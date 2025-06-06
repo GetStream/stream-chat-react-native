@@ -1,8 +1,6 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
-
-import type { File } from '../../types/types';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -15,36 +13,6 @@ export type AttachmentPickerIconProps = {
 
 export type AttachmentPickerContextValue = {
   /**
-   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachment picker.
-   *
-   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
-   */
-  AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
-  /**
-   * Height of the image picker bottom sheet handle.
-   * @type number
-   * @default 20
-   */
-  attachmentPickerBottomSheetHandleHeight: number;
-  /**
-   * Height of the image picker bottom sheet when opened.
-   * @type number
-   * @default 40% of window height
-   */
-  attachmentPickerBottomSheetHeight: number;
-  /**
-   * Custom UI component for AttachmentPickerSelectionBar
-   *
-   * **Default: ** [AttachmentPickerSelectionBar](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/AttachmentPicker/components/AttachmentPickerSelectionBar.tsx)
-   */
-  AttachmentPickerSelectionBar: React.ComponentType;
-  /**
-   * Height of the attachment selection bar displayed on the attachment picker.
-   * @type number
-   * @default 52
-   */
-  attachmentSelectionBarHeight: number;
-  /**
    * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
    * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
    *
@@ -52,51 +20,14 @@ export type AttachmentPickerContextValue = {
    * for more details.
    */
   bottomInset: number;
-  /**
-   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
-   */
-  CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
+  bottomSheetRef: React.RefObject<BottomSheet | null>;
   closePicker: () => void;
-  /**
-   * Custom UI component for the poll creation icon.
-   *
-   * **Default: ** [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
-   */
-  CreatePollIcon: React.ComponentType;
-  /**
-   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
-   */
-  FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
-   */
-  ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Limit for maximum files that can be attached per message.
-   */
-  maxNumberOfFiles: number;
   openPicker: () => void;
-  selectedFiles: File[];
-  selectedImages: File[];
   setBottomInset: React.Dispatch<React.SetStateAction<number>>;
-  setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
-  setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-  setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
   setTopInset: React.Dispatch<React.SetStateAction<number>>;
   topInset: number;
-  /**
-   * Custom UI component for Android's video recorder selector icon.
-   *
-   * **Default: ** [VideoRecorderSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/VideoRecorderSelectorIcon.tsx)
-   */
-  VideoRecorderSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
+
   selectedPicker?: 'images';
 };
 
@@ -108,25 +39,13 @@ export const AttachmentPickerProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value?: Pick<
-    AttachmentPickerContextValue,
-    | 'CameraSelectorIcon'
-    | 'closePicker'
-    | 'CreatePollIcon'
-    | 'FileSelectorIcon'
-    | 'ImageSelectorIcon'
-    | 'openPicker'
-    | 'VideoRecorderSelectorIcon'
-  > &
+  value?: Pick<AttachmentPickerContextValue, 'closePicker' | 'openPicker'> &
     Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>>;
 }>) => {
   const bottomInsetValue = value?.bottomInset;
   const topInsetValue = value?.topInset;
 
   const [bottomInset, setBottomInset] = useState<number>(bottomInsetValue ?? 0);
-  const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
   const [topInset, setTopInset] = useState<number>(topInsetValue ?? 0);
 
@@ -139,14 +58,8 @@ export const AttachmentPickerProvider = ({
   }, [topInsetValue]);
 
   const combinedValue = {
-    maxNumberOfFiles,
-    selectedFiles,
-    selectedImages,
     selectedPicker,
     setBottomInset,
-    setMaxNumberOfFiles,
-    setSelectedFiles,
-    setSelectedImages,
     setSelectedPicker,
     setTopInset,
     ...value,

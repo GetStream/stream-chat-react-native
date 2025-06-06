@@ -1,8 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { CustomDataManagerState, TextComposerState } from 'stream-chat';
+import { TextComposerState } from 'stream-chat';
 
+import {
+  AttachmentPickerContextValue,
+  OwnCapabilitiesContextValue,
+  useAttachmentPickerContext,
+} from '../../contexts';
+import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
@@ -23,16 +29,14 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasFilePicker'
   | 'hasImagePicker'
   | 'MoreOptionsButton'
-  | 'selectedPicker'
   | 'toggleAttachmentPicker'
->;
+> &
+  Pick<AttachmentPickerContextValue, 'selectedPicker'> &
+  Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
   text: state.text,
-});
-
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
 });
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
@@ -44,17 +48,20 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
+    uploadFile: ownCapabilitiesUploadFile,
   } = props;
-  const { customDataManager, textComposer } = useMessageComposer();
-  const { text } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { textComposer } = useMessageComposer();
+  const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
+
   const [showMoreOptions, setShowMoreOptions] = useState(true);
+  const { attachments } = useAttachmentManagerState();
 
   const hasText = !!text;
+  const shouldShowMoreOptions = hasText || !!attachments.length;
 
   useEffect(() => {
-    setShowMoreOptions(!hasText);
-  }, [hasText]);
+    setShowMoreOptions(!shouldShowMoreOptions);
+  }, [shouldShowMoreOptions]);
 
   const {
     theme: {
@@ -66,24 +73,29 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     setShowMoreOptions(true);
   }, [setShowMoreOptions]);
 
-  const ownCapabilities = useOwnCapabilitiesContext();
+  const hasAttachmentUploadCapabilities =
+    (hasCameraPicker || hasFilePicker || hasImagePicker) && ownCapabilitiesUploadFile;
 
   if (command) {
     return null;
   }
 
-  return !showMoreOptions && (hasCameraPicker || hasImagePicker || hasFilePicker) && hasCommands ? (
+  if (!hasAttachmentUploadCapabilities && !hasCommands) {
+    return null;
+  }
+
+  return !showMoreOptions ? (
     <MoreOptionsButton handleOnPress={handleShowMoreOptions} />
   ) : (
     <>
-      {(hasCameraPicker || hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
+      {hasAttachmentUploadCapabilities ? (
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
         >
           <AttachButton />
         </View>
-      )}
-      {hasCommands && <CommandsButton hasText={hasText} />}
+      ) : null}
+      {hasCommands ? <CommandsButton hasText={hasText} /> : null}
     </>
   );
 };
@@ -145,9 +157,10 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
-    selectedPicker,
     toggleAttachmentPicker,
   } = useMessageInputContext();
+  const { selectedPicker } = useAttachmentPickerContext();
+  const { uploadFile } = useOwnCapabilitiesContext();
 
   return (
     <MemoizedInputButtonsWithContext
@@ -161,6 +174,7 @@ export const InputButtons = (props: InputButtonsProps) => {
         MoreOptionsButton,
         selectedPicker,
         toggleAttachmentPicker,
+        uploadFile,
       }}
       {...props}
     />

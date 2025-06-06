@@ -162,9 +162,13 @@ export const CreatePoll = ({
 
   const createAndSendPoll = useCallback(async () => {
     try {
+      /**
+       * The poll is emptied inside the createPoll method(using initState) which is why we close the dialog
+       * first so that it doesn't look weird.
+       */
+      closePollCreationDialog?.();
       await messageComposer.createPoll();
       await sendMessage();
-      closePollCreationDialog?.();
     } catch (error) {
       console.log('Error creating a poll and sending a message:', error);
     }

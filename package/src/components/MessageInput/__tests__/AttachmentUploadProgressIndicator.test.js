@@ -4,15 +4,19 @@ import { render, screen, userEvent, waitFor } from '@testing-library/react-nativ
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { ProgressIndicatorTypes } from '../../../utils/utils';
-import { UploadProgressIndicator } from '../UploadProgressIndicator';
 
-describe('UploadProgressIndicator', () => {
-  it('should render an inactive UploadProgressIndicator', async () => {
+import { AttachmentUploadProgressIndicator } from '../components/AttachmentPreview/AttachmentUploadProgressIndicator';
+
+describe('AttachmentUploadProgressIndicator', () => {
+  it('should render an inactive AttachmentUploadProgressIndicator', async () => {
     const action = jest.fn();
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.INACTIVE} />
+        <AttachmentUploadProgressIndicator
+          onPress={action}
+          type={ProgressIndicatorTypes.INACTIVE}
+        />
       </ThemeProvider>,
     );
 
@@ -23,12 +27,15 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active UploadProgressIndicator', async () => {
+  it('should render an active AttachmentUploadProgressIndicator', async () => {
     const action = jest.fn();
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.IN_PROGRESS} />
+        <AttachmentUploadProgressIndicator
+          onPress={action}
+          type={ProgressIndicatorTypes.IN_PROGRESS}
+        />
       </ThemeProvider>,
     );
 
@@ -39,12 +46,15 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active UploadProgressIndicator and not-supported indicator', async () => {
+  it('should render an active AttachmentUploadProgressIndicator and not-supported indicator', async () => {
     const action = jest.fn();
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.NOT_SUPPORTED} />
+        <AttachmentUploadProgressIndicator
+          onPress={action}
+          type={ProgressIndicatorTypes.NOT_SUPPORTED}
+        />
       </ThemeProvider>,
     );
 
@@ -56,12 +66,15 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active UploadProgressIndicator and in-progress indicator', async () => {
+  it('should render an active AttachmentUploadProgressIndicator and in-progress indicator', async () => {
     const action = jest.fn();
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.IN_PROGRESS} />
+        <AttachmentUploadProgressIndicator
+          onPress={action}
+          type={ProgressIndicatorTypes.IN_PROGRESS}
+        />
       </ThemeProvider>,
     );
 
@@ -73,13 +86,13 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active UploadProgressIndicator and retry indicator', async () => {
+  it('should render an active AttachmentUploadProgressIndicator and retry indicator', async () => {
     const action = jest.fn();
     const user = userEvent.setup();
 
     render(
       <ThemeProvider>
-        <UploadProgressIndicator action={action} type={ProgressIndicatorTypes.RETRY} />
+        <AttachmentUploadProgressIndicator onPress={action} type={ProgressIndicatorTypes.RETRY} />
       </ThemeProvider>,
     );
 

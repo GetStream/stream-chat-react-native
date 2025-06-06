@@ -1,13 +1,10 @@
 import React, { useContext } from 'react';
 
-import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import type { Attachment } from 'stream-chat';
 
-import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
-import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -26,39 +23,19 @@ export const OverlayContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as OverlayContextValue,
 );
 
-export type OverlayProviderProps = Partial<AttachmentPickerProps> &
-  Partial<
-    Pick<
-      AttachmentPickerContextValue,
-      | 'AttachmentPickerBottomSheetHandle'
-      | 'attachmentPickerBottomSheetHandleHeight'
-      | 'attachmentPickerBottomSheetHeight'
-      | 'AttachmentPickerSelectionBar'
-      | 'attachmentSelectionBarHeight'
-      | 'bottomInset'
-      | 'CameraSelectorIcon'
-      | 'CreatePollIcon'
-      | 'FileSelectorIcon'
-      | 'ImageSelectorIcon'
-      | 'topInset'
-      | 'VideoRecorderSelectorIcon'
-    >
-  > &
-  ImageGalleryCustomComponents & {
-    autoPlayVideo?: boolean;
-    /**
-     * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
-     * */
-    closePicker?: (ref: React.RefObject<BottomSheetMethods | null>) => void;
-    giphyVersion?: keyof NonNullable<Attachment['giphy']>;
-    /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
-    i18nInstance?: Streami18n;
-    imageGalleryGridHandleHeight?: number;
-    imageGalleryGridSnapPoints?: [string | number, string | number];
-    numberOfImageGalleryGridColumns?: number;
-    openPicker?: (ref: React.RefObject<BottomSheetMethods | null>) => void;
-    value?: Partial<OverlayContextValue>;
-  };
+export type OverlayProviderProps = ImageGalleryCustomComponents & {
+  autoPlayVideo?: boolean;
+  /**
+   * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
+   * */
+  giphyVersion?: keyof NonNullable<Attachment['giphy']>;
+  /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
+  i18nInstance?: Streami18n;
+  imageGalleryGridHandleHeight?: number;
+  imageGalleryGridSnapPoints?: [string | number, string | number];
+  numberOfImageGalleryGridColumns?: number;
+  value?: Partial<OverlayContextValue>;
+};
 
 export const useOverlayContext = () => {
   const contextValue = useContext(OverlayContext);

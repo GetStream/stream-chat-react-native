@@ -1,4 +1,9 @@
+import structuredClone from '@ungap/structured-clone';
+
 (function () {
+  if (!window.structuredClone) {
+    window.structuredClone = structuredClone;
+  }
   if (!Array.prototype.at) {
     // eslint-disable-next-line no-extend-native
     Object.defineProperty(Array.prototype, 'at', {

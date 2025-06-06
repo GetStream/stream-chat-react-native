@@ -1,29 +1,20 @@
 import React from 'react';
-import { View } from 'react-native';
 
-import { fireEvent, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
-import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
-import { generateChannelResponse } from '../../../mock-builders/generator/channel';
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateMessage } from '../../../mock-builders/generator/message';
-import { generateUser } from '../../../mock-builders/generator/user';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { OverlayProvider } from '../../../contexts';
+import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
+import {
+  generateAudioAttachment,
+  generateFileAttachment,
+  generateImageAttachment,
+  generateVideoAttachment,
+} from '../../../mock-builders/attachments';
+
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { FileUploadPreview } from '../FileUploadPreview';
-
-function MockedFlatList(props) {
-  const items = props.data.map((item, index) => {
-    const key = props.keyExtractor(item, index);
-    return <View key={key}>{props.renderItem({ index, item })}</View>;
-  });
-  return <View testID={props.testID}>{items}</View>;
-}
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
@@ -33,7 +24,7 @@ jest.mock('../../../native.ts', () => {
     isDocumentPickerAvailable: jest.fn(() => true),
     isImageMediaLibraryAvailable: jest.fn(() => true),
     isImagePickerAvailable: jest.fn(() => true),
-    isSoundPackageAvailable: jest.fn(() => true),
+    isSoundPackageAvailable: jest.fn(() => false),
     NativeHandlers: {
       Sound: {
         Player: View,
@@ -42,337 +33,248 @@ jest.mock('../../../native.ts', () => {
   };
 });
 
-describe('FileUploadPreview', () => {
-  it('should render FileUploadPreview with all uploading files', async () => {
-    const fileUploads = [
-      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOADING }),
-      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOADING }),
-      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOADING }),
-      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.UPLOADING }),
-    ];
-    const removeFile = jest.fn();
-    const uploadFile = jest.fn();
-    const user = userEvent.setup();
+const renderComponent = ({ client, channel, props }) => {
+  return render(
+    <OverlayProvider>
+      <Chat client={client}>
+        <Channel channel={channel}>
+          <FileUploadPreview {...props} />
+        </Channel>
+      </Chat>
+    </OverlayProvider>,
+  );
+};
 
-    const user1 = generateUser();
+describe("FileUploadPreview's render", () => {
+  let client;
+  let channel;
 
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
-    });
+  beforeAll(async () => {
+    const { client: chatClient, channels } = await initiateClientWithChannels();
+    client = chatClient;
+    channel = channels[0];
+  });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
-      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(fileUploads.length);
-      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByText('File type not supported')).toHaveLength(0);
-      expect(removeFile).toHaveBeenCalledTimes(0);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
-    });
-
-    user.press(screen.getAllByTestId('remove-file-upload-preview')[0]);
-
-    await waitFor(() => {
-      expect(removeFile).toHaveBeenCalledTimes(1);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
+  afterEach(() => {
+    act(() => {
+      channel.messageComposer.attachmentManager.initState();
     });
   });
 
-  it('should render FileUploadPreview with all uploaded files', async () => {
-    const fileUploads = [
-      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOADED }),
-      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOADED }),
-      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOADED }),
-      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.UPLOADED }),
-    ];
-    const removeFile = jest.fn();
-    const uploadFile = jest.fn();
-    const user = userEvent.setup();
+  it('should return null when no files are uploaded', async () => {
+    const props = {};
 
-    const user1 = generateUser();
+    renderComponent({ channel, client, props });
 
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    const { queryAllByTestId } = screen;
 
     await waitFor(() => {
-      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
-      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByText('File type not supported')).toHaveLength(0);
-      expect(removeFile).toHaveBeenCalledTimes(0);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
-    });
-
-    user.press(screen.getAllByTestId('remove-file-upload-preview')[0]);
-
-    await waitFor(() => {
-      expect(removeFile).toHaveBeenCalledTimes(1);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
+      expect(queryAllByTestId('file-upload-preview')).toHaveLength(0);
     });
   });
 
-  it('should render FileUploadPreview with all failed files', async () => {
-    const fileUploads = [
-      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOAD_FAILED }),
-      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOAD_FAILED }),
-      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOAD_FAILED }),
-      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.UPLOAD_FAILED }),
-    ];
-    const removeFile = jest.fn();
-    const uploadFile = jest.fn();
-
-    const user1 = generateUser();
-    const user = userEvent.setup();
-
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
-      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
-      expect(screen.queryAllByText('File type not supported')).toHaveLength(0);
-      expect(removeFile).toHaveBeenCalledTimes(0);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
-    });
-
-    user.press(screen.getAllByTestId('remove-file-upload-preview')[0]);
-
-    await waitFor(() => {
-      expect(removeFile).toHaveBeenCalledTimes(1);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
-    });
-
-    user.press(screen.getAllByTestId('retry-upload-progress-indicator')[0]);
-
-    await waitFor(() => {
-      expect(removeFile).toHaveBeenCalledTimes(1);
-      expect(uploadFile).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('should render FileUploadPreview with all unsupported files', async () => {
-    const fileUploads = [
-      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.NOT_SUPPORTED }),
-      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.NOT_SUPPORTED }),
-      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.NOT_SUPPORTED }),
-      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.NOT_SUPPORTED }),
-    ];
-    const removeFile = jest.fn();
-    const uploadFile = jest.fn();
-
-    const user1 = generateUser();
-    const user = userEvent.setup();
-
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
-      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
-      expect(screen.queryAllByText('File type not supported')).toHaveLength(fileUploads.length);
-      expect(removeFile).toHaveBeenCalledTimes(0);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
-    });
-
-    user.press(screen.getAllByTestId('remove-file-upload-preview')[0]);
-
-    await waitFor(() => {
-      expect(removeFile).toHaveBeenCalledTimes(1);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
-    });
-  });
-
-  it('should render FileUploadPreview with 1 uploading, 1 uploaded, and 1 failed file', async () => {
-    const fileUploads = [
-      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOADING }),
-      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOADED }),
-      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOAD_FAILED }),
-      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.NOT_SUPPORTED }),
-    ];
-    const removeFile = jest.fn();
-    const uploadFile = jest.fn();
-
-    const user1 = generateUser();
-
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-    await waitFor(() => {
-      expect(screen.queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
-        fileUploads.length - 1,
-      );
-      expect(screen.queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
-      expect(screen.queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
-      expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
-      expect(screen.queryAllByText('File type not supported')).toHaveLength(1);
-      expect(removeFile).toHaveBeenCalledTimes(0);
-      expect(uploadFile).toHaveBeenCalledTimes(0);
-    });
-  });
-
-  it('should render FileUploadPreview with all uploaded audios', async () => {
-    const fileUploads = [
-      generateFileUploadPreview({
-        id: 'file-upload-id-1',
-        state: FileState.UPLOADED,
-        type: 'audio/mp3',
+  it('should return null when the file is an image', async () => {
+    const attachments = [
+      generateImageAttachment({
+        localMetadata: {
+          id: 'image-attachment',
+          uploadState: FileState.FINISHED,
+        },
       }),
     ];
-    const removeFile = jest.fn();
-    const uploadFile = jest.fn();
+    const props = {};
 
-    const user1 = generateUser();
-
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
+    await act(() => {
+      channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    renderComponent({ channel, client, props });
 
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    const AudioAttachmentComponent = screen.getByTestId('audio-attachment-upload-preview');
+    const { queryAllByTestId } = screen;
 
     await waitFor(() => {
-      fireEvent(AudioAttachmentComponent, 'onLoad');
-      fireEvent(AudioAttachmentComponent, 'onProgress');
-      fireEvent(AudioAttachmentComponent, 'onPlayPause');
-      fireEvent(AudioAttachmentComponent, 'onPlayPause', {
-        status: false,
+      expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(0);
+    });
+  });
+
+  it('should render FileAttachmentUploadPreview when the sound package is unavailable', async () => {
+    const attachments = [
+      generateAudioAttachment({
+        localMetadata: {
+          id: 'audio-attachment',
+          uploadState: FileState.UPLOADING,
+        },
+      }),
+    ];
+
+    const props = {};
+
+    await act(() => {
+      channel.messageComposer.attachmentManager.upsertAttachments(attachments);
+    });
+
+    renderComponent({ channel, client, props });
+
+    const { queryAllByTestId } = screen;
+
+    await waitFor(() => {
+      expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(1);
+      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(1);
+      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+    });
+  });
+
+  describe('FileAttachmentUploadPreview', () => {
+    it('should render FileAttachmentUploadPreview with all uploading files', async () => {
+      const attachments = [
+        generateFileAttachment({
+          localMetadata: {
+            id: 'file-attachment',
+            uploadState: FileState.UPLOADING,
+          },
+        }),
+        generateVideoAttachment({
+          localMetadata: {
+            id: 'video-attachment',
+            uploadState: FileState.UPLOADING,
+          },
+        }),
+      ];
+      const props = {};
+
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { getAllByTestId, queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
+        expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(2);
+        expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(2);
+      });
+
+      await act(() => {
+        fireEvent.press(getAllByTestId('remove-upload-preview')[0]);
+      });
+
+      await waitFor(() => {
+        expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(1);
+      });
+
+      await act(() => {
+        fireEvent.press(getAllByTestId('remove-upload-preview')[0]);
+      });
+
+      await waitFor(() => {
+        expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(0);
+      });
+    });
+
+    it('should render FileAttachmentUploadPreview with all uploaded files', async () => {
+      const attachments = [
+        generateFileAttachment({
+          localMetadata: {
+            id: 'image-attachment',
+            uploadState: FileState.FINISHED,
+          },
+        }),
+        generateVideoAttachment({
+          localMetadata: {
+            id: 'video-attachment',
+            uploadState: FileState.FINISHED,
+          },
+        }),
+      ];
+      const props = {};
+
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
+        expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(2);
+      });
+    });
+
+    it('should render FileAttachmentUploadPreview with all failed files', async () => {
+      const uploadAttachmentSpy = jest.fn();
+      channel.messageComposer.attachmentManager.uploadAttachment = uploadAttachmentSpy;
+      const attachments = [
+        generateFileAttachment({
+          localMetadata: {
+            id: 'file-attachment',
+            uploadState: FileState.FAILED,
+          },
+        }),
+        generateVideoAttachment({
+          localMetadata: {
+            id: 'video-attachment',
+            uploadState: FileState.FAILED,
+          },
+        }),
+      ];
+      const props = {};
+
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { getAllByTestId, queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
+        expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(2);
+      });
+
+      await act(() => {
+        fireEvent.press(getAllByTestId('retry-upload-progress-indicator')[0]);
+      });
+
+      await waitFor(() => {
+        expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
+        expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(2);
+        expect(uploadAttachmentSpy).toHaveBeenCalled();
+      });
+    });
+
+    it('should render FileAttachmentUploadPreview with all unsupported', async () => {
+      const attachments = [
+        generateFileAttachment({
+          localMetadata: {
+            id: 'file-attachment',
+            uploadState: FileState.BLOCKED,
+          },
+        }),
+        generateVideoAttachment({
+          localMetadata: {
+            id: 'video-attachment',
+            uploadState: FileState.BLOCKED,
+          },
+        }),
+      ];
+      const props = {};
+
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { queryAllByText, queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
+        expect(queryAllByText('Not supported')).toHaveLength(2);
       });
     });
   });

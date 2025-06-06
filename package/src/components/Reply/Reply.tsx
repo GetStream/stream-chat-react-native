@@ -24,7 +24,7 @@ import { useStateStore } from '../../hooks';
 import { FileTypes } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
-import { hasOnlyEmojis } from '../../utils/utils';
+import { checkQuotedMessageEquality, hasOnlyEmojis } from '../../utils/utils';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { VideoThumbnail } from '../Attachment/VideoThumbnail';
@@ -351,12 +351,14 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
   const quotedMessageEqual =
     !!prevQuotedMessage &&
     !!nextQuotedMessage &&
-    typeof prevQuotedMessage !== 'boolean' &&
-    typeof nextQuotedMessage !== 'boolean'
-      ? prevQuotedMessage.id === nextQuotedMessage.id &&
-        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at &&
-        prevQuotedMessage.type === nextQuotedMessage.type
-      : !!prevQuotedMessage === !!nextQuotedMessage;
+    checkQuotedMessageEquality(prevQuotedMessage, nextQuotedMessage);
+
+  const quotedMessageAttachmentsEqual =
+    prevQuotedMessage?.attachments?.length === nextQuotedMessage?.attachments?.length;
+
+  if (!quotedMessageAttachmentsEqual) {
+    return false;
+  }
 
   if (!quotedMessageEqual) {
     return false;

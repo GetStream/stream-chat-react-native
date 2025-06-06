@@ -1,13 +1,12 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import type { GestureResponderEvent } from 'react-native';
+import { Pressable } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { CircleRight } from '../../icons/CircleRight';
 
 export type MoreOptionsButtonProps = {
   /** Function that opens attachment options bottom sheet */
-  handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
+  handleOnPress?: () => void;
 };
 
 export const MoreOptionsButton = (props: MoreOptionsButtonProps) => {
@@ -21,14 +20,14 @@ export const MoreOptionsButton = (props: MoreOptionsButtonProps) => {
   } = useTheme();
 
   return (
-    <TouchableOpacity
+    <Pressable
       hitSlop={{ bottom: 15, left: 15, right: 15, top: 15 }}
       onPress={handleOnPress}
-      style={[moreOptionsButton]}
+      style={({ pressed }) => [moreOptionsButton, { opacity: pressed ? 0.8 : 1 }]}
       testID='more-options-button'
     >
       <CircleRight pathFill={accent_blue} />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

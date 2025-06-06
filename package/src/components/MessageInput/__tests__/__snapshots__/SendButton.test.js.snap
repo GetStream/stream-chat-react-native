@@ -1,465 +1,375 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SendButton should render a non-editing disabled SendButton 1`] = `
-<View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": true,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    [
-      {},
-    ]
-  }
-  testID="send-button"
->
-  <RNSVGSvgView
-    align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
-    fill="#DBDBDB"
-    focusable={false}
-    height={32}
-    meetOrSlice={0}
-    minX={0}
-    minY={0}
+exports[`SendButton should render a SendButton 1`] = `
+[
+  <View
+    keyboardVerticalOffset={86.5}
+    onLayout={[Function]}
     style={
-      [
-        {
-          "backgroundColor": "transparent",
-          "borderWidth": 0,
-        },
-        {
-          "flex": 0,
-          "height": 32,
-          "width": 32,
-        },
-      ]
-    }
-    vbHeight={32}
-    vbWidth={32}
-    width={32}
-  >
-    <RNSVGGroup
-      fill={
-        {
-          "payload": 4292598747,
-          "type": 0,
-        }
+      {
+        "paddingBottom": 0,
       }
-      propList={
-        [
-          "fill",
-        ]
+    }
+  >
+    <View
+      style={
+        {
+          "height": "100%",
+        }
       }
     >
-      <RNSVGCircle
-        cx={16}
-        cy={16}
-        fill={
+      <View
+        accessibilityState={
           {
-            "payload": 4292598747,
-            "type": 0,
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
           }
         }
-        propList={
-          [
-            "fill",
-          ]
-        }
-        r={16}
-      />
-      <RNSVGPath
-        clipRule={0}
-        d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
-        fill={
+        accessibilityValue={
           {
-            "payload": 4294967295,
-            "type": 0,
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
           }
         }
-        fillRule={0}
-        propList={
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
           [
-            "fill",
-            "fillRule",
+            {},
           ]
         }
-      />
-    </RNSVGGroup>
-  </RNSVGSvgView>
-</View>
+        testID="send-button"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={32}
+          bbWidth={32}
+          fill="#005FFF"
+          focusable={false}
+          height={32}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          style={
+            [
+              {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              {
+                "flex": 0,
+                "height": 32,
+                "width": 32,
+              },
+            ]
+          }
+          testID="send-up"
+          vbHeight={32}
+          vbWidth={32}
+          width={32}
+        >
+          <RNSVGGroup
+            fill={
+              {
+                "payload": 4278214655,
+                "type": 0,
+              }
+            }
+            propList={
+              [
+                "fill",
+              ]
+            }
+          >
+            <RNSVGCircle
+              cx={16}
+              cy={16}
+              fill={
+                {
+                  "payload": 4278214655,
+                  "type": 0,
+                }
+              }
+              propList={
+                [
+                  "fill",
+                ]
+              }
+              r={16}
+            />
+            <RNSVGPath
+              clipRule={0}
+              d="M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z"
+              fill={
+                {
+                  "payload": 4294967295,
+                  "type": 0,
+                }
+              }
+              fillRule={0}
+              propList={
+                [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>,
+  <View
+    enablePanDownToClose={true}
+    handleComponent={[Function]}
+    handleHeight={20}
+    index={-1}
+    onChange={[Function]}
+    snapPoints={
+      [
+        600.3000000000001,
+        1334,
+      ]
+    }
+  >
+    <RCTScrollView
+      contentContainerStyle={
+        [
+          {
+            "flexGrow": 1,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+          },
+          {},
+          {
+            "opacity": 1,
+          },
+        ]
+      }
+      data={[]}
+      getItem={[Function]}
+      getItemCount={[Function]}
+      keyExtractor={[Function]}
+      onContentSizeChange={[Function]}
+      onEndReached={[Function]}
+      onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
+      onMomentumScrollEnd={[Function]}
+      onScroll={[Function]}
+      onScrollBeginDrag={[Function]}
+      onScrollEndDrag={[Function]}
+      removeClippedSubviews={false}
+      renderItem={[Function]}
+      scrollEventThrottle={0.0001}
+      stickyHeaderIndices={[]}
+      testID="attachment-picker-list"
+      viewabilityConfigCallbackPairs={[]}
+    >
+      <View />
+    </RCTScrollView>
+  </View>,
+]
 `;
 
-exports[`SendButton should render a non-editing enabled SendButton 1`] = `
-<View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": false,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    [
-      {},
-    ]
-  }
-  testID="send-button"
->
-  <RNSVGSvgView
-    align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
-    fill="#005FFF"
-    focusable={false}
-    height={32}
-    meetOrSlice={0}
-    minX={0}
-    minY={0}
+exports[`SendButton should render a disabled SendButton 1`] = `
+[
+  <View
+    keyboardVerticalOffset={86.5}
+    onLayout={[Function]}
     style={
-      [
-        {
-          "backgroundColor": "transparent",
-          "borderWidth": 0,
-        },
-        {
-          "flex": 0,
-          "height": 32,
-          "width": 32,
-        },
-      ]
-    }
-    vbHeight={32}
-    vbWidth={32}
-    width={32}
-  >
-    <RNSVGGroup
-      fill={
-        {
-          "payload": 4278214655,
-          "type": 0,
-        }
+      {
+        "paddingBottom": 0,
       }
-      propList={
-        [
-          "fill",
-        ]
+    }
+  >
+    <View
+      style={
+        {
+          "height": "100%",
+        }
       }
     >
-      <RNSVGCircle
-        cx={16}
-        cy={16}
-        fill={
+      <View
+        accessibilityState={
           {
-            "payload": 4278214655,
-            "type": 0,
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": true,
+            "expanded": undefined,
+            "selected": undefined,
           }
         }
-        propList={
-          [
-            "fill",
-          ]
-        }
-        r={16}
-      />
-      <RNSVGPath
-        clipRule={0}
-        d="M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z"
-        fill={
+        accessibilityValue={
           {
-            "payload": 4294967295,
-            "type": 0,
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
           }
         }
-        fillRule={0}
-        propList={
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
           [
-            "fill",
-            "fillRule",
+            {},
           ]
         }
-      />
-    </RNSVGGroup>
-  </RNSVGSvgView>
-</View>
-`;
-
-exports[`SendButton should render an editing disabled SendButton 1`] = `
-<View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": true,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    [
-      {},
-    ]
-  }
-  testID="send-button"
->
-  <RNSVGSvgView
-    align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
-    fill="#DBDBDB"
-    focusable={false}
-    height={32}
-    meetOrSlice={0}
-    minX={0}
-    minY={0}
-    style={
+        testID="send-button"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={32}
+          bbWidth={32}
+          fill="#DBDBDB"
+          focusable={false}
+          height={32}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          style={
+            [
+              {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              {
+                "flex": 0,
+                "height": 32,
+                "width": 32,
+              },
+            ]
+          }
+          testID="send-right"
+          vbHeight={32}
+          vbWidth={32}
+          width={32}
+        >
+          <RNSVGGroup
+            fill={
+              {
+                "payload": 4292598747,
+                "type": 0,
+              }
+            }
+            propList={
+              [
+                "fill",
+              ]
+            }
+          >
+            <RNSVGCircle
+              cx={16}
+              cy={16}
+              fill={
+                {
+                  "payload": 4292598747,
+                  "type": 0,
+                }
+              }
+              propList={
+                [
+                  "fill",
+                ]
+              }
+              r={16}
+            />
+            <RNSVGPath
+              clipRule={0}
+              d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
+              fill={
+                {
+                  "payload": 4294967295,
+                  "type": 0,
+                }
+              }
+              fillRule={0}
+              propList={
+                [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>,
+  <View
+    enablePanDownToClose={true}
+    handleComponent={[Function]}
+    handleHeight={20}
+    index={-1}
+    onChange={[Function]}
+    snapPoints={
       [
-        {
-          "backgroundColor": "transparent",
-          "borderWidth": 0,
-        },
-        {
-          "flex": 0,
-          "height": 32,
-          "width": 32,
-        },
+        600.3000000000001,
+        1334,
       ]
     }
-    vbHeight={32}
-    vbWidth={32}
-    width={32}
   >
-    <RNSVGGroup
-      fill={
-        {
-          "payload": 4292598747,
-          "type": 0,
-        }
-      }
-      propList={
+    <RCTScrollView
+      contentContainerStyle={
         [
-          "fill",
+          {
+            "flexGrow": 1,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+          },
+          {},
+          {
+            "opacity": 1,
+          },
         ]
       }
+      data={[]}
+      getItem={[Function]}
+      getItemCount={[Function]}
+      keyExtractor={[Function]}
+      onContentSizeChange={[Function]}
+      onEndReached={[Function]}
+      onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
+      onMomentumScrollEnd={[Function]}
+      onScroll={[Function]}
+      onScrollBeginDrag={[Function]}
+      onScrollEndDrag={[Function]}
+      removeClippedSubviews={false}
+      renderItem={[Function]}
+      scrollEventThrottle={0.0001}
+      stickyHeaderIndices={[]}
+      testID="attachment-picker-list"
+      viewabilityConfigCallbackPairs={[]}
     >
-      <RNSVGCircle
-        cx={16}
-        cy={16}
-        fill={
-          {
-            "payload": 4292598747,
-            "type": 0,
-          }
-        }
-        propList={
-          [
-            "fill",
-          ]
-        }
-        r={16}
-      />
-      <RNSVGPath
-        clipRule={0}
-        d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
-        fill={
-          {
-            "payload": 4294967295,
-            "type": 0,
-          }
-        }
-        fillRule={0}
-        propList={
-          [
-            "fill",
-            "fillRule",
-          ]
-        }
-      />
-    </RNSVGGroup>
-  </RNSVGSvgView>
-</View>
-`;
-
-exports[`SendButton should render an editing enabled SendButton 1`] = `
-<View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": false,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    [
-      {},
-    ]
-  }
-  testID="send-button"
->
-  <RNSVGSvgView
-    align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
-    fill="#005FFF"
-    focusable={false}
-    height={32}
-    meetOrSlice={0}
-    minX={0}
-    minY={0}
-    style={
-      [
-        {
-          "backgroundColor": "transparent",
-          "borderWidth": 0,
-        },
-        {
-          "flex": 0,
-          "height": 32,
-          "width": 32,
-        },
-      ]
-    }
-    vbHeight={32}
-    vbWidth={32}
-    width={32}
-  >
-    <RNSVGGroup
-      fill={
-        {
-          "payload": 4278214655,
-          "type": 0,
-        }
-      }
-      propList={
-        [
-          "fill",
-        ]
-      }
-    >
-      <RNSVGCircle
-        cx={16}
-        cy={16}
-        fill={
-          {
-            "payload": 4278214655,
-            "type": 0,
-          }
-        }
-        propList={
-          [
-            "fill",
-          ]
-        }
-        r={16}
-      />
-      <RNSVGPath
-        clipRule={0}
-        d="M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z"
-        fill={
-          {
-            "payload": 4294967295,
-            "type": 0,
-          }
-        }
-        fillRule={0}
-        propList={
-          [
-            "fill",
-            "fillRule",
-          ]
-        }
-      />
-    </RNSVGGroup>
-  </RNSVGSvgView>
-</View>
+      <View />
+    </RCTScrollView>
+  </View>,
+]
 `;

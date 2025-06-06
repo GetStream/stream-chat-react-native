@@ -1,35 +1,58 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { OverlayProvider } from '../../../contexts';
+
+import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
 import { SendButton } from '../SendButton';
 
-describe('SendButton', () => {
-  const getComponent = ({ editing, ...rest } = {}) => (
-    <ThemeProvider>
-      <MessagesProvider value={{ editing }}>
-        <SendButton {...rest} />
-      </MessagesProvider>
-    </ThemeProvider>
+const renderComponent = ({ client, channel, props }) => {
+  return render(
+    <OverlayProvider>
+      <Chat client={client}>
+        <Channel channel={channel}>
+          <SendButton {...props} />
+        </Channel>
+      </Chat>
+    </OverlayProvider>,
   );
+};
 
-  it('should render a non-editing enabled SendButton', async () => {
+describe('SendButton', () => {
+  let client;
+  let channel;
+
+  beforeAll(async () => {
+    const { client: chatClient, channels } = await initiateClientWithChannels();
+    client = chatClient;
+    channel = channels[0];
+  });
+
+  it('should render a SendButton', async () => {
     const sendMessage = jest.fn();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
-      getComponent({ editing: false, sendMessage }),
-    );
+    const props = { sendMessage };
+
+    renderComponent({ channel, client, props });
+
+    const { getByTestId, queryByTestId, toJSON } = screen;
 
     await waitFor(() => {
       expect(queryByTestId('send-button')).toBeTruthy();
       expect(sendMessage).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByTestId('send-button'));
+    await act(() => {
+      userEvent.press(getByTestId('send-button'));
+    });
 
-    await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(1));
+    await waitFor(() => {
+      expect(sendMessage).toHaveBeenCalledTimes(1);
+      expect(getByTestId('send-up')).toBeDefined();
+    });
 
     const snapshot = toJSON();
 
@@ -38,21 +61,28 @@ describe('SendButton', () => {
     });
   });
 
-  it('should render a non-editing disabled SendButton', async () => {
+  it('should render a disabled SendButton', async () => {
     const sendMessage = jest.fn();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
-      getComponent({ disabled: true, editing: false, sendMessage }),
-    );
+    const props = { disabled: true, sendMessage };
+
+    renderComponent({ channel, client, props });
+
+    const { getByTestId, queryByTestId, toJSON } = screen;
 
     await waitFor(() => {
       expect(queryByTestId('send-button')).toBeTruthy();
       expect(sendMessage).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByTestId('send-button'));
+    await act(() => {
+      userEvent.press(getByTestId('send-button'));
+    });
 
-    await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(0));
+    await waitFor(() => {
+      expect(sendMessage).toHaveBeenCalledTimes(0);
+      expect(getByTestId('send-right')).toBeDefined();
+    });
 
     const snapshot = toJSON();
 
@@ -61,49 +91,23 @@ describe('SendButton', () => {
     });
   });
 
-  it('should render an editing enabled SendButton', async () => {
+  it('should show search button if the command is enabled', async () => {
     const sendMessage = jest.fn();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
-      getComponent({ editing: true, sendMessage }),
-    );
+    const props = { sendMessage };
+
+    channel.messageComposer.textComposer.setCommand({ description: 'Ban a user', name: 'ban' });
+
+    renderComponent({ channel, client, props });
+
+    const { queryByTestId } = screen;
 
     await waitFor(() => {
-      expect(queryByTestId('send-button')).toBeTruthy();
-      expect(sendMessage).toHaveBeenCalledTimes(0);
+      expect(queryByTestId('search-icon')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('send-button'));
-
-    await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(1));
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
-  });
-
-  it('should render an editing disabled SendButton', async () => {
-    const sendMessage = jest.fn();
-
-    const { getByTestId, queryByTestId, toJSON } = render(
-      getComponent({ disabled: true, editing: true, sendMessage }),
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('send-button')).toBeTruthy();
-      expect(sendMessage).toHaveBeenCalledTimes(0);
-    });
-
-    fireEvent.press(getByTestId('send-button'));
-
-    await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(0));
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
+    await act(() => {
+      channel.messageComposer.clear();
     });
   });
 });

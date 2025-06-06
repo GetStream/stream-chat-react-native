@@ -14,6 +14,7 @@ import type { MessageContentType } from '../../contexts/messagesContext/Messages
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 
+import { MessageComposerAPIContextValue } from '../messageComposerContext/MessageComposerAPIContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type Alignment = 'right' | 'left';
@@ -119,7 +120,8 @@ export type MessageContextValue = {
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
-} & Pick<ChannelContextValue, 'channel' | 'members'>;
+} & Pick<ChannelContextValue, 'channel' | 'members'> &
+  Pick<MessageComposerAPIContextValue, 'setQuotedMessage'>;
 
 export const MessageContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessageContextValue,

@@ -1,156 +1,68 @@
-import React from 'react';
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-} from 'react-native';
+import React, { useCallback } from 'react';
+import { FlatList, StyleSheet } from 'react-native';
 
-import { UploadProgressIndicator } from './UploadProgressIndicator';
+import { isLocalImageAttachment, LocalImageAttachment } from 'stream-chat';
 
-import { ChatContextValue, useChatContext } from '../../contexts';
 import {
   MessageInputContextValue,
+  useMessageComposer,
   useMessageInputContext,
-} from '../../contexts/messageInputContext/MessageInputContext';
+} from '../../contexts';
+import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Close } from '../../icons/Close';
-import { Warning } from '../../icons/Warning';
-import type { FileUpload } from '../../types/types';
-import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
-const WARNING_ICON_SIZE = 16;
 
-const styles = StyleSheet.create({
-  dismiss: {
-    borderRadius: 24,
-    position: 'absolute',
-    right: 8,
-    top: 8,
-  },
-  fileSizeText: {
-    fontSize: 12,
-    paddingHorizontal: 10,
-  },
-  flatList: { paddingBottom: 12 },
-  iconContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    height: IMAGE_PREVIEW_SIZE,
-    marginLeft: 8,
-  },
-  unsupportedImage: {
-    borderRadius: 20,
-    bottom: 8,
-    flexDirection: 'row',
-    marginHorizontal: 3,
-    position: 'absolute',
-  },
-  upload: {
-    borderRadius: 10,
-    height: IMAGE_PREVIEW_SIZE,
-    width: IMAGE_PREVIEW_SIZE,
-  },
-  warningIconStyle: {
-    borderRadius: 24,
-    marginTop: 6,
-  },
-  warningText: {
-    alignItems: 'center',
-    color: 'black',
-    fontSize: 10,
-    justifyContent: 'center',
-    marginHorizontal: 4,
-  },
-});
-
-type ImageUploadPreviewPropsWithContext = Pick<
+export type ImageUploadPreviewPropsWithContext = Pick<
   MessageInputContextValue,
-  'imageUploads' | 'removeImage' | 'uploadImage'
-> &
-  Pick<ChatContextValue, 'enableOfflineSupport'>;
+  'ImageAttachmentUploadPreview'
+>;
 
-export type ImageUploadPreviewProps = Partial<ImageUploadPreviewPropsWithContext>;
+export type ImageAttachmentPreview<CustomLocalMetadata = Record<string, unknown>> =
+  LocalImageAttachment<CustomLocalMetadata>;
 
-type ImageUploadPreviewItem = { index: number; item: FileUpload };
+type ImageUploadPreviewItem = { index: number; item: ImageAttachmentPreview };
 
-export const UnsupportedImageTypeIndicator = ({
-  indicatorType,
-}: {
-  indicatorType: (typeof ProgressIndicatorTypes)[keyof typeof ProgressIndicatorTypes] | null;
-}) => {
-  const {
-    theme: {
-      colors: { accent_red, overlay, white },
-    },
-  } = useTheme();
+/**
+ * UI Component to preview the images set for upload
+ */
+const UnmemoizedImageUploadPreview = (props: ImageUploadPreviewPropsWithContext) => {
+  const { ImageAttachmentUploadPreview } = props;
+  const { attachmentManager } = useMessageComposer();
+  const { attachments } = useAttachmentManagerState();
 
-  const { t } = useTranslationContext();
-  return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-    <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
-      <View style={[styles.iconContainer]}>
-        <Warning
-          height={WARNING_ICON_SIZE}
-          pathFill={accent_red}
-          style={styles.warningIconStyle}
-          width={WARNING_ICON_SIZE}
-        />
-        <Text style={[styles.warningText, { color: white }]}>{t<string>('Not supported')}</Text>
-      </View>
-    </View>
-  ) : null;
-};
-
-const ImageUploadPreviewWithContext = (props: ImageUploadPreviewPropsWithContext) => {
-  const { enableOfflineSupport, imageUploads, removeImage, uploadImage } = props;
+  const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
 
   const {
     theme: {
       messageInput: {
-        imageUploadPreview: { flatList, itemContainer, upload },
+        imageUploadPreview: { flatList },
       },
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state, enableOfflineSupport);
-    const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
-
-    return (
-      <View style={[styles.itemContainer, itemMarginForIndex, itemContainer]}>
-        <UploadProgressIndicator
-          action={() => {
-            uploadImage({ newImage: item });
-          }}
-          style={styles.upload}
-          type={indicatorType}
-        >
-          <Image
-            resizeMode='cover'
-            source={{ uri: item.file.uri || item.url }}
-            style={[styles.upload, upload]}
-          />
-        </UploadProgressIndicator>
-        <DismissUpload
-          onPress={() => {
-            removeImage(item.id);
-          }}
+  const renderItem = useCallback(
+    ({ item }: ImageUploadPreviewItem) => {
+      return (
+        <ImageAttachmentUploadPreview
+          attachment={item}
+          handleRetry={attachmentManager.uploadAttachment}
+          removeAttachments={attachmentManager.removeAttachments}
         />
-        <UnsupportedImageTypeIndicator indicatorType={indicatorType} />
-      </View>
-    );
-  };
+      );
+    },
+    [
+      ImageAttachmentUploadPreview,
+      attachmentManager.removeAttachments,
+      attachmentManager.uploadAttachment,
+    ],
+  );
 
-  return imageUploads.length > 0 ? (
+  if (!imageUploads.length) {
+    return null;
+  }
+
+  return (
     <FlatList
       data={imageUploads}
       getItemLayout={(_, index) => ({
@@ -159,70 +71,41 @@ const ImageUploadPreviewWithContext = (props: ImageUploadPreviewPropsWithContext
         offset: (IMAGE_PREVIEW_SIZE + 8) * index,
       })}
       horizontal
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.localMetadata.id}
       renderItem={renderItem}
       style={[styles.flatList, flatList]}
     />
-  ) : null;
-};
-
-type DismissUploadProps = Pick<TouchableOpacityProps, 'onPress'>;
-
-const DismissUpload = ({ onPress }: DismissUploadProps) => {
-  const {
-    theme: {
-      colors: { overlay, white },
-      messageInput: {
-        imageUploadPreview: { dismiss, dismissIconColor },
-      },
-    },
-  } = useTheme();
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
-      testID='remove-image-upload-preview'
-    >
-      <Close pathFill={dismissIconColor || white} />
-    </TouchableOpacity>
   );
 };
 
-const areEqual = (
-  prevProps: ImageUploadPreviewPropsWithContext,
-  nextProps: ImageUploadPreviewPropsWithContext,
-) => {
-  const { imageUploads: prevImageUploads } = prevProps;
-  const { imageUploads: nextImageUploads } = nextProps;
+const MemoizedImageUploadPreviewWithContext = React.memo(UnmemoizedImageUploadPreview);
 
-  return (
-    prevImageUploads.length === nextImageUploads.length &&
-    prevImageUploads.every(
-      (prevImageUpload, index) => prevImageUpload.state === nextImageUploads[index].state,
-    )
-  );
-};
-
-const MemoizedImageUploadPreviewWithContext = React.memo(
-  ImageUploadPreviewWithContext,
-  areEqual,
-) as typeof ImageUploadPreviewWithContext;
+export type ImageUploadPreviewProps = Partial<ImageUploadPreviewPropsWithContext>;
 
 /**
  * UI Component to preview the images set for upload
  */
 export const ImageUploadPreview = (props: ImageUploadPreviewProps) => {
-  const { enableOfflineSupport } = useChatContext();
-  const { imageUploads, removeImage, uploadImage } = useMessageInputContext();
-
-  return (
-    <MemoizedImageUploadPreviewWithContext
-      {...{ imageUploads, removeImage, uploadImage }}
-      {...{ enableOfflineSupport }}
-      {...props}
-    />
-  );
+  const { ImageAttachmentUploadPreview } = useMessageInputContext();
+  return <MemoizedImageUploadPreviewWithContext {...{ ImageAttachmentUploadPreview }} {...props} />;
 };
+
+const styles = StyleSheet.create({
+  fileSizeText: {
+    fontSize: 12,
+    paddingHorizontal: 10,
+  },
+  flatList: { paddingBottom: 12 },
+  itemContainer: {
+    flexDirection: 'row',
+    height: IMAGE_PREVIEW_SIZE,
+    marginLeft: 8,
+  },
+  upload: {
+    borderRadius: 10,
+    height: IMAGE_PREVIEW_SIZE,
+    width: IMAGE_PREVIEW_SIZE,
+  },
+});
 
 ImageUploadPreview.displayName = 'ImageUploadPreview{messageInput{imageUploadPreview}}';

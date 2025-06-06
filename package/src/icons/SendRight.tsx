@@ -9,7 +9,7 @@ type Props = IconProps & {
 };
 
 export const SendRight = ({ size, ...rest }: Props) => (
-  <Svg height={size} viewBox={`0 0 ${size} ${size}`} width={size} {...rest}>
+  <Svg height={size} viewBox={`0 0 ${size} ${size}`} width={size} {...rest} testID='send-right'>
     <Circle cx={size / 2} cy={size / 2} r={size / 2} {...rest} />
     <Path
       clipRule='evenodd'

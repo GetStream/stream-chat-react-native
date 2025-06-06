@@ -6,7 +6,6 @@ export const useCreateChannelContext = ({
   channel,
   channelUnreadState,
   disabled,
-  editing,
   EmptyStateIndicator,
   enableMessageGroupingByUser,
   enforceUniqueReaction,
@@ -46,14 +45,12 @@ export const useCreateChannelContext = ({
   const readUsersLength = readUsers.length;
   const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
   const stringifiedChannelUnreadState = JSON.stringify(channelUnreadState);
-  const editingDep = editing ? editing.id : '';
 
   const channelContext: ChannelContextValue = useMemo(
     () => ({
       channel,
       channelUnreadState,
       disabled,
-      editing,
       EmptyStateIndicator,
       enableMessageGroupingByUser,
       enforceUniqueReaction,
@@ -89,7 +86,6 @@ export const useCreateChannelContext = ({
     [
       channelId,
       disabled,
-      editingDep,
       error,
       isChannelActive,
       highlightedMessageId,
