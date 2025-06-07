@@ -104,7 +104,7 @@ type ChannelScreenProps = {
 const EmptyHeader = () => <></>;
 
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
-  const { channel, setThread } = useContext(AppContext);
+  const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
   const { overlay } = useOverlayContext();
 
@@ -120,7 +120,12 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Channel audioRecordingEnabled={true} channel={channel} keyboardVerticalOffset={headerHeight}>
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+      >
         <View style={{ flex: 1 }}>
           <MessageList
             onThreadSelect={(selectedThread) => {

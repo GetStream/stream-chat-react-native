@@ -20,9 +20,16 @@ export const getDraftForChannels = async ({
 
   const rows = await SqliteClient.executeSql.apply(null, query);
 
+  /**
+   * Filter out drafts without a parent ID, as we will not show them in the channel.
+   * The above `createSelectQuery` was not able to filter out drafts without a parent ID.
+   * TODO: Fix the query to filter out drafts without a parent ID. This can be a bit faster.
+   */
+  const rowsWithoutParentID = rows.filter((row) => row.parentId === null);
+
   const cidVsDrafts: Record<string, DraftResponse> = {};
 
-  for (const row of rows) {
+  for (const row of rowsWithoutParentID) {
     const draftMessageQuery = createSelectQuery('draftMessage', ['*'], {
       id: row.draftMessageId,
     });
