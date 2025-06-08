@@ -169,13 +169,13 @@ export type Theme = {
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
-    message: TextStyle & {
-      fontWeight: TextStyle['fontWeight'];
-    };
     mutedStatus: {
       height: number;
       iconStyle: ViewStyle;
       width: number;
+    };
+    message: {
+      container: ViewStyle;
     };
     row: ViewStyle;
     title: TextStyle;
@@ -500,6 +500,9 @@ export type Theme = {
       reactionsText: TextStyle;
       title: TextStyle;
     };
+  };
+  messagePreview: {
+    message: TextStyle;
   };
   messageSimple: {
     actions: {
@@ -846,7 +849,9 @@ export type Theme = {
     headerRow: ViewStyle;
     infoRow: ViewStyle;
     lastReplyText: TextStyle;
+    parentMessagePreviewContainer: ViewStyle;
     parentMessageText: TextStyle;
+    previewMessageContainer: ViewStyle;
     touchableWrapper: ViewStyle;
     unreadBubbleText: TextStyle;
     unreadBubbleWrapper: ViewStyle;
@@ -967,7 +972,7 @@ export const defaultTheme: Theme = {
     contentContainer: {},
     date: {},
     message: {
-      fontWeight: '400',
+      container: {},
     },
     mutedStatus: {
       height: 20,
@@ -1281,6 +1286,9 @@ export const defaultTheme: Theme = {
       reactionsText: {},
       title: {},
     },
+  },
+  messagePreview: {
+    message: {},
   },
   messageSimple: {
     actions: {
@@ -1655,7 +1663,9 @@ export const defaultTheme: Theme = {
     headerRow: {},
     infoRow: {},
     lastReplyText: {},
+    parentMessagePreviewContainer: {},
     parentMessageText: {},
+    previewMessageContainer: {},
     touchableWrapper: {},
     unreadBubbleText: {},
     unreadBubbleWrapper: {},

@@ -1,6 +1,11 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DraftsIcon } from '../icons/DraftIcon';
-import { useChatContext, useStateStore, useTheme } from 'stream-chat-react-native';
+import {
+  getChannelPreviewDisplayName,
+  useChatContext,
+  useStateStore,
+  useTheme,
+} from 'stream-chat-react-native';
 import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
 import { useEffect, useMemo } from 'react';
 import dayjs from 'dayjs';
@@ -25,10 +30,10 @@ export const DraftItem = ({ type, channel, date, content, parentId, thread }: Dr
   } = useTheme();
   const navigation = useNavigation();
   const { client } = useChatContext();
+  const channelName = channel?.name ? channel.name : 'Channel';
 
   const onNavigationHandler = async () => {
     if (channel?.type && channel.id) {
-      console.log(channel);
       const resultChannel = client.channel(channel?.type, channel?.id);
       await resultChannel?.watch();
       if (type === 'thread' && parentId) {
@@ -49,7 +54,7 @@ export const DraftItem = ({ type, channel, date, content, parentId, thread }: Dr
     >
       <View style={styles.header}>
         <Text style={styles.name}>
-          {type === 'channel' ? `# ${channel?.name}` : `Thread in # ${channel?.name}`}
+          {type === 'channel' ? `# ${channelName}` : `Thread in # ${channelName}`}
         </Text>
         <Text style={[styles.date, { color: grey }]}>{dayjs(date).fromNow()}</Text>
       </View>
