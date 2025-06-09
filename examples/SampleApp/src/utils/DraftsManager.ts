@@ -1,4 +1,5 @@
 import { DraftFilters, DraftResponse, DraftSort, Pager, StateStore, StreamChat } from 'stream-chat';
+import { WithSubscriptions } from './WithSubscription';
 
 export type QueryDraftOptions = Pager & {
   filter?: DraftFilters;
@@ -34,7 +35,7 @@ export type DraftManagerPagination = {
   nextCursor: string | null;
 };
 
-export class DraftsManager {
+export class DraftsManager extends WithSubscriptions {
   public readonly state: StateStore<DraftManagerState>;
   private client: StreamChat;
   private draftsByIdGetterCache: {
@@ -43,6 +44,7 @@ export class DraftsManager {
   };
 
   constructor({ client }: { client: StreamChat }) {
+    super();
     this.client = client;
     this.state = new StateStore<DraftManagerState>(DRAFT_MANAGER_INITIAL_STATE);
     this.draftsByIdGetterCache = { drafts: [], draftsById: {} };
@@ -76,6 +78,99 @@ export class DraftsManager {
 
   public deactivate = () => {
     this.state.partialNext({ active: false });
+  };
+
+  private subscribeDraftUpdated = () =>
+    this.client.on('draft.updated', (event) => {
+      if (!event.draft) {
+        return;
+      }
+
+      const draftData = event.draft;
+
+      const { drafts } = this.state.getLatestValue();
+
+      const newDrafts = [...drafts];
+
+      let existingDraftIndex = -1;
+
+      if (draftData.parent_id) {
+        existingDraftIndex = drafts.findIndex(
+          (draft) =>
+            draft.parent_id === draftData.parent_id &&
+            draft.channel?.cid === draftData.channel?.cid,
+        );
+      } else {
+        existingDraftIndex = drafts.findIndex(
+          (draft) => draft.channel?.cid === draftData.channel?.cid,
+        );
+      }
+
+      if (existingDraftIndex !== -1) {
+        newDrafts[existingDraftIndex] = draftData;
+      } else {
+        newDrafts.push(draftData);
+      }
+
+      this.state.partialNext({ drafts: newDrafts });
+    }).unsubscribe;
+
+  private subscribeDraftDeleted = () =>
+    this.client.on('draft.deleted', (event) => {
+      if (!event.draft) {
+        return;
+      }
+
+      const { drafts } = this.state.getLatestValue();
+
+      const newDrafts = [...drafts];
+
+      const draftData = event.draft;
+
+      let existingDraftIndex = -1;
+
+      if (draftData.parent_id) {
+        existingDraftIndex = drafts.findIndex(
+          (draft) =>
+            draft.parent_id === draftData.parent_id &&
+            draft.channel?.cid === draftData.channel?.cid,
+        );
+      } else {
+        existingDraftIndex = drafts.findIndex(
+          (draft) => draft.channel?.cid === draftData.channel?.cid,
+        );
+      }
+
+      if (existingDraftIndex !== -1) {
+        newDrafts.splice(existingDraftIndex, 1);
+      }
+
+      this.state.partialNext({
+        drafts: newDrafts,
+      });
+    }).unsubscribe;
+
+  private subscribeReloadOnActivation = () =>
+    this.state.subscribeWithSelector(
+      (nextValue) => ({ active: nextValue.active }),
+      ({ active }) => {
+        if (active) {
+          this.reload();
+        }
+      },
+    );
+
+  public registerSubscriptions = () => {
+    if (this.hasSubscriptions) {
+      return;
+    }
+    this.addUnsubscribeFunction(this.subscribeReloadOnActivation());
+    this.addUnsubscribeFunction(this.subscribeDraftUpdated());
+    this.addUnsubscribeFunction(this.subscribeDraftDeleted());
+  };
+
+  public unregisterSubscriptions = () => {
+    return super.unregisterSubscriptions();
   };
 
   public reload = async ({ force = false } = {}) => {

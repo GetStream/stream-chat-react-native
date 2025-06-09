@@ -1,4 +1,4 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DraftsIcon } from '../icons/DraftIcon';
 import {
   FileTypes,
@@ -10,10 +10,10 @@ import {
   useTranslationContext,
 } from 'stream-chat-react-native';
 import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import dayjs from 'dayjs';
-import { useNavigation } from '@react-navigation/native';
-import { ChannelResponse, DraftMessage, MessageResponseBase } from 'stream-chat';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { ChannelResponse, DraftMessage, DraftResponse, MessageResponseBase } from 'stream-chat';
 
 export type DraftItemProps = {
   type?: 'channel' | 'thread';
@@ -145,45 +145,66 @@ const selector = (nextValue: DraftManagerState) =>
     drafts: nextValue.drafts,
   }) as const;
 
+const renderItem = ({ item }: { item: DraftResponse }) => (
+  <DraftItem
+    channel={item.channel}
+    type={item.parent_id ? 'thread' : 'channel'}
+    date={item.created_at}
+    message={item.message}
+    thread={item.parent_message}
+    parentId={item.parent_id}
+  />
+);
+
+const renderEmptyComponent = () => (
+  <Text style={{ textAlign: 'center', padding: 20 }}>No drafts available</Text>
+);
+
 export const DraftsList = () => {
+  const isFocused = useIsFocused();
   const { client } = useChatContext();
   const draftsManager = useMemo(() => new DraftsManager({ client }), [client]);
 
   useEffect(() => {
-    draftsManager.reload({ force: true });
+    if (isFocused) {
+      draftsManager.activate();
+    } else {
+      draftsManager.deactivate();
+    }
+  }, [draftsManager, isFocused]);
+
+  useEffect(() => {
+    draftsManager.registerSubscriptions();
+
+    return () => {
+      draftsManager.deactivate();
+      draftsManager.unregisterSubscriptions();
+    };
   }, [draftsManager]);
 
   const { isLoading, drafts, isLoadingNext } = useStateStore(draftsManager.state, selector);
 
+  const onRefresh = useCallback(() => {
+    draftsManager.reload({ force: true });
+  }, [draftsManager]);
+
+  const onEndReached = useCallback(() => {
+    if (!isLoadingNext) {
+      draftsManager.loadNextPage();
+    }
+  }, [draftsManager, isLoadingNext]);
+
   return (
-    <View>
-      <FlatList
-        data={drafts}
-        refreshing={isLoading}
-        keyExtractor={(item) => item.message.id}
-        renderItem={({ item }) => (
-          <DraftItem
-            channel={item.channel}
-            type={item.parent_id ? 'thread' : 'channel'}
-            date={item.created_at}
-            message={item.message}
-            thread={item.parent_message}
-            parentId={item.parent_id}
-          />
-        )}
-        onRefresh={() => draftsManager.reload({ force: true })}
-        ListEmptyComponent={
-          !isLoading && drafts.length === 0 ? (
-            <Text style={{ textAlign: 'center', padding: 20 }}>No drafts available</Text>
-          ) : null
-        }
-        onEndReached={() => {
-          if (!isLoadingNext) {
-            draftsManager.loadNextPage();
-          }
-        }}
-      />
-    </View>
+    <FlatList
+      contentContainerStyle={{ flexGrow: 1 }}
+      data={drafts}
+      refreshing={isLoading}
+      keyExtractor={(item) => item.message.id}
+      renderItem={renderItem}
+      onRefresh={onRefresh}
+      ListEmptyComponent={renderEmptyComponent}
+      onEndReached={onEndReached}
+    />
   );
 };
 
