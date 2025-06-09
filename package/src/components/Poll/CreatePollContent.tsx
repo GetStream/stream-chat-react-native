@@ -77,7 +77,6 @@ export const CreatePollContent = () => {
         updatedTop: index * createPollOptionHeight,
       };
     });
-    console.log('TEST', newCurrentOptionPositions);
     currentOptionPositions.value = newCurrentOptionPositions;
   }, [createPollOptionHeight, currentOptionPositions, options]);
 
