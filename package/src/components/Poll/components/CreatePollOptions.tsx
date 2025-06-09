@@ -268,14 +268,13 @@ const pollComposerStateSelector = (state: PollComposerState) => ({
 
 export type CreatePollOptionsProps = {
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
-  options: PollComposerOption[];
 };
 
-export const CreatePollOptions = ({ currentOptionPositions, options }: CreatePollOptionsProps) => {
+export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsProps) => {
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
-  const { errors } = useStateStore(pollComposer.state, pollComposerStateSelector);
+  const { errors, options } = useStateStore(pollComposer.state, pollComposerStateSelector);
   const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
 
   const updateOption = useCallback(

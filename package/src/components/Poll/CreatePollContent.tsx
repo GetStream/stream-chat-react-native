@@ -100,7 +100,7 @@ export const CreatePollContent = () => {
         style={[styles.scrollView, { backgroundColor: white }, scrollView]}
       >
         <NameField />
-        <CreatePollOptions currentOptionPositions={currentOptionPositions} options={options} />
+        <CreatePollOptions currentOptionPositions={currentOptionPositions} />
         <MultipleAnswersField />
         <View
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
