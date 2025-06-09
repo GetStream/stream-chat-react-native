@@ -1,28 +1,92 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DraftsIcon } from '../icons/DraftIcon';
 import {
-  getChannelPreviewDisplayName,
+  FileTypes,
+  MessagePreview,
+  TranslationContextValue,
   useChatContext,
   useStateStore,
   useTheme,
+  useTranslationContext,
 } from 'stream-chat-react-native';
 import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
 import { useEffect, useMemo } from 'react';
 import dayjs from 'dayjs';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelResponse, MessageResponseBase } from 'stream-chat';
+import { ChannelResponse, DraftMessage, MessageResponseBase } from 'stream-chat';
 
 export type DraftItemProps = {
   type?: 'channel' | 'thread';
   channel?: ChannelResponse;
   date?: string;
-  content?: string;
+  message: DraftMessage;
   // TODO: Fix the type for thread
   thread?: MessageResponseBase;
   parentId?: string;
 };
 
-export const DraftItem = ({ type, channel, date, content, parentId, thread }: DraftItemProps) => {
+export const attachmentTypeIconMap = {
+  audio: '🔈',
+  file: '📄',
+  image: '📷',
+  video: '🎥',
+  voiceRecording: '🎙️',
+} as const;
+
+const getPreviewFromMessage = ({
+  t,
+  draftMessage,
+}: {
+  t: TranslationContextValue['t'];
+  draftMessage: DraftMessage;
+}) => {
+  if (draftMessage.attachments?.length) {
+    const attachment = draftMessage?.attachments?.at(0);
+
+    const attachmentIcon = attachment
+      ? `${
+          attachmentTypeIconMap[
+            (attachment.type as keyof typeof attachmentTypeIconMap) ?? 'file'
+          ] ?? attachmentTypeIconMap.file
+        } `
+      : '';
+
+    if (attachment?.type === FileTypes.VoiceRecording) {
+      return [
+        { bold: false, text: attachmentIcon },
+        {
+          bold: false,
+          text: t('Voice message'),
+        },
+      ];
+    }
+    return [
+      { bold: false, text: attachmentIcon },
+      {
+        bold: false,
+        text:
+          attachment?.type === FileTypes.Image
+            ? attachment?.fallback
+              ? attachment?.fallback
+              : 'N/A'
+            : attachment?.title
+              ? attachment?.title
+              : 'N/A',
+      },
+    ];
+  }
+
+  if (draftMessage.text) {
+    return [
+      {
+        bold: false,
+        text: draftMessage.text,
+      },
+    ];
+  }
+};
+
+export const DraftItem = ({ type, channel, date, message, parentId, thread }: DraftItemProps) => {
   const {
     theme: {
       colors: { grey },
@@ -30,12 +94,14 @@ export const DraftItem = ({ type, channel, date, content, parentId, thread }: Dr
   } = useTheme();
   const navigation = useNavigation();
   const { client } = useChatContext();
+  const { t } = useTranslationContext();
   const channelName = channel?.name ? channel.name : 'Channel';
 
   const onNavigationHandler = async () => {
     if (channel?.type && channel.id) {
       const resultChannel = client.channel(channel?.type, channel?.id);
       await resultChannel?.watch();
+
       if (type === 'thread' && parentId) {
         navigation.navigate('ThreadScreen', {
           thread: thread,
@@ -46,6 +112,10 @@ export const DraftItem = ({ type, channel, date, content, parentId, thread }: Dr
       }
     }
   };
+
+  const previews = useMemo(() => {
+    return getPreviewFromMessage({ draftMessage: message, t });
+  }, [message, t]);
 
   return (
     <Pressable
@@ -62,9 +132,7 @@ export const DraftItem = ({ type, channel, date, content, parentId, thread }: Dr
         <View style={styles.icon}>
           <DraftsIcon />
         </View>
-        <Text style={[styles.text, { color: grey }]} numberOfLines={1}>
-          {content}
-        </Text>
+        <MessagePreview previews={previews} />
       </View>
     </Pressable>
   );
@@ -98,7 +166,7 @@ export const DraftsList = () => {
             channel={item.channel}
             type={item.parent_id ? 'thread' : 'channel'}
             date={item.created_at}
-            content={item.message.text}
+            message={item.message}
             thread={item.parent_message}
             parentId={item.parent_id}
           />
