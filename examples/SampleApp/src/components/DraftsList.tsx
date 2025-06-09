@@ -22,7 +22,6 @@ export type DraftItemProps = {
   message: DraftMessage;
   // TODO: Fix the type for thread
   thread?: MessageResponseBase;
-  parentId?: string;
 };
 
 export const attachmentTypeIconMap = {
@@ -86,7 +85,7 @@ const getPreviewFromMessage = ({
   }
 };
 
-export const DraftItem = ({ type, channel, date, message, parentId, thread }: DraftItemProps) => {
+export const DraftItem = ({ type, channel, date, message, thread }: DraftItemProps) => {
   const {
     theme: {
       colors: { grey },
@@ -102,9 +101,9 @@ export const DraftItem = ({ type, channel, date, message, parentId, thread }: Dr
       const resultChannel = client.channel(channel?.type, channel?.id);
       await resultChannel?.watch();
 
-      if (type === 'thread' && parentId) {
+      if (type === 'thread' && thread?.id) {
         navigation.navigate('ThreadScreen', {
-          thread: thread,
+          thread,
           channel: resultChannel,
         });
       } else if (type === 'channel') {
@@ -152,7 +151,6 @@ const renderItem = ({ item }: { item: DraftResponse }) => (
     date={item.created_at}
     message={item.message}
     thread={item.parent_message}
-    parentId={item.parent_id}
   />
 );
 
