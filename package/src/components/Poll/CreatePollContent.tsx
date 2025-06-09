@@ -66,22 +66,19 @@ export const CreatePollContent = () => {
 
   useEffect(() => {
     if (!createPollOptionHeight) return;
+    const newCurrentOptionPositions: CurrentOptionPositionsCache = {
+      inverseIndexCache: {},
+      positionCache: {},
+    };
     options.forEach((option, index) => {
-      currentOptionPositions.value = {
-        ...currentOptionPositions.value,
-        inverseIndexCache: {
-          ...currentOptionPositions.value.inverseIndexCache,
-          [index]: option.id,
-        },
-        positionCache: {
-          ...currentOptionPositions.value.positionCache,
-          [option.id]: {
-            updatedIndex: index,
-            updatedTop: index * createPollOptionHeight,
-          },
-        },
+      newCurrentOptionPositions.inverseIndexCache[index] = option.id;
+      newCurrentOptionPositions.positionCache[option.id] = {
+        updatedIndex: index,
+        updatedTop: index * createPollOptionHeight,
       };
     });
+    console.log('TEST', newCurrentOptionPositions);
+    currentOptionPositions.value = newCurrentOptionPositions;
   }, [createPollOptionHeight, currentOptionPositions, options]);
 
   const onBackPressHandler = useCallback(() => {
@@ -104,7 +101,7 @@ export const CreatePollContent = () => {
         style={[styles.scrollView, { backgroundColor: white }, scrollView]}
       >
         <NameField />
-        <CreatePollOptions currentOptionPositions={currentOptionPositions} />
+        <CreatePollOptions currentOptionPositions={currentOptionPositions} options={options} />
         <MultipleAnswersField />
         <View
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
