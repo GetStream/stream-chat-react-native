@@ -1,95 +1,88 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AttachButton should render a disabled AttachButton 1`] = `
+exports[`AttachButton should call handleAttachButtonPress when the button is clicked if passed 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": true,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
+  keyboardVerticalOffset={86.5}
   onLayout={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
-    [
-      {},
-    ]
-  }
-  testID="attach-button"
->
-  <RNSVGSvgView
-    align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
-    fill="#7A7A7A"
-    focusable={false}
-    height={32}
-    meetOrSlice={0}
-    minX={0}
-    minY={0}
-    style={
-      [
-        {
-          "backgroundColor": "transparent",
-          "borderWidth": 0,
-        },
-        {
-          "flex": 0,
-          "height": 32,
-          "width": 32,
-        },
-      ]
+    {
+      "paddingBottom": 0,
     }
-    vbHeight={32}
-    vbWidth={32}
-    width={32}
+  }
+>
+  <View
+    style={
+      {
+        "height": "100%",
+      }
+    }
   >
-    <RNSVGGroup
-      fill={
+    <View
+      accessibilityState={
         {
-          "payload": 4286216826,
-          "type": 0,
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
         }
       }
-      propList={
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onLayout={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
         [
-          "fill",
+          {},
         ]
       }
+      testID="attach-button"
     >
-      <RNSVGGroup
-        clipPath="id"
-        fill={
-          {
-            "payload": 4278190080,
-            "type": 0,
-          }
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight={32}
+        bbWidth={32}
+        fill="#7A7A7A"
+        focusable={false}
+        height={32}
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        style={
+          [
+            {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            {
+              "flex": 0,
+              "height": 32,
+              "width": 32,
+            },
+          ]
         }
+        vbHeight={32}
+        vbWidth={32}
+        width={32}
       >
-        <RNSVGPath
-          d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
+        <RNSVGGroup
           fill={
             {
               "payload": 4286216826,
@@ -101,137 +94,205 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
               "fill",
             ]
           }
-        />
-      </RNSVGGroup>
-      <RNSVGDefs>
-        <RNSVGClipPath
-          fill={
-            {
-              "payload": 4278190080,
-              "type": 0,
-            }
-          }
-          name="id"
         >
-          <RNSVGRect
+          <RNSVGGroup
+            clipPath="id"
             fill={
               {
                 "payload": 4278190080,
                 "type": 0,
               }
             }
-            height={32}
-            matrix={
-              [
-                1,
-                0,
-                0,
-                1,
-                0.191406,
-                0,
-              ]
-            }
-            width={32}
-            x={0}
-            y={0}
-          />
-        </RNSVGClipPath>
-      </RNSVGDefs>
-    </RNSVGGroup>
-  </RNSVGSvgView>
+          >
+            <RNSVGPath
+              d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
+              fill={
+                {
+                  "payload": 4286216826,
+                  "type": 0,
+                }
+              }
+              propList={
+                [
+                  "fill",
+                ]
+              }
+            />
+          </RNSVGGroup>
+          <RNSVGDefs>
+            <RNSVGClipPath
+              fill={
+                {
+                  "payload": 4278190080,
+                  "type": 0,
+                }
+              }
+              name="id"
+            >
+              <RNSVGRect
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+                height={32}
+                matrix={
+                  [
+                    1,
+                    0,
+                    0,
+                    1,
+                    0.191406,
+                    0,
+                  ]
+                }
+                width={32}
+                x={0}
+                y={0}
+              />
+            </RNSVGClipPath>
+          </RNSVGDefs>
+        </RNSVGGroup>
+      </RNSVGSvgView>
+    </View>
+  </View>
+  <View
+    enablePanDownToClose={true}
+    handleComponent={[Function]}
+    handleHeight={20}
+    index={-1}
+    onChange={[Function]}
+    snapPoints={
+      [
+        600.3000000000001,
+        1334,
+      ]
+    }
+  >
+    <RCTScrollView
+      contentContainerStyle={
+        [
+          {
+            "flexGrow": 1,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+          },
+          {},
+          {
+            "opacity": 1,
+          },
+        ]
+      }
+      data={[]}
+      getItem={[Function]}
+      getItemCount={[Function]}
+      keyExtractor={[Function]}
+      onContentSizeChange={[Function]}
+      onEndReached={[Function]}
+      onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
+      onMomentumScrollEnd={[Function]}
+      onScroll={[Function]}
+      onScrollBeginDrag={[Function]}
+      onScrollEndDrag={[Function]}
+      removeClippedSubviews={false}
+      renderItem={[Function]}
+      scrollEventThrottle={0.0001}
+      stickyHeaderIndices={[]}
+      testID="attachment-picker-list"
+      viewabilityConfigCallbackPairs={[]}
+    >
+      <View />
+    </RCTScrollView>
+  </View>
 </View>
 `;
 
-exports[`AttachButton should render an enabled AttachButton 1`] = `
+exports[`AttachButton should render a enabled AttachButton 1`] = `
 <View
-  accessibilityState={
-    {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
-  accessibilityValue={
-    {
-      "max": undefined,
-      "min": undefined,
-      "now": undefined,
-      "text": undefined,
-    }
-  }
-  accessible={true}
-  collapsable={false}
-  focusable={true}
-  onBlur={[Function]}
-  onClick={[Function]}
-  onFocus={[Function]}
+  keyboardVerticalOffset={86.5}
   onLayout={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
   style={
-    [
-      {},
-    ]
-  }
-  testID="attach-button"
->
-  <RNSVGSvgView
-    align="xMidYMid"
-    bbHeight={32}
-    bbWidth={32}
-    fill="#7A7A7A"
-    focusable={false}
-    height={32}
-    meetOrSlice={0}
-    minX={0}
-    minY={0}
-    style={
-      [
-        {
-          "backgroundColor": "transparent",
-          "borderWidth": 0,
-        },
-        {
-          "flex": 0,
-          "height": 32,
-          "width": 32,
-        },
-      ]
+    {
+      "paddingBottom": 0,
     }
-    vbHeight={32}
-    vbWidth={32}
-    width={32}
+  }
+>
+  <View
+    style={
+      {
+        "height": "100%",
+      }
+    }
   >
-    <RNSVGGroup
-      fill={
+    <View
+      accessibilityState={
         {
-          "payload": 4286216826,
-          "type": 0,
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
         }
       }
-      propList={
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onLayout={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
         [
-          "fill",
+          {},
         ]
       }
+      testID="attach-button"
     >
-      <RNSVGGroup
-        clipPath="id"
-        fill={
-          {
-            "payload": 4278190080,
-            "type": 0,
-          }
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight={32}
+        bbWidth={32}
+        fill="#7A7A7A"
+        focusable={false}
+        height={32}
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        style={
+          [
+            {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            {
+              "flex": 0,
+              "height": 32,
+              "width": 32,
+            },
+          ]
         }
+        vbHeight={32}
+        vbWidth={32}
+        width={32}
       >
-        <RNSVGPath
-          d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
+        <RNSVGGroup
           fill={
             {
               "payload": 4286216826,
@@ -243,43 +304,328 @@ exports[`AttachButton should render an enabled AttachButton 1`] = `
               "fill",
             ]
           }
-        />
-      </RNSVGGroup>
-      <RNSVGDefs>
-        <RNSVGClipPath
-          fill={
-            {
-              "payload": 4278190080,
-              "type": 0,
-            }
-          }
-          name="id"
         >
-          <RNSVGRect
+          <RNSVGGroup
+            clipPath="id"
             fill={
               {
                 "payload": 4278190080,
                 "type": 0,
               }
             }
-            height={32}
-            matrix={
-              [
-                1,
-                0,
-                0,
-                1,
-                0.191406,
-                0,
-              ]
+          >
+            <RNSVGPath
+              d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
+              fill={
+                {
+                  "payload": 4286216826,
+                  "type": 0,
+                }
+              }
+              propList={
+                [
+                  "fill",
+                ]
+              }
+            />
+          </RNSVGGroup>
+          <RNSVGDefs>
+            <RNSVGClipPath
+              fill={
+                {
+                  "payload": 4278190080,
+                  "type": 0,
+                }
+              }
+              name="id"
+            >
+              <RNSVGRect
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+                height={32}
+                matrix={
+                  [
+                    1,
+                    0,
+                    0,
+                    1,
+                    0.191406,
+                    0,
+                  ]
+                }
+                width={32}
+                x={0}
+                y={0}
+              />
+            </RNSVGClipPath>
+          </RNSVGDefs>
+        </RNSVGGroup>
+      </RNSVGSvgView>
+    </View>
+  </View>
+  <View
+    enablePanDownToClose={true}
+    handleComponent={[Function]}
+    handleHeight={20}
+    index={-1}
+    onChange={[Function]}
+    snapPoints={
+      [
+        600.3000000000001,
+        1334,
+      ]
+    }
+  >
+    <RCTScrollView
+      contentContainerStyle={
+        [
+          {
+            "flexGrow": 1,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+          },
+          {},
+          {
+            "opacity": 1,
+          },
+        ]
+      }
+      data={[]}
+      getItem={[Function]}
+      getItemCount={[Function]}
+      keyExtractor={[Function]}
+      onContentSizeChange={[Function]}
+      onEndReached={[Function]}
+      onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
+      onMomentumScrollEnd={[Function]}
+      onScroll={[Function]}
+      onScrollBeginDrag={[Function]}
+      onScrollEndDrag={[Function]}
+      removeClippedSubviews={false}
+      renderItem={[Function]}
+      scrollEventThrottle={0.0001}
+      stickyHeaderIndices={[]}
+      testID="attachment-picker-list"
+      viewabilityConfigCallbackPairs={[]}
+    >
+      <View />
+    </RCTScrollView>
+  </View>
+</View>
+`;
+
+exports[`AttachButton should render an disabled AttachButton 1`] = `
+<View
+  keyboardVerticalOffset={86.5}
+  onLayout={[Function]}
+  style={
+    {
+      "paddingBottom": 0,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "height": "100%",
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": true,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onLayout={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {},
+        ]
+      }
+      testID="attach-button"
+    >
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight={32}
+        bbWidth={32}
+        fill="#7A7A7A"
+        focusable={false}
+        height={32}
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        style={
+          [
+            {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            {
+              "flex": 0,
+              "height": 32,
+              "width": 32,
+            },
+          ]
+        }
+        vbHeight={32}
+        vbWidth={32}
+        width={32}
+      >
+        <RNSVGGroup
+          fill={
+            {
+              "payload": 4286216826,
+              "type": 0,
             }
-            width={32}
-            x={0}
-            y={0}
-          />
-        </RNSVGClipPath>
-      </RNSVGDefs>
-    </RNSVGGroup>
-  </RNSVGSvgView>
+          }
+          propList={
+            [
+              "fill",
+            ]
+          }
+        >
+          <RNSVGGroup
+            clipPath="id"
+            fill={
+              {
+                "payload": 4278190080,
+                "type": 0,
+              }
+            }
+          >
+            <RNSVGPath
+              d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
+              fill={
+                {
+                  "payload": 4286216826,
+                  "type": 0,
+                }
+              }
+              propList={
+                [
+                  "fill",
+                ]
+              }
+            />
+          </RNSVGGroup>
+          <RNSVGDefs>
+            <RNSVGClipPath
+              fill={
+                {
+                  "payload": 4278190080,
+                  "type": 0,
+                }
+              }
+              name="id"
+            >
+              <RNSVGRect
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+                height={32}
+                matrix={
+                  [
+                    1,
+                    0,
+                    0,
+                    1,
+                    0.191406,
+                    0,
+                  ]
+                }
+                width={32}
+                x={0}
+                y={0}
+              />
+            </RNSVGClipPath>
+          </RNSVGDefs>
+        </RNSVGGroup>
+      </RNSVGSvgView>
+    </View>
+  </View>
+  <View
+    enablePanDownToClose={true}
+    handleComponent={[Function]}
+    handleHeight={20}
+    index={-1}
+    onChange={[Function]}
+    snapPoints={
+      [
+        600.3000000000001,
+        1334,
+      ]
+    }
+  >
+    <RCTScrollView
+      contentContainerStyle={
+        [
+          {
+            "flexGrow": 1,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+          },
+          {},
+          {
+            "opacity": 1,
+          },
+        ]
+      }
+      data={[]}
+      getItem={[Function]}
+      getItemCount={[Function]}
+      keyExtractor={[Function]}
+      onContentSizeChange={[Function]}
+      onEndReached={[Function]}
+      onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
+      onMomentumScrollEnd={[Function]}
+      onScroll={[Function]}
+      onScrollBeginDrag={[Function]}
+      onScrollEndDrag={[Function]}
+      removeClippedSubviews={false}
+      renderItem={[Function]}
+      scrollEventThrottle={0.0001}
+      stickyHeaderIndices={[]}
+      testID="attachment-picker-list"
+      viewabilityConfigCallbackPairs={[]}
+    >
+      <View />
+    </RCTScrollView>
+  </View>
 </View>
 `;

@@ -2,18 +2,28 @@ import { useEffect, useMemo } from 'react';
 
 import { FixedSizeQueueCache, MessageComposer } from 'stream-chat';
 
-import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
+import {
+  MessageComposerContextValue,
+  useMessageComposerContext,
+} from '../../messageComposerContext/MessageComposerContext';
 
 const queueCache = new FixedSizeQueueCache<string, MessageComposer>(64);
 
 export const useMessageComposer = () => {
-  const { client } = useChatContext();
-  const { channel, editing: editedMessage } = useChannelContext();
+  const messageComposerContext = useMessageComposerContext();
 
+  return useCreateMessageComposer(messageComposerContext);
+};
+
+export const useCreateMessageComposer = ({
+  editing: editedMessage,
+  thread: parentMessage,
+  threadInstance,
+  channel,
+}: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'thread' | 'editing'>) => {
+  const { client } = useChatContext();
   // legacy thread will receive new composer
-  const { thread: parentMessage, threadInstance } = useThreadContext();
 
   const cachedEditedMessage = useMemo(() => {
     if (!editedMessage) return undefined;
@@ -34,7 +44,7 @@ export const useMessageComposer = () => {
   // editedMessage ?? thread ?? parentMessage ?? channel;
 
   const messageComposer = useMemo(() => {
-    if (editedMessage && cachedEditedMessage) {
+    if (cachedEditedMessage) {
       const tag = MessageComposer.constructTag(cachedEditedMessage);
 
       const cachedComposer = queueCache.get(tag);
@@ -65,8 +75,7 @@ export const useMessageComposer = () => {
     } else {
       return channel.messageComposer;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cachedEditedMessage, cachedParentMessage, channel, threadInstance]);
+  }, [cachedEditedMessage, cachedParentMessage, channel.messageComposer, client, threadInstance]);
 
   if (
     (['legacy_thread', 'message'] as MessageComposer['contextType'][]).includes(

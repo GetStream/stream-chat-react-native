@@ -18,7 +18,6 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -27,6 +26,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { NativeHandlers } from '../../../native';
 
+import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { useMessageData } from '../hooks/useMessageData';
 
 const styles = StyleSheet.create({
@@ -70,6 +70,7 @@ export type MessageSimplePropsWithContext = Pick<
   | 'onlyEmojis'
   | 'otherAttachments'
   | 'showMessageStatus'
+  | 'setQuotedMessage'
 > &
   Pick<
     MessagesContextValue,
@@ -130,6 +131,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     ReactionListTop,
     showMessageStatus,
     shouldRenderSwipeableWrapper,
+    setQuotedMessage,
   } = props;
 
   const {
@@ -161,7 +163,6 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     isVeryLastMessage,
     messageGroupedSingleOrBottom,
   } = useMessageData({});
-  const messageComposer = useMessageComposer();
 
   const lastMessageInMessageListStyles = [styles.lastMessageContainer, lastMessageContainer];
   const messageGroupedSingleOrBottomStyles = {
@@ -215,8 +216,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   );
 
   const onSwipeToReply = useCallback(() => {
-    messageComposer.setQuotedMessage(message);
-  }, [messageComposer, message]);
+    setQuotedMessage(message);
+  }, [setQuotedMessage, message]);
 
   const THRESHOLD = 25;
 
@@ -476,11 +477,6 @@ const areEqual = (
     otherAttachments: nextOtherAttachments,
   } = nextProps;
 
-  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
-  if (!repliesEqual) {
-    return false;
-  }
-
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) {
     return false;
@@ -490,9 +486,6 @@ const areEqual = (
   if (!groupStylesEqual) {
     return false;
   }
-
-  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
-  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) {
@@ -504,24 +497,15 @@ const areEqual = (
     return false;
   }
 
-  const messageEqual =
-    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    prevMessage.reply_count === nextMessage.reply_count &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.i18n === nextMessage.i18n &&
-    prevMessage.pinned === nextMessage.pinned;
+  const messageEqual = checkMessageEquality(prevMessage, nextMessage);
   if (!messageEqual) {
     return false;
   }
 
-  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
-  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
-
-  const quotedMessageEqual =
-    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
+  const quotedMessageEqual = checkQuotedMessageEquality(
+    prevMessage.quoted_message,
+    nextMessage.quoted_message,
+  );
 
   if (!quotedMessageEqual) {
     return false;
@@ -548,6 +532,14 @@ const areEqual = (
         })
       : prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) {
+    return false;
+  }
+
+  const quotedMessageAttachmentsEqual =
+    prevMessage.quoted_message?.attachments?.length ===
+    nextMessage.quoted_message?.attachments?.length;
+
+  if (!quotedMessageAttachmentsEqual) {
     return false;
   }
 
@@ -608,6 +600,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     otherAttachments,
     showMessageStatus,
     isMessageAIGenerated,
+    setQuotedMessage,
   } = useMessageContext();
   const {
     enableMessageGroupingByUser,
@@ -662,6 +655,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
         ReactionListBottom,
         reactionListPosition,
         ReactionListTop,
+        setQuotedMessage,
         shouldRenderSwipeableWrapper,
         showMessageStatus,
       }}

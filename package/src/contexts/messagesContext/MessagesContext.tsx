@@ -302,7 +302,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
-  setEditingState: (message?: LocalMessage) => void;
   /**
    * UI component for StreamingMessageView. Displays the text of a message with a typewriter animation.
    */

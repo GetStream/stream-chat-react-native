@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Pressable } from 'react-native';
 
-import { CustomDataManagerState } from 'stream-chat';
+import { TextComposerState } from 'stream-chat';
 
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -15,19 +15,27 @@ import { Search } from '../../icons/Search';
 import { SendRight } from '../../icons/SendRight';
 import { SendUp } from '../../icons/SendUp';
 
-type SendButtonPropsWithContext = Pick<MessageInputContextValue, 'sendMessage'> & {
-  /** Disables the button */ disabled: boolean;
+export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {
+  /** Disables the button */
+  disabled: boolean;
 };
 
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
+// TODO: Comment out once the commands PR has been merged on the LLC
+// @ts-ignore
+const textComposerStateSelector = (state: TextComposerState) => ({
+  // TODO: Comment out once the commands PR has been merged on the LLC
+  // command: state.command,
+  command: null,
 });
 
-const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
-  const { disabled = false, sendMessage } = props;
+export const SendButton = (props: SendButtonProps) => {
+  const { disabled = false, sendMessage: propsSendMessage } = props;
+  const { sendMessage: sendMessageFromContext } = useMessageInputContext();
+  const sendMessage = propsSendMessage || sendMessageFromContext;
   const messageComposer = useMessageComposer();
-  const { customDataManager } = messageComposer;
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { textComposer } = messageComposer;
+  const { command } = useStateStore(textComposer.state, textComposerStateSelector);
+
   const {
     theme: {
       colors: { accent_blue, grey_gainsboro },
@@ -35,10 +43,17 @@ const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
     },
   } = useTheme();
 
+  const onPressHandler = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+    sendMessage();
+  }, [disabled, sendMessage]);
+
   return (
     <Pressable
       disabled={disabled}
-      onPress={disabled ? () => null : () => sendMessage()}
+      onPress={onPressHandler}
       style={[sendButton]}
       testID='send-button'
     >
@@ -50,45 +65,6 @@ const SendButtonWithContext = (props: SendButtonPropsWithContext) => {
         <SendUp fill={accent_blue} size={32} {...sendUpIcon} />
       )}
     </Pressable>
-  );
-};
-
-const areEqual = (prevProps: SendButtonPropsWithContext, nextProps: SendButtonPropsWithContext) => {
-  const { disabled: prevDisabled, sendMessage: prevSendMessage } = prevProps;
-  const { disabled: nextDisabled, sendMessage: nextSendMessage } = nextProps;
-
-  const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) {
-    return false;
-  }
-
-  const sendMessageEqual = prevSendMessage === nextSendMessage;
-  if (!sendMessageEqual) {
-    return false;
-  }
-
-  return true;
-};
-
-const MemoizedSendButton = React.memo(
-  SendButtonWithContext,
-  areEqual,
-) as typeof SendButtonWithContext;
-
-export type SendButtonProps = Partial<SendButtonPropsWithContext>;
-
-/**
- * UI Component for send button in MessageInput component.
- */
-export const SendButton = (props: SendButtonProps) => {
-  const { sendMessage } = useMessageInputContext();
-
-  return (
-    <MemoizedSendButton
-      {...{ sendMessage }}
-      {...props}
-      {...{ disabled: props.disabled || false }}
-    />
   );
 };
 

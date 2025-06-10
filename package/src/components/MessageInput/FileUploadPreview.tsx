@@ -1,136 +1,270 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, LayoutChangeEvent, StyleSheet } from 'react-native';
 
-import { UploadProgressIndicator } from './UploadProgressIndicator';
+import {
+  isAudioAttachment,
+  isLocalAudioAttachment,
+  isLocalFileAttachment,
+  isLocalImageAttachment,
+  isLocalVideoAttachment,
+  isLocalVoiceRecordingAttachment,
+  isVideoAttachment,
+  isVoiceRecordingAttachment,
+  LocalAudioAttachment,
+  LocalFileAttachment,
+  LocalVideoAttachment,
+  LocalVoiceRecordingAttachment,
+} from 'stream-chat';
 
-import { ChatContextValue, useChatContext } from '../../contexts';
+import { useMessageComposer } from '../../contexts';
+import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Close } from '../../icons/Close';
-import { Warning } from '../../icons/Warning';
 import { isSoundPackageAvailable } from '../../native';
-import type { AudioUpload, FileUpload } from '../../types/types';
-import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
-import {
-  getDurationLabelFromDuration,
-  getIndicatorTypeForFileState,
-  ProgressIndicatorTypes,
-} from '../../utils/utils';
-import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
-import { WritingDirectionAwareText } from '../RTLComponents/WritingDirectionAwareText';
+import { AudioConfig } from '../../types/types';
 
 const FILE_PREVIEW_HEIGHT = 60;
-const WARNING_ICON_SIZE = 16;
 
-const styles = StyleSheet.create({
-  dismiss: {
-    borderRadius: 24,
-    height: 24,
-    marginRight: 4,
-    position: 'absolute',
-    right: 8,
-    top: 8,
-    width: 24,
-  },
-  fileContainer: {
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    paddingHorizontal: 8,
-  },
-  fileIcon: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  filenameText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  fileSizeText: {
-    fontSize: 12,
-    marginTop: 10,
-  },
-  fileTextContainer: {
-    justifyContent: 'space-around',
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
-  overlay: {
-    borderRadius: 12,
-    marginHorizontal: 8,
-    marginTop: 2,
-  },
-  unsupportedFile: {
-    flexDirection: 'row',
-    paddingTop: 10,
-  },
-  unsupportedFileText: {
-    fontSize: 12,
-    marginHorizontal: 4,
-  },
-  warningIconStyle: {
-    borderRadius: 24,
-    marginTop: 2,
-  },
-});
+export type FileUploadPreviewPropsWithContext = Pick<
+  MessageInputContextValue,
+  'AudioAttachmentUploadPreview' | 'FileAttachmentUploadPreview' | 'VideoAttachmentUploadPreview'
+>;
 
-const UnsupportedFileTypeOrFileSizeIndicator = ({
-  indicatorType,
-  item,
-}: {
-  indicatorType: (typeof ProgressIndicatorTypes)[keyof typeof ProgressIndicatorTypes];
-  item: FileUpload;
-}) => {
+type FileAttachmentType<CustomLocalMetadata = Record<string, unknown>> =
+  | LocalFileAttachment<CustomLocalMetadata>
+  | LocalAudioAttachment<CustomLocalMetadata>
+  | LocalVoiceRecordingAttachment<CustomLocalMetadata>
+  | LocalVideoAttachment<CustomLocalMetadata>;
+
+/**
+ * FileUploadPreview
+ * UI Component to preview the files set for upload
+ */
+const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) => {
+  const {
+    AudioAttachmentUploadPreview,
+    FileAttachmentUploadPreview,
+    VideoAttachmentUploadPreview,
+  } = props;
+  const { attachmentManager } = useMessageComposer();
+  const { attachments } = useAttachmentManagerState();
+  const [audioAttachmentsStateMap, setAudioAttachmentsStateMap] = useState<
+    Record<string, AudioConfig>
+  >({});
+  const flatListRef = useRef<FlatList<FileAttachmentType> | null>(null);
+  const [flatListWidth, setFlatListWidth] = useState(0);
+
+  const fileUploads = useMemo(() => {
+    return attachments.filter(
+      (attachment) =>
+        isLocalFileAttachment(attachment) ||
+        isLocalAudioAttachment(attachment) ||
+        isLocalVoiceRecordingAttachment(attachment) ||
+        isLocalVideoAttachment(attachment),
+    );
+  }, [attachments]);
+
+  useEffect(() => {
+    const newAudioAttachmentsStateMap = fileUploads.reduce(
+      (acc, attachment) => {
+        if (isAudioAttachment(attachment) || isVoiceRecordingAttachment(attachment)) {
+          acc[attachment.localMetadata.id] = {
+            duration:
+              attachment.duration ||
+              audioAttachmentsStateMap[attachment.localMetadata.id]?.duration ||
+              0,
+            paused: true,
+            progress: 0,
+          };
+        }
+        return acc;
+      },
+      {} as Record<string, AudioConfig>,
+    );
+
+    setAudioAttachmentsStateMap(newAudioAttachmentsStateMap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fileUploads]);
+
+  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here
+  // and the duration is set.
+  const onLoad = useCallback((index: string, duration: number) => {
+    setAudioAttachmentsStateMap((prevState) => ({
+      ...prevState,
+      [index]: {
+        ...prevState[index],
+        duration,
+      },
+    }));
+  }, []);
+
+  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The
+  // progressed duration is set here.
+  const onProgress = useCallback((index: string, progress: number) => {
+    setAudioAttachmentsStateMap((prevState) => ({
+      ...prevState,
+      [index]: {
+        ...prevState[index],
+        progress,
+      },
+    }));
+  }, []);
+
+  // The handler which controls or sets the paused/played state of the audio.
+  const onPlayPause = useCallback((index: string, pausedStatus?: boolean) => {
+    if (pausedStatus === false) {
+      // In this case, all others except the index are set to paused.
+      setAudioAttachmentsStateMap((prevState) => {
+        const newState = { ...prevState };
+        Object.keys(newState).forEach((key) => {
+          if (key !== index) {
+            newState[key].paused = true;
+          }
+        });
+        return {
+          ...newState,
+          [index]: {
+            ...newState[index],
+            paused: false,
+          },
+        };
+      });
+    } else {
+      setAudioAttachmentsStateMap((prevState) => ({
+        ...prevState,
+        [index]: {
+          ...prevState[index],
+          paused: true,
+        },
+      }));
+    }
+  }, []);
+
   const {
     theme: {
-      colors: { accent_red, grey, grey_dark },
       messageInput: {
-        fileUploadPreview: { fileSizeText },
+        fileUploadPreview: { flatList },
       },
     },
   } = useTheme();
 
-  const { t } = useTranslationContext();
+  const renderItem = useCallback(
+    ({ item }: { item: FileAttachmentType }) => {
+      if (isLocalImageAttachment(item)) {
+        // This is already handled in the `ImageUploadPreview` component
+        return null;
+      } else if (isLocalVoiceRecordingAttachment(item)) {
+        return (
+          <AudioAttachmentUploadPreview
+            attachment={item}
+            audioAttachmentConfig={audioAttachmentsStateMap[item.localMetadata.id]}
+            handleRetry={attachmentManager.uploadAttachment}
+            onLoad={onLoad}
+            onPlayPause={onPlayPause}
+            onProgress={onProgress}
+            removeAttachments={attachmentManager.removeAttachments}
+          />
+        );
+      } else if (isLocalAudioAttachment(item)) {
+        if (isSoundPackageAvailable()) {
+          return (
+            <AudioAttachmentUploadPreview
+              attachment={item}
+              audioAttachmentConfig={audioAttachmentsStateMap[item.localMetadata.id]}
+              handleRetry={attachmentManager.uploadAttachment}
+              onLoad={onLoad}
+              onPlayPause={onPlayPause}
+              onProgress={onProgress}
+              removeAttachments={attachmentManager.removeAttachments}
+            />
+          );
+        } else {
+          return (
+            <FileAttachmentUploadPreview
+              attachment={item}
+              flatListWidth={flatListWidth}
+              handleRetry={attachmentManager.uploadAttachment}
+              removeAttachments={attachmentManager.removeAttachments}
+            />
+          );
+        }
+      } else if (isVideoAttachment(item)) {
+        return (
+          <VideoAttachmentUploadPreview
+            attachment={item}
+            flatListWidth={flatListWidth}
+            handleRetry={attachmentManager.uploadAttachment}
+            removeAttachments={attachmentManager.removeAttachments}
+          />
+        );
+      } else if (isLocalFileAttachment(item)) {
+        return (
+          <FileAttachmentUploadPreview
+            attachment={item}
+            flatListWidth={flatListWidth}
+            handleRetry={attachmentManager.uploadAttachment}
+            removeAttachments={attachmentManager.removeAttachments}
+          />
+        );
+      } else return null;
+    },
+    [
+      AudioAttachmentUploadPreview,
+      FileAttachmentUploadPreview,
+      VideoAttachmentUploadPreview,
+      attachmentManager.removeAttachments,
+      attachmentManager.uploadAttachment,
+      audioAttachmentsStateMap,
+      flatListWidth,
+      onLoad,
+      onPlayPause,
+      onProgress,
+    ],
+  );
 
-  return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-    <View style={styles.unsupportedFile}>
-      <Warning
-        height={WARNING_ICON_SIZE}
-        pathFill={accent_red}
-        style={styles.warningIconStyle}
-        width={WARNING_ICON_SIZE}
-      />
-      <Text style={[styles.unsupportedFileText, { color: grey_dark }]}>
-        {t<string>('File type not supported')}
-      </Text>
-    </View>
-  ) : (
-    <WritingDirectionAwareText style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-      {item.file.duration
-        ? getDurationLabelFromDuration(item.file.duration)
-        : getFileSizeDisplayText(item.file.size)}
-    </WritingDirectionAwareText>
+  useEffect(() => {
+    if (fileUploads.length && flatListRef.current) {
+      setTimeout(() => flatListRef.current?.scrollToEnd(), 1);
+    }
+  }, [fileUploads.length]);
+
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      if (flatListRef.current) {
+        setFlatListWidth(event.nativeEvent.layout.width);
+      }
+    },
+    [flatListRef],
+  );
+
+  if (fileUploads.length === 0) {
+    return null;
+  }
+
+  return (
+    <FlatList
+      data={fileUploads}
+      getItemLayout={(_, index) => ({
+        index,
+        length: FILE_PREVIEW_HEIGHT + 8,
+        offset: (FILE_PREVIEW_HEIGHT + 8) * index,
+      })}
+      keyExtractor={(item) => item.localMetadata.id}
+      onLayout={onLayout}
+      ref={flatListRef}
+      renderItem={renderItem}
+      style={[styles.flatList, flatList]}
+      testID={'file-upload-preview'}
+    />
   );
 };
 
-export type FileUploadPreviewProps = Partial<
-  Pick<
-    MessageInputContextValue,
-    'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
-  >
-> &
-  Partial<Pick<MessagesContextValue, 'FileAttachmentIcon'>> &
-  Partial<Pick<ChatContextValue, 'enableOfflineSupport'>>;
+export type FileUploadPreviewProps = Partial<FileUploadPreviewPropsWithContext>;
+
+const MemoizedFileUploadPreviewWithContext = React.memo(UnMemoizedFileUploadPreview);
 
 /**
  * FileUploadPreview
@@ -138,206 +272,24 @@ export type FileUploadPreviewProps = Partial<
  */
 export const FileUploadPreview = (props: FileUploadPreviewProps) => {
   const {
-    AudioAttachmentUploadPreview: propAudioAttachmentUploadPreview,
-    enableOfflineSupport: propEnableOfflineSupport,
-    FileAttachmentIcon: propFileAttachmentIcon,
-    fileUploads: propFileUploads,
-    removeFile: propRemoveFile,
-    uploadFile: propUploadFile,
-  } = props;
-
-  const { enableOfflineSupport: contextEnableOfflineSupport } = useChatContext();
-  const {
-    AudioAttachmentUploadPreview: contextAudioAttachmentUploadPreview,
-    fileUploads: contextFileUploads,
-    removeFile: contextRemoveFile,
-    uploadFile: contextUploadFile,
+    AudioAttachmentUploadPreview,
+    FileAttachmentUploadPreview,
+    VideoAttachmentUploadPreview,
   } = useMessageInputContext();
-  const { FileAttachmentIcon: contextFileAttachmentIcon } = useMessagesContext();
-
-  const enableOfflineSupport = propEnableOfflineSupport ?? contextEnableOfflineSupport;
-  const AudioAttachmentUploadPreview =
-    propAudioAttachmentUploadPreview ?? contextAudioAttachmentUploadPreview;
-  const fileUploads = propFileUploads ?? contextFileUploads;
-  const removeFile = propRemoveFile ?? contextRemoveFile;
-  const uploadFile = propUploadFile ?? contextUploadFile;
-  const FileAttachmentIcon = propFileAttachmentIcon ?? contextFileAttachmentIcon;
-
-  const [filesToDisplay, setFilesToDisplay] = useState<AudioUpload[]>([]);
-
-  const flatListRef = useRef<FlatList<AudioUpload> | null>(null);
-  const [flatListWidth, setFlatListWidth] = useState(0);
-
-  useEffect(() => {
-    setFilesToDisplay(
-      fileUploads.map((file) => ({
-        ...file,
-        duration: file.duration || filesToDisplay.find((f) => f.id === file.id)?.duration || 0,
-        paused: true,
-        progress: 0,
-      })),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileUploads]);
-
-  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
-  const onLoad = (index: string, duration: number) => {
-    setFilesToDisplay((prevFilesUploads) =>
-      prevFilesUploads.map((fileUpload) => ({
-        ...fileUpload,
-        duration: fileUpload.id === index ? duration : fileUpload.duration,
-      })),
-    );
-  };
-
-  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
-  const onProgress = (index: string, progress: number) => {
-    setFilesToDisplay((prevFilesUploads) =>
-      prevFilesUploads.map((fileUpload) => ({
-        ...fileUpload,
-        progress: fileUpload.id === index ? progress : fileUpload.progress,
-      })),
-    );
-  };
-
-  // The handler which controls or sets the paused/played state of the audio.
-  const onPlayPause = (index: string, pausedStatus?: boolean) => {
-    if (pausedStatus === false) {
-      // If the status is false we set the audio with the index as playing and the others as paused.
-      setFilesToDisplay((prevFileUploads) =>
-        prevFileUploads.map((fileUpload) => ({
-          ...fileUpload,
-          paused: fileUpload.id !== index,
-        })),
-      );
-    } else {
-      // If the status is true we simply set all the audio's paused state as true.
-      setFilesToDisplay((prevFileUploads) =>
-        prevFileUploads.map((fileUpload) => ({
-          ...fileUpload,
-          paused: true,
-        })),
-      );
-    }
-  };
-
-  const {
-    theme: {
-      colors: { black, grey_dark, grey_gainsboro, grey_whisper },
-      messageInput: {
-        fileUploadPreview: { dismiss, fileContainer, filenameText, fileTextContainer, flatList },
-      },
-    },
-  } = useTheme();
-
-  const renderItem = ({ item }: { item: AudioUpload }) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state, enableOfflineSupport);
-    const isAudio = item.file.type?.startsWith('audio/');
-
-    return (
-      <>
-        <UploadProgressIndicator
-          action={() => {
-            uploadFile({ newFile: item });
-          }}
-          style={styles.overlay}
-          type={indicatorType}
-        >
-          {isAudio && isSoundPackageAvailable() ? (
-            <AudioAttachmentUploadPreview
-              hideProgressBar={true}
-              item={item}
-              onLoad={onLoad}
-              onPlayPause={onPlayPause}
-              onProgress={onProgress}
-              showSpeedSettings={false}
-              testID='audio-attachment-upload-preview'
-            />
-          ) : (
-            <View
-              style={[
-                styles.fileContainer,
-                {
-                  borderColor: grey_whisper,
-                },
-                fileContainer,
-              ]}
-            >
-              <View style={styles.fileIcon}>
-                <FileAttachmentIcon mimeType={item.file.type} />
-              </View>
-              <View style={[styles.fileTextContainer, fileTextContainer]}>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    styles.filenameText,
-                    {
-                      color: black,
-                      width:
-                        flatListWidth -
-                        16 - // 16 = horizontal padding
-                        40 - // 40 = file icon size
-                        24 - // 24 = close icon size
-                        24, // 24 = internal padding
-                    },
-                    I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
-                    filenameText,
-                  ]}
-                >
-                  {getTrimmedAttachmentTitle(item.file.name)}
-                </Text>
-                {indicatorType !== null && (
-                  <UnsupportedFileTypeOrFileSizeIndicator
-                    indicatorType={indicatorType}
-                    item={item}
-                  />
-                )}
-              </View>
-            </View>
-          )}
-        </UploadProgressIndicator>
-        <TouchableOpacity
-          onPress={() => {
-            removeFile(item.id);
-          }}
-          style={[styles.dismiss, { backgroundColor: grey_gainsboro }, dismiss]}
-          testID='remove-file-upload-preview'
-        >
-          <Close pathFill={grey_dark} />
-        </TouchableOpacity>
-      </>
-    );
-  };
-
-  const fileUploadsLength = fileUploads.length;
-
-  useEffect(() => {
-    if (fileUploadsLength && flatListRef.current) {
-      setTimeout(() => flatListRef.current?.scrollToEnd(), 1);
-    }
-  }, [fileUploadsLength]);
-
-  return fileUploadsLength ? (
-    <FlatList
-      data={filesToDisplay}
-      getItemLayout={(_, index) => ({
-        index,
-        length: FILE_PREVIEW_HEIGHT + 8,
-        offset: (FILE_PREVIEW_HEIGHT + 8) * index,
-      })}
-      keyExtractor={(item) => `${item.id}`}
-      onLayout={({
-        nativeEvent: {
-          layout: { width },
-        },
-      }) => {
-        setFlatListWidth(width);
+  return (
+    <MemoizedFileUploadPreviewWithContext
+      {...{
+        AudioAttachmentUploadPreview,
+        FileAttachmentUploadPreview,
+        VideoAttachmentUploadPreview,
       }}
-      ref={flatListRef}
-      renderItem={renderItem}
-      style={[styles.flatList, flatList]}
+      {...props}
     />
-  ) : null;
+  );
 };
+
+const styles = StyleSheet.create({
+  flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
+});
 
 FileUploadPreview.displayName = 'FileUploadPreview{messageInput{fileUploadPreview}}';

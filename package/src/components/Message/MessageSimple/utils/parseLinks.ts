@@ -17,7 +17,10 @@ const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.*\]\(.*
 const removeUserNamesWithEmailFromText = (input: string) =>
   input.replace(/@(\w+(\.\w+)?)(@\w+\.\w+)/g, '');
 
-export const parseLinksFromText = (input: string): LinkInfo[] => {
+export const parseLinksFromText = (input?: string): LinkInfo[] => {
+  if (!input) {
+    return [];
+  }
   const strippedInput = [removeMarkdownLinksFromText, removeUserNamesWithEmailFromText].reduce(
     (acc, fn) => fn(acc),
     input,

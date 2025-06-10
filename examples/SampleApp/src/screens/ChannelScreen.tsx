@@ -19,13 +19,12 @@ import {
   AITypingIndicatorView,
   createTextComposerEmojiMiddleware,
 } from 'stream-chat-react-native';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppContext } from '../context/AppContext';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';
@@ -58,44 +57,51 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const typing = useTypingString();
 
-  if (!channel || !chatClient) {
-    return null;
-  }
-
   const isOneOnOneConversation =
     channel &&
     Object.values(channel.state.members).length === 2 &&
     channel.id?.indexOf('!members-') === 0;
 
+  const onBackPress = useCallback(() => {
+    if (!navigation.canGoBack()) {
+      // if no previous screen was present in history, go to the list screen
+      // this can happen when opened through push notification
+      navigation.reset({ index: 0, routes: [{ name: 'MessagingScreen' }] });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation]);
+
+  const onRightContentPress = useCallback(() => {
+    closePicker();
+    if (isOneOnOneConversation) {
+      navigation.navigate('OneOnOneChannelDetailScreen', {
+        channel,
+      });
+    } else {
+      navigation.navigate('GroupChannelDetailsScreen', {
+        channel,
+      });
+    }
+  }, [channel, closePicker, isOneOnOneConversation, navigation]);
+
+  if (!channel || !chatClient) {
+    return null;
+  }
+
   return (
     <ScreenHeader
-      onBack={() => {
-        if (!navigation.canGoBack()) {
-          // if no previous screen was present in history, go to the list screen
-          // this can happen when opened through push notification
-          navigation.reset({ index: 0, routes: [{ name: 'MessagingScreen' }] });
-        } else {
-          navigation.goBack();
-        }
-      }}
+      onBack={onBackPress}
       // eslint-disable-next-line react/no-unstable-nested-components
       RightContent={() => (
-        <TouchableOpacity
-          onPress={() => {
-            closePicker();
-            if (isOneOnOneConversation) {
-              navigation.navigate('OneOnOneChannelDetailScreen', {
-                channel,
-              });
-            } else {
-              navigation.navigate('GroupChannelDetailsScreen', {
-                channel,
-              });
-            }
-          }}
+        <Pressable
+          onPress={onRightContentPress}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.5 : 1,
+          })}
         >
           <ChannelAvatar channel={channel} />
-        </TouchableOpacity>
+        </Pressable>
       )}
       showUnreadCountBadge
       Subtitle={isOnline ? undefined : NetworkDownIndicator}
@@ -135,7 +141,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         if (!newChannel?.initialized) {
           await newChannel?.watch();
         }
-      } catch(error) {
+      } catch (error) {
         console.log('An error has occurred while watching the channel: ', error);
       }
       setChannel(newChannel);

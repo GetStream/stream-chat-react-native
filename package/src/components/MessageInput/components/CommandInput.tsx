@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { CustomDataManagerState } from 'stream-chat';
+import { TextComposerState } from 'stream-chat';
 
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -21,9 +21,11 @@ export type CommandInputProps = Partial<
 > & {
   disabled: boolean;
 };
-
-const customComposerDataSelector = (state: CustomDataManagerState) => ({
-  command: state.custom.command,
+const textComposerStateSelector = (state: TextComposerState) => ({
+  // TODO: Comment out once the commands PR has been merged on the LLC
+  // command: state.command,
+  command: null,
+  text: state.text,
 });
 
 export const CommandInput = ({
@@ -32,8 +34,8 @@ export const CommandInput = ({
 }: CommandInputProps) => {
   const { cooldownEndsAt: contextCooldownEndsAt } = useMessageInputContext();
   const messageComposer = useMessageComposer();
-  const { customDataManager } = messageComposer;
-  const { command } = useStateStore(customDataManager.state, customComposerDataSelector);
+  const { textComposer } = messageComposer;
+  const { command } = useStateStore(textComposer.state, textComposerStateSelector);
 
   const cooldownEndsAt = propCooldownEndsAt || contextCooldownEndsAt;
 
@@ -50,18 +52,24 @@ export const CommandInput = ({
   } = useTheme();
 
   const onCloseHandler = () => {
-    customDataManager.setCustomData({ command: null });
+    // TODO: Comment out once the commands PR has been merged on the LLC
+    // textComposer.clearCommand();
+    messageComposer?.restore();
   };
 
   if (!command) {
     return null;
   }
 
+  // TODO: Comment out once the commands PR has been merged on the LLC
+  // const commandName = (command.name ?? '').toUpperCase();
+  const commandName = '';
+
   return (
     <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
       <View style={[styles.giphyContainer, { backgroundColor: accent_blue }, container]}>
         <GiphyLightning fill={white} size={16} />
-        <Text style={[styles.giphyText, { color: white }, text]}>{command.toUpperCase()}</Text>
+        <Text style={[styles.giphyText, { color: white }, text]}>{commandName}</Text>
       </View>
 
       <AutoCompleteInput cooldownActive={!!cooldownRemainingSeconds} />

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -11,6 +11,7 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 
 import { PollComposerOption, PollComposerState } from 'stream-chat';
@@ -295,6 +296,19 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   // this will hold id for item which user started dragging
   const draggedItemId = useSharedValue<string | null>(null);
 
+  // holds the animated height of the option container
+  const animatedOptionsContainerHeight = useSharedValue(createPollOptionHeight * options.length);
+
+  useEffect(() => {
+    animatedOptionsContainerHeight.value = withTiming(createPollOptionHeight * options.length, {
+      duration: 200,
+    });
+  }, [animatedOptionsContainerHeight, createPollOptionHeight, options.length]);
+
+  const animatedOptionsContainerStyle = useAnimatedStyle(() => ({
+    height: animatedOptionsContainerHeight.value,
+  }));
+
   const boundaries = useMemo(
     () => ({ maxBound: (options.length - 1) * createPollOptionHeight, minBound: 0 }),
     [createPollOptionHeight, options.length],
@@ -332,7 +346,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   return (
     <View style={[styles.container, container]}>
       <Text style={[styles.text, { color: black }, title]}>{t<string>('Options')}</Text>
-      <View style={{ height: createPollOptionHeight * options.length }}>
+      <Animated.View style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption
             boundaries={boundaries}
@@ -348,7 +362,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
             option={option}
           />
         ))}
-      </View>
+      </Animated.View>
     </View>
   );
 };
