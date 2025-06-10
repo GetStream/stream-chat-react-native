@@ -624,7 +624,10 @@ export const MessageInputProvider = ({
       }
     } else {
       try {
-        messageComposer.clear();
+        // we will handle this specific case in the poll creation dialog
+        if (!localMessage.poll_id) {
+          messageComposer.clear();
+        }
         await value.sendMessage({
           localMessage: {
             ...localMessage,
