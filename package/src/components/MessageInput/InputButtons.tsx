@@ -35,7 +35,9 @@ export type InputButtonsWithContextProps = Pick<
   Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
-  command: state.command,
+  // TODO: Comment out once the commands PR has been merged on the LLC
+  // command: state.command,
+  command: null,
   hasText: !!state.text,
 });
 
