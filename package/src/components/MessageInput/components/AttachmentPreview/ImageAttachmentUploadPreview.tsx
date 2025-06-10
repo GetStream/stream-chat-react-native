@@ -23,7 +23,7 @@ export const ImageAttachmentUploadPreview = ({
   handleRetry,
   removeAttachments,
 }: ImageAttachmentUploadPreviewProps) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { enableOfflineSupport } = useChatContext();
   const indicatorType = loading
     ? ProgressIndicatorTypes.IN_PROGRESS
@@ -49,10 +49,6 @@ export const ImageAttachmentUploadPreview = ({
     setLoading(false);
   }, []);
 
-  const onLoadStartHandler = useCallback(() => {
-    setLoading(true);
-  }, []);
-
   return (
     <View style={[styles.itemContainer, itemContainer]} testID={'image-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
@@ -62,12 +58,12 @@ export const ImageAttachmentUploadPreview = ({
       >
         <Image
           onLoadEnd={onLoadEndHandler}
-          onLoadStart={onLoadStartHandler}
           resizeMode='cover'
           source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
           style={[styles.upload, upload]}
         />
       </AttachmentUploadProgressIndicator>
+
       <DismissAttachmentUpload onPress={onDismissHandler} />
       {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
         <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />

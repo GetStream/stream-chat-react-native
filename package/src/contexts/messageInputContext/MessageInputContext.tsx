@@ -59,7 +59,10 @@ import type { MessageInputProps } from '../../components/MessageInput/MessageInp
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import { useStableCallback } from '../../hooks/useStableCallback';
-import { createAttachmentsCompositionMiddleware } from '../../middlewares/attachments';
+import {
+  createAttachmentsCompositionMiddleware,
+  createDraftAttachmentsCompositionMiddleware,
+} from '../../middlewares/attachments';
 
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
 import { File } from '../../types/types';
@@ -479,6 +482,10 @@ export const MessageInputProvider = ({
     if (enableOfflineSupport) {
       messageComposer.compositionMiddlewareExecutor.replace([
         createAttachmentsCompositionMiddleware(messageComposer),
+      ]);
+
+      messageComposer.draftCompositionMiddlewareExecutor.replace([
+        createDraftAttachmentsCompositionMiddleware(messageComposer),
       ]);
     }
   }, [
