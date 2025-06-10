@@ -415,10 +415,21 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   });
 
+  const messagesLength = useRef<number>(processedMessageList.length);
+
   /**
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
+    // we need this check to make sure that regular list change do not trigger
+    // the unread notification to appear (for example if the old last read messages
+    // go out of the viewport).
+    if (processedMessageList.length !== messagesLength.current) {
+      setIsUnreadNotificationOpen(false);
+      return;
+    }
+    messagesLength.current = processedMessageList.length;
+
     if (!viewableItems.length) {
       setIsUnreadNotificationOpen(false);
       return;
@@ -737,10 +748,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const isLastReadMessage =
         channelUnreadState?.last_read_message_id === message.id ||
         (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
+      const isMyMessage = message.user?.id === client.userID;
 
       const showUnreadSeparator =
         isLastReadMessage &&
         !isNewestMessage &&
+        !isMyMessage &&
         // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
         (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
 
