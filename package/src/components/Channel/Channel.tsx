@@ -279,7 +279,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'EmptyStateIndicator'
       | 'enableMessageGroupingByUser'
       | 'enforceUniqueReaction'
-      | 'isCommandUIEnabled'
       | 'hideStickyDateHeader'
       | 'hideDateSeparators'
       | 'LoadingIndicator'
@@ -1694,7 +1693,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hideStickyDateHeader,
     highlightedMessageId,
     isChannelActive: shouldSyncChannel,
-    isCommandUIEnabled: isCommandUIEnabled ?? !!clientChannelConfig?.commands?.length,
     lastRead,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
@@ -1769,7 +1767,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileUploadPreview,
     handleAttachButtonPress,
     hasCameraPicker,
-    hasCommands: hasCommands ?? (getChannelConfigSafely()?.commands ?? []).length > 0,
+    hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,
     hasFilePicker,
     hasImagePicker,
     ImageAttachmentUploadPreview,
@@ -1779,7 +1777,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InputButtons,
     InputEditingStateHeader,
     InputReplyStateHeader,
-    isCommandUIEnabled,
+    isCommandUIEnabled: isCommandUIEnabled ?? !!clientChannelConfig?.commands?.length,
     MoreOptionsButton,
     openPollCreationDialog,
     SendButton,

@@ -11,15 +11,11 @@ import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-nativ
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
-  createCommandInjectionMiddleware,
-  createCommandStringExtractionMiddleware,
-  createDraftCommandInjectionMiddleware,
   LocalMessage,
   Message,
   SendMessageOptions,
   StreamChat,
   Message as StreamMessage,
-  TextComposerMiddleware,
   UpdateMessageOptions,
   UploadRequestFn,
   UserResponse,
@@ -67,6 +63,7 @@ import {
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
+import { setupCommandUIMiddleware } from '../../utils/setupCommandUIMiddleware';
 import {
   AttachmentPickerIconProps,
   useAttachmentPickerContext,
@@ -428,7 +425,7 @@ export const MessageInputProvider = ({
     useAttachmentPickerContext();
   const { client, enableOfflineSupport } = useChatContext();
 
-  const { isCommandUIEnabled, uploadAbortControllerRef } = useChannelContext();
+  const { uploadAbortControllerRef } = useChannelContext();
   const { clearEditingState } = useMessageComposerAPIContext();
   const { thread } = useThreadContext();
   const { t } = useTranslationContext();
@@ -462,21 +459,8 @@ export const MessageInputProvider = ({
       attachmentManager.setCustomUploadFn(value.doFileUploadRequest);
     }
 
-    if (isCommandUIEnabled) {
-      messageComposer.compositionMiddlewareExecutor.insert({
-        middleware: [createCommandInjectionMiddleware(messageComposer)],
-        position: { after: 'stream-io/message-composer-middleware/attachments' },
-      });
-
-      messageComposer.draftCompositionMiddlewareExecutor.insert({
-        middleware: [createDraftCommandInjectionMiddleware(messageComposer)],
-        position: { after: 'stream-io/message-composer-middleware/draft-attachments' },
-      });
-
-      messageComposer.textComposer.middlewareExecutor.insert({
-        middleware: [createCommandStringExtractionMiddleware() as TextComposerMiddleware],
-        position: { after: 'stream-io/text-composer/commands-middleware' },
-      });
+    if (value.isCommandUIEnabled) {
+      setupCommandUIMiddleware(messageComposer);
     }
 
     if (enableOfflineSupport) {
@@ -490,7 +474,7 @@ export const MessageInputProvider = ({
     }
   }, [
     value.doFileUploadRequest,
-    isCommandUIEnabled,
+    value.isCommandUIEnabled,
     enableOfflineSupport,
     messageComposer,
     attachmentManager,

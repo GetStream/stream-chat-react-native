@@ -50,10 +50,6 @@ export type ChannelContextValue = {
   enforceUniqueReaction: boolean;
   error: boolean | Error;
   /**
-   * When set to false, it will disable giphy command on MessageInput component.
-   */
-  isCommandUIEnabled: boolean;
-  /**
    * Hide inline date separators on channel
    */
   hideDateSeparators: boolean;
