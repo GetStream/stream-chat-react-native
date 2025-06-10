@@ -36,6 +36,7 @@ import {
   PollContentProps,
   StopMessageStreamingButtonProps,
 } from '../../components';
+import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { AttachmentUploadProgressIndicatorProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
@@ -75,6 +76,7 @@ import {
 import { useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
 import { useMessageComposerAPIContext } from '../messageComposerContext/MessageComposerAPIContext';
+import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -428,6 +430,7 @@ export const MessageInputProvider = ({
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { client, enableOfflineSupport } = useChatContext();
+  const channelCapabilities = useOwnCapabilitiesContext();
 
   const { uploadAbortControllerRef } = useChannelContext();
   const { clearEditingState } = useMessageComposerAPIContext();
@@ -602,7 +605,15 @@ export const MessageInputProvider = ({
 
     const composition = await messageComposer.compose();
     if (!composition || !composition.message) return;
+
     const { localMessage, message, sendOptions } = composition;
+    const linkInfos = parseLinksFromText(localMessage.text);
+
+    if (!channelCapabilities.sendLinks && linkInfos.length > 0) {
+      Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
+
+      return;
+    }
 
     if (editedMessage && editedMessage.type !== 'error') {
       try {
