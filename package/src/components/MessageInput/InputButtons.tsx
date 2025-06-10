@@ -36,7 +36,7 @@ export type InputButtonsWithContextProps = Pick<
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
-  text: state.text,
+  hasText: !!state.text,
 });
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
@@ -51,12 +51,11 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     uploadFile: ownCapabilitiesUploadFile,
   } = props;
   const { textComposer } = useMessageComposer();
-  const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { command, hasText } = useStateStore(textComposer.state, textComposerStateSelector);
 
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const { attachments } = useAttachmentManagerState();
 
-  const hasText = !!text;
   const shouldShowMoreOptions = hasText || !!attachments.length;
 
   useEffect(() => {
