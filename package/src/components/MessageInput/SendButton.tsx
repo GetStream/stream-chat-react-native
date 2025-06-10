@@ -20,8 +20,12 @@ export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessag
   disabled: boolean;
 };
 
+// TODO: Comment out once the commands PR has been merged on the LLC
+// @ts-ignore
 const textComposerStateSelector = (state: TextComposerState) => ({
-  command: state.command,
+  // TODO: Comment out once the commands PR has been merged on the LLC
+  // command: state.command,
+  command: null,
 });
 
 export const SendButton = (props: SendButtonProps) => {

@@ -173,7 +173,9 @@ type MessageInputPropsWithContext = Partial<
   Pick<MessageComposerAPIContextValue, 'clearEditingState'> & { editing: boolean };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
-  command: state.command,
+  // TODO: Comment out once the commands PR has been merged on the LLC
+  // command: state.command,
+  command: null,
   hasText: !!state.text,
   mentionedUsers: state.mentionedUsers,
   suggestions: state.suggestions,
@@ -378,7 +380,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const showSendingButton = hasText || attachments.length;
 
   const isSendingButtonVisible = useMemo(() => {
-    return asyncAudioEnabled && showSendingButton && !recording;
+    return asyncAudioEnabled ? showSendingButton && !recording : true;
   }, [asyncAudioEnabled, recording, showSendingButton]);
 
   const micPositionX = useSharedValue(0);
