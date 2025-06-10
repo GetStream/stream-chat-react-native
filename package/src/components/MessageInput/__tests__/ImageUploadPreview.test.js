@@ -105,6 +105,13 @@ describe('ImageUploadPreview', () => {
     const { queryAllByTestId } = screen;
 
     await waitFor(() => {
+      const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
+      for (const image of imageAttachments) {
+        fireEvent(image, 'loadEnd');
+      }
+    });
+
+    await waitFor(() => {
       expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
       expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
     });
@@ -130,6 +137,13 @@ describe('ImageUploadPreview', () => {
     renderComponent({ channel, client, props });
 
     const { getAllByTestId, queryAllByTestId } = screen;
+
+    await waitFor(() => {
+      const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
+      for (const image of imageAttachments) {
+        fireEvent(image, 'loadEnd');
+      }
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
@@ -165,6 +179,13 @@ describe('ImageUploadPreview', () => {
     renderComponent({ channel, client, props });
 
     const { queryAllByText, queryAllByTestId } = screen;
+
+    await waitFor(() => {
+      const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
+      for (const image of imageAttachments) {
+        fireEvent(image, 'loadEnd');
+      }
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
@@ -208,6 +229,13 @@ describe('ImageUploadPreview', () => {
     renderComponent({ channel, client, props });
 
     const { queryAllByTestId, queryAllByText } = screen;
+
+    await waitFor(() => {
+      const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
+      for (const image of imageAttachments) {
+        fireEvent(image, 'loadEnd');
+      }
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(4);

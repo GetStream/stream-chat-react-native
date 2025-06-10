@@ -38,6 +38,26 @@ const defaultProps = {
   supportedReactions: mockSupportedReactions,
 };
 
+const renderComponent = (props = {}) =>
+  render(
+    <ThemeProvider theme={defaultTheme}>
+      <TranslationProvider value={mockTranslations as unknown as TranslationContextValue}>
+        <MessagesProvider
+          value={
+            {
+              MessageUserReactionsAvatar: () => null,
+              MessageUserReactionsItem: (props: MessageUserReactionsItemProps) => (
+                <Text>{props.reaction.id + ' ' + props.reaction.type}</Text>
+              ),
+            } as unknown as MessagesContextValue
+          }
+        >
+          <MessageUserReactions {...defaultProps} {...props} />
+        </MessagesProvider>
+      </TranslationProvider>
+    </ThemeProvider>,
+  );
+
 describe('MessageUserReactions when the supportedReactions are defined', () => {
   beforeAll(() => {
     const mockLoadNextPage = jest.fn();
@@ -58,25 +78,6 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
       ],
     });
   });
-  const renderComponent = (props = {}) =>
-    render(
-      <ThemeProvider theme={defaultTheme}>
-        <TranslationProvider value={mockTranslations as unknown as TranslationContextValue}>
-          <MessagesProvider
-            value={
-              {
-                MessageUserReactionsAvatar: () => null,
-                MessageUserReactionsItem: (props: MessageUserReactionsItemProps) => (
-                  <Text>{props.reaction.id + ' ' + props.reaction.type}</Text>
-                ),
-              } as unknown as MessagesContextValue
-            }
-          >
-            <MessageUserReactions {...defaultProps} {...props} />
-          </MessagesProvider>
-        </TranslationProvider>
-      </ThemeProvider>,
-    );
 
   it('renders correctly', () => {
     const { getByLabelText, getByText } = renderComponent();
@@ -132,27 +133,27 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
   });
 });
 
-const renderComponent = (props = {}) =>
-  render(
-    <ThemeProvider theme={defaultTheme}>
-      <TranslationProvider value={mockTranslations as unknown as TranslationContextValue}>
-        <MessagesProvider
-          value={
-            {
-              MessageUserReactionsAvatar: () => null,
-              MessageUserReactionsItem: (props: MessageUserReactionsItemProps) => (
-                <Text>{props.reaction.id + ' ' + props.reaction.type}</Text>
-              ),
-            } as unknown as MessagesContextValue
-          }
-        >
-          <MessageUserReactions {...defaultProps} {...props} />
-        </MessagesProvider>
-      </TranslationProvider>
-    </ThemeProvider>,
-  );
-
 describe("MessageUserReactions when the supportedReactions aren't defined", () => {
+  beforeAll(() => {
+    const mockLoadNextPage = jest.fn();
+
+    const mockUseFetchReactions = jest.spyOn(useFetchReactionsModule, 'useFetchReactions');
+    mockUseFetchReactions.mockReturnValue({
+      loading: false,
+      loadNextPage: mockLoadNextPage,
+      reactions: [
+        {
+          type: 'like',
+          user: { id: '1', image: 'user1.jpg', name: 'User 1' },
+        } as unknown as ReactionResponse,
+        {
+          type: 'love',
+          user: { id: '2', image: 'user2.jpg', name: 'User 2' },
+        } as unknown as ReactionResponse,
+      ],
+    });
+  });
+
   it("don't render reaction buttons that is of unsupported type", () => {
     const { queryAllByLabelText } = renderComponent({
       message: { ...generateMessage(), reaction_groups: undefined },

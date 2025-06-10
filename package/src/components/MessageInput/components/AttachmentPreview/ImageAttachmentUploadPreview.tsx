@@ -61,6 +61,7 @@ export const ImageAttachmentUploadPreview = ({
           resizeMode='cover'
           source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
           style={[styles.upload, upload]}
+          testID={'image-attachment-upload-preview-image'}
         />
       </AttachmentUploadProgressIndicator>
 

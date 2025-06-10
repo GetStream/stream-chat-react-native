@@ -361,7 +361,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const showSendingButton = hasText || attachments.length;
 
   const isSendingButtonVisible = useMemo(() => {
-    return asyncAudioEnabled && showSendingButton && !recording;
+    return asyncAudioEnabled ? showSendingButton && !recording : true;
   }, [asyncAudioEnabled, recording, showSendingButton]);
 
   const micPositionX = useSharedValue(0);
