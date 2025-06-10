@@ -848,7 +848,6 @@ export type Theme = {
     dateText: TextStyle;
     headerRow: ViewStyle;
     infoRow: ViewStyle;
-    lastReplyText: TextStyle;
     parentMessagePreviewContainer: ViewStyle;
     parentMessageText: TextStyle;
     previewMessageContainer: ViewStyle;
@@ -1662,7 +1661,6 @@ export const defaultTheme: Theme = {
     dateText: {},
     headerRow: {},
     infoRow: {},
-    lastReplyText: {},
     parentMessagePreviewContainer: {},
     parentMessageText: {},
     previewMessageContainer: {},

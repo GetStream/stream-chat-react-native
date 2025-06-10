@@ -37,7 +37,7 @@ export type ThreadListItemProps = {
 };
 
 const styles = StyleSheet.create({
-  boldText: { flexShrink: 1, fontSize: 14, fontWeight: '500' },
+  boldText: { fontSize: 14, fontWeight: '500' },
   contentRow: {
     flexDirection: 'row',
     marginTop: 6,
