@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Image, StyleSheet, View } from 'react-native';
 
@@ -23,11 +23,11 @@ export const ImageAttachmentUploadPreview = ({
   handleRetry,
   removeAttachments,
 }: ImageAttachmentUploadPreviewProps) => {
+  const [loading, setLoading] = useState(true);
   const { enableOfflineSupport } = useChatContext();
-  const indicatorType = getIndicatorTypeForFileState(
-    attachment.localMetadata.uploadState,
-    enableOfflineSupport,
-  );
+  const indicatorType = loading
+    ? ProgressIndicatorTypes.IN_PROGRESS
+    : getIndicatorTypeForFileState(attachment.localMetadata.uploadState, enableOfflineSupport);
 
   const {
     theme: {
@@ -45,19 +45,25 @@ export const ImageAttachmentUploadPreview = ({
     removeAttachments([attachment.localMetadata.id]);
   }, [attachment, removeAttachments]);
 
+  const onLoadEndHandler = useCallback(() => {
+    setLoading(false);
+  }, []);
+
   return (
-    <View style={[styles.itemContainer, itemContainer]}>
+    <View style={[styles.itemContainer, itemContainer]} testID={'image-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
         style={styles.upload}
         type={indicatorType}
       >
         <Image
+          onLoadEnd={onLoadEndHandler}
           resizeMode='cover'
           source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
           style={[styles.upload, upload]}
         />
       </AttachmentUploadProgressIndicator>
+
       <DismissAttachmentUpload onPress={onDismissHandler} />
       {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
         <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
