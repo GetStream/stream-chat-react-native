@@ -11,11 +11,15 @@ import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-nativ
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
+  // createCommandInjectionMiddleware,
+  // createCommandStringExtractionMiddleware,
+  // createDraftCommandInjectionMiddleware,
   LocalMessage,
   Message,
   SendMessageOptions,
   StreamChat,
   Message as StreamMessage,
+  // TextComposerMiddleware,
   UpdateMessageOptions,
   UploadRequestFn,
   UserResponse,
