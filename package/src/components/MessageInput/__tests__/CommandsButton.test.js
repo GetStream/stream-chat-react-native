@@ -13,10 +13,10 @@ const renderComponent = ({ client, channel, props }) => {
   return render(
     <OverlayProvider>
       <Chat client={client}>
-    <Channel channel={channel}>
-      <SendButton {...props} />
-  </Channel>
-  </Chat>
-  </OverlayProvider>,
-);
+        <Channel channel={channel}>
+          <SendButton {...props} />
+        </Channel>
+      </Chat>
+    </OverlayProvider>,
+  );
 };
