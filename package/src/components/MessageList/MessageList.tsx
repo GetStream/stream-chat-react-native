@@ -425,7 +425,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
     if (processedMessageList.length !== messagesLength.current) {
-      setIsUnreadNotificationOpen(false);
       return;
     }
     messagesLength.current = processedMessageList.length;
