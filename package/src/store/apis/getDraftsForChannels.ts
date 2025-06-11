@@ -1,5 +1,6 @@
 import { DraftResponse } from 'stream-chat';
 
+import { selectDraftMessageFromDraft } from './queries/selectDraftMessageFromDraft';
 import { selectMessageForId } from './queries/selectMessageById';
 
 import { mapStorableToDraft } from '../mappers/mapStorableToDraft';
@@ -16,25 +17,18 @@ export const getDraftForChannels = async ({
 }) => {
   SqliteClient.logger?.('info', 'getDraftsForChannel', { channelIds });
 
-  const query = createSelectQuery('draft', ['*'], { cid: channelIds });
-
-  const rows = await SqliteClient.executeSql.apply(null, query);
+  const draftRowsWithMessage = await selectDraftMessageFromDraft(channelIds);
 
   /**
    * Filter out drafts without a parent ID, as we will not show them in the channel.
    * The above `createSelectQuery` was not able to filter out drafts without a parent ID.
    * TODO: Fix the query to filter out drafts without a parent ID. This can be a bit faster.
    */
-  const rowsWithoutParentID = rows.filter((row) => row.parentId === null);
+  const rowsWithoutParentID = draftRowsWithMessage.filter((row) => row.parentId === null);
 
   const cidVsDrafts: Record<string, DraftResponse> = {};
 
   for (const row of rowsWithoutParentID) {
-    const draftMessageQuery = createSelectQuery('draftMessage', ['*'], {
-      id: row.draftMessageId,
-    });
-    const draftMessageRows = await SqliteClient.executeSql.apply(null, draftMessageQuery);
-
     const channelQuery = createSelectQuery('channels', ['*'], { cid: row.cid });
     const channelRows = await SqliteClient.executeSql.apply(null, channelQuery);
 
@@ -50,8 +44,7 @@ export const getDraftForChannels = async ({
     cidVsDrafts[row.cid] = mapStorableToDraft({
       channelRow: channelRows[0] as unknown as TableRow<'channels'>,
       currentUserId,
-      draftMessageRow: draftMessageRows[0] as unknown as TableRow<'draftMessage'>,
-      draftRow: row as unknown as TableRow<'draft'>,
+      draftRow: row,
       pollRow: polls[0],
       quotedMessageRow,
     });

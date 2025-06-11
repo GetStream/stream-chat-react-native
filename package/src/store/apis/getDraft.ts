@@ -1,3 +1,4 @@
+import { selectDraftMessageFromDraft } from './queries/selectDraftMessageFromDraft';
 import { selectMessageForId } from './queries/selectMessageById';
 
 import { mapStorableToDraft } from '../mappers/mapStorableToDraft';
@@ -16,23 +17,18 @@ export const getDraft = async ({
 }) => {
   SqliteClient.logger?.('info', 'getDraft', { cid, parent_id });
 
-  const query = createSelectQuery('draft', ['*'], { cid, parentId: parent_id });
+  const draftRowsWithMessage = await selectDraftMessageFromDraft([cid]);
 
-  const rows = await SqliteClient.executeSql.apply(null, query);
+  const draftRowWithMessage = draftRowsWithMessage[0];
 
-  if (!rows.length) return null;
-
-  const draftRow = rows[0];
-
-  const draftMessageQuery = createSelectQuery('draftMessage', ['*'], {
-    id: draftRow.draftMessageId,
-  });
-  const draftMessageRows = await SqliteClient.executeSql.apply(null, draftMessageQuery);
+  if (!draftRowWithMessage) {
+    return undefined;
+  }
 
   const channelQuery = createSelectQuery('channels', ['*'], { cid });
   const channelRows = await SqliteClient.executeSql.apply(null, channelQuery);
 
-  const quotedMessageRows = await selectMessageForId(draftRow.quotedMessageId);
+  const quotedMessageRows = await selectMessageForId(draftRowWithMessage.quotedMessageId);
 
   const polls = (await SqliteClient.executeSql.apply(
     null,
@@ -44,8 +40,7 @@ export const getDraft = async ({
   return mapStorableToDraft({
     channelRow: channelRows[0] as unknown as TableRow<'channels'>,
     currentUserId,
-    draftMessageRow: draftMessageRows[0] as unknown as TableRow<'draftMessage'>,
-    draftRow: draftRow as unknown as TableRow<'draft'>,
+    draftRow: draftRowWithMessage,
     pollRow: polls[0],
     quotedMessageRow: quotedMessageRows,
   });

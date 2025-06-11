@@ -5,26 +5,24 @@ import { mapStorableToDraftMessage } from './mapStorableToDraftMessage';
 
 import { mapStorableToMessage } from './mapStorableToMessage';
 
-import type { TableRow, TableRowJoinedUser } from '../types';
+import type { TableRow, TableRowJoinedDraftMessage, TableRowJoinedUser } from '../types';
 
 export const mapStorableToDraft = ({
   currentUserId,
   draftRow,
-  draftMessageRow,
   channelRow,
   pollRow,
   quotedMessageRow,
 }: {
   currentUserId: string;
-  draftRow: TableRow<'draft'>;
-  draftMessageRow: TableRow<'draftMessage'>;
+  draftRow: TableRowJoinedDraftMessage<'draft'>;
   channelRow: TableRow<'channels'>;
   pollRow: TableRow<'poll'>;
   quotedMessageRow?: TableRowJoinedUser<'messages'>;
 }): DraftResponse => {
   const { createdAt, cid, parentId } = draftRow;
 
-  const message = mapStorableToDraftMessage(draftMessageRow);
+  const message = mapStorableToDraftMessage(draftRow.draftMessage);
 
   const channel = mapStorableToChannel(channelRow);
 
