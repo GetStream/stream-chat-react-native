@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import React, { useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -100,7 +108,8 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
   } = props;
 
   const [height, setHeight] = useState(200);
-  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [savingInProgress, setSavingInProgress] = useState(false);
+  const shareIsInProgressRef = useRef<boolean>(false);
   const {
     theme: {
       colors: { black, white },
@@ -124,25 +133,43 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
   );
 
   const share = async () => {
-    setShareMenuOpen(true);
+    if (shareIsInProgressRef.current) {
+      return;
+    }
+    shareIsInProgressRef.current = true;
     try {
       if (!NativeHandlers.shareImage || !NativeHandlers.deleteFile) {
         return;
       }
       const extension = photo.mime_type?.split('/')[1] || 'jpg';
-      const localFile = await NativeHandlers.saveFile({
-        fileName: `${photo.user?.id || 'ChatPhoto'}-${
-          photo.messageId
-        }-${selectedIndex}.${extension}`,
-        fromUrl: photo.uri,
-      });
+      const shouldDownload = photo.uri && photo.uri.includes('http');
+      let localFile;
+      // If the file is already uploaded to a CDN, create a local reference to
+      // it first; otherwise just use the local file
+      if (shouldDownload) {
+        setSavingInProgress(true);
+        localFile = await NativeHandlers.saveFile({
+          fileName: `${photo.user?.id || 'ChatPhoto'}-${
+            photo.messageId
+          }-${selectedIndex}.${extension}`,
+          fromUrl: photo.uri,
+        });
+        setSavingInProgress(false);
+      } else {
+        localFile = photo.uri;
+      }
+
       // `image/jpeg` is added for the case where the mime_type isn't available for a file/image
       await NativeHandlers.shareImage({ type: photo.mime_type || 'image/jpeg', url: localFile });
-      await NativeHandlers.deleteFile({ uri: localFile });
+      // Only delete the file if a local reference has been created beforehand
+      if (shouldDownload) {
+        await NativeHandlers.deleteFile({ uri: localFile });
+      }
     } catch (error) {
+      setSavingInProgress(false);
       console.log(error);
     }
-    setShareMenuOpen(false);
+    shareIsInProgressRef.current = false;
   };
 
   return (
@@ -168,12 +195,12 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
         ) : null}
         <View style={[styles.innerContainer, { backgroundColor: white }, innerContainer]}>
           {leftElement ? (
-            leftElement({ openGridView, photo, share, shareMenuOpen })
+            leftElement({ openGridView, photo, share, shareMenuOpen: savingInProgress })
           ) : (
-            <ShareButton share={share} ShareIcon={ShareIcon} shareMenuOpen={shareMenuOpen} />
+            <ShareButton savingInProgress={savingInProgress} share={share} ShareIcon={ShareIcon} />
           )}
           {centerElement ? (
-            centerElement({ openGridView, photo, share, shareMenuOpen })
+            centerElement({ openGridView, photo, share, shareMenuOpen: savingInProgress })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
@@ -185,7 +212,7 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
             </View>
           )}
           {rightElement ? (
-            rightElement({ openGridView, photo, share, shareMenuOpen })
+            rightElement({ openGridView, photo, share, shareMenuOpen: savingInProgress })
           ) : (
             <TouchableOpacity onPress={openGridView}>
               <View style={[styles.rightContainer, rightContainer]}>
@@ -201,11 +228,11 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
 
 type ShareButtonProps = {
   share: () => Promise<void>;
-  shareMenuOpen: boolean;
+  savingInProgress: boolean;
   ShareIcon?: React.ReactElement;
 };
 
-const ShareButton = ({ share, ShareIcon, shareMenuOpen }: ShareButtonProps) => {
+const ShareButton = ({ share, ShareIcon, savingInProgress }: ShareButtonProps) => {
   const {
     theme: {
       colors: { black },
@@ -221,9 +248,15 @@ const ShareButton = ({ share, ShareIcon, shareMenuOpen }: ShareButtonProps) => {
   }
 
   return (
-    <TouchableOpacity accessibilityLabel='Share Button' disabled={shareMenuOpen} onPress={share}>
+    <TouchableOpacity accessibilityLabel='Share Button' onPress={share}>
       <View style={[styles.leftContainer, leftContainer]}>
-        {ShareIcon ? ShareIcon : <ShareIconDefault pathFill={black} />}
+        {savingInProgress ? (
+          <ActivityIndicator size='small' />
+        ) : ShareIcon ? (
+          ShareIcon
+        ) : (
+          <ShareIconDefault pathFill={black} />
+        )}
       </View>
     </TouchableOpacity>
   );

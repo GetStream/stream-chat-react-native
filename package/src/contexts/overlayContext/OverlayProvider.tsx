@@ -92,8 +92,8 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
       <OverlayContext.Provider value={overlayContext}>
         <ImageGalleryProvider>
-          {children}
           <ThemeProvider style={overlayContext.style}>
+            {children}
             {overlay === 'gallery' && (
               <ImageGallery
                 autoPlayVideo={autoPlayVideo}

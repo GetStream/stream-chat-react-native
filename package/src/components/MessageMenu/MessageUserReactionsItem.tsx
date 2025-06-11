@@ -32,7 +32,7 @@ export const MessageUserReactionsItem = ({
   const { id, name, type } = reaction;
   const {
     theme: {
-      colors: { accent_blue, black, grey, grey_gainsboro, white },
+      colors: { black, grey_gainsboro, white },
       messageMenu: {
         userReactions: {
           avatarContainer,
@@ -40,9 +40,13 @@ export const MessageUserReactionsItem = ({
           avatarName,
           avatarNameContainer,
           avatarSize,
+          filledBackgroundColor,
+          iconFilledColor,
+          iconUnFilledColor,
           radius,
           reactionBubbleBackground,
           reactionBubbleBorderRadius,
+          unfilledBackgroundColor,
         },
       },
     },
@@ -76,7 +80,8 @@ export const MessageUserReactionsItem = ({
           style={[
             styles.reactionBubbleBackground,
             {
-              backgroundColor: grey_gainsboro,
+              backgroundColor:
+                alignment === 'left' ? filledBackgroundColor : unfilledBackgroundColor,
               borderColor: alignment === 'left' ? white : grey_gainsboro,
               borderWidth: radius / 2,
               left,
@@ -87,7 +92,7 @@ export const MessageUserReactionsItem = ({
         >
           <Icon
             height={reactionBubbleBorderRadius / 2}
-            pathFill={alignment === 'left' ? accent_blue : grey}
+            pathFill={alignment === 'left' ? iconFilledColor : iconUnFilledColor}
             width={reactionBubbleBorderRadius / 2}
           />
         </View>

@@ -39,10 +39,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
-import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -149,7 +145,6 @@ type MessageListPropsWithContext = Pick<
   Pick<ChatContextValue, 'client'> &
   Pick<ImageGalleryContextValue, 'setMessages'> &
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
-  Pick<OverlayContextValue, 'overlay'> &
   Pick<
     MessagesContextValue,
     | 'DateHeader'
@@ -278,7 +273,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     noGroupByUser,
     onListScroll,
     onThreadSelect,
-    overlay,
     reloadChannel,
     ScrollToBottomButton,
     selectedPicker,
@@ -421,10 +415,20 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   });
 
+  const messagesLength = useRef<number>(processedMessageList.length);
+
   /**
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
+    // we need this check to make sure that regular list change do not trigger
+    // the unread notification to appear (for example if the old last read messages
+    // go out of the viewport).
+    if (processedMessageList.length !== messagesLength.current) {
+      return;
+    }
+    messagesLength.current = processedMessageList.length;
+
     if (!viewableItems.length) {
       setIsUnreadNotificationOpen(false);
       return;
@@ -743,10 +747,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const isLastReadMessage =
         channelUnreadState?.last_read_message_id === message.id ||
         (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
+      const isMyMessage = message.user?.id === client.userID;
 
       const showUnreadSeparator =
         isLastReadMessage &&
         !isNewestMessage &&
+        !isMyMessage &&
         // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
         (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
 
@@ -1253,7 +1259,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
-          scrollEnabled={overlay === 'none'}
           showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
           style={flatListStyle}
           testID='message-flat-list'
@@ -1330,7 +1335,6 @@ export const MessageList = (props: MessageListProps) => {
     UnreadMessagesNotification,
   } = useMessagesContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
-  const { overlay } = useOverlayContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
 
   return (
@@ -1365,7 +1369,6 @@ export const MessageList = (props: MessageListProps) => {
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,
-        overlay,
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,

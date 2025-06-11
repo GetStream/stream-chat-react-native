@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.1.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.0...sampleapp@v3.1.1) (2025-05-30)
+
+
+### Bug Fixes
+
+* bump stream-chat version as a fix for type issues ([#3106](https://github.com/GetStream/stream-chat-react-native/issues/3106)) ([efd080a](https://github.com/GetStream/stream-chat-react-native/commit/efd080a6cd80d91fed6e05cc3c94d9db7f8bd7f7))
+
 ## [3.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.0.1...sampleapp@v3.1.0) (2025-05-27)
 
 
