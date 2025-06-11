@@ -16,10 +16,11 @@ import {
   // createDraftCommandInjectionMiddleware,
   LocalMessage,
   Message,
+  MessageComposer,
   SendMessageOptions,
   StreamChat,
-  Message as StreamMessage,
   // TextComposerMiddleware,
+  Message as StreamMessage,
   UpdateMessageOptions,
   UploadRequestFn,
   UserResponse,
@@ -624,7 +625,18 @@ export const MessageInputProvider = ({
       }
     } else {
       try {
-        messageComposer.clear();
+        // Since the message id does not get cleared, we have to handle this manually
+        // and let the poll creation dialog handle clearing the rest of the state. Once
+        // sending a message has been moved to the composer as an API, this will be
+        // redundant and can be removed.
+        if (localMessage.poll_id) {
+          messageComposer.state.partialNext({
+            id: MessageComposer.generateId(),
+            pollId: null,
+          });
+        } else {
+          messageComposer.clear();
+        }
         await value.sendMessage({
           localMessage: {
             ...localMessage,

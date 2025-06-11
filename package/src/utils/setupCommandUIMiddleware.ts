@@ -8,6 +8,7 @@ import {
 
 // TODO: Comment out once the commands PR has been merged on the LLC
 // @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const setupCommandUIMiddleware = (messageComposer: MessageComposer) => {
   // TODO: Comment out once the commands PR has been merged on the LLC
   // messageComposer.compositionMiddlewareExecutor.insert({
