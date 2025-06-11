@@ -22,7 +22,7 @@ export const getDraft = async ({
   const draftRowWithMessage = draftRowsWithMessage[0];
 
   if (!draftRowWithMessage) {
-    return undefined;
+    return null;
   }
 
   const channelQuery = createSelectQuery('channels', ['*'], { cid });
