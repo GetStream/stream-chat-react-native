@@ -142,17 +142,29 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
         return;
       }
       const extension = photo.mime_type?.split('/')[1] || 'jpg';
-      setSavingInProgress(true);
-      const localFile = await NativeHandlers.saveFile({
-        fileName: `${photo.user?.id || 'ChatPhoto'}-${
-          photo.messageId
-        }-${selectedIndex}.${extension}`,
-        fromUrl: photo.uri,
-      });
-      setSavingInProgress(false);
+      const shouldDownload = photo.uri && photo.uri.includes('http');
+      let localFile;
+      // If the file is already uploaded to a CDN, create a local reference to
+      // it first; otherwise just use the local file
+      if (shouldDownload) {
+        setSavingInProgress(true);
+        localFile = await NativeHandlers.saveFile({
+          fileName: `${photo.user?.id || 'ChatPhoto'}-${
+            photo.messageId
+          }-${selectedIndex}.${extension}`,
+          fromUrl: photo.uri,
+        });
+        setSavingInProgress(false);
+      } else {
+        localFile = photo.uri;
+      }
+
       // `image/jpeg` is added for the case where the mime_type isn't available for a file/image
       await NativeHandlers.shareImage({ type: photo.mime_type || 'image/jpeg', url: localFile });
-      await NativeHandlers.deleteFile({ uri: localFile });
+      // Only delete the file if a local reference has been created beforehand
+      if (shouldDownload) {
+        await NativeHandlers.deleteFile({ uri: localFile });
+      }
     } catch (error) {
       setSavingInProgress(false);
       console.log(error);
