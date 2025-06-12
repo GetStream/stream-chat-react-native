@@ -1,5 +1,18 @@
 # Change Log
 
+### [7.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v7.1.0...v7.1.1) (2025-05-30)
+
+
+### Bug Fixes
+
+* add filled and unfilled bg color theme properties for ReactionListBottom ([#3100](https://github.com/GetStream/stream-chat-react-native/issues/3100)) ([7289934](https://github.com/GetStream/stream-chat-react-native/commit/72899343213aeec1f71a6b6b9890de566b9bfa10))
+* bump stream-chat version as a fix for type issues ([#3106](https://github.com/GetStream/stream-chat-react-native/issues/3106)) ([efd080a](https://github.com/GetStream/stream-chat-react-native/commit/efd080a6cd80d91fed6e05cc3c94d9db7f8bd7f7))
+
+
+### Performance Improvements
+
+* image gallery rendering improvements ([#3108](https://github.com/GetStream/stream-chat-react-native/issues/3108)) ([e87cc22](https://github.com/GetStream/stream-chat-react-native/commit/e87cc22c66cb5ccad287ea15b32f9a179a6c4ba4))
+
 ## [7.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v7.0.1...v7.1.0) (2025-05-27)
 
 

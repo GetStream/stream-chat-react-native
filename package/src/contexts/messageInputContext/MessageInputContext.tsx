@@ -13,6 +13,7 @@ import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
   LocalMessage,
   Message,
+  MessageComposer,
   SendMessageOptions,
   StreamChat,
   Message as StreamMessage,
@@ -32,6 +33,7 @@ import {
   PollContentProps,
   StopMessageStreamingButtonProps,
 } from '../../components';
+import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { AttachmentUploadProgressIndicatorProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
@@ -71,6 +73,7 @@ import {
 import { useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
 import { useMessageComposerAPIContext } from '../messageComposerContext/MessageComposerAPIContext';
+import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -424,6 +427,7 @@ export const MessageInputProvider = ({
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { client, enableOfflineSupport } = useChatContext();
+  const channelCapabilities = useOwnCapabilitiesContext();
 
   const { uploadAbortControllerRef } = useChannelContext();
   const { clearEditingState } = useMessageComposerAPIContext();
@@ -598,7 +602,15 @@ export const MessageInputProvider = ({
 
     const composition = await messageComposer.compose();
     if (!composition || !composition.message) return;
+
     const { localMessage, message, sendOptions } = composition;
+    const linkInfos = parseLinksFromText(localMessage.text);
+
+    if (!channelCapabilities.sendLinks && linkInfos.length > 0) {
+      Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
+
+      return;
+    }
 
     if (editedMessage && editedMessage.type !== 'error') {
       try {
@@ -609,7 +621,18 @@ export const MessageInputProvider = ({
       }
     } else {
       try {
-        messageComposer.clear();
+        // Since the message id does not get cleared, we have to handle this manually
+        // and let the poll creation dialog handle clearing the rest of the state. Once
+        // sending a message has been moved to the composer as an API, this will be
+        // redundant and can be removed.
+        if (localMessage.poll_id) {
+          messageComposer.state.partialNext({
+            id: MessageComposer.generateId(),
+            pollId: null,
+          });
+        } else {
+          messageComposer.clear();
+        }
         await value.sendMessage({
           localMessage: {
             ...localMessage,

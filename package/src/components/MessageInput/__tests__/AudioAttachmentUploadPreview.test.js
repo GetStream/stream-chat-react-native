@@ -4,11 +4,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-
 
 import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
-import {
-  generateAudioAttachment,
-  generateFileAttachment,
-  generateVideoAttachment,
-} from '../../../mock-builders/attachments';
+import { generateAudioAttachment } from '../../../mock-builders/attachments';
 
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
