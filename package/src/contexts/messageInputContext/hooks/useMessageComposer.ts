@@ -91,7 +91,8 @@ export const useCreateMessageComposer = ({
     return () => {
       unsubscribe();
     };
-  }, [messageComposer]);
+    // When the thread message is set/unset, we need to re-register/de-register the subscriptions
+  }, [messageComposer, cachedParentMessage]);
 
   return messageComposer;
 };
