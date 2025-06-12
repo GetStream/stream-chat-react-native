@@ -76,6 +76,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
 
   const hasAttachmentUploadCapabilities =
     (hasCameraPicker || hasFilePicker || hasImagePicker) && ownCapabilitiesUploadFile;
+  const showCommandsButton = hasCommands && !hasText;
 
   if (command) {
     return null;
@@ -96,7 +97,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
           <AttachButton />
         </View>
       ) : null}
-      {hasCommands ? <CommandsButton hasText={hasText} /> : null}
+      {showCommandsButton ? <CommandsButton /> : null}
     </>
   );
 };
