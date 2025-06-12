@@ -23,15 +23,31 @@ export const useChannelPreviewData = (
   const { forceUpdate: contextForceUpdate } = useChannelsContext();
   const channelListForceUpdate = forceUpdateOverride ?? contextForceUpdate;
 
-  useEffect(() => {
-    const unsubscribe = channel.messageComposer.registerSubscriptions();
-    return () => {
-      unsubscribe();
-    };
-  }, [channel.messageComposer]);
-
   const channelLastMessage = channel.lastMessage();
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
+
+  useEffect(() => {
+    const { unsubscribe } = client.on('draft.updated', (event) => {
+      const { cid, draft } = event;
+      if (!draft || cid !== channel.cid) {
+        return;
+      }
+      channel.messageComposer.initState({ composition: draft });
+    });
+    return unsubscribe;
+  }, [channel, client]);
+
+  useEffect(() => {
+    const { unsubscribe } = client.on('draft.deleted', (event) => {
+      const { cid, draft } = event;
+      if (!draft || cid !== channel.cid) {
+        return;
+      }
+
+      channel.messageComposer.clear();
+    });
+    return unsubscribe;
+  }, [channel, client]);
 
   useEffect(() => {
     const { unsubscribe } = client.on('notification.mark_read', () => {
