@@ -75,7 +75,7 @@ export const useCreateMessageComposer = ({
     } else {
       return channel.messageComposer;
     }
-  }, [cachedEditedMessage, cachedParentMessage, channel.messageComposer, client, threadInstance]);
+  }, [cachedEditedMessage, cachedParentMessage, channel, client, threadInstance]);
 
   if (
     (['legacy_thread', 'message'] as MessageComposer['contextType'][]).includes(
@@ -91,8 +91,7 @@ export const useCreateMessageComposer = ({
     return () => {
       unsubscribe();
     };
-    // When the thread message is set/unset, we need to re-register/de-register the subscriptions
-  }, [messageComposer, cachedParentMessage]);
+  }, [messageComposer]);
 
   return messageComposer;
 };

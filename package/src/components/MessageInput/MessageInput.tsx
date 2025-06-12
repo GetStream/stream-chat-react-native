@@ -279,7 +279,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     if (editing && inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
-  }, [messageComposer, inputBoxRef, editing]);
+  }, [editing, inputBoxRef]);
 
   // Effect to create draft whenever we un-mount the component.
   useEffect(
