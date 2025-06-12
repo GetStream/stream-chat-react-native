@@ -9,14 +9,10 @@ import { Lightning } from '../../icons/Lightning';
 export type CommandsButtonProps = {
   /** Function that opens commands selector. */
   handleOnPress?: PressableProps['onPress'];
-  /**
-   * Determines if the text input has text
-   */
-  hasText?: boolean;
 };
 
 export const CommandsButton = (props: CommandsButtonProps) => {
-  const { handleOnPress, hasText } = props;
+  const { handleOnPress } = props;
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
 
@@ -44,10 +40,6 @@ export const CommandsButton = (props: CommandsButtonProps) => {
       messageInput: { commandsButton },
     },
   } = useTheme();
-
-  if (hasText) {
-    return null;
-  }
 
   return (
     <Pressable onPress={onPressHandler} style={[commandsButton]} testID='commands-button'>

@@ -132,6 +132,20 @@ describe('InputButtons', () => {
     });
   });
 
+  it('should not show commands buttons when there is text in the textComposer', async () => {
+    const props = {};
+    const channelProps = {
+      channel,
+    };
+    channel.messageComposer.textComposer.setText('hello');
+    renderComponent({ channelProps, client, props });
+    const { queryByTestId } = screen;
+
+    await waitFor(() => {
+      expect(queryByTestId('commands-button')).toBeFalsy();
+    });
+  });
+
   it('should show more options button when there is text in the textComposer', async () => {
     const props = {};
     const channelProps = {

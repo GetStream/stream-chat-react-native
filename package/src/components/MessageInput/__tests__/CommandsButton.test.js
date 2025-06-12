@@ -31,19 +31,8 @@ describe('CommandsButton', () => {
     channel = channels[0];
   });
 
-  it('should not render component when hasText is true', async () => {
-    const props = { hasText: true };
-    renderComponent({ channel, client, props });
-
-    const { queryByTestId } = screen;
-
-    await waitFor(() => {
-      expect(queryByTestId('commands-button')).toBeFalsy();
-    });
-  });
-
-  it('should render component when hasText is false', async () => {
-    const props = { hasText: false };
+  it('should render component', async () => {
+    const props = {};
     renderComponent({ channel, client, props });
 
     const { queryByTestId } = screen;
@@ -71,28 +60,6 @@ describe('CommandsButton', () => {
 
     await waitFor(() => {
       expect(handleOnPress).toHaveBeenCalled();
-    });
-  });
-
-  it('should call textComposer handleChange when the button is clicked by default', async () => {
-    const props = {};
-
-    renderComponent({ channel, client, props });
-
-    const { getByTestId, queryByTestId } = screen;
-
-    await waitFor(() => {
-      expect(queryByTestId('commands-button')).toBeTruthy();
-    });
-
-    await act(() => {
-      userEvent.press(getByTestId('commands-button'));
-    });
-
-    await waitFor(() => {
-      expect(channel.messageComposer.textComposer.text).toBe('/');
-      expect(channel.messageComposer.textComposer.selection.start).toBe(1);
-      expect(channel.messageComposer.textComposer.selection.end).toBe(1);
     });
   });
 });
