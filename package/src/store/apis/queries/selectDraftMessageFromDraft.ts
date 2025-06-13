@@ -37,7 +37,5 @@ export const selectDraftMessageFromDraft = async ({
     [cid, parent_id],
   );
 
-  console.log('selectDraftMessageFromDraft result', result);
-
   return result[0] ? JSON.parse(result[0].value) : undefined;
 };

@@ -23,8 +23,6 @@ export const getDraft = async ({
       parent_id: parent_id ?? null,
     });
 
-    console.log('getDraft draftRowsWithMessage', draftRowsWithMessage);
-
     if (!draftRowsWithMessage) return null;
 
     const draftRowWithMessage = draftRowsWithMessage;
