@@ -1930,7 +1930,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNGestureHandler (2.25.0):
+  - RNGestureHandler (2.26.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2604,7 +2604,7 @@ SPEC CHECKSUMS:
   ReactCommon: b7062f81f6ea61ec29e03aab1d439fb56c49372c
   RNAudioRecorderPlayer: 224c7de87722938aedce04000d09baa633148f5b
   RNCClipboard: 9250faa957e583ab8bd4a2a65ac8e4e2decb4913
-  RNGestureHandler: 5d8431415d4b8518e86e289e9ad5bb9be78f6dba
+  RNGestureHandler: 970902e9f2f6308b2a2519ce93108fbc65460933
   RNReactNativeHapticFeedback: 7dfb10cca09eb7a4ed6b63ae6415a195beec8cf2
   RNReanimated: 6a437c90e263e4a2202a282f9d6dea0ad28d018d
   RNScreens: c2e3cc506212228c607b4785b315205e28acbf0f

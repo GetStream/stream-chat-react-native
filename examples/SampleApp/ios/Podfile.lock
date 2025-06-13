@@ -2116,7 +2116,7 @@ PODS:
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.25.0):
+  - RNGestureHandler (2.26.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2862,7 +2862,7 @@ SPEC CHECKSUMS:
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBApp: df5caad9f64b6bc87f8a0b110e6bc411fb00a12b
   RNFBMessaging: 6586f18ab3411aeb3349088c19fe54283d39e529
-  RNGestureHandler: b249b5be5a3659025aed8898aaaafd567dc2d660
+  RNGestureHandler: 2fa49aef8b58d35bcc61abe06ffecc4bcc5268a4
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNReactNativeHapticFeedback: 85c0a6ff490d52f5e8073040296fefe5945ebbfa
   RNReanimated: 2b314b18e28adf1b300f606eb0f205a1a6a643e1
