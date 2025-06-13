@@ -1,5 +1,13 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
+import {
+  DevSettings,
+  I18nManager,
+  LogBox,
+  Platform,
+  SafeAreaView,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -35,9 +43,12 @@ const options = {
 
 I18nManager.forceRTL(false);
 
-SqliteClient.logger = (level, message, extraData) => {
-  console.log(level, `SqliteClient: ${message}`, extraData);
-};
+if (__DEV__) {
+  DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
+    SqliteClient.resetDB();
+    console.info('Local DB reset');
+  });
+}
 
 const apiKey = 'q95x9hkbyd6p';
 const userToken =
@@ -216,7 +227,10 @@ const StackNavigator = () => {
       <Stack.Screen
         component={ThreadScreen}
         name='Thread'
-        options={() => ({ headerLeft: EmptyHeader })}
+        options={() => ({
+          headerBackTitle: 'Back',
+          headerRight: EmptyHeader,
+        })}
       />
     </Stack.Navigator>
   );
@@ -230,6 +244,19 @@ const App = () => {
     userData: user,
     tokenOrProvider: userToken,
   });
+
+  useEffect(() => {
+    if (!chatClient) {
+      return;
+    }
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+    });
+  }, [chatClient]);
 
   if (!chatClient) {
     return <AuthProgressLoader />;

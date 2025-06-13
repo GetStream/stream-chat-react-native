@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   Chat,
+  createTextComposerEmojiMiddleware,
   OverlayProvider,
   SqliteClient,
   ThemeProvider,
@@ -34,8 +35,12 @@ import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetail
 import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
+import { init, SearchIndex } from 'emoji-mart';
+import data from '@emoji-mart/data';
 
-import type { LocalMessage, StreamChat } from 'stream-chat';
+import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-chat';
+
+init({ data });
 
 if (__DEV__) {
   DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
@@ -117,6 +122,25 @@ const App = () => {
       unsubscribeForegroundEvent();
     };
   }, []);
+
+  useEffect(() => {
+    if (!chatClient) {
+      return;
+    }
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+
+      composer.textComposer.middlewareExecutor.insert({
+        middleware: [createTextComposerEmojiMiddleware(SearchIndex) as TextComposerMiddleware],
+        position: { after: 'stream-io/text-composer/mentions-middleware' },
+        unique: true,
+      });
+    });
+  }, [chatClient]);
 
   return (
     <SafeAreaProvider

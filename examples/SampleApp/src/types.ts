@@ -49,6 +49,7 @@ export type UserSelectorParamList = {
 
 export type BottomTabNavigatorParamList = {
   ChatScreen: undefined;
+  DraftsScreen: undefined;
   MentionsScreen: undefined;
   ThreadsScreen: undefined;
 };

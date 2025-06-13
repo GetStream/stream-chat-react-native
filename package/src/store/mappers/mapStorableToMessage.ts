@@ -16,7 +16,7 @@ export const mapStorableToMessage = ({
   currentUserId: string;
   messageRow: TableRowJoinedUser<'messages'>;
   pollRow: TableRow<'poll'>;
-  reactionRows: TableRowJoinedUser<'reactions'>[];
+  reactionRows?: TableRowJoinedUser<'reactions'>[];
 }): MessageResponse => {
   const {
     createdAt,
