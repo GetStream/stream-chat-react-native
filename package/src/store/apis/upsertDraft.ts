@@ -4,6 +4,7 @@ import { upsertMessages } from './upsertMessages';
 
 import { mapDraftMessageToStorable } from '../mappers/mapDraftMessageToStorable';
 import { mapDraftToStorable } from '../mappers/mapDraftToStorable';
+import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
@@ -16,9 +17,18 @@ export const upsertDraft = async ({
   execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
+  const { channel_cid, parent_id, message } = draft;
+
+  // Delete existing draft message if it exists.
+  const deleteQuery = createDeleteQuery('draft', {
+    cid: channel_cid,
+    parentId: parent_id,
+  });
+
+  queries.push(deleteQuery);
 
   // Important: Make sure you create a draft only after a draft message is created.
-  const storableDraftMessage = mapDraftMessageToStorable({ draftMessage: draft.message });
+  const storableDraftMessage = mapDraftMessageToStorable({ draftMessage: message });
 
   queries.push(createUpsertQuery('draftMessage', storableDraftMessage));
 
@@ -26,7 +36,7 @@ export const upsertDraft = async ({
 
   queries.push(createUpsertQuery('draft', storableDraft));
 
-  SqliteClient.logger?.('info', 'upsertDraftMessage', {
+  SqliteClient.logger?.('info', 'upsertDraft', {
     draftMessage: storableDraftMessage,
   });
 
