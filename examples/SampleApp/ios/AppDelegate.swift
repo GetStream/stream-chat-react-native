@@ -6,24 +6,42 @@ import FirebaseCore
 import FirebaseMessaging
 
 @main
-class AppDelegate: RCTAppDelegate {
-  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    self.moduleName = "SampleApp"
-    self.dependencyProvider = RCTAppDependencyProvider()
-    FirebaseApp.configure()
+class AppDelegate: UIResponder, UIApplicationDelegate {
+  var window: UIWindow?
+  
+  var reactNativeDelegate: ReactNativeDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+  
+  func application(
+      _ application: UIApplication,
+      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+      let delegate = ReactNativeDelegate()
+      let factory = RCTReactNativeFactory(delegate: delegate)
+      delegate.dependencyProvider = RCTAppDependencyProvider()
+      FirebaseApp.configure()
+   
+      reactNativeDelegate = delegate
+      reactNativeFactory = factory
+   
+      window = UIWindow(frame: UIScreen.main.bounds)
+   
+      factory.startReactNative(
+        withModuleName: "SampleApp",
+        in: window,
+        launchOptions: launchOptions
+      )
+   
+      return true
+    }
 
-    // You can add your custom initial props in the dictionary below.
-    // They will be passed down to the ViewController used by React Native.
-    self.initialProps = [:]
-
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-
-  override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+  func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
       // Pass the device token to FCM
       Messaging.messaging().apnsToken = deviceToken
   }
+}
 
+class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }

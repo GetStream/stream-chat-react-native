@@ -29,7 +29,7 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { ImageGallery, ImageGalleryCustomComponents } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
-  const View = require('react-native/Libraries/Components/View/View');
+  const { View } = require('react-native');
   return {
     isFileSystemAvailable: jest.fn(() => true),
     isImageMediaLibraryAvailable: jest.fn(() => true),

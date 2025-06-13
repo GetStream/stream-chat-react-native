@@ -250,7 +250,7 @@ export const CreatePoll = ({
   const createAndSendPoll = useCallback(
     async (pollData: CreatePollData) => {
       const poll = await client.polls.createPoll(pollData);
-      await sendMessage({ customMessageData: { poll_id: poll.id } });
+      await sendMessage({ customMessageData: { poll_id: poll?.id } });
       closePollCreationDialog?.();
     },
     [client, sendMessage, closePollCreationDialog],

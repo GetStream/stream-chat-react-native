@@ -11,6 +11,10 @@ gem 'concurrent-ruby', '< 1.3.4'
 gem 'fastlane'
 gem 'rubocop-performance'
 gem 'rubocop-require_tools'
+gem 'bigdecimal'
+gem 'logger'
+gem 'benchmark'
+gem 'mutex_m'
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
 eval_gemfile(plugins_path) if File.exist?(plugins_path)
