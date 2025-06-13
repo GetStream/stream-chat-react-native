@@ -29,7 +29,7 @@ export const useChannelPreviewData = (
   useEffect(() => {
     const { unsubscribe } = client.on('draft.updated', (event) => {
       const { cid, draft } = event;
-      if (!draft || cid !== channel.cid) {
+      if (!draft || cid !== channel.cid || draft.parent_id) {
         return;
       }
       channel.messageComposer.initState({ composition: draft });
@@ -40,7 +40,7 @@ export const useChannelPreviewData = (
   useEffect(() => {
     const { unsubscribe } = client.on('draft.deleted', (event) => {
       const { cid, draft } = event;
-      if (!draft || cid !== channel.cid) {
+      if (!draft || cid !== channel.cid || draft.parent_id) {
         return;
       }
 
