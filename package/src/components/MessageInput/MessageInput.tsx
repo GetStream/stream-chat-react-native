@@ -120,7 +120,7 @@ type MessageInputPropsWithContext = Partial<
   >
 > &
   Pick<AttachmentPickerContextValue, 'bottomInset' | 'bottomSheetRef' | 'selectedPicker'> &
-  Pick<ChatContextValue, 'client' | 'isOnline'> &
+  Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
@@ -205,7 +205,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     AudioRecordingPreview,
     AutoCompleteSuggestionList,
     channel,
-    client,
     closeAttachmentPicker,
     closePollCreationDialog,
     cooldownEndsAt,
@@ -295,29 +294,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
    */
   useEffect(() => {
     const threadId = messageComposer.threadId;
-    if (!threadId || !messageComposer.channel || !messageComposer.compositionIsEmpty) return;
+    if (!threadId) return;
 
-    // This is for the offline db support for getting drafts for legacy thread composer.
-    if (client.offlineDb && client.userID) {
-      client.offlineDb
-        .getDraft({
-          cid: messageComposer.channel.cid,
-          currentUserId: client.userID,
-          parent_id: threadId,
-        })
-        .then((draft) => {
-          if (draft) {
-            messageComposer.initState({ composition: draft });
-          }
-        });
-    }
-
-    messageComposer.channel.getDraft({ parent_id: threadId }).then(({ draft }) => {
-      if (draft) {
-        messageComposer.initState({ composition: draft });
-      }
-    });
-  }, [client.offlineDb, client.userID, messageComposer]);
+    messageComposer.getDraft();
+  }, [messageComposer]);
 
   const getMembers = () => {
     const result: UserResponse[] = [];
@@ -781,7 +761,7 @@ export type MessageInputProps = Partial<MessageInputPropsWithContext>;
  * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
 export const MessageInput = (props: MessageInputProps) => {
-  const { client, isOnline } = useChatContext();
+  const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { channel, members, threadList, watchers } = useChannelContext();
@@ -875,7 +855,6 @@ export const MessageInput = (props: MessageInputProps) => {
         CameraSelectorIcon,
         channel,
         clearEditingState,
-        client,
         closeAttachmentPicker,
         closePollCreationDialog,
         CommandInput,

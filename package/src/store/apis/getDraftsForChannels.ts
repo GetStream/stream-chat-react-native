@@ -1,6 +1,6 @@
 import { DraftResponse } from 'stream-chat';
 
-import { selectDraftMessageFromDraft } from './queries/selectDraftMessageFromDraft';
+import { selectDraftMessageFromDraftForChannels } from './queries/selectDraftMessageFromDraftForChannels';
 import { selectMessageForId } from './queries/selectMessageById';
 
 import { mapStorableToDraft } from '../mappers/mapStorableToDraft';
@@ -17,7 +17,7 @@ export const getDraftForChannels = async ({
 }) => {
   SqliteClient.logger?.('info', 'getDraftsForChannel', { channelIds });
 
-  const draftRowsWithMessage = await selectDraftMessageFromDraft(channelIds);
+  const draftRowsWithMessage = await selectDraftMessageFromDraftForChannels(channelIds);
 
   /**
    * Filter out drafts without a parent ID, as we will not show them in the channel.

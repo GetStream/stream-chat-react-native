@@ -8,40 +8,52 @@ import { TableRow } from '../types';
 
 export const getDraft = async ({
   cid,
-  currentUserId,
+  userId,
   parent_id,
 }: {
   cid: string;
-  currentUserId: string;
+  userId: string;
   parent_id?: string;
 }) => {
   SqliteClient.logger?.('info', 'getDraft', { cid, parent_id });
 
-  const draftRowsWithMessage = await selectDraftMessageFromDraft([cid]);
+  try {
+    const draftRowsWithMessage = await selectDraftMessageFromDraft({
+      cid,
+      parent_id: parent_id ?? null,
+    });
 
-  const draftRowWithMessage = draftRowsWithMessage[0];
+    console.log('getDraft draftRowsWithMessage', draftRowsWithMessage);
 
-  if (!draftRowWithMessage) {
-    return null;
+    if (!draftRowsWithMessage) return null;
+
+    const draftRowWithMessage = draftRowsWithMessage;
+
+    if (!draftRowWithMessage) {
+      return null;
+    }
+
+    const channelQuery = createSelectQuery('channels', ['*'], { cid });
+    const channelRows = await SqliteClient.executeSql.apply(null, channelQuery);
+
+    const quotedMessageRows = await selectMessageForId(draftRowWithMessage.quotedMessageId);
+
+    const polls = (await SqliteClient.executeSql.apply(
+      null,
+      createSelectQuery('poll', ['*'], {
+        id: quotedMessageRows?.poll_id,
+      }),
+    )) as unknown as TableRow<'poll'>[];
+
+    return mapStorableToDraft({
+      channelRow: channelRows[0] as unknown as TableRow<'channels'>,
+      currentUserId: userId,
+      draftRow: draftRowWithMessage,
+      pollRow: polls[0],
+      quotedMessageRow: quotedMessageRows,
+    });
+  } catch (error) {
+    console.error('Error in getDraft:', error);
+    throw error;
   }
-
-  const channelQuery = createSelectQuery('channels', ['*'], { cid });
-  const channelRows = await SqliteClient.executeSql.apply(null, channelQuery);
-
-  const quotedMessageRows = await selectMessageForId(draftRowWithMessage.quotedMessageId);
-
-  const polls = (await SqliteClient.executeSql.apply(
-    null,
-    createSelectQuery('poll', ['*'], {
-      id: quotedMessageRows?.poll_id,
-    }),
-  )) as unknown as TableRow<'poll'>[];
-
-  return mapStorableToDraft({
-    channelRow: channelRows[0] as unknown as TableRow<'channels'>,
-    currentUserId,
-    draftRow: draftRowWithMessage,
-    pollRow: polls[0],
-    quotedMessageRow: quotedMessageRows,
-  });
 };

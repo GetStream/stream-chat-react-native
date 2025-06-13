@@ -1,15 +1,14 @@
 import { tables } from '../../schema';
 import { SqliteClient } from '../../SqliteClient';
-import type { TableRowJoinedDraftMessage } from '../../types';
+import { TableRowJoinedDraftMessage } from '../../types';
 
-export const selectDraftMessageFromDraft = async (
-  cids?: string[],
-): Promise<TableRowJoinedDraftMessage<'draft'>[]> => {
-  if (!cids || cids.length === 0) {
-    return [];
-  }
-
-  const questionMarks = Array(cids.length).fill('?').join(',');
+export const selectDraftMessageFromDraft = async ({
+  cid,
+  parent_id,
+}: {
+  cid: string;
+  parent_id: string | null;
+}): Promise<TableRowJoinedDraftMessage<'draft'> | undefined> => {
   const draftColumnNames = Object.keys(tables.draft.columns)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');
@@ -17,25 +16,28 @@ export const selectDraftMessageFromDraft = async (
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  SqliteClient.logger?.('info', 'selectDraft', {
-    cids,
+  SqliteClient.logger?.('info', 'selectDraftMessageFromDraft', {
+    cid,
+    parent_id,
   });
 
   const result = await SqliteClient.executeSql(
     `SELECT
-      json_object(
-        'draftMessage', json_object(
-          ${draftMessageColumnNames}
-        ),
-        ${draftColumnNames}
-      ) as value
-    FROM draft a
-    LEFT JOIN
-      draftMessage b
-    ON b.id = a.draftMessageId
-    WHERE cid in (${questionMarks}) ORDER BY datetime(a.createdAt) DESC`,
-    cids,
+        json_object(
+          'draftMessage', json_object(
+            ${draftMessageColumnNames}
+          ),
+          ${draftColumnNames}
+        ) as value
+      FROM draft a
+      LEFT JOIN
+        draftMessage b
+      ON b.id = a.draftMessageId
+      WHERE a.cid = ? AND a.parentId is ?`,
+    [cid, parent_id],
   );
 
-  return result.map((r) => JSON.parse(r.value));
+  console.log('selectDraftMessageFromDraft result', result);
+
+  return result[0] ? JSON.parse(result[0].value) : undefined;
 };
