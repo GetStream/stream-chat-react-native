@@ -1,5 +1,21 @@
 import { generateRandomId } from '../utils/utils';
 
+export const generateLocalAttachmentData = () => ({
+  localMetadata: {
+    id: generateRandomId(),
+  },
+});
+
+export const generateLocalFileUploadAttachmentData = (overrides, attachmentData) => ({
+  localMetadata: {
+    ...generateLocalAttachmentData().localMetadata,
+    ...overrides,
+    file: generateFileReference(overrides?.file ?? {}),
+  },
+  type: 'file',
+  ...attachmentData,
+});
+
 export const generateImageAttachment = (a) => ({
   fallback: generateRandomId() + '.png',
   image_url: 'https://' + generateRandomId() + '.png',
