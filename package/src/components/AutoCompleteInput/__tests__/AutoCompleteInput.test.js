@@ -1,69 +1,192 @@
 import React from 'react';
 
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannelResponse } from '../../../mock-builders/generator/channel';
-import { generateUser } from '../../../mock-builders/generator/user';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { AutoCompleteInput } from '../AutoCompleteInput';
-import { AutoCompleteSuggestionList } from '../AutoCompleteSuggestionList';
+
+const renderComponent = ({ channelProps, client, props }) => {
+  return render(
+    <Chat client={client}>
+      <Channel {...channelProps}>
+        <AutoCompleteInput {...props} />
+      </Channel>
+    </Chat>,
+  );
+};
 
 describe('AutoCompleteInput', () => {
-  const clientUser = generateUser();
-  let chatClient;
+  let client;
   let channel;
 
-  const getAutoCompleteComponent = () => (
-    <Chat client={chatClient}>
-      <Channel channel={channel}>
-        <AutoCompleteInput />
-        <AutoCompleteSuggestionList />
-      </Channel>
-    </Chat>
-  );
-
-  const initializeChannel = async (c) => {
-    useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
-
-    channel = chatClient.channel('messaging');
-
-    await channel.watch();
-  };
-
-  beforeEach(async () => {
-    chatClient = await getTestClientWithUser(clientUser);
-    await initializeChannel(generateChannelResponse());
+  beforeAll(async () => {
+    const { client: chatClient, channels } = await initiateClientWithChannels();
+    client = chatClient;
+    channel = channels[0];
   });
 
   afterEach(() => {
-    channel = null;
+    jest.clearAllMocks();
+    cleanup();
   });
 
-  it('should render AutoCompleteInput and trigger open/close suggestions with / commands', async () => {
-    const { queryByTestId } = render(getAutoCompleteComponent());
+  it('should render AutoCompleteInput', async () => {
+    const channelProps = { channel };
+    const props = {};
+
+    renderComponent({ channelProps, client, props });
+
+    const { queryByTestId } = screen;
 
     const input = queryByTestId('auto-complete-text-input');
-
-    const onSelectionChange = input.props.onSelectionChange;
 
     await waitFor(() => {
       expect(input).toBeTruthy();
     });
+  });
 
-    await act(async () => {
-      await onSelectionChange({
+  it('should have the editable prop as false when the message composer config is set', async () => {
+    const channelProps = { channel };
+    const props = {};
+
+    channel.messageComposer.updateConfig({ text: { enabled: false } });
+
+    renderComponent({ channelProps, client, props });
+
+    const { queryByTestId } = screen;
+
+    const input = queryByTestId('auto-complete-text-input');
+
+    await waitFor(() => {
+      expect(input.props.editable).toBeFalsy();
+    });
+  });
+
+  it('should have the maxLength same as the one on the config of channel', async () => {
+    jest.spyOn(channel, 'getConfig').mockReturnValue({
+      max_message_length: 10,
+    });
+    const channelProps = { channel };
+    const props = {};
+
+    renderComponent({ channelProps, client, props });
+
+    const { queryByTestId } = screen;
+
+    const input = queryByTestId('auto-complete-text-input');
+
+    await waitFor(() => {
+      expect(input.props.maxLength).toBe(10);
+    });
+  });
+
+  it('should call the textComposer handleChange when the onChangeText is triggered', () => {
+    const { textComposer } = channel.messageComposer;
+
+    const spyHandleChange = jest.spyOn(textComposer, 'handleChange');
+
+    const channelProps = { channel };
+    const props = {};
+
+    renderComponent({ channelProps, client, props });
+
+    const { queryByTestId } = screen;
+
+    const input = queryByTestId('auto-complete-text-input');
+
+    act(() => {
+      userEvent.type(input, 'hello');
+    });
+
+    waitFor(() => {
+      expect(spyHandleChange).toHaveBeenCalled();
+      expect(spyHandleChange).toHaveBeenCalledWith({
+        selection: { end: 5, start: 5 },
+        text: 'hello',
+      });
+      expect(input.props.value).toBe('hello');
+    });
+  });
+
+  it('should style the text input with maxHeight that is set by the layout', () => {
+    const channelProps = { channel };
+    const props = { numberOfLines: 10 };
+
+    renderComponent({ channelProps, client, props });
+
+    const { queryByTestId } = screen;
+
+    const input = queryByTestId('auto-complete-text-input');
+
+    act(() => {
+      fireEvent(input, 'contentSizeChange', {
         nativeEvent: {
-          selection: {
-            end: 1,
-            start: 1,
-          },
+          contentSize: { height: 100 },
         },
       });
-      await fireEvent.changeText(input, '/');
+    });
+
+    waitFor(() => {
+      expect(input.props.style[1].maxHeight).toBe(1000);
+    });
+  });
+
+  it('should call the textComposer setSelection when the onSelectionChange is triggered', () => {
+    const { textComposer } = channel.messageComposer;
+
+    const spySetSelection = jest.spyOn(textComposer, 'setSelection');
+
+    const channelProps = { channel };
+    const props = {};
+
+    renderComponent({ channelProps, client, props });
+
+    const { queryByTestId } = screen;
+
+    const input = queryByTestId('auto-complete-text-input');
+
+    act(() => {
+      fireEvent(input, 'selectionChange', {
+        nativeEvent: {
+          selection: { end: 5, start: 5 },
+        },
+      });
+    });
+
+    waitFor(() => {
+      expect(spySetSelection).toHaveBeenCalled();
+      expect(spySetSelection).toHaveBeenCalledWith({ end: 5, start: 5 });
+    });
+  });
+
+  // TODO: Add a test for command
+  it.each([
+    { cooldownActive: false, result: 'Send a message' },
+    { cooldownActive: true, result: 'Slow mode ON' },
+  ])('should have the placeholderText as Slow mode ON when cooldown is active', async (data) => {
+    const channelProps = { channel };
+    const props = {
+      cooldownActive: data.cooldownActive,
+    };
+
+    renderComponent({ channelProps, client, props });
+
+    const { queryByTestId } = screen;
+
+    const input = queryByTestId('auto-complete-text-input');
+
+    await waitFor(() => {
+      expect(input.props.placeholder).toBe(data.result);
     });
   });
 });
