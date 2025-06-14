@@ -186,9 +186,7 @@ export type InputMessageInputContextValue = {
   AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
 
   /**
-   * Custom UI component to render [draggable
-   * handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachment
-   * picker.
+   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachmentpicker.
    *
    * **Default**
    * [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
@@ -221,8 +219,7 @@ export type InputMessageInputContextValue = {
   attachmentSelectionBarHeight: number;
 
   /**
-   * Custom UI component for [camera selector
-   * icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
+   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
    * **Default: **
    * [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
@@ -236,16 +233,14 @@ export type InputMessageInputContextValue = {
    */
   CreatePollIcon: React.ComponentType;
   /**
-   * Custom UI component for [file selector
-   * icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
+   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
    * **Default: **
    * [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
    */
   FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
-   * Custom UI component for [image selector
-   * icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
+   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
    * **Default: **
    * [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
@@ -367,8 +362,7 @@ export type InputMessageInputContextValue = {
   compressImageQuality?: number;
 
   /**
-   * Override the entire content of the CreatePoll component. The component has full access to the
-   * useCreatePollContext() hook.
+   * Override the entire content of the CreatePoll component. The component has full access to the useCreatePollContext() hook.
    * */
   CreatePollContent?: React.ComponentType<PollContentProps>;
 
@@ -388,8 +382,7 @@ export type InputMessageInputContextValue = {
 
   /**
    * Custom UI component for AutoCompleteInput.
-   * Has access to all of
-   * [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
+   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
     Omit<MessageInputProps, 'Input'> &
