@@ -25,6 +25,7 @@ registerNativeHandlers({
     unsubscribe: () => {},
   }),
   pickDocument: () => null,
+  pickImage: () => null,
   saveFile: () => null,
   SDK: 'stream-chat-react-native',
   shareImage: () => null,

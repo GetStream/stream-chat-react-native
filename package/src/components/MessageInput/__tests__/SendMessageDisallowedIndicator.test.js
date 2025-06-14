@@ -149,7 +149,7 @@ describe("SendMessageDisallowedIndicator's edited state", () => {
     const message = generateMessage({
       attachments: [generateLocalFileUploadAttachmentData()],
       cid: 'messaging:channel-id',
-      text: 'XXX',
+      text: 'test',
     });
 
     const { channel: customChannel, chatClient } = await editedMessageSetup({

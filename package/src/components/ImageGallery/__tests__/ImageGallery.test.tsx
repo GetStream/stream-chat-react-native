@@ -3,6 +3,8 @@ import React from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 
 import { LocalMessage } from 'stream-chat';
 
@@ -21,6 +23,8 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 
 import { ImageGallery } from '../ImageGallery';
+
+dayjs.extend(duration);
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');

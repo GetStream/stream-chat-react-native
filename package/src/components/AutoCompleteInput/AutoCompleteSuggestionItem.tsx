@@ -134,6 +134,7 @@ const UnMemoizedAutoCompleteSuggestionItem = ({
     <Pressable
       onPress={handlePress}
       style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, itemStyle]}
+      testID='suggestion-item'
     >
       <SuggestionItem item={itemProps} triggerType={triggerType} />
     </Pressable>
