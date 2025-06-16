@@ -1,6 +1,6 @@
 import React, {
-  LegacyRef,
   PropsWithChildren,
+  Ref,
   useCallback,
   useContext,
   useEffect,
@@ -15,7 +15,6 @@ import {
   // createCommandStringExtractionMiddleware,
   // createDraftCommandInjectionMiddleware,
   LocalMessage,
-  Message,
   MessageComposer,
   SendMessageOptions,
   StreamChat,
@@ -89,7 +88,7 @@ export type LocalMessageInputContext = {
   /** The time at which the active cooldown will end */
   cooldownEndsAt: Date;
 
-  inputBoxRef: React.MutableRefObject<TextInput | null>;
+  inputBoxRef: React.RefObject<TextInput | null>;
   openAttachmentPicker: () => void;
   openFilePicker: () => void;
   /**
@@ -98,13 +97,11 @@ export type LocalMessageInputContext = {
   pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
   selectedPicker?: 'images';
-  sendMessage: (params?: { customMessageData?: Partial<Message> }) => Promise<void>;
-  sendThreadMessageInChannel: boolean;
+  sendMessage: () => Promise<void>;
   /**
    * Ref callback to set reference on input box
    */
-  setInputBoxRef: LegacyRef<TextInput> | undefined;
-  setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
+  setInputBoxRef: Ref<TextInput> | undefined;
   /**
    * Function for taking a photo and uploading it
    */
@@ -439,7 +436,6 @@ export const MessageInputProvider = ({
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
 
-  const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
   const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
 
   const defaultOpenPollCreationDialog = useCallback(() => setShowPollCreationDialog(true), []);
@@ -452,11 +448,6 @@ export const MessageInputProvider = ({
   const messageComposer = useMessageComposer();
   const { attachmentManager, editedMessage } = messageComposer;
   const { availableUploadSlots } = useAttachmentManagerState();
-
-  const threadId = thread?.id;
-  useEffect(() => {
-    setSendThreadMessageInChannel(false);
-  }, [threadId]);
 
   /**
    * These are the RN SDK specific middlewares that are added to the message composer to provide the default behaviour.
@@ -638,14 +629,8 @@ export const MessageInputProvider = ({
           messageComposer.clear();
         }
         await value.sendMessage({
-          localMessage: {
-            ...localMessage,
-            show_in_channel: sendThreadMessageInChannel || undefined,
-          },
-          message: {
-            ...message,
-            show_in_channel: sendThreadMessageInChannel || undefined,
-          },
+          localMessage,
+          message,
           options: sendOptions,
         });
       } catch (error) {
@@ -697,9 +682,7 @@ export const MessageInputProvider = ({
     openFilePicker: pickFile,
     pickAndUploadImageFromNativePicker,
     pickFile,
-    sendThreadMessageInChannel,
     setInputBoxRef,
-    setSendThreadMessageInChannel,
     takeAndUploadImage,
     thread,
     toggleAttachmentPicker,

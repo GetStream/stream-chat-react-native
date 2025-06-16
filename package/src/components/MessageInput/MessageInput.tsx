@@ -228,7 +228,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    threadList,
     watchers,
   } = props;
 
@@ -589,7 +588,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             </>
           )}
         </View>
-        <ShowThreadMessageInChannelButton threadList={threadList} />
+        <ShowThreadMessageInChannelButton />
       </View>
 
       <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>
