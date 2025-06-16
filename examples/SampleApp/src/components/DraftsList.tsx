@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DraftsIcon } from '../icons/DraftIcon';
 import {
   FileTypes,
@@ -180,17 +180,15 @@ export const DraftsList = () => {
     };
   }, [draftsManager]);
 
-  const { isLoading, drafts, isLoadingNext } = useStateStore(draftsManager.state, selector);
+  const { isLoading, drafts } = useStateStore(draftsManager.state, selector);
 
   const onRefresh = useCallback(() => {
     draftsManager.reload({ force: true });
   }, [draftsManager]);
 
   const onEndReached = useCallback(() => {
-    if (!isLoadingNext) {
       draftsManager.loadNextPage();
-    }
-  }, [draftsManager, isLoadingNext]);
+  }, [draftsManager]);
 
   return (
     <FlatList

@@ -27,27 +27,9 @@ export const useChannelPreviewData = (
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
 
   useEffect(() => {
-    const { unsubscribe } = client.on('draft.updated', (event) => {
-      const { cid, draft } = event;
-      if (!draft || cid !== channel.cid || draft.parent_id) {
-        return;
-      }
-      channel.messageComposer.initState({ composition: draft });
-    });
-    return unsubscribe;
-  }, [channel, client]);
-
-  useEffect(() => {
-    const { unsubscribe } = client.on('draft.deleted', (event) => {
-      const { cid, draft } = event;
-      if (!draft || cid !== channel.cid || draft.parent_id) {
-        return;
-      }
-
-      channel.messageComposer.clear();
-    });
-    return unsubscribe;
-  }, [channel, client]);
+    const unsubscribe = channel.messageComposer.registerDraftEventSubscriptions();
+    return () => unsubscribe();
+  }, [channel.messageComposer]);
 
   useEffect(() => {
     const { unsubscribe } = client.on('notification.mark_read', () => {

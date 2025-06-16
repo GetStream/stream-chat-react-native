@@ -133,11 +133,11 @@ export class DraftsManager extends WithSubscriptions {
         existingDraftIndex = drafts.findIndex(
           (draft) =>
             draft.parent_id === draftData.parent_id &&
-            draft.channel?.cid === draftData.channel?.cid,
+            draft.channel_cid === draftData.channel_cid,
         );
       } else {
         existingDraftIndex = drafts.findIndex(
-          (draft) => draft.channel?.cid === draftData.channel?.cid,
+          (draft) => draft.channel_cid === draftData.channel_cid,
         );
       }
 

@@ -279,30 +279,9 @@ export const ThreadListItemComponent = () => {
   );
 
   useEffect(() => {
-    const { unsubscribe } = client.on('draft.updated', (event) => {
-      const { cid, draft } = event;
-      if (!draft) return;
-      if (cid !== channel.cid || draft.parent_id !== thread.id) {
-        return;
-      }
-
-      thread.messageComposer.initState({ composition: draft });
-    });
-    return unsubscribe;
-  }, [channel.cid, client, thread.id, thread.messageComposer]);
-
-  useEffect(() => {
-    const { unsubscribe } = client.on('draft.deleted', (event) => {
-      const { cid, draft } = event;
-      if (!draft) return;
-      if (cid !== channel.cid || draft.parent_id !== thread.id) {
-        return;
-      }
-
-      thread.messageComposer.clear();
-    });
-    return unsubscribe;
-  }, [channel.cid, client, thread.id, thread.messageComposer]);
+    const unsubscribe = thread.messageComposer.registerDraftEventSubscriptions();
+    return () => unsubscribe();
+  }, [thread.messageComposer]);
 
   const draftMessage: DraftMessage | undefined = useMemo(
     () =>
