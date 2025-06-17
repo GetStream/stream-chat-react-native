@@ -40,17 +40,23 @@ export const upsertDraft = async ({
     draftMessage: storableDraftMessage,
   });
 
+  const messagesToUpsert = [];
+
   if (draft.quoted_message) {
-    const query = await upsertMessages({ execute: false, messages: [draft.quoted_message] });
+    messagesToUpsert.push(draft.quoted_message);
+  }
+
+  if (draft.parent_message) {
+    messagesToUpsert.push(draft.parent_message);
+  }
+
+  if (messagesToUpsert.length > 0) {
+    const query = await upsertMessages({ execute: false, messages: messagesToUpsert });
     queries.concat(query);
   }
 
   if (execute) {
-    try {
-      await SqliteClient.executeSqlBatch(queries);
-    } catch (error) {
-      console.error(error);
-    }
+    await SqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

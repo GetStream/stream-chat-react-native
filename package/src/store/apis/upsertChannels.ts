@@ -41,7 +41,7 @@ export const upsertChannels = async ({
     }
 
     if (draft) {
-      queries = queries.concat(await upsertDraft({ draft }));
+      queries = queries.concat(await upsertDraft({ draft, execute: false }));
     }
 
     queries = queries.concat(

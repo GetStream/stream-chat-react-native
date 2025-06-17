@@ -280,14 +280,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     }
   }, [editing, inputBoxRef]);
 
-  // Effect to create draft whenever we un-mount the component.
-  useEffect(
-    () => () => {
-      messageComposer.createDraft();
-    },
-    [messageComposer],
-  );
-
   /**
    * Effect to get the draft data for legacy thread composer and set it to message composer.
    * TODO: This can be removed once we remove legacy thread composer.

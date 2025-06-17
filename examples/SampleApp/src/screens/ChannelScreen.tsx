@@ -24,6 +24,7 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
+import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -62,6 +63,8 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       navigation.goBack();
     }
   }, [navigation]);
+
+  useCreateDraftFocusEffect();
 
   const onRightContentPress = useCallback(() => {
     closePicker();
