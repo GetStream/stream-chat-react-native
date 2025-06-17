@@ -173,9 +173,7 @@ type MessageInputPropsWithContext = Partial<
   Pick<MessageComposerAPIContextValue, 'clearEditingState'> & { editing: boolean };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
-  // TODO: Comment out once the commands PR has been merged on the LLC
-  // command: state.command,
-  command: null,
+  command: state.command,
   hasText: !!state.text,
   mentionedUsers: state.mentionedUsers,
   suggestions: state.suggestions,
