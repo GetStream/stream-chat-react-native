@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 
@@ -59,8 +59,8 @@ describe('CommandsButton', () => {
       expect(queryByTestId('commands-button')).toBeTruthy();
     });
 
-    await act(() => {
-      userEvent.press(getByTestId('commands-button'));
+    act(() => {
+      fireEvent.press(getByTestId('commands-button'));
     });
 
     await waitFor(() => {

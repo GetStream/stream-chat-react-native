@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { ProgressIndicatorTypes } from '../../../utils/utils';
@@ -93,7 +93,6 @@ describe('AttachmentUploadProgressIndicator', () => {
 
   it('should render an active AttachmentUploadProgressIndicator and retry indicator', async () => {
     const action = jest.fn();
-    const user = userEvent.setup();
 
     render(
       <ThemeProvider>
@@ -109,7 +108,9 @@ describe('AttachmentUploadProgressIndicator', () => {
       expect(action).toHaveBeenCalledTimes(0);
     });
 
-    user.press(screen.getByTestId('retry-upload-progress-indicator'));
+    act(() => {
+      fireEvent.press(screen.getByTestId('retry-upload-progress-indicator'));
+    });
 
     await waitFor(() => expect(action).toHaveBeenCalledTimes(1));
   });

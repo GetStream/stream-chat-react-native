@@ -86,7 +86,7 @@ describe("FileUploadPreview's render", () => {
     ];
     const props = {};
 
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
     });
 
@@ -111,7 +111,7 @@ describe("FileUploadPreview's render", () => {
 
     const props = {};
 
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments);
     });
 
@@ -144,7 +144,7 @@ describe("FileUploadPreview's render", () => {
       ];
       const props = {};
 
-      await act(() => {
+      act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments);
       });
 
@@ -158,7 +158,7 @@ describe("FileUploadPreview's render", () => {
         expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(2);
       });
 
-      await act(() => {
+      act(() => {
         fireEvent.press(getAllByTestId('remove-upload-preview')[0]);
       });
 
@@ -166,7 +166,7 @@ describe("FileUploadPreview's render", () => {
         expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(1);
       });
 
-      await act(() => {
+      act(() => {
         fireEvent.press(getAllByTestId('remove-upload-preview')[0]);
       });
 
@@ -192,7 +192,7 @@ describe("FileUploadPreview's render", () => {
       ];
       const props = {};
 
-      await act(() => {
+      act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
       });
 
@@ -225,7 +225,7 @@ describe("FileUploadPreview's render", () => {
       ];
       const props = {};
 
-      await act(() => {
+      act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
       });
 
@@ -238,7 +238,7 @@ describe("FileUploadPreview's render", () => {
         expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(2);
       });
 
-      await act(() => {
+      act(() => {
         fireEvent.press(getAllByTestId('retry-upload-progress-indicator')[0]);
       });
 
@@ -266,7 +266,7 @@ describe("FileUploadPreview's render", () => {
       ];
       const props = {};
 
-      await act(() => {
+      act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
       });
 

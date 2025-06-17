@@ -61,14 +61,14 @@ describe('MessageInput', () => {
   let channel;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+    cleanup();
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
-    cleanup();
     act(() => {
       channel.messageComposer.clear();
     });
@@ -85,7 +85,9 @@ describe('MessageInput', () => {
 
     const { getByTestId, queryByTestId, queryByText } = screen;
 
-    fireEvent.press(getByTestId('attach-button'));
+    act(() => {
+      fireEvent.press(getByTestId('attach-button'));
+    });
 
     await waitFor(() => {
       expect(queryByTestId('upload-photo-touchable')).toBeTruthy();
@@ -97,8 +99,6 @@ describe('MessageInput', () => {
   });
 
   it('should start the audio recorder on long press and cleanup on unmount', async () => {
-    jest.clearAllMocks();
-
     const userBot = userEvent.setup();
 
     renderComponent({
@@ -132,8 +132,6 @@ describe('MessageInput', () => {
   });
 
   it('should trigger an alert if a normal press happened on audio recording', async () => {
-    jest.clearAllMocks();
-
     const userBot = userEvent.setup();
 
     renderComponent({

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 
@@ -36,6 +36,10 @@ describe('InputButtons', () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
+
+    act(() => {
+      channel.messageComposer.clear();
+    });
   });
 
   // TODO: Add it back once the command inject PR is merged
@@ -53,10 +57,6 @@ describe('InputButtons', () => {
       expect(queryByTestId('more-options-button')).toBeFalsy();
       expect(queryByTestId('commands-button')).toBeFalsy();
       expect(queryByTestId('attach-button')).toBeFalsy();
-    });
-
-    await act(() => {
-      channel.messageComposer.clear();
     });
   });
 
@@ -162,18 +162,14 @@ describe('InputButtons', () => {
       expect(queryByTestId('more-options-button')).toBeTruthy();
     });
 
-    await act(() => {
-      userEvent.press(queryByTestId('more-options-button'));
+    act(() => {
+      fireEvent.press(queryByTestId('more-options-button'));
     });
 
     await waitFor(() => {
       // Falsy, because the textComposer has text. This is a good test.
       expect(queryByTestId('commands-button')).toBeFalsy();
       expect(queryByTestId('attach-button')).toBeTruthy();
-    });
-
-    await act(() => {
-      channel.messageComposer.clear();
     });
   });
 
@@ -199,17 +195,13 @@ describe('InputButtons', () => {
       expect(queryByTestId('more-options-button')).toBeTruthy();
     });
 
-    await act(() => {
-      userEvent.press(queryByTestId('more-options-button'));
+    act(() => {
+      fireEvent.press(queryByTestId('more-options-button'));
     });
 
     await waitFor(() => {
       expect(queryByTestId('commands-button')).toBeTruthy();
       expect(queryByTestId('attach-button')).toBeTruthy();
-    });
-
-    await act(() => {
-      channel.messageComposer.clear();
     });
   });
 });

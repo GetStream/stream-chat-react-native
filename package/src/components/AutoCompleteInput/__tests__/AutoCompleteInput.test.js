@@ -93,7 +93,7 @@ describe('AutoCompleteInput', () => {
     });
   });
 
-  it('should call the textComposer handleChange when the onChangeText is triggered', () => {
+  it('should call the textComposer handleChange when the onChangeText is triggered', async () => {
     const { textComposer } = channel.messageComposer;
 
     const spyHandleChange = jest.spyOn(textComposer, 'handleChange');
@@ -111,7 +111,7 @@ describe('AutoCompleteInput', () => {
       userEvent.type(input, 'hello');
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(spyHandleChange).toHaveBeenCalled();
       expect(spyHandleChange).toHaveBeenCalledWith({
         selection: { end: 5, start: 5 },
@@ -121,7 +121,7 @@ describe('AutoCompleteInput', () => {
     });
   });
 
-  it('should style the text input with maxHeight that is set by the layout', () => {
+  it('should style the text input with maxHeight that is set by the layout', async () => {
     const channelProps = { channel };
     const props = { numberOfLines: 10 };
 
@@ -139,12 +139,12 @@ describe('AutoCompleteInput', () => {
       });
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(input.props.style[1].maxHeight).toBe(1000);
     });
   });
 
-  it('should call the textComposer setSelection when the onSelectionChange is triggered', () => {
+  it('should call the textComposer setSelection when the onSelectionChange is triggered', async () => {
     const { textComposer } = channel.messageComposer;
 
     const spySetSelection = jest.spyOn(textComposer, 'setSelection');
@@ -166,7 +166,7 @@ describe('AutoCompleteInput', () => {
       });
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(spySetSelection).toHaveBeenCalled();
       expect(spySetSelection).toHaveBeenCalledWith({ end: 5, start: 5 });
     });

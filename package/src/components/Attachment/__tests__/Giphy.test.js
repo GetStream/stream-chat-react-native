@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -177,11 +178,15 @@ describe('Giphy', () => {
 
     await waitFor(() => screen.getByTestId(`${attachment.actions[2].value}-action-button`));
 
-    expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
-      screen.getByTestId(`${attachment.actions[2].value}-action-button`),
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
+        screen.getByTestId(`${attachment.actions[2].value}-action-button`),
+      );
+    });
 
-    user.press(screen.getByTestId(`${attachment.actions[2].value}-action-button`));
+    act(() => {
+      user.press(screen.getByTestId(`${attachment.actions[2].value}-action-button`));
+    });
 
     await waitFor(() => {
       expect(handleAction).toHaveBeenCalledTimes(1);
@@ -202,11 +207,15 @@ describe('Giphy', () => {
 
     await waitFor(() => screen.getByTestId(`${attachment.actions[1].value}-action-button`));
 
-    expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
-      screen.getByTestId(`${attachment.actions[1].value}-action-button`),
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
+        screen.getByTestId(`${attachment.actions[1].value}-action-button`),
+      );
+    });
 
-    user.press(screen.getByTestId(`${attachment.actions[1].value}-action-button`));
+    act(() => {
+      user.press(screen.getByTestId(`${attachment.actions[1].value}-action-button`));
+    });
 
     await waitFor(() => {
       expect(handleAction).toHaveBeenCalledTimes(1);
@@ -227,11 +236,15 @@ describe('Giphy', () => {
 
     await waitFor(() => screen.getByTestId(`${attachment.actions[0].value}-action-button`));
 
-    expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
-      screen.getByTestId(`${attachment.actions[0].value}-action-button`),
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId('giphy-action-attachment')).toContainElement(
+        screen.getByTestId(`${attachment.actions[0].value}-action-button`),
+      );
+    });
 
-    user.press(screen.getByTestId(`${attachment.actions[0].value}-action-button`));
+    act(() => {
+      user.press(screen.getByTestId(`${attachment.actions[0].value}-action-button`));
+    });
 
     await waitFor(() => {
       expect(handleAction).toHaveBeenCalledTimes(1);
@@ -303,8 +316,13 @@ describe('Giphy', () => {
       expect(screen.queryByTestId('giphy-attachment')).toBeTruthy();
     });
 
-    fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'error');
-    expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
+    act(() => {
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'error');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
+    });
   });
 
   it('should render a loading indicator in giphy image and when successful render the image', async () => {
@@ -321,13 +339,22 @@ describe('Giphy', () => {
       expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
     });
 
-    fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoadStart');
+    act(() => {
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoadStart');
+    });
 
-    expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
+    await waitFor(() => {
+      expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
+    });
 
-    fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoadFinish');
+    act(() => {
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoad');
+    });
 
     waitForElementToBeRemoved(() => screen.getByAccessibilityHint('image-loading'));
-    expect(screen.getByLabelText('Giphy Attachment Image')).toBeTruthy();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Giphy Attachment Image')).toBeTruthy();
+    });
   });
 });
