@@ -9,11 +9,7 @@ export const useCreateDraftFocusEffect = () => {
   useFocusEffect(
     useCallback(() => {
       return navigation.addListener('beforeRemove', async () => {
-        try {
-          await messageComposer.createDraft();
-        } catch (e) {
-          console.error('Failed to save draft before remove', e);
-        }
+        await messageComposer.createDraft();
       });
     }, [navigation, messageComposer]),
   );
