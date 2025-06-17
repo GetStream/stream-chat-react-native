@@ -110,9 +110,9 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
     expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-selected');
   });
 
-  it('renders reactions list', async () => {
+  it('renders reactions list', () => {
     const { getByText } = renderComponent();
-    const reactionItems = await getByText('1 like');
+    const reactionItems = getByText('1 like');
     expect(reactionItems).toBeDefined();
   });
 

@@ -128,7 +128,7 @@ describe("MessageInputContext's pickAndUploadImageFromNativePicker", () => {
   let channel;
   let chatClient;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client, channels } = await initiateClientWithChannels();
     channel = channels[0];
     chatClient = client;
@@ -227,7 +227,7 @@ describe("MessageInputContext's takeAndUploadImage", () => {
   let channel;
   let chatClient;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client, channels } = await initiateClientWithChannels();
     channel = channels[0];
     chatClient = client;

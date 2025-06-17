@@ -1,14 +1,6 @@
 import React from 'react';
 
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  userEvent,
-  waitFor,
-} from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -108,7 +100,7 @@ describe('AutoCompleteInput', () => {
     const input = queryByTestId('auto-complete-text-input');
 
     act(() => {
-      userEvent.type(input, 'hello');
+      fireEvent.changeText(input, 'hello');
     });
 
     await waitFor(() => {

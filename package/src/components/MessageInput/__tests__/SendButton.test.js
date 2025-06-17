@@ -32,9 +32,12 @@ describe('SendButton', () => {
   });
 
   afterEach(() => {
-    channel.messageComposer.clear();
     jest.clearAllMocks();
     cleanup();
+
+    act(() => {
+      channel.messageComposer.clear();
+    });
   });
 
   it('should render a SendButton', async () => {
