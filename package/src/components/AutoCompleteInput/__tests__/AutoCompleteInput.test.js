@@ -10,6 +10,7 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
+import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
@@ -17,11 +18,13 @@ import { AutoCompleteInput } from '../AutoCompleteInput';
 
 const renderComponent = ({ channelProps, client, props }) => {
   return render(
-    <Chat client={client}>
-      <Channel {...channelProps}>
-        <AutoCompleteInput {...props} />
-      </Channel>
-    </Chat>,
+    <OverlayProvider>
+      <Chat client={client}>
+        <Channel {...channelProps}>
+          <AutoCompleteInput {...props} />
+        </Channel>
+      </Chat>
+    </OverlayProvider>,
   );
 };
 
@@ -29,7 +32,7 @@ describe('AutoCompleteInput', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];

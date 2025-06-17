@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 
@@ -25,10 +25,15 @@ describe('SendButton', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
   });
 
   it('should render a SendButton', async () => {
@@ -91,7 +96,8 @@ describe('SendButton', () => {
     });
   });
 
-  it('should show search button if the command is enabled', async () => {
+  // TODO: Add it back once the command inject PR is merged
+  it.skip('should show search button if the command is enabled', async () => {
     const sendMessage = jest.fn();
 
     const props = { sendMessage };

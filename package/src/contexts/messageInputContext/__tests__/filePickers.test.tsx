@@ -51,7 +51,7 @@ describe("MessageInputContext's pickFile", () => {
   let channel;
   let chatClient;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client, channels } = await initiateClientWithChannels();
     channel = channels[0];
     chatClient = client;

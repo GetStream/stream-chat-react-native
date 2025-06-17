@@ -54,9 +54,9 @@ describe("MessageInputContext's sendMessage", () => {
   });
 
   afterEach(() => {
-    channel.messageComposer.clear();
     jest.clearAllMocks();
     cleanup();
+    channel.messageComposer.clear();
   });
 
   it('should get into the catch block if the message composer compose throws an error', async () => {

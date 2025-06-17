@@ -160,7 +160,6 @@ describe('MessageSimple', () => {
     renderMessage({ groupStyles: ['top'], message });
 
     await waitFor(() => {
-      console.log(screen.getByTestId('message-simple-wrapper').props.style[1]);
       expect(screen.getByTestId('message-simple-wrapper').props.style[1]).toMatchObject({});
     });
   });
@@ -185,7 +184,6 @@ describe('MessageSimple', () => {
     renderMessage({ message });
 
     await waitFor(() => {
-      console.log(screen.getByTestId('message-content-wrapper').props.style);
       expect(screen.getByTestId('message-content-wrapper').props.style[2]).toMatchObject({
         borderWidth: 0,
       });
@@ -199,7 +197,6 @@ describe('MessageSimple', () => {
     renderMessage({ message });
 
     await waitFor(() => {
-      console.log(screen.getByTestId('message-content-wrapper').props.style);
       expect(screen.getByTestId('message-content-wrapper').props.style[2]).toMatchObject({
         borderWidth: 0,
       });

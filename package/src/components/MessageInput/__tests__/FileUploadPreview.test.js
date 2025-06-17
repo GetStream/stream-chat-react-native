@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -49,13 +49,15 @@ describe("FileUploadPreview's render", () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
     act(() => {
       channel.messageComposer.attachmentManager.initState();
     });

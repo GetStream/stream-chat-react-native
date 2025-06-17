@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { ProgressIndicatorTypes } from '../../../utils/utils';
@@ -8,6 +8,11 @@ import { ProgressIndicatorTypes } from '../../../utils/utils';
 import { AttachmentUploadProgressIndicator } from '../components/AttachmentPreview/AttachmentUploadProgressIndicator';
 
 describe('AttachmentUploadProgressIndicator', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
   it('should render an inactive AttachmentUploadProgressIndicator', async () => {
     const action = jest.fn();
 

@@ -10,6 +10,11 @@ import { ScrollToBottomButton } from '../ScrollToBottomButton';
 afterEach(cleanup);
 
 describe('ScrollToBottomButton', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
   it('should render nothing if showNotification is false', async () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
