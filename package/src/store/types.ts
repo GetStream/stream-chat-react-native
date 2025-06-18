@@ -8,6 +8,10 @@ export type TableRowJoinedUser<T extends Table> = Schema[T] & {
   user: TableRow<'users'>;
 };
 
+export type TableRowJoinedDraftMessage<T extends Table> = Schema[T] & {
+  draftMessage: TableRow<'draftMessage'>;
+};
+
 export type TableColumnNames<T extends Table> = keyof Schema[T];
 export type TableColumnValue = string | boolean | number | undefined;
 export type Scalar = string | number | boolean | null | ArrayBuffer | ArrayBufferView;

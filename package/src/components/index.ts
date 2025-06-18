@@ -164,6 +164,8 @@ export * from './MessageMenu/MessageUserReactionsAvatar';
 export * from './MessageMenu/MessageReactionPicker';
 export * from './MessageMenu/hooks/useFetchReactions';
 
+export * from './MessagePreview/MessagePreview';
+
 export * from './ProgressControl/ProgressControl';
 export * from './Poll';
 

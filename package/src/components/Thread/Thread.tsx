@@ -114,7 +114,10 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
         {...additionalMessageListProps}
       />
       <MessageInput
-        additionalTextInputProps={{ autoFocus, editable: !disabled }}
+        additionalTextInputProps={{
+          autoFocus,
+          editable: !disabled,
+        }}
         threadList
         {...additionalMessageInputProps}
       />

@@ -23,7 +23,6 @@ export const useCreateMessageComposer = ({
   channel,
 }: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'thread' | 'editing'>) => {
   const { client } = useChatContext();
-  // legacy thread will receive new composer
 
   const cachedEditedMessage = useMemo(() => {
     if (!editedMessage) return undefined;
@@ -68,6 +67,7 @@ export const useCreateMessageComposer = ({
       const cachedComposer = queueCache.get(tag);
       if (cachedComposer) return cachedComposer;
 
+      // legacy thread will receive new composer
       return new MessageComposer({
         client,
         compositionContext,
@@ -75,7 +75,7 @@ export const useCreateMessageComposer = ({
     } else {
       return channel.messageComposer;
     }
-  }, [cachedEditedMessage, cachedParentMessage, channel.messageComposer, client, threadInstance]);
+  }, [cachedEditedMessage, cachedParentMessage, channel, client, threadInstance]);
 
   if (
     (['legacy_thread', 'message'] as MessageComposer['contextType'][]).includes(

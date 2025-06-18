@@ -10,6 +10,7 @@ import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
 import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
+import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -38,6 +39,8 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   if (subtitleText == null) {
     subtitleText = (parentMessage?.user as UserResponse)?.name;
   }
+
+  useCreateDraftFocusEffect();
 
   return (
     <ScreenHeader
