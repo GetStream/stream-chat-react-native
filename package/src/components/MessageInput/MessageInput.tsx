@@ -222,6 +222,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     isOnline,
     members,
     Reply,
+    threadList,
     SendButton,
     sendMessage,
     showPollCreationDialog,
@@ -588,7 +589,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             </>
           )}
         </View>
-        <ShowThreadMessageInChannelButton />
+        <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
 
       <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>

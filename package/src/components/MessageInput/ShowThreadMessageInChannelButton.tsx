@@ -3,10 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { MessageComposerState } from 'stream-chat';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
+import { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
@@ -25,8 +22,7 @@ export type ShowThreadMessageInChannelButtonWithContextProps = Pick<
   ThreadContextValue,
   'allowThreadMessagesInChannel'
 > &
-  Pick<TranslationContextValue, 't'> &
-  Pick<ChannelContextValue, 'threadList'>;
+  Pick<TranslationContextValue, 't'> & { threadList?: ChannelContextValue['threadList'] };
 
 export const ShowThreadMessageInChannelButtonWithContext = (
   props: ShowThreadMessageInChannelButtonWithContextProps,
@@ -129,7 +125,6 @@ export type ShowThreadMessageInChannelButtonProps =
   Partial<ShowThreadMessageInChannelButtonWithContextProps>;
 
 export const ShowThreadMessageInChannelButton = (props: ShowThreadMessageInChannelButtonProps) => {
-  const { threadList } = useChannelContext();
   const { t } = useTranslationContext();
   const { allowThreadMessagesInChannel } = useThreadContext();
 
@@ -138,7 +133,6 @@ export const ShowThreadMessageInChannelButton = (props: ShowThreadMessageInChann
       {...{
         allowThreadMessagesInChannel,
         t,
-        threadList,
       }}
       {...props}
     />
