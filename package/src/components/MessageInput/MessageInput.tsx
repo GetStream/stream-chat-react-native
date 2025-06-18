@@ -222,24 +222,21 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     isOnline,
     members,
     Reply,
+    threadList,
     SendButton,
     sendMessage,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    threadList,
     watchers,
   } = props;
 
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
-  const { command, mentionedUsers, hasText } = useStateStore(
-    textComposer.state,
-    textComposerStateSelector,
-  );
+  const { command, hasText } = useStateStore(textComposer.state, textComposerStateSelector);
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
-  const { attachments, availableUploadSlots } = useAttachmentManagerState();
+  const { attachments } = useAttachmentManagerState();
   const hasSendableData = useMessageComposerHasSendableData();
 
   const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
@@ -277,30 +274,22 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     [closeAttachmentPicker],
   );
 
-  const editingExists = !!editing;
-
   useEffect(() => {
     if (editing && inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
+  }, [editing, inputBoxRef]);
 
-    /**
-     * Make sure to test `initialValue` functionality, if you are modifying following condition.
-     *
-     * We have the following condition, to make sure - when user comes out of "editing message" state,
-     * we wipe out all the state around message input such as text, mentioned users, image uploads etc.
-     * But it also means, this condition will be fired up on first render, which may result in clearing
-     * the initial value set on input box, through the prop - `initialValue`.
-     * This prop generally gets used for the case of draft message functionality.
-     */
-    if (
-      !editing &&
-      (command || attachments.length > 0 || mentionedUsers.length > 0 || availableUploadSlots)
-    ) {
-      messageComposer.clear();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingExists]);
+  /**
+   * Effect to get the draft data for legacy thread composer and set it to message composer.
+   * TODO: This can be removed once we remove legacy thread composer.
+   */
+  useEffect(() => {
+    const threadId = messageComposer.threadId;
+    if (!threadId) return;
+
+    messageComposer.getDraft();
+  }, [messageComposer]);
 
   const getMembers = () => {
     const result: UserResponse[] = [];

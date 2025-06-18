@@ -2662,9 +2662,9 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  stream-chat-react-native: c9c1901e17cb31dfd68f17dca5cdc994bef9ac5e
+  stream-chat-react-native: 3d6ea43d3097dfc813d9e99fd0d6d113d3faac78
   Yoga: be02ca501b03c79d7027a6bbbd0a8db985034f11
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.14.3
