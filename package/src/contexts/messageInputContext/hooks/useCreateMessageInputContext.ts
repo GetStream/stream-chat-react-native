@@ -64,10 +64,8 @@ export const useCreateMessageInputContext = ({
   SendButton,
   sendMessage,
   SendMessageDisallowedIndicator,
-  sendThreadMessageInChannel,
   setInputBoxRef,
   setInputRef,
-  setSendThreadMessageInChannel,
   showPollCreationDialog,
   ShowThreadMessageInChannelButton,
   StartAudioRecordingButton,
@@ -143,10 +141,8 @@ export const useCreateMessageInputContext = ({
       SendButton,
       sendMessage,
       SendMessageDisallowedIndicator,
-      sendThreadMessageInChannel,
       setInputBoxRef,
       setInputRef,
-      setSendThreadMessageInChannel,
       showPollCreationDialog,
       ShowThreadMessageInChannelButton,
       StartAudioRecordingButton,
@@ -158,14 +154,7 @@ export const useCreateMessageInputContext = ({
       VideoRecorderSelectorIcon,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      cooldownEndsAt,
-      isCommandUIEnabled,
-      sendThreadMessageInChannel,
-      threadId,
-      showPollCreationDialog,
-      selectedPicker,
-    ],
+    [cooldownEndsAt, isCommandUIEnabled, threadId, showPollCreationDialog, selectedPicker],
   );
 
   return messageInputContext;

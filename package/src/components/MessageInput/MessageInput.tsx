@@ -222,13 +222,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     isOnline,
     members,
     Reply,
+    threadList,
     SendButton,
     sendMessage,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    threadList,
     watchers,
   } = props;
 
