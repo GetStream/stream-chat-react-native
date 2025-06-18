@@ -7827,10 +7827,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat@^9.5.1:
-  version "9.5.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.5.1.tgz#b8260bc1d1470ae3c91d8c40d22f41e9c4523d7b"
-  integrity sha512-X9w22JfEp2cTggAwyt0gyvwe8VBy1qvJENliNen/2FJDpS3k6PCaeSO6MHNXz3c0Qy21hqxuu8/b32jCSe4LSA==
+stream-chat@^9.6.1:
+  version "9.6.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.6.1.tgz#430a4ccabefd7ac8f3665b6b78d7848d197a832e"
+  integrity sha512-IJYjB1Zez2RdL9jnmrvhgVeUeKk4BOVm82UGU8fomf+CfIL+rsxzSQGEPx4ZpJ0g2KmsCKD/CbjiWAkbh97IcA==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

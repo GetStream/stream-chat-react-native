@@ -2937,6 +2937,11 @@
   dependencies:
     "@types/yargs-parser" "*"
 
+"@ungap/structured-clone@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.3.0.tgz#d06bbb384ebcf6c505fde1c3d0ed4ddffe0aaff8"
+  integrity sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==
+
 "@urql/core@^5.0.0", "@urql/core@^5.0.6":
   version "5.0.8"
   resolved "https://registry.yarnpkg.com/@urql/core/-/core-5.0.8.tgz#eba39eaa2bf9a0a963383e87a65cba7a9ca794bd"
@@ -4064,11 +4069,6 @@ electron-to-chromium@^1.5.41:
   version "1.5.69"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.69.tgz#7268a4251e82fc83a7cdc9ab51e7154bb2813038"
   integrity sha512-zz4e7EbJqqtdQtwt61ZYKrfEYlV0HpGbIGRVFGOO9YBZIhg0BDXtBcWxpqyAm6oyPl2Zp8tc5FrPpCZQH/Yazg==
-
-emoji-regex@^10.3.0:
-  version "10.3.0"
-  resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-10.3.0.tgz#76998b9268409eb3dae3de989254d456e70cfe23"
-  integrity sha512-QpLs9D9v9kArv4lfDEgg1X/gN5XLnf/A6l9cs8SPZLRZR3ZkY9+kwIQTxm+fsSej5UMYGE8fdoaZVIBlqG0XTw==
 
 emoji-regex@^10.4.0:
   version "10.4.0"
@@ -7408,33 +7408,14 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-7.1.0.tgz#b5002ec967467a2ac4be54700e5e4e60bbd5fd97"
-  integrity sha512-Rfecu6kH2zBW0ufhVz076NlpOg6QxNgShGnK4js/ypjSZ4rGZIKMFHNuArLVr/uSuTWiVPNO1zMI/LyvljtwdQ==
-  dependencies:
-    "@gorhom/bottom-sheet" "^5.1.1"
-    dayjs "1.10.5"
-    emoji-regex "^10.3.0"
-    i18next "^21.6.14"
-    intl-pluralrules "^2.0.1"
-    linkifyjs "^4.1.1"
-    lodash-es "4.17.21"
-    mime-types "^2.1.34"
-    path "0.12.7"
-    react-native-markdown-package "1.8.2"
-    react-native-url-polyfill "^1.3.0"
-    stream-chat "^9.2.0"
-    use-sync-external-store "^1.4.0"
-
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
   uid ""
 
-stream-chat@^9.2.0:
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.2.0.tgz#f3109891ca27f17b6fd0aa6ebcf66be12df1f88c"
-  integrity sha512-inz3CA5tuqqSrla7qjRTCKs+coRKOYROWf0wEWYgbCu0tAUuiBTRtu1PJL1isEXIaPLiWi00BuRrBEIFon9Kng==
+stream-chat@^9.6.1:
+  version "9.6.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.6.1.tgz#430a4ccabefd7ac8f3665b6b78d7848d197a832e"
+  integrity sha512-IJYjB1Zez2RdL9jnmrvhgVeUeKk4BOVm82UGU8fomf+CfIL+rsxzSQGEPx4ZpJ0g2KmsCKD/CbjiWAkbh97IcA==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
@@ -7445,36 +7426,6 @@ stream-chat@^9.2.0:
     jsonwebtoken "^9.0.2"
     linkifyjs "^4.2.0"
     ws "^8.18.1"
-
-stream-chat@^9.3.0:
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.3.0.tgz#35ca4db9e841eb92d07413ae156de0500ad77b23"
-  integrity sha512-S73B3HrvmQvJjq58Zjo50vh74juhsWsVRpT+OBjGAxSGxlA+ITkZ3vKs8Y/r2eDK7mBTMmX5QCruFaDJH5dRuw==
-  dependencies:
-    "@types/jsonwebtoken" "^9.0.8"
-    "@types/ws" "^8.5.14"
-    axios "^1.6.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^5.0.0"
-    jsonwebtoken "^9.0.2"
-    linkifyjs "^4.2.0"
-    ws "^8.18.1"
-
-stream-chat@^8.57.6:
-  version "8.60.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.60.0.tgz#b67d4fbb185da53fb8ac5fc5759986d6ad7e19a3"
-  integrity sha512-7FpO7Wno++r+n+x9aFuXtGYtNO06CIMd2Bxe3doYZLhMfS0nuaXloeFlGcMT0r4U/6bnguz1qQdDJUPNQAS8bQ==
-  dependencies:
-    "@babel/runtime" "^7.27.0"
-    "@types/jsonwebtoken" "~9.0.0"
-    "@types/ws" "^7.4.0"
-    axios "^1.6.0"
-    base64-js "^1.5.1"
-    form-data "^4.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "~9.0.0"
-    ws "^7.5.10"
 
 stream-slice@^0.1.2:
   version "0.1.2"
