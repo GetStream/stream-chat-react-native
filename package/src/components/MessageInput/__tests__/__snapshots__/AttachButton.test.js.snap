@@ -89,48 +89,9 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
               "type": 0,
             }
           }
-        }
-        accessible={true}
-        collapsable={false}
-        focusable={true}
-        onBlur={[Function]}
-        onClick={[Function]}
-        onFocus={[Function]}
-        onLayout={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-        style={
-          [
-            {},
-          ]
-        }
-        testID="attach-button"
-      >
-        <RNSVGSvgView
-          align="xMidYMid"
-          bbHeight={32}
-          bbWidth={32}
-          fill="#7A7A7A"
-          focusable={false}
-          height={32}
-          meetOrSlice={0}
-          minX={0}
-          minY={0}
-          style={
+          propList={
             [
-              {
-                "backgroundColor": "transparent",
-                "borderWidth": 0,
-              },
-              {
-                "flex": 0,
-                "height": 32,
-                "width": 32,
-              },
+              "fill",
             ]
           }
         >
@@ -138,7 +99,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             clipPath="id"
             fill={
               {
-                "payload": 4286216826,
+                "payload": 4278190080,
                 "type": 0,
               }
             }
@@ -338,48 +299,9 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
               "type": 0,
             }
           }
-        }
-        accessible={true}
-        collapsable={false}
-        focusable={true}
-        onBlur={[Function]}
-        onClick={[Function]}
-        onFocus={[Function]}
-        onLayout={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-        style={
-          [
-            {},
-          ]
-        }
-        testID="attach-button"
-      >
-        <RNSVGSvgView
-          align="xMidYMid"
-          bbHeight={32}
-          bbWidth={32}
-          fill="#7A7A7A"
-          focusable={false}
-          height={32}
-          meetOrSlice={0}
-          minX={0}
-          minY={0}
-          style={
+          propList={
             [
-              {
-                "backgroundColor": "transparent",
-                "borderWidth": 0,
-              },
-              {
-                "flex": 0,
-                "height": 32,
-                "width": 32,
-              },
+              "fill",
             ]
           }
         >
@@ -387,7 +309,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             clipPath="id"
             fill={
               {
-                "payload": 4286216826,
+                "payload": 4278190080,
                 "type": 0,
               }
             }

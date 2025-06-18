@@ -99,6 +99,7 @@ export const AutoCompleteSuggestionList = ({
           flatlist,
           { backgroundColor: white, maxHeight, shadowColor: black },
         ]}
+        testID={'auto-complete-suggestion-list'}
       />
     </View>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Alert } from 'react-native';
 
-import { act, render, screen, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { MessageComposer } from 'stream-chat';
 
@@ -65,13 +65,15 @@ describe('SendMessageDisallowedIndicator', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
     act(() => {
       channel.messageComposer.clear();
     });
@@ -149,7 +151,7 @@ describe("SendMessageDisallowedIndicator's edited state", () => {
     const message = generateMessage({
       attachments: [generateLocalFileUploadAttachmentData()],
       cid: 'messaging:channel-id',
-      text: 'XXX',
+      text: 'test',
     });
 
     const { channel: customChannel, chatClient } = await editedMessageSetup({

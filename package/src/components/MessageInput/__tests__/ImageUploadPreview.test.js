@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, fireEvent, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -27,13 +27,15 @@ describe('ImageUploadPreview', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
     act(() => {
       channel.messageComposer.clear();
     });
@@ -50,7 +52,7 @@ describe('ImageUploadPreview', () => {
     ];
     const props = {};
 
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
     });
 
@@ -65,7 +67,7 @@ describe('ImageUploadPreview', () => {
     });
 
     await act(() => {
-      userEvent.press(getAllByTestId('remove-upload-preview')[0]);
+      fireEvent.press(getAllByTestId('remove-upload-preview')[0]);
     });
 
     await waitFor(() => {
@@ -96,7 +98,7 @@ describe('ImageUploadPreview', () => {
     ];
     const props = {};
 
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
     });
 
@@ -130,7 +132,7 @@ describe('ImageUploadPreview', () => {
     ];
     const props = {};
 
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
     });
 
@@ -150,7 +152,7 @@ describe('ImageUploadPreview', () => {
       expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
     });
 
-    await act(() => {
+    act(() => {
       fireEvent.press(getAllByTestId('retry-upload-progress-indicator')[0]);
     });
 
@@ -172,7 +174,7 @@ describe('ImageUploadPreview', () => {
     ];
     const props = {};
 
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
     });
 
@@ -222,7 +224,7 @@ describe('ImageUploadPreview', () => {
     ];
 
     const props = {};
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
     });
 

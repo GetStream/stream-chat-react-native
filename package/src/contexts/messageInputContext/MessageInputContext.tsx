@@ -179,9 +179,10 @@ export type InputMessageInputContextValue = {
   AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
 
   /**
-   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachment picker.
+   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachmentpicker.
    *
-   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
+   * **Default**
+   * [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
    */
   AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
   /**
@@ -199,7 +200,8 @@ export type InputMessageInputContextValue = {
   /**
    * Custom UI component for AttachmentPickerSelectionBar
    *
-   * **Default: ** [AttachmentPickerSelectionBar](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/AttachmentPicker/components/AttachmentPickerSelectionBar.tsx)
+   * **Default: **
+   * [AttachmentPickerSelectionBar](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/AttachmentPicker/components/AttachmentPickerSelectionBar.tsx)
    */
   AttachmentPickerSelectionBar: React.ComponentType;
   /**
@@ -212,31 +214,36 @@ export type InputMessageInputContextValue = {
   /**
    * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
-   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
+   * **Default: **
+   * [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
    */
   CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
    * Custom UI component for the poll creation icon.
    *
-   * **Default: ** [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
+   * **Default: **
+   * [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
    */
   CreatePollIcon: React.ComponentType;
   /**
    * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
-   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
+   * **Default: **
+   * [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
    */
   FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
    * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
-   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
+   * **Default: **
+   * [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
    */
   ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
    * Custom UI component for Android's video recorder selector icon.
    *
-   * **Default: ** [VideoRecorderSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/VideoRecorderSelectorIcon.tsx)
+   * **Default: **
+   * [VideoRecorderSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/VideoRecorderSelectorIcon.tsx)
    */
   VideoRecorderSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentUploadPreviewProps>;
@@ -348,8 +355,7 @@ export type InputMessageInputContextValue = {
   compressImageQuality?: number;
 
   /**
-   * Override the entire content of the CreatePoll component. The component has full access to the
-   * useCreatePollContext() hook.
+   * Override the entire content of the CreatePoll component. The component has full access to the useCreatePollContext() hook.
    * */
   CreatePollContent?: React.ComponentType<PollContentProps>;
 
@@ -369,8 +375,7 @@ export type InputMessageInputContextValue = {
 
   /**
    * Custom UI component for AutoCompleteInput.
-   * Has access to all of
-   * [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
+   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
     Omit<MessageInputProps, 'Input'> &
@@ -447,7 +452,8 @@ export const MessageInputProvider = ({
 
   /**
    * These are the RN SDK specific middlewares that are added to the message composer to provide the default behaviour.
-   * TODO: Discuss and decide if we provide them by default in the SDK or leave it to the user to add them if they want the feature.
+   * TODO: Discuss and decide if we provide them by default in the SDK or leave it to the user to add them if they want
+   * the feature.
    */
   useEffect(() => {
     if (value.doFileUploadRequest) {
@@ -479,10 +485,16 @@ export const MessageInputProvider = ({
    * Function for capturing a photo and uploading it
    */
   const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
+    if (!availableUploadSlots) {
+      Alert.alert(t('Maximum number of files reached'));
+      return;
+    }
+
     const file = await NativeHandlers.takePhoto({
       compressImageQuality: value.compressImageQuality,
       mediaType,
     });
+
     if (file.askToOpenSettings) {
       Alert.alert(
         t('Allow camera access in device settings'),
@@ -494,20 +506,22 @@ export const MessageInputProvider = ({
       );
     }
 
-    if (!availableUploadSlots) {
-      Alert.alert(t('Maximum number of files reached'));
+    if (file.cancelled) {
       return;
     }
 
-    if (!file.cancelled) {
-      await uploadNewFile(file);
-    }
+    await uploadNewFile(file);
   });
 
   /**
    * Function for picking a photo from native image picker and uploading it
    */
   const pickAndUploadImageFromNativePicker = useStableCallback(async () => {
+    if (!availableUploadSlots) {
+      Alert.alert(t('Maximum number of files reached'));
+      return;
+    }
+
     const result = await NativeHandlers.pickImage();
     if (result.askToOpenSettings) {
       Alert.alert(
@@ -520,16 +534,13 @@ export const MessageInputProvider = ({
       );
     }
 
-    if (!availableUploadSlots) {
-      Alert.alert(t('Maximum number of files reached'));
+    if (result.cancelled || !result.assets?.length) {
       return;
     }
 
-    if (result.assets && result.assets.length > 0) {
-      result.assets.forEach(async (asset) => {
-        await uploadNewFile(asset);
-      });
-    }
+    result.assets.forEach(async (asset) => {
+      await uploadNewFile(asset);
+    });
   });
 
   const pickFile = useStableCallback(async () => {
@@ -549,11 +560,13 @@ export const MessageInputProvider = ({
       maxNumberOfFiles: availableUploadSlots,
     });
 
-    if (!result.cancelled && result.assets) {
-      result.assets.forEach(async (asset) => {
-        await uploadNewFile(asset);
-      });
+    if (result.cancelled || !result.assets?.length) {
+      return;
     }
+
+    result.assets.forEach(async (asset) => {
+      await uploadNewFile(asset);
+    });
   });
 
   /**
@@ -591,47 +604,58 @@ export const MessageInputProvider = ({
       inputBoxRef.current.clear();
     }
 
-    const composition = await messageComposer.compose();
-    if (!composition || !composition.message) return;
-
-    const { localMessage, message, sendOptions } = composition;
-    const linkInfos = parseLinksFromText(localMessage.text);
-
-    if (!channelCapabilities.sendLinks && linkInfos.length > 0) {
-      Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
-
-      return;
-    }
-
-    if (editedMessage && editedMessage.type !== 'error') {
-      try {
+    try {
+      const composition = await messageComposer.compose();
+      // This is added to ensure the input box is cleared if there's no change and user presses on the send button.
+      if (!composition && editedMessage) {
         clearEditingState();
-        await value.editMessage({ localMessage, options: sendOptions });
-      } catch (error) {
-        console.log('Failed to edit message:', error);
       }
-    } else {
-      try {
-        // Since the message id does not get cleared, we have to handle this manually
-        // and let the poll creation dialog handle clearing the rest of the state. Once
-        // sending a message has been moved to the composer as an API, this will be
-        // redundant and can be removed.
-        if (localMessage.poll_id) {
-          messageComposer.state.partialNext({
-            id: MessageComposer.generateId(),
-            pollId: null,
-          });
-        } else {
-          messageComposer.clear();
+      if (!composition || !composition.message) return;
+
+      const { localMessage, message, sendOptions } = composition;
+      const linkInfos = parseLinksFromText(localMessage.text);
+
+      if (!channelCapabilities.sendLinks && linkInfos.length > 0) {
+        Alert.alert(
+          t('Links are disabled'),
+          t('Sending links is not allowed in this conversation'),
+        );
+
+        return;
+      }
+
+      if (editedMessage && editedMessage.type !== 'error') {
+        try {
+          clearEditingState();
+          await value.editMessage({ localMessage, options: sendOptions });
+        } catch (error) {
+          throw new Error('Error while editing message');
         }
-        await value.sendMessage({
-          localMessage,
-          message,
-          options: sendOptions,
-        });
-      } catch (error) {
-        console.log('Failed to send message:', error);
+      } else {
+        try {
+          // Since the message id does not get cleared, we have to handle this manually
+          // and let the poll creation dialog handle clearing the rest of the state. Once
+          // sending a message has been moved to the composer as an API, this will be
+          // redundant and can be removed.
+          if (localMessage.poll_id) {
+            messageComposer.state.partialNext({
+              id: MessageComposer.generateId(),
+              pollId: null,
+            });
+          } else {
+            messageComposer.clear();
+          }
+          await value.sendMessage({
+            localMessage,
+            message,
+            options: sendOptions,
+          });
+        } catch (error) {
+          throw new Error('Error while sending message');
+        }
       }
+    } catch (error) {
+      console.error('Error while sending message:', error);
     }
   });
 

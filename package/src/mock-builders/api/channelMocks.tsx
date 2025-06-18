@@ -1,8 +1,9 @@
 import type { Attachment, Channel, LocalMessage, MessageResponse, UserResponse } from 'stream-chat';
 
 import {
+  CHANNEL_MEMBERS,
   GROUP_CHANNEL_MEMBERS_MOCK,
-  ONE_MEMBER_WITH_EMPTY_USER_MOCK,
+  ONE_MEMBER_WITH_EMPTY_USER,
 } from '../../mock-builders/api/queryMembers';
 
 const channelName = 'okechukwu';
@@ -12,140 +13,118 @@ const CHANNEL = {
 } as unknown as Channel;
 
 const CHANNEL_WITH_MESSAGES_TEXT = {
-  data: { name: channelName },
-  state: {
-    members: GROUP_CHANNEL_MEMBERS_MOCK,
-    messages: [
-      {
-        args: 'string',
-        attachments: [],
-        channel: CHANNEL,
-        cid: 'stridkncnng',
-        command: 'giphy',
-        command_info: { name: 'string' },
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        id: 'ljkblk',
-        text: 'jkbkbiubicbi',
-        type: 'MessageLabel',
-        user: { id: 'okechukwu' } as unknown as UserResponse,
-      } as unknown as MessageResponse,
-      {
-        args: 'string',
-        attachments: [],
-        channel: CHANNEL,
-        cid: 'stridodong',
-        command: 'giphy',
-        command_info: { name: 'string' },
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        id: 'jbkjb',
-        text: 'jkbkbiubicbi',
-        type: 'MessageLabel',
-        user: { id: 'okechukwu' } as unknown as UserResponse,
-      } as unknown as MessageResponse,
-    ],
-  },
-} as unknown as Channel;
+  members: CHANNEL_MEMBERS,
+  messages: [
+    {
+      args: 'string',
+      attachments: [],
+      channel: CHANNEL,
+      cid: 'stridkncnng',
+      command: 'giphy',
+      command_info: { name: 'string' },
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      id: 'ljkblk',
+      text: 'jkbkbiubicbi',
+      type: 'MessageLabel',
+      user: { id: 'okechukwu' } as unknown as UserResponse,
+    } as unknown as MessageResponse,
+    {
+      args: 'string',
+      attachments: [],
+      channel: CHANNEL,
+      cid: 'stridodong',
+      command: 'giphy',
+      command_info: { name: 'string' },
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      id: 'jbkjb',
+      text: 'jkbkbiubicbi',
+      type: 'MessageLabel',
+      user: { id: 'okechukwu' } as unknown as UserResponse,
+    } as unknown as MessageResponse,
+  ],
+  name: channelName,
+};
 
-const CHANNEL_WITH_DELETED_MESSAGES = {
-  data: { name: channelName },
-  state: {
-    members: GROUP_CHANNEL_MEMBERS_MOCK,
-    messages: [
-      {
-        type: 'deleted',
-      } as unknown as MessageResponse,
-      {
-        type: 'deleted',
-      } as unknown as MessageResponse,
-    ],
-  },
-} as unknown as Channel;
+const CHANNEL_WITH_DELETED_MESSAGES = {};
 
 const CHANNEL_WITH_NO_MESSAGES = {
-  data: { name: channelName },
-  state: {
-    members: GROUP_CHANNEL_MEMBERS_MOCK,
-    messages: [],
-  },
-} as unknown as Channel;
+  members: CHANNEL_MEMBERS,
+  messages: [],
+  name: channelName,
+};
 
 const CHANNEL_WITH_MESSAGE_COMMAND = {
-  data: { name: channelName },
-  state: {
-    members: GROUP_CHANNEL_MEMBERS_MOCK,
-    messages: [
-      {
-        args: 'string',
-        attachments: [],
-        channel: CHANNEL,
-        cid: 'stridkncnng',
-        command: 'giphy',
-        command_info: { name: 'string' },
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        id: 'ljkblk',
-        user: { id: 'okechukwu' } as unknown as UserResponse,
-      } as unknown as MessageResponse,
-      {
-        args: 'string',
-        attachments: [],
-        channel: CHANNEL,
-        cid: 'stridodong',
-        command: 'giphy',
-        command_info: { name: 'string' },
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        id: 'jbkjb',
-        user: { id: 'okechukwu' } as unknown as UserResponse,
-      } as unknown as MessageResponse,
-    ],
-  },
-} as unknown as Channel;
+  members: CHANNEL_MEMBERS,
+  messages: [
+    {
+      args: 'string',
+      attachments: [],
+      channel: CHANNEL,
+      cid: 'stridkncnng',
+      command: 'giphy',
+      command_info: { name: 'string' },
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      id: 'ljkblk',
+      user: { id: 'okechukwu' } as unknown as UserResponse,
+    } as unknown as MessageResponse,
+    {
+      args: 'string',
+      attachments: [],
+      channel: CHANNEL,
+      cid: 'stridodong',
+      command: 'giphy',
+      command_info: { name: 'string' },
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      id: 'jbkjb',
+      user: { id: 'okechukwu' } as unknown as UserResponse,
+    } as unknown as MessageResponse,
+  ],
+};
 
 const CHANNEL_WITH_MESSAGES_ATTACHMENTS = {
-  data: { name: channelName },
-  state: {
-    members: GROUP_CHANNEL_MEMBERS_MOCK,
-    messages: [
-      {
-        args: 'string',
-        attachments: [
-          {
-            actions: [],
-            asset_url: 'string',
-            author_icon: 'string',
-            author_link: 'string',
-            author_name: 'string',
-            color: 'string',
-            fallback: 'string',
-            fields: [],
-            file_size: 25,
-            footer: 'string',
-            footer_icon: 'string',
-            image_url: 'string',
-            mime_type: 'string',
-            og_scrape_url: 'string',
-            original_height: 5,
-            original_width: 4,
-            pretext: 'string',
-            text: 'string',
-            thumb_url: 'string',
-            title: 'string',
-            title_link: 'string',
-            type: 'string',
-          } as Attachment,
-        ],
-        channel: CHANNEL,
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        id: 'ljkblk',
-        user: { id: 'okechukwu' } as unknown as UserResponse,
-      } as unknown as MessageResponse,
-    ],
-  },
-} as unknown as Channel;
+  members: CHANNEL_MEMBERS,
+  messages: [
+    {
+      args: 'string',
+      attachments: [
+        {
+          actions: [],
+          asset_url: 'string',
+          author_icon: 'string',
+          author_link: 'string',
+          author_name: 'string',
+          color: 'string',
+          fallback: 'string',
+          fields: [],
+          file_size: 25,
+          footer: 'string',
+          footer_icon: 'string',
+          image_url: 'string',
+          mime_type: 'string',
+          og_scrape_url: 'string',
+          original_height: 5,
+          original_width: 4,
+          pretext: 'string',
+          text: 'string',
+          thumb_url: 'string',
+          title: 'string',
+          title_link: 'string',
+          type: 'string',
+        } as Attachment,
+      ],
+      channel: CHANNEL,
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      id: 'ljkblk',
+      user: { id: 'okechukwu' } as unknown as UserResponse,
+    } as unknown as MessageResponse,
+  ],
+  name: channelName,
+};
 
 const LATEST_MESSAGE = {
   args: 'string',
@@ -173,74 +152,70 @@ const FORMATTED_MESSAGE: LocalMessage = {
 };
 
 const CHANNEL_WITH_MENTIONED_USERS = {
-  state: {
-    members: ONE_MEMBER_WITH_EMPTY_USER_MOCK,
-    messages: [
-      {
-        args: 'string',
-        attachments: [],
-        cid: 'stridkncnng',
-        command_info: { name: 'string' },
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        mentioned_users: [
-          { id: 'Max', name: 'Max' },
-          { id: 'Ada', name: 'Ada' },
-          { id: 'Enzo', name: 'Enzo' },
-        ] as UserResponse[],
-        text: 'Max',
-      } as unknown as MessageResponse,
-      {
-        args: 'string',
-        attachments: [],
-        cid: 'stridodong',
-        command_info: { name: 'string' },
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        mentioned_users: [
-          { id: 'Max', name: 'Max' },
-          { id: 'Ada', name: 'Ada' },
-          { id: 'Enzo', name: 'Enzo' },
-        ] as UserResponse[],
-        text: 'Max',
-      } as unknown as MessageResponse,
-    ],
-  },
-} as unknown as Channel;
+  members: ONE_MEMBER_WITH_EMPTY_USER,
+  messages: [
+    {
+      args: 'string',
+      attachments: [],
+      cid: 'stridkncnng',
+      command_info: { name: 'string' },
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      mentioned_users: [
+        { id: 'Max', name: 'Max' },
+        { id: 'Ada', name: 'Ada' },
+        { id: 'Enzo', name: 'Enzo' },
+      ] as UserResponse[],
+      text: 'Max',
+    } as unknown as MessageResponse,
+    {
+      args: 'string',
+      attachments: [],
+      cid: 'stridodong',
+      command_info: { name: 'string' },
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      mentioned_users: [
+        { id: 'Max', name: 'Max' },
+        { id: 'Ada', name: 'Ada' },
+        { id: 'Enzo', name: 'Enzo' },
+      ] as UserResponse[],
+      text: 'Max',
+    } as unknown as MessageResponse,
+  ],
+};
 
 const CHANNEL_WITH_EMPTY_MESSAGE = {
-  state: {
-    members: ONE_MEMBER_WITH_EMPTY_USER_MOCK,
-    messages: [
-      {
-        args: 'string',
-        attachments: [],
-        cid: 'stridkncnng',
-        command_info: { name: 'string' },
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        mentioned_users: [
-          { id: 'Max', name: 'Max' },
-          { id: 'Ada', name: 'Ada' },
-          { id: 'Enzo', name: 'Enzo' },
-        ] as UserResponse[],
-      } as unknown as MessageResponse,
-      {
-        args: 'string',
-        attachments: [],
-        cid: 'stridodong',
-        command_info: { name: 'string' },
-        created_at: new Date('2021-02-12T12:12:35.862Z'),
-        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-        mentioned_users: [
-          { id: 'Max', name: 'Max' },
-          { id: 'Ada', name: 'Ada' },
-          { id: 'Enzo', name: 'Enzo' },
-        ] as UserResponse[],
-      } as unknown as MessageResponse,
-    ],
-  },
-} as unknown as Channel;
+  members: ONE_MEMBER_WITH_EMPTY_USER,
+  messages: [
+    {
+      args: 'string',
+      attachments: [],
+      cid: 'stridkncnng',
+      command_info: { name: 'string' },
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      mentioned_users: [
+        { id: 'Max', name: 'Max' },
+        { id: 'Ada', name: 'Ada' },
+        { id: 'Enzo', name: 'Enzo' },
+      ] as UserResponse[],
+    } as unknown as MessageResponse,
+    {
+      args: 'string',
+      attachments: [],
+      cid: 'stridodong',
+      command_info: { name: 'string' },
+      created_at: new Date('2021-02-12T12:12:35.862Z'),
+      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      mentioned_users: [
+        { id: 'Max', name: 'Max' },
+        { id: 'Ada', name: 'Ada' },
+        { id: 'Enzo', name: 'Enzo' },
+      ] as UserResponse[],
+    } as unknown as MessageResponse,
+  ],
+};
 
 const CHANNEL_WITH_MESSAGES = {
   data: { name: channelName },
@@ -248,7 +223,7 @@ const CHANNEL_WITH_MESSAGES = {
     members: GROUP_CHANNEL_MEMBERS_MOCK,
     messages: [FORMATTED_MESSAGE, FORMATTED_MESSAGE],
   },
-} as unknown as Channel;
+};
 
 export {
   CHANNEL,
