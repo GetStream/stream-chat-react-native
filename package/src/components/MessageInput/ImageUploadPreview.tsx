@@ -91,21 +91,7 @@ export const ImageUploadPreview = (props: ImageUploadPreviewProps) => {
 };
 
 const styles = StyleSheet.create({
-  fileSizeText: {
-    fontSize: 12,
-    paddingHorizontal: 10,
-  },
   flatList: { paddingBottom: 12 },
-  itemContainer: {
-    flexDirection: 'row',
-    height: IMAGE_PREVIEW_SIZE,
-    marginLeft: 8,
-  },
-  upload: {
-    borderRadius: 10,
-    height: IMAGE_PREVIEW_SIZE,
-    width: IMAGE_PREVIEW_SIZE,
-  },
 });
 
 ImageUploadPreview.displayName = 'ImageUploadPreview{messageInput{imageUploadPreview}}';

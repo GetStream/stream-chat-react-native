@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 import { v5 as uuidv5 } from 'uuid';
 
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
@@ -9,6 +9,7 @@ import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/Ch
 import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
@@ -22,38 +23,52 @@ import { Thread } from '../Thread';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 
-afterEach(cleanup);
+const renderComponent = ({ chatClient, channel, props, thread }) => {
+  return render(
+    <OverlayProvider>
+      <Chat client={chatClient}>
+        <Channel channel={channel} client={chatClient} thread={thread} threadList>
+          <Thread {...props} />
+        </Channel>
+      </Chat>
+    </OverlayProvider>,
+  );
+};
 
 describe('Thread', () => {
+  let chatClient;
+  let channel;
+
+  beforeEach(async () => {
+    const { client: client, channels } = await initiateClientWithChannels();
+    chatClient = client;
+    channel = channels[0];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
   it('should render a new thread', async () => {
-    const thread = generateMessage({ text: 'Thread Message Text' });
-    const thread2 = generateMessage({ text: 'Thread2 Message Text' });
+    const cid = 'messaging:test-channel';
+    const thread = generateMessage({ cid, text: 'Thread Message Text' });
     const parent_id = thread.id;
+    const props = {
+      thread,
+    };
+
     const threadResponses = [
-      generateMessage({ parent_id, text: 'Response Message Text' }),
-      generateMessage({ parent_id }),
-      generateMessage({ parent_id }),
+      generateMessage({ cid, parent_id, text: 'Response Message Text' }),
+      generateMessage({ cid, parent_id }),
+      generateMessage({ cid, parent_id }),
     ];
 
-    const mockedChannel = generateChannelResponse({
-      messages: [thread, thread2],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'Neil' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
     channel.state.addMessagesSorted(threadResponses);
 
-    const { getAllByText, getByText, queryByText } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} client={chatClient} thread={thread} threadList>
-            <Thread thread={thread} />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    renderComponent({ channel, chatClient, props, thread });
+
+    const { getAllByText, getByText, queryByText } = screen;
 
     await waitFor(() => {
       expect(getByText('Also send to channel')).toBeTruthy();
@@ -63,16 +78,33 @@ describe('Thread', () => {
   }, 10000);
 
   it('should match thread snapshot', async () => {
+    const cid = 'messaging:test-channel';
     const i18nInstance = new Streami18n();
     const user1 = generateStaticUser(1);
     const user2 = generateStaticUser(3);
-    const thread = generateStaticMessage('Message3', { user: user2 }, '2020-05-05T14:50:00.000Z');
+    const thread = generateStaticMessage(
+      'Message3',
+      { cid, user: user2 },
+      '2020-05-05T14:50:00.000Z',
+    );
     const parent_id = thread.id;
 
     const threadResponses = [
-      generateStaticMessage('Message4', { parent_id, user: user1 }, '2020-05-05T14:50:00.000Z'),
-      generateStaticMessage('Message5', { parent_id, user: user2 }, '2020-05-05T14:50:00.000Z'),
-      generateStaticMessage('Message6', { parent_id, user: user1 }, '2020-05-05T14:50:00.000Z'),
+      generateStaticMessage(
+        'Message4',
+        { cid, parent_id, user: user1 },
+        '2020-05-05T14:50:00.000Z',
+      ),
+      generateStaticMessage(
+        'Message5',
+        { cid, parent_id, user: user2 },
+        '2020-05-05T14:50:00.000Z',
+      ),
+      generateStaticMessage(
+        'Message6',
+        { cid, parent_id, user: user1 },
+        '2020-05-05T14:50:00.000Z',
+      ),
     ];
 
     const mockedChannel = generateChannelResponse({
@@ -81,8 +113,8 @@ describe('Thread', () => {
       },
       members: [generateMember({ user: user1 }), generateMember({ user: user1 })],
       messages: [
-        generateStaticMessage('Message1', { user: user1 }, '2020-05-05T14:48:00.000Z'),
-        generateStaticMessage('Message2', { user: user2 }, '2020-05-05T14:49:00.000Z'),
+        generateStaticMessage('Message1', { cid, user: user1 }, '2020-05-05T14:48:00.000Z'),
+        generateStaticMessage('Message2', { cid, user: user2 }, '2020-05-05T14:49:00.000Z'),
         thread,
         ...threadResponses,
       ],

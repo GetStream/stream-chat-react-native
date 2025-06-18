@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import type {
-  LocalMessage,
-  Channel as StreamChatChannel,
-  TextComposerMiddleware,
-} from 'stream-chat';
+import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Channel,
@@ -17,7 +13,6 @@ import {
   useTheme,
   useTypingString,
   AITypingIndicatorView,
-  createTextComposerEmojiMiddleware,
 } from 'stream-chat-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -29,10 +24,7 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
-import { init, SearchIndex } from 'emoji-mart';
-import data from '@emoji-mart/data';
-
-init({ data });
+import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -71,6 +63,8 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       navigation.goBack();
     }
   }, [navigation]);
+
+  useCreateDraftFocusEffect();
 
   const onRightContentPress = useCallback(() => {
     closePicker();
@@ -153,20 +147,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   useFocusEffect(() => {
     setSelectedThread(undefined);
   });
-
-  useEffect(() => {
-    if (!chatClient) {
-      return;
-    }
-
-    chatClient.setMessageComposerSetupFunction(({ composer }) => {
-      composer.textComposer.middlewareExecutor.insert({
-        middleware: [createTextComposerEmojiMiddleware(SearchIndex) as TextComposerMiddleware],
-        position: { after: 'stream-io/text-composer/mentions-middleware' },
-        unique: true,
-      });
-    });
-  }, [chatClient]);
 
   const onThreadSelect = useCallback(
     (thread: LocalMessage | null) => {

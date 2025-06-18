@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 
@@ -25,10 +25,15 @@ describe('CommandsButton', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
   });
 
   it('should render component', async () => {
@@ -54,8 +59,8 @@ describe('CommandsButton', () => {
       expect(queryByTestId('commands-button')).toBeTruthy();
     });
 
-    await act(() => {
-      userEvent.press(getByTestId('commands-button'));
+    act(() => {
+      fireEvent.press(getByTestId('commands-button'));
     });
 
     await waitFor(() => {

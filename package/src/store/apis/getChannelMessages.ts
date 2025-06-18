@@ -33,6 +33,8 @@ export const getChannelMessages = async ({
     }
     messageIdVsReactions[reaction.messageId].push(reaction);
   });
+
+  // Populate the polls.
   const messageIdsVsPolls: Record<string, TableRow<'poll'>> = {};
   const pollsById: Record<string, TableRow<'poll'>> = {};
   const messagesWithPolls = messageRows.filter((message) => !!message.poll_id);

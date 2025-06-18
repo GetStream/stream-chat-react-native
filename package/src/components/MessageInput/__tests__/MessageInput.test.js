@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Alert } from 'react-native';
 
-import { act, fireEvent, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -52,7 +52,9 @@ describe('MessageInput', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    cleanup();
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
@@ -75,7 +77,9 @@ describe('MessageInput', () => {
 
     const { getByTestId, queryByTestId, queryByText } = screen;
 
-    fireEvent.press(getByTestId('attach-button'));
+    act(() => {
+      fireEvent.press(getByTestId('attach-button'));
+    });
 
     await waitFor(() => {
       expect(queryByTestId('upload-photo-touchable')).toBeTruthy();
@@ -87,10 +91,6 @@ describe('MessageInput', () => {
   });
 
   it('should start the audio recorder on long press and cleanup on unmount', async () => {
-    jest.clearAllMocks();
-
-    const userBot = userEvent.setup();
-
     renderComponent({
       channelProps: { audioRecordingEnabled: true, channel },
       client,
@@ -99,8 +99,10 @@ describe('MessageInput', () => {
 
     const { queryByTestId, unmount } = screen;
 
+    const audioButton = queryByTestId('audio-button');
+
     act(() => {
-      userBot.longPress(queryByTestId('audio-button'), { duration: 1000 });
+      fireEvent(audioButton, 'longPress');
     });
 
     await waitFor(() => {
@@ -122,10 +124,6 @@ describe('MessageInput', () => {
   });
 
   it('should trigger an alert if a normal press happened on audio recording', async () => {
-    jest.clearAllMocks();
-
-    const userBot = userEvent.setup();
-
     renderComponent({
       channelProps: { audioRecordingEnabled: true, channel },
       client,
@@ -134,8 +132,10 @@ describe('MessageInput', () => {
 
     const { queryByTestId } = screen;
 
+    const audioButton = queryByTestId('audio-button');
+
     act(() => {
-      userBot.press(queryByTestId('audio-button'));
+      fireEvent.press(audioButton);
     });
 
     await waitFor(() => {

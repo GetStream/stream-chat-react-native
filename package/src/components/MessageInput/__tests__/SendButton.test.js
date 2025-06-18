@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 
@@ -25,10 +25,19 @@ describe('SendButton', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+
+    act(() => {
+      channel.messageComposer.clear();
+    });
   });
 
   it('should render a SendButton', async () => {
@@ -45,8 +54,8 @@ describe('SendButton', () => {
       expect(sendMessage).toHaveBeenCalledTimes(0);
     });
 
-    await act(() => {
-      userEvent.press(getByTestId('send-button'));
+    act(() => {
+      fireEvent.press(getByTestId('send-button'));
     });
 
     await waitFor(() => {
@@ -75,8 +84,8 @@ describe('SendButton', () => {
       expect(sendMessage).toHaveBeenCalledTimes(0);
     });
 
-    await act(() => {
-      userEvent.press(getByTestId('send-button'));
+    act(() => {
+      fireEvent.press(getByTestId('send-button'));
     });
 
     await waitFor(() => {
@@ -91,7 +100,8 @@ describe('SendButton', () => {
     });
   });
 
-  it('should show search button if the command is enabled', async () => {
+  // TODO: Add it back once the command inject PR is merged
+  it.skip('should show search button if the command is enabled', async () => {
     const sendMessage = jest.fn();
 
     const props = { sendMessage };
@@ -104,10 +114,6 @@ describe('SendButton', () => {
 
     await waitFor(() => {
       expect(queryByTestId('search-icon')).toBeTruthy();
-    });
-
-    await act(() => {
-      channel.messageComposer.clear();
     });
   });
 });

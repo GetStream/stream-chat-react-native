@@ -3,8 +3,6 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
-import { ReactTestInstance } from 'react-test-renderer';
-
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { LocalMessage } from 'stream-chat';
@@ -188,8 +186,10 @@ describe('ImageGalleryFooter', () => {
       </OverlayProvider>,
     );
 
+    const { getByLabelText } = screen;
+
     await waitFor(() => {
-      user.press(screen.queryByLabelText('Share Button') as ReactTestInstance);
+      user.press(getByLabelText('Share Button'));
     });
 
     await waitFor(() => {
@@ -231,8 +231,10 @@ describe('ImageGalleryFooter', () => {
       </OverlayProvider>,
     );
 
+    const { getByLabelText } = screen;
+
     await waitFor(() => {
-      user.press(screen.queryByLabelText('Share Button') as ReactTestInstance);
+      user.press(getByLabelText('Share Button'));
     });
 
     await waitFor(() => {
@@ -280,8 +282,10 @@ describe('ImageGalleryFooter', () => {
       </OverlayProvider>,
     );
 
+    const { getByLabelText } = screen;
+
     await waitFor(() => {
-      user.press(screen.queryByLabelText('Share Button') as ReactTestInstance);
+      user.press(getByLabelText('Share Button'));
     });
 
     await waitFor(() => {
