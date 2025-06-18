@@ -175,8 +175,8 @@ export const tables: Tables = {
       createdAt: 'TEXT',
       id: 'INTEGER PRIMARY KEY AUTOINCREMENT',
       messageId: 'TEXT',
-      parentId: 'TEXT',
       payload: 'TEXT',
+      threadId: 'TEXT',
       type: 'TEXT',
     },
   },
@@ -368,7 +368,7 @@ export type Schema = {
     createdAt: string;
     id: number;
     messageId: string;
-    parentId: string;
+    threadId: string;
     payload: string;
     type: ValueOf<PendingTaskTypes>;
   };
