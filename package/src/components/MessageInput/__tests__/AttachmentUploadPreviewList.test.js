@@ -14,7 +14,7 @@ import {
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { FileUploadPreview } from '../FileUploadPreview';
+import { AttachmentUploadPreviewList } from '../AttachmentUploadPreviewList';
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
@@ -38,14 +38,14 @@ const renderComponent = ({ client, channel, props }) => {
     <OverlayProvider>
       <Chat client={client}>
         <Channel channel={channel}>
-          <FileUploadPreview {...props} />
+          <AttachmentUploadPreviewList {...props} />
         </Channel>
       </Chat>
     </OverlayProvider>,
   );
 };
 
-describe("FileUploadPreview's render", () => {
+describe('AttachmentUploadPreviewList', () => {
   let client;
   let channel;
 
@@ -275,6 +275,215 @@ describe("FileUploadPreview's render", () => {
       await waitFor(() => {
         expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
         expect(queryAllByText('Not supported')).toHaveLength(2);
+      });
+    });
+  });
+
+  describe('ImageAttachmentUploadPreview', () => {
+    it('should render ImageAttachmentUploadPreview with all uploading images', async () => {
+      const attachments = [
+        generateImageAttachment({
+          localMetadata: {
+            id: 'image-attachment',
+            uploadState: FileState.UPLOADING,
+          },
+        }),
+      ];
+      const props = {};
+
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { getAllByTestId, queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
+        expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(1);
+        expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+      });
+
+      await act(() => {
+        fireEvent.press(getAllByTestId('remove-upload-preview')[0]);
+      });
+
+      await waitFor(() => {
+        expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(0);
+      });
+    });
+
+    it('should return null when no images are uploaded', async () => {
+      const props = {};
+
+      renderComponent({ channel, client, props });
+
+      const { queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        expect(queryAllByTestId('file-upload-preview')).toHaveLength(0);
+      });
+    });
+
+    it('should render ImageAttachmentUploadPreview with all uploaded images', async () => {
+      const attachments = [
+        generateImageAttachment({
+          localMetadata: {
+            id: 'image-attachment',
+            uploadState: FileState.FINISHED,
+          },
+        }),
+      ];
+      const props = {};
+
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
+        for (const image of imageAttachments) {
+          fireEvent(image, 'loadEnd');
+        }
+      });
+
+      await waitFor(() => {
+        expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
+        expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
+      });
+    });
+
+    it('should render ImageAttachmentUploadPreview with all failed images', async () => {
+      const uploadAttachmentSpy = jest.fn();
+      channel.messageComposer.attachmentManager.uploadAttachment = uploadAttachmentSpy;
+      const attachments = [
+        generateImageAttachment({
+          localMetadata: {
+            id: 'image-attachment',
+            uploadState: FileState.FAILED,
+          },
+        }),
+      ];
+      const props = {};
+
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { getAllByTestId, queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
+        for (const image of imageAttachments) {
+          fireEvent(image, 'loadEnd');
+        }
+      });
+
+      await waitFor(() => {
+        expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
+        expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
+      });
+
+      await act(() => {
+        fireEvent.press(getAllByTestId('retry-upload-progress-indicator')[0]);
+      });
+
+      await waitFor(() => {
+        expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
+        expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(1);
+        expect(uploadAttachmentSpy).toHaveBeenCalled();
+      });
+    });
+
+    it('should render ImageAttachmentUploadPreview with all unsupported', async () => {
+      const attachments = [
+        generateImageAttachment({
+          localMetadata: {
+            id: 'image-attachment',
+            uploadState: FileState.BLOCKED,
+          },
+        }),
+      ];
+      const props = {};
+
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { queryAllByText, queryAllByTestId } = screen;
+
+      await waitFor(() => {
+        const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
+        for (const image of imageAttachments) {
+          fireEvent(image, 'loadEnd');
+        }
+      });
+
+      await waitFor(() => {
+        expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
+        expect(queryAllByText('Not supported')).toHaveLength(1);
+      });
+    });
+
+    it('should render ImageAttachmentUploadPreview with 1 uploading, 1 uploaded, and 1 failed image, and 1 unsupported', async () => {
+      const attachments = [
+        generateImageAttachment({
+          localMetadata: {
+            id: 'image-attachment-1',
+            uploadState: FileState.UPLOADING,
+          },
+        }),
+        generateImageAttachment({
+          localMetadata: {
+            id: 'image-attachment-2',
+            uploadState: FileState.FINISHED,
+          },
+        }),
+        generateImageAttachment({
+          localMetadata: {
+            id: 'image-attachment-3',
+            uploadState: FileState.FAILED,
+          },
+        }),
+        generateImageAttachment({
+          localMetadata: {
+            id: 'image-attachment-4',
+            uploadState: FileState.BLOCKED,
+          },
+        }),
+      ];
+
+      const props = {};
+      await act(() => {
+        channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
+      });
+
+      renderComponent({ channel, client, props });
+
+      const { queryAllByTestId, queryAllByText } = screen;
+
+      await waitFor(() => {
+        const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
+        for (const image of imageAttachments) {
+          fireEvent(image, 'loadEnd');
+        }
+      });
+
+      await waitFor(() => {
+        expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(4);
+        expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+        expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
+        expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
+        expect(queryAllByText('Not supported')).toHaveLength(1);
       });
     });
   });

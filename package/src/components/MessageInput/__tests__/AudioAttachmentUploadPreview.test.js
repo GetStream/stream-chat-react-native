@@ -9,7 +9,7 @@ import { generateAudioAttachment } from '../../../mock-builders/attachments';
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { FileUploadPreview } from '../FileUploadPreview';
+import { AttachmentUploadPreviewList } from '../AttachmentUploadPreviewList';
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
@@ -33,7 +33,7 @@ const renderComponent = ({ client, channel, props }) => {
     <OverlayProvider>
       <Chat client={client}>
         <Channel channel={channel}>
-          <FileUploadPreview {...props} />
+          <AttachmentUploadPreviewList {...props} />
         </Channel>
       </Chat>
     </OverlayProvider>,

@@ -274,6 +274,11 @@ export type Theme = {
       warningIcon: IconProps;
       text: TextStyle;
     };
+    attachmentUploadPreviewList: {
+      filesFlatList: ViewStyle;
+      imagesFlatList: ViewStyle;
+      wrapper: ViewStyle;
+    };
     audioRecorder: {
       arrowLeftIcon: IconProps;
       checkContainer: ViewStyle;
@@ -1076,6 +1081,11 @@ export const defaultTheme: Theme = {
       container: {},
       text: {},
       warningIcon: {},
+    },
+    attachmentUploadPreviewList: {
+      filesFlatList: {},
+      imagesFlatList: {},
+      wrapper: {},
     },
     audioRecorder: {
       arrowLeftIcon: {},

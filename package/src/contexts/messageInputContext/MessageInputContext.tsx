@@ -11,15 +11,11 @@ import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-nativ
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
-  // createCommandInjectionMiddleware,
-  // createCommandStringExtractionMiddleware,
-  // createDraftCommandInjectionMiddleware,
   LocalMessage,
   Message,
   MessageComposer,
   SendMessageOptions,
   StreamChat,
-  // TextComposerMiddleware,
   Message as StreamMessage,
   UpdateMessageOptions,
   UploadRequestFn,
@@ -39,6 +35,7 @@ import {
 } from '../../components';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
+import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/AttachmentUploadPreviewList';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { AttachmentUploadProgressIndicatorProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
@@ -53,9 +50,7 @@ import type { AudioRecordingWaveformProps } from '../../components/MessageInput/
 import type { CommandInputProps } from '../../components/MessageInput/components/CommandInput';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
 import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
-import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
-import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
 import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
@@ -216,6 +211,7 @@ export type InputMessageInputContextValue = {
    */
   attachmentSelectionBarHeight: number;
 
+  AttachmentUploadPreviewList: React.ComponentType<AttachmentUploadPreviewListProps>;
   /**
    * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
@@ -270,12 +266,6 @@ export type InputMessageInputContextValue = {
     localMessage: LocalMessage;
     options?: UpdateMessageOptions;
   }) => ReturnType<StreamChat['updateMessage']>;
-  /**
-   * Custom UI component for FileUploadPreview.
-   * Defaults to and accepts same props as:
-   * https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/FileUploadPreview.tsx
-   */
-  FileUploadPreview: React.ComponentType<FileUploadPreviewProps>;
 
   /** When false, CameraSelectorIcon will be hidden */
   hasCameraPicker: boolean;
@@ -286,12 +276,7 @@ export type InputMessageInputContextValue = {
   hasFilePicker: boolean;
   /** When false, ImageSelectorIcon will be hidden */
   hasImagePicker: boolean;
-  /**
-   * Custom UI component for ImageUploadPreview.
-   * Defaults to and accepts same props as:
-   * https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/ImageUploadPreview.tsx
-   */
-  ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps>;
+
   InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps>;
   /**
    * Boolean value to determine if the input should show a command UI.

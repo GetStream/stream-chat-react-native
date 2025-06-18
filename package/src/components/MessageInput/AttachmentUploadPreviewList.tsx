@@ -1,19 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, LayoutChangeEvent, StyleSheet } from 'react-native';
+import { FlatList, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import {
   isAudioAttachment,
   isLocalAudioAttachment,
   isLocalFileAttachment,
   isLocalImageAttachment,
-  isLocalVideoAttachment,
   isLocalVoiceRecordingAttachment,
   isVideoAttachment,
   isVoiceRecordingAttachment,
-  LocalAudioAttachment,
-  LocalFileAttachment,
-  LocalVideoAttachment,
-  LocalVoiceRecordingAttachment,
+  LocalAttachment,
+  LocalImageAttachment,
 } from 'stream-chat';
 
 import { useMessageComposer } from '../../contexts';
@@ -26,45 +23,50 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { isSoundPackageAvailable } from '../../native';
 import { AudioConfig } from '../../types/types';
 
+const IMAGE_PREVIEW_SIZE = 100;
 const FILE_PREVIEW_HEIGHT = 60;
 
-export type FileUploadPreviewPropsWithContext = Pick<
+export type AttachmentUploadPreviewListPropsWithContext = Pick<
   MessageInputContextValue,
-  'AudioAttachmentUploadPreview' | 'FileAttachmentUploadPreview' | 'VideoAttachmentUploadPreview'
+  | 'AudioAttachmentUploadPreview'
+  | 'FileAttachmentUploadPreview'
+  | 'ImageAttachmentUploadPreview'
+  | 'VideoAttachmentUploadPreview'
 >;
 
-type FileAttachmentType<CustomLocalMetadata = Record<string, unknown>> =
-  | LocalFileAttachment<CustomLocalMetadata>
-  | LocalAudioAttachment<CustomLocalMetadata>
-  | LocalVoiceRecordingAttachment<CustomLocalMetadata>
-  | LocalVideoAttachment<CustomLocalMetadata>;
-
 /**
- * FileUploadPreview
+ * AttachmentUploadPreviewList
  * UI Component to preview the files set for upload
  */
-const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) => {
+const UnMemoizedAttachmentUploadListPreview = (
+  props: AttachmentUploadPreviewListPropsWithContext,
+) => {
+  const [flatListWidth, setFlatListWidth] = useState(0);
+  const [audioAttachmentsStateMap, setAudioAttachmentsStateMap] = useState<
+    Record<string, AudioConfig>
+  >({});
+  const flatListRef = useRef<FlatList<LocalAttachment> | null>(null);
   const {
     AudioAttachmentUploadPreview,
     FileAttachmentUploadPreview,
+    ImageAttachmentUploadPreview,
     VideoAttachmentUploadPreview,
   } = props;
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
-  const [audioAttachmentsStateMap, setAudioAttachmentsStateMap] = useState<
-    Record<string, AudioConfig>
-  >({});
-  const flatListRef = useRef<FlatList<FileAttachmentType> | null>(null);
-  const [flatListWidth, setFlatListWidth] = useState(0);
+  const {
+    theme: {
+      colors: { grey_whisper },
+      messageInput: {
+        attachmentSeparator,
+        attachmentUploadPreviewList: { filesFlatList, imagesFlatList, wrapper },
+      },
+    },
+  } = useTheme();
 
+  const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
   const fileUploads = useMemo(() => {
-    return attachments.filter(
-      (attachment) =>
-        isLocalFileAttachment(attachment) ||
-        isLocalAudioAttachment(attachment) ||
-        isLocalVoiceRecordingAttachment(attachment) ||
-        isLocalVideoAttachment(attachment),
-    );
+    return attachments.filter((attachment) => !isLocalImageAttachment(attachment));
   }, [attachments]);
 
   useEffect(() => {
@@ -143,18 +145,27 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
     }
   }, []);
 
-  const {
-    theme: {
-      messageInput: {
-        fileUploadPreview: { flatList },
-      },
+  const renderImageItem = useCallback(
+    ({ item }: { item: LocalImageAttachment }) => {
+      return (
+        <ImageAttachmentUploadPreview
+          attachment={item}
+          handleRetry={attachmentManager.uploadAttachment}
+          removeAttachments={attachmentManager.removeAttachments}
+        />
+      );
     },
-  } = useTheme();
+    [
+      ImageAttachmentUploadPreview,
+      attachmentManager.removeAttachments,
+      attachmentManager.uploadAttachment,
+    ],
+  );
 
-  const renderItem = useCallback(
-    ({ item }: { item: FileAttachmentType }) => {
+  const renderFileItem = useCallback(
+    ({ item }: { item: LocalAttachment }) => {
       if (isLocalImageAttachment(item)) {
-        // This is already handled in the `ImageUploadPreview` component
+        // This is already handled in the `renderImageItem` above, so we return null here to avoid duplication.
         return null;
       } else if (isLocalVoiceRecordingAttachment(item)) {
         return (
@@ -240,47 +251,80 @@ const UnMemoizedFileUploadPreview = (props: FileUploadPreviewPropsWithContext) =
     [flatListRef],
   );
 
-  if (fileUploads.length === 0) {
+  if (!attachments.length) {
     return null;
   }
 
   return (
-    <FlatList
-      data={fileUploads}
-      getItemLayout={(_, index) => ({
-        index,
-        length: FILE_PREVIEW_HEIGHT + 8,
-        offset: (FILE_PREVIEW_HEIGHT + 8) * index,
-      })}
-      keyExtractor={(item) => item.localMetadata.id}
-      onLayout={onLayout}
-      ref={flatListRef}
-      renderItem={renderItem}
-      style={[styles.flatList, flatList]}
-      testID={'file-upload-preview'}
-    />
+    <View style={[wrapper]}>
+      {imageUploads.length ? (
+        <FlatList
+          data={imageUploads}
+          getItemLayout={(_, index) => ({
+            index,
+            length: IMAGE_PREVIEW_SIZE + 8,
+            offset: (IMAGE_PREVIEW_SIZE + 8) * index,
+          })}
+          horizontal
+          keyExtractor={(item) => item.localMetadata.id}
+          renderItem={renderImageItem}
+          style={[styles.imagesFlatList, imagesFlatList]}
+        />
+      ) : null}
+      {imageUploads.length && fileUploads.length ? (
+        <View
+          style={[
+            styles.attachmentSeparator,
+            {
+              borderBottomColor: grey_whisper,
+            },
+            attachmentSeparator,
+          ]}
+        />
+      ) : null}
+      {fileUploads.length ? (
+        <FlatList
+          data={fileUploads}
+          getItemLayout={(_, index) => ({
+            index,
+            length: FILE_PREVIEW_HEIGHT + 8,
+            offset: (FILE_PREVIEW_HEIGHT + 8) * index,
+          })}
+          keyExtractor={(item) => item.localMetadata.id}
+          onLayout={onLayout}
+          ref={flatListRef}
+          renderItem={renderFileItem}
+          style={[styles.filesFlatList, filesFlatList]}
+          testID={'file-upload-preview'}
+        />
+      ) : null}
+    </View>
   );
 };
 
-export type FileUploadPreviewProps = Partial<FileUploadPreviewPropsWithContext>;
+export type AttachmentUploadPreviewListProps = Partial<AttachmentUploadPreviewListPropsWithContext>;
 
-const MemoizedFileUploadPreviewWithContext = React.memo(UnMemoizedFileUploadPreview);
+const MemoizedAttachmentUploadPreviewListWithContext = React.memo(
+  UnMemoizedAttachmentUploadListPreview,
+);
 
 /**
- * FileUploadPreview
+ * AttachmentUploadPreviewList
  * UI Component to preview the files set for upload
  */
-export const FileUploadPreview = (props: FileUploadPreviewProps) => {
+export const AttachmentUploadPreviewList = (props: AttachmentUploadPreviewListProps) => {
   const {
     AudioAttachmentUploadPreview,
     FileAttachmentUploadPreview,
+    ImageAttachmentUploadPreview,
     VideoAttachmentUploadPreview,
   } = useMessageInputContext();
   return (
-    <MemoizedFileUploadPreviewWithContext
+    <MemoizedAttachmentUploadPreviewListWithContext
       {...{
         AudioAttachmentUploadPreview,
         FileAttachmentUploadPreview,
+        ImageAttachmentUploadPreview,
         VideoAttachmentUploadPreview,
       }}
       {...props}
@@ -289,7 +333,13 @@ export const FileUploadPreview = (props: FileUploadPreviewProps) => {
 };
 
 const styles = StyleSheet.create({
-  flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
+  attachmentSeparator: {
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  },
+  filesFlatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
+  imagesFlatList: { paddingBottom: 12 },
 });
 
-FileUploadPreview.displayName = 'FileUploadPreview{messageInput{fileUploadPreview}}';
+AttachmentUploadPreviewList.displayName =
+  'AttachmentUploadPreviewList{messageInput{attachmentUploadPreviewList}}';
