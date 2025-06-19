@@ -155,7 +155,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - op-sqlite (14.0.3):
+  - op-sqlite (14.0.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2078,7 +2078,7 @@ PODS:
     - React-logger (= 0.79.3)
     - React-perflogger (= 0.79.3)
     - React-utils (= 0.79.3)
-  - RNAudioRecorderPlayer (3.6.12):
+  - RNAudioRecorderPlayer (3.6.13):
     - React-Core
   - RNCAsyncStorage (2.2.0):
     - DoubleConversion
@@ -2784,7 +2784,7 @@ SPEC CHECKSUMS:
   hermes-engine: 94ed01537bdeccaab1adbf94b040d115d6fa1a7f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  op-sqlite: d6e784349cc26c59527acbbd78b1610710a3b6a3
+  op-sqlite: 6a5255f36253697406618ceba5212d6572012a9d
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
@@ -2857,7 +2857,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 552391af67c115d8ee20f9359711e7821145cd96
   ReactCodegen: 5a3b071aec923e67260550b3f65329f844d691fa
   ReactCommon: 1dce2374d9dc2cdf634244f1584513b606512750
-  RNAudioRecorderPlayer: 224c7de87722938aedce04000d09baa633148f5b
+  RNAudioRecorderPlayer: 8a1c6ee5080aa83c3f2ccc75d1a43b2ce82b366d
   RNCAsyncStorage: faf86846c58994b6b8aab074a4914eb1796c2a9f
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBApp: df5caad9f64b6bc87f8a0b110e6bc411fb00a12b

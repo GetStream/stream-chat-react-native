@@ -1876,10 +1876,10 @@
   resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-9.1.8.tgz#3d55cb3fbcc21f9e35931e366afdf64b294da891"
   integrity sha512-Az/dueoPerJsbbjRxu8a558wKY+gONUrfoy3Hs++5OqbeMsR0dYe6P+4oN6twrLFyzAhEA1tEoZRvQTFDRmvQg==
 
-"@op-engineering/op-sqlite@^14.0.3":
-  version "14.0.3"
-  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-14.0.3.tgz#a4110e0914ac0553d2676f3bfb9c2ab0d289413f"
-  integrity sha512-rr1ofSJq+Pz5Zwd4p8OLi5adr1Tl0hhxw66AoSpdyHPGpcJnB25gOT2BVhe9THgh0is9QT1ggwJkv1j+2tiYtw==
+"@op-engineering/op-sqlite@^14.0.4":
+  version "14.0.4"
+  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-14.0.4.tgz#a86951f98e65be2f66d3f17d5bc27796d614e023"
+  integrity sha512-WNWsEY+ZLbOUJ6EuhB4vGqE+99NTJJkdwW+7XKdg8lN7QMnbsM7z7LGWQ9Cqp5JKvWwItBpjaxlHB2wbywsSJA==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -7219,10 +7219,10 @@ react-is@^19.1.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-19.1.0.tgz#805bce321546b7e14c084989c77022351bbdd11b"
   integrity sha512-Oe56aUPnkHyyDxxkvqtd7KkdQP5uIUfHxd5XTb3wE9d/kRnZLmKbDB0GWk919tdQ+mxxPtG6EAs6RMT6i1qtHg==
 
-react-native-audio-recorder-player@^3.6.12:
-  version "3.6.12"
-  resolved "https://registry.yarnpkg.com/react-native-audio-recorder-player/-/react-native-audio-recorder-player-3.6.12.tgz#edc3aa271534a4ce6bc4b32ff2b0ece555b35498"
-  integrity sha512-/pnZxPA2jvQ9K7oDtrjcAjc/hn124swi451Q/i1Z6yesDVqupE38moNm12HgY1IVupdUCjeiZVqPoShcE0N8mw==
+react-native-audio-recorder-player@^3.6.13:
+  version "3.6.13"
+  resolved "https://registry.yarnpkg.com/react-native-audio-recorder-player/-/react-native-audio-recorder-player-3.6.13.tgz#cfb98ef2582a02e1de4a539ccf93981805b39211"
+  integrity sha512-8IaNxets8as8qfITPh4GgXdW2PhrlGNqYD/41rMeEWRxGGv5KQEttC2uQWkDc7yA7/0GeBN6AFgatK2S7cLZQw==
   dependencies:
     hyochan-welcome "^1.0.0"
 
@@ -7929,10 +7929,10 @@ stream-chat@^9.3.0:
     linkifyjs "^4.2.0"
     ws "^8.18.1"
 
-stream-chat@^9.5.1:
-  version "9.5.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.5.1.tgz#b8260bc1d1470ae3c91d8c40d22f41e9c4523d7b"
-  integrity sha512-X9w22JfEp2cTggAwyt0gyvwe8VBy1qvJENliNen/2FJDpS3k6PCaeSO6MHNXz3c0Qy21hqxuu8/b32jCSe4LSA==
+stream-chat@^9.7.0:
+  version "9.7.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.7.0.tgz#8302a4dfd2b68115c57cd0a102976542a79cf132"
+  integrity sha512-8K4RQAUFfznCxpJ5CMIrMQQLroaZ1snB4aR/Xnwa9UpxNCzn3kIi61AVkfsaHTHGojPz5LA3c3faVb251u4HnA==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
