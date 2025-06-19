@@ -14,6 +14,7 @@ try {
 }
 
 export const Sound = {
+  // Always try to prioritize expo-audio if it's there.
   initializeSound: ExpoAudioComponent
     ? async (source, initialStatus, onPlaybackStatusUpdate: (playbackStatus) => void) => {
         await ExpoAudioComponent.setAudioModeAsync({
@@ -92,7 +93,7 @@ class ExpoAudioSoundAdapter {
   // eslint-disable-next-line require-await
   unloadAsync: SoundReturnType['unloadAsync'] = async () => {
     this.statusEventListener.remove();
-    this.player.remove();
+    this.player.release();
   };
 
   // eslint-disable-next-line require-await

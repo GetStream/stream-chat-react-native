@@ -184,7 +184,7 @@ export const useAudioController = () => {
     if (accessGranted) {
       setPermissionsGranted(true);
       const recording = recordingInfo.recording;
-      if (recording && typeof recording !== 'string') {
+      if (recording && typeof recording !== 'string' && recording.setProgressUpdateInterval) {
         recording.setProgressUpdateInterval(Platform.OS === 'android' ? 100 : 60);
       }
       setRecording(recording);
@@ -256,7 +256,6 @@ export const useAudioController = () => {
       await stopVoiceRecording();
     }
 
-    console.log('DURATION?', recordingDuration);
     const durationInSeconds = parseFloat((recordingDuration / 1000).toFixed(3));
 
     const resampledWaveformData = resampleWaveformData(waveformData, 100);
