@@ -556,7 +556,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                    <SendButton disabled={!hasSendableData} />
+                    <SendButton disabled={!hasSendableData || (!!command && !isOnline)} />
                   </View>
                 )
               ) : null}
