@@ -64,7 +64,6 @@ import {
   NativeHandlers,
 } from '../../native';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
-import { AttachmentPickerProps } from '../AttachmentPicker/AttachmentPicker';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 
@@ -106,20 +105,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageInputPropsWithContext = Partial<
-  Pick<
-    AttachmentPickerProps,
-    | 'AttachmentPickerError'
-    | 'AttachmentPickerErrorImage'
-    | 'AttachmentPickerIOSSelectMorePhotos'
-    | 'ImageOverlaySelectedComponent'
-    | 'attachmentPickerErrorButtonText'
-    | 'attachmentPickerErrorText'
-    | 'numberOfAttachmentImagesToLoadPerCall'
-    | 'numberOfAttachmentPickerImageColumns'
-  >
+type MessageInputPropsWithContext = Pick<
+  AttachmentPickerContextValue,
+  'bottomInset' | 'selectedPicker'
 > &
-  Pick<AttachmentPickerContextValue, 'bottomInset' | 'bottomSheetRef' | 'selectedPicker'> &
   Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
