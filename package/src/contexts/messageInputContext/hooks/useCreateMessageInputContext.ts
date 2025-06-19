@@ -40,7 +40,6 @@ export const useCreateMessageInputContext = ({
   FileAttachmentUploadPreview,
   FileSelectorIcon,
   FileUploadPreview,
-  isCommandUIEnabled,
   handleAttachButtonPress,
   hasCameraPicker,
   hasCommands,
@@ -130,7 +129,6 @@ export const useCreateMessageInputContext = ({
       InputButtons,
       InputEditingStateHeader,
       InputReplyStateHeader,
-      isCommandUIEnabled,
       MoreOptionsButton,
       openAttachmentPicker,
       openFilePicker,
@@ -154,7 +152,7 @@ export const useCreateMessageInputContext = ({
       VideoRecorderSelectorIcon,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cooldownEndsAt, isCommandUIEnabled, threadId, showPollCreationDialog, selectedPicker],
+    [cooldownEndsAt, threadId, showPollCreationDialog, selectedPicker],
   );
 
   return messageInputContext;

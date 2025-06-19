@@ -292,10 +292,6 @@ export type InputMessageInputContextValue = {
    */
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps>;
   InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps>;
-  /**
-   * Boolean value to determine if the input should show a command UI.
-   */
-  isCommandUIEnabled?: boolean;
   CommandInput: React.ComponentType<CommandInputProps>;
   InputReplyStateHeader: React.ComponentType;
   /**
@@ -468,13 +464,7 @@ export const MessageInputProvider = ({
         createDraftAttachmentsCompositionMiddleware(messageComposer),
       ]);
     }
-  }, [
-    value.doFileUploadRequest,
-    value.isCommandUIEnabled,
-    enableOfflineSupport,
-    messageComposer,
-    attachmentManager,
-  ]);
+  }, [value.doFileUploadRequest, enableOfflineSupport, messageComposer, attachmentManager]);
 
   /**
    * Function for capturing a photo and uploading it
