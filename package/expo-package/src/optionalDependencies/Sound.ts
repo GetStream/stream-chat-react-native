@@ -123,6 +123,11 @@ class ExpoAudioSoundAdapter {
     shouldCorrectPitch = this.initialShouldCorrectPitch,
     pitchCorrectionQuality = this.initialPitchCorrectionQuality,
   ) => {
+    // On Android, pitch correction sets the playback speed to 1f every time
+    // as seen here: https://github.com/expo/expo/blob/f9d82c5af6d472c257b14c2657938db1be4a1b2c/packages/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt#L409
+    // Pitch correction is set to true whenever the pitchCorrectionQuality parameter is set,
+    // so there isn't much we can do about it for now.
+    // This is wrong and will likely be fixed within the library.
     if (shouldCorrectPitch && pitchCorrectionQuality) {
       this.player.setPlaybackRate(rate, pitchCorrectionQuality);
       return;
