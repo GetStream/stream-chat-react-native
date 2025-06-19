@@ -267,9 +267,19 @@ const flattenExpoAudioRecordingOptions = (
       ...options.ios,
     };
   } else if (Platform.OS === 'android') {
+    const audioEncoder = options.android.audioEncoder;
+    const audioEncoderConfig = audioEncoder
+      ? { audioEncoder: expoAvToExpoAudioAndroidEncoderAdapter(audioEncoder) }
+      : {};
+    const outputFormat = options.android.outputFormat;
+    const outputFormatConfig = outputFormat
+      ? { outputFormat: expoAvToExpoAudioAndroidOutputAdapter(outputFormat) }
+      : {};
     commonOptions = {
       ...commonOptions,
       ...options.android,
+      ...audioEncoderConfig,
+      ...outputFormatConfig,
     };
   }
   return commonOptions;
@@ -293,6 +303,44 @@ const expoAvToExpoAudioModeAdapter = (mode: AudioRecordingConfiguration['mode'])
     shouldPlayInBackground: staysActiveInBackground,
     shouldRouteThroughEarpiece: playThroughEarpieceAndroid,
   };
+};
+
+const expoAvToExpoAudioAndroidEncoderAdapter = (
+  audioEncoder: AudioRecordingConfiguration['options']['android']['audioEncoder'],
+) => {
+  const encoderMap = {
+    0: 'default',
+    1: 'amr_nb',
+    2: 'amr_wb',
+    3: 'aac',
+    4: 'he_aac',
+    5: 'aac_eld',
+  };
+
+  return Object.keys(encoderMap).includes(audioEncoder.toString())
+    ? encoderMap[audioEncoder]
+    : 'default';
+};
+
+const expoAvToExpoAudioAndroidOutputAdapter = (
+  outputFormat: AudioRecordingConfiguration['options']['android']['outputFormat'],
+) => {
+  const outputFormatMap = {
+    0: 'default',
+    1: '3gp',
+    2: 'mpeg4',
+    3: 'amrnb',
+    4: 'amrwb',
+    5: 'default',
+    6: 'aac_adts',
+    7: 'default',
+    8: 'mpeg2ts',
+    9: 'webm',
+  };
+
+  return Object.keys(outputFormatMap).includes(outputFormat.toString())
+    ? outputFormatMap[outputFormat]
+    : 'default';
 };
 
 // Always try to prioritize expo-audio if it's there.
