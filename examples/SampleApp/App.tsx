@@ -8,6 +8,7 @@ import {
   Chat,
   createTextComposerEmojiMiddleware,
   OverlayProvider,
+  setupCommandUIMiddleware,
   SqliteClient,
   ThemeProvider,
   useOverlayContext,
@@ -133,6 +134,8 @@ const App = () => {
           enabled: true,
         },
       });
+
+      setupCommandUIMiddleware(composer);
 
       composer.textComposer.middlewareExecutor.insert({
         middleware: [createTextComposerEmojiMiddleware(SearchIndex) as TextComposerMiddleware],
