@@ -128,14 +128,11 @@ export const useAudioController = () => {
       if (uri && NativeHandlers.Sound?.initializeSound) {
         soundRef.current = await NativeHandlers.Sound.initializeSound(
           { uri },
-          {},
+          { progressUpdateIntervalMillis: Platform.OS === 'android' ? 100 : 60 },
           onVoicePlayerPlaybackStatusUpdate,
         );
-        if (soundRef.current?.playAsync && soundRef.current.setProgressUpdateIntervalAsync) {
+        if (soundRef.current?.playAsync) {
           await soundRef.current.playAsync();
-          await soundRef.current.setProgressUpdateIntervalAsync(
-            Platform.OS === 'android' ? 100 : 60,
-          );
         }
       }
     }
@@ -187,7 +184,7 @@ export const useAudioController = () => {
     if (accessGranted) {
       setPermissionsGranted(true);
       const recording = recordingInfo.recording;
-      if (recording && typeof recording !== 'string') {
+      if (recording && typeof recording !== 'string' && recording.setProgressUpdateInterval) {
         recording.setProgressUpdateInterval(Platform.OS === 'android' ? 100 : 60);
       }
       setRecording(recording);
