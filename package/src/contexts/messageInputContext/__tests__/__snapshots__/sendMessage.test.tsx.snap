@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MessageInputContext's sendMessage exit sendMessage when edit message is not boolean image upload status is uploaded successfully 1`] = `
 {
@@ -104,6 +104,80 @@ exports[`MessageInputContext's sendMessage exit sendMessage when file upload sta
 `;
 
 exports[`MessageInputContext's sendMessage exit sendMessage when image upload status is uploaded successfully 1`] = `
+{
+  "attachments": [
+    {
+      "fallback": undefined,
+      "image_url": undefined,
+      "mime_type": undefined,
+      "originalImage": {
+        "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+      },
+      "original_height": undefined,
+      "original_width": undefined,
+      "type": "image",
+    },
+    {
+      "fallback": undefined,
+      "image_url": undefined,
+      "mime_type": undefined,
+      "originalImage": {
+        "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+      },
+      "original_height": undefined,
+      "original_width": undefined,
+      "type": "image",
+    },
+  ],
+  "mentioned_users": [
+    "dummy1",
+    "dummy2",
+  ],
+  "parent_id": undefined,
+  "quoted_message_id": undefined,
+  "show_in_channel": undefined,
+  "text": "",
+}
+`;
+
+exports[`MessageInputContext's sendMessage exit sendMessage when image upload status is uploaded successfully 2`] = `
+{
+  "attachments": [
+    {
+      "fallback": undefined,
+      "image_url": undefined,
+      "mime_type": undefined,
+      "originalImage": {
+        "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+      },
+      "original_height": undefined,
+      "original_width": undefined,
+      "type": "image",
+    },
+    {
+      "fallback": undefined,
+      "image_url": undefined,
+      "mime_type": undefined,
+      "originalImage": {
+        "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+      },
+      "original_height": undefined,
+      "original_width": undefined,
+      "type": "image",
+    },
+  ],
+  "mentioned_users": [
+    "dummy1",
+    "dummy2",
+  ],
+  "parent_id": undefined,
+  "quoted_message_id": undefined,
+  "show_in_channel": undefined,
+  "text": "",
+}
+`;
+
+exports[`MessageInputContext's sendMessage exit sendMessage when image upload status is uploaded successfully 3`] = `
 {
   "attachments": [
     {

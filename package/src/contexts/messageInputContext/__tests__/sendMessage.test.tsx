@@ -209,16 +209,15 @@ describe("MessageInputContext's sendMessage", () => {
       result.current.setText('');
     });
 
+    await result.current.sendMessage();
     await waitFor(() => {
-      result.current.sendMessage();
+      expect(sendMessageMock.mock.calls[0][0]).toMatchSnapshot();
+      expect(clearQuotedMessageStateMock).toHaveBeenCalled();
+      expect(result.current.sending.current).toBeFalsy();
+      expect(result.current.fileUploads.length).toBe(0);
+      expect(result.current.imageUploads.length).toBe(0);
+      expect(result.current.mentionedUsers.length).toBe(0);
     });
-
-    expect(sendMessageMock.mock.calls[0][0]).toMatchSnapshot();
-    expect(clearQuotedMessageStateMock).toHaveBeenCalled();
-    expect(result.current.sending.current).toBeFalsy();
-    expect(result.current.fileUploads.length).toBe(0);
-    expect(result.current.imageUploads.length).toBe(0);
-    expect(result.current.mentionedUsers.length).toBe(0);
   });
 
   it('exit sendMessage when image upload has an error and catch block is executed', () => {

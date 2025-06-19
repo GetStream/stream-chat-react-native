@@ -5,8 +5,6 @@ import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js
 
 import { registerNativeHandlers } from './src/native';
 
-// eslint-disable-next-line no-underscore-dangle
-
 console.warn = () => {};
 
 registerNativeHandlers({
@@ -56,3 +54,9 @@ jest.mock('@op-engineering/op-sqlite', () => {
   const { sqliteMock } = require('./src/mock-builders/DB/mock');
   return sqliteMock;
 });
+// RN 0.80 introduced a bug which is reported here: https://github.com/facebook/react-native/issues/51993#issuecomment-2970614900
+// This can be removed once it's resolved.
+jest.mock('react-native/Libraries/Components/RefreshControl/RefreshControl', () => ({
+  __esModule: true,
+  default: require('./__mocks__/RefreshControlMock'),
+}));
