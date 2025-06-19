@@ -1,12 +1,11 @@
 import {
+  createActiveCommandGuardMiddleware,
   createCommandInjectionMiddleware,
   createCommandStringExtractionMiddleware,
   createDraftCommandInjectionMiddleware,
   MessageComposer,
   TextComposerMiddleware,
 } from 'stream-chat';
-
-import { createTextComposerPreCommandMiddleware } from '../middlewares/pre-command';
 
 export const setupCommandUIMiddleware = (messageComposer: MessageComposer) => {
   messageComposer.compositionMiddlewareExecutor.insert({
@@ -20,7 +19,7 @@ export const setupCommandUIMiddleware = (messageComposer: MessageComposer) => {
   });
 
   messageComposer.textComposer.middlewareExecutor.insert({
-    middleware: [createTextComposerPreCommandMiddleware() as TextComposerMiddleware],
+    middleware: [createActiveCommandGuardMiddleware() as TextComposerMiddleware],
     position: { before: 'stream-io/text-composer/commands-middleware' },
   });
 

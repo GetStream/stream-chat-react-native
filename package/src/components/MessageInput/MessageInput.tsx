@@ -347,7 +347,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   } = useAudioController();
 
   const asyncAudioEnabled = audioRecordingEnabled && isAudioRecorderAvailable();
-  const showSendingButton = hasText || attachments.length;
+  const showSendingButton = hasText || attachments.length || command;
 
   const isSendingButtonVisible = useMemo(() => {
     return asyncAudioEnabled ? showSendingButton && !recording : true;
@@ -556,7 +556,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   <CooldownTimer seconds={cooldownRemainingSeconds} />
                 ) : (
                   <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                    <SendButton disabled={!hasSendableData || (!!command && !isOnline)} />
+                    <SendButton disabled={!hasSendableData} />
                   </View>
                 )
               ) : null}

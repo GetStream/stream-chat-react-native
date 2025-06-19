@@ -64,7 +64,6 @@ import {
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
-import { setupCommandUIMiddleware } from '../../utils/setupCommandUIMiddleware';
 import {
   AttachmentPickerIconProps,
   useAttachmentPickerContext,
@@ -458,10 +457,6 @@ export const MessageInputProvider = ({
   useEffect(() => {
     if (value.doFileUploadRequest) {
       attachmentManager.setCustomUploadFn(value.doFileUploadRequest);
-    }
-
-    if (value.isCommandUIEnabled) {
-      setupCommandUIMiddleware(messageComposer);
     }
 
     if (enableOfflineSupport) {
