@@ -23,7 +23,7 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { ImageGallery } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
-  const { View } = require('react-native');
+  const View = require('react-native/Libraries/Components/View/View');
   return {
     isFileSystemAvailable: jest.fn(() => true),
     isImageMediaLibraryAvailable: jest.fn(() => true),

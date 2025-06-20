@@ -17,13 +17,14 @@ import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAtt
 
 jest.mock('../../../native.ts', () => ({
   isSoundPackageAvailable: jest.fn(() => true),
-  NativeHandlers: {
-    SDK: 'stream-chat-expo',
-    Sound: {
-      initializeSound: jest.fn(),
-      Player: null,
-    },
+  Sound: {
+    initializeSound: jest.fn(),
+    Player: null,
   },
+}));
+
+jest.mock('react-native/Libraries/ReactNative/I18nManager', () => ({
+  isRTL: true,
 }));
 
 const getComponent = (

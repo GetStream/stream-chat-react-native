@@ -31,7 +31,7 @@ export const AudioRecordingLockIndicator = ({
   style,
 }: AudioRecordingLockIndicatorProps) => {
   const [visible, setVisible] = useState(true);
-  const timeoutRef = useRef<number>(undefined);
+  const timeoutRef = useRef<NodeJS.Timeout>(undefined);
 
   useEffect(() => {
     timeoutRef.current = setTimeout(() => {

@@ -36,8 +36,6 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
     base64 (0.2.0)
-    benchmark (0.3.0)
-    bigdecimal (3.1.5)
     claide (1.1.0)
     cocoapods (1.14.3)
       addressable (~> 2.8)
@@ -222,14 +220,12 @@ GEM
     jwt (2.8.2)
       base64
     language_server-protocol (3.17.0.3)
-    logger (1.6.0)
     mini_magick (4.13.2)
     mini_mime (1.1.5)
     minitest (5.25.1)
     molinillo (0.8.0)
     multi_json (1.15.0)
     multipart-post (2.4.1)
-    mutex_m (0.2.0)
     nanaimo (0.3.0)
     nap (1.1.0)
     naturally (2.2.1)
@@ -320,16 +316,12 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (>= 6.1.7.5, != 7.1.0)
-  benchmark
-  bigdecimal
   cocoapods (>= 1.13, != 1.15.1, != 1.15.0)
   concurrent-ruby (< 1.3.4)
   fastlane
   fastlane-plugin-firebase_app_distribution
   fastlane-plugin-load_json
   fastlane-plugin-stream_actions (= 0.3.73)
-  logger
-  mutex_m
   rubocop-performance
   rubocop-require_tools
   xcodeproj (< 1.26.0)

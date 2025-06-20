@@ -10,7 +10,7 @@ module.exports = (api) => {
         },
       ],
       plugins: ['module-resolver', 'react-native-reanimated/plugin'],
-      presets: ['module:@react-native/babel-preset'],
+      presets: ['@babel/env', 'module:@react-native/babel-preset', '@babel/preset-typescript'],
     };
   }
 
@@ -33,6 +33,6 @@ module.exports = (api) => {
       },
     ],
     plugins: ['module-resolver'],
-    presets: ['module:@react-native/babel-preset'],
+    presets: ['@babel/env', 'module:@react-native/babel-preset', '@babel/preset-typescript'],
   };
 };

@@ -26,7 +26,7 @@ function MockedFlatList(props) {
 }
 
 jest.mock('../../../native.ts', () => {
-  const { View } = require('react-native');
+  const View = require('react-native/Libraries/Components/View/View');
 
   return {
     isAudioRecorderAvailable: jest.fn(() => true),

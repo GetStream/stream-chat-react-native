@@ -38,7 +38,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
       i18nInstance={streami18n}
       value={{ style: theme }}
     >
-      <Chat enableOfflineSupport client={chatClient} i18nInstance={streami18n}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         {children}
       </Chat>
     </OverlayProvider>

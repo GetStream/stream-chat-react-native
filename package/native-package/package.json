@@ -73,7 +73,7 @@
     "postpack": "rm README.md"
   },
   "devDependencies": {
-    "react-native": "^0.79.3"
+    "react-native": "0.78.0"
   },
   "codegenConfig": {
     "name": "StreamChatReactNativeSpec",
