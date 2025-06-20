@@ -119,11 +119,6 @@ const App = () => {
   }, []);
 
   return (
-    <SafeAreaProvider
-      style={{
-        backgroundColor: streamChatTheme.colors?.white_snow || '#FCFCFC',
-      }}
-    >
       <ThemeProvider style={streamChatTheme}>
         <NavigationContainer
           ref={RootNavigationRef}
@@ -147,7 +142,6 @@ const App = () => {
           </AppContext.Provider>
         </NavigationContainer>
       </ThemeProvider>
-    </SafeAreaProvider>
   );
 };
 
