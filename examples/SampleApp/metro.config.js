@@ -63,6 +63,8 @@ config.resolver.extraNodeModules = extraNodeModules;
 
 config.resolver.nodeModulesPaths = [PATH.resolve(__dirname, 'node_modules')];
 
+config.resolver.unstable_enablePackageExports = false;
+
 // add the package dir for metro to access the package folder
 config.watchFolders = [packageDirPath];
 
