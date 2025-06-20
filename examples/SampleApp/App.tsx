@@ -72,7 +72,7 @@ const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const colorScheme = useColorScheme();
-  const streamChatTheme = useStreamChatTheme();
+  // const streamChatTheme = useStreamChatTheme();
 
   useEffect(() => {
     const messaging = getMessaging();
@@ -119,13 +119,18 @@ const App = () => {
   }, []);
 
   return (
-      <ThemeProvider style={streamChatTheme}>
+    <SafeAreaProvider
+      style={{
+        backgroundColor: '#FCFCFC',
+      }}
+    >
+      <ThemeProvider>
         <NavigationContainer
           ref={RootNavigationRef}
           theme={{
             colors: {
               ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-              background: streamChatTheme.colors?.white_snow || '#FCFCFC',
+              background: '#FCFCFC',
             },
             fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
             dark: colorScheme === 'dark',
@@ -142,6 +147,7 @@ const App = () => {
           </AppContext.Provider>
         </NavigationContainer>
       </ThemeProvider>
+    </SafeAreaProvider>
   );
 };
 

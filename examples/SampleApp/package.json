@@ -44,7 +44,7 @@
     "react-native-haptic-feedback": "^2.3.3",
     "react-native-image-picker": "^8.2.1",
     "react-native-reanimated": "^3.18.0",
-    "react-native-safe-area-context": "^5.4.1",
+    "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.11.1",
     "react-native-share": "^12.0.11",
     "react-native-svg": "^15.12.0",
