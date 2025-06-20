@@ -155,7 +155,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - op-sqlite (14.0.4):
+  - op-sqlite (11.4.9):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2784,7 +2784,7 @@ SPEC CHECKSUMS:
   hermes-engine: 8b5a5eb386b990287d072fd7b6f6ebd9544dd251
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  op-sqlite: 6a5255f36253697406618ceba5212d6572012a9d
+  op-sqlite: 8fa63011fa3f134b0f88a48b3ff0c56f31db5f6c
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
