@@ -80,5 +80,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "resolutions": {
+    "stream-chat": "9.7.0"
   }
 }
