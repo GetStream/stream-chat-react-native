@@ -86,7 +86,6 @@ export type LocalMessageInputContext = {
 
   inputBoxRef: React.RefObject<TextInput | null>;
   openAttachmentPicker: () => void;
-  openFilePicker: () => void;
   /**
    * Function for picking a photo from native image picker and uploading it.
    */
@@ -699,7 +698,6 @@ export const MessageInputProvider = ({
     cooldownEndsAt,
     inputBoxRef,
     openAttachmentPicker,
-    openFilePicker: pickFile,
     pickAndUploadImageFromNativePicker,
     pickFile,
     setInputBoxRef,
