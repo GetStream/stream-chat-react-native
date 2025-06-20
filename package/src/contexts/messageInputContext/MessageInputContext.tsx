@@ -64,7 +64,6 @@ import {
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
-import { setupCommandUIMiddleware } from '../../utils/setupCommandUIMiddleware';
 import {
   AttachmentPickerIconProps,
   useAttachmentPickerContext,
@@ -292,10 +291,6 @@ export type InputMessageInputContextValue = {
    */
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps>;
   InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps>;
-  /**
-   * Boolean value to determine if the input should show a command UI.
-   */
-  isCommandUIEnabled?: boolean;
   CommandInput: React.ComponentType<CommandInputProps>;
   InputReplyStateHeader: React.ComponentType;
   /**
@@ -459,10 +454,6 @@ export const MessageInputProvider = ({
       attachmentManager.setCustomUploadFn(value.doFileUploadRequest);
     }
 
-    if (value.isCommandUIEnabled) {
-      setupCommandUIMiddleware(messageComposer);
-    }
-
     if (enableOfflineSupport) {
       messageComposer.compositionMiddlewareExecutor.replace([
         createAttachmentsCompositionMiddleware(messageComposer),
@@ -472,13 +463,7 @@ export const MessageInputProvider = ({
         createDraftAttachmentsCompositionMiddleware(messageComposer),
       ]);
     }
-  }, [
-    value.doFileUploadRequest,
-    value.isCommandUIEnabled,
-    enableOfflineSupport,
-    messageComposer,
-    attachmentManager,
-  ]);
+  }, [value.doFileUploadRequest, enableOfflineSupport, messageComposer, attachmentManager]);
 
   /**
    * Function for capturing a photo and uploading it

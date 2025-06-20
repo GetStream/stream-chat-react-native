@@ -42,9 +42,7 @@ type AutoCompleteInputPropsWithContext = TextInputProps &
 type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
-  // TODO: Comment out once the commands PR has been merged on the LLC
-  // command: state.command,
-  command: null,
+  command: state.command,
   text: state.text,
 });
 

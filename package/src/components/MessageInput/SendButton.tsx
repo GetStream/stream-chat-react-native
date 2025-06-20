@@ -20,13 +20,8 @@ export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessag
   disabled: boolean;
 };
 
-// TODO: Comment out once the commands PR has been merged on the LLC
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const textComposerStateSelector = (state: TextComposerState) => ({
-  // TODO: Comment out once the commands PR has been merged on the LLC
-  // command: state.command,
-  command: null,
+  command: state.command,
 });
 
 export const SendButton = (props: SendButtonProps) => {
