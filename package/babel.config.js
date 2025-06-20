@@ -32,7 +32,7 @@ module.exports = (api) => {
         compact: false,
       },
     ],
-    plugins: ['module-resolver'],
+    plugins: ['module-resolver', 'react-native-reanimated/plugin'],
     presets: ['module:@react-native/babel-preset'],
   };
 };
