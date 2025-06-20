@@ -74,49 +74,49 @@ const App = () => {
   const colorScheme = useColorScheme();
   // const streamChatTheme = useStreamChatTheme();
 
-  useEffect(() => {
-    const messaging = getMessaging();
-    const unsubscribeOnNotificationOpen = messaging.onNotificationOpenedApp((remoteMessage) => {
-      // Notification caused app to open from background state on iOS
-      const channelId = remoteMessage.data?.channel_id as string;
-      if (channelId) {
-        navigateToChannel(channelId);
-      }
-    });
-    // handle notification clicks on foreground
-    const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
-      if (type === EventType.PRESS) {
-        // user has pressed the foreground notification
-        const channelId = detail.notification?.data?.channel_id as string;
-        if (channelId) {
-          navigateToChannel(channelId);
-        }
-      }
-    });
-    notifee.getInitialNotification().then((initialNotification) => {
-      if (initialNotification) {
-        // Notification caused app to open from quit state on Android
-        const channelId = initialNotification.notification.data?.channel_id as string;
-        if (channelId) {
-          initialChannelIdGlobalRef.current = channelId;
-        }
-      }
-    });
-    messaging.getInitialNotification().then((remoteMessage) => {
-      if (remoteMessage) {
-        // Notification caused app to open from quit state on iOS
-        const channelId = remoteMessage.data?.channel_id as string;
-        if (channelId) {
-          // this will make the app to start with the channel screen with this channel id
-          initialChannelIdGlobalRef.current = channelId;
-        }
-      }
-    });
-    return () => {
-      unsubscribeOnNotificationOpen();
-      unsubscribeForegroundEvent();
-    };
-  }, []);
+  // useEffect(() => {
+  //   const messaging = getMessaging();
+  //   const unsubscribeOnNotificationOpen = messaging.onNotificationOpenedApp((remoteMessage) => {
+  //     // Notification caused app to open from background state on iOS
+  //     const channelId = remoteMessage.data?.channel_id as string;
+  //     if (channelId) {
+  //       navigateToChannel(channelId);
+  //     }
+  //   });
+  //   // handle notification clicks on foreground
+  //   const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
+  //     if (type === EventType.PRESS) {
+  //       // user has pressed the foreground notification
+  //       const channelId = detail.notification?.data?.channel_id as string;
+  //       if (channelId) {
+  //         navigateToChannel(channelId);
+  //       }
+  //     }
+  //   });
+  //   notifee.getInitialNotification().then((initialNotification) => {
+  //     if (initialNotification) {
+  //       // Notification caused app to open from quit state on Android
+  //       const channelId = initialNotification.notification.data?.channel_id as string;
+  //       if (channelId) {
+  //         initialChannelIdGlobalRef.current = channelId;
+  //       }
+  //     }
+  //   });
+  //   messaging.getInitialNotification().then((remoteMessage) => {
+  //     if (remoteMessage) {
+  //       // Notification caused app to open from quit state on iOS
+  //       const channelId = remoteMessage.data?.channel_id as string;
+  //       if (channelId) {
+  //         // this will make the app to start with the channel screen with this channel id
+  //         initialChannelIdGlobalRef.current = channelId;
+  //       }
+  //     }
+  //   });
+  //   return () => {
+  //     unsubscribeOnNotificationOpen();
+  //     unsubscribeForegroundEvent();
+  //   };
+  // }, []);
 
   return (
     <SafeAreaProvider
@@ -177,7 +177,6 @@ const DrawerNavigatorWrapper: React.FC<{
       <OverlayProvider bottomInset={bottom} value={{ style: streamChatTheme }}>
         <Chat
           client={chatClient}
-          enableOfflineSupport
           // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
           ImageComponent={FastImage}
           isMessageAIGenerated={isMessageAIGenerated}

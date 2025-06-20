@@ -1876,11 +1876,6 @@
   resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-9.1.8.tgz#3d55cb3fbcc21f9e35931e366afdf64b294da891"
   integrity sha512-Az/dueoPerJsbbjRxu8a558wKY+gONUrfoy3Hs++5OqbeMsR0dYe6P+4oN6twrLFyzAhEA1tEoZRvQTFDRmvQg==
 
-"@op-engineering/op-sqlite@^14.0.3":
-  version "14.0.4"
-  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-14.0.4.tgz#a86951f98e65be2f66d3f17d5bc27796d614e023"
-  integrity sha512-WNWsEY+ZLbOUJ6EuhB4vGqE+99NTJJkdwW+7XKdg8lN7QMnbsM7z7LGWQ9Cqp5JKvWwItBpjaxlHB2wbywsSJA==
-
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
