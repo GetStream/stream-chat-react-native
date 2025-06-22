@@ -7,7 +7,6 @@ import { ChannelsUnreadCountBadge } from './UnreadCountBadge';
 
 import { GoBack } from '../icons/GoBack';
 
-import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';

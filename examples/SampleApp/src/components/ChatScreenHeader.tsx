@@ -8,7 +8,6 @@ import { ScreenHeader } from './ScreenHeader';
 import { useAppContext } from '../context/AppContext';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
 
-import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';

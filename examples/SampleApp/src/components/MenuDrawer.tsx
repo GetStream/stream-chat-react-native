@@ -12,8 +12,6 @@ import {
 import { useAppContext } from '../context/AppContext';
 import { SecretMenu } from './SecretMenu.tsx';
 
-import type { DrawerContentComponentProps } from '@react-navigation/drawer';
-
 export const styles = StyleSheet.create({
   avatar: {
     borderRadius: 20,
@@ -51,7 +49,7 @@ export const styles = StyleSheet.create({
   },
 });
 
-export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
+export const MenuDrawer = ({ navigation }) => {
   const [secretMenuPressCounter, setSecretMenuPressCounter] = useState(0);
   const [secretMenuVisible, setSecretMenuVisible] = useState(false);
 

@@ -1,10 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
 import {
   LayoutChangeEvent,
   Text,
@@ -24,30 +18,8 @@ export const SlideInView = ({
   visible: boolean;
   children: React.ReactNode;
 }) => {
-  const animatedHeight = useSharedValue(0);
 
-  const onLayout = (event: LayoutChangeEvent) => {
-    const { height } = event.nativeEvent.layout;
-    animatedHeight.value = height;
-  };
-
-  const animatedStyle = useAnimatedStyle(
-    () => ({
-      height: withSpring(visible ? animatedHeight.value : 0, { damping: 10 }),
-      opacity: withTiming(visible ? 1 : 0, { duration: 500 }),
-    }),
-    [visible],
-  );
-
-  return (
-    <Animated.View style={animatedStyle}>
-      {visible ? (
-        <View onLayout={onLayout} style={{ position: 'absolute', width: '100%' }}>
-          {children}
-        </View>
-      ) : null}
-    </Animated.View>
-  );
+  return null;
 };
 
 const isAndroid = Platform.OS === 'android';
@@ -153,13 +125,6 @@ export const SecretMenu = ({
     setSelectedProvider(item.id);
   }, []);
 
-  const removeAllDevices = useCallback(async () => {
-    const { devices } = await chatClient.getDevices(chatClient.userID);
-    for (const device of devices ?? []) {
-      await chatClient.removeDevice(device.id, chatClient.userID);
-    }
-  }, [chatClient]);
-
   return (
     <SlideInView visible={visible}>
       <View
@@ -191,7 +156,7 @@ export const SecretMenu = ({
           </View>
         </View>
       </View>
-      <TouchableOpacity onPress={removeAllDevices} style={menuDrawerStyles.menuItem}>
+      <TouchableOpacity onPress={() => {}} style={menuDrawerStyles.menuItem}>
         <Text
           style={[
             menuDrawerStyles.menuTitle,

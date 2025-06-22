@@ -8,7 +8,6 @@ import {
   View,
 } from 'react-native';
 import dayjs from 'dayjs';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import { useUserSearchContext } from '../../context/UserSearchContext';
 
@@ -121,19 +120,6 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
     <View style={[styles.flex]}>
       {groupedAlphabetically && sections.length > 0 && (
         <View style={styles.gradient}>
-          <Svg height={24} style={styles.absolute} width={100}>
-            <Rect fill='url(#gradient)' height={24} width={100} x={0} y={0} />
-            <Defs>
-              <LinearGradient
-                gradientUnits='userSpaceOnUse'
-                id='gradient'
-                x1={0}
-                x2={0}
-                y1={0}
-                y2={24}
-               />
-            </Defs>
-          </Svg>
           <Text
             style={[
               styles.matches,

@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BackHandler, StyleSheet, useWindowDimensions } from 'react-native';
-import Animated, {
-  cancelAnimation,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 
 import { AppOverlayContext, AppOverlayContextValue } from './AppOverlayContext';
 
@@ -26,7 +20,6 @@ export const AppOverlayProvider = (
 
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
-  const overlayOpacity = useSharedValue(0);
   const { height, width } = useWindowDimensions();
 
   useEffect(() => {
@@ -44,23 +37,6 @@ export const AppOverlayProvider = (
     return () => backHandler.remove();
   }, [overlay]);
 
-  useEffect(() => {
-    cancelAnimation(overlayOpacity);
-    if (overlay !== 'none') {
-      overlayOpacity.value = withTiming(1);
-    } else {
-      overlayOpacity.value = withTiming(0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [overlay]);
-
-  const overlayStyle = useAnimatedStyle(
-    () => ({
-      opacity: overlayOpacity.value,
-    }),
-    [],
-  );
-
   const overlayContext = {
     overlay,
     setOverlay,
@@ -72,21 +48,6 @@ export const AppOverlayProvider = (
         <ChannelInfoOverlayProvider>
           <UserInfoOverlayProvider>
             {children}
-            <Animated.View
-              pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-              style={[StyleSheet.absoluteFill, overlayStyle]}
-            >
-              <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
-            </Animated.View>
-            <UserInfoOverlay overlayOpacity={overlayOpacity} visible={overlay === 'userInfo'} />
-            <ChannelInfoOverlay
-              overlayOpacity={overlayOpacity}
-              visible={overlay === 'channelInfo'}
-            />
-            <BottomSheetOverlay
-              overlayOpacity={overlayOpacity}
-              visible={overlay === 'addMembers' || overlay === 'confirmation'}
-            />
           </UserInfoOverlayProvider>
         </ChannelInfoOverlayProvider>
       </BottomSheetOverlayProvider>

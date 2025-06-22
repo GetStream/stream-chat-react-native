@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { DevSettings, LogBox, Platform, Text, useColorScheme, View } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,7 +18,6 @@ import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessages
 import { ChatScreen } from './src/screens/ChatScreen';
 import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
-import { MenuDrawer } from './src/components/MenuDrawer';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
 import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
@@ -37,7 +35,6 @@ if (__DEV__) {
 import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
-import FastImage from 'react-native-fast-image';
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 console.assert = () => null;
@@ -56,7 +53,6 @@ notifee.onBackgroundEvent(async ({ detail, type }) => {
   }
 });
 
-const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
