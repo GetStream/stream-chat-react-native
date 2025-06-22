@@ -3,7 +3,6 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 
-@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 

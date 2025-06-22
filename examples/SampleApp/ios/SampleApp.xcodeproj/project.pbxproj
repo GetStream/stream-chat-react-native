@@ -15,6 +15,7 @@
 		F5D25F8E32BEE5B47244E873 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5CA034D157E1D7F2B7696EF5 /* PrivacyInfo.xcprivacy */; };
 		FCA5E58D254B70E600B4E978 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FCA5E58C254B70E600B4E978 /* GoogleService-Info.plist */; };
 		FDE391DD2D68D510005AA9DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDE391DC2D68D510005AA9DC /* AppDelegate.swift */; };
+		FDF6F07B2E08B475005EDE6E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FDF6F07A2E08B475005EDE6E /* main.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		FCA5E58C254B70E600B4E978 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FDE391DC2D68D510005AA9DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FDE391DE2D68D512005AA9DC /* SampleApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SampleApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		FDF6F07A2E08B475005EDE6E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 		13B07FAE1A68108700A75B9A /* SampleApp */ = {
 			isa = PBXGroup;
 			children = (
+				FDF6F07A2E08B475005EDE6E /* main.m */,
 				FDE391DC2D68D510005AA9DC /* AppDelegate.swift */,
 				DD531E2E2807481A00AFB737 /* SampleAppRelease.entitlements */,
 				DD531E2D280743F700AFB737 /* SampleAppDebug.entitlements */,
@@ -402,6 +405,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDF6F07B2E08B475005EDE6E /* main.m in Sources */,
 				FDE391DD2D68D510005AA9DC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -674,10 +678,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -809,10 +810,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
