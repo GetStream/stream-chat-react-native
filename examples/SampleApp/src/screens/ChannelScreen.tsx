@@ -3,7 +3,6 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';

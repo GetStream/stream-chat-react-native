@@ -28,7 +28,6 @@ if (__DEV__) {
 }
 
 import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
@@ -53,88 +52,4 @@ const App = () => {
     </View>
   );
 };
-
-// TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
-const HomeScreen = () => {
-  return (
-    <Stack.Navigator
-      initialRouteName={initialChannelIdGlobalRef.current ? 'ChannelScreen' : 'MessagingScreen'}
-    >
-      <Stack.Screen
-        component={ChatScreen}
-        name='MessagingScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={ChannelScreen}
-        initialParams={
-          initialChannelIdGlobalRef.current
-            ? { channelId: initialChannelIdGlobalRef.current }
-            : undefined
-        }
-        name='ChannelScreen'
-        options={{
-          gestureEnabled: Platform.OS === 'ios',
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        component={NewDirectMessagingScreen}
-        name='NewDirectMessagingScreen'
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        component={NewGroupChannelAddMemberScreen}
-        name='NewGroupChannelAddMemberScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={NewGroupChannelAssignNameScreen}
-        name='NewGroupChannelAssignNameScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={OneOnOneChannelDetailScreen}
-        name='OneOnOneChannelDetailScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={GroupChannelDetailsScreen}
-        name='GroupChannelDetailsScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={ChannelImagesScreen}
-        name='ChannelImagesScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={ChannelFilesScreen}
-        name='ChannelFilesScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={ChannelPinnedMessagesScreen}
-        name='ChannelPinnedMessagesScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={SharedGroupsScreen}
-        name='SharedGroupsScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={ThreadScreen}
-        name='ThreadScreen'
-        options={{
-          gestureEnabled: Platform.OS === 'ios',
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-};
-
 export default App;

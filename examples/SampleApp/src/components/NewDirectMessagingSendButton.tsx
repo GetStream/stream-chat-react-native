@@ -1,8 +1,6 @@
 import React from 'react';
 import { Alert } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
 
 import { useUserSearchContext } from '../context/UserSearchContext';
 import { useAppContext } from '../context/AppContext';
@@ -13,13 +11,7 @@ const SendButtonWithContext = (
   const { disabled = false, giphyActive, sendMessage } = props;
 
 
-  return (
-    <TouchableOpacity
-      disabled={disabled}
-      onPress={sendMessage}
-      testID='send-button'
-     />
-  );
+  return null;
 };
 
 const areEqual = (

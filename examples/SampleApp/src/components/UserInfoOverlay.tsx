@@ -2,12 +2,6 @@ import React, { useEffect } from 'react';
 import { Alert, Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';

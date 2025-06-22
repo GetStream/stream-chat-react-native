@@ -1,11 +1,5 @@
 import React, { useEffect } from 'react';
 import { Keyboard, StyleSheet } from 'react-native';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
 
 import { AddMemberBottomSheet } from './AddMemberBottomSheet';
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
