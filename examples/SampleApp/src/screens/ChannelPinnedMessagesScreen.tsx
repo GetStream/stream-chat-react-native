@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useTheme } from 'stream-chat-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePaginatedPinnedMessages } from '../hooks/usePaginatedPinnedMessages';
@@ -76,11 +75,6 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
     params: { channel },
   },
 }) => {
-  const {
-    theme: {
-      colors: { white_snow },
-    },
-  } = useTheme();
   const { loading, loadMore, messages } = usePaginatedPinnedMessages(channel);
   const insets = useSafeAreaInsets();
   return (
@@ -88,35 +82,16 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
       style={[
         styles.flex,
         {
-          backgroundColor: white_snow,
           paddingBottom: insets.bottom,
         },
       ]}
     >
       <ScreenHeader titleText='Pinned Messages' />
       <MessageSearchList
-        EmptySearchIndicator={EmptyListComponent}
         loading={loading}
         loadMore={loadMore}
         messages={messages}
       />
-    </View>
-  );
-};
-
-const EmptyListComponent = () => {
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-    },
-  } = useTheme();
-  return (
-    <View style={styles.emptyContainer}>
-      <Message fill={grey_gainsboro} height={110} width={130} />
-      <Text style={[styles.noFiles, { color: black }]}>No pinned messages</Text>
-      <Text style={[styles.noFilesDetails, { color: grey }]}>
-        Long-press an important message and choose Pin to conversation.
-      </Text>
     </View>
   );
 };

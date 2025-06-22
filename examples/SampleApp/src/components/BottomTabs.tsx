@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from 'stream-chat-react-native';
 
 import { ChannelsUnreadCountBadge, ThreadsUnreadCountBadge } from './UnreadCountBadge';
 
@@ -69,11 +68,6 @@ type TabProps = Pick<BottomTabBarProps, 'navigation' | 'state'> & {
 
 const Tab = (props: TabProps) => {
   const { navigation, state, route, index } = props;
-  const {
-    theme: {
-      colors: { black, grey },
-    },
-  } = useTheme();
   const tab = getTab(route.name);
 
   const isFocused = state.index === index;
@@ -102,9 +96,6 @@ const Tab = (props: TabProps) => {
       <Text
         style={[
           styles.tabTitle,
-          {
-            color: isFocused ? black : grey,
-          },
         ]}
       >
         {tab.title}
@@ -115,11 +106,6 @@ const Tab = (props: TabProps) => {
 
 export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
   const { navigation, state } = props;
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
   const { bottom } = useSafeAreaInsets();
 
   return (
@@ -127,7 +113,6 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
       style={[
         styles.tabListContainer,
         {
-          backgroundColor: white,
           paddingBottom: bottom,
         },
       ]}

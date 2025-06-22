@@ -2,42 +2,39 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { useAppContext } from '../context/AppContext';
 
-import type { UserFilters, UserResponse } from 'stream-chat';
-
-
 export type PaginatedUsers = {
   clearText: () => void;
-  initialResults: UserResponse[] | null;
+  initialResults: unknown[] | null;
   loading: boolean;
   loadMore: () => void;
   onChangeSearchText: (newText: string) => void;
   onFocusInput: () => void;
   removeUser: (index: number) => void;
   reset: () => void;
-  results: UserResponse[];
+  results: unknown[];
   searchText: string;
   selectedUserIds: string[];
-  selectedUsers: UserResponse[];
+  selectedUsers: unknown[];
   setInitialResults: React.Dispatch<
-    React.SetStateAction<UserResponse[] | null>
+    React.SetStateAction<unknown[] | null>
   >;
-  setResults: React.Dispatch<React.SetStateAction<UserResponse[]>>;
+  setResults: React.Dispatch<React.SetStateAction<unknown[]>>;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedUsers: React.Dispatch<React.SetStateAction<UserResponse[]>>;
-  toggleUser: (user: UserResponse) => void;
+  setSelectedUsers: React.Dispatch<React.SetStateAction<unknown[]>>;
+  toggleUser: (user: unknown) => void;
 };
 
 export const usePaginatedUsers = (): PaginatedUsers => {
   const { chatClient } = useAppContext();
 
-  const [initialResults, setInitialResults] = useState<UserResponse[] | null>(
+  const [initialResults, setInitialResults] = useState<unknown[] | null>(
     null,
   );
   const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState<UserResponse[]>([]);
+  const [results, setResults] = useState<unknown[]>([]);
   const [searchText, setSearchText] = useState('');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<UserResponse[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<unknown[]>([]);
 
   const hasMoreResults = useRef(true);
   const offset = useRef(0);
@@ -50,7 +47,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
     setSelectedUsers([]);
   };
 
-  const addUser = (user: UserResponse) => {
+  const addUser = (user: unknown) => {
     setSelectedUsers([...selectedUsers, user]);
     setSelectedUserIds((prevSelectedUserIds) => {
       prevSelectedUserIds.push(user.id);
@@ -78,7 +75,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
     });
   };
 
-  const toggleUser = (user: UserResponse) => {
+  const toggleUser = (user: unknown) => {
     if (!user.id) {
       return;
     }
@@ -119,7 +116,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
 
     try {
       queryInProgress.current = true;
-      const filter: UserFilters = {
+      const filter = {
         role: 'user',
       };
 
@@ -138,18 +135,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
         queryInProgress.current = false;
         return;
       }
-
-      const { users } = await chatClient?.queryUsers(
-        filter,
-        { name: 1 },
-        {
-          limit: 10,
-          offset: offset.current,
-          presence: true,
-        },
-      );
-
-      const usersWithoutClientUserId = users.filter((user) => user.id !== chatClient.userID);
+      const usersWithoutClientUserId = null;
 
       setResults((r) => {
         if (query !== searchText) {

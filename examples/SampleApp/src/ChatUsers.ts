@@ -1,4 +1,3 @@
-import { UserResponse } from 'stream-chat';
 
 export const USER_TOKENS: Record<string, string> = {
   e2etest1:
@@ -26,7 +25,7 @@ export const USER_TOKENS: Record<string, string> = {
   rodolphe:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9kb2xwaGUifQ.tLl-I8ADBhTKB-x5FB9jK4-am0dELLXgydM6VN9rTL8',
 };
-export const USERS: Record<string, UserResponse> = {
+export const USERS: Record<string, unknown> = {
   neil: {
     id: 'neil',
     image: 'https://ca.slack-edge.com/T02RM6X6B-U01173D1D5J-0dead6eea6ea-512',

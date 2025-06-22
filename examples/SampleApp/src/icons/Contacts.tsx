@@ -1,15 +1,10 @@
 import React from 'react';
 import Svg, { G, Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
 export const Contacts: React.FC<IconProps> = ({ fill, height = 24, scale = 1, width = 24 }) => {
-  const {
-    theme: {
-      colors: { black },
-    },
-  } = useTheme();
+  const grey = '#808080';
 
   return (
     <Svg
@@ -22,7 +17,7 @@ export const Contacts: React.FC<IconProps> = ({ fill, height = 24, scale = 1, wi
         <Path
           clipRule='evenodd'
           d='M16 7a4 4 0 11-8 0 4 4 0 018 0zm-2 0a2 2 0 11-4 0 2 2 0 014 0z'
-          fill={fill || black}
+          fill={fill || grey}
           fillRule='evenodd'
         />
         <Path

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { KeyboardCompatibleView, useTheme, version } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
 
@@ -61,11 +60,6 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
   onChangeText,
   value,
 }) => {
-  const {
-    theme: {
-      colors: { accent_blue, accent_red, black, grey, white_smoke },
-    },
-  } = useTheme();
   const [borderColor, setBorderColor] = useState(white_smoke);
 
   const onFocus = () => {
@@ -78,70 +72,11 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 
   const isEmpty = value === undefined;
 
-  return (
-    <View
-      style={[
-        styles.labelTextContainer,
-        {
-          backgroundColor: white_smoke,
-          borderColor,
-          borderWidth: 1,
-          paddingVertical: !!value || error ? 16 : 8,
-        },
-      ]}
-    >
-      {!!value && (
-        <Text
-          style={[
-            styles.labelText,
-            {
-              color: grey,
-            },
-          ]}
-        >
-          {label}
-        </Text>
-      )}
-      {error && (
-        <Text
-          style={[
-            styles.labelText,
-            {
-              color: accent_red,
-            },
-          ]}
-        >
-          Please enter {label}
-        </Text>
-      )}
-      <TextInput
-        onBlur={onBlur}
-        onChangeText={onChangeText}
-        onFocus={onFocus}
-        placeholder={label}
-        placeholderTextColor={grey}
-        returnKeyType='next'
-        numberOfLines={1}
-        style={[
-          styles.input,
-          {
-            color: black,
-            fontWeight: isEmpty ? '500' : 'normal',
-          }, // design team wanted placeholder fontWeight of 500
-        ]}
-        value={value}
-      />
-    </View>
-  );
+  return null;
 };
 
 export const AdvancedUserSelectorScreen: React.FC = () => {
   const { bottom } = useSafeAreaInsets();
-  const {
-    theme: {
-      colors: { button_background, button_text, grey_gainsboro, white_snow },
-    },
-  } = useTheme();
 
   const { loginUser } = useAppContext();
   const [apiKey, setApiKey] = useState('');
@@ -171,103 +106,5 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
 
     return isValid;
   };
-  return (
-    <KeyboardCompatibleView keyboardVerticalOffset={0}>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: white_snow,
-            paddingBottom: bottom,
-          },
-        ]}
-      >
-        <View style={styles.innerContainer}>
-          <View style={styles.labelsContainer}>
-            <LabeledTextInput
-              error={apiKeyError}
-              label='Chat API Key'
-              onChangeText={(text) => {
-                setApiKeyError(false);
-                setApiKey(text);
-              }}
-              value={apiKey}
-            />
-            <LabeledTextInput
-              error={userIdError}
-              label='User ID'
-              onChangeText={(text) => {
-                setUserIdError(false);
-                setUserId(text);
-              }}
-              value={userId}
-            />
-            <LabeledTextInput
-              error={userTokenError}
-              label='User Token'
-              onChangeText={(text) => {
-                setUserTokenError(false);
-                setUserToken(text);
-              }}
-              value={userToken}
-            />
-            <LabeledTextInput
-              label='Username (optional)'
-              onChangeText={(text) => {
-                setUserName(text);
-              }}
-              value={userName}
-            />
-          </View>
-          <View style={styles.bottomContainer}>
-            <TouchableOpacity
-              onPress={async () => {
-                if (!isValidInput()) {
-                  return;
-                }
-
-                try {
-                  await loginUser({
-                    apiKey,
-                    userId,
-                    userName,
-                    userToken,
-                  });
-                } catch (e) {
-                  Alert.alert(
-                    `Login resulted in error. Please make sure you have entered valid credentials. Error: ${(e as Error).message}`,
-                  );
-                  console.warn(e);
-                }
-              }}
-              style={[
-                styles.bottomInnerContainer,
-                {
-                  backgroundColor: button_background,
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  color: button_text,
-                }}
-              >
-                Login
-              </Text>
-            </TouchableOpacity>
-            <Text
-              style={[
-                styles.versionText,
-                {
-                  color: grey_gainsboro,
-                },
-              ]}
-            >
-              Stream SDK v{version}
-            </Text>
-          </View>
-        </View>
-      </View>
-    </KeyboardCompatibleView>
-  );
+  return null;
 };

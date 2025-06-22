@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Delete, useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
@@ -117,18 +116,10 @@ type Props = {
 };
 
 const Spacer = () => {
-  const {
-    theme: {
-      colors: { grey_gainsboro },
-    },
-  } = useTheme();
   return (
     <View
       style={[
         styles.spacer,
-        {
-          backgroundColor: grey_gainsboro,
-        },
       ]}
     />
   );
@@ -140,11 +131,6 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
     params: { channel },
   },
 }) => {
-  const {
-    theme: {
-      colors: { accent_green, accent_red, black, border, grey, white, white_smoke },
-    },
-  } = useTheme();
   const { chatClient } = useAppContext();
   const { setOverlay } = useAppOverlayContext();
   const { setData } = useBottomSheetOverlayContext();
@@ -202,30 +188,24 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   }
 
   return (
-    <SafeAreaView style={[{ backgroundColor: white }, styles.container]}>
+    <SafeAreaView style={[, styles.container]}>
       <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
         <View style={styles.userInfoContainer}>
           <Image source={{ uri: user.image }} style={styles.avatar} />
           <Text
             style={[
               styles.displayName,
-              {
-                color: black,
-              },
             ]}
           >
             {user.name}
           </Text>
           <View style={styles.onlineStatusContainer}>
             {user.online && (
-              <View style={[{ backgroundColor: accent_green }, styles.onlineIndicator]} />
+              <View style={[styles.onlineIndicator]} />
             )}
             <Text
               style={[
                 styles.onlineStatus,
-                {
-                  color: black,
-                },
               ]}
             >
               {user?.online ? 'Online' : getUserActivityStatus(user)}
@@ -234,17 +214,11 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           <View
             style={[
               styles.userNameContainer,
-              {
-                borderTopColor: border,
-              },
             ]}
           >
             <Text
               style={[
                 styles.userName,
-                {
-                  color: black,
-                },
               ]}
             >
               @{user.id}
@@ -252,9 +226,6 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
             <Text
               style={[
                 styles.userName,
-                {
-                  color: grey,
-                },
               ]}
             >
               {user.name}
@@ -273,19 +244,12 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
         <TouchableOpacity
           style={[
             styles.actionContainer,
-            {
-              borderBottomColor: border,
-            },
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <Notification fill={grey} height={24} width={24} />
             <Text
               style={[
                 styles.itemText,
-                {
-                  color: black,
-                },
               ]}
             >
               Notifications
@@ -301,10 +265,6 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
                 }
                 setNotificationsEnabled((previousState) => !previousState);
               }}
-              trackColor={{
-                false: white_smoke,
-                true: accent_green,
-              }}
               value={notificationsEnabled}
             />
           </View>
@@ -312,9 +272,6 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
         <TouchableOpacity
           style={[
             styles.actionContainer,
-            {
-              borderBottomColor: border,
-            },
           ]}
         >
           <View style={styles.actionLabelContainer}>
@@ -322,9 +279,6 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
             <Text
               style={[
                 styles.itemText,
-                {
-                  color: black,
-                },
               ]}
             >
               Mute user
@@ -342,10 +296,6 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
                 }
                 setMuted((previousState) => !previousState);
               }}
-              trackColor={{
-                false: white_smoke,
-                true: accent_green,
-              }}
               value={muted}
             />
           </View>
@@ -358,27 +308,18 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           }}
           style={[
             styles.actionContainer,
-            {
-              borderBottomColor: border,
-            },
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <Pin fill={grey} />
             <Text
               style={[
                 styles.itemText,
-                {
-                  color: black,
-                },
               ]}
             >
               Pinned Messages
             </Text>
           </View>
-          <View>
-            <GoForward fill={grey} />
-          </View>
+          <View />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -388,27 +329,18 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           }}
           style={[
             styles.actionContainer,
-            {
-              borderBottomColor: border,
-            },
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <Picture fill={grey} />
             <Text
               style={[
                 styles.itemText,
-                {
-                  color: black,
-                },
               ]}
             >
               Photos and Videos
             </Text>
           </View>
-          <View>
-            <GoForward fill={grey} />
-          </View>
+          <View />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -418,27 +350,18 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           }}
           style={[
             styles.actionContainer,
-            {
-              borderBottomColor: border,
-            },
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <File pathFill={grey} />
             <Text
               style={[
                 styles.itemText,
-                {
-                  color: black,
-                },
               ]}
             >
               Files
             </Text>
           </View>
-          <View>
-            <GoForward fill={grey} />
-          </View>
+          <View />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -448,46 +371,30 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           }}
           style={[
             styles.actionContainer,
-            {
-              borderBottomColor: border,
-            },
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <Contacts fill={grey} />
             <Text
               style={[
                 styles.itemText,
-                {
-                  color: black,
-                },
               ]}
             >
               Shared Groups
             </Text>
           </View>
-          <View>
-            <GoForward fill={grey} />
-          </View>
+          <View />
         </TouchableOpacity>
         <Spacer />
         <TouchableOpacity
           onPress={openDeleteConversationConfirmationSheet}
           style={[
             styles.actionContainer,
-            {
-              borderBottomColor: border,
-            },
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <Delete fill={accent_red} size={24} />
             <Text
               style={[
                 styles.itemText,
-                {
-                  color: accent_red,
-                },
               ]}
             >
               Delete contact

@@ -1,11 +1,10 @@
 import React from 'react';
 
-import type { StreamChat } from 'stream-chat';
 
 import type { LoginConfig } from '../types';
 
 type AppContextType = {
-  chatClient: StreamChat | null;
+  chatClient: unknown | null;
   loginUser: (config: LoginConfig) => void;
   logout: () => void;
   switchUser: (userId?: string) => void;

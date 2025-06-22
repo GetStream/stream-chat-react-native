@@ -1,7 +1,5 @@
 import React, { RefObject, useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { AtMentions, useTheme } from 'stream-chat-react-native';
-import { MessageResponse } from 'stream-chat';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
@@ -29,16 +27,10 @@ const styles = StyleSheet.create({
 });
 
 const EmptyMentionsSearchIndicator = () => {
-  const {
-    theme: {
-      colors: { grey, grey_gainsboro },
-    },
-  } = useTheme();
 
   return (
     <View style={styles.emptyIndicatorContainer}>
-      <AtMentions height={112} pathFill={grey_gainsboro} width={112} />
-      <Text style={[styles.emptyIndicatorText, { color: grey }]}>No mentions exist yet...</Text>
+      <Text style={[styles.emptyIndicatorText]}>No mentions exist yet...</Text>
     </View>
   );
 };
@@ -48,11 +40,7 @@ export type MentionsScreenProps = {
 };
 
 export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
-  const {
-    theme: {
-      colors: { white_snow },
-    },
-  } = useTheme();
+
   const { chatClient } = useAppContext();
   const messageFilters = useMemo(
     () => ({
@@ -63,32 +51,9 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     [chatClient],
   );
 
-  const scrollRef = useRef<FlatList<MessageResponse> | null>(null);
-
-  useScrollToTop(scrollRef as RefObject<FlatList<MessageResponse>>);
 
   const { loading, loadMore, messages, refreshing, refreshList } =
     usePaginatedSearchedMessages(messageFilters);
 
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: white_snow,
-        },
-      ]}
-    >
-      <ChatScreenHeader />
-      <MessageSearchList
-        EmptySearchIndicator={EmptyMentionsSearchIndicator}
-        loading={loading}
-        loadMore={loadMore}
-        messages={messages}
-        ref={scrollRef}
-        refreshing={refreshing}
-        refreshList={refreshList}
-      />
-    </View>
-  );
+  return null;
 };

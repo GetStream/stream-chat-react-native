@@ -1,15 +1,10 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
 export const BlockUser: React.FC<IconProps> = ({ height, width }) => {
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
+  const grey = '#808080';
 
   return (
     <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>

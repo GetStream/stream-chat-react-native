@@ -13,10 +13,8 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
-import { Close, Notification, Delete, useTheme } from 'stream-chat-react-native';
 import { styles as menuDrawerStyles } from './MenuDrawer.tsx';
 import AsyncStore from '../utils/AsyncStore.ts';
-import { StreamChat } from 'stream-chat';
 import { LabeledTextInput } from '../screens/AdvancedUserSelectorScreen.tsx';
 
 export const SlideInView = ({
@@ -127,14 +125,9 @@ export const SecretMenu = ({
 }: {
   close: () => void;
   visible: boolean;
-  chatClient: StreamChat;
+  chatClient: unknown;
 }) => {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
-  const {
-    theme: {
-      colors: { black, grey },
-    },
-  } = useTheme();
 
   const notificationConfigItems = useMemo(
     () => [
@@ -175,13 +168,11 @@ export const SecretMenu = ({
           { alignItems: 'flex-start' },
         ]}
       >
-        <Notification height={24} pathFill={grey} width={24} />
         <View>
           <Text
             style={[
               menuDrawerStyles.menuTitle,
               {
-                color: black,
                 marginTop: 4,
               },
             ]}
@@ -201,34 +192,24 @@ export const SecretMenu = ({
         </View>
       </View>
       <TouchableOpacity onPress={removeAllDevices} style={menuDrawerStyles.menuItem}>
-        <Delete height={24} size={24} pathFill={grey} width={24} />
         <Text
           style={[
             menuDrawerStyles.menuTitle,
-            {
-              color: black,
-            },
           ]}
         >
           Remove all devices
         </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={close} style={menuDrawerStyles.menuItem}>
-        <Close height={24} pathFill={grey} width={24} />
         <Text
           style={[
             menuDrawerStyles.menuTitle,
-            {
-              color: black,
-            },
           ]}
         >
           Close
         </Text>
       </TouchableOpacity>
-      <View style={menuDrawerStyles.menuItem}>
-        <View style={[styles.separator, { backgroundColor: grey }]} />
-      </View>
+      <View style={menuDrawerStyles.menuItem} />
     </SlideInView>
   );
 };

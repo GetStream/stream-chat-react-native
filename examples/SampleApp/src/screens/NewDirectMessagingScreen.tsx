@@ -1,15 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  Channel,
-  Group,
-  MessageInput,
-  MessageList,
-  User,
-  UserAdd,
-  useTheme,
-} from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -19,7 +10,6 @@ import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { Channel as StreamChatChannel } from 'stream-chat';
 
 import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import type { StackNavigatorParamList } from '../types';
@@ -83,19 +73,11 @@ const styles = StyleSheet.create({
 });
 
 const EmptyMessagesIndicator = () => {
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
   return (
     <View style={styles.emptyMessageContainer}>
       <Text
         style={[
           styles.noChats,
-          {
-            color: grey,
-          },
         ]}
       >
         No chats here yet...
@@ -116,11 +98,6 @@ export type NewDirectMessagingScreenProps = {
 export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> = ({
   navigation,
 }) => {
-  const {
-    theme: {
-      colors: { accent_blue, black, border, grey, white },
-    },
-  } = useTheme();
   const { chatClient } = useAppContext();
 
   const {
@@ -160,11 +137,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       }
 
       const members = [chatClient.user.id, ...selectedUserIds];
-
-      // Check if the channel already exists.
-      const channels = await chatClient.queryChannels({
-        members,
-      });
+      const channels = [];
 
       if (channels.length === 1) {
         // Channel already exist
@@ -173,14 +146,6 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       } else {
         // Channel doesn't exist.
         isDraft.current = true;
-
-        const channel = chatClient.channel('messaging', {
-          members,
-        });
-
-        // Hack to trick channel component into accepting channel without watching it.
-        channel.initialized = true;
-        currentChannel.current = channel;
       }
 
       if (messageInputRef.current) {
@@ -192,151 +157,19 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     initChannel();
   }, [chatClient, selectedUserIds, selectedUsersLength]);
 
-  const renderUserSearch = ({ inSafeArea }: { inSafeArea: boolean }) => (
-    <View style={[{ backgroundColor: white }, focusOnSearchInput ? styles.container : undefined]}>
-      <ScreenHeader inSafeArea={inSafeArea} onBack={reset} titleText='New Chat' />
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={() => {
-          setFocusOnMessageInput(false);
-          setFocusOnSearchInput(true);
-          if (searchInputRef.current) {
-            searchInputRef.current.focus();
-          }
-        }}
-        style={[
-          styles.searchContainer,
-          {
-            backgroundColor: white,
-            borderBottomColor: border,
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.searchContainerLeft,
-            {
-              color: grey,
-            },
-          ]}
-        >
-          TO:
-        </Text>
-        <View style={styles.searchContainerMiddle}>
-          <View style={styles.selectedUsersContainer}>
-            {selectedUsers.map((tag, index) => {
-              const tagProps = {
-                disabled: !focusOnSearchInput,
-                index,
-                onPress: () => {
-                  toggleUser(tag);
-                },
-                tag,
-              };
-
-              return <SelectedUserTag key={index} {...tagProps} />;
-            })}
-          </View>
-          {focusOnSearchInput && (
-            <View style={styles.inputBoxContainer}>
-              <TextInput
-                onChangeText={onChangeSearchText}
-                onFocus={onFocusInput}
-                placeholder='Type a name'
-                placeholderTextColor={grey}
-                ref={searchInputRef}
-                style={[
-                  styles.inputBox,
-                  {
-                    color: black,
-                    paddingBottom: selectedUsers.length ? 16 : 0,
-                  },
-                ]}
-                value={searchText}
-              />
-            </View>
-          )}
-        </View>
-        <View style={styles.searchContainerRight}>
-          {selectedUsers.length === 0 ? <User pathFill={grey} /> : <UserAdd pathFill={grey} />}
-        </View>
-      </TouchableOpacity>
-      {focusOnSearchInput && !searchText && selectedUsers.length === 0 && (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.push('NewGroupChannelAddMemberScreen');
-          }}
-          style={styles.createGroupButtonContainer}
-        >
-          <RoundButton>
-            <Group pathFill={accent_blue} />
-          </RoundButton>
-          <Text
-            style={[
-              styles.createGroupButtonText,
-              {
-                color: black,
-              },
-            ]}
-          >
-            Create a Group
-          </Text>
-        </TouchableOpacity>
-      )}
-      {results && focusOnSearchInput && (
-        <UserSearchResults
-          toggleSelectedUser={(user) => {
-            setFocusOnSearchInput(false);
-            toggleUser(user);
-          }}
-        />
-      )}
-    </View>
-  );
-
   if (!chatClient) {
     return null;
   }
 
   if (!currentChannel.current) {
-    return renderUserSearch({ inSafeArea: false });
+    return null;
   }
 
   return (
     <SafeAreaView
       style={[
         styles.container,
-        {
-          backgroundColor: white,
-        },
       ]}
-    >
-      <Channel
-        additionalTextInputProps={{
-          onFocus: () => {
-            setFocusOnMessageInput(true);
-            setFocusOnSearchInput(false);
-            if (messageInputRef.current) {
-              messageInputRef.current.focus();
-            }
-          },
-        }}
-        audioRecordingEnabled={true}
-        channel={currentChannel.current}
-        EmptyStateIndicator={EmptyMessagesIndicator}
-        enforceUniqueReaction
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
-        onChangeText={setMessageInputText}
-        overrideOwnCapabilities={{ sendMessage: true }}
-        SendButton={NewDirectMessagingSendButton}
-        setInputRef={(ref) => (messageInputRef.current = ref)}
-      >
-        {renderUserSearch({ inSafeArea: true })}
-        {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
-          <MessageList />
-        )}
-        {selectedUsers.length > 0 && <MessageInput />}
-      </Channel>
-    </SafeAreaView>
+     />
   );
 };

@@ -48,8 +48,7 @@
     "react-native-screens": "^4.11.1",
     "react-native-share": "^12.0.11",
     "react-native-svg": "^15.12.0",
-    "react-native-video": "^6.14.1",
-    "stream-chat-react-native": "^7.1.2-beta.5"
+    "react-native-video": "^6.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",

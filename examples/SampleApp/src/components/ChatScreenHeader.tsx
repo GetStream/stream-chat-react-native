@@ -1,7 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
-import { useChatContext, useTheme } from 'stream-chat-react-native';
 
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';
@@ -29,15 +28,9 @@ type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
 >;
 
 export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream Chat' }) => {
-  const {
-    theme: {
-      colors: { accent_blue },
-    },
-  } = useTheme();
 
   const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
   const { chatClient } = useAppContext();
-  const { isOnline } = useChatContext();
 
   return (
     <ScreenHeader
@@ -59,11 +52,10 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
             navigation.navigate('NewDirectMessagingScreen');
           }}
         >
-          <NewDirectMessageIcon active color={accent_blue} height={25} width={25} />
+          <NewDirectMessageIcon active height={25} width={25} />
         </RoundButton>
       )}
-      // eslint-disable-next-line react/no-unstable-nested-components
-      Title={isOnline ? undefined : () => <NetworkDownIndicator titleSize='large' />}
+      Title={undefined}
       titleText={title}
     />
   );

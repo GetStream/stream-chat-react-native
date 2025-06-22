@@ -1,10 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { TouchableOpacity } from '@gorhom/bottom-sheet';
-import { Avatar, Close, useTheme } from 'stream-chat-react-native';
-
-import type { UserResponse } from 'stream-chat';
-
 
 const presenceIndicator = { cx: 7, cy: 7, r: 5 };
 
@@ -39,7 +34,7 @@ const styles = StyleSheet.create({
 
 export type UserGridItemProps = {
   onPress: () => void;
-  user: UserResponse;
+  user: unknown;
   removeButton?: boolean;
 };
 
@@ -48,35 +43,7 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
   removeButton = true,
   user,
 }) => {
-  const {
-    theme: {
-      colors: { black, white_snow },
-    },
-  } = useTheme();
   return (
-    <TouchableOpacity key={user.id} onPress={onPress} style={styles.selectedUserItemContainer}>
-      <Avatar
-        image={user.image}
-        online={user.online}
-        presenceIndicator={presenceIndicator}
-        presenceIndicatorContainerStyle={styles.presenceIndicatorContainer}
-        size={64}
-      />
-      {removeButton && (
-        <View
-          style={[
-            styles.selectedUserRemoveIcon,
-            {
-              backgroundColor: white_snow,
-            },
-          ]}
-        >
-          <Close />
-        </View>
-      )}
-      <Text numberOfLines={2} style={[styles.selectedUserItemName, { color: black }]}>
-        {user.name}
-      </Text>
-    </TouchableOpacity>
+    null
   );
 };

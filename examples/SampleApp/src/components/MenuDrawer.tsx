@@ -8,7 +8,6 @@ import {
   Pressable,
   View,
 } from 'react-native';
-import { Edit, Group, User, useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { SecretMenu } from './SecretMenu.tsx';
@@ -56,12 +55,6 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   const [secretMenuPressCounter, setSecretMenuPressCounter] = useState(0);
   const [secretMenuVisible, setSecretMenuVisible] = useState(false);
 
-  const {
-    theme: {
-      colors: { black, grey, white },
-    },
-  } = useTheme();
-
   useEffect(() => {
     if (!secretMenuVisible && secretMenuPressCounter >= 7) {
       setSecretMenuVisible(true);
@@ -80,7 +73,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: white }]}>
+    <View style={[styles.container]}>
       <SafeAreaView style={{ flex: 1 }}>
         <Pressable onPress={() => setSecretMenuPressCounter(c => c + 1)} style={[styles.userRow]}>
           <Image
@@ -92,9 +85,6 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
           <Text
             style={[
               styles.userName,
-              {
-                color: black,
-              },
             ]}
           >
             {chatClient.user?.name}
@@ -107,13 +97,9 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
               onPress={() => navigation.navigate('NewDirectMessagingScreen')}
               style={styles.menuItem}
             >
-              <Edit height={24} pathFill={grey} width={24} />
               <Text
                 style={[
                   styles.menuTitle,
-                  {
-                    color: black,
-                  },
                 ]}
               >
                 New Direct Messages
@@ -123,13 +109,9 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
               onPress={() => navigation.navigate('NewGroupChannelAddMemberScreen')}
               style={styles.menuItem}
             >
-              <Group height={24} pathFill={grey} width={24} />
               <Text
                 style={[
                   styles.menuTitle,
-                  {
-                    color: black,
-                  },
                 ]}
               >
                 New Group
@@ -142,13 +124,9 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
             }}
             style={styles.menuItem}
           >
-            <User height={24} pathFill={grey} width={24} />
             <Text
               style={[
                 styles.menuTitle,
-                {
-                  color: black,
-                },
               ]}
             >
               Sign Out

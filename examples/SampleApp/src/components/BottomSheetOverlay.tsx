@@ -19,7 +19,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { KeyboardCompatibleView, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { AddMemberBottomSheet } from './AddMemberBottomSheet';
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
@@ -48,16 +47,8 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
   const { overlayOpacity, visible } = props;
 
   const { overlay, setOverlay } = useAppOverlayContext();
-  const { vh } = useViewport();
-  const screenHeight = vh(100);
 
   const { reset } = useBottomSheetOverlayContext();
-
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
 
   const offsetY = useSharedValue(0);
   const showScreen = useSharedValue(0);
@@ -131,7 +122,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
             ? withDecay({
                 velocity: evt.velocityY,
               })
-            : withTiming(screenHeight, {
+            : withTiming(100, {
                 duration: 200,
                 easing: Easing.out(Easing.ease),
               });
@@ -179,7 +170,6 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
             }}
           >
             <Animated.View style={[styles.animatedContainer, panStyle]}>
-              <KeyboardCompatibleView keyboardVerticalOffset={10}>
                 <TapGestureHandler>
                   <Animated.View
                     onLayout={({
@@ -192,9 +182,6 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
                     style={[
                       styles.container,
                       showScreenStyle,
-                      {
-                        backgroundColor: white,
-                      },
                       overlay === 'addMembers' ? styles.addMembers : undefined,
                     ]}
                   >
@@ -202,7 +189,6 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
                     {overlay === 'confirmation' && <ConfirmationBottomSheet />}
                   </Animated.View>
                 </TapGestureHandler>
-              </KeyboardCompatibleView>
             </Animated.View>
           </TapGestureHandler>
         </Animated.View>

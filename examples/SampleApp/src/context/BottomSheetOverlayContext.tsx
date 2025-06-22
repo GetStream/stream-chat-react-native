@@ -1,14 +1,13 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
-import type { ChannelContextValue } from 'stream-chat-react-native';
 
 
 export const isAddMemberBottomSheetData = (
   data: BottomSheetOverlayData,
-): data is Pick<ChannelContextValue, 'channel'> => 'channel' in data;
+): data is Pick<{ channel: string }, 'channel'> => 'channel' in data;
 
 export type BottomSheetOverlayData =
-  | Pick<ChannelContextValue, 'channel'>
+  | Pick<{ channel: string }, 'channel'>
   | {
       onConfirm: () => void;
       title: string;

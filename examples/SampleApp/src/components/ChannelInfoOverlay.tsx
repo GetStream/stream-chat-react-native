@@ -20,16 +20,6 @@ import Animated, {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  Avatar,
-  CircleClose,
-  Delete,
-  User,
-  UserMinus,
-  useTheme,
-  useViewport,
-} from 'stream-chat-react-native';
-import { ChannelMemberResponse } from 'stream-chat';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
@@ -108,19 +98,12 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const { overlay, setOverlay } = useAppOverlayContext();
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useChannelInfoOverlayContext();
-  const { vh, vw } = useViewport();
 
   const screenHeight = vh(100);
   const halfScreenHeight = vh(50);
   const width = vw(100) - 60;
 
   const { channel, clientId, membership, navigation } = data || {};
-
-  const {
-    theme: {
-      colors: { accent_red, black, border, grey, white },
-    },
-  } = useTheme();
 
   const offsetY = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -219,37 +202,6 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     ],
   }));
 
-  // magic number 8 used as fontSize is 16 so assuming average character width of half
-  const maxWidth = channel
-    ? Math.floor(width / 8 - Object.keys(channel.state.members || {}).length.toString().length)
-    : 0;
-  const channelName = channel
-    ? channel.data?.name ||
-      Object.values<ChannelMemberResponse>(channel.state.members)
-        .slice(0)
-        .reduce<string>((returnString, currentMember, index, originalArray) => {
-          const returnStringLength = returnString.length;
-          const currentMemberName =
-            currentMember.user?.name || currentMember.user?.id || 'Unknown User';
-          // a rough approximation of when the +Number shows up
-          if (returnStringLength + (currentMemberName.length + 2) < maxWidth) {
-            if (returnStringLength) {
-              returnString += `, ${currentMemberName}`;
-            } else {
-              returnString = currentMemberName;
-            }
-          } else {
-            const remainingMembers = originalArray.length - index;
-            returnString += `, +${remainingMembers}`;
-            originalArray.splice(1); // exit early
-          }
-          return returnString;
-        }, '')
-    : '';
-  const otherMembers = channel
-    ? Object.values<ChannelMemberResponse>(channel.state.members).filter((member) => member.user?.id !== clientId)
-    : [];
-
   return (
     <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
       <PanGestureHandler
@@ -278,236 +230,15 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
               style={[styles.container, panStyle]}
             >
               <Animated.View
-                style={[styles.containerInner, { backgroundColor: white }, showScreenStyle]}
+                style={[styles.containerInner,  showScreenStyle]}
               >
                 <SafeAreaView>
                   {channel && (
                     <>
                       <View style={styles.detailsContainer}>
-                        <Text numberOfLines={1} style={[styles.channelName, { color: black }]}>
-                          {channelName}
-                        </Text>
-                        <Text style={[styles.channelStatus, { color: grey }]}>
-                          {otherMembers.length === 1
-                            ? otherMembers[0].user?.online
-                              ? 'Online'
-                              : `Last Seen ${dayjs(otherMembers[0].user?.last_active).fromNow()}`
-                            : `${Object.keys(channel.state.members).length} Members, ${
-                                Object.values<ChannelMemberResponse>(channel.state.members).filter(
-                                  (member) => !!member.user?.online,
-                                ).length
-                              } Online`}
-                        </Text>
-                        <FlatList
-                          contentContainerStyle={styles.flatListContent}
-                          data={Object.values<ChannelMemberResponse>(channel.state.members)
-                            .map((member) => member.user)
-                            .sort((a, b) =>
-                              !!a?.online && !b?.online
-                                ? -1
-                                : a?.id === clientId && b?.id !== clientId
-                                ? -1
-                                : !!a?.online && !!b?.online
-                                ? 0
-                                : 1,
-                            )}
-                          horizontal
-                          keyExtractor={(item, index) => `${item?.id}_${index}`}
-                          renderItem={({ item }) =>
-                            item ? (
-                              <View style={styles.userItemContainer}>
-                                <Avatar
-                                  image={item.image}
-                                  name={item.name || item.id}
-                                  online={item.online}
-                                  presenceIndicatorContainerStyle={styles.avatarPresenceIndicator}
-                                  size={avatarSize}
-                                />
-                                <Text style={[styles.userName, { color: black }]}>
-                                  {item.name || item.id || ''}
-                                </Text>
-                              </View>
-                            ) : null
-                          }
-                          style={styles.flatList}
-                        />
+                        <Text numberOfLines={1} style={[styles.channelName]} />
+                        <Text style={[styles.channelStatus]} />
                       </View>
-                      <TapGestureHandler
-                        onHandlerStateChange={({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            setOverlay('none');
-                            if (navigation) {
-                              if (otherMembers.length === 1) {
-                                navigation.navigate('OneOnOneChannelDetailScreen', {
-                                  channel,
-                                });
-                              } else {
-                                navigation.navigate('GroupChannelDetailsScreen', {
-                                  channel,
-                                });
-                              }
-                            }
-                          }
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.row,
-                            {
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <User pathFill={grey} />
-                          </View>
-                          <Text style={[styles.rowText, { color: black }]}>View info</Text>
-                        </View>
-                      </TapGestureHandler>
-                      <TapGestureHandler
-                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            try {
-                              if (membership?.pinned_at) {
-                                await channel.unpin();
-                              } else {
-                                await channel.pin();
-                              }
-                            } catch (error) {
-                              console.log('Error pinning/unpinning channel', error);
-                            }
-
-                            setOverlay('none');
-                          }
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.row,
-                            {
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <Pin height={24} width={24} />
-                          </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            {membership?.pinned_at ? 'Unpin' : 'Pin'}
-                          </Text>
-                        </View>
-                      </TapGestureHandler>
-                      <TapGestureHandler
-                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            try {
-                              if (membership?.archived_at) {
-                                await channel.unarchive();
-                              } else {
-                                await channel.archive();
-                              }
-                            } catch (error) {
-                              console.log('Error archiving/unarchiving channel', error);
-                            }
-
-                            setOverlay('none');
-                          }
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.row,
-                            {
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <Archive height={24} width={24} />
-                          </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            {membership?.archived_at ? 'Unarchive' : 'Archive'}
-                          </Text>
-                        </View>
-                      </TapGestureHandler>
-
-                      {otherMembers.length > 1 && (
-                        <TapGestureHandler
-                          onHandlerStateChange={({ nativeEvent: { state } }) => {
-                            if (state === State.END) {
-                              if (clientId) {
-                                channel.removeMembers([clientId]);
-                              }
-                              setOverlay('none');
-                            }
-                          }}
-                        >
-                          <View style={[styles.row, { borderTopColor: border }]}>
-                            <View style={styles.rowInner}>
-                              <UserMinus pathFill={grey} />
-                            </View>
-                            <Text style={[styles.rowText, { color: black }]}>Leave Group</Text>
-                          </View>
-                        </TapGestureHandler>
-                      )}
-                      <TapGestureHandler
-                        onHandlerStateChange={({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            setData({
-                              confirmText: 'DELETE',
-                              onConfirm: () => {
-                                channel.delete();
-                                setOverlay('none');
-                              },
-                              subtext: `Are you sure you want to delete this ${
-                                otherMembers.length === 1 ? 'conversation' : 'group'
-                              }?`,
-                              title: `Delete ${
-                                otherMembers.length === 1 ? 'Conversation' : 'Group'
-                              }`,
-                            });
-                            setOverlay('confirmation');
-                          }
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.row,
-                            {
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <Delete size={24} fill={accent_red} />
-                          </View>
-                          <Text style={[styles.rowText, { color: accent_red }]}>
-                            Delete conversation
-                          </Text>
-                        </View>
-                      </TapGestureHandler>
-                      <TapGestureHandler
-                        onHandlerStateChange={({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            setOverlay('none');
-                          }
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.lastRow,
-                            {
-                              borderBottomColor: border,
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <CircleClose pathFill={grey} />
-                          </View>
-                          <Text style={[styles.rowText, { color: black }]}>Cancel</Text>
-                        </View>
-                      </TapGestureHandler>
                     </>
                   )}
                 </SafeAreaView>

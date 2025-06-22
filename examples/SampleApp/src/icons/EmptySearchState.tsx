@@ -1,22 +1,17 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
 export const EmptySearchState: React.FC<IconProps> = ({ height, width }) => {
-  const {
-    theme: {
-      colors: { accent_red, grey_gainsboro },
-    },
-  } = useTheme();
+  const grey = '#808080';
 
   return (
     <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <Path
         clipRule='evenodd'
         d='M74.567 101.133c26.27 0 47.566-21.296 47.566-47.566C122.133 27.297 100.837 6 74.567 6 48.297 6 27 27.296 27 53.567c0 26.27 21.296 47.566 47.567 47.566zm0 4c28.479 0 51.566-23.087 51.566-51.566C126.133 25.087 103.046 2 74.567 2 46.087 2 23 25.087 23 53.567c0 28.479 23.087 51.566 51.567 51.566z'
-        fill={grey_gainsboro}
+        fill={grey}
         fillRule='evenodd'
       />
       <Path

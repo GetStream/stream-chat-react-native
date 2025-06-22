@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Delete, UserMinus, useTheme } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import {
@@ -50,11 +49,6 @@ export const ConfirmationBottomSheet: React.FC = () => {
   const { data: contextData, reset } = useBottomSheetOverlayContext();
   const data = contextData && !isAddMemberBottomSheetData(contextData) ? contextData : undefined;
 
-  const {
-    theme: {
-      colors: { accent_red, black, border, grey, white },
-    },
-  } = useTheme();
   const inset = useSafeAreaInsets();
 
   if (!data) {
@@ -68,26 +62,13 @@ export const ConfirmationBottomSheet: React.FC = () => {
       style={[
         styles.container,
         {
-          backgroundColor: white,
           marginBottom: inset.bottom,
         },
       ]}
     >
-      <View style={styles.description}>
-        {confirmText === 'LEAVE' ? (
-          <UserMinus pathFill={grey} />
-        ) : (
-          <Delete size={32} fill={accent_red} />
-        )}
-        <Text style={[styles.title, { color: black }]}>{title}</Text>
-        <Text style={[styles.subtext, { color: black }]}>{subtext}</Text>
-      </View>
       <View
         style={[
           styles.actionButtonsContainer,
-          {
-            borderTopColor: border,
-          },
         ]}
       >
         <TouchableOpacity
@@ -96,12 +77,8 @@ export const ConfirmationBottomSheet: React.FC = () => {
             reset();
           }}
           style={styles.actionButtonLeft}
-        >
-          <Text style={{ color: grey }}>{cancelText}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onConfirm} style={styles.actionButtonRight}>
-          <Text style={{ color: accent_red }}>{confirmText}</Text>
-        </TouchableOpacity>
+         />
+        <TouchableOpacity onPress={onConfirm} style={styles.actionButtonRight} />
       </View>
     </View>
   );

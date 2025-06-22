@@ -223,7 +223,6 @@ PODS:
     - React-RCTText (= 0.79.3)
     - React-RCTVibration (= 0.79.3)
   - React-callinvoker (0.79.3)
-  - React-Codegen (0.1.0)
   - React-Core (0.79.3):
     - glog
     - hermes-engine
@@ -2425,31 +2424,6 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.7.1)
-  - stream-chat-react-native (7.1.1):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Codegen
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2547,7 +2521,6 @@ DEPENDENCIES:
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - stream-chat-react-native (from `../node_modules/stream-chat-react-native`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -2570,7 +2543,6 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - PromisesSwift
-    - React-Codegen
     - SDWebImage
     - SDWebImageWebPCoder
     - SocketRocket
@@ -2755,8 +2727,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  stream-chat-react-native:
-    :path: "../node_modules/stream-chat-react-native"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -2793,7 +2763,6 @@ SPEC CHECKSUMS:
   RCTTypeSafety: fe728195791e1a0222aa83596a570cf377cd475e
   React: 114ee161feb204412580928b743e6716aebac987
   React-callinvoker: d175cf3640a993f6cd960044a7657543157f0ba9
-  React-Codegen: 4b8b4817cea7a54b83851d4c1f91f79aa73de30a
   React-Core: e84d47ce3df8dde567f5b9668f6103f8e562d72a
   React-CoreModules: ce8e588dca54cd790e2d424d0e678924e62b41b1
   React-cxxreact: 2c10954abacc35e876adf46e25ebfd74a0106521
@@ -2872,7 +2841,6 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  stream-chat-react-native: 963e1146ba5f092aa8f6c59f4e20e431a9265a69
   Yoga: b2eaabf17044cd4273a661b14eb83f9fd2c90491
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d

@@ -9,15 +9,12 @@ import {
   View,
 } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
-import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { useAppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
-import type { ChannelSort } from 'stream-chat';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -59,7 +56,7 @@ const baseFilters = {
   type: 'messaging',
 };
 
-const sort: ChannelSort = [
+const sort = [
   { pinned_at: -1 },
   { last_message_at: -1 },
   { updated_at: -1 },
@@ -76,159 +73,6 @@ const HeaderNetworkDownIndicator = () => null;
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation();
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro, grey_whisper, white, white_snow },
-    },
-  } = useTheme();
 
-  const searchInputRef = useRef<TextInput | null>(null);
-  const scrollRef = useRef<FlatList<Channel> | null>(null);
-
-  const [searchInputText, setSearchInputText] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const { loading, loadMore, messages, refreshing, refreshList, reset } =
-    usePaginatedSearchedMessages(searchQuery);
-
-  const chatClientUserId = chatClient?.user?.id || '';
-  const filters = useMemo(
-    () => ({
-      ...baseFilters,
-      members: {
-        $in: [chatClientUserId],
-      },
-    }),
-    [chatClientUserId],
-  );
-
-  useScrollToTop(scrollRef as RefObject<FlatList<Channel>>);
-
-  // eslint-disable-next-line react/no-unstable-nested-components
-  const EmptySearchIndicator = () => (
-    <View style={styles.emptyIndicatorContainer}>
-      <Search height={112} pathFill={grey_gainsboro} width={112} />
-      <Text style={[styles.emptyIndicatorText, { color: grey }]}>
-        {`No results for "${searchQuery}"`}
-      </Text>
-    </View>
-  );
-
-  const additionalFlatListProps = useMemo<Partial<FlatListProps<Channel>>>(
-    () => ({
-      getItemLayout: (_: unknown, index: number) => ({
-        index,
-        length: 65,
-        offset: 65 * index,
-      }),
-      keyboardDismissMode: 'on-drag',
-    }),
-    [],
-  );
-
-  const onSelect = useCallback(
-    (channel: Channel) => {
-      navigation.navigate('ChannelScreen', {
-        channel,
-      });
-    },
-    [navigation],
-  );
-
-  const setScrollRef = useCallback(
-    () => (ref: FlatList<Channel> | null) => {
-      scrollRef.current = ref;
-    },
-    [],
-  );
-
-  if (!chatClient) {
-    return null;
-  }
-
-  return (
-    <View
-      style={[
-        styles.flex,
-        {
-          backgroundColor: white_snow,
-        },
-      ]}
-    >
-      <ChatScreenHeader />
-
-      <View style={styles.flex}>
-        <View
-          style={[
-            styles.searchContainer,
-            {
-              backgroundColor: white,
-              borderColor: grey_whisper,
-            },
-          ]}
-        >
-          <Search pathFill={black} />
-          <TextInput
-            onChangeText={(text) => {
-              setSearchInputText(text);
-              if (!text) {
-                reset();
-                setSearchQuery('');
-              }
-            }}
-            onSubmitEditing={({ nativeEvent: { text } }) => {
-              setSearchQuery(text);
-            }}
-            placeholder='Search'
-            placeholderTextColor={grey}
-            ref={searchInputRef}
-            returnKeyType='search'
-            style={[styles.searchInput, { color: black }]}
-            value={searchInputText}
-          />
-          {!!searchInputText && (
-            <TouchableOpacity
-              onPress={() => {
-                setSearchInputText('');
-                setSearchQuery('');
-                if (searchInputRef.current) {
-                  searchInputRef.current.blur();
-                }
-                reset();
-              }}
-            >
-              <CircleClose pathFill={grey} />
-            </TouchableOpacity>
-          )}
-        </View>
-        {(!!searchQuery || (messages && messages.length > 0)) && (
-          <MessageSearchList
-            EmptySearchIndicator={EmptySearchIndicator}
-            loading={loading}
-            loadMore={loadMore}
-            messages={messages}
-            ref={scrollRef}
-            refreshing={refreshing}
-            refreshList={refreshList}
-            showResultCount
-          />
-        )}
-        <View style={{ flex: searchQuery ? 0 : 1 }}>
-          <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
-            <ChannelList
-              additionalFlatListProps={additionalFlatListProps}
-              filters={filters}
-              HeaderNetworkDownIndicator={HeaderNetworkDownIndicator}
-              maxUnreadCount={99}
-              onSelect={onSelect}
-              options={options}
-              Preview={ChannelPreview}
-              setFlatListRef={setScrollRef}
-              sort={sort}
-            />
-          </View>
-        </View>
-      </View>
-    </View>
-  );
+  return null;
 };

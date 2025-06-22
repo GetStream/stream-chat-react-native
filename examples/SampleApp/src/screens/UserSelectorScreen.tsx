@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme, version } from 'stream-chat-react-native';
 
 import { USERS } from '../ChatUsers';
 import { useAppContext } from '../context/AppContext';
@@ -88,11 +87,6 @@ type Props = {
 };
 
 export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
-  const {
-    theme: {
-      colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
-    },
-  } = useTheme();
   const { switchUser } = useAppContext();
   const { bottom } = useSafeAreaInsets();
 
@@ -103,7 +97,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView
       edges={['right', 'top', 'left']}
-      style={[styles.container, { backgroundColor: white_snow }]}
+      style={[styles.container]}
       testID='user-selector-screen'
     >
       <ScrollView
@@ -113,8 +107,8 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
       >
         <View style={styles.titleContainer}>
           <StreamLogo />
-          <Text style={[styles.title, { color: black }]}>Welcome to Stream Chat</Text>
-          <Text style={[styles.subTitle, { color: black }]}>
+          <Text style={[styles.title]}>Welcome to Stream Chat</Text>
+          <Text style={[styles.subTitle]}>
             Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'} sdk:
           </Text>
         </View>
@@ -125,7 +119,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
             onPress={() => {
               switchUser(u.id);
             }}
-            style={[styles.userContainer, { borderBottomColor: border }]}
+            style={[styles.userContainer]}
             testID={`user-selector-button-${u.id}`}
           >
             <Image
@@ -138,14 +132,10 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
               <Text
                 style={[
                   styles.userName,
-                  {
-                    color: black,
-                  },
                 ]}
               >
                 {u.name}
               </Text>
-              <Text style={{ color: grey }}>Stream test account</Text>
             </View>
             <View style={styles.rightArrow}>
               <RightArrow height={24} width={24} />
@@ -156,7 +146,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
           onPress={() => {
             navigation.navigate('AdvancedUserSelectorScreen');
           }}
-          style={[styles.userContainer, { borderBottomColor: border }]}
+          style={[styles.userContainer]}
         >
           <View
             style={{
@@ -166,7 +156,6 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
             <View
               style={{
                 alignItems: 'center',
-                backgroundColor: grey_whisper,
                 borderRadius: 20,
                 height: 40,
                 justifyContent: 'center',
@@ -179,14 +168,11 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
               <Text
                 style={[
                   styles.userName,
-                  {
-                    color: black,
-                  },
                 ]}
               >
                 Advanced Options
               </Text>
-              <Text style={{ color: grey }}>Custom settings</Text>
+              <Text style={}>Custom settings</Text>
             </View>
           </View>
           <View style={styles.rightArrow}>
@@ -197,14 +183,11 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
       <View
         style={[
           {
-            backgroundColor: white_snow,
             paddingBottom: bottom ? bottom : 16,
             paddingTop: 16,
           },
         ]}
-      >
-        <Text style={[styles.footerText, { color: grey_gainsboro }]}>Stream SDK v{version}</Text>
-      </View>
+       />
     </SafeAreaView>
   );
 };

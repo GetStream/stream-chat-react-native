@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useTheme, ThreadList } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -28,11 +27,6 @@ export type ThreadsScreenProps = {
 };
 
 export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
-  const {
-    theme: {
-      colors: { white_snow },
-    },
-  } = useTheme();
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
@@ -40,21 +34,9 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
     <View
       style={[
         styles.container,
-        {
-          backgroundColor: white_snow,
-        },
       ]}
     >
       <ChatScreenHeader />
-      <ThreadList
-        isFocused={isFocused}
-        onThreadSelect={(thread, channel) => {
-          navigation.navigate('ThreadScreen', {
-            thread,
-            channel,
-          });
-        }}
-      />
     </View>
   );
 };

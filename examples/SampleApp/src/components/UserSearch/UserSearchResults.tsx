@@ -9,13 +9,9 @@ import {
 } from 'react-native';
 import dayjs from 'dayjs';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Avatar, CheckSend, Close, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { useUserSearchContext } from '../../context/UserSearchContext';
 
-import type { UserResponse } from 'stream-chat';
-
-import { Search } from '../../icons/Search';
 import calendar from 'dayjs/plugin/calendar';
 
 dayjs.extend(calendar);
@@ -64,9 +60,9 @@ const styles = StyleSheet.create({
 type UserSearchResultsProps = {
   groupedAlphabetically?: boolean;
   removeOnPressOnly?: boolean;
-  results?: UserResponse[];
+  results?: unknown[];
   showOnlineStatus?: boolean;
-  toggleSelectedUser?: (user: UserResponse) => void;
+  toggleSelectedUser?: (user: unknown) => void;
 };
 
 export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
@@ -86,33 +82,17 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   } = useUserSearchContext();
   const [sections, setSections] = useState<
     Array<{
-      data: UserResponse[];
+      data: unknown[];
       title: string;
     }>
   >([]);
-  const {
-    theme: {
-      colors: {
-        accent_blue,
-        bg_gradient_end,
-        bg_gradient_start,
-        black,
-        border,
-        grey,
-        grey_gainsboro,
-        white_smoke,
-        white_snow,
-      },
-    },
-  } = useTheme();
-  const { vw } = useViewport();
 
   const results = resultsProp || resultsContext;
   const resultsLength = results.length;
   useEffect(() => {
     const newSections: {
       [key: string]: {
-        data: UserResponse[];
+        data: unknown[];
         title: string;
       };
     } = {};
@@ -138,11 +118,11 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   }, [resultsLength]);
 
   return (
-    <View style={[styles.flex, { backgroundColor: white_snow }]}>
+    <View style={[styles.flex]}>
       {groupedAlphabetically && sections.length > 0 && (
         <View style={styles.gradient}>
-          <Svg height={24} style={styles.absolute} width={vw(100)}>
-            <Rect fill='url(#gradient)' height={24} width={vw(100)} x={0} y={0} />
+          <Svg height={24} style={styles.absolute} width={100}>
+            <Rect fill='url(#gradient)' height={24} width={100} x={0} y={0} />
             <Defs>
               <LinearGradient
                 gradientUnits='userSpaceOnUse'
@@ -151,18 +131,12 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 x2={0}
                 y1={0}
                 y2={24}
-              >
-                <Stop offset={1} stopColor={bg_gradient_start} stopOpacity={1} />
-                <Stop offset={0} stopColor={bg_gradient_end} stopOpacity={1} />
-              </LinearGradient>
+               />
             </Defs>
           </Svg>
           <Text
             style={[
               styles.matches,
-              {
-                color: grey,
-              },
             ]}
           >
             {searchText ? `Matches for "${searchText}"` : 'On the platform'}
@@ -177,12 +151,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
           keyboardShouldPersistTaps='handled'
           // eslint-disable-next-line react/no-unstable-nested-components
           ListEmptyComponent={() => (
-            <View style={styles.emptyResultIndicator}>
-              <Search fill={grey_gainsboro} scale={5} />
-              <Text style={[{ color: grey }, styles.emptyResultIndicatorText]}>
-                {loading ? 'Loading...' : 'No user matches these keywords...'}
-              </Text>
-            </View>
+            <View style={styles.emptyResultIndicator} />
           )}
           onEndReached={loadMore}
           renderItem={({ item }) => (
@@ -197,20 +166,12 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
               }}
               style={[
                 styles.searchResultContainer,
-                {
-                  backgroundColor: white_snow,
-                  borderBottomColor: border,
-                },
               ]}
             >
-              <Avatar image={item.image} name={item.name} size={40} />
               <View style={styles.searchResultUserDetails}>
                 <Text
                   style={[
                     styles.searchResultUserName,
-                    {
-                      color: black,
-                    },
                   ]}
                 >
                   {item.name}
@@ -219,24 +180,12 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                   <Text
                     style={[
                       styles.searchResultUserLastOnline,
-                      {
-                        color: grey,
-                      },
                     ]}
                   >
                     Last online {dayjs(item.last_active).calendar()}
                   </Text>
                 )}
               </View>
-              {selectedUserIds.indexOf(item.id) > -1 && (
-                <>
-                  {removeOnPressOnly ? (
-                    <Close pathFill={black} />
-                  ) : (
-                    <CheckSend pathFill={accent_blue} />
-                  )}
-                </>
-              )}
             </TouchableOpacity>
           )}
           renderSectionHeader={({ section: { title } }) => {
@@ -249,10 +198,6 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 key={title}
                 style={[
                   styles.sectionHeader,
-                  {
-                    backgroundColor: white_smoke,
-                    color: grey,
-                  },
                 ]}
               >
                 {title}

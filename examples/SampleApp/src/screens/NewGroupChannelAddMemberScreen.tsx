@@ -1,6 +1,5 @@
 import React from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { ArrowRight, Search, useTheme } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
@@ -50,16 +49,10 @@ type RightArrowButtonProps = {
 const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
   const { disabled, onPress } = props;
 
-  const {
-    theme: {
-      colors: { accent_blue },
-    },
-  } = useTheme();
+
 
   return (
-    <TouchableOpacity disabled={disabled} onPress={onPress} style={styles.navigationButton}>
-      <ArrowRight pathFill={disabled ? 'transparent' : accent_blue} />
-    </TouchableOpacity>
+    <TouchableOpacity disabled={disabled} onPress={onPress} style={styles.navigationButton} />
   );
 };
 
@@ -75,11 +68,6 @@ type Props = {
 export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) => {
   const { chatClient } = useAppContext();
 
-  const {
-    theme: {
-      colors: { black, border, grey, white },
-    },
-  } = useTheme();
 
   const { onChangeSearchText, onFocusInput, removeUser, reset, searchText, selectedUsers } =
     useUserSearchContext();
@@ -95,60 +83,5 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
     return null;
   }
 
-  return (
-    <View style={styles.container}>
-      <ScreenHeader
-        onBack={reset}
-        // eslint-disable-next-line react/no-unstable-nested-components
-        RightContent={() => (
-          <RightArrowButton disabled={selectedUsers.length === 0} onPress={onRightArrowPress} />
-        )}
-        titleText='Add Group Members'
-      />
-      <View>
-        <View
-          style={[
-            styles.inputBoxContainer,
-            {
-              backgroundColor: white,
-              borderColor: border,
-              marginBottom: selectedUsers.length === 0 ? 8 : 16,
-            },
-          ]}
-        >
-          <Search pathFill={black} />
-          <TextInput
-            onChangeText={onChangeSearchText}
-            onFocus={onFocusInput}
-            placeholder='Search'
-            placeholderTextColor={grey}
-            style={[
-              styles.inputBox,
-              {
-                color: black,
-              },
-            ]}
-            value={searchText}
-          />
-        </View>
-        <FlatList
-          data={selectedUsers}
-          horizontal
-          keyExtractor={(item, index) => `${item.id}-${index}`}
-          renderItem={({ index, item: user }) => (
-            <View style={styles.userGridItemContainer}>
-              <UserGridItem
-                onPress={() => {
-                  removeUser(index);
-                }}
-                user={user}
-              />
-            </View>
-          )}
-          style={selectedUsers.length ? styles.flatList : {}}
-        />
-      </View>
-      <UserSearchResults />
-    </View>
-  );
+  return null;
 };

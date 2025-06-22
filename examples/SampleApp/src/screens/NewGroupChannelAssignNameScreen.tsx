@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Check, generateRandomId, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -56,16 +54,9 @@ type ConfirmButtonProps = {
 
 const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
   const { disabled, onPress } = props;
-  const {
-    theme: {
-      colors: { accent_blue, grey },
-    },
-  } = useTheme();
 
   return (
-    <RoundButton disabled={disabled} onPress={onPress}>
-      <Check pathFill={!disabled ? accent_blue : grey} />
-    </RoundButton>
+    <RoundButton disabled={disabled} onPress={onPress} />
   );
 };
 
@@ -84,12 +75,6 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
   const { chatClient } = useAppContext();
   const { selectedUserIds, selectedUsers } = useUserSearchContext();
 
-  const {
-    theme: {
-      colors: { bg_gradient_end, bg_gradient_start, black, border, grey, white_snow },
-    },
-  } = useTheme();
-  const { vw } = useViewport();
 
   const [groupName, setGroupName] = useState('');
 
@@ -102,16 +87,8 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
       return;
     }
 
-    const channel = chatClient.channel('messaging', generateRandomId(), {
-      members: [...selectedUserIds, chatClient.user?.id],
-      name: groupName,
-    });
-
     // TODO: Maybe there is a better way to do this.
     navigation.pop(2);
-    navigation.replace('ChannelScreen', {
-      channelId: channel.id,
-    });
   };
 
   return (
@@ -126,50 +103,23 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
         <View
           style={[
             styles.inputBoxContainer,
-            {
-              backgroundColor: white_snow,
-              borderColor: border,
-            },
           ]}
         >
-          <Text style={[styles.nameText, { color: grey }]}>NAME</Text>
+          <Text style={[styles.nameText]}>NAME</Text>
           <TextInput
             autoFocus
             onChangeText={setGroupName}
             placeholder='Choose a group chat name'
-            placeholderTextColor={grey}
             style={[
               styles.inputBox,
-              {
-                color: black,
-              },
             ]}
             value={groupName}
           />
         </View>
         <View style={styles.gradient}>
-          <Svg height={24} style={styles.absolute} width={vw(100)}>
-            <Rect fill='url(#gradient)' height={24} width={vw(100)} x={0} y={0} />
-            <Defs>
-              <LinearGradient
-                gradientUnits='userSpaceOnUse'
-                id='gradient'
-                x1={0}
-                x2={0}
-                y1={0}
-                y2={24}
-              >
-                <Stop offset={1} stopColor={bg_gradient_start} stopOpacity={1} />
-                <Stop offset={0} stopColor={bg_gradient_end} stopOpacity={1} />
-              </LinearGradient>
-            </Defs>
-          </Svg>
           <Text
             style={[
               styles.memberLength,
-              {
-                color: grey,
-              },
             ]}
           >
             {selectedUsers.length} Members

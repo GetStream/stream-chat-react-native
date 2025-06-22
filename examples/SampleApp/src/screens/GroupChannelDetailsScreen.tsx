@@ -10,12 +10,6 @@ import {
 } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  Avatar,
-  useChannelPreviewDisplayName,
-  useOverlayContext,
-  useTheme,
-} from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -36,7 +30,6 @@ import { RemoveUser } from '../icons/RemoveUser';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { Channel, UserResponse } from 'stream-chat';
 
 import type { StackNavigatorParamList } from '../types';
 import { Pin } from '../icons/Pin';
@@ -133,18 +126,10 @@ type GroupChannelDetailsScreenNavigationProp = StackNavigationProp<
 >;
 
 const Spacer = () => {
-  const {
-    theme: {
-      colors: { grey_gainsboro },
-    },
-  } = useTheme();
   return (
     <View
       style={[
         styles.spacer,
-        {
-          backgroundColor: grey_gainsboro,
-        },
       ]}
     />
   );
@@ -160,12 +145,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
   const navigation = useNavigation<GroupChannelDetailsScreenNavigationProp>();
-  const { setOverlay } = useOverlayContext();
-  const {
-    theme: {
-      colors: { accent_blue, accent_green, black, border, grey, white, white_smoke },
-    },
-  } = useTheme();
 
   const textInputRef = useRef<TextInput>(null);
   const [muted, setMuted] = useState(
@@ -177,7 +156,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const [textInputFocused, setTextInputFocused] = useState(false);
 
   const membersStatus = useChannelMembersStatus(channel);
-  const displayName = useChannelPreviewDisplayName(channel, 30);
 
   const allMembersLength = allMembers.length;
   useEffect(() => {
@@ -190,7 +168,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   }
 
   const channelCreatorId =
-    channel.data && (channel.data.created_by_id || (channel.data.created_by as UserResponse)?.id);
+    channel.data && (channel.data.created_by_id || (channel.data.created_by as unknown)?.id);
 
   /**
    * Opens confirmation sheet for leaving the group
@@ -227,7 +205,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
       await channel.removeMembers([chatClient?.user?.id]);
     }
     setAppOverlay('none');
-    setOverlay('none');
 
     navigation.reset({
       index: 0,
@@ -240,21 +217,18 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
+    <SafeAreaView style={[styles.container]}>
       <ScreenHeader
         inSafeArea
         // eslint-disable-next-line react/no-unstable-nested-components
         RightContent={() =>
           channelCreatorId === chatClient?.user?.id ? (
-            <RoundButton onPress={openAddMembersSheet}>
-              <AddUser fill={accent_blue} height={24} width={24} />
-            </RoundButton>
+            <RoundButton onPress={openAddMembersSheet} />
           ) : null
         }
         subtitleText={membersStatus}
-        titleText={displayName}
       />
-      <ScrollView keyboardShouldPersistTaps='always' style={{ backgroundColor: white }}>
+      <ScrollView keyboardShouldPersistTaps='always'>
         {members.map((member) => {
           if (!member.user?.id) {
             return null;
@@ -275,26 +249,11 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               }}
               style={[
                 styles.memberContainer,
-                {
-                  borderBottomColor: border,
-                },
               ]}
             >
               <View style={styles.memberRow}>
-                <Avatar
-                  image={member.user?.image}
-                  name={member.user?.name}
-                  online={member.user?.online}
-                  size={40}
-                />
-                <View style={styles.memberDetails}>
-                  <Text style={[{ color: black }, styles.memberName]}>{member.user?.name}</Text>
-                  <Text style={{ color: grey }}>{getUserActivityStatus(member.user)}</Text>
-                </View>
+                <View style={styles.memberDetails} />
               </View>
-              <Text style={{ color: grey }}>
-                {channelCreatorId === member.user?.id ? 'owner' : ''}
-              </Text>
             </TouchableOpacity>
           );
         })}
@@ -305,18 +264,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             }}
             style={[
               styles.loadMoreButton,
-              {
-                borderBottomColor: border,
-              },
             ]}
           >
             <DownArrow height={24} width={24} />
             <Text
               style={[
                 styles.loadMoreText,
-                {
-                  color: grey,
-                },
               ]}
             >
               {`${allMembersLength - members.length} more`}
@@ -329,26 +282,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
           <View
             style={[
               styles.changeNameContainer,
-              {
-                borderBottomColor: border,
-              },
             ]}
           >
-            <NewGroupIcon height={24} width={24} fill={grey} />
-            <TextInput
-              onBlur={() => {
-                setTextInputFocused(false);
-              }}
-              onChangeText={setGroupName}
-              onFocus={() => {
-                setTextInputFocused(true);
-              }}
-              placeholder='Add a group name'
-              placeholderTextColor={grey}
-              ref={textInputRef}
-              style={[{ color: black }, styles.changeNameInputBox]}
-              value={groupName}
-            />
             <View style={[styles.row, { opacity: textInputFocused ? 1 : 0 }]}>
               <TouchableOpacity
                 onPress={() => {
@@ -368,22 +303,17 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   await channel.update({
                     ...channel.data,
                     name: groupName,
-                  } as Parameters<Channel['update']>[0]);
+                  } as unknown);
                   if (textInputRef.current) {
                     textInputRef.current.blur();
                   }
                 }}
-              >
-                {!!groupName && <Check fill={accent_blue} height={24} width={24} />}
-              </TouchableOpacity>
+               />
             </View>
           </View>
           <TouchableOpacity
             style={[
               styles.actionContainer,
-              {
-                borderBottomColor: border,
-              },
             ]}
           >
             <View style={styles.actionLabelContainer}>
@@ -391,9 +321,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               <Text
                 style={[
                   styles.itemText,
-                  {
-                    color: black,
-                  },
                 ]}
               >
                 Mute group
@@ -410,10 +337,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
 
                   setMuted((previousState) => !previousState);
                 }}
-                trackColor={{
-                  false: white_smoke,
-                  true: accent_green,
-                }}
                 value={muted}
               />
             </View>
@@ -426,24 +349,9 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             }}
             style={[
               styles.actionContainer,
-              {
-                borderBottomColor: border,
-              },
             ]}
           >
-            <View style={styles.actionLabelContainer}>
-              <Pin fill={grey} />
-              <Text
-                style={[
-                  styles.itemText,
-                  {
-                    color: black,
-                  },
-                ]}
-              >
-                Pinned Messages
-              </Text>
-            </View>
+            <View style={styles.actionLabelContainer} />
             <View>
               <GoForward height={24} width={24} />
             </View>
@@ -456,19 +364,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             }}
             style={[
               styles.actionContainer,
-              {
-                borderBottomColor: border,
-              },
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <Picture fill={grey} />
               <Text
                 style={[
                   styles.itemText,
-                  {
-                    color: black,
-                  },
                 ]}
               >
                 Photos and Videos
@@ -486,9 +387,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             }}
             style={[
               styles.actionContainer,
-              {
-                borderBottomColor: border,
-              },
             ]}
           >
             <View style={styles.actionLabelContainer}>
@@ -496,9 +394,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               <Text
                 style={[
                   styles.itemText,
-                  {
-                    color: black,
-                  },
                 ]}
               >
                 Files
@@ -512,9 +407,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             onPress={openLeaveGroupConfirmationSheet}
             style={[
               styles.actionContainer,
-              {
-                borderBottomColor: border,
-              },
             ]}
           >
             <View style={styles.actionLabelContainer}>
@@ -522,9 +414,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               <Text
                 style={[
                   styles.itemText,
-                  {
-                    color: black,
-                  },
                 ]}
               >
                 Leave Group

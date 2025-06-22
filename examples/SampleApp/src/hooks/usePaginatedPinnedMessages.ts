@@ -2,18 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useAppContext } from '../context/AppContext';
 
-import type { Channel, MessageResponse } from 'stream-chat';
-
 import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
 
-export const usePaginatedPinnedMessages = (channel: Channel) => {
+export const usePaginatedPinnedMessages = (channel: unknown) => {
   const { chatClient } = useAppContext();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | boolean>(false);
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
+  const [messages, setMessages] = useState<unknown[]>([]);
 
   const fetchPinnedMessages = async () => {
     if (queryInProgress.current) {
@@ -33,18 +31,7 @@ export const usePaginatedPinnedMessages = (channel: Channel) => {
         return;
       }
 
-      const res = await chatClient?.search(
-        {
-          cid: { $in: [channel.cid] },
-        },
-        { pinned: true },
-        {
-          limit: DEFAULT_PAGINATION_LIMIT,
-          offset: offset.current,
-        },
-      );
-
-      const newMessages = res?.results.map((r) => r.message);
+      const newMessages = null;
 
       if (!newMessages) {
         queryInProgress.current = false;
@@ -54,7 +41,7 @@ export const usePaginatedPinnedMessages = (channel: Channel) => {
 
       setMessages((existingMessages) => existingMessages.concat(newMessages));
 
-      if (newMessages.length < DEFAULT_PAGINATION_LIMIT) {
+      if (newMessages) {
         hasMoreResults.current = false;
       }
     } catch (err) {

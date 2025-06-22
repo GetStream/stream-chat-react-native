@@ -1,8 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { useTheme } from 'stream-chat-react-native';
 
-import type { UserResponse } from 'stream-chat';
 
 
 const styles = StyleSheet.create({
@@ -28,7 +26,7 @@ const styles = StyleSheet.create({
 type SelectedUserTagProps = {
   index: number;
   onPress: () => void;
-  tag: UserResponse;
+  tag: unknown;
   disabled?: boolean;
 };
 
@@ -38,18 +36,14 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
   onPress,
   tag,
 }) => {
-  const {
-    theme: {
-      colors: { black, grey_gainsboro },
-    },
-  } = useTheme();
+  const grey = '#808080';
 
   return (
     <TouchableOpacity
       disabled={disabled}
       key={`${tag}-${index}`}
       onPress={onPress}
-      style={[styles.tagContainer, { backgroundColor: grey_gainsboro }]}
+      style={[styles.tagContainer, { backgroundColor: grey }]}
     >
       <Image
         source={{
@@ -62,7 +56,7 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
         style={[
           styles.tagText,
           {
-            color: black,
+            color: grey,
           },
         ]}
       >

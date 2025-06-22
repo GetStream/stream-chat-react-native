@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useAppContext } from '../context/AppContext';
 
-import type { Channel, MessageResponse } from 'stream-chat';
-
 export const usePaginatedAttachments = (
-  channel: Channel,
+  channel: unknown,
   attachmentType: string,
 ) => {
   const { chatClient } = useAppContext();
@@ -13,7 +11,7 @@ export const usePaginatedAttachments = (
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
+  const [messages, setMessages] = useState<unknown[]>([]);
 
   const fetchAttachments = async () => {
     if (queryInProgress.current) {
@@ -34,18 +32,9 @@ export const usePaginatedAttachments = (
       }
 
       // TODO: Use this when support for attachment_type is ready.
-      const res = await chatClient?.search(
-        {
-          cid: { $in: [channel.cid] },
-        },
-        { 'attachments.type': { $in: [attachmentType] } },
-        {
-          limit: 10,
-          offset: offset.current,
-        },
-      );
+      const res = { results: [] };
 
-      const newMessages = res?.results.map((r) => r.message);
+      const newMessages = res?.results.map((r) => !!r.message);
 
       if (!newMessages) {
         queryInProgress.current = false;

@@ -1,15 +1,10 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
 export const Archive: React.FC<IconProps> = ({ height = 512, width = 512 }) => {
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
+  const grey = '#808080';
 
   return (
     <Svg height={height} viewBox={'0 0 512 512'} width={width}>

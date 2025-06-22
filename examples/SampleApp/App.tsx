@@ -1,16 +1,9 @@
 import React, { useEffect } from 'react';
-import { DevSettings, LogBox, Platform, useColorScheme } from 'react-native';
+import { DevSettings, LogBox, Platform, Text, useColorScheme, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  Chat,
-  OverlayProvider,
-  SqliteClient,
-  ThemeProvider,
-  useOverlayContext,
-} from 'stream-chat-react-native';
 import { getMessaging } from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import { AppContext } from './src/context/AppContext';
@@ -35,11 +28,8 @@ import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 
-import type { LocalMessage, StreamChat } from 'stream-chat';
-
 if (__DEV__) {
   DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
-    SqliteClient.resetDB();
     console.info('Local DB reset');
   });
 }
@@ -121,97 +111,16 @@ const App = () => {
   return (
     <SafeAreaProvider
       style={{
-        backgroundColor: streamChatTheme.colors?.white_snow || '#FCFCFC',
+        backgroundColor: '#FCFCFC',
       }}
     >
-      <ThemeProvider style={streamChatTheme}>
-        <NavigationContainer
-          ref={RootNavigationRef}
-          theme={{
-            colors: {
-              ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-              background: streamChatTheme.colors?.white_snow || '#FCFCFC',
-            },
-            fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
-            dark: colorScheme === 'dark',
-          }}
-        >
-          <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser }}>
-            {isConnecting && !chatClient ? (
-              <LoadingScreen />
-            ) : chatClient ? (
-              <DrawerNavigatorWrapper chatClient={chatClient} />
-            ) : (
-              <UserSelector />
-            )}
-          </AppContext.Provider>
-        </NavigationContainer>
-      </ThemeProvider>
+      <View><Text>This is a test build, please disregard it.</Text></View>
     </SafeAreaProvider>
   );
 };
 
-const DrawerNavigator: React.FC = () => (
-  <Drawer.Navigator
-    drawerContent={MenuDrawer}
-    screenOptions={{
-      drawerStyle: {
-        width: 300,
-      },
-    }}
-  >
-    <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
-  </Drawer.Navigator>
-);
-
-const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
-
-const DrawerNavigatorWrapper: React.FC<{
-  chatClient: StreamChat;
-}> = ({ chatClient }) => {
-  const { bottom } = useSafeAreaInsets();
-  const streamChatTheme = useStreamChatTheme();
-
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <OverlayProvider bottomInset={bottom} value={{ style: streamChatTheme }}>
-        <Chat
-          client={chatClient}
-          enableOfflineSupport
-          // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
-          ImageComponent={FastImage}
-          isMessageAIGenerated={isMessageAIGenerated}
-        >
-          <AppOverlayProvider>
-            <UserSearchProvider>
-              <DrawerNavigator />
-            </UserSearchProvider>
-          </AppOverlayProvider>
-        </Chat>
-      </OverlayProvider>
-    </GestureHandlerRootView>
-  );
-};
-
-const UserSelector = () => (
-  <UserSelectorStack.Navigator initialRouteName='UserSelectorScreen'>
-    <UserSelectorStack.Screen
-      component={AdvancedUserSelectorScreen}
-      name='AdvancedUserSelectorScreen'
-      options={{ gestureEnabled: false }}
-    />
-    <UserSelectorStack.Screen
-      component={UserSelectorScreen}
-      name='UserSelectorScreen'
-      options={{ gestureEnabled: false, headerShown: false }}
-    />
-  </UserSelectorStack.Navigator>
-);
-
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => {
-  const { overlay } = useOverlayContext();
-
   return (
     <Stack.Navigator
       initialRouteName={initialChannelIdGlobalRef.current ? 'ChannelScreen' : 'MessagingScreen'}
@@ -230,7 +139,7 @@ const HomeScreen = () => {
         }
         name='ChannelScreen'
         options={{
-          gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+          gestureEnabled: Platform.OS === 'ios',
           headerShown: false,
         }}
       />
@@ -285,7 +194,7 @@ const HomeScreen = () => {
         component={ThreadScreen}
         name='ThreadScreen'
         options={{
-          gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+          gestureEnabled: Platform.OS === 'ios',
           headerShown: false,
         }}
       />

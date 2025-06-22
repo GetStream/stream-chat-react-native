@@ -1,8 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { ChannelState } from 'stream-chat';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { ChannelContextValue } from 'stream-chat-react-native';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -12,10 +10,10 @@ type ChannelListScreenNavigationProp = StackNavigationProp<
 >;
 
 export type ChannelInfoOverlayData = Partial<
-  Pick<ChannelContextValue, 'channel'>
+  Pick<{ channel: string }, 'channel'>
 > & {
   clientId?: string;
-  membership?: ChannelState['membership'];
+  membership?: unknown;
   navigation?: ChannelListScreenNavigationProp;
 };
 

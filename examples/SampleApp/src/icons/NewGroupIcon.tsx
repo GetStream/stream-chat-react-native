@@ -1,15 +1,10 @@
 import React from 'react';
 import Svg, { G, Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
 export const NewGroupIcon: React.FC<IconProps> = ({ active, color, height, width }) => {
-  const {
-    theme: {
-      colors: { black },
-    },
-  } = useTheme();
+  const grey = '#808080';
 
   return (
     <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
@@ -17,7 +12,7 @@ export const NewGroupIcon: React.FC<IconProps> = ({ active, color, height, width
         <Path
           clipRule='evenodd'
           d='M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7ZM14 7C14 8.10457 13.1046 9 12 9C10.8954 9 10 8.10457 10 7C10 5.89543 10.8954 5 12 5C13.1046 5 14 5.89543 14 7Z'
-          fill={color || black}
+          fill={color || grey}
           fillRule='evenodd'
         />
         <Path

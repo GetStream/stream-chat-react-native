@@ -11,20 +11,12 @@ import {
 } from 'react-native';
 import Dayjs from 'dayjs';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  DateHeader,
-  Photo,
-  useImageGalleryContext,
-  useOverlayContext,
-  useTheme,
-} from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { Picture } from '../icons/Picture';
 
 import type { RouteProp } from '@react-navigation/native';
-import type { Attachment } from 'stream-chat';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -66,20 +58,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     params: { channel },
   },
 }) => {
-  const {
-    messages: images,
-    setMessages: setImages,
-    setSelectedMessage: setImage,
-  } = useImageGalleryContext();
-  const { setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
-
-  const channelImages = useRef(images);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState(
     Dayjs(messages?.[0]?.created_at).format('MMM YYYY'),
@@ -110,9 +89,9 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
    * Photos array created from all currently available
    * photo attachments
    */
-  const photos = messages.reduce((acc: Photo[], cur) => {
+  const photos = messages.reduce((acc: unknown[], cur) => {
     const attachmentImages =
-      (cur.attachments as Attachment[])?.filter(
+      (cur.attachments as unknown[])?.filter(
         (attachment) =>
           attachment.type === 'image' &&
           !attachment.title_link &&
@@ -151,80 +130,34 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
    */
   const imageString = messagesWithImages
     .map((message) =>
-      (message.attachments as Attachment[])
+      (message.attachments as unknown[])
         .map((attachment) => attachment.image_url || attachment.thumb_url || '')
         .join(),
     )
     .join();
 
-  useEffect(() => {
-    setImages(messagesWithImages);
-    const channelImagesCurrent = channelImages.current;
-    return () => setImages(channelImagesCurrent);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageString, setImages]);
-
   return (
-    <SafeAreaView style={[styles.flex, { backgroundColor: white }]}>
+    <SafeAreaView style={[styles.flex]}>
       <ScreenHeader inSafeArea titleText='Photos and Videos' />
       <View style={styles.flex}>
         <FlatList
           contentContainerStyle={styles.contentContainer}
           data={photos}
           keyExtractor={(item, index) => `${item.id}-${index}`}
-          ListEmptyComponent={EmptyListComponent}
           numColumns={3}
           onEndReached={loadMore}
           onViewableItemsChanged={updateStickyDate.current}
           refreshing={loading}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                setImage({
-                  messageId: item.messageId,
-                  url: item.uri,
-                });
-                setOverlay('gallery');
-              }}
-            >
-              <Image
-                source={{ uri: item.uri }}
-                style={{
-                  height: screen / 3,
-                  margin: 1,
-                  width: screen / 3 - 2,
-                }}
-              />
-            </TouchableOpacity>
-          )}
+          renderItem={({ item }) => null}
           style={styles.flex}
           viewabilityConfig={{
             viewAreaCoveragePercentThreshold: 50,
           }}
         />
         {photos && photos.length ? (
-          <View style={styles.stickyHeader}>
-            <DateHeader dateString={stickyHeaderDate} />
-          </View>
+          <View style={styles.stickyHeader} />
         ) : null}
       </View>
     </SafeAreaView>
-  );
-};
-
-const EmptyListComponent = () => {
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-    },
-  } = useTheme();
-  return (
-    <View style={styles.emptyContainer}>
-      <Picture fill={grey_gainsboro} scale={6} />
-      <Text style={[styles.noMedia, { color: black }]}>No media</Text>
-      <Text style={[styles.noMediaDetails, { color: grey }]}>
-        Photos or video sent in this chat will appear here
-      </Text>
-    </View>
   );
 };

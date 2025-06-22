@@ -2,19 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Alert, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Dayjs from 'dayjs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  FileIcon,
-  getFileSizeDisplayText,
-  ThemeProvider,
-  useTheme,
-} from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { File } from '../icons/File';
 
 import type { RouteProp } from '@react-navigation/native';
-import type { Attachment } from 'stream-chat';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -81,15 +74,10 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
 }) => {
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'file');
   const insets = useSafeAreaInsets();
-  const {
-    theme: {
-      colors: { black, border, grey, white_snow },
-    },
-  } = useTheme();
 
   const [sections, setSections] = useState<
     Array<{
-      data: Attachment[];
+      data: unknown[];
       title: string;
     }>
   >([]);
@@ -98,7 +86,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
     const newSections: Record<
       string,
       {
-        data: Attachment[];
+        data: unknown[];
         title: string;
       }
     > = {};
@@ -130,91 +118,11 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       style={[
         styles.flex,
         {
-          backgroundColor: white_snow,
           paddingBottom: insets.bottom,
         },
       ]}
     >
       <ScreenHeader titleText='Files' />
-      <ThemeProvider>
-        {(sections.length > 0 || !loading) && (
-          <SectionList<Attachment>
-            contentContainerStyle={styles.sectionContentContainer}
-            ListEmptyComponent={EmptyListComponent}
-            onEndReached={loadMore}
-            renderItem={({ index, item: attachment, section }) => (
-              <TouchableOpacity
-                key={`${attachment.asset_url}${attachment.image_url}${attachment.og_scrape_url}${attachment.thumb_url}${attachment.type}`}
-                onPress={() => {
-                  Alert.alert('Not implemented.');
-                }}
-                style={{
-                  borderBottomColor: border,
-                  borderBottomWidth: index === section.data.length - 1 ? 0 : 1,
-                }}
-              >
-                <View style={[styles.container, { backgroundColor: white_snow }]}>
-                  <FileIcon mimeType={attachment.mime_type} />
-                  <View style={styles.details}>
-                    <Text
-                      numberOfLines={1}
-                      style={[
-                        styles.title,
-                        {
-                          color: black,
-                        },
-                      ]}
-                    >
-                      {attachment.title}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.size,
-                        {
-                          color: grey,
-                        },
-                      ]}
-                    >
-                      {getFileSizeDisplayText(attachment.file_size)}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            )}
-            renderSectionHeader={({ section: { title } }) => (
-              <View
-                style={[
-                  styles.sectionContainer,
-                  {
-                    backgroundColor: white_snow,
-                  },
-                ]}
-              >
-                <Text style={[styles.sectionTitle, { color: black }]}>{title}</Text>
-              </View>
-            )}
-            sections={sections}
-            stickySectionHeadersEnabled
-          />
-        )}
-      </ThemeProvider>
-    </View>
-  );
-};
-
-const EmptyListComponent = () => {
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-    },
-  } = useTheme();
-  return (
-    <View style={styles.emptyContainer}>
-      <File fill={grey_gainsboro} scale={6} />
-      <Text style={[styles.noFiles, { color: black }]}>No files</Text>
-      <Text style={[styles.noFilesDetails, { color: grey }]}>
-        Files sent on this chat will appear here.
-      </Text>
     </View>
   );
 };
