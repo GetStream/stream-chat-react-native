@@ -4,7 +4,6 @@ import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMessaging } from '@react-native-firebase/messaging';
-import notifee, { EventType } from '@notifee/react-native';
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
@@ -42,17 +41,6 @@ console.assert = () => null;
 // when a channel id is set here, the intial route is the channel screen
 const initialChannelIdGlobalRef = { current: '' };
 
-notifee.onBackgroundEvent(async ({ detail, type }) => {
-  // user press on notification detected while app was on background on Android
-  if (type === EventType.PRESS) {
-    const channelId = detail.notification?.data?.channel_id as string;
-    if (channelId) {
-      navigateToChannel(channelId);
-    }
-    await Promise.resolve();
-  }
-});
-
 const Stack = createStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
@@ -70,24 +58,6 @@ const App = () => {
       }
     });
     // handle notification clicks on foreground
-    const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
-      if (type === EventType.PRESS) {
-        // user has pressed the foreground notification
-        const channelId = detail.notification?.data?.channel_id as string;
-        if (channelId) {
-          navigateToChannel(channelId);
-        }
-      }
-    });
-    notifee.getInitialNotification().then((initialNotification) => {
-      if (initialNotification) {
-        // Notification caused app to open from quit state on Android
-        const channelId = initialNotification.notification.data?.channel_id as string;
-        if (channelId) {
-          initialChannelIdGlobalRef.current = channelId;
-        }
-      }
-    });
     messaging.getInitialNotification().then((remoteMessage) => {
       if (remoteMessage) {
         // Notification caused app to open from quit state on iOS
@@ -100,7 +70,6 @@ const App = () => {
     });
     return () => {
       unsubscribeOnNotificationOpen();
-      unsubscribeForegroundEvent();
     };
   }, []);
 
