@@ -34,7 +34,7 @@ jobs:
       - name: iOS Pods setup
         working-directory: examples/SampleApp/ios
         run: |
-          pod update hermes-engine --no-repo-update
+          bundle exec pod update hermes-engine --no-repo-update
           bundle exec pod install
       - name: Build and release Testflight QA
         working-directory: examples/SampleApp
