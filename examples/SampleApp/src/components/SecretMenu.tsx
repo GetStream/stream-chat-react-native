@@ -111,17 +111,11 @@ export const SecretMenu = ({
 
   useEffect(() => {
     const getSelectedProvider = async () => {
-      const provider = await AsyncStore.getItem(
-        '@stream-rn-sampleapp-push-provider',
-        notificationConfigItems[0],
-      );
-      setSelectedProvider(provider?.id ?? 'firebase');
     };
     getSelectedProvider();
   }, [notificationConfigItems]);
 
   const storeProvider = useCallback(async (item: NotificationConfigItem) => {
-    await AsyncStore.setItem('@stream-rn-sampleapp-push-provider', item);
     setSelectedProvider(item.id);
   }, []);
 

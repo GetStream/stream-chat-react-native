@@ -3,7 +3,6 @@ import { DevSettings, LogBox, Platform, Text, useColorScheme, View } from 'react
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getMessaging } from '@react-native-firebase/messaging';
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
@@ -47,31 +46,6 @@ const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
-
-  useEffect(() => {
-    const messaging = getMessaging();
-    const unsubscribeOnNotificationOpen = messaging.onNotificationOpenedApp((remoteMessage) => {
-      // Notification caused app to open from background state on iOS
-      const channelId = remoteMessage.data?.channel_id as string;
-      if (channelId) {
-        navigateToChannel(channelId);
-      }
-    });
-    // handle notification clicks on foreground
-    messaging.getInitialNotification().then((remoteMessage) => {
-      if (remoteMessage) {
-        // Notification caused app to open from quit state on iOS
-        const channelId = remoteMessage.data?.channel_id as string;
-        if (channelId) {
-          // this will make the app to start with the channel screen with this channel id
-          initialChannelIdGlobalRef.current = channelId;
-        }
-      }
-    });
-    return () => {
-      unsubscribeOnNotificationOpen();
-    };
-  }, []);
 
   return (
     <SafeAreaProvider
