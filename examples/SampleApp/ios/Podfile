@@ -31,7 +31,6 @@ target 'SampleApp' do
   # Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) we must tell CocoaPods to use frameworks.
   # https://rnfirebase.io/#altering-cocoapods-to-use-frameworks
   use_frameworks! :linkage => :static
-  $RNFirebaseAsStaticFramework = true
 
   use_react_native!(
     :path => config[:reactNativePath],
