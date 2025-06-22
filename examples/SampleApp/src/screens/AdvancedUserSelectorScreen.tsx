@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppContext } from '../context/AppContext';
 
@@ -60,23 +59,12 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
   onChangeText,
   value,
 }) => {
-  const [borderColor, setBorderColor] = useState(white_smoke);
-
-  const onFocus = () => {
-    setBorderColor(accent_blue);
-  };
-
-  const onBlur = () => {
-    setBorderColor(white_smoke);
-  };
-
   const isEmpty = value === undefined;
 
   return null;
 };
 
 export const AdvancedUserSelectorScreen: React.FC = () => {
-  const { bottom } = useSafeAreaInsets();
 
   const { loginUser } = useAppContext();
   const [apiKey, setApiKey] = useState('');

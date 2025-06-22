@@ -10,13 +10,10 @@ import {
   ViewToken,
 } from 'react-native';
 import Dayjs from 'dayjs';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { Picture } from '../icons/Picture';
-
-import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -46,14 +43,7 @@ const styles = StyleSheet.create({
     top: 8, // DateHeader already has marginTop 8
   },
 });
-
-type ChannelImagesScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChannelImagesScreen'>;
-
-export type ChannelImagesScreenProps = {
-  route: ChannelImagesScreenRouteProp;
-};
-
-export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
+export const ChannelImagesScreen: React.FC = ({
   route: {
     params: { channel },
   },
@@ -137,7 +127,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     .join();
 
   return (
-    <SafeAreaView style={[styles.flex]}>
+    <View style={[styles.flex]}>
       <ScreenHeader inSafeArea titleText='Photos and Videos' />
       <View style={styles.flex}>
         <FlatList
@@ -158,6 +148,6 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
           <View style={styles.stickyHeader} />
         ) : null}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };

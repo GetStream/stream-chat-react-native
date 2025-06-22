@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Dayjs from 'dayjs';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { File } from '../icons/File';
 
-import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -61,19 +59,13 @@ const styles = StyleSheet.create({
   },
 });
 
-type ChannelFilesScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChannelFilesScreen'>;
 
-export type ChannelFilesScreenProps = {
-  route: ChannelFilesScreenRouteProp;
-};
-
-export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
+export const ChannelFilesScreen: React.FC = ({
   route: {
     params: { channel },
   },
 }) => {
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'file');
-  const insets = useSafeAreaInsets();
 
   const [sections, setSections] = useState<
     Array<{
@@ -118,7 +110,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       style={[
         styles.flex,
         {
-          paddingBottom: insets.bottom,
+          paddingBottom: 0,
         },
       ]}
     >

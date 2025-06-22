@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useAppContext } from '../context/AppContext';
@@ -42,13 +41,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type SharedGroupsScreenRouteProp = RouteProp<StackNavigatorParamList, 'SharedGroupsScreen'>;
-
-type SharedGroupsScreenProps = {
-  route: SharedGroupsScreenRouteProp;
-};
-
-export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
+export const SharedGroupsScreen: React.FC = ({
   route: {
     params: { user },
   },

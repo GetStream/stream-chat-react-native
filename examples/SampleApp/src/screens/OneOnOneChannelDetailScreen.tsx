@@ -23,9 +23,6 @@ import { Picture } from '../icons/Picture';
 import { Pin } from '../icons/Pin';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
-import type { RouteProp } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-
 import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
@@ -99,22 +96,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
-
-type OneOnOneChannelDetailScreenRouteProp = RouteProp<
-  StackNavigatorParamList,
-  'OneOnOneChannelDetailScreen'
->;
-
-type OneOnOneChannelDetailScreenNavigationProp = StackNavigationProp<
-  StackNavigatorParamList,
-  'OneOnOneChannelDetailScreen'
->;
-
-type Props = {
-  navigation: OneOnOneChannelDetailScreenNavigationProp;
-  route: OneOnOneChannelDetailScreenRouteProp;
-};
-
 const Spacer = () => {
   return (
     <View
@@ -125,7 +106,7 @@ const Spacer = () => {
   );
 };
 
-export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
+export const OneOnOneChannelDetailScreen: React.FC = ({
   navigation,
   route: {
     params: { channel },
@@ -140,16 +121,6 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   );
 
   const user = member?.user;
-  const [muted, setMuted] = useState(
-    chatClient?.mutedUsers &&
-      chatClient?.mutedUsers?.findIndex((mutedUser) => mutedUser.target.id === user?.id) > -1,
-  );
-  const [notificationsEnabled, setNotificationsEnabled] = useState(
-    chatClient?.mutedChannels &&
-      chatClient.mutedChannels.findIndex(
-        (mutedChannel) => mutedChannel.channel?.id === channel.id,
-      ) > -1,
-  );
 
   /**
    * Opens confirmation sheet for deleting the conversation
@@ -258,14 +229,8 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           <View>
             <Switch
               onValueChange={async () => {
-                if (notificationsEnabled) {
-                  await channel.unmute();
-                } else {
-                  await channel.mute();
-                }
-                setNotificationsEnabled((previousState) => !previousState);
               }}
-              value={notificationsEnabled}
+              value={false}
             />
           </View>
         </TouchableOpacity>
@@ -287,16 +252,8 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           <View>
             <Switch
               onValueChange={async () => {
-                if (muted) {
-                  const r = await chatClient?.unmuteUser(user.id);
-                  console.warn(r);
-                } else {
-                  const r = await chatClient?.muteUser(user.id);
-                  console.warn(r);
-                }
-                setMuted((previousState) => !previousState);
               }}
-              value={muted}
+              value={false}
             />
           </View>
         </TouchableOpacity>

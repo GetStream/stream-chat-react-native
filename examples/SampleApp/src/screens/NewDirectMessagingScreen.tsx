@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -8,8 +7,6 @@ import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
-
-import type { StackNavigationProp } from '@react-navigation/stack';
 
 import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import type { StackNavigatorParamList } from '../types';
@@ -86,16 +83,7 @@ const EmptyMessagesIndicator = () => {
   );
 };
 
-export type NewDirectMessagingScreenNavigationProp = StackNavigationProp<
-  StackNavigatorParamList,
-  'NewDirectMessagingScreen'
->;
-
-export type NewDirectMessagingScreenProps = {
-  navigation: NewDirectMessagingScreenNavigationProp;
-};
-
-export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> = ({
+export const NewDirectMessagingScreen: React.FC = ({
   navigation,
 }) => {
   const { chatClient } = useAppContext();
@@ -113,7 +101,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const messageInputRef = useRef<TextInput | null>(null);
   const searchInputRef = useRef<TextInput>(null);
-  const currentChannel = useRef<StreamChatChannel>(undefined);
+  const currentChannel = useRef(undefined);
   const isDraft = useRef(true);
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
@@ -166,7 +154,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   }
 
   return (
-    <SafeAreaView
+    <View
       style={[
         styles.container,
       ]}

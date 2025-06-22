@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RouteProp, useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -28,8 +26,6 @@ import { Mute } from '../icons/Mute';
 import { Picture } from '../icons/Picture';
 import { RemoveUser } from '../icons/RemoveUser';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-
-import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { StackNavigatorParamList } from '../types';
 import { Pin } from '../icons/Pin';
@@ -114,17 +110,6 @@ const styles = StyleSheet.create({
   },
 });
 
-type GroupChannelDetailsRouteProp = RouteProp<StackNavigatorParamList, 'GroupChannelDetailsScreen'>;
-
-type GroupChannelDetailsProps = {
-  route: GroupChannelDetailsRouteProp;
-};
-
-type GroupChannelDetailsScreenNavigationProp = StackNavigationProp<
-  StackNavigatorParamList,
-  'GroupChannelDetailsScreen'
->;
-
 const Spacer = () => {
   return (
     <View
@@ -135,7 +120,7 @@ const Spacer = () => {
   );
 };
 
-export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
+export const GroupChannelDetailsScreen: React.FC = ({
   route: {
     params: { channel },
   },
@@ -144,7 +129,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const { setOverlay: setAppOverlay } = useAppOverlayContext();
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
-  const navigation = useNavigation<GroupChannelDetailsScreenNavigationProp>();
 
   const textInputRef = useRef<TextInput>(null);
   const [muted, setMuted] = useState(
@@ -205,19 +189,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
       await channel.removeMembers([chatClient?.user?.id]);
     }
     setAppOverlay('none');
-
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: 'MessagingScreen',
-        },
-      ],
-    });
   };
 
   return (
-    <SafeAreaView style={[styles.container]}>
+    <View style={[styles.container]}>
       <ScreenHeader
         inSafeArea
         // eslint-disable-next-line react/no-unstable-nested-components
@@ -242,7 +217,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   setUserInfoOverlayData({
                     channel,
                     member,
-                    navigation,
                   });
                   setAppOverlay('userInfo');
                 }
@@ -343,9 +317,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ChannelPinnedMessagesScreen', {
-                channel,
-              });
             }}
             style={[
               styles.actionContainer,
@@ -358,9 +329,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ChannelImagesScreen', {
-                channel,
-              });
             }}
             style={[
               styles.actionContainer,
@@ -381,9 +349,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ChannelFilesScreen', {
-                channel,
-              });
             }}
             style={[
               styles.actionContainer,
@@ -422,6 +387,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
           </TouchableOpacity>
         </>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };

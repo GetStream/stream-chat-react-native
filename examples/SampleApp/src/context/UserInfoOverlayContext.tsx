@@ -1,19 +1,12 @@
 import React, { useContext, useState } from 'react';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
 
-import type { StackNavigatorParamList } from '../types';
-
-type GroupChannelDetailsScreenNavigationProp = StackNavigationProp<
-  StackNavigatorParamList,
-  'GroupChannelDetailsScreen'
->;
 
 export type UserInfoOverlayData = Partial<
   Pick<{ channel: string }, 'channel'>
 > & {
   member?: unknown;
-  navigation?: GroupChannelDetailsScreenNavigationProp;
+  navigation?: unknown;
 };
 
 export type UserInfoOverlayContextValue = {

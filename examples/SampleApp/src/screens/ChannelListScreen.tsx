@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
@@ -72,7 +71,6 @@ const HeaderNetworkDownIndicator = () => null;
 
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
-  const navigation = useNavigation();
 
   return null;
 };

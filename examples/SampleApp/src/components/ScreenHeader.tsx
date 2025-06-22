@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
 import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ChannelsUnreadCountBadge } from './UnreadCountBadge';
 
 import { GoBack } from '../icons/GoBack';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 
@@ -48,30 +45,14 @@ const styles = StyleSheet.create({
   },
 });
 
-type ScreenHeaderNavigationProp = CompositeNavigationProp<
-  DrawerNavigationProp<DrawerNavigatorParamList>,
-  StackNavigationProp<StackNavigatorParamList>
->;
-
 export const BackButton: React.FC<{
   onBack?: () => void;
   showUnreadCountBadge?: boolean;
 }> = ({ onBack, showUnreadCountBadge }) => {
-  const navigation = useNavigation<ScreenHeaderNavigationProp>();
 
   return (
     <TouchableOpacity
       onPress={() => {
-        if (!navigation.canGoBack()) {
-          // if no previous screen was present in history, go to the list screen
-          // this can happen when opened through push notification
-          navigation.reset({ index: 0, routes: [{ name: 'HomeScreen' }] });
-        } else {
-          navigation.goBack();
-        }
-        if (onBack) {
-          onBack();
-        }
       }}
       style={styles.backButton}
     >
@@ -113,14 +94,13 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
     Title,
     titleText = 'Stream Chat',
   } = props;
-  const insets = useSafeAreaInsets();
 
   return (
     <View
       style={[
         styles.safeAreaContainer,
         {
-          height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
+          height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : 0),
         },
         style,
       ]}
@@ -130,7 +110,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
           styles.contentContainer,
           {
             height: HEADER_CONTENT_HEIGHT,
-            marginTop: inSafeArea ? 0 : insets.top,
+            marginTop: inSafeArea ? 0 : 0,
           },
         ]}
       >

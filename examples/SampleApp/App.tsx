@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
 import { DevSettings, LogBox, Platform, Text, useColorScheme, View } from 'react-native';
-import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
@@ -39,22 +36,21 @@ console.assert = () => null;
 
 // when a channel id is set here, the intial route is the channel screen
 const initialChannelIdGlobalRef = { current: '' };
-
-const Stack = createStackNavigator<StackNavigatorParamList>();
-const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
 
   return (
-    <SafeAreaProvider
+    <View
       style={{
-        backgroundColor: '#FCFCFC',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <View><Text>This is a test build, please disregard it.</Text></View>
-    </SafeAreaProvider>
+    </View>
   );
 };
 

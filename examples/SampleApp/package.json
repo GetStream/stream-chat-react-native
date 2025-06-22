@@ -23,13 +23,9 @@
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
   },
   "dependencies": {
-    "@react-navigation/bottom-tabs": "7.3.14",
-    "@react-navigation/native": "^7.1.10",
-    "@react-navigation/stack": "^7.3.3",
     "react": "19.0.0",
     "react-native": "^0.79.3",
-    "react-native-gesture-handler": "^2.26.0",
-    "react-native-safe-area-context": "^5.4.1"
+    "react-native-gesture-handler": "^2.26.0"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",

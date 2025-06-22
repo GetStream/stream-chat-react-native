@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
 
@@ -65,7 +64,6 @@ export const AddMemberBottomSheet: React.FC = () => {
 
   const channel = data && isAddMemberBottomSheetData(data) ? data.channel : undefined;
 
-  const insets = useSafeAreaInsets();
   const {
     clearText,
     loading: loadingResults,
@@ -88,7 +86,7 @@ export const AddMemberBottomSheet: React.FC = () => {
       style={[
         styles.container,
         {
-          marginBottom: insets.bottom,
+          marginBottom: 0,
         },
       ]}
      />

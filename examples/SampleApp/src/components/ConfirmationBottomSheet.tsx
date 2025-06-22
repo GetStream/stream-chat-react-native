@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import {
@@ -49,7 +48,6 @@ export const ConfirmationBottomSheet: React.FC = () => {
   const { data: contextData, reset } = useBottomSheetOverlayContext();
   const data = contextData && !isAddMemberBottomSheetData(contextData) ? contextData : undefined;
 
-  const inset = useSafeAreaInsets();
 
   if (!data) {
     return null;
@@ -62,7 +60,7 @@ export const ConfirmationBottomSheet: React.FC = () => {
       style={[
         styles.container,
         {
-          marginBottom: inset.bottom,
+          marginBottom: 0,
         },
       ]}
     >

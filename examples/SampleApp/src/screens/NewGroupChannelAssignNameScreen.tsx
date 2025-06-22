@@ -7,8 +7,6 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
-
 import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
@@ -59,17 +57,7 @@ const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
     <RoundButton disabled={disabled} onPress={onPress} />
   );
 };
-
-type NewGroupChannelAssignNameScreenNavigationProp = StackNavigationProp<
-  StackNavigatorParamList,
-  'NewGroupChannelAssignNameScreen'
->;
-
-export type NewGroupChannelAssignNameScreenProps = {
-  navigation: NewGroupChannelAssignNameScreenNavigationProp;
-};
-
-export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignNameScreenProps> = ({
+export const NewGroupChannelAssignNameScreen: React.FC = ({
   navigation,
 }) => {
   const { chatClient } = useAppContext();

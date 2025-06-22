@@ -1,15 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ChannelsUnreadCountBadge, ThreadsUnreadCountBadge } from './UnreadCountBadge';
 
 import { ChatsTab } from '../icons/ChatsTab';
 import { ThreadsTab } from '../icons/ThreadsTab';
 import { MentionsTab } from '../icons/MentionsTab';
-
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import type { Route } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   notification: {
@@ -61,12 +57,7 @@ const getTab = (key: string) => {
   }
 };
 
-type TabProps = Pick<BottomTabBarProps, 'navigation' | 'state'> & {
-  index: number;
-  route: Route<string>;
-};
-
-const Tab = (props: TabProps) => {
+const Tab = (props) => {
   const { navigation, state, route, index } = props;
   const tab = getTab(route.name);
 
@@ -104,16 +95,15 @@ const Tab = (props: TabProps) => {
   );
 };
 
-export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
+export const BottomTabs: React.FC = (props) => {
   const { navigation, state } = props;
-  const { bottom } = useSafeAreaInsets();
 
   return (
     <View
       style={[
         styles.tabListContainer,
         {
-          paddingBottom: bottom,
+          paddingBottom: 0,
         },
       ]}
     >

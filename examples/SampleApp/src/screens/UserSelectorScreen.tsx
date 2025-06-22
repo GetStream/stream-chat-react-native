@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { USERS } from '../ChatUsers';
 import { useAppContext } from '../context/AppContext';
@@ -17,7 +16,6 @@ import { StreamLogo } from '../icons/StreamLogo';
 import { Settings } from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { UserSelectorParamList } from '../types';
 
@@ -77,25 +75,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export type UserSelectorScreenNavigationProp = StackNavigationProp<
-  UserSelectorParamList,
-  'UserSelectorScreen'
->;
-
-type Props = {
-  navigation: UserSelectorScreenNavigationProp;
-};
-
-export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
+export const UserSelectorScreen: React.FC = ({ navigation }) => {
   const { switchUser } = useAppContext();
-  const { bottom } = useSafeAreaInsets();
 
   useEffect(() => {
     AsyncStore.setItem('@stream-rn-sampleapp-user-id', '');
   }, []);
 
   return (
-    <SafeAreaView
+    <View
       edges={['right', 'top', 'left']}
       style={[styles.container]}
       testID='user-selector-screen'
@@ -183,11 +171,11 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
       <View
         style={[
           {
-            paddingBottom: bottom ? bottom : 16,
+            paddingBottom: 0,
             paddingTop: 16,
           },
         ]}
        />
-    </SafeAreaView>
+    </View>
   );
 };

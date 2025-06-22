@@ -1,7 +1,6 @@
 import React from 'react';
 import { Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/core';
 
 import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
 
@@ -67,7 +66,6 @@ const MemoizedNewDirectMessagingSendButton = React.memo(
  */
 export const NewDirectMessagingSendButton = (props) => {
   const { chatClient } = useAppContext();
-  const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
   const { selectedUserIds, reset } = useUserSearchContext();
 
   return null;

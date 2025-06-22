@@ -1,4 +1,3 @@
-import type { Theme } from '@react-navigation/native';
 
 export type DrawerNavigatorParamList = {
   HomeScreen: undefined;

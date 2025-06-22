@@ -1,14 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
-
-import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -36,11 +33,6 @@ const styles = StyleSheet.create({
   },
 });
 
-type ChannelListScreenNavigationProp = StackNavigationProp<
-  StackNavigatorParamList,
-  'ChannelListScreen'
->;
-
 export const ChannelPreview = (
   props,
 ) => {
@@ -51,9 +43,6 @@ export const ChannelPreview = (
   const { setData: setDataBottomSheet } = useBottomSheetOverlayContext();
 
   const { data, setData } = useChannelInfoOverlayContext();
-
-
-  const navigation = useNavigation<ChannelListScreenNavigationProp>();
 
   const otherMembers = channel
     ? Object.values(channel.state.members).filter((member) => member.user?.id !== data?.clientId)

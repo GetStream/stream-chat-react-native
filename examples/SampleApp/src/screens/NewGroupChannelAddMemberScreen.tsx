@@ -7,8 +7,6 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
-
 import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
@@ -55,17 +53,7 @@ const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
     <TouchableOpacity disabled={disabled} onPress={onPress} style={styles.navigationButton} />
   );
 };
-
-export type NewGroupChannelAddMemberScreenNavigationProp = StackNavigationProp<
-  StackNavigatorParamList,
-  'NewGroupChannelAddMemberScreen'
->;
-
-type Props = {
-  navigation: NewGroupChannelAddMemberScreenNavigationProp;
-};
-
-export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) => {
+export const NewGroupChannelAddMemberScreen: React.FC = ({ navigation }) => {
   const { chatClient } = useAppContext();
 
 

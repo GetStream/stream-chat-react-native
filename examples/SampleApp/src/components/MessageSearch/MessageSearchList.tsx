@@ -1,6 +1,5 @@
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 
@@ -64,8 +63,6 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
       refreshList,
       showResultCount = false,
     } = props;
-    const navigation =
-      useNavigation<NavigationProp<StackNavigatorParamList, 'ChannelListScreen'>>();
 
     if (!messages && !refreshing) {
       return null;

@@ -4,9 +4,6 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
-import { useScrollToTop } from '@react-navigation/native';
-
-import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
 import { useAppContext } from '../context/AppContext';
@@ -35,11 +32,7 @@ const EmptyMentionsSearchIndicator = () => {
   );
 };
 
-export type MentionsScreenProps = {
-  navigation: StackNavigationProp<BottomTabNavigatorParamList, 'MentionsScreen'>;
-};
-
-export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
+export const MentionsScreen: React.FC = () => {
 
   const { chatClient } = useAppContext();
   const messageFilters = useMemo(
