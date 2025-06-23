@@ -14,7 +14,7 @@ import type { FileUpload } from '../../../types/types';
 import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAttachment';
 
 jest.mock('../../../native.ts', () => {
-  const View = require('react-native/Libraries/Components/View/View');
+  const View = require('react-native').View;
 
   return {
     isSoundPackageAvailable: jest.fn(() => true),
