@@ -232,9 +232,9 @@ class ExpoAudioRecordingAdapter {
   };
 
   stopAndUnloadAsync = async () => {
+    clearInterval(this.recordingStateInterval);
     await this.recording.stop();
     this.uri = this.recording.uri;
-    clearInterval(this.recordingStateInterval);
     this.recording.release();
   };
 

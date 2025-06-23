@@ -20,9 +20,8 @@ export const Sound = {
         await ExpoAudioComponent.setAudioModeAsync({
           playsInSilentMode: true,
         });
-        const sound = new ExpoAudioSoundAdapter();
+        const sound = new ExpoAudioSoundAdapter(onPlaybackStatusUpdate);
         await sound.loadAsync(source, initialStatus);
-        sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
         return sound;
       }
     : AudioComponent
@@ -63,18 +62,32 @@ class ExpoAudioSoundAdapter {
   private statusEventListener;
   private initialPitchCorrectionQuality;
   private initialShouldCorrectPitch;
+  private onPlaybackStatusUpdate;
 
-  constructor() {}
+  constructor(onPlaybackStatusUpdate: (playbackStatus: PlaybackStatus) => void) {
+    this.onPlaybackStatusUpdate = (playbackStatus: ExpoAudioPlaybackStatus) => {
+      onPlaybackStatusUpdate(expoAudioToExpoAvStatusAdapter(playbackStatus));
+      if (playbackStatus.didJustFinish) {
+        this.unsubscribeStatusEventListener();
+      }
+    };
+  }
 
-  setOnPlaybackStatusUpdate = (
-    onPlaybackStatusUpdate: (playbackStatus: PlaybackStatus) => void,
-  ) => {
+  subscribeStatusEventListener = () => {
+    if (this.statusEventListener) {
+      this.unsubscribeStatusEventListener();
+    }
     this.statusEventListener = this.player.addListener(
       'playbackStatusUpdate',
-      (playbackStatus: ExpoAudioPlaybackStatus) => {
-        onPlaybackStatusUpdate(expoAudioToExpoAvStatusAdapter(playbackStatus));
-      },
+      this.onPlaybackStatusUpdate,
     );
+  };
+
+  unsubscribeStatusEventListener = () => {
+    if (this.statusEventListener) {
+      this.statusEventListener.remove();
+      this.statusEventListener = null;
+    }
   };
 
   // eslint-disable-next-line require-await
@@ -86,28 +99,32 @@ class ExpoAudioSoundAdapter {
 
   // eslint-disable-next-line require-await
   stopAsync: SoundReturnType['stopAsync'] = async () => {
+    this.unsubscribeStatusEventListener();
     this.player.seekTo(0);
     this.player.pause();
   };
 
   // eslint-disable-next-line require-await
   unloadAsync: SoundReturnType['unloadAsync'] = async () => {
-    this.statusEventListener.remove();
+    this.unsubscribeStatusEventListener();
     this.player.release();
   };
 
   // eslint-disable-next-line require-await
   playAsync: SoundReturnType['playAsync'] = async () => {
+    this.subscribeStatusEventListener();
     this.player.play();
   };
 
   // eslint-disable-next-line require-await
   pauseAsync: SoundReturnType['pauseAsync'] = async () => {
+    this.unsubscribeStatusEventListener();
     this.player.pause();
   };
 
   // eslint-disable-next-line require-await
   replayAsync: SoundReturnType['replayAsync'] = async () => {
+    this.subscribeStatusEventListener();
     this.player.seekTo(0);
   };
 

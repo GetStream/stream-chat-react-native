@@ -126,13 +126,17 @@ export const useAudioController = () => {
     if (recording && typeof recording !== 'string') {
       const uri = recording.getURI();
       if (uri && NativeHandlers.Sound?.initializeSound) {
-        soundRef.current = await NativeHandlers.Sound.initializeSound(
-          { uri },
-          { progressUpdateIntervalMillis: Platform.OS === 'android' ? 100 : 60 },
-          onVoicePlayerPlaybackStatusUpdate,
-        );
-        if (soundRef.current?.playAsync) {
-          await soundRef.current.playAsync();
+        if (soundRef.current?.replayAsync) {
+          await soundRef.current.replayAsync({});
+        } else {
+          soundRef.current = await NativeHandlers.Sound.initializeSound(
+            { uri },
+            { progressUpdateIntervalMillis: Platform.OS === 'android' ? 100 : 60 },
+            onVoicePlayerPlaybackStatusUpdate,
+          );
+          if (soundRef.current?.playAsync) {
+            await soundRef.current.playAsync();
+          }
         }
       }
     }
