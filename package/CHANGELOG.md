@@ -1,5 +1,15 @@
 # Change Log
 
+### [7.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v7.1.1...v7.1.2) (2025-06-23)
+
+
+### Bug Fixes
+
+* android crash during sharing larger media ([96e4cc2](https://github.com/GetStream/stream-chat-react-native/commit/96e4cc26c4724e260148223eb8d501ea042e27cd))
+* prefer local uri when sharing if there ([#3118](https://github.com/GetStream/stream-chat-react-native/issues/3118)) ([0ecee49](https://github.com/GetStream/stream-chat-react-native/commit/0ecee49cf6996874b076b82a816542a707b5b825))
+* remove unwanted styles ([#3111](https://github.com/GetStream/stream-chat-react-native/issues/3111)) ([41940f0](https://github.com/GetStream/stream-chat-react-native/commit/41940f01e39ecf3b17796376948fcda1a3d4febd))
+* visibility of unread notification and underlay in certain scenarios ([#3119](https://github.com/GetStream/stream-chat-react-native/issues/3119)) ([69bbbe6](https://github.com/GetStream/stream-chat-react-native/commit/69bbbe6a9363fdd75c4beae6f652628dd2525731))
+
 ### [7.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v7.1.0...v7.1.1) (2025-05-30)
 
 
