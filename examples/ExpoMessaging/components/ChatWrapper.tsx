@@ -15,7 +15,7 @@ const streami18n = new Streami18n({
 });
 
 SqliteClient.logger = (level, message, extraData) => {
-  console.log(level, `SqliteClient: ${message}`, extraData);
+  // console.log(level, `SqliteClient: ${message}`, extraData);
 };
 
 export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {

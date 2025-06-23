@@ -3633,10 +3633,10 @@ expo-asset@~11.1.5:
     "@expo/image-utils" "^0.7.4"
     expo-constants "~17.1.5"
 
-expo-av@~15.1.6:
-  version "15.1.6"
-  resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-15.1.6.tgz#f1c4a404672500feb0274144a64bb3a956e85bdd"
-  integrity sha512-5ZbeXdCmdckZHwtEV+8tRZqLlUWR96gkkUIxpyZAEvK0L+aI/BnyhDCpjnSKWwZo4ZA6lx8/su9kyFNV/mQ/sQ==
+expo-audio@~0.4.6:
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/expo-audio/-/expo-audio-0.4.6.tgz#39def71b91f2cb5c4d21a51aef6ffabcc4421ad4"
+  integrity sha512-/pgz0AnQHnyJWkPfTp/3gBDib6FZYnscpktFZgmPeTeCK8KkPV4+eV2oEDDbSe2ngUrqDA0WVO4MX2Mfeec9ZA==
 
 expo-clipboard@~7.1.4:
   version "7.1.4"

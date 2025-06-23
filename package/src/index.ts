@@ -4,7 +4,7 @@ import './polyfills';
 
 export * from './components';
 export * from './hooks';
-export { registerNativeHandlers } from './native';
+export { registerNativeHandlers, SoundReturnType, PlaybackStatus, RecordingStatus } from './native';
 export * from './contexts';
 
 export * from './icons';
