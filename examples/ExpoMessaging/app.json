@@ -62,7 +62,8 @@
         {
           "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
         }
-      ]
+      ],
+      "./plugins/keyboardInsetMainActivityListener.js"
     ]
   }
 }
