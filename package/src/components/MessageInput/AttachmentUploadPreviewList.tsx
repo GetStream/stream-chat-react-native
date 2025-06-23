@@ -2,16 +2,16 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FlatList, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import {
-  isAudioAttachment,
   isLocalAudioAttachment,
   isLocalFileAttachment,
   isLocalImageAttachment,
   isLocalVoiceRecordingAttachment,
   isVideoAttachment,
-  isVoiceRecordingAttachment,
   LocalAttachment,
   LocalImageAttachment,
 } from 'stream-chat';
+
+import { useAudioPreviewManager } from './hooks/useAudioPreviewManager';
 
 import { useMessageComposer } from '../../contexts';
 import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
@@ -21,7 +21,6 @@ import {
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { isSoundPackageAvailable } from '../../native';
-import { AudioConfig } from '../../types/types';
 
 const IMAGE_PREVIEW_SIZE = 100;
 const FILE_PREVIEW_HEIGHT = 60;
@@ -42,9 +41,6 @@ const UnMemoizedAttachmentUploadListPreview = (
   props: AttachmentUploadPreviewListPropsWithContext,
 ) => {
   const [flatListWidth, setFlatListWidth] = useState(0);
-  const [audioAttachmentsStateMap, setAudioAttachmentsStateMap] = useState<
-    Record<string, AudioConfig>
-  >({});
   const flatListRef = useRef<FlatList<LocalAttachment> | null>(null);
   const {
     AudioAttachmentUploadPreview,
@@ -68,82 +64,15 @@ const UnMemoizedAttachmentUploadListPreview = (
   const fileUploads = useMemo(() => {
     return attachments.filter((attachment) => !isLocalImageAttachment(attachment));
   }, [attachments]);
-
-  useEffect(() => {
-    const newAudioAttachmentsStateMap = fileUploads.reduce(
-      (acc, attachment) => {
-        if (isAudioAttachment(attachment) || isVoiceRecordingAttachment(attachment)) {
-          acc[attachment.localMetadata.id] = {
-            duration:
-              attachment.duration ||
-              audioAttachmentsStateMap[attachment.localMetadata.id]?.duration ||
-              0,
-            paused: true,
-            progress: 0,
-          };
-        }
-        return acc;
-      },
-      {} as Record<string, AudioConfig>,
+  const audioUploads = useMemo(() => {
+    return fileUploads.filter(
+      (attachment) =>
+        isLocalAudioAttachment(attachment) || isLocalVoiceRecordingAttachment(attachment),
     );
-
-    setAudioAttachmentsStateMap(newAudioAttachmentsStateMap);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUploads]);
 
-  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here
-  // and the duration is set.
-  const onLoad = useCallback((index: string, duration: number) => {
-    setAudioAttachmentsStateMap((prevState) => ({
-      ...prevState,
-      [index]: {
-        ...prevState[index],
-        duration,
-      },
-    }));
-  }, []);
-
-  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The
-  // progressed duration is set here.
-  const onProgress = useCallback((index: string, progress: number) => {
-    setAudioAttachmentsStateMap((prevState) => ({
-      ...prevState,
-      [index]: {
-        ...prevState[index],
-        progress,
-      },
-    }));
-  }, []);
-
-  // The handler which controls or sets the paused/played state of the audio.
-  const onPlayPause = useCallback((index: string, pausedStatus?: boolean) => {
-    if (pausedStatus === false) {
-      // In this case, all others except the index are set to paused.
-      setAudioAttachmentsStateMap((prevState) => {
-        const newState = { ...prevState };
-        Object.keys(newState).forEach((key) => {
-          if (key !== index) {
-            newState[key].paused = true;
-          }
-        });
-        return {
-          ...newState,
-          [index]: {
-            ...newState[index],
-            paused: false,
-          },
-        };
-      });
-    } else {
-      setAudioAttachmentsStateMap((prevState) => ({
-        ...prevState,
-        [index]: {
-          ...prevState[index],
-          paused: true,
-        },
-      }));
-    }
-  }, []);
+  const { audioAttachmentsStateMap, onLoad, onProgress, onPlayPause } =
+    useAudioPreviewManager(audioUploads);
 
   const renderImageItem = useCallback(
     ({ item }: { item: LocalImageAttachment }) => {
