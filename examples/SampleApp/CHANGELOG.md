@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.1.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.1...sampleapp@v3.1.2) (2025-06-23)
+
+
+### Bug Fixes
+
+* sample app crash on start ([#3128](https://github.com/GetStream/stream-chat-react-native/issues/3128)) ([971087d](https://github.com/GetStream/stream-chat-react-native/commit/971087d0f81a33c8503853ad1a34cff8c3822fec))
+
 ### [3.1.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.0...sampleapp@v3.1.1) (2025-05-30)
 
 
