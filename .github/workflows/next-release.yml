@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - V8
 
 jobs:
   publish-next:
