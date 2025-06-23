@@ -25,7 +25,7 @@ import { NativeHandlers } from '../../../native';
 import { ImageGallery, ImageGalleryCustomComponents } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
-  const View = require('react-native/Libraries/Components/View/View');
+  const { View } = require('react-native');
   return {
     isFileSystemAvailable: jest.fn(() => true),
     isImageMediaLibraryAvailable: jest.fn(() => true),
@@ -159,12 +159,14 @@ describe('ImageGalleryFooter', () => {
     });
   });
 
-  it('should trigger the share button onPress Handler', async () => {
+  it('should trigger the share button onPress Handler with local attachment and no mime_type', async () => {
     const user = userEvent.setup();
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     const saveFileMock = jest.spyOn(NativeHandlers, 'saveFile');
     const shareImageMock = jest.spyOn(NativeHandlers, 'shareImage');
     const deleteFileMock = jest.spyOn(NativeHandlers, 'deleteFile');
+
+    const attachment = generateImageAttachment();
 
     render(
       <OverlayProvider>
@@ -173,7 +175,99 @@ describe('ImageGalleryFooter', () => {
             {
               messages: [
                 generateMessage({
-                  attachments: [generateImageAttachment()],
+                  attachments: [attachment],
+                }),
+              ] as unknown as LocalMessage[],
+            } as unknown as ImageGalleryContextValue
+          }
+        >
+          <Chat client={chatClient}>
+            <ImageGallery overlayOpacity={{ value: 1 } as SharedValue<number>} />
+          </Chat>
+        </ImageGalleryContext.Provider>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      user.press(screen.queryByLabelText('Share Button') as ReactTestInstance);
+    });
+
+    await waitFor(() => {
+      expect(saveFileMock).not.toHaveBeenCalled();
+      expect(shareImageMock).toHaveBeenCalledWith({
+        type: 'image/jpeg',
+        url: attachment.image_url,
+      });
+      expect(deleteFileMock).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should trigger the share button onPress Handler with local attachment and existing mime_type', async () => {
+    const user = userEvent.setup();
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const saveFileMock = jest.spyOn(NativeHandlers, 'saveFile');
+    const shareImageMock = jest.spyOn(NativeHandlers, 'shareImage');
+    const deleteFileMock = jest.spyOn(NativeHandlers, 'deleteFile');
+
+    const attachment = { ...generateImageAttachment(), mime_type: 'image/png' };
+
+    render(
+      <OverlayProvider>
+        <ImageGalleryContext.Provider
+          value={
+            {
+              messages: [
+                generateMessage({
+                  attachments: [attachment],
+                }),
+              ] as unknown as LocalMessage[],
+            } as unknown as ImageGalleryContextValue
+          }
+        >
+          <Chat client={chatClient}>
+            <ImageGallery overlayOpacity={{ value: 1 } as SharedValue<number>} />
+          </Chat>
+        </ImageGalleryContext.Provider>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      user.press(screen.queryByLabelText('Share Button') as ReactTestInstance);
+    });
+
+    await waitFor(() => {
+      expect(saveFileMock).not.toHaveBeenCalled();
+      expect(shareImageMock).toHaveBeenCalledWith({
+        type: 'image/png',
+        url: attachment.image_url,
+      });
+      expect(deleteFileMock).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should trigger the share button onPress Handler with cdn attachment', async () => {
+    const user = userEvent.setup();
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const saveFileMock = jest
+      .spyOn(NativeHandlers, 'saveFile')
+      .mockResolvedValue('file:///local/asset/url');
+    const shareImageMock = jest.spyOn(NativeHandlers, 'shareImage');
+    const deleteFileMock = jest.spyOn(NativeHandlers, 'deleteFile');
+
+    const attachment = {
+      ...generateImageAttachment(),
+      image_url: 'https://my-image-service/image/123456',
+      mime_type: 'image/png',
+    };
+
+    render(
+      <OverlayProvider>
+        <ImageGalleryContext.Provider
+          value={
+            {
+              messages: [
+                generateMessage({
+                  attachments: [attachment],
                 }),
               ] as unknown as LocalMessage[],
             } as unknown as ImageGalleryContextValue
@@ -192,7 +286,10 @@ describe('ImageGalleryFooter', () => {
 
     await waitFor(() => {
       expect(saveFileMock).toHaveBeenCalled();
-      expect(shareImageMock).toHaveBeenCalled();
+      expect(shareImageMock).toHaveBeenCalledWith({
+        type: 'image/png',
+        url: 'file:///local/asset/url',
+      });
       expect(deleteFileMock).toHaveBeenCalled();
     });
   });

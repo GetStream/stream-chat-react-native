@@ -1064,6 +1064,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         if (failedMessages?.length) {
           channel.state.addMessagesSorted(failedMessages);
         }
+        await markRead();
         channel.state.setIsUpToDate(true);
       } else {
         await reloadThread();
