@@ -1,5 +1,12 @@
 # Change Log
 
+## [7.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v7.1.2...v7.2.0) (2025-06-23)
+
+
+### Features
+
+* add support for `expo-audio` ([#3126](https://github.com/GetStream/stream-chat-react-native/issues/3126)) ([e1f555f](https://github.com/GetStream/stream-chat-react-native/commit/e1f555fc4a59bf7514332bf0ba724c49a98288c1))
+
 ### [7.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v7.1.1...v7.1.2) (2025-06-23)
 
 
