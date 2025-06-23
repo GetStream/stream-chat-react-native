@@ -7,7 +7,7 @@ import {
   TextComposerMiddleware,
 } from 'stream-chat';
 
-export const setupCommandUIMiddleware = (messageComposer: MessageComposer) => {
+export const setupCommandUIMiddlewares = (messageComposer: MessageComposer) => {
   messageComposer.compositionMiddlewareExecutor.insert({
     middleware: [createCommandInjectionMiddleware(messageComposer)],
     position: { after: 'stream-io/message-composer-middleware/attachments' },

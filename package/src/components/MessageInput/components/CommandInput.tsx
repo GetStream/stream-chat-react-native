@@ -21,6 +21,7 @@ export type CommandInputProps = Partial<
 > & {
   disabled: boolean;
 };
+
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
 });
