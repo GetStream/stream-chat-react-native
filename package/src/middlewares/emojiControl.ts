@@ -88,10 +88,13 @@ export type EmojiMiddleware<T extends Emoji = Emoji> = Middleware<
  *   }} options
  * @returns
  */
-export const createTextComposerEmojiMiddleware = (
-  emojiSearchIndex: EmojiSearchIndex,
-  options?: Partial<TextComposerMiddlewareOptions>,
-): EmojiMiddleware => {
+export const createTextComposerEmojiMiddleware = ({
+  emojiSearchIndex,
+  options,
+}: {
+  emojiSearchIndex: EmojiSearchIndex;
+  options?: Partial<TextComposerMiddlewareOptions>;
+}): EmojiMiddleware => {
   const finalOptions = mergeWith(DEFAULT_OPTIONS, options ?? {});
   const emojiSearchSource = new EmojiSearchSource(emojiSearchIndex);
   emojiSearchSource.activate();
