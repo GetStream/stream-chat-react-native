@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 
@@ -26,10 +26,15 @@ describe('AttachButton', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
   });
 
   it('should render an disabled AttachButton', async () => {
@@ -46,8 +51,8 @@ describe('AttachButton', () => {
       expect(handleOnPress).toHaveBeenCalledTimes(0);
     });
 
-    await act(() => {
-      userEvent.press(screen.getByTestId('attach-button'));
+    act(() => {
+      fireEvent.press(screen.getByTestId('attach-button'));
     });
 
     await waitFor(() => {
@@ -75,8 +80,8 @@ describe('AttachButton', () => {
       expect(handleOnPress).toHaveBeenCalledTimes(0);
     });
 
-    await act(() => {
-      userEvent.press(screen.getByTestId('attach-button'));
+    act(() => {
+      fireEvent.press(screen.getByTestId('attach-button'));
     });
 
     await waitFor(() => {
@@ -104,8 +109,8 @@ describe('AttachButton', () => {
       expect(handleAttachButtonPress).toHaveBeenCalledTimes(0);
     });
 
-    await act(() => {
-      userEvent.press(screen.getByTestId('attach-button'));
+    act(() => {
+      fireEvent.press(screen.getByTestId('attach-button'));
     });
 
     await waitFor(() => {
@@ -133,8 +138,8 @@ describe('AttachButton', () => {
       expect(queryByTestId('attach-button')).toBeTruthy();
     });
 
-    await act(() => {
-      userEvent.press(screen.getByTestId('attach-button'));
+    act(() => {
+      fireEvent.press(screen.getByTestId('attach-button'));
     });
 
     await waitFor(() => {
@@ -156,8 +161,8 @@ describe('AttachButton', () => {
       expect(queryByTestId('attach-button')).toBeTruthy();
     });
 
-    await act(() => {
-      userEvent.press(screen.getByTestId('attach-button'));
+    act(() => {
+      fireEvent.press(screen.getByTestId('attach-button'));
     });
 
     await waitFor(() => {

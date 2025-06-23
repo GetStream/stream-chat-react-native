@@ -1,17 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-const styles = StyleSheet.create({
-  bold: { fontWeight: '600' },
-  message: {
-    flexShrink: 1,
-    fontSize: 12,
-  },
-});
+import { useTheme } from '../../contexts';
+import { MessagePreview } from '../MessagePreview/MessagePreview';
 
 export type ChannelPreviewMessageProps = {
   /**
@@ -25,24 +18,19 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
 
   const {
     theme: {
-      channelPreview: { message },
-      colors: { grey },
+      channelPreview: {
+        message: { container },
+      },
     },
   } = useTheme();
 
   return (
-    <Text numberOfLines={1} style={[styles.message, { color: grey }, message]}>
-      {latestMessagePreview?.previews?.map(
-        (preview, index) =>
-          preview.text && (
-            <Text
-              key={`${preview.text}_${index}`}
-              style={[{ color: grey }, preview.bold ? styles.bold : {}, message]}
-            >
-              {preview.text}
-            </Text>
-          ),
-      )}
-    </Text>
+    <View style={[styles.container, container]}>
+      <MessagePreview previews={latestMessagePreview.previews} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {},
+});

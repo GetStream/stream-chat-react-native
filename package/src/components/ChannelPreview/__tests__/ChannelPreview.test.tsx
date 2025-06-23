@@ -47,6 +47,23 @@ const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => (
   </>
 );
 
+const initChannelFromData = async (
+  chatClient: StreamChat,
+  overrides: Record<string, unknown> = {},
+) => {
+  const mockedChannel = generateChannelResponse(overrides);
+  useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+  const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+  await channel.watch();
+
+  channel.countUnread = jest.fn().mockReturnValue(0);
+  channel.initialized = true;
+  channel.lastMessage = jest.fn().mockReturnValue(generateMessage());
+  channel.muteStatus = jest.fn().mockReturnValue({ muted: false });
+
+  return channel;
+};
+
 describe('ChannelPreview', () => {
   const clientUser = generateUser();
   let chatClient: StreamChat;
@@ -98,12 +115,10 @@ describe('ChannelPreview', () => {
     it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannelWrapper({
-        countUnread: jest.fn().mockReturnValue(10),
-        on: channelOnMock,
-      });
+      channel = await initChannelFromData(chatClient);
 
-      channel = c as unknown as Channel;
+      channel.countUnread = jest.fn().mockReturnValue(10);
+      channel.on = channelOnMock;
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -128,12 +143,10 @@ describe('ChannelPreview', () => {
 
       countUnreadMock.mockReturnValue(10);
 
-      const c = generateChannelWrapper({
-        countUnread: countUnreadMock,
-        on: channelOnMock,
-      });
+      channel = await initChannelFromData(chatClient);
 
-      channel = c as unknown as Channel;
+      channel.countUnread = countUnreadMock;
+      channel.on = channelOnMock;
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -159,11 +172,9 @@ describe('ChannelPreview', () => {
     it("should not update the unread count if the event's cid is undefined", async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannelWrapper({
-        on: channelOnMock,
-      });
+      channel = await initChannelFromData(chatClient);
 
-      channel = c as unknown as Channel;
+      channel.on = channelOnMock;
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -192,11 +203,9 @@ describe('ChannelPreview', () => {
     it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannelWrapper({
-        on: channelOnMock,
-      });
+      channel = await initChannelFromData(chatClient);
 
-      channel = c as unknown as Channel;
+      channel.on = channelOnMock;
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -225,11 +234,9 @@ describe('ChannelPreview', () => {
     it("should not update the unread count if the event's user id does not match the client's user id", async () => {
       const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 
-      const c = generateChannelWrapper({
-        on: channelOnMock,
-      });
+      channel = await initChannelFromData(chatClient);
 
-      channel = c as unknown as Channel;
+      channel.on = channelOnMock;
 
       const { getByTestId } = render(<TestComponent />);
 

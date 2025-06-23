@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { renderHook, waitFor } from '@testing-library/react-native';
 
-import type { MessageResponse, StreamChat } from 'stream-chat';
+import { ChannelResponse, MessageResponse, StreamChat } from 'stream-chat';
 
 import { ChatContext, ChatContextValue } from '../../../../contexts/chatContext/ChatContext';
 import {
@@ -16,10 +16,21 @@ import {
   LATEST_MESSAGE,
 } from '../../../../mock-builders/api/channelMocks';
 
+import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
-
 import { useLatestMessagePreview } from '../useLatestMessagePreview';
+
+const initChannelFromData = async (chatClient: StreamChat, channelData: ChannelResponse) => {
+  const mockedChannel = generateChannelResponse(channelData);
+  useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+  const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+  await channel.watch();
+
+  return channel;
+};
 
 describe('useLatestMessagePreview', () => {
   const FORCE_UPDATE = 15;
@@ -44,10 +55,15 @@ describe('useLatestMessagePreview', () => {
   );
 
   it('should return a deleted message preview if the latest message is deleted', async () => {
+    const channel = await initChannelFromData(
+      chatClient,
+      CHANNEL_WITH_DELETED_MESSAGES as unknown as ChannelResponse,
+    );
+
     const latestMessage = { cid: 'test', type: 'deleted' } as unknown as MessageResponse;
 
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_DELETED_MESSAGES, FORCE_UPDATE, latestMessage),
+      () => useLatestMessagePreview(channel, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
     await waitFor(() => {
@@ -56,10 +72,14 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return an "Nothing yet..." message preview if channel has no messages', async () => {
+    const channel = await initChannelFromData(
+      chatClient,
+      CHANNEL_WITH_NO_MESSAGES as unknown as ChannelResponse,
+    );
     const latestMessage = undefined;
 
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_NO_MESSAGES, FORCE_UPDATE, latestMessage),
+      () => useLatestMessagePreview(channel, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
     await waitFor(() => {
@@ -68,8 +88,12 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should use latestMessage if provided', async () => {
+    const channel = await initChannelFromData(
+      chatClient,
+      CHANNEL_WITH_MESSAGES_TEXT as unknown as ChannelResponse,
+    );
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_TEXT, FORCE_UPDATE, LATEST_MESSAGE),
+      () => useLatestMessagePreview(channel, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
 
@@ -82,10 +106,14 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return a channel with an empty message preview', async () => {
+    const channel = await initChannelFromData(
+      chatClient,
+      CHANNEL_WITH_EMPTY_MESSAGE as unknown as ChannelResponse,
+    );
     const latestMessage = {} as unknown as MessageResponse;
 
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_EMPTY_MESSAGE, FORCE_UPDATE, latestMessage),
+      () => useLatestMessagePreview(channel, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
 
@@ -98,6 +126,10 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return a mentioned user (@Max) message preview', async () => {
+    const channel = await initChannelFromData(
+      chatClient,
+      CHANNEL_WITH_MENTIONED_USERS as unknown as ChannelResponse,
+    );
     const latestMessage = {
       mentioned_users: [{ id: 'Max', name: 'Max' }],
       text: 'Max',
@@ -107,7 +139,7 @@ describe('useLatestMessagePreview', () => {
     } as unknown as MessageResponse;
 
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MENTIONED_USERS, FORCE_UPDATE, latestMessage),
+      () => useLatestMessagePreview(channel, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
     await waitFor(() => {
@@ -119,6 +151,11 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return the latest command preview', async () => {
+    const channel = await initChannelFromData(
+      chatClient,
+      CHANNEL_WITH_MESSAGES_COMMAND as unknown as ChannelResponse,
+    );
+
     const latestMessage = {
       command: 'giphy',
       user: {
@@ -127,7 +164,7 @@ describe('useLatestMessagePreview', () => {
     } as unknown as MessageResponse;
 
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_COMMAND, FORCE_UPDATE, latestMessage),
+      () => useLatestMessagePreview(channel, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
     await waitFor(() => {
@@ -139,6 +176,10 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return an attachment preview', async () => {
+    const channel = await initChannelFromData(
+      chatClient,
+      CHANNEL_WITH_MESSAGES_ATTACHMENTS as unknown as ChannelResponse,
+    );
     const latestMessage = {
       attachments: ['arbitrary value'],
       user: {
@@ -147,7 +188,7 @@ describe('useLatestMessagePreview', () => {
     } as unknown as MessageResponse;
 
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_ATTACHMENTS, FORCE_UPDATE, latestMessage),
+      () => useLatestMessagePreview(channel, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
 
@@ -160,10 +201,14 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should default to messages from the channel state if latestMessage is undefined', async () => {
+    const channel = await initChannelFromData(
+      chatClient,
+      CHANNEL_WITH_MESSAGES_TEXT as unknown as ChannelResponse,
+    );
     const latestMessage = undefined;
 
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_TEXT, FORCE_UPDATE, latestMessage),
+      () => useLatestMessagePreview(channel, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
 

@@ -1,8 +1,6 @@
 import React from 'react';
 
-import { act } from 'react-test-renderer';
-
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import {
   MessageInputContext,
@@ -17,14 +15,13 @@ import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAtt
 
 jest.mock('../../../native.ts', () => ({
   isSoundPackageAvailable: jest.fn(() => true),
-  Sound: {
-    initializeSound: jest.fn(),
-    Player: null,
+  NativeHandlers: {
+    SDK: 'stream-chat-expo',
+    Sound: {
+      initializeSound: jest.fn(),
+      Player: null,
+    },
   },
-}));
-
-jest.mock('react-native/Libraries/ReactNative/I18nManager', () => ({
-  isRTL: true,
 }));
 
 const getComponent = (

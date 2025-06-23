@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Image, Text } from 'react-native';
 
-import { act } from 'react-test-renderer';
-
-import { render, waitFor } from '@testing-library/react-native';
+import { act, render, waitFor } from '@testing-library/react-native';
 import type { Channel, ChannelResponse, Event, StreamChat } from 'stream-chat';
 
 import { ChatContext, useChannelUpdated } from '../../../../../index';

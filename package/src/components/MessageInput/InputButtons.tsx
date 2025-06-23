@@ -35,9 +35,7 @@ export type InputButtonsWithContextProps = Pick<
   Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
-  // TODO: Comment out once the commands PR has been merged on the LLC
-  // command: state.command,
-  command: null,
+  command: state.command,
   hasText: !!state.text,
 });
 
@@ -58,7 +56,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const { attachments } = useAttachmentManagerState();
 
-  const shouldShowMoreOptions = hasText || !!attachments.length;
+  const shouldShowMoreOptions = hasText || attachments.length;
 
   useEffect(() => {
     setShowMoreOptions(!shouldShowMoreOptions);

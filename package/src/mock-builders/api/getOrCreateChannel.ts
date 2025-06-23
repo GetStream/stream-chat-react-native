@@ -2,7 +2,7 @@
 import { mockedApiResponse } from './utils';
 
 export type GetOrCreateChannelApiParams = {
-  draft: Record<string, any>;
+  draft?: Record<string, any>;
   channel?: Record<string, any>;
   members?: Record<string, any>[];
   messages?: Record<string, any>[];

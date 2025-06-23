@@ -14,8 +14,15 @@ import { SqliteClient } from '../SqliteClient';
  */
 export const addPendingTask = async (task: PendingTask) => {
   const storable = mapTaskToStorable(task);
-  const { channelId, channelType, payload, type } = storable;
-  const query = createUpsertQuery('pendingTasks', storable);
+  const { channelId, channelType, threadId, payload, type } = storable;
+  const queries = [];
+  if (type === 'create-draft' || type === 'delete-draft') {
+    // Only one draft pending task is allowed per entity (i.e thread, channel etc).
+    // If multiple arrive, we'll simply take the last one (since deleteDraft does not
+    // fail as an API if a draft doesn't exist).
+    queries.push(createDeleteQuery('pendingTasks', { channelId, channelType, threadId }));
+  }
+  queries.push(createUpsertQuery('pendingTasks', storable));
   SqliteClient.logger?.('info', 'addPendingTask', {
     channelId,
     channelType,
@@ -23,7 +30,7 @@ export const addPendingTask = async (task: PendingTask) => {
     type,
   });
 
-  await SqliteClient.executeSql.apply(null, query);
+  await SqliteClient.executeSqlBatch(queries);
 
   return async () => {
     SqliteClient.logger?.('info', 'deletePendingTaskAfterAddition', {
@@ -39,6 +46,6 @@ export const addPendingTask = async (task: PendingTask) => {
       type,
     });
 
-    await SqliteClient.executeSql.apply(null, query);
+    await SqliteClient.executeSqlBatch([query]);
   };
 };

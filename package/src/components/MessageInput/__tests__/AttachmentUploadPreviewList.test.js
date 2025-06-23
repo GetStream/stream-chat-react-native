@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -17,7 +17,7 @@ import { Chat } from '../../Chat/Chat';
 import { AttachmentUploadPreviewList } from '../AttachmentUploadPreviewList';
 
 jest.mock('../../../native.ts', () => {
-  const View = require('react-native/Libraries/Components/View/View');
+  const { View } = require('react-native');
 
   return {
     isAudioRecorderAvailable: jest.fn(() => true),
@@ -49,13 +49,15 @@ describe('AttachmentUploadPreviewList', () => {
   let client;
   let channel;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
     act(() => {
       channel.messageComposer.attachmentManager.initState();
     });
@@ -84,7 +86,7 @@ describe('AttachmentUploadPreviewList', () => {
     ];
     const props = {};
 
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
     });
 
@@ -109,7 +111,7 @@ describe('AttachmentUploadPreviewList', () => {
 
     const props = {};
 
-    await act(() => {
+    act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments);
     });
 
@@ -142,7 +144,7 @@ describe('AttachmentUploadPreviewList', () => {
       ];
       const props = {};
 
-      await act(() => {
+      act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments);
       });
 
@@ -156,7 +158,7 @@ describe('AttachmentUploadPreviewList', () => {
         expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(2);
       });
 
-      await act(() => {
+      act(() => {
         fireEvent.press(getAllByTestId('remove-upload-preview')[0]);
       });
 
@@ -164,7 +166,7 @@ describe('AttachmentUploadPreviewList', () => {
         expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(1);
       });
 
-      await act(() => {
+      act(() => {
         fireEvent.press(getAllByTestId('remove-upload-preview')[0]);
       });
 
@@ -190,7 +192,7 @@ describe('AttachmentUploadPreviewList', () => {
       ];
       const props = {};
 
-      await act(() => {
+      act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
       });
 
@@ -223,7 +225,7 @@ describe('AttachmentUploadPreviewList', () => {
       ];
       const props = {};
 
-      await act(() => {
+      act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
       });
 
@@ -236,7 +238,7 @@ describe('AttachmentUploadPreviewList', () => {
         expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(2);
       });
 
-      await act(() => {
+      act(() => {
         fireEvent.press(getAllByTestId('retry-upload-progress-indicator')[0]);
       });
 
@@ -264,7 +266,7 @@ describe('AttachmentUploadPreviewList', () => {
       ];
       const props = {};
 
-      await act(() => {
+      act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
       });
 

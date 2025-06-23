@@ -34,10 +34,10 @@ lane :deploy_to_testflight_qa do |options|
   )
 
   current_build_number = app_store_build_number(
-    api_key: appstore_api_key,
-    live: false,
-    app_identifier: bundle_id
-  )
+      api_key: appstore_api_key,
+      live: false,
+      app_identifier: bundle_id
+    )
 
   increment_build_number(
     build_number: current_build_number + 1,

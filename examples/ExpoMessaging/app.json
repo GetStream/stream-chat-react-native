@@ -15,18 +15,25 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "usesIcloudStorage": true,
-      "bundleIdentifier": "io.stream.expomessagingapp"
+      "bundleIdentifier": "io.stream.expomessagingapp",
+      "appleTeamId": "EHV7XZLAHA"
     },
     "android": {
       "package": "io.stream.expomessagingapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -44,16 +51,16 @@
         }
       ],
       [
-        "expo-av",
-        {
-          "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
-        }
-      ],
-      [
         "expo-video",
         {
           "supportsBackgroundPlayback": true,
           "supportsPictureInPicture": true
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
         }
       ]
     ]

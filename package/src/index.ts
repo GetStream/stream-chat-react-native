@@ -4,7 +4,7 @@ import './polyfills';
 
 export * from './components';
 export * from './hooks';
-export { registerNativeHandlers } from './native';
+export { registerNativeHandlers, SoundReturnType, PlaybackStatus, RecordingStatus } from './native';
 export * from './contexts';
 
 export * from './icons';
@@ -15,6 +15,7 @@ export * from './types/types';
 
 export * from './utils/patchMessageTextCommand';
 export * from './utils/i18n/Streami18n';
+export * from './utils/setupCommandUIMiddlewares';
 export * from './utils/utils';
 
 export { default as enTranslations } from './i18n/en.json';

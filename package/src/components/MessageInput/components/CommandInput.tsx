@@ -21,11 +21,9 @@ export type CommandInputProps = Partial<
 > & {
   disabled: boolean;
 };
+
 const textComposerStateSelector = (state: TextComposerState) => ({
-  // TODO: Comment out once the commands PR has been merged on the LLC
-  // command: state.command,
-  command: null,
-  text: state.text,
+  command: state.command,
 });
 
 export const CommandInput = ({
@@ -52,8 +50,7 @@ export const CommandInput = ({
   } = useTheme();
 
   const onCloseHandler = () => {
-    // TODO: Comment out once the commands PR has been merged on the LLC
-    // textComposer.clearCommand();
+    textComposer.clearCommand();
     messageComposer?.restore();
   };
 
@@ -61,9 +58,7 @@ export const CommandInput = ({
     return null;
   }
 
-  // TODO: Comment out once the commands PR has been merged on the LLC
-  // const commandName = (command.name ?? '').toUpperCase();
-  const commandName = '';
+  const commandName = (command.name ?? '').toUpperCase();
 
   return (
     <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
