@@ -7412,10 +7412,10 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@^9.5.1:
-  version "9.5.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.5.1.tgz#b8260bc1d1470ae3c91d8c40d22f41e9c4523d7b"
-  integrity sha512-X9w22JfEp2cTggAwyt0gyvwe8VBy1qvJENliNen/2FJDpS3k6PCaeSO6MHNXz3c0Qy21hqxuu8/b32jCSe4LSA==
+stream-chat@^9.8.0:
+  version "9.8.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.8.0.tgz#52782073a3923367fe97638fde39ce18e4eed28a"
+  integrity sha512-iKFVFOKWuW2/GTWBOps9YWZoQBlXdJ05FiOKXI/AnCMCGzOpmvEyaoCtsktvdeMaetmZojVPbw/5jomP36Qg0Q==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
