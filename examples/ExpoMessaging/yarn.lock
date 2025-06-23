@@ -3633,11 +3633,6 @@ expo-audio@~0.4.6:
   resolved "https://registry.yarnpkg.com/expo-audio/-/expo-audio-0.4.6.tgz#39def71b91f2cb5c4d21a51aef6ffabcc4421ad4"
   integrity sha512-/pgz0AnQHnyJWkPfTp/3gBDib6FZYnscpktFZgmPeTeCK8KkPV4+eV2oEDDbSe2ngUrqDA0WVO4MX2Mfeec9ZA==
 
-expo-av@~15.1.6:
-  version "15.1.6"
-  resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-15.1.6.tgz#f1c4a404672500feb0274144a64bb3a956e85bdd"
-  integrity sha512-5ZbeXdCmdckZHwtEV+8tRZqLlUWR96gkkUIxpyZAEvK0L+aI/BnyhDCpjnSKWwZo4ZA6lx8/su9kyFNV/mQ/sQ==
-
 expo-clipboard@~7.1.4:
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-7.1.4.tgz#f2cda0d3cbfd2d307aa85dd7ba6843d6bbaf4227"
@@ -6114,6 +6109,25 @@ stream-buffers@2.2.x:
 "stream-chat-expo@link:../../package/expo-package":
   version "0.0.0"
   uid ""
+
+stream-chat-react-native-core@7.1.2:
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-7.1.2.tgz#5870a1188ecbf8c3b705d74379d19ff77efce2c5"
+  integrity sha512-Ob+V8tt+7L+7BRkWyWbFlju6E/8MAoB/NUZ8ENtEEijq5QBNWnVvZctQSZuekIOVrfoP9EenlIOPadHnN/mvYA==
+  dependencies:
+    "@gorhom/bottom-sheet" "^5.1.6"
+    dayjs "1.11.13"
+    emoji-regex "^10.4.0"
+    i18next "^21.10.0"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.3.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.35"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^2.0.0"
+    stream-chat "^9.7.0"
+    use-sync-external-store "^1.5.0"
 
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
