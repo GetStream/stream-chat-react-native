@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-expo",
   "description": "The official Expo SDK for Stream Chat, a service for building chat applications",
-  "version": "7.1.1",
+  "version": "7.1.2",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -56,7 +56,7 @@
     }
   },
   "devDependencies": {
-    "expo": "^52.0.36",
+    "expo": "^53.0.12",
     "expo-image-manipulator": "^12.0.5"
   },
   "scripts": {

@@ -17,7 +17,7 @@ import { Chat } from '../../Chat/Chat';
 import { FileUploadPreview } from '../FileUploadPreview';
 
 jest.mock('../../../native.ts', () => {
-  const View = require('react-native/Libraries/Components/View/View');
+  const { View } = require('react-native');
 
   return {
     isAudioRecorderAvailable: jest.fn(() => true),

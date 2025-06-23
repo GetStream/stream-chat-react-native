@@ -27,7 +27,7 @@ import { ImageGallery } from '../ImageGallery';
 dayjs.extend(duration);
 
 jest.mock('../../../native.ts', () => {
-  const View = require('react-native/Libraries/Components/View/View');
+  const { View } = require('react-native');
   return {
     isFileSystemAvailable: jest.fn(() => true),
     isImageMediaLibraryAvailable: jest.fn(() => true),
