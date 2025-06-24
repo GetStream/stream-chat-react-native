@@ -161,6 +161,7 @@ import { ReactionListBottom as ReactionListBottomDefault } from '../Message/Mess
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
+import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/AttachmentUploadPreviewList';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
@@ -176,8 +177,6 @@ import { CommandInput as CommandInputDefault } from '../MessageInput/components/
 import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
 import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
-import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
-import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
 import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
@@ -526,6 +525,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AttachmentPickerError = DefaultAttachmentPickerError,
     AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
     AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
+    AttachmentUploadPreviewList = AttachmentUploadPreviewDefault,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     attachmentPickerErrorButtonText,
     attachmentPickerErrorText,
@@ -567,7 +567,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
-    FileUploadPreview = FileUploadPreviewDefault,
     FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
@@ -599,7 +598,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
     ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     ImageReloadIndicator = ImageReloadIndicatorDefault,
-    ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
@@ -1741,6 +1739,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     attachmentPickerBottomSheetHeight,
     AttachmentPickerSelectionBar,
     attachmentSelectionBarHeight,
+    AttachmentUploadPreviewList,
     AttachmentUploadProgressIndicator,
     AudioAttachmentUploadPreview,
     AudioRecorder,
@@ -1764,7 +1763,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     editMessage,
     FileAttachmentUploadPreview,
     FileSelectorIcon,
-    FileUploadPreview,
     handleAttachButtonPress,
     hasCameraPicker,
     hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,
@@ -1772,7 +1770,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasImagePicker,
     ImageAttachmentUploadPreview,
     ImageSelectorIcon,
-    ImageUploadPreview,
     Input,
     InputButtons,
     InputEditingStateHeader,

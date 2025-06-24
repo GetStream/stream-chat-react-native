@@ -16,12 +16,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import {
-  isLocalImageAttachment,
-  type MessageComposerState,
-  type TextComposerState,
-  type UserResponse,
-} from 'stream-chat';
+import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
 
 import { useAudioController } from './hooks/useAudioController';
 import { useCountdown } from './hooks/useCountdown';
@@ -122,6 +117,7 @@ type MessageInputPropsWithContext = Pick<
     | 'attachmentPickerBottomSheetHeight'
     | 'AttachmentPickerSelectionBar'
     | 'attachmentSelectionBarHeight'
+    | 'AttachmentUploadPreviewList'
     | 'AudioRecorder'
     | 'AudioRecordingInProgress'
     | 'AudioRecordingLockIndicator'
@@ -131,8 +127,6 @@ type MessageInputPropsWithContext = Pick<
     | 'CooldownTimer'
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
-    | 'FileUploadPreview'
-    | 'ImageUploadPreview'
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
@@ -183,6 +177,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
+    AttachmentUploadPreviewList,
     AudioRecorder,
     audioRecordingEnabled,
     AudioRecordingInProgress,
@@ -196,8 +191,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     CooldownTimer,
     CreatePollContent,
     editing,
-    FileUploadPreview,
-    ImageUploadPreview,
     Input,
     inputBoxRef,
     InputButtons,
@@ -224,9 +217,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { attachments } = useAttachmentManagerState();
   const hasSendableData = useMessageComposerHasSendableData();
 
-  const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
-  const fileUploads = attachments.filter((attachment) => !isLocalImageAttachment(attachment));
-
   const [height, setHeight] = useState(0);
 
   const {
@@ -234,7 +224,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       colors: { border, grey_whisper, white, white_smoke },
       messageInput: {
         attachmentSelectionBar,
-        attachmentSeparator,
         autoCompleteInputContainer,
         composerContainer,
         container,
@@ -508,20 +497,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         <Reply />
                       </View>
                     )}
-                    <ImageUploadPreview />
-                    {imageUploads.length && fileUploads.length ? (
-                      <View
-                        style={[
-                          styles.attachmentSeparator,
-                          {
-                            borderBottomColor: grey_whisper,
-                            marginHorizontal: command ? 8 : 12,
-                          },
-                          attachmentSeparator,
-                        ]}
-                      />
-                    ) : null}
-                    <FileUploadPreview />
+                    <AttachmentUploadPreviewList />
                     {command ? (
                       <CommandInput disabled={!isOnline} />
                     ) : (
@@ -754,6 +730,7 @@ export const MessageInput = (props: MessageInputProps) => {
     attachmentPickerBottomSheetHeight,
     AttachmentPickerSelectionBar,
     attachmentSelectionBarHeight,
+    AttachmentUploadPreviewList,
     AudioRecorder,
     audioRecordingEnabled,
     AudioRecordingInProgress,
@@ -770,9 +747,7 @@ export const MessageInput = (props: MessageInputProps) => {
     CreatePollContent,
     CreatePollIcon,
     FileSelectorIcon,
-    FileUploadPreview,
     ImageSelectorIcon,
-    ImageUploadPreview,
     Input,
     inputBoxRef,
     InputButtons,
@@ -820,6 +795,7 @@ export const MessageInput = (props: MessageInputProps) => {
         attachmentPickerBottomSheetHeight,
         AttachmentPickerSelectionBar,
         attachmentSelectionBarHeight,
+        AttachmentUploadPreviewList,
         AudioRecorder,
         audioRecordingEnabled,
         AudioRecordingInProgress,
@@ -842,9 +818,7 @@ export const MessageInput = (props: MessageInputProps) => {
         CreatePollIcon,
         editing,
         FileSelectorIcon,
-        FileUploadPreview,
         ImageSelectorIcon,
-        ImageUploadPreview,
         Input,
         inputBoxRef,
         InputButtons,
