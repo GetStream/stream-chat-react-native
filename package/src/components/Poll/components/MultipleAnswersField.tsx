@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import { PollComposerState } from 'stream-chat';
@@ -13,7 +13,7 @@ const pollComposerStateSelector = (state: PollComposerState) => ({
 });
 
 export const MultipleAnswersField = () => {
-  const [allowMultipleVotes, setAllowMultipleVotes] = React.useState<boolean>(false);
+  const [allowMultipleVotes, setAllowMultipleVotes] = useState<boolean>(false);
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;

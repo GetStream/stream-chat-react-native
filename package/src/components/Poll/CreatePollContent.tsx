@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -30,9 +30,9 @@ const pollComposerStateSelector = (state: PollComposerState) => ({
 export const POLL_OPTION_HEIGHT = 71;
 
 export const CreatePollContent = () => {
-  const [isAnonymousPoll, setIsAnonymousPoll] = React.useState<boolean>(false);
-  const [allowUserSuggestedOptions, setAllowUserSuggestedOptions] = React.useState<boolean>(false);
-  const [allowAnswers, setAllowAnswers] = React.useState<boolean>(false);
+  const [isAnonymousPoll, setIsAnonymousPoll] = useState<boolean>(false);
+  const [allowUserSuggestedOptions, setAllowUserSuggestedOptions] = useState<boolean>(false);
+  const [allowAnswers, setAllowAnswers] = useState<boolean>(false);
 
   const { t } = useTranslationContext();
 
