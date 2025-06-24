@@ -47,7 +47,7 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
           <Avatar image={vote.user.image as string} key={vote.id} size={20} />
         ) : null}
         <Text style={[styles.voteUserName, { color: black }, userName]}>
-          {isAnonymous ? t<string>('Anonymous') : (vote.user?.name ?? vote.user?.id)}
+          {isAnonymous ? t('Anonymous') : (vote.user?.name ?? vote.user?.id)}
         </Text>
       </View>
       <Text style={[styles.voteDate, { color: text_low_emphasis }, dateText]}>{dateString}</Text>

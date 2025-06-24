@@ -358,6 +358,8 @@ const defaultStreami18nOptions = {
   logger: (msg?: string) => console.warn(msg),
 };
 
+export const defaultTranslatorFunction = ((key: string) => key) as TFunction;
+
 export class Streami18n {
   i18nInstance = i18n.createInstance();
   Dayjs = null;
@@ -376,7 +378,7 @@ export class Streami18n {
    */
   private queuedTFunctionOverride: TFunction | undefined;
 
-  t: TFunction = (key: string) => key;
+  t: TFunction = defaultTranslatorFunction;
   tDateTimeParser: TDateTimeParser;
 
   translations: {

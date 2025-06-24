@@ -127,7 +127,7 @@ export const CreatePollContent = () => {
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
         >
           <Text style={[styles.text, { color: black }, anonymousPoll.title]}>
-            {t<string>('Anonymous poll')}
+            {t('Anonymous poll')}
           </Text>
           <Switch onValueChange={onAnonymousPollChangeHandler} value={isAnonymousPoll} />
         </View>
@@ -135,7 +135,7 @@ export const CreatePollContent = () => {
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, suggestOption.wrapper]}
         >
           <Text style={[styles.text, { color: black }, suggestOption.title]}>
-            {t<string>('Suggest an option')}
+            {t('Suggest an option')}
           </Text>
           <Switch
             onValueChange={onAllowUserSuggestedOptionsChangeHandler}
@@ -144,7 +144,7 @@ export const CreatePollContent = () => {
         </View>
         <View style={[styles.textInputWrapper, { backgroundColor: bg_user }, addComment.wrapper]}>
           <Text style={[styles.text, { color: black }, addComment.title]}>
-            {t<string>('Add a comment')}
+            {t('Add a comment')}
           </Text>
           <Switch onValueChange={onAllowAnswersChangeHandler} value={allowAnswers} />
         </View>

@@ -73,9 +73,7 @@ export const ShowThreadMessageInChannelButtonWithContext = (
           >
             {showReplyInChannel && <Check height={16} pathFill={white} width={16} {...check} />}
           </View>
-          <Text style={[styles.text, { color: grey }, text]}>
-            {t<string>('Also send to channel')}
-          </Text>
+          <Text style={[styles.text, { color: grey }, text]}>{t('Also send to channel')}</Text>
         </View>
       </Pressable>
     </View>

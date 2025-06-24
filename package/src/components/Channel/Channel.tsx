@@ -1943,7 +1943,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   if (!channel?.cid || !channel.watch) {
     return (
       <Text style={[styles.selectChannel, { color: black }, selectChannel]} testID='no-channel'>
-        {t<string>('Please select a channel first')}
+        {t('Please select a channel first')}
       </Text>
     );
   }

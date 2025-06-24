@@ -27,7 +27,7 @@ export const InputReplyStateHeader = () => {
     <View style={[styles.replyBoxHeader, editingBoxHeader]}>
       <CurveLineLeftUp pathFill={grey_gainsboro} />
       <Text style={[styles.replyBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-        {t<string>('Reply to Message')}
+        {t('Reply to Message')}
       </Text>
       <Pressable
         onPress={onCloseHandler}

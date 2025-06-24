@@ -132,8 +132,8 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
         </Svg>
         <Text style={[styles.text, { color: grey }, text]}>
           {replyCount === 1
-            ? t<string>('1 Reply')
-            : t<string>('{{ replyCount }} Replies', {
+            ? t('1 Reply')
+            : t('{{ replyCount }} Replies', {
                 replyCount,
               })}
         </Text>

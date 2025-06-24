@@ -7,6 +7,7 @@ import type { Moment } from 'moment-timezone';
 
 import type { TranslationLanguages } from 'stream-chat';
 
+import { defaultTranslatorFunction } from '../../utils/i18n/Streami18n';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export const DEFAULT_USER_LANGUAGE: TranslationLanguages = 'en';
@@ -21,7 +22,7 @@ export type TDateTimeParserOutput = string | number | Date | Dayjs.Dayjs | Momen
 export type TDateTimeParser = (input?: TDateTimeParserInput) => TDateTimeParserOutput;
 
 export type TranslatorFunctions = {
-  t: TFunction | ((key: string) => string);
+  t: TFunction;
   tDateTimeParser: TDateTimeParser;
 };
 
@@ -30,7 +31,7 @@ export type TranslationContextValue = TranslatorFunctions & {
 };
 
 const defaultTranslationContextValue: TranslationContextValue = {
-  t: (key: string) => key,
+  t: defaultTranslatorFunction,
   tDateTimeParser: (input) => Dayjs(input),
   userLanguage: DEFAULT_USER_LANGUAGE,
 };

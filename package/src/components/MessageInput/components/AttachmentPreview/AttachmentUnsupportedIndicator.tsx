@@ -50,7 +50,7 @@ export const AttachmentUnsupportedIndicator = ({
         {...warningIcon}
       />
       <Text style={[styles.warningText, { color: isImage ? white : grey_dark }, text]}>
-        {t<string>('Not supported')}
+        {t('Not supported')}
       </Text>
     </View>
   );

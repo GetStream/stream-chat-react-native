@@ -78,14 +78,14 @@ export const AttachmentPickerError = (props: AttachmentPickerErrorProps) => {
       <AttachmentPickerErrorImage />
       <Text style={[styles.errorText, { color: grey }, errorText]}>
         {attachmentPickerErrorText ||
-          t<string>('Please enable access to your photos and videos so you can share them.')}
+          t('Please enable access to your photos and videos so you can share them.')}
       </Text>
       <Text
         onPress={openSettings}
         style={[styles.errorButtonText, { color: accent_blue }, errorButtonText]}
         suppressHighlighting
       >
-        {attachmentPickerErrorButtonText || t<string>('Allow access to your Gallery')}
+        {attachmentPickerErrorButtonText || t('Allow access to your Gallery')}
       </Text>
     </View>
   );

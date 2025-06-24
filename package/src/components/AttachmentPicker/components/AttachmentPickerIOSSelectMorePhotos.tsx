@@ -22,7 +22,7 @@ export const AttachmentPickerIOSSelectMorePhotos = () => {
       onPress={NativeHandlers.iOS14RefreshGallerySelection}
       style={[styles.container, { backgroundColor: white }]}
     >
-      <Text style={[styles.text, { color: accent_blue }]}>{t<string>('Select More Photos')}</Text>
+      <Text style={[styles.text, { color: accent_blue }]}>{t('Select More Photos')}</Text>
     </Pressable>
   );
 };

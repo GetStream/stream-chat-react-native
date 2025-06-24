@@ -44,7 +44,7 @@ export const InputEditingStateHeader = ({
     <View style={[styles.editingBoxHeader, editingBoxHeader]}>
       <Edit pathFill={grey_gainsboro} />
       <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-        {t<string>('Editing Message')}
+        {t('Editing Message')}
       </Text>
       <Pressable
         onPress={onCloseHandler}

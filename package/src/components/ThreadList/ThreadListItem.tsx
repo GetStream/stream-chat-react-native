@@ -308,7 +308,7 @@ export const ThreadListItemComponent = () => {
     return [
       {
         bold: true,
-        text: `${t<string>('replied to')}: `,
+        text: `${t('replied to')}: `,
       },
       ...getPreviewFromMessage({
         currentUserId: client.userID,

@@ -39,7 +39,7 @@ export const CreatePollHeader = ({
 
   return (
     <View style={[styles.headerContainer, { backgroundColor: white }, headerContainer]}>
-      <PollModalHeader onPress={onBackPressHandler} title={t<string>('Create Poll')} />
+      <PollModalHeader onPress={onBackPressHandler} title={t('Create Poll')} />
       <Pressable
         disabled={!canCreatePoll}
         onPress={onCreatePollPressHandler}

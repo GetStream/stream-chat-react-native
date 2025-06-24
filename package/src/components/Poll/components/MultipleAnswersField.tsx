@@ -54,7 +54,7 @@ export const MultipleAnswersField = () => {
     >
       <View style={[styles.multipleAnswersRow, multipleAnswers.row]}>
         <Text style={[styles.text, { color: black }, multipleAnswers.title]}>
-          {t<string>('Multiple answers')}
+          {t('Multiple answers')}
         </Text>
         <Switch onValueChange={onEnforceUniqueVoteHandler} value={allowMultipleVotes} />
       </View>
@@ -68,7 +68,7 @@ export const MultipleAnswersField = () => {
                 maxVotes.validationText,
               ]}
             >
-              {t<string>(error)}
+              {t(error)}
             </Text>
           ) : null}
           <View style={{ flexDirection: 'row' }}>
@@ -76,7 +76,7 @@ export const MultipleAnswersField = () => {
               inputMode='numeric'
               onBlur={onBlurHandler}
               onChangeText={onChangeTextHandler}
-              placeholder={t<string>('Maximum votes per person')}
+              placeholder={t('Maximum votes per person')}
               style={[styles.maxVotesInput, { color: black }, maxVotes.input]}
             />
           </View>

@@ -32,7 +32,7 @@ export const NameField = () => {
 
   return (
     <View>
-      <Text style={[styles.text, { color: black }, name.title]}>{t<string>('Questions')}</Text>
+      <Text style={[styles.text, { color: black }, name.title]}>{t('Questions')}</Text>
       <TextInput
         onBlur={onBlur}
         onChangeText={onChangeText}

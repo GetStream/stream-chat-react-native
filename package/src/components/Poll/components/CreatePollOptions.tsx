@@ -241,13 +241,13 @@ export const CreatePollOption = ({
             optionStyle.validationErrorText,
           ]}
         >
-          {t<string>(error)}
+          {t(error)}
         </Text>
       ) : null}
       <TextInput
         onBlur={handleBlur}
         onChangeText={onChangeTextHandler}
-        placeholder={t<string>('Add an option')}
+        placeholder={t('Add an option')}
         style={[styles.optionInput, { color: black }, optionStyle.input]}
       />
       <GestureDetector gesture={gesture}>
@@ -345,7 +345,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.text, { color: black }, title]}>{t<string>('Options')}</Text>
+      <Text style={[styles.text, { color: black }, title]}>{t('Options')}</Text>
       <Animated.View style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption
