@@ -22,8 +22,8 @@ export const useAudioPreviewManager = (files: LocalAttachment[]) => {
 
         const config: AudioConfig = {
           duration: attachment.duration ?? existingConfig?.duration ?? 0,
-          paused: true,
-          progress: 0,
+          paused: existingConfig?.paused ?? true,
+          progress: existingConfig?.progress ?? 0,
         };
 
         return [id, config];
