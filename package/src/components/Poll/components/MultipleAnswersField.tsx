@@ -8,20 +8,17 @@ import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/
 import { useStateStore } from '../../../hooks/useStateStore';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
-  enforce_unique_vote: state.data.enforce_unique_vote,
   error: state.errors.max_votes_allowed,
   max_votes_allowed: state.data.max_votes_allowed,
 });
 
 export const MultipleAnswersField = () => {
+  const [allowMultipleVotes, setAllowMultipleVotes] = React.useState<boolean>(false);
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
   const { handleFieldBlur, updateFields } = pollComposer;
-  const { enforce_unique_vote, error, max_votes_allowed } = useStateStore(
-    pollComposer.state,
-    pollComposerStateSelector,
-  );
+  const { error, max_votes_allowed } = useStateStore(pollComposer.state, pollComposerStateSelector);
 
   const {
     theme: {
@@ -34,6 +31,7 @@ export const MultipleAnswersField = () => {
 
   const onEnforceUniqueVoteHandler = useCallback(
     async (value: boolean) => {
+      setAllowMultipleVotes(value);
       await updateFields({ enforce_unique_vote: !value });
     },
     [updateFields],
@@ -58,9 +56,9 @@ export const MultipleAnswersField = () => {
         <Text style={[styles.text, { color: black }, multipleAnswers.title]}>
           {t<string>('Multiple answers')}
         </Text>
-        <Switch onValueChange={onEnforceUniqueVoteHandler} value={!enforce_unique_vote} />
+        <Switch onValueChange={onEnforceUniqueVoteHandler} value={allowMultipleVotes} />
       </View>
-      {!enforce_unique_vote ? (
+      {allowMultipleVotes ? (
         <View style={[styles.maxVotesWrapper, maxVotes.wrapper]}>
           {max_votes_allowed && error ? (
             <Text

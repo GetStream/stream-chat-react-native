@@ -24,26 +24,21 @@ import { useMessageComposer } from '../../contexts/messageInputContext/hooks/use
 import { useStateStore } from '../../hooks/useStateStore';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
-  allow_answers: state.data.allow_answers,
-  allow_user_suggested_options: state.data.allow_user_suggested_options,
-  enforce_unique_vote: state.data.enforce_unique_vote,
-  max_votes_allowed: state.data.max_votes_allowed,
-  name: state.data.name,
   options: state.data.options,
-  voting_visibility: state.data.voting_visibility,
 });
 
 export const POLL_OPTION_HEIGHT = 71;
 
 export const CreatePollContent = () => {
+  const [isAnonymousPoll, setIsAnonymousPoll] = React.useState<boolean>(false);
+  const [allowUserSuggestedOptions, setAllowUserSuggestedOptions] = React.useState<boolean>(false);
+  const [allowAnswers, setAllowAnswers] = React.useState<boolean>(false);
+
   const { t } = useTranslationContext();
 
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
-  const { allow_answers, allow_user_suggested_options, options, voting_visibility } = useStateStore(
-    pollComposer.state,
-    pollComposerStateSelector,
-  );
+  const { options } = useStateStore(pollComposer.state, pollComposerStateSelector);
 
   const { createPollOptionHeight, closePollCreationDialog, createAndSendPoll } =
     useCreatePollContentContext();
@@ -89,6 +84,32 @@ export const CreatePollContent = () => {
     await createAndSendPoll();
   }, [createAndSendPoll]);
 
+  const onAnonymousPollChangeHandler = useCallback(
+    async (value: boolean) => {
+      setIsAnonymousPoll(value);
+      await pollComposer.updateFields({
+        voting_visibility: value ? VotingVisibility.anonymous : VotingVisibility.public,
+      });
+    },
+    [pollComposer],
+  );
+
+  const onAllowUserSuggestedOptionsChangeHandler = useCallback(
+    (value: boolean) => {
+      setAllowUserSuggestedOptions(value);
+      pollComposer.updateFields({ allow_user_suggested_options: value });
+    },
+    [pollComposer],
+  );
+
+  const onAllowAnswersChangeHandler = useCallback(
+    (value: boolean) => {
+      setAllowAnswers(value);
+      pollComposer.updateFields({ allow_answers: value });
+    },
+    [pollComposer],
+  );
+
   return (
     <>
       <CreatePollHeader
@@ -108,14 +129,7 @@ export const CreatePollContent = () => {
           <Text style={[styles.text, { color: black }, anonymousPoll.title]}>
             {t<string>('Anonymous poll')}
           </Text>
-          <Switch
-            onValueChange={(value) =>
-              pollComposer.updateFields({
-                voting_visibility: value ? VotingVisibility.anonymous : VotingVisibility.public,
-              })
-            }
-            value={voting_visibility === VotingVisibility.anonymous}
-          />
+          <Switch onValueChange={onAnonymousPollChangeHandler} value={isAnonymousPoll} />
         </View>
         <View
           style={[styles.textInputWrapper, { backgroundColor: bg_user }, suggestOption.wrapper]}
@@ -124,20 +138,15 @@ export const CreatePollContent = () => {
             {t<string>('Suggest an option')}
           </Text>
           <Switch
-            onValueChange={(value) =>
-              pollComposer.updateFields({ allow_user_suggested_options: value })
-            }
-            value={allow_user_suggested_options}
+            onValueChange={onAllowUserSuggestedOptionsChangeHandler}
+            value={allowUserSuggestedOptions}
           />
         </View>
         <View style={[styles.textInputWrapper, { backgroundColor: bg_user }, addComment.wrapper]}>
           <Text style={[styles.text, { color: black }, addComment.title]}>
             {t<string>('Add a comment')}
           </Text>
-          <Switch
-            onValueChange={(value) => pollComposer.updateFields({ allow_answers: value })}
-            value={allow_answers}
-          />
+          <Switch onValueChange={onAllowAnswersChangeHandler} value={allowAnswers} />
         </View>
       </ScrollView>
     </>
