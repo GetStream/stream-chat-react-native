@@ -20,7 +20,14 @@ export const addPendingTask = async (task: PendingTask) => {
     // Only one draft pending task is allowed per entity (i.e thread, channel etc).
     // If multiple arrive, we'll simply take the last one (since deleteDraft does not
     // fail as an API if a draft doesn't exist).
-    queries.push(createDeleteQuery('pendingTasks', { channelId, channelType, threadId }));
+    queries.push(
+      createDeleteQuery('pendingTasks', {
+        channelId,
+        channelType,
+        threadId,
+        type: ['create-draft', 'delete-draft'],
+      }),
+    );
   }
   queries.push(createUpsertQuery('pendingTasks', storable));
   SqliteClient.logger?.('info', 'addPendingTask', {
