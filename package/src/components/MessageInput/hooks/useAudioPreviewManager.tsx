@@ -15,23 +15,23 @@ export const useAudioPreviewManager = (files: LocalAttachment[]) => {
   >({});
 
   useEffect(() => {
-    const updatedStateMap = Object.fromEntries(
-      files.map((attachment) => {
-        const id = attachment.localMetadata.id;
-        const existingConfig = audioAttachmentsStateMap[id];
+    setAudioAttachmentsStateMap((prevState) => {
+      const updatedStateMap = Object.fromEntries(
+        files.map((attachment) => {
+          const id = attachment.localMetadata.id;
 
-        const config: AudioConfig = {
-          duration: attachment.duration ?? existingConfig?.duration ?? 0,
-          paused: existingConfig?.paused ?? true,
-          progress: existingConfig?.progress ?? 0,
-        };
+          const config: AudioConfig = {
+            duration: attachment.duration ?? prevState[id]?.duration ?? 0,
+            paused: prevState[id]?.paused ?? true,
+            progress: prevState[id]?.progress ?? 0,
+          };
 
-        return [id, config];
-      }),
-    );
+          return [id, config];
+        }),
+      );
 
-    setAudioAttachmentsStateMap(updatedStateMap);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      return updatedStateMap;
+    });
   }, [files]);
 
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here
