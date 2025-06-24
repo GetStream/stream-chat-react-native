@@ -95,17 +95,17 @@ export const CreatePollContent = () => {
   );
 
   const onAllowUserSuggestedOptionsChangeHandler = useCallback(
-    (value: boolean) => {
+    async (value: boolean) => {
       setAllowUserSuggestedOptions(value);
-      pollComposer.updateFields({ allow_user_suggested_options: value });
+      await pollComposer.updateFields({ allow_user_suggested_options: value });
     },
     [pollComposer],
   );
 
   const onAllowAnswersChangeHandler = useCallback(
-    (value: boolean) => {
+    async (value: boolean) => {
       setAllowAnswers(value);
-      pollComposer.updateFields({ allow_answers: value });
+      await pollComposer.updateFields({ allow_answers: value });
     },
     [pollComposer],
   );
