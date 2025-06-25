@@ -345,10 +345,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     [autoscrollToRecent, minIndexForVisible],
   );
 
-  useEffect(() => {
-    console.log('CHANGED: ', maintainVisibleContentPosition);
-  }, [maintainVisibleContentPosition]);
-
   /**
    * We want to call onEndReached and onStartReached only once, per content length.
    * We keep track of calls to these functions per content length, with following trackers.
