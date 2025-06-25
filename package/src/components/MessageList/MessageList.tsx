@@ -335,13 +335,19 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(false);
 
+  const minIndexForVisible = Math.min(1, processedMessageList.length);
+
   const maintainVisibleContentPosition = useMemo(
     () => ({
       autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
-      minIndexForVisible: 1,
+      minIndexForVisible,
     }),
-    [autoscrollToRecent],
+    [autoscrollToRecent, minIndexForVisible],
   );
+
+  useEffect(() => {
+    console.log('CHANGED: ', maintainVisibleContentPosition);
+  }, [maintainVisibleContentPosition]);
 
   /**
    * We want to call onEndReached and onStartReached only once, per content length.
@@ -620,7 +626,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
 
   useEffect(() => {
-    if (!rawMessageList.length) {
+    if (!processedMessageList.length) {
       return;
     }
     if (threadList) {
@@ -637,7 +643,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
     latestNonCurrentMessageBeforeUpdateRef.current = undefined;
-    const latestCurrentMessageAfterUpdate = rawMessageList[rawMessageList.length - 1];
+    const latestCurrentMessageAfterUpdate = processedMessageList[0];
     if (!latestCurrentMessageAfterUpdate) {
       setAutoscrollToRecent(true);
       return;
@@ -662,7 +668,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, rawMessageList, threadList]);
+  }, [channel, processedMessageList, threadList]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
