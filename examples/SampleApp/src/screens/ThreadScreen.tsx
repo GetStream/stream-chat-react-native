@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Channel, Thread, ThreadType, useTheme, useTypingString } from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
@@ -68,7 +68,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         audioRecordingEnabled={true}
         channel={channel}
         enforceUniqueReaction
-        keyboardVerticalOffset={0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         thread={thread}
         threadList
       >
