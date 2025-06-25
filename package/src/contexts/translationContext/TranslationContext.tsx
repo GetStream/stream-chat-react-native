@@ -2,29 +2,14 @@ import React, { useContext } from 'react';
 
 import Dayjs from 'dayjs';
 
-import type { TFunction } from 'i18next';
-import type { Moment } from 'moment-timezone';
-
 import type { TranslationLanguages } from 'stream-chat';
+
+import { TranslatorFunctions } from './types';
 
 import { defaultTranslatorFunction } from '../../utils/i18n/Streami18n';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export const DEFAULT_USER_LANGUAGE: TranslationLanguages = 'en';
-
-export const isDayOrMoment = (output: TDateTimeParserOutput): output is Dayjs.Dayjs | Moment =>
-  (output as Dayjs.Dayjs | Moment).isSame != null;
-
-export type TDateTimeParserInput = string | number | Date;
-
-export type TDateTimeParserOutput = string | number | Date | Dayjs.Dayjs | Moment;
-
-export type TDateTimeParser = (input?: TDateTimeParserInput) => TDateTimeParserOutput;
-
-export type TranslatorFunctions = {
-  t: TFunction;
-  tDateTimeParser: TDateTimeParser;
-};
 
 export type TranslationContextValue = TranslatorFunctions & {
   userLanguage: TranslationLanguages;

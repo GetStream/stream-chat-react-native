@@ -10,13 +10,10 @@ import i18n, { FallbackLng, TFunction } from 'i18next';
 import type momentTimezone from 'moment-timezone';
 
 import { calendarFormats } from './calendarFormats';
-import {
-  CustomFormatters,
-  PredefinedFormatters,
-  predefinedFormatters,
-} from './predefinedFormatters';
+import { predefinedFormatters } from './predefinedFormatters';
+import { CustomFormatters, PredefinedFormatters } from './types';
 
-import type { TDateTimeParser } from '../../contexts/translationContext/TranslationContext';
+import type { TDateTimeParser } from '../../contexts/translationContext/types';
 import enTranslations from '../../i18n/en.json';
 import esTranslations from '../../i18n/es.json';
 import frTranslations from '../../i18n/fr.json';

@@ -20,7 +20,7 @@ import { useCreatePollContentContext, useTheme, useTranslationContext } from '..
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { DragHandle } from '../../../icons';
-import { POLL_OPTION_HEIGHT } from '../CreatePollContent';
+import { POLL_OPTION_HEIGHT } from '../../../utils/constants';
 
 export type CurrentOptionPositionsCache = {
   inverseIndexCache: {

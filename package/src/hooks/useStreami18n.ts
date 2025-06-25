@@ -4,7 +4,7 @@ import Dayjs from 'dayjs';
 
 import { useIsMountedRef } from './useIsMountedRef';
 
-import type { TranslatorFunctions } from '../contexts/translationContext/TranslationContext';
+import type { TranslatorFunctions } from '../contexts/translationContext/types';
 import { defaultTranslatorFunction, Streami18n } from '../utils/i18n/Streami18n';
 
 export const useStreami18n = (i18nInstance?: Streami18n) => {

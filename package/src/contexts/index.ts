@@ -22,7 +22,7 @@ export * from './themeContext/utils/theme';
 export * from './threadContext/ThreadContext';
 export * from './threadsContext/ThreadsContext';
 export * from './threadsContext/ThreadListItemContext';
-export * from './translationContext/TranslationContext';
+export * from './translationContext';
 export * from './typingContext/TypingContext';
 export * from './utils/getDisplayName';
 export * from './pollContext';

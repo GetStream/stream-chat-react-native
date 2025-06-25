@@ -22,12 +22,11 @@ import {
 } from '../../contexts';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
+import { POLL_OPTION_HEIGHT } from '../../utils/constants';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   options: state.data.options,
 });
-
-export const POLL_OPTION_HEIGHT = 71;
 
 export const CreatePollContent = () => {
   const [isAnonymousPoll, setIsAnonymousPoll] = useState<boolean>(false);
