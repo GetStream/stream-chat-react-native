@@ -1404,6 +1404,11 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
+"@babel/runtime@^7.27.1":
+  version "7.27.6"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.27.6.tgz#ec4070a04d76bae8ddbb10770ba55714a417b7c6"
+  integrity sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q==
+
 "@babel/template@^7.20.7", "@babel/template@^7.21.9":
   version "7.21.9"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.21.9.tgz#bf8dad2859130ae46088a99c1f265394877446fb"
@@ -4125,6 +4130,13 @@ i18next@^21.10.0:
   dependencies:
     "@babel/runtime" "^7.17.2"
 
+i18next@^25.2.1:
+  version "25.2.1"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-25.2.1.tgz#23cf8794904f551f577558d93c84b0fb6cd489a2"
+  integrity sha512-+UoXK5wh+VlE1Zy5p6MjcvctHXAhRwQKCxiJD8noKZzIXmnAX8gdHX5fLPA3MEVxEN4vbZkQFy8N0LyD9tUqPw==
+  dependencies:
+    "@babel/runtime" "^7.27.1"
+
 ieee754@^1.1.13:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
@@ -6115,14 +6127,33 @@ stream-buffers@2.2.x:
   version "0.0.0"
   uid ""
 
+stream-chat-react-native-core@7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-7.2.0.tgz#9c60f0235a84f22077dd56c57a532e19701dcd15"
+  integrity sha512-DXToshO7/6Bu+Rk03fTeP3W3LFlkOpRph/Iu9OtAU0QzDdG2IgMa1tNhiDEmFmJHjWROjFZtBmyV1Cuk4vFiAQ==
+  dependencies:
+    "@gorhom/bottom-sheet" "^5.1.6"
+    dayjs "1.11.13"
+    emoji-regex "^10.4.0"
+    i18next "^21.10.0"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.3.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.35"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^2.0.0"
+    stream-chat "^9.7.0"
+    use-sync-external-store "^1.5.0"
+
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
   uid ""
 
-stream-chat@^9.8.0:
-  version "9.8.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.8.0.tgz#52782073a3923367fe97638fde39ce18e4eed28a"
-  integrity sha512-iKFVFOKWuW2/GTWBOps9YWZoQBlXdJ05FiOKXI/AnCMCGzOpmvEyaoCtsktvdeMaetmZojVPbw/5jomP36Qg0Q==
+stream-chat@^9.7.0, stream-chat@^9.9.0:
+  version "9.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.9.0.tgz#59ac996e6e0ca6b3e3a0041954ae99a43541ec13"
+  integrity sha512-4tqedL7NfDhwJIKRBKGdvNu4x0ifKO+qxyc9TEWe+LLaW3Qed4txKysrVKnDfj/rx3iZuIwrMV7VeW5yxZfP5w==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
