@@ -1,9 +1,7 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 
 import { LocalMessage, type MessageComposer } from 'stream-chat';
 
-import { useStableCallback } from '../../hooks';
-import { useMessageComposer } from '../messageInputContext/hooks/useMessageComposer';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -18,20 +16,12 @@ export const MessageComposerAPIContext = React.createContext(
 );
 
 type Props = React.PropsWithChildren<{
-  value: Pick<MessageComposerAPIContextValue, 'setEditingState' | 'clearEditingState'>;
+  value: MessageComposerAPIContextValue;
 }>;
 
 export const MessageComposerAPIProvider = ({ children, value }: Props) => {
-  const messageComposer = useMessageComposer();
-
-  const setQuotedMessage = useStableCallback((message: LocalMessage | null) =>
-    messageComposer.setQuotedMessage(message),
-  );
-
-  const contextValue = useMemo(() => ({ setQuotedMessage, ...value }), [setQuotedMessage, value]);
-
   return (
-    <MessageComposerAPIContext.Provider value={contextValue}>
+    <MessageComposerAPIContext.Provider value={value}>
       {children}
     </MessageComposerAPIContext.Provider>
   );

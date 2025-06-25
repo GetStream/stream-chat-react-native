@@ -9,6 +9,7 @@ import {
 
 import { ChannelProps } from '../../components';
 import { useStableCallback } from '../../hooks';
+import { useCreateMessageComposer } from '../messageInputContext/hooks/useCreateMessageComposer';
 import { ThreadContextValue } from '../threadContext/ThreadContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -47,9 +48,15 @@ export const MessageComposerProvider = ({ children, value }: Props) => {
 
   const messageComposerContextValue = useMemo(() => ({ editing, ...value }), [editing, value]);
 
+  const messageComposer = useCreateMessageComposer(messageComposerContextValue);
+
+  const setQuotedMessage = useStableCallback((message: LocalMessage | null) =>
+    messageComposer.setQuotedMessage(message),
+  );
+
   const messageComposerAPIContextValue = useMemo(
-    () => ({ clearEditingState, setEditingState }),
-    [clearEditingState, setEditingState],
+    () => ({ clearEditingState, setEditingState, setQuotedMessage }),
+    [clearEditingState, setEditingState, setQuotedMessage],
   );
 
   return (
