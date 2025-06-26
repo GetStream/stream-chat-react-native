@@ -1,5 +1,27 @@
 # Change Log
 
+## [4.0.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.3...sampleapp@v4.0.0) (2025-06-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* V7 release candidate
+
+* chore: add rc channel
+
+* fix: typo in branch name
+* Release V7
+
+* chore: remove dryRun
+
+* chore: bump stream-chat version to latest rc
+
+* chore: bump stream-chat to latest
+
+### Features
+
+* v8 ([#3137](https://github.com/GetStream/stream-chat-react-native/issues/3137)) ([c8b8b71](https://github.com/GetStream/stream-chat-react-native/commit/c8b8b716634f34dfa883cc878596143626294520)), closes [#3085](https://github.com/GetStream/stream-chat-react-native/issues/3085) [#2993](https://github.com/GetStream/stream-chat-react-native/issues/2993) [#3000](https://github.com/GetStream/stream-chat-react-native/issues/3000) [#3005](https://github.com/GetStream/stream-chat-react-native/issues/3005) [#3010](https://github.com/GetStream/stream-chat-react-native/issues/3010) [#3050](https://github.com/GetStream/stream-chat-react-native/issues/3050) [#3061](https://github.com/GetStream/stream-chat-react-native/issues/3061) [#3073](https://github.com/GetStream/stream-chat-react-native/issues/3073) [#3072](https://github.com/GetStream/stream-chat-react-native/issues/3072)
+
 ### [3.1.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.2...sampleapp@v3.1.3) (2025-06-26)
 
 
