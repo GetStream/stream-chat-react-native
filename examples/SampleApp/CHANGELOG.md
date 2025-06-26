@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.1.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.2...sampleapp@v3.1.3) (2025-06-26)
+
+
+### Bug Fixes
+
+* android 35 keyboard issues ([#3134](https://github.com/GetStream/stream-chat-react-native/issues/3134)) ([241d1db](https://github.com/GetStream/stream-chat-react-native/commit/241d1db886fb85b5397f1ebde2e8d7a76c85abeb))
+
 ### [3.1.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.1...sampleapp@v3.1.2) (2025-06-23)
 
 
