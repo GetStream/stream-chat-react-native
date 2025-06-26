@@ -1,9 +1,17 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { I18nManager, LogBox, Platform, SafeAreaView, useColorScheme, View } from 'react-native';
+import {
+  DevSettings,
+  I18nManager,
+  LogBox,
+  Platform,
+  SafeAreaView,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Channel as ChannelType, ChannelSort } from 'stream-chat';
 import {
   Channel,
@@ -16,7 +24,6 @@ import {
   Streami18n,
   Thread,
   ThreadContextValue,
-  useAttachmentPickerContext,
   useCreateChatClient,
   useOverlayContext,
 } from 'stream-chat-react-native';
@@ -36,9 +43,12 @@ const options = {
 
 I18nManager.forceRTL(false);
 
-SqliteClient.logger = (level, message, extraData) => {
-  console.log(level, `SqliteClient: ${message}`, extraData);
-};
+if (__DEV__) {
+  DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
+    SqliteClient.resetDB();
+    console.info('Local DB reset');
+  });
+}
 
 const apiKey = 'q95x9hkbyd6p';
 const userToken =
@@ -53,11 +63,7 @@ const filters = {
   type: 'messaging',
 };
 
-const sort: ChannelSort = [
-  { pinned_at: -1 },
-  { last_message_at: -1 },
-  { updated_at: -1 },
-];
+const sort: ChannelSort = [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }];
 
 /**
  * Start playing with streami18n instance here:
@@ -100,7 +106,6 @@ const EmptyHeader = () => <></>;
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
-  const { setTopInset } = useAttachmentPickerContext();
   const { overlay } = useOverlayContext();
 
   useEffect(() => {
@@ -108,10 +113,6 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
       gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
     });
   }, [overlay, navigation]);
-
-  useEffect(() => {
-    setTopInset(headerHeight);
-  }, [headerHeight, setTopInset]);
 
   if (channel === undefined) {
     return null;
@@ -193,18 +194,50 @@ const Stack = createStackNavigator<NavigationParamsList>();
 type AppContextType = {
   channel: ChannelType | undefined;
   setChannel: React.Dispatch<React.SetStateAction<ChannelType | undefined>>;
-  setThread: React.Dispatch<
-    React.SetStateAction<ThreadContextValue['thread'] | undefined>
-  >;
+  setThread: React.Dispatch<React.SetStateAction<ThreadContextValue['thread'] | undefined>>;
   thread: ThreadContextValue['thread'] | undefined;
 };
 
 const AppContext = React.createContext({} as AppContextType);
 
-const App = () => {
-  const { bottom } = useSafeAreaInsets();
-  const theme = useStreamChatTheme();
+const StackNavigator = () => {
   const { channel } = useContext(AppContext);
+
+  return (
+    <Stack.Navigator
+      initialRouteName='ChannelList'
+      screenOptions={{
+        headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+      }}
+    >
+      <Stack.Screen
+        component={ChannelScreen}
+        name='Channel'
+        options={() => ({
+          headerBackTitle: 'Back',
+          headerRight: EmptyHeader,
+          headerTitle: channel?.data?.name,
+        })}
+      />
+      <Stack.Screen
+        component={ChannelListScreen}
+        name='ChannelList'
+        options={{ headerTitle: 'Channel List' }}
+      />
+      <Stack.Screen
+        component={ThreadScreen}
+        name='Thread'
+        options={() => ({
+          headerBackTitle: 'Back',
+          headerRight: EmptyHeader,
+        })}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const App = () => {
+  const theme = useStreamChatTheme();
 
   const chatClient = useCreateChatClient({
     apiKey,
@@ -212,43 +245,27 @@ const App = () => {
     tokenOrProvider: userToken,
   });
 
+  useEffect(() => {
+    if (!chatClient) {
+      return;
+    }
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+    });
+  }, [chatClient]);
+
   if (!chatClient) {
     return <AuthProgressLoader />;
   }
 
   return (
-    <OverlayProvider
-      bottomInset={bottom}
-      i18nInstance={streami18n}
-      value={{ style: theme }}
-    >
+    <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
       <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
-        <Stack.Navigator
-          initialRouteName='ChannelList'
-          screenOptions={{
-            headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-          }}
-        >
-          <Stack.Screen
-            component={ChannelScreen}
-            name='Channel'
-            options={() => ({
-              headerBackTitle: 'Back',
-              headerRight: EmptyHeader,
-              headerTitle: channel?.data?.name,
-            })}
-          />
-          <Stack.Screen
-            component={ChannelListScreen}
-            name='ChannelList'
-            options={{ headerTitle: 'Channel List' }}
-          />
-          <Stack.Screen
-            component={ThreadScreen}
-            name='Thread'
-            options={() => ({ headerLeft: EmptyHeader })}
-          />
-        </Stack.Navigator>
+        <StackNavigator />
       </Chat>
     </OverlayProvider>
   );

@@ -16,12 +16,6 @@ export class OfflineDB extends AbstractOfflineDB {
     super({ client });
   }
 
-  getDraft = () => Promise.resolve(null);
-
-  upsertDraft = () => Promise.resolve([]);
-
-  deleteDraft = () => Promise.resolve([]);
-
   upsertCidsForQuery = api.upsertCidsForQuery;
 
   upsertChannels = api.upsertChannels;
@@ -35,6 +29,12 @@ export class OfflineDB extends AbstractOfflineDB {
     api.upsertAppSettings({ appSettings, currentUserId: userId, execute });
 
   upsertPoll = api.upsertPoll;
+
+  upsertDraft = api.upsertDraft;
+
+  getDraft = api.getDraft;
+
+  deleteDraft = api.deleteDraft;
 
   upsertChannelData = api.upsertChannelData;
 

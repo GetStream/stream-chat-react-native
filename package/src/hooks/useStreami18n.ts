@@ -4,12 +4,12 @@ import Dayjs from 'dayjs';
 
 import { useIsMountedRef } from './useIsMountedRef';
 
-import type { TranslatorFunctions } from '../contexts/translationContext/TranslationContext';
-import { Streami18n } from '../utils/i18n/Streami18n';
+import type { TranslatorFunctions } from '../contexts/translationContext/types';
+import { defaultTranslatorFunction, Streami18n } from '../utils/i18n/Streami18n';
 
 export const useStreami18n = (i18nInstance?: Streami18n) => {
   const [translators, setTranslators] = useState<TranslatorFunctions>({
-    t: (key: string) => key,
+    t: defaultTranslatorFunction,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
   const isMounted = useIsMountedRef();

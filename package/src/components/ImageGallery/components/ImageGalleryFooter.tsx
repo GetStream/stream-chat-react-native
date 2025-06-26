@@ -204,7 +204,7 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
-                {t<string>('{{ index }} of {{ photoLength }}', {
+                {t('{{ index }} of {{ photoLength }}', {
                   index: photoLength - selectedIndex,
                   photoLength,
                 })}

@@ -2,6 +2,10 @@ import React from 'react';
 import { Alert } from 'react-native';
 
 import {
+  MessageComposerAPIContextValue,
+  useMessageComposerAPIContext,
+} from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
+import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
@@ -13,11 +17,11 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 
 export type MessageBouncePropsWithContext = Pick<
   MessagesContextValue,
-  'setEditingState' | 'removeMessage' | 'retrySendMessage'
+  'removeMessage' | 'retrySendMessage'
 > &
   Pick<MessageContextValue, 'message'> & {
     setIsBounceDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  };
+  } & Pick<MessageComposerAPIContextValue, 'setEditingState'>;
 
 export const MessageBounceWithContext = (props: MessageBouncePropsWithContext) => {
   const { t } = useTranslationContext();
@@ -91,7 +95,8 @@ export type MessageBounceProps = Partial<MessageBouncePropsWithContext> & {
 
 export const MessageBounce = (props: MessageBounceProps) => {
   const { message } = useMessageContext();
-  const { removeMessage, retrySendMessage, setEditingState } = useMessagesContext();
+  const { removeMessage, retrySendMessage } = useMessagesContext();
+  const { setEditingState } = useMessageComposerAPIContext();
   return (
     <MemoizedMessageBounce
       {...{

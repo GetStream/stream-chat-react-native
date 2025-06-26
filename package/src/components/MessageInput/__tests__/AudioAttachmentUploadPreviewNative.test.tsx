@@ -1,8 +1,6 @@
 import React from 'react';
 
-import { act } from 'react-test-renderer';
-
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import {
   MessageInputContext,
@@ -16,7 +14,7 @@ import type { FileUpload } from '../../../types/types';
 import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAttachment';
 
 jest.mock('../../../native.ts', () => {
-  const View = require('react-native/Libraries/Components/View/View');
+  const View = require('react-native').View;
 
   return {
     isSoundPackageAvailable: jest.fn(() => true),

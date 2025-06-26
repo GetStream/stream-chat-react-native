@@ -18,6 +18,10 @@ import {
   KeyboardContextValue,
   useKeyboardContext,
 } from '../../contexts/keyboardContext/KeyboardContext';
+import {
+  MessageComposerAPIContextValue,
+  useMessageComposerAPIContext,
+} from '../../contexts/messageComposerContext/MessageComposerAPIContext';
 import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
@@ -34,6 +38,7 @@ import {
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import { FileTypes } from '../../types/types';
 import {
+  checkMessageEquality,
   hasOnlyEmojis,
   isBlockedMessage,
   isBouncedMessage,
@@ -172,8 +177,6 @@ export type MessagePropsWithContext = Pick<
     | 'deleteReaction'
     | 'retrySendMessage'
     | 'selectReaction'
-    | 'setEditingState'
-    | 'setQuotedMessageState'
     | 'supportedReactions'
     | 'updateMessage'
     | 'PollContent'
@@ -196,7 +199,7 @@ export type MessagePropsWithContext = Pick<
     onThreadSelect?: (message: LocalMessage) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
-  };
+  } & Pick<MessageComposerAPIContextValue, 'setQuotedMessage' | 'setEditingState'>;
 
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
@@ -256,7 +259,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     selectReaction,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
     showAvatar,
     showMessageStatus,
     showUnreadUnderlay,
@@ -266,6 +268,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     threadList = false,
     updateMessage,
     readBy,
+    setQuotedMessage,
   } = props;
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
@@ -501,7 +504,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     retrySendMessage,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
+    setQuotedMessage,
     supportedReactions,
   });
 
@@ -546,7 +549,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     selectReaction,
     sendReaction,
     setEditingState,
-    setQuotedMessageState,
+    setQuotedMessage,
     supportedReactions,
     t,
     updateMessage,
@@ -695,6 +698,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     reactions,
     readBy,
     setIsEditedMessageOpen,
+    setQuotedMessage,
     showAvatar,
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
@@ -817,28 +821,16 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
-  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
-  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
-
-  const messageEqual =
-    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned &&
-    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}` &&
-    prevMessage.i18n === nextMessage.i18n;
+  const messageEqual = checkMessageEquality(prevMessage, nextMessage);
 
   if (!messageEqual) {
     return false;
   }
 
-  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
-  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
-
-  const quotedMessageEqual =
-    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
+  const quotedMessageEqual = checkMessageEquality(
+    prevMessage.quoted_message,
+    nextMessage.quoted_message,
+  );
 
   if (!quotedMessageEqual) {
     return false;
@@ -872,6 +864,14 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
       })) ||
     prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) {
+    return false;
+  }
+
+  const quotedMessageAttachmentsEqual =
+    prevMessage.quoted_message?.attachments?.length ===
+    nextMessage.quoted_message?.attachments?.length;
+
+  if (!quotedMessageAttachmentsEqual) {
     return false;
   }
 
@@ -942,6 +942,7 @@ export const Message = (props: MessageProps) => {
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
   const readBy = useMemo(() => getReadState(message, read), [message, read]);
+  const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
     <MemoizedMessage
@@ -955,6 +956,8 @@ export const Message = (props: MessageProps) => {
         messagesContext,
         openThread,
         readBy,
+        setEditingState,
+        setQuotedMessage,
         t,
       }}
       {...props}

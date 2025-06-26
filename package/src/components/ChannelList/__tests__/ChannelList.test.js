@@ -40,7 +40,7 @@ import { ChannelList } from '../ChannelList';
  */
 const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
   <View accessibilityLabel='list-item' onPress={setActiveChannel} testID={channel.id}>
-    <Text>{channel.data.name}</Text>
+    <Text>{channel.data?.name}</Text>
     <Text>{channel.state.messages[0]?.text}</Text>
   </View>
 );
@@ -157,7 +157,7 @@ describe('ChannelList', () => {
       return deferredCallForStaleFilter.promise;
     });
 
-    render(
+    const { rerender, queryByTestId } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} filters={staleFilter} />
       </Chat>,
@@ -172,10 +172,10 @@ describe('ChannelList', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('channel-list')).toBeTruthy();
+      expect(queryByTestId('channel-list')).toBeTruthy();
     });
 
-    screen.rerender(
+    rerender(
       <Chat client={chatClient}>
         <ChannelList {...props} filters={freshFilter} />
       </Chat>,
@@ -189,11 +189,13 @@ describe('ChannelList', () => {
       expect.anything(),
     );
 
-    deferredCallForStaleFilter.resolve(staleChannel);
-    deferredCallForFreshFilter.resolve(freshChannel);
+    await act(() => {
+      deferredCallForStaleFilter.resolve(staleChannel);
+      deferredCallForFreshFilter.resolve(freshChannel);
+    });
     await waitFor(() => {
-      expect(screen.getByTestId('channel-list')).toBeTruthy();
-      expect(screen.getByTestId('new-channel')).toBeTruthy();
+      expect(queryByTestId('channel-list')).toBeTruthy();
+      expect(queryByTestId('new-channel')).toBeTruthy();
     });
   });
 

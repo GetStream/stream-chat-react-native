@@ -147,7 +147,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   );
 
   const renderHeader = () => (
-    <Text style={[styles.reactionsText, reactionsText]}>{t<string>('Message Reactions')}</Text>
+    <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>
   );
 
   const selectorReactions: ReactionSelectorItemType[] = messageReactions.map((reaction) => ({

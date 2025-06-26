@@ -3,10 +3,12 @@ import { DevSettings, LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   Chat,
+  createTextComposerEmojiMiddleware,
   OverlayProvider,
+  setupCommandUIMiddlewares,
   SqliteClient,
   ThemeProvider,
   useOverlayContext,
@@ -34,8 +36,12 @@ import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetail
 import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
+import { init, SearchIndex } from 'emoji-mart';
+import data from '@emoji-mart/data';
 
-import type { LocalMessage, StreamChat } from 'stream-chat';
+import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-chat';
+
+init({ data });
 
 if (__DEV__) {
   DevSettings.addMenuItem('Reset local DB (offline storage)', () => {
@@ -118,6 +124,31 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!chatClient) {
+      return;
+    }
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+
+      setupCommandUIMiddlewares(composer);
+
+      composer.textComposer.middlewareExecutor.insert({
+        middleware: [
+          createTextComposerEmojiMiddleware({
+            emojiSearchIndex: SearchIndex,
+          }) as TextComposerMiddleware,
+        ],
+        position: { after: 'stream-io/text-composer/mentions-middleware' },
+        unique: true,
+      });
+    });
+  }, [chatClient]);
+
   return (
     <SafeAreaProvider
       style={{
@@ -169,12 +200,11 @@ const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;
 }> = ({ chatClient }) => {
-  const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <OverlayProvider bottomInset={bottom} value={{ style: streamChatTheme }}>
+      <OverlayProvider value={{ style: streamChatTheme }}>
         <Chat
           client={chatClient}
           enableOfflineSupport

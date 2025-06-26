@@ -34,7 +34,7 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      <GenericPollButton onPress={onPressHandler} title={t<string>('View Results')} />
+      <GenericPollButton onPress={onPressHandler} title={t('View Results')} />
       {showResults ? (
         <Modal
           animationType='slide'
@@ -42,10 +42,7 @@ export const ViewResultsButton = (props: PollButtonProps) => {
           visible={showResults}
         >
           <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader
-              onPress={() => setShowResults(false)}
-              title={t<string>('Poll Results')}
-            />
+            <PollModalHeader onPress={() => setShowResults(false)} title={t('Poll Results')} />
             <PollResults message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -81,7 +78,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
       {options && options.length > 10 ? (
         <GenericPollButton
           onPress={onPressHandler}
-          title={t<string>('See all {{count}} options', { count: options.length })}
+          title={t('See all {{count}} options', { count: options.length })}
         />
       ) : null}
       {showAllOptions ? (
@@ -91,10 +88,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
           visible={showAllOptions}
         >
           <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader
-              onPress={() => setShowAllOptions(false)}
-              title={t<string>('Poll Options')}
-            />
+            <PollModalHeader onPress={() => setShowAllOptions(false)} title={t('Poll Options')} />
             <PollAllOptions message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -130,7 +124,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
       {answersCount && answersCount > 0 ? (
         <GenericPollButton
           onPress={onPressHandler}
-          title={t<string>('View {{count}} comments', { count: answersCount })}
+          title={t('View {{count}} comments', { count: answersCount })}
         />
       ) : null}
       {showAnswers ? (
@@ -140,10 +134,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
           visible={showAnswers}
         >
           <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader
-              onPress={() => setShowAnswers(false)}
-              title={t<string>('Poll Comments')}
-            />
+            <PollModalHeader onPress={() => setShowAnswers(false)} title={t('Poll Comments')} />
             <PollAnswersList message={message} poll={poll} />
           </SafeAreaView>
         </Modal>
@@ -171,13 +162,13 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
   return (
     <>
       {!isClosed && allowUserSuggestedOptions ? (
-        <GenericPollButton onPress={onPressHandler} title={t<string>('Suggest an option')} />
+        <GenericPollButton onPress={onPressHandler} title={t('Suggest an option')} />
       ) : null}
       {showAddOptionDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddOptionDialog(false)}
           onSubmit={addOption}
-          title={t<string>('Suggest an option')}
+          title={t('Suggest an option')}
           visible={showAddOptionDialog}
         />
       ) : null}
@@ -204,14 +195,14 @@ export const AddCommentButton = (props: PollButtonProps) => {
   return (
     <>
       {!isClosed && allowAnswers ? (
-        <GenericPollButton onPress={onPressHandler} title={t<string>('Add a comment')} />
+        <GenericPollButton onPress={onPressHandler} title={t('Add a comment')} />
       ) : null}
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddCommentDialog(false)}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
-          title={t<string>('Add a comment')}
+          title={t('Add a comment')}
           visible={showAddCommentDialog}
         />
       ) : null}
@@ -225,7 +216,7 @@ export const EndVoteButton = () => {
   const { client } = useChatContext();
 
   return !isClosed && createdBy?.id === client.userID ? (
-    <GenericPollButton onPress={endVote} title={t<string>('End Vote')} />
+    <GenericPollButton onPress={endVote} title={t('End Vote')} />
   ) : null;
 };
 

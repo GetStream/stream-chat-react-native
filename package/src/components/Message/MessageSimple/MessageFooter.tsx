@@ -73,7 +73,7 @@ const OnlyVisibleToYouComponent = ({ alignment }: { alignment: Alignment }) => {
         ]}
         testID='only-visible-to-you'
       >
-        {t<string>('Only visible to you')}
+        {t('Only visible to you')}
       </Text>
     </>
   );
@@ -157,7 +157,7 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
               ⦁
             </Text>
             <Text style={[styles.text, { color: grey, textAlign: alignment }, editedLabel]}>
-              {t<string>('Edited')}
+              {t('Edited')}
             </Text>
           </>
         ) : null}

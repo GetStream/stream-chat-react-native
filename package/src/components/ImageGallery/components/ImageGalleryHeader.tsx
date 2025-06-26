@@ -108,7 +108,7 @@ export const ImageGalleryHeader = (props: Props) => {
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.userName, { color: black }, usernameText]}>
-                {photo?.user?.name || photo?.user?.id || t<string>('Unknown User')}
+                {photo?.user?.name || photo?.user?.id || t('Unknown User')}
               </Text>
               {date && <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>}
             </View>
