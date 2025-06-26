@@ -21,6 +21,7 @@ configPromise.then((config) => {
   }).then((result) => {
     // This logics avoid a overflow of next tags in github by removing the last
     // tag before pushing the current one for each next release
+    console.log('Release result: ', result);
     return (
       result &&
       result.nextRelease.gitTag &&
