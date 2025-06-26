@@ -36,13 +36,13 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
             style={[styles.channelTitle, { color: black }, channelTitle]}
             testID='empty-channel-state-title'
           >
-            {t<string>("Let's start chatting!")}
+            {t("Let's start chatting!")}
           </Text>
           <Text
             style={[styles.channelDetails, { color: grey, width: vw(66) }, channelDetails]}
             testID='empty-channel-state-details'
           >
-            {t<string>('How about sending your first message to a friend?')}
+            {t('How about sending your first message to a friend?')}
           </Text>
         </View>
       );
@@ -51,7 +51,7 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
         <View style={[styles.container, messageContainer]}>
           <ChatIcon height={width} pathFill={grey_gainsboro} width={width} />
           <Text style={[styles.messageTitle, { color: grey_gainsboro }, messageTitle]}>
-            {t<string>('No chats here yet…')}
+            {t('No chats here yet…')}
           </Text>
         </View>
       );
@@ -59,7 +59,7 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
       return (
         <View style={[styles.container]}>
           <MessageBubbleEmpty height={width} pathFill={'#B4BBBA'} width={width} />
-          <Text style={{ color: '#7E828B' }}>{t<string>('No threads here yet')}...</Text>
+          <Text style={{ color: '#7E828B' }}>{t('No threads here yet')}...</Text>
         </View>
       );
     default:

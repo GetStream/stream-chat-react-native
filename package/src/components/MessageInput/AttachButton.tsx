@@ -5,14 +5,20 @@ import { Pressable } from 'react-native';
 import { NativeAttachmentPicker } from './components/NativeAttachmentPicker';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
-import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
+import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
 
 import { isImageMediaLibraryAvailable } from '../../native';
 
-type AttachButtonPropsWithContext = Pick<ChannelContextValue, 'disabled'> & {
+type AttachButtonPropsWithContext = Pick<
+  MessageInputContextValue,
+  'handleAttachButtonPress' | 'toggleAttachmentPicker'
+> & {
+  disabled?: boolean;
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   selectedPicker?: 'images';
@@ -21,14 +27,19 @@ type AttachButtonPropsWithContext = Pick<ChannelContextValue, 'disabled'> & {
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
   const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
-  const { disabled, handleOnPress, selectedPicker } = props;
+  const {
+    disabled = false,
+    handleAttachButtonPress,
+    handleOnPress,
+    selectedPicker,
+    toggleAttachmentPicker,
+  } = props;
   const {
     theme: {
       colors: { accent_blue, grey },
       messageInput: { attachButton },
     },
   } = useTheme();
-  const { handleAttachButtonPress, toggleAttachmentPicker } = useMessageInputContext();
 
   const onAttachButtonLayout = (event: LayoutChangeEvent) => {
     const layout = event.nativeEvent.layout;
@@ -51,6 +62,9 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   };
 
   const onPressHandler = () => {
+    if (disabled) {
+      return;
+    }
     if (handleOnPress) {
       handleOnPress();
       return;
@@ -71,7 +85,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
       <Pressable
         disabled={disabled}
         onLayout={onAttachButtonLayout}
-        onPress={disabled ? () => null : onPressHandler}
+        onPress={onPressHandler}
         style={[attachButton]}
         testID='attach-button'
       >
@@ -119,8 +133,14 @@ export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
  */
 export const AttachButton = (props: AttachButtonProps) => {
   const { selectedPicker } = useAttachmentPickerContext();
+  const { handleAttachButtonPress, toggleAttachmentPicker } = useMessageInputContext();
 
-  return <MemoizedAttachButton {...{ selectedPicker }} {...props} />;
+  return (
+    <MemoizedAttachButton
+      {...{ handleAttachButtonPress, selectedPicker, toggleAttachmentPicker }}
+      {...props}
+    />
+  );
 };
 
 AttachButton.displayName = 'AttachButton{messageInput}';

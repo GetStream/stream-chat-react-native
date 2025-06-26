@@ -3,9 +3,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
-import { act } from 'react-test-renderer';
-
-import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { LocalMessage } from 'stream-chat';
 

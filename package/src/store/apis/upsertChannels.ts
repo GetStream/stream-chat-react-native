@@ -1,5 +1,6 @@
 import type { ChannelAPIResponse, ChannelMemberResponse } from 'stream-chat';
 
+import { upsertDraft } from './upsertDraft';
 import { upsertMembers } from './upsertMembers';
 
 import { upsertMessages } from './upsertMessages';
@@ -31,13 +32,18 @@ export const upsertChannels = async ({
   for (const channel of channels) {
     queries.push(createUpsertQuery('channels', mapChannelDataToStorable(channel.channel)));
 
-    const { members, membership, messages, read } = channel;
+    const { draft, members, membership, messages, read } = channel;
     if (
       membership &&
       !members.includes((m: ChannelMemberResponse) => m.user?.id === membership.user?.id)
     ) {
       members.push({ ...membership, user_id: membership.user?.id });
     }
+
+    if (draft) {
+      queries = queries.concat(await upsertDraft({ draft, execute: false }));
+    }
+
     queries = queries.concat(
       await upsertMembers({
         cid: channel.channel.cid,

@@ -790,7 +790,7 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
-"@babel/runtime@^7.27.6":
+"@babel/runtime@^7.27.1", "@babel/runtime@^7.27.6":
   version "7.27.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.27.6.tgz#ec4070a04d76bae8ddbb10770ba55714a417b7c6"
   integrity sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q==
@@ -901,6 +901,11 @@
   integrity sha512-5n3nTJblwRi8LlXkJ9eBzu+kZR8Yxcc7ubakyQTFzPMtIhFpUBRbsnc2Dv88IZDIbCDlBiWrknhB4Lsz7mg6BA==
   dependencies:
     tslib "^2.4.0"
+
+"@emoji-mart/data@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@emoji-mart/data/-/data-1.2.1.tgz#0ad70c662e3bc603e23e7d98413bd1e64c4fcb6c"
+  integrity sha512-no2pQMWiBy6gpBEiqGeU77/bFejDqUTRY7KX+0+iur13op3bqUsXdnwoZs6Xb1zbv0gAj5VvS1PWoUUckSr5Dw==
 
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
   version "4.4.1"
@@ -2545,6 +2550,18 @@
     "@types/ms" "*"
     "@types/node" "*"
 
+"@types/lodash.mergewith@^4.6.9":
+  version "4.6.9"
+  resolved "https://registry.yarnpkg.com/@types/lodash.mergewith/-/lodash.mergewith-4.6.9.tgz#7093028a36de3cae4495d03b9d92c351cab1f8bf"
+  integrity sha512-fgkoCAOF47K7sxrQ7Mlud2TH023itugZs2bUg8h/KzT+BnZNrR2jAOmaokbLunHNnobXVWOezAeNn/lZqwxkcw==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
+  version "4.17.16"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.16.tgz#94ae78fab4a38d73086e962d0b65c30d816bfb0a"
+  integrity sha512-HX7Em5NYQAXKW+1T+FiuG27NGwzJfCX3s1GjOa7ujxZa52kjJLOr4FUxT+giF6Tgxv1e+/czV/iTtBw27WTU9g==
+
 "@types/ms@*":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-2.1.0.tgz#052aa67a48eccc4309d7f0191b7e41434b90bb78"
@@ -4054,6 +4071,11 @@ emittery@^0.13.1:
   resolved "https://registry.yarnpkg.com/emittery/-/emittery-0.13.1.tgz#c04b8c3457490e0847ae51fced3af52d338e3dad"
   integrity sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==
 
+emoji-mart@^5.6.0:
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/emoji-mart/-/emoji-mart-5.6.0.tgz#71b3ed0091d3e8c68487b240d9d6d9a73c27f023"
+  integrity sha512-eJp3QRe79pjwa+duv+n7+5YsNhRcMl812EcFVwrnRvYKoNPoQb5qxU8DG6Bgwji0akHdp6D4Ln6tYLG58MFSow==
+
 emoji-regex@^10.4.0:
   version "10.4.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-10.4.0.tgz#03553afea80b3975749cfcb36f776ca268e413d4"
@@ -5101,6 +5123,13 @@ i18next@^21.10.0:
   integrity sha512-YeuIBmFsGjUfO3qBmMOc0rQaun4mIpGKET5WDwvu8lU7gvwpcariZLNtL0Fzj+zazcHUrlXHiptcFhBMFaxzfg==
   dependencies:
     "@babel/runtime" "^7.17.2"
+
+i18next@^25.2.1:
+  version "25.2.1"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-25.2.1.tgz#23cf8794904f551f577558d93c84b0fb6cd489a2"
+  integrity sha512-+UoXK5wh+VlE1Zy5p6MjcvctHXAhRwQKCxiJD8noKZzIXmnAX8gdHX5fLPA3MEVxEN4vbZkQFy8N0LyD9tUqPw==
+  dependencies:
+    "@babel/runtime" "^7.27.1"
 
 iconv-lite@0.4.24:
   version "0.4.24"
@@ -6257,6 +6286,11 @@ lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
+
+lodash.mergewith@^4.6.2:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/lodash.mergewith/-/lodash.mergewith-4.6.2.tgz#617121f89ac55f59047c7aec1ccd6654c6590f55"
+  integrity sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==
 
 lodash.once@^4.0.0:
   version "4.1.1"
@@ -7867,10 +7901,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat-react-native-core@7.1.2:
-  version "7.1.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-7.1.2.tgz#5870a1188ecbf8c3b705d74379d19ff77efce2c5"
-  integrity sha512-Ob+V8tt+7L+7BRkWyWbFlju6E/8MAoB/NUZ8ENtEEijq5QBNWnVvZctQSZuekIOVrfoP9EenlIOPadHnN/mvYA==
+stream-chat-react-native-core@7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-7.2.0.tgz#9c60f0235a84f22077dd56c57a532e19701dcd15"
+  integrity sha512-DXToshO7/6Bu+Rk03fTeP3W3LFlkOpRph/Iu9OtAU0QzDdG2IgMa1tNhiDEmFmJHjWROjFZtBmyV1Cuk4vFiAQ==
   dependencies:
     "@gorhom/bottom-sheet" "^5.1.6"
     dayjs "1.11.13"
@@ -7895,9 +7929,24 @@ stream-chat-react-native-core@7.1.2:
   uid ""
 
 stream-chat@^9.7.0:
-  version "9.7.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.7.0.tgz#8302a4dfd2b68115c57cd0a102976542a79cf132"
-  integrity sha512-8K4RQAUFfznCxpJ5CMIrMQQLroaZ1snB4aR/Xnwa9UpxNCzn3kIi61AVkfsaHTHGojPz5LA3c3faVb251u4HnA==
+  version "9.8.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.8.0.tgz#52782073a3923367fe97638fde39ce18e4eed28a"
+  integrity sha512-iKFVFOKWuW2/GTWBOps9YWZoQBlXdJ05FiOKXI/AnCMCGzOpmvEyaoCtsktvdeMaetmZojVPbw/5jomP36Qg0Q==
+  dependencies:
+    "@types/jsonwebtoken" "^9.0.8"
+    "@types/ws" "^8.5.14"
+    axios "^1.6.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^5.0.0"
+    jsonwebtoken "^9.0.2"
+    linkifyjs "^4.2.0"
+    ws "^8.18.1"
+
+stream-chat@^9.9.0:
+  version "9.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.9.0.tgz#59ac996e6e0ca6b3e3a0041954ae99a43541ec13"
+  integrity sha512-4tqedL7NfDhwJIKRBKGdvNu4x0ifKO+qxyc9TEWe+LLaW3Qed4txKysrVKnDfj/rx3iZuIwrMV7VeW5yxZfP5w==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

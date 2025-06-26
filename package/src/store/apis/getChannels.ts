@@ -1,6 +1,7 @@
 import type { ChannelAPIResponse } from 'stream-chat';
 
 import { getChannelMessages } from './getChannelMessages';
+import { getDraftForChannels } from './getDraftsForChannels';
 import { getMembers } from './getMembers';
 import { getReads } from './getReads';
 import { selectChannels } from './queries/selectChannels';
@@ -26,8 +27,9 @@ export const getChannels = async ({
 }): Promise<Omit<ChannelAPIResponse, 'duration'>[]> => {
   SqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
 
-  const [channels, cidVsMembers, cidVsReads, cidVsMessages] = await Promise.all([
+  const [channels, cidVsDraft, cidVsMembers, cidVsReads, cidVsMessages] = await Promise.all([
     selectChannels({ channelIds }),
+    getDraftForChannels({ channelIds, currentUserId }),
     getMembers({ channelIds }),
     getReads({ channelIds }),
     getChannelMessages({
@@ -39,6 +41,7 @@ export const getChannels = async ({
   // Enrich the channels with state
   return channels.map((c) => ({
     ...mapStorableToChannel(c),
+    draft: cidVsDraft[c.cid],
     members: cidVsMembers[c.cid] || [],
     membership: (cidVsMembers[c.cid] || []).find((member) => member.user_id === currentUserId),
     messages: cidVsMessages[c.cid] || [],

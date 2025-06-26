@@ -46,7 +46,7 @@ export const PollOptionFullResultsContent = ({
     () => (
       <View style={[styles.headerContainer, headerContainer]}>
         <Text style={[styles.headerText, { color: black }, headerText]}>
-          {t<string>('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+          {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
         </Text>
       </View>
     ),

@@ -1,22 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { Alert } from 'react-native';
 
-import { act, cleanup, fireEvent, render, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
-import { useMessagesContext } from '../../../contexts';
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
-import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
-import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import {
-  generateFileAttachment,
-  generateImageAttachment,
-} from '../../../mock-builders/generator/attachment';
-import { generateChannelResponse } from '../../../mock-builders/generator/channel';
-import { generateUser } from '../../../mock-builders/generator/user';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
+
 import { NativeHandlers } from '../../../native';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
@@ -27,84 +19,67 @@ import { Chat } from '../../Chat/Chat';
 import { CreatePollIcon } from '../../Poll';
 import { MessageInput } from '../MessageInput';
 
-describe('MessageInput', () => {
-  jest.spyOn(Alert, 'alert');
-  jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
-    jest.fn(() => ({
-      AttachmentPickerSelectionBar,
-      CameraSelectorIcon,
-      closePicker: jest.fn(),
-      CreatePollIcon,
-      FileSelectorIcon,
-      ImageSelectorIcon,
-      openPicker: jest.fn(),
-      selectedFiles: [
-        generateFileAttachment({ name: 'Dummy.pdf', size: 500000000 }),
-        generateFileAttachment({ name: 'Dummy.pdf', size: 600000000 }),
-      ],
-      selectedImages: [
-        generateImageAttachment({
-          file: { height: 100, uri: 'https://picsum.photos/200/300', width: 100 },
-          size: 500000000,
-          uri: 'https://picsum.photos/200/300',
-        }),
-        generateImageAttachment({
-          file: { height: 100, uri: 'https://picsum.photos/200/300', width: 100 },
-          size: 600000000,
-          uri: 'https://picsum.photos/200/300',
-        }),
-      ],
-      selectedPicker: 'images',
-      setBottomInset: jest.fn(),
-      setMaxNumberOfFiles: jest.fn(),
-      setSelectedFiles: jest.fn(),
-      setSelectedImages: jest.fn(),
-      setSelectedPicker: jest.fn(),
-      setTopInset: jest.fn(),
-    })),
-  );
+jest.spyOn(Alert, 'alert');
+jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
+  jest.fn(() => ({
+    AttachmentPickerSelectionBar,
+    CameraSelectorIcon,
+    closePicker: jest.fn(),
+    CreatePollIcon,
+    FileSelectorIcon,
+    ImageSelectorIcon,
+    openPicker: jest.fn(),
+    selectedPicker: 'images',
+    setBottomInset: jest.fn(),
+    setSelectedPicker: jest.fn(),
+    setTopInset: jest.fn(),
+  })),
+);
 
-  const clientUser = generateUser();
-  let chatClient;
-  let channel;
-
-  const getComponent = () => (
+const renderComponent = ({ channelProps, client, props }) => {
+  return render(
     <OverlayProvider>
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <MessageInput />
+      <Chat client={client}>
+        <Channel {...channelProps}>
+          <MessageInput {...props} />
         </Channel>
       </Chat>
-    </OverlayProvider>
+    </OverlayProvider>,
   );
+};
 
-  const initializeChannel = async (c) => {
-    useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
-
-    channel = chatClient.channel('messaging');
-
-    await channel.watch();
-  };
+describe('MessageInput', () => {
+  let client;
+  let channel;
 
   beforeEach(async () => {
-    chatClient = await getTestClientWithUser(clientUser);
+    jest.clearAllMocks();
+    cleanup();
+    const { client: chatClient, channels } = await initiateClientWithChannels();
+    client = chatClient;
+    channel = channels[0];
   });
 
   afterEach(() => {
-    channel = null;
-    cleanup();
+    act(() => {
+      channel.messageComposer.clear();
+    });
   });
 
   it('should render MessageInput', async () => {
-    await initializeChannel(generateChannelResponse());
+    const channelProps = { channel };
 
-    const openPicker = jest.fn();
-    const closePicker = jest.fn();
-    const attachmentValue = { closePicker, openPicker };
+    renderComponent({
+      channelProps,
+      client,
+      props: {},
+    });
 
-    const { getByTestId, queryByTestId, queryByText } = render(getComponent({ attachmentValue }));
+    const { getByTestId, queryByTestId, queryByText } = screen;
 
-    fireEvent.press(getByTestId('attach-button'));
+    act(() => {
+      fireEvent.press(getByTestId('attach-button'));
+    });
 
     await waitFor(() => {
       expect(queryByTestId('upload-photo-touchable')).toBeTruthy();
@@ -115,40 +90,20 @@ describe('MessageInput', () => {
     });
   });
 
-  it('trigger file size threshold limit alert when images size above the limit', async () => {
-    await initializeChannel(generateChannelResponse());
-
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <MessageInput />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    // Both for files and for images triggered in one test itself.
-    await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledTimes(4);
-    });
-  });
-
   it('should start the audio recorder on long press and cleanup on unmount', async () => {
-    jest.clearAllMocks();
+    renderComponent({
+      channelProps: { audioRecordingEnabled: true, channel },
+      client,
+      props: {},
+    });
 
-    await initializeChannel(generateChannelResponse());
-    const userBot = userEvent.setup();
+    const { queryByTestId, unmount } = screen;
 
-    const { queryByTestId, unmount } = render(
-      <Chat client={chatClient}>
-        <Channel audioRecordingEnabled channel={channel}>
-          <MessageInput />
-        </Channel>
-      </Chat>,
-    );
+    const audioButton = queryByTestId('audio-button');
 
-    await userBot.longPress(queryByTestId('audio-button'), { duration: 1000 });
+    act(() => {
+      fireEvent(audioButton, 'longPress');
+    });
 
     await waitFor(() => {
       expect(NativeHandlers.Audio.startRecording).toHaveBeenCalledTimes(1);
@@ -157,7 +112,9 @@ describe('MessageInput', () => {
       expect(Alert.alert).not.toHaveBeenCalledWith('Hold to start recording.');
     });
 
-    unmount();
+    await act(() => {
+      unmount();
+    });
 
     await waitFor(() => {
       expect(NativeHandlers.Audio.stopRecording).toHaveBeenCalledTimes(1);
@@ -167,20 +124,19 @@ describe('MessageInput', () => {
   });
 
   it('should trigger an alert if a normal press happened on audio recording', async () => {
-    jest.clearAllMocks();
+    renderComponent({
+      channelProps: { audioRecordingEnabled: true, channel },
+      client,
+      props: {},
+    });
 
-    await initializeChannel(generateChannelResponse());
-    const userBot = userEvent.setup();
+    const { queryByTestId } = screen;
 
-    const { queryByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel audioRecordingEnabled channel={channel}>
-          <MessageInput />
-        </Channel>
-      </Chat>,
-    );
+    const audioButton = queryByTestId('audio-button');
 
-    await userBot.press(queryByTestId('audio-button'));
+    act(() => {
+      fireEvent.press(audioButton);
+    });
 
     await waitFor(() => {
       expect(NativeHandlers.Audio.startRecording).not.toHaveBeenCalled();
@@ -189,119 +145,6 @@ describe('MessageInput', () => {
       // This is sort of a brittle test, but there doesn't seem to be another way
       // to target alerts. The reason why it's here is because we had a bug with it.
       expect(Alert.alert).toHaveBeenCalledWith('Hold to start recording.');
-    });
-  });
-
-  it('should render the SendMessageDisallowedIndicator if the send-message capability is not present', async () => {
-    await initializeChannel(generateChannelResponse());
-
-    const { queryByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel audioRecordingEnabled channel={channel}>
-          <MessageInput />
-        </Channel>
-      </Chat>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
-    });
-
-    act(() => {
-      chatClient.dispatchEvent({
-        cid: channel.data.cid,
-        own_capabilities: channel.data.own_capabilities.filter(
-          (capability) => capability !== 'send-message',
-        ),
-        type: 'capabilities.changed',
-      });
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId('send-message-disallowed-indicator')).toBeTruthy();
-    });
-  });
-
-  it('should not render the SendMessageDisallowedIndicator if the channel is frozen and the send-message capability is present', async () => {
-    await initializeChannel(generateChannelResponse({ channel: { frozen: true } }));
-
-    const { queryByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel audioRecordingEnabled channel={channel}>
-          <MessageInput />
-        </Channel>
-      </Chat>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
-    });
-  });
-
-  it('should render the SendMessageDisallowedIndicator in a frozen channel only if the send-message capability is not present', async () => {
-    await initializeChannel(generateChannelResponse({ channel: { frozen: true } }));
-
-    const { queryByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel audioRecordingEnabled channel={channel}>
-          <MessageInput />
-        </Channel>
-      </Chat>,
-    );
-
-    act(() => {
-      chatClient.dispatchEvent({
-        channel: {
-          ...channel.data,
-          own_capabilities: channel.data.own_capabilities.filter(
-            (capability) => capability !== 'send-message',
-          ),
-        },
-        cid: channel.data.cid,
-        type: 'channel.updated',
-      });
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId('send-message-disallowed-indicator')).toBeTruthy();
-    });
-  });
-
-  const EditingStateMessageInput = () => {
-    const { setEditingState } = useMessagesContext();
-    useEffect(() => {
-      setEditingState({ id: 'some-message-id' });
-    }, [setEditingState]);
-    return <MessageInput />;
-  };
-
-  it('should not render the SendMessageDisallowedIndicator if we are editing a message, regardless of capabilities', async () => {
-    await initializeChannel(generateChannelResponse());
-
-    const { queryByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel audioRecordingEnabled channel={channel}>
-          <EditingStateMessageInput />
-        </Channel>
-      </Chat>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
-    });
-
-    act(() => {
-      chatClient.dispatchEvent({
-        cid: channel.data.cid,
-        own_capabilities: channel.data.own_capabilities.filter(
-          (capability) => capability !== 'send-message',
-        ),
-        type: 'capabilities.changed',
-      });
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
     });
   });
 });

@@ -1,14 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  Channel,
-  Thread,
-  ThreadType,
-  useAttachmentPickerContext,
-  useTheme,
-  useTypingString,
-} from 'stream-chat-react-native';
+import { Channel, Thread, ThreadType, useTheme, useTypingString } from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -17,6 +10,7 @@ import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
 import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
+import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -46,6 +40,8 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
     subtitleText = (parentMessage?.user as UserResponse)?.name;
   }
 
+  useCreateDraftFocusEffect();
+
   return (
     <ScreenHeader
       inSafeArea
@@ -65,13 +61,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       colors: { white },
     },
   } = useTheme();
-  const { setSelectedImages } = useAttachmentPickerContext();
-
-  useEffect(() => {
-    setSelectedImages([]);
-    return () => setSelectedImages([]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>

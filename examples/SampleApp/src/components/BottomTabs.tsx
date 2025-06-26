@@ -11,6 +11,7 @@ import { MentionsTab } from '../icons/MentionsTab';
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { Route } from '@react-navigation/native';
+import { DraftsTab } from '../icons/DraftsTab';
 
 const styles = StyleSheet.create({
   notification: {
@@ -43,6 +44,13 @@ const getTab = (key: string) => {
         iconActive: <ChatsTab active />,
         notification: <ChannelsUnreadCountBadge />,
         title: 'Chats',
+      };
+    case 'DraftsScreen':
+      return {
+        icon: <DraftsTab />,
+        iconActive: <DraftsTab active />,
+        title: 'Drafts',
+        notification: <ChannelsUnreadCountBadge />,
       };
     case 'ThreadsScreen':
       return {

@@ -2,7 +2,11 @@ import React from 'react';
 
 import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
-import { AttachmentPickerContextValue } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 'stream-chat';
+
+import { useAttachmentManagerState } from '../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../hooks/useViewport';
@@ -10,33 +14,26 @@ import { Recorder } from '../../../icons';
 import type { File } from '../../../types/types';
 import { getDurationLabelFromDuration } from '../../../utils/utils';
 import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
-type AttachmentPickerItemType = Pick<
-  AttachmentPickerContextValue,
-  'selectedFiles' | 'setSelectedFiles' | 'setSelectedImages' | 'selectedImages' | 'maxNumberOfFiles'
-> & {
+
+type AttachmentPickerItemType = {
   asset: File;
   ImageOverlaySelectedComponent: React.ComponentType;
-  numberOfUploads: number;
-  selected: boolean;
   numberOfAttachmentPickerImageColumns?: number;
 };
-type AttachmentImageProps = Omit<AttachmentPickerItemType, 'setSelectedFiles' | 'selectedFiles'>;
 
-type AttachmentVideoProps = Omit<AttachmentPickerItemType, 'setSelectedImages' | 'selectedImages'>;
-
-const AttachmentVideo = (props: AttachmentVideoProps) => {
-  const {
-    asset,
-    ImageOverlaySelectedComponent,
-    maxNumberOfFiles,
-    numberOfAttachmentPickerImageColumns,
-    numberOfUploads,
-    selected,
-    selectedFiles,
-    setSelectedFiles,
-  } = props;
+const AttachmentVideo = (props: AttachmentPickerItemType) => {
+  const { asset, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns } = props;
   const { vw } = useViewport();
   const { t } = useTranslationContext();
+  const messageComposer = useMessageComposer();
+  const { uploadNewFile } = useMessageInputContext();
+  const { attachmentManager } = messageComposer;
+  const { attachments, availableUploadSlots } = useAttachmentManagerState();
+  const videoUploads = attachments.filter((attachment) => isLocalVideoAttachment(attachment));
+
+  const selected = videoUploads.some(
+    (attachment) => (attachment.localMetadata.file as FileReference).uri === asset.uri,
+  );
 
   const {
     theme: {
@@ -51,22 +48,20 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const updateSelectedFiles = () => {
-    if (numberOfUploads >= maxNumberOfFiles) {
-      Alert.alert(t('Maximum number of files reached'));
-      return;
-    }
-    setSelectedFiles([...selectedFiles, asset]);
-  };
-
-  const onPressVideo = () => {
+  const onPressVideo = async () => {
     if (selected) {
-      setSelectedFiles((files) =>
-        // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
-        files.filter((file) => file.uri !== uri),
+      const attachment = videoUploads.find(
+        (attachment) => (attachment.localMetadata.file as FileReference).uri === uri,
       );
+      if (attachment) {
+        attachmentManager.removeAttachments([attachment.localMetadata.id]);
+      }
     } else {
-      updateSelectedFiles();
+      if (!availableUploadSlots) {
+        Alert.alert(t('Maximum number of files reached'));
+        return;
+      }
+      await uploadNewFile(asset);
     }
   };
 
@@ -101,17 +96,8 @@ const AttachmentVideo = (props: AttachmentVideoProps) => {
   );
 };
 
-const AttachmentImage = (props: AttachmentImageProps) => {
-  const {
-    asset,
-    ImageOverlaySelectedComponent,
-    maxNumberOfFiles,
-    numberOfAttachmentPickerImageColumns,
-    numberOfUploads,
-    selected,
-    selectedImages,
-    setSelectedImages,
-  } = props;
+const AttachmentImage = (props: AttachmentPickerItemType) => {
+  const { asset, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns } = props;
   const {
     theme: {
       attachmentPicker: { image, imageOverlay },
@@ -119,26 +105,34 @@ const AttachmentImage = (props: AttachmentImageProps) => {
     },
   } = useTheme();
   const { vw } = useViewport();
-  const { t } = useTranslationContext();
+  const { uploadNewFile } = useMessageInputContext();
+  const messageComposer = useMessageComposer();
+  const { attachmentManager } = messageComposer;
+  const { attachments, availableUploadSlots } = useAttachmentManagerState();
+  const imageUploads = attachments.filter((attachment) => isLocalImageAttachment(attachment));
+
+  const selected = imageUploads.some(
+    (attachment) => attachment.localMetadata.previewUri === asset.uri,
+  );
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
   const { uri } = asset;
 
-  const updateSelectedImages = () => {
-    if (numberOfUploads >= maxNumberOfFiles) {
-      Alert.alert(t('Maximum number of files reached'));
-      return;
-    }
-    setSelectedImages([...selectedImages, asset]);
-  };
-
-  const onPressImage = () => {
+  const onPressImage = async () => {
     if (selected) {
-      // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
-      setSelectedImages((images) => images.filter((image) => image.uri !== uri));
+      const attachment = imageUploads.find(
+        (attachment) => attachment.localMetadata.previewUri === uri,
+      );
+      if (attachment) {
+        await attachmentManager.removeAttachments([attachment.localMetadata.id]);
+      }
     } else {
-      updateSelectedImages();
+      if (!availableUploadSlots) {
+        Alert.alert('Maximum number of files reached');
+        return;
+      }
+      await uploadNewFile(asset);
     }
   };
 
@@ -166,18 +160,7 @@ const AttachmentImage = (props: AttachmentImageProps) => {
 };
 
 export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerItemType }) => {
-  const {
-    asset,
-    ImageOverlaySelectedComponent,
-    maxNumberOfFiles,
-    numberOfAttachmentPickerImageColumns,
-    numberOfUploads,
-    selected,
-    selectedFiles,
-    selectedImages,
-    setSelectedFiles,
-    setSelectedImages,
-  } = item;
+  const { asset, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns } = item;
 
   /**
    * Expo Media Library - Result of asset type
@@ -192,12 +175,7 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
       <AttachmentVideo
         asset={asset}
         ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
-        maxNumberOfFiles={maxNumberOfFiles}
         numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-        numberOfUploads={numberOfUploads}
-        selected={selected}
-        selectedFiles={selectedFiles}
-        setSelectedFiles={setSelectedFiles}
       />
     );
   }
@@ -206,12 +184,7 @@ export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerIte
     <AttachmentImage
       asset={asset}
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
-      maxNumberOfFiles={maxNumberOfFiles}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      numberOfUploads={numberOfUploads}
-      selected={selected}
-      selectedImages={selectedImages}
-      setSelectedImages={setSelectedImages}
     />
   );
 };

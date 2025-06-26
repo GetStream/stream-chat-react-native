@@ -4,3 +4,4 @@ export const defaultMentionAllAppUsersQuery = {
   options: {},
   sort: {},
 };
+export const POLL_OPTION_HEIGHT = 71;

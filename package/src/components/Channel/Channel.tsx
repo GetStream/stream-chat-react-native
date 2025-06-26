@@ -2,7 +2,6 @@ import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useS
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
-import omit from 'lodash/omit';
 import throttle from 'lodash/throttle';
 
 import { lookup } from 'mime-types';
@@ -12,14 +11,17 @@ import {
   Channel as ChannelType,
   EventHandler,
   LocalMessage,
+  localMessageToNewMessagePayload,
   MessageLabel,
   MessageResponse,
   Reaction,
   SendMessageAPIResponse,
+  SendMessageOptions,
   StreamChat,
   Event as StreamEvent,
   Message as StreamMessage,
   Thread,
+  UpdateMessageOptions,
 } from 'stream-chat';
 
 import { useChannelDataState } from './hooks/useChannelDataState';
@@ -39,11 +41,21 @@ import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 import { useMessageListPagination } from './hooks/useMessageListPagination';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
-import { MessageContextValue } from '../../contexts';
+import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
+import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
+import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
+import { VideoRecorderSelectorIcon as DefaultVideoRecorderSelectorIcon } from '../../components/AttachmentPicker/components/VideoRecorderSelectorIcon';
+import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/Poll/components/CreatePollIcon';
+import {
+  AttachmentPickerContextValue,
+  AttachmentPickerProvider,
+  MessageContextValue,
+} from '../../contexts';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { MessageComposerProvider } from '../../contexts/messageComposerContext/MessageComposerContext';
 import {
   InputMessageInputContextValue,
   MessageInputProvider,
@@ -60,10 +72,6 @@ import {
   PaginatedMessageListContextValue,
   PaginatedMessageListProvider,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import {
-  SuggestionsContextValue,
-  SuggestionsProvider,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
@@ -75,9 +83,10 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { TypingProvider } from '../../contexts/typingContext/TypingContext';
-import { useStableCallback } from '../../hooks';
+import { useStableCallback, useViewport } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
+import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
 import {
   LOLReaction,
   LoveReaction,
@@ -96,10 +105,7 @@ import { ChannelUnreadState, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import { removeReservedFields } from '../../utils/removeReservedFields';
 import {
-  defaultEmojiSearchIndex,
-  generateRandomId,
   getFileNameFromPath,
   isBouncedMessage,
   isLocalUrl,
@@ -119,6 +125,13 @@ import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } fro
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
+import { AttachmentPicker, AttachmentPickerProps } from '../AttachmentPicker/AttachmentPicker';
+import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
+import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
+import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
+import { AttachmentPickerIOSSelectMorePhotos as DefaultAttachmentPickerIOSSelectMorePhotos } from '../AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos';
+import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../AttachmentPicker/components/AttachmentPickerSelectionBar';
+import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
@@ -148,26 +161,28 @@ import { ReactionListBottom as ReactionListBottomDefault } from '../Message/Mess
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
+import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/AttachmentUploadPreviewList';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
+import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
+import { ImageAttachmentUploadPreview as ImageAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
 import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
 import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
 import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
 import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
 import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
+import { CommandInput as CommandInputDefault } from '../MessageInput/components/CommandInput';
 import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
-import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
 import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
-import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
-import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
 import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
-import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
@@ -243,13 +258,26 @@ const debounceOptions = {
 };
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
+  Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>> &
+  Partial<
+    Pick<
+      AttachmentPickerProps,
+      | 'AttachmentPickerError'
+      | 'AttachmentPickerErrorImage'
+      | 'AttachmentPickerIOSSelectMorePhotos'
+      | 'ImageOverlaySelectedComponent'
+      | 'attachmentPickerErrorButtonText'
+      | 'attachmentPickerErrorText'
+      | 'numberOfAttachmentImagesToLoadPerCall'
+      | 'numberOfAttachmentPickerImageColumns'
+    >
+  > &
   Partial<
     Pick<
       ChannelContextValue,
       | 'EmptyStateIndicator'
       | 'enableMessageGroupingByUser'
       | 'enforceUniqueReaction'
-      | 'giphyEnabled'
       | 'hideStickyDateHeader'
       | 'hideDateSeparators'
       | 'LoadingIndicator'
@@ -259,18 +287,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     >
   > &
   Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
-  Partial<
-    Omit<
-      InputMessageInputContextValue,
-      'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
-    >
-  > &
-  Partial<
-    Pick<
-      SuggestionsContextValue,
-      'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem' | 'AutoCompleteSuggestionList'
-    >
-  > &
+  Partial<Omit<InputMessageInputContextValue, 'editing' | 'clearEditingState' | 'sendMessage'>> &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<PaginatedMessageListContextValue, 'messages' | 'loadingMore' | 'loadingMoreRecent'>
@@ -406,6 +423,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     doSendMessageRequest?: (
       channelId: string,
       messageData: StreamMessage,
+      options?: SendMessageOptions,
     ) => Promise<SendMessageAPIResponse>;
     /**
      * Overrides the Stream default update message request (Advanced usage only)
@@ -415,6 +433,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     doUpdateMessageRequest?: (
       channelId: string,
       updatedMessage: Parameters<StreamChat['updateMessage']>[0],
+      options?: UpdateMessageOptions,
     ) => ReturnType<StreamChat['updateMessage']>;
     /**
      * When true, messageList will be scrolled at first unread message, when opened.
@@ -450,7 +469,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * Boolean flag to enable/disable marking the channel as read on mount
      */
     markReadOnMount?: boolean;
-    maxMessageLength?: number;
     /**
      * Load the channel at a specified message instead of the most recent message.
      */
@@ -474,6 +492,8 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   >;
 
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
+  const { vh } = useViewport();
+
   const {
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
@@ -486,8 +506,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
+    AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
+    attachmentPickerBottomSheetHandleHeight = 20,
+    attachmentPickerBottomSheetHeight = vh(45),
+    AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
+    attachmentSelectionBarHeight = 52,
     AudioAttachment = AudioAttachmentDefault,
-    AudioAttachmentUploadPreview = AudioAttachmentDefault,
+    AudioAttachmentUploadPreview = AudioAttachmentUploadPreviewDefault,
     AudioRecorder = AudioRecorderDefault,
     audioRecordingEnabled = false,
     AudioRecordingInProgress = AudioRecordingInProgressDefault,
@@ -497,8 +522,22 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
-    autoCompleteSuggestionsLimit,
-    autoCompleteTriggerSettings,
+    AttachmentPickerError = DefaultAttachmentPickerError,
+    AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
+    AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
+    AttachmentUploadPreviewList = AttachmentUploadPreviewDefault,
+    ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
+    attachmentPickerErrorButtonText,
+    attachmentPickerErrorText,
+    numberOfAttachmentImagesToLoadPerCall = 60,
+    numberOfAttachmentPickerImageColumns = 3,
+
+    bottomInset = 0,
+    CameraSelectorIcon = DefaultCameraSelectorIcon,
+    FileSelectorIcon = DefaultFileSelectorIcon,
+    CreatePollIcon = DefaultCreatePollIcon,
+    ImageSelectorIcon = DefaultImageSelectorIcon,
+    VideoRecorderSelectorIcon = DefaultVideoRecorderSelectorIcon,
     Card = CardDefault,
     CardCover,
     CardFooter,
@@ -515,27 +554,24 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
-    doDocUploadRequest,
-    doImageUploadRequest,
+    doFileUploadRequest,
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
-    emojiSearchIndex = defaultEmojiSearchIndex,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
+    FileAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
-    FileUploadPreview = FileUploadPreviewDefault,
     FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
     Giphy = GiphyDefault,
-    giphyEnabled,
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
     handleBan,
@@ -558,18 +594,17 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
     hideDateSeparators = false,
     hideStickyDateHeader = false,
+    ImageAttachmentUploadPreview = ImageAttachmentUploadPreviewDefault,
     ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
     ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     ImageReloadIndicator = ImageReloadIndicatorDefault,
-    ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
-    initialValue,
     InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
     InputEditingStateHeader = InputEditingStateHeaderDefault,
-    InputGiphySearch = InputGiphyCommandInputDefault,
+    CommandInput = CommandInputDefault,
     InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
@@ -583,11 +618,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     markReadOnMount = true,
-    maxMessageLength: maxMessageLengthProp,
-    maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
-    mentionAllAppUsersEnabled = false,
-    mentionAllAppUsersQuery,
     Message = MessageDefault,
     MessageActionList = MessageActionListDefault,
     MessageActionListItem = MessageActionListItemDefault,
@@ -632,8 +663,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     // TODO: Think about this one
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
-    numberOfLines = 5,
-    onChangeText,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
@@ -647,7 +676,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
-    sendImageAsync = false,
     SendMessageDisallowedIndicator = SendMessageDisallowedIndicatorDefault,
     setInputRef,
     setThreadMessages,
@@ -664,11 +692,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     thread: threadFromProps,
     threadList,
     threadMessages,
+    topInset,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
-    UploadProgressIndicator = UploadProgressIndicatorDefault,
+    AttachmentUploadProgressIndicator = AttachmentUploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
+    VideoAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
   } = props;
@@ -686,17 +716,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     },
   } = useTheme();
   const [deleted, setDeleted] = useState<boolean>(false);
-  const [editing, setEditing] = useState<LocalMessage | undefined>(undefined);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<Date | undefined>();
-
-  const [quotedMessage, setQuotedMessage] = useState<LocalMessage | undefined>(undefined);
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadState, setChannelUnreadState] = useState<ChannelUnreadState | undefined>(
     undefined,
   );
+
+  const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
   const syncingChannelRef = useRef(false);
 
@@ -1206,7 +1235,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const replaceMessage = useStableCallback(
-    (oldMessage: MessageResponse, newMessage: MessageResponse) => {
+    (oldMessage: LocalMessage, newMessage: MessageResponse) => {
       if (channel) {
         channel.state.removeMessage(oldMessage);
         channel.state.addMessageSorted(newMessage, true);
@@ -1220,75 +1249,23 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     },
   );
 
-  const createMessagePreview = useStableCallback(
-    ({
-      attachments,
-      mentioned_users,
-      parent_id,
-      poll_id,
-      text,
-      ...extraFields
-    }: Partial<StreamMessage>) => {
-      // Exclude following properties from message.user within message preview,
-      // since they could be long arrays and have no meaning as sender of message.
-      // Storing such large value within user's table may cause sqlite queries to crash.
-      // @ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { channel_mutes, devices, mutes, ...messageUser } = client.user;
-
-      const preview = {
-        __html: text,
-        attachments,
-        created_at: new Date(),
-        html: text,
-        id: `${client.userID}-${generateRandomId()}`,
-        mentioned_users:
-          mentioned_users?.map((userId) => ({
-            id: userId,
-          })) || [],
-        parent_id,
-        poll_id,
-        reactions: [],
-        status: MessageStatusTypes.SENDING,
-        text,
-        type: 'regular',
-        user: {
-          ...messageUser,
-          id: client.userID,
-        },
-        ...extraFields,
-      } as unknown as MessageResponse;
-
-      /**
-       * This is added to the message for local rendering prior to the message
-       * being returned from the backend, it is removed when the message is sent
-       * as quoted_message is a reserved field.
-       */
-      if (preview.quoted_message_id) {
-        const quotedMessage = channelMessagesState.messages?.find(
-          (message) => message.id === preview.quoted_message_id,
-        );
-
-        preview.quoted_message = quotedMessage as MessageResponse['quoted_message'];
-      }
-      return preview;
-    },
-  );
-
-  const uploadPendingAttachments = useStableCallback(async (message: MessageResponse) => {
+  const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     const updatedMessage = { ...message };
     if (updatedMessage.attachments?.length) {
       for (let i = 0; i < updatedMessage.attachments?.length; i++) {
         const attachment = updatedMessage.attachments[i];
-        const image = attachment.originalImage;
-        const file = attachment.originalFile;
-        // check if image_url is not a remote url
+
+        // If the attachment is already uploaded, skip it.
         if (
-          attachment.type === FileTypes.Image &&
-          image?.uri &&
-          attachment.image_url &&
-          isLocalUrl(attachment.image_url)
+          (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
+          (attachment.asset_url && !isLocalUrl(attachment.asset_url))
         ) {
+          continue;
+        }
+
+        const image = attachment.originalFile;
+        const file = attachment.originalFile;
+        if (attachment.type === FileTypes.Image && image?.uri) {
           const filename = image.name ?? getFileNameFromPath(image.uri);
           // if any upload is in progress, cancel it
           const controller = uploadAbortControllerRef.current.get(filename);
@@ -1299,8 +1276,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           const compressedUri = await compressedImageURI(image, compressImageQuality);
           const contentType = lookup(filename) || 'multipart/form-data';
 
-          const uploadResponse = doImageUploadRequest
-            ? await doImageUploadRequest(image, channel)
+          const uploadResponse = doFileUploadRequest
+            ? await doFileUploadRequest(image)
             : await channel.sendImage(compressedUri, filename, contentType);
 
           attachment.image_url = uploadResponse.file;
@@ -1311,23 +1288,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           });
         }
 
-        if (
-          (attachment.type === FileTypes.File ||
-            attachment.type === FileTypes.Audio ||
-            attachment.type === FileTypes.VoiceRecording ||
-            attachment.type === FileTypes.Video) &&
-          attachment.asset_url &&
-          isLocalUrl(attachment.asset_url) &&
-          file?.uri
-        ) {
+        if (attachment.type !== FileTypes.Image && file?.uri) {
           // if any upload is in progress, cancel it
           const controller = uploadAbortControllerRef.current.get(file.name);
           if (controller) {
             controller.abort();
             uploadAbortControllerRef.current.delete(file.name);
           }
-          const response = doDocUploadRequest
-            ? await doDocUploadRequest(file, channel)
+          const response = doFileUploadRequest
+            ? await doFileUploadRequest(file)
             : await channel.sendFile(file.uri, file.name, file.type);
           attachment.asset_url = response.file;
           if (response.thumb_url) {
@@ -1346,18 +1315,28 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const sendMessageRequest = useStableCallback(
-    async (message: MessageResponse, retrying?: boolean) => {
+    async ({
+      localMessage,
+      message,
+      options,
+      retrying,
+    }: {
+      localMessage: LocalMessage;
+      message: StreamMessage;
+      options?: SendMessageOptions;
+      retrying?: boolean;
+    }) => {
       let failedMessageUpdated = false;
       const handleFailedMessage = async () => {
         if (!failedMessageUpdated) {
           const updatedMessage = {
-            ...message,
+            ...localMessage,
             cid: channel.cid,
             status: MessageStatusTypes.FAILED,
           };
           updateMessage(updatedMessage);
           threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
-          optimisticallyUpdatedNewMessages.delete(message.id);
+          optimisticallyUpdatedNewMessages.delete(localMessage.id);
 
           if (enableOfflineSupport) {
             await dbApi.updateMessage({
@@ -1374,50 +1353,25 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           await handleFailedMessage();
         }
 
-        const updatedMessage = await uploadPendingAttachments(message);
-        const extraFields = omit(updatedMessage, [
-          '__html',
-          'attachments',
-          'created_at',
-          'deleted_at',
-          'html',
-          'id',
-          'latest_reactions',
-          'mentioned_users',
-          'own_reactions',
-          'parent_id',
-          'quoted_message',
-          'reaction_counts',
-          'reaction_groups',
-          'reactions',
-          'status',
-          'text',
-          'type',
-          'updated_at',
-          'user',
-        ]);
-        const { attachments, id, mentioned_users, parent_id, text } = updatedMessage;
+        const updatedLocalMessage = await uploadPendingAttachments(localMessage);
+        const { attachments } = updatedLocalMessage;
+        const { text, mentioned_users } = message;
         if (!channel.id) {
           return;
         }
 
-        const mentionedUserIds = mentioned_users?.map((user) => user.id) || [];
-
         const messageData = {
+          ...message,
           attachments,
-          id,
-          mentioned_users: mentionedUserIds,
-          parent_id,
-          text: patchMessageTextCommand(text ?? '', mentionedUserIds),
-          ...extraFields,
+          text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
 
         if (doSendMessageRequest) {
-          messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
+          messageResponse = await doSendMessageRequest(channel?.cid || '', messageData, options);
         } else if (channel) {
-          messageResponse = await channel.sendMessage(messageData);
+          messageResponse = await channel.sendMessage(messageData, options);
         }
 
         if (messageResponse?.message) {
@@ -1432,35 +1386,27 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             });
           }
           if (retrying) {
-            replaceMessage(message, newMessageResponse);
+            replaceMessage(localMessage, newMessageResponse);
           } else {
             updateMessage(newMessageResponse, {}, true);
           }
         }
       } catch (err) {
-        console.log(err);
+        console.log('Error sending message:', err);
         await handleFailedMessage();
       }
     },
   );
 
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
-    async (message) => {
+    async ({ localMessage, message, options }) => {
       if (channel?.state?.filterErrorMessages) {
         channel.state.filterErrorMessages();
       }
 
-      const messagePreview = createMessagePreview({
-        ...message,
-        attachments: message.attachments || [],
-      });
-
-      updateMessage(messagePreview, {
-        commands: [],
-        messageInput: '',
-      });
-      threadInstance?.upsertReplyLocally?.({ message: messagePreview });
-      optimisticallyUpdatedNewMessages.add(messagePreview.id);
+      updateMessage(localMessage);
+      threadInstance?.upsertReplyLocally?.({ message: localMessage });
+      optimisticallyUpdatedNewMessages.add(localMessage.id);
 
       if (enableOfflineSupport) {
         // While sending a message, we add the message to local db with failed status, so that
@@ -1468,56 +1414,42 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         // then user can see that message in failed state and can retry.
         // If succesfull, it will be updated with received status.
         await dbApi.upsertMessages({
-          messages: [{ ...messagePreview, cid: channel.cid, status: MessageStatusTypes.FAILED }],
+          messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
         });
       }
 
-      await sendMessageRequest(messagePreview);
+      await sendMessageRequest({ localMessage, message, options });
     },
   );
 
   const retrySendMessage: MessagesContextValue['retrySendMessage'] = useStableCallback(
-    async (message) => {
+    async (localMessage) => {
       const statusPendingMessage = {
-        ...message,
+        ...localMessage,
         status: MessageStatusTypes.SENDING,
       };
 
-      const messageWithoutReservedFields = removeReservedFields(statusPendingMessage);
+      const messageWithoutReservedFields = localMessageToNewMessagePayload(statusPendingMessage);
 
       // For bounced messages, we don't need to update the message, instead always send a new message.
-      if (!isBouncedMessage(message)) {
+      if (!isBouncedMessage(localMessage)) {
         updateMessage(messageWithoutReservedFields as MessageResponse);
       }
 
-      await sendMessageRequest(messageWithoutReservedFields as MessageResponse, true);
+      await sendMessageRequest({
+        localMessage,
+        message: messageWithoutReservedFields,
+        retrying: true,
+      });
     },
   );
 
   const editMessage: InputMessageInputContextValue['editMessage'] = useStableCallback(
-    (updatedMessage) =>
+    ({ localMessage, options }) =>
       doUpdateMessageRequest
-        ? doUpdateMessageRequest(channel?.cid || '', updatedMessage)
-        : client.updateMessage(updatedMessage),
+        ? doUpdateMessageRequest(channel?.cid || '', localMessage, options)
+        : client.updateMessage(localMessage, undefined, options),
   );
-
-  const setEditingState: MessagesContextValue['setEditingState'] = useStableCallback((message) => {
-    clearQuotedMessageState();
-    setEditing(message);
-  });
-
-  const setQuotedMessageState: MessagesContextValue['setQuotedMessageState'] = useStableCallback(
-    (messageOrBoolean) => {
-      setQuotedMessage(messageOrBoolean);
-    },
-  );
-
-  const clearEditingState: InputMessageInputContextValue['clearEditingState'] = useStableCallback(
-    () => setEditing(undefined),
-  );
-
-  const clearQuotedMessageState: InputMessageInputContextValue['clearQuotedMessageState'] =
-    useStableCallback(() => setQuotedMessage(undefined));
 
   /**
    * Removes the message from local state
@@ -1700,6 +1632,48 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
   });
 
+  const attachmentPickerProps = useMemo(
+    () => ({
+      AttachmentPickerBottomSheetHandle,
+      attachmentPickerBottomSheetHandleHeight,
+      attachmentPickerBottomSheetHeight,
+      AttachmentPickerError,
+      attachmentPickerErrorButtonText,
+      AttachmentPickerErrorImage,
+      attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
+      attachmentSelectionBarHeight,
+      ImageOverlaySelectedComponent,
+      numberOfAttachmentImagesToLoadPerCall,
+      numberOfAttachmentPickerImageColumns,
+    }),
+    [
+      AttachmentPickerBottomSheetHandle,
+      attachmentPickerBottomSheetHandleHeight,
+      attachmentPickerBottomSheetHeight,
+      AttachmentPickerError,
+      attachmentPickerErrorButtonText,
+      AttachmentPickerErrorImage,
+      attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
+      attachmentSelectionBarHeight,
+      ImageOverlaySelectedComponent,
+      numberOfAttachmentImagesToLoadPerCall,
+      numberOfAttachmentPickerImageColumns,
+    ],
+  );
+
+  const attachmentPickerContext = useMemo(
+    () => ({
+      bottomInset,
+      bottomSheetRef,
+      closePicker: () => closePicker(bottomSheetRef),
+      openPicker: () => openPicker(bottomSheetRef),
+      topInset,
+    }),
+    [bottomInset, bottomSheetRef, closePicker, openPicker, topInset],
+  );
+
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
     channel,
     overrideCapabilities: overrideOwnCapabilities,
@@ -1713,9 +1687,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
-    giphyEnabled:
-      giphyEnabled ??
-      !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
@@ -1763,6 +1734,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     AttachButton,
+    AttachmentPickerBottomSheetHandle,
+    attachmentPickerBottomSheetHandleHeight,
+    attachmentPickerBottomSheetHeight,
+    AttachmentPickerSelectionBar,
+    attachmentSelectionBarHeight,
+    AttachmentUploadPreviewList,
+    AttachmentUploadProgressIndicator,
     AudioAttachmentUploadPreview,
     AudioRecorder,
     audioRecordingEnabled,
@@ -1770,52 +1748,43 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
     AudioRecordingWaveform,
-    autoCompleteSuggestionsLimit,
-    autoCompleteTriggerSettings,
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
+    CameraSelectorIcon,
     channelId,
-    clearEditingState,
-    clearQuotedMessageState,
+    CommandInput,
     CommandsButton,
     compressImageQuality,
     CooldownTimer,
     CreatePollContent,
-    doDocUploadRequest,
-    doImageUploadRequest,
-    editing,
+    CreatePollIcon,
+    doFileUploadRequest,
     editMessage,
-    emojiSearchIndex,
-    FileUploadPreview,
+    FileAttachmentUploadPreview,
+    FileSelectorIcon,
     handleAttachButtonPress,
     hasCameraPicker,
-    hasCommands: hasCommands ?? (getChannelConfigSafely()?.commands ?? []).length > 0,
+    hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,
     hasFilePicker,
     hasImagePicker,
-    ImageUploadPreview,
-    initialValue,
+    ImageAttachmentUploadPreview,
+    ImageSelectorIcon,
     Input,
     InputButtons,
     InputEditingStateHeader,
-    InputGiphySearch,
     InputReplyStateHeader,
-    maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
-    maxNumberOfFiles,
-    mentionAllAppUsersEnabled,
-    mentionAllAppUsersQuery,
     MoreOptionsButton,
-    numberOfLines,
-    onChangeText,
     openPollCreationDialog,
-    quotedMessage,
     SendButton,
-    sendImageAsync,
     sendMessage,
     SendMessageDisallowedIndicator,
     setInputRef,
-    setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
-    UploadProgressIndicator,
+    VideoAttachmentUploadPreview,
+    VideoRecorderSelectorIcon,
   });
 
   const messageListContext = useCreatePaginatedMessageListContext({
@@ -1842,7 +1811,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     CardFooter,
     CardHeader,
     channelId,
-    clearQuotedMessageState,
     DateHeader,
     deletedMessagesVisibilityType,
     deleteMessage,
@@ -1928,8 +1896,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ScrollToBottomButton,
     selectReaction,
     sendReaction,
-    setEditingState,
-    setQuotedMessageState,
     shouldShowUnreadUnderlay,
     StreamingMessageView,
     supportedReactions,
@@ -1941,14 +1907,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     UrlPreview,
     VideoThumbnail,
   });
-
-  const suggestionsContext = useMemo(() => {
-    return {
-      AutoCompleteSuggestionHeader,
-      AutoCompleteSuggestionItem,
-      AutoCompleteSuggestionList,
-    };
-  }, [AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem, AutoCompleteSuggestionList]);
 
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
@@ -1968,6 +1926,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     typing: channelState.typing ?? {},
   });
 
+  const messageComposerContext = useMemo(
+    () => ({ channel, thread, threadInstance }),
+    [channel, thread, threadInstance],
+  );
+
   // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
   if (deleted) {
     return null;
@@ -1980,7 +1943,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   if (!channel?.cid || !channel.watch) {
     return (
       <Text style={[styles.selectChannel, { color: black }, selectChannel]} testID='no-channel'>
-        {t<string>('Please select a channel first')}
+        {t('Please select a channel first')}
       </Text>
     );
   }
@@ -1998,11 +1961,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             <PaginatedMessageListProvider value={messageListContext}>
               <MessagesProvider value={messagesContext}>
                 <ThreadProvider value={threadContext}>
-                  <SuggestionsProvider value={suggestionsContext}>
-                    <MessageInputProvider value={inputMessageInputContext}>
-                      <View style={{ height: '100%' }}>{children}</View>
-                    </MessageInputProvider>
-                  </SuggestionsProvider>
+                  <AttachmentPickerProvider value={attachmentPickerContext}>
+                    <MessageComposerProvider value={messageComposerContext}>
+                      <MessageInputProvider value={inputMessageInputContext}>
+                        <View style={{ height: '100%' }}>{children}</View>
+                        <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                      </MessageInputProvider>
+                    </MessageComposerProvider>
+                  </AttachmentPickerProvider>
                 </ThreadProvider>
               </MessagesProvider>
             </PaginatedMessageListProvider>

@@ -1,16 +1,22 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { TextComposerState } from 'stream-chat';
+
+import {
+  AttachmentPickerContextValue,
+  OwnCapabilitiesContextValue,
+  useAttachmentPickerContext,
+} from '../../contexts';
+import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-const styles = StyleSheet.create({
-  attachButtonContainer: { paddingRight: 5 },
-});
+import { useStateStore } from '../../hooks/useStateStore';
 
 export type InputButtonsProps = Partial<InputButtonsWithContextProps>;
 
@@ -18,39 +24,47 @@ export type InputButtonsWithContextProps = Pick<
   MessageInputContextValue,
   | 'AttachButton'
   | 'CommandsButton'
-  | 'giphyActive'
   | 'hasCameraPicker'
   | 'hasCommands'
   | 'hasFilePicker'
   | 'hasImagePicker'
-  | 'hasText'
   | 'MoreOptionsButton'
-  | 'openCommandsPicker'
-  | 'selectedPicker'
-  | 'setShowMoreOptions'
-  | 'showMoreOptions'
   | 'toggleAttachmentPicker'
->;
+> &
+  Pick<AttachmentPickerContextValue, 'selectedPicker'> &
+  Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
+
+const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
+  hasText: !!state.text,
+});
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
   const {
     AttachButton,
     CommandsButton,
-    giphyActive,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    hasText,
     MoreOptionsButton,
-    openCommandsPicker,
-    setShowMoreOptions,
-    showMoreOptions,
+    uploadFile: ownCapabilitiesUploadFile,
   } = props;
+  const { textComposer } = useMessageComposer();
+  const { command, hasText } = useStateStore(textComposer.state, textComposerStateSelector);
+
+  const [showMoreOptions, setShowMoreOptions] = useState(true);
+  const { attachments } = useAttachmentManagerState();
+
+  const shouldShowMoreOptions = hasText || attachments.length;
+
+  useEffect(() => {
+    setShowMoreOptions(!shouldShowMoreOptions);
+  }, [shouldShowMoreOptions]);
 
   const {
     theme: {
-      messageInput: { attachButtonContainer, commandsButtonContainer },
+      messageInput: { attachButtonContainer },
     },
   } = useTheme();
 
@@ -58,28 +72,30 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     setShowMoreOptions(true);
   }, [setShowMoreOptions]);
 
-  const ownCapabilities = useOwnCapabilitiesContext();
+  const hasAttachmentUploadCapabilities =
+    (hasCameraPicker || hasFilePicker || hasImagePicker) && ownCapabilitiesUploadFile;
+  const showCommandsButton = hasCommands && !hasText;
 
-  if (giphyActive) {
+  if (command) {
     return null;
   }
 
-  return !showMoreOptions && (hasCameraPicker || hasImagePicker || hasFilePicker) && hasCommands ? (
+  if (!hasAttachmentUploadCapabilities && !hasCommands) {
+    return null;
+  }
+
+  return !showMoreOptions ? (
     <MoreOptionsButton handleOnPress={handleShowMoreOptions} />
   ) : (
     <>
-      {(hasCameraPicker || hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
+      {hasAttachmentUploadCapabilities ? (
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
         >
           <AttachButton />
         </View>
-      )}
-      {hasCommands && !hasText && (
-        <View style={commandsButtonContainer}>
-          <CommandsButton handleOnPress={openCommandsPicker} />
-        </View>
-      )}
+      ) : null}
+      {showCommandsButton ? <CommandsButton /> : null}
     </>
   );
 };
@@ -89,25 +105,19 @@ const areEqual = (
   nextProps: InputButtonsWithContextProps,
 ) => {
   const {
-    giphyActive: prevGiphyActive,
     hasCameraPicker: prevHasCameraPicker,
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
-    hasText: prevHasText,
     selectedPicker: prevSelectedPicker,
-    showMoreOptions: prevShowMoreOptions,
   } = prevProps;
 
   const {
-    giphyActive: nextGiphyActive,
     hasCameraPicker: nextHasCameraPicker,
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
-    hasText: nextHasText,
     selectedPicker: nextSelectedPicker,
-    showMoreOptions: nextShowMoreOptions,
   } = nextProps;
 
   if (prevHasCameraPicker !== nextHasCameraPicker) {
@@ -130,18 +140,6 @@ const areEqual = (
     return false;
   }
 
-  if (prevShowMoreOptions !== nextShowMoreOptions) {
-    return false;
-  }
-
-  if (prevHasText !== nextHasText) {
-    return false;
-  }
-
-  if (prevGiphyActive !== nextGiphyActive) {
-    return false;
-  }
-
   return true;
 };
 
@@ -154,39 +152,35 @@ export const InputButtons = (props: InputButtonsProps) => {
   const {
     AttachButton,
     CommandsButton,
-    giphyActive,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
-    hasText,
     MoreOptionsButton,
-    openCommandsPicker,
-    selectedPicker,
-    setShowMoreOptions,
-    showMoreOptions,
     toggleAttachmentPicker,
   } = useMessageInputContext();
+  const { selectedPicker } = useAttachmentPickerContext();
+  const { uploadFile } = useOwnCapabilitiesContext();
 
   return (
     <MemoizedInputButtonsWithContext
       {...{
         AttachButton,
         CommandsButton,
-        giphyActive,
         hasCameraPicker,
         hasCommands,
         hasFilePicker,
         hasImagePicker,
-        hasText,
         MoreOptionsButton,
-        openCommandsPicker,
         selectedPicker,
-        setShowMoreOptions,
-        showMoreOptions,
         toggleAttachmentPicker,
+        uploadFile,
       }}
       {...props}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  attachButtonContainer: { paddingRight: 5 },
+});

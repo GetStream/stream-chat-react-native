@@ -33,8 +33,8 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
     >
       <PinHeader fill={grey} size={16} />
       <Text style={[{ color: grey }, styles.label, label]}>
-        {t<string>('Pinned by')}{' '}
-        {message?.pinned_by?.id === client?.user?.id ? t<string>('You') : message?.pinned_by?.name}
+        {t('Pinned by')}{' '}
+        {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}
       </Text>
     </View>
   );
