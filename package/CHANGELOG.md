@@ -1,5 +1,13 @@
 # Change Log
 
+### [7.2.1](https://github.com/GetStream/stream-chat-react-native/compare/v7.2.0...v7.2.1) (2025-06-26)
+
+
+### Bug Fixes
+
+* android 35 keyboard issues ([#3134](https://github.com/GetStream/stream-chat-react-native/issues/3134)) ([241d1db](https://github.com/GetStream/stream-chat-react-native/commit/241d1db886fb85b5397f1ebde2e8d7a76c85abeb))
+* properly set minIndexForVisible ([#3136](https://github.com/GetStream/stream-chat-react-native/issues/3136)) ([857d220](https://github.com/GetStream/stream-chat-react-native/commit/857d2203559bf093be61c45a019d7e96ff9fd10b))
+
 ## [7.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v7.1.2...v7.2.0) (2025-06-23)
 
 
