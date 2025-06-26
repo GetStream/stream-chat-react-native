@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
@@ -79,7 +79,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         audioRecordingEnabled={true}
         channel={channel}
         enforceUniqueReaction
-        keyboardVerticalOffset={0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         thread={thread}
         threadList
       >
