@@ -82,14 +82,14 @@
     "use-sync-external-store": "^1.5.0"
   },
   "peerDependencies": {
-    "@emoji-mart/data": "^1.1.0",
-    "@op-engineering/op-sqlite": ">=9.3.0",
+    "@emoji-mart/data": ">=1.1.0",
+    "@op-engineering/op-sqlite": ">=14.0.0",
     "@react-native-community/netinfo": ">=11.3.1",
-    "emoji-mart": "^5.4.0",
-    "react-native": ">=0.71.0",
-    "react-native-gesture-handler": ">=2.16.1",
+    "emoji-mart": ">=5.4.0",
+    "react-native": ">=0.73.0",
+    "react-native-gesture-handler": ">=2.18.0",
     "react-native-reanimated": ">=3.16.0",
-    "react-native-svg": ">=13.6.0"
+    "react-native-svg": ">=15.8.0"
   },
   "peerDependenciesMeta": {
     "@op-engineering/op-sqlite": {
