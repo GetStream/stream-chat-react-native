@@ -105,8 +105,11 @@ export const ReminderItem = (
       const resultChannel = client.channel(channel?.type, channel?.id);
       await resultChannel?.watch();
 
-      // TODO: Handle thread navigation if needed
-      navigation.navigate('ChannelScreen', { channel: resultChannel });
+      if (message.parent_id) {
+        // TODO: Handle thread navigation
+      } else {
+        navigation.navigate('ChannelScreen', { channel: resultChannel });
+      }
     }
   };
 

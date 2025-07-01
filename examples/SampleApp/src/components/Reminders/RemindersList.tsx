@@ -41,11 +41,11 @@ export const RemindersList = () => {
   }, [items]);
 
   useEffect(() => {
-    if (!isFocused) {
-      return;
+    if (isFocused) {
+      client.reminders.paginator.sort = { remind_at: 1 };
+      client.reminders.queryNextReminders();
     }
-    client.reminders.paginator.sort = { remind_at: 1 };
-  }, [client.reminders.paginator, isFocused]);
+  }, [client.reminders, isFocused]);
 
   const onEndReached = useCallback(() => {
     client.reminders.paginator.next();
