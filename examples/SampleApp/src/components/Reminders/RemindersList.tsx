@@ -90,7 +90,7 @@ export const RemindersList = () => {
 
   const renderItem = useCallback(
     ({ item }: { item: ReminderResponse }) => (
-      <ReminderItem {...item} onDeleteHandler={onDeleteItemHandler} />
+      <ReminderItem {...item} key={item.message_id} onDeleteHandler={onDeleteItemHandler} />
     ),
     [onDeleteItemHandler],
   );
