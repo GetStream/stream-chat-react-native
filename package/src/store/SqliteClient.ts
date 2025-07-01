@@ -51,8 +51,6 @@ export class SqliteClient {
         name: SqliteClient.dbName,
       });
 
-      console.log(this.db.getDbPath());
-
       await this.db?.execute('PRAGMA foreign_keys = ON', []);
     } catch (e) {
       this.logger?.('error', `Error opening database ${SqliteClient.dbName}`, {
