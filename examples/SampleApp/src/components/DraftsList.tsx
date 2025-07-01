@@ -187,7 +187,7 @@ export const DraftsList = () => {
   }, [draftsManager]);
 
   const onEndReached = useCallback(() => {
-      draftsManager.loadNextPage();
+    draftsManager.loadNextPage();
   }, [draftsManager]);
 
   return (

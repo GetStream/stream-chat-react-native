@@ -28,7 +28,7 @@ import type { PreparedBatchQueries, PreparedQueries, Scalar, Table } from './typ
  * This way usage @op-engineering/op-sqlite package is scoped to a single class/file.
  */
 export class SqliteClient {
-  static dbVersion = 11;
+  static dbVersion = 12;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
@@ -50,6 +50,8 @@ export class SqliteClient {
         location: SqliteClient.dbLocation,
         name: SqliteClient.dbName,
       });
+
+      console.log(this.db.getDbPath());
 
       await this.db?.execute('PRAGMA foreign_keys = ON', []);
     } catch (e) {

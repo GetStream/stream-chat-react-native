@@ -235,10 +235,14 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
     client.threads.registerSubscriptions();
     client.polls.registerSubscriptions();
+    client.reminders.registerSubscriptions();
+    client.reminders.initTimers();
 
     return () => {
       client.threads.unregisterSubscriptions();
       client.polls.unregisterSubscriptions();
+      client.reminders.unregisterSubscriptions();
+      client.reminders.clearTimers();
     };
   }, [client]);
 

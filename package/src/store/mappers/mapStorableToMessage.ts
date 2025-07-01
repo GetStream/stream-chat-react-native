@@ -3,6 +3,7 @@ import type { MessageResponse } from 'stream-chat';
 import { mapStorableToPoll } from './mapStorableToPoll';
 import { mapStorableToReaction } from './mapStorableToReaction';
 
+import { mapStorableToReminder } from './mapStorableToReminder';
 import { mapStorableToUser } from './mapStorableToUser';
 
 import type { TableRow, TableRowJoinedUser } from '../types';
@@ -12,11 +13,13 @@ export const mapStorableToMessage = ({
   messageRow,
   pollRow,
   reactionRows,
+  reminderRow,
 }: {
   currentUserId: string;
   messageRow: TableRowJoinedUser<'messages'>;
   pollRow: TableRow<'poll'>;
   reactionRows?: TableRowJoinedUser<'reactions'>[];
+  reminderRow?: TableRow<'reminders'>;
 }): MessageResponse => {
   const {
     createdAt,
@@ -47,5 +50,6 @@ export const mapStorableToMessage = ({
     user: mapStorableToUser(user),
     ...(pollRow ? { poll: mapStorableToPoll(pollRow) } : {}),
     ...(extraData ? JSON.parse(extraData) : {}),
+    ...(reminderRow ? { reminder: mapStorableToReminder(reminderRow) } : {}),
   };
 };

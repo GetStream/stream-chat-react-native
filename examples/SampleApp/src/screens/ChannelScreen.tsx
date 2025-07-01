@@ -13,6 +13,7 @@ import {
   useTheme,
   useTypingString,
   AITypingIndicatorView,
+  useTranslationContext,
 } from 'stream-chat-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -25,6 +26,8 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
+import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
+import { channelMessageActions } from '../utils/messageActions.tsx';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -119,6 +122,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       colors: { white },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
@@ -172,6 +176,14 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         enforceUniqueReaction
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        messageActions={(params) => {
+          return channelMessageActions({
+            params,
+            chatClient,
+            t,
+          });
+        }}
+        MessageHeader={MessageReminderHeader}
         messageId={messageId}
         NetworkDownIndicator={() => null}
         thread={selectedThread}
