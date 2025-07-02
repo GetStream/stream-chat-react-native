@@ -1,20 +1,24 @@
 import { Alert } from 'react-native';
 import { StreamChat } from 'stream-chat';
 import {
+  Colors,
   messageActions,
   MessageActionsParams,
   Time,
   TranslationContextValue,
 } from 'stream-chat-react-native';
+import { Bell } from '../icons/Bell';
 
 export function channelMessageActions({
   params,
   chatClient,
+  colors,
   t,
 }: {
   params: MessageActionsParams;
   chatClient: StreamChat;
   t: TranslationContextValue['t'];
+  colors?: typeof Colors;
 }) {
   const { dismissOverlay } = params;
   const actions = messageActions(params);
@@ -37,7 +41,7 @@ export function channelMessageActions({
     },
     actionType: reminder ? 'remove-from-later' : 'save-for-later',
     title: reminder ? 'Remove from Later' : 'Save for Later',
-    icon: <Time />,
+    icon: <Time pathFill={colors?.grey} />,
   });
   actions.push({
     action: () => {
@@ -82,7 +86,7 @@ export function channelMessageActions({
     },
     actionType: reminder ? 'remove-reminder' : 'remind-me',
     title: reminder ? 'Remove Reminder' : 'Remind Me',
-    icon: <Time />,
+    icon: <Bell height={24} width={24} />,
   });
 
   return actions;

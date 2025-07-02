@@ -118,9 +118,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
-    theme: {
-      colors: { white },
-    },
+    theme: { colors },
   } = useTheme();
   const { t } = useTranslationContext();
 
@@ -168,7 +166,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   }
 
   return (
-    <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>
+    <View style={[styles.flex, { backgroundColor: colors.white, paddingBottom: bottom }]}>
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
@@ -181,6 +179,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
             params,
             chatClient,
             t,
+            colors,
           });
         }}
         MessageHeader={MessageReminderHeader}
