@@ -32,5 +32,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flexShrink: 1,
+  },
 });
