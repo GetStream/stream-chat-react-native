@@ -14,6 +14,7 @@ import {
   useTypingString,
   AITypingIndicatorView,
   useTranslationContext,
+  MessageActionsParams,
 } from 'stream-chat-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -161,6 +162,21 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     [channel, navigation],
   );
 
+  const messageActions = useCallback(
+    (params: MessageActionsParams) => {
+      if (!chatClient) {
+        return [];
+      }
+      return channelMessageActions({
+        params,
+        chatClient,
+        t,
+        colors,
+      });
+    },
+    [chatClient, colors, t],
+  );
+
   if (!channel || !chatClient) {
     return null;
   }
@@ -174,14 +190,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         enforceUniqueReaction
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
-        messageActions={(params) => {
-          return channelMessageActions({
-            params,
-            chatClient,
-            t,
-            colors,
-          });
-        }}
+        messageActions={messageActions}
         MessageHeader={MessageReminderHeader}
         messageId={messageId}
         NetworkDownIndicator={() => null}

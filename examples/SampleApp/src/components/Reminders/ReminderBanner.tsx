@@ -1,7 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { ReminderResponse, ReminderState } from 'stream-chat';
-import { useTheme, useTranslationContext, useStateStore } from 'stream-chat-react-native';
-import { useMessageReminder } from '../../hooks/useMessageReminder';
+import {
+  useMessageReminder,
+  useTheme,
+  useTranslationContext,
+  useStateStore,
+} from 'stream-chat-react-native';
 
 const reminderStateSelector = (state: ReminderState) => ({
   timeLeftMs: state.timeLeftMs,

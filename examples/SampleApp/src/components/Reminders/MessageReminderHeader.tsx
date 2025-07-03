@@ -1,10 +1,10 @@
 import {
   MessageFooterProps,
   Time,
+  useMessageReminder,
   useStateStore,
   useTranslationContext,
 } from 'stream-chat-react-native';
-import { useMessageReminder } from '../../hooks/useMessageReminder';
 import { ReminderState } from 'stream-chat';
 import { StyleSheet, Text, View } from 'react-native';
 

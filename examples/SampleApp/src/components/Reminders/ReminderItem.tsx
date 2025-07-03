@@ -1,90 +1,17 @@
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import { Alert, AlertButton, Pressable, StyleSheet, Text, View } from 'react-native';
-import { MessageResponse, ReminderResponse } from 'stream-chat';
+import { ReminderResponse } from 'stream-chat';
 import {
   Delete,
-  FileTypes,
   MessagePreview,
-  TranslationContextValue,
   useChatContext,
   useTheme,
   useTranslationContext,
 } from 'stream-chat-react-native';
 import { ReminderBanner } from './ReminderBanner';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-
-export const attachmentTypeIconMap = {
-  audio: '🔈',
-  file: '📄',
-  image: '📷',
-  video: '🎥',
-  voiceRecording: '🎙️',
-} as const;
-
-const getPreviewFromMessage = ({
-  t,
-  message,
-}: {
-  t: TranslationContextValue['t'];
-  message: MessageResponse;
-}) => {
-  if (message.attachments?.length) {
-    const attachment = message?.attachments?.at(0);
-
-    const attachmentIcon = attachment
-      ? `${
-          attachmentTypeIconMap[
-            (attachment.type as keyof typeof attachmentTypeIconMap) ?? 'file'
-          ] ?? attachmentTypeIconMap.file
-        } `
-      : '';
-
-    if (attachment?.type === FileTypes.VoiceRecording) {
-      return [
-        { bold: false, text: attachmentIcon },
-        {
-          bold: false,
-          text: t('Voice message'),
-        },
-      ];
-    }
-    return [
-      { bold: false, text: attachmentIcon },
-      {
-        bold: false,
-        text:
-          attachment?.type === FileTypes.Image
-            ? attachment?.fallback
-              ? attachment?.fallback
-              : 'N/A'
-            : attachment?.title
-              ? attachment?.title
-              : 'N/A',
-      },
-    ];
-  }
-
-  if (message.poll_id) {
-    return [
-      {
-        bold: false,
-        text: '📊',
-      },
-      {
-        bold: false,
-        text: 'Poll',
-      },
-    ];
-  }
-
-  return [
-    {
-      bold: false,
-      text: message.text ?? '',
-    },
-  ];
-};
+import { getPreviewFromMessage } from '../../utils/getPreviewOfMessage';
 
 export const ReminderItem = (
   item: ReminderResponse & { onDeleteHandler?: (id: string) => void },

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
+  MessageActionsParams,
   Thread,
   ThreadType,
   useChatContext,
@@ -74,6 +75,20 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   const { client: chatClient } = useChatContext();
   const { t } = useTranslationContext();
 
+  const messageActions = useCallback(
+    (params: MessageActionsParams) => {
+      if (!chatClient) {
+        return [];
+      }
+      return channelMessageActions({
+        params,
+        chatClient,
+        t,
+      });
+    },
+    [chatClient, t],
+  );
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
       <Channel
@@ -81,13 +96,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         channel={channel}
         enforceUniqueReaction
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
-        messageActions={(params) => {
-          return channelMessageActions({
-            params,
-            chatClient,
-            t,
-          });
-        }}
+        messageActions={messageActions}
         MessageHeader={MessageReminderHeader}
         thread={thread}
         threadList

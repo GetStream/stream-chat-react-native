@@ -1,7 +1,10 @@
 import { useCallback } from 'react';
 
 import type { ReminderManagerState } from 'stream-chat';
-import { useChatContext, useStateStore } from 'stream-chat-react-native';
+
+import { useStateStore } from './useStateStore';
+
+import { useChatContext } from '../contexts/chatContext/ChatContext';
 
 export const useMessageReminder = (messageId: string) => {
   const { client } = useChatContext();

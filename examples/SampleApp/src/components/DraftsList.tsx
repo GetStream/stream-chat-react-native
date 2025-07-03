@@ -1,9 +1,7 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DraftsIcon } from '../icons/DraftIcon';
 import {
-  FileTypes,
   MessagePreview,
-  TranslationContextValue,
   useChatContext,
   useStateStore,
   useTheme,
@@ -14,6 +12,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import dayjs from 'dayjs';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { ChannelResponse, DraftMessage, DraftResponse, MessageResponseBase } from 'stream-chat';
+import { getPreviewFromMessage } from '../utils/getPreviewOfMessage';
 
 export type DraftItemProps = {
   type?: 'channel' | 'thread';
@@ -22,67 +21,6 @@ export type DraftItemProps = {
   message: DraftMessage;
   // TODO: Fix the type for thread
   thread?: MessageResponseBase;
-};
-
-export const attachmentTypeIconMap = {
-  audio: '🔈',
-  file: '📄',
-  image: '📷',
-  video: '🎥',
-  voiceRecording: '🎙️',
-} as const;
-
-const getPreviewFromMessage = ({
-  t,
-  draftMessage,
-}: {
-  t: TranslationContextValue['t'];
-  draftMessage: DraftMessage;
-}) => {
-  if (draftMessage.attachments?.length) {
-    const attachment = draftMessage?.attachments?.at(0);
-
-    const attachmentIcon = attachment
-      ? `${
-          attachmentTypeIconMap[
-            (attachment.type as keyof typeof attachmentTypeIconMap) ?? 'file'
-          ] ?? attachmentTypeIconMap.file
-        } `
-      : '';
-
-    if (attachment?.type === FileTypes.VoiceRecording) {
-      return [
-        { bold: false, text: attachmentIcon },
-        {
-          bold: false,
-          text: t('Voice message'),
-        },
-      ];
-    }
-    return [
-      { bold: false, text: attachmentIcon },
-      {
-        bold: false,
-        text:
-          attachment?.type === FileTypes.Image
-            ? attachment?.fallback
-              ? attachment?.fallback
-              : 'N/A'
-            : attachment?.title
-              ? attachment?.title
-              : 'N/A',
-      },
-    ];
-  }
-
-  if (draftMessage.text) {
-    return [
-      {
-        bold: false,
-        text: draftMessage.text,
-      },
-    ];
-  }
 };
 
 export const DraftItem = ({ type, channel, date, message, thread }: DraftItemProps) => {
@@ -113,7 +51,7 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
   };
 
   const previews = useMemo(() => {
-    return getPreviewFromMessage({ draftMessage: message, t });
+    return getPreviewFromMessage({ message, t });
   }, [message, t]);
 
   return (
