@@ -6,6 +6,7 @@ import {
   Streami18n,
   useCreateChatClient,
 } from 'stream-chat-expo';
+import { LocalMessage } from 'stream-chat';
 import { AuthProgressLoader } from './AuthProgressLoader';
 import { STREAM_API_KEY, user, userToken } from '../constants';
 import { useStreamChatTheme } from '../useStreamChatTheme';
@@ -32,7 +33,11 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
 
   return (
     <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
-      <Chat client={chatClient} i18nInstance={streami18n}>
+      <Chat
+        client={chatClient}
+        i18nInstance={streami18n}
+        isMessageAIGenerated={(message: LocalMessage) => !!message.ai_generated}
+      >
         {children}
       </Chat>
     </OverlayProvider>

@@ -1,14 +1,49 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import { SafeAreaView, View } from 'react-native';
-import { Channel, MessageInput, MessageList } from 'stream-chat-expo';
+import {
+  AITypingIndicatorView,
+  Channel,
+  MessageInput,
+  MessageList,
+  StreamingMessageView,
+} from 'stream-chat-expo';
 import { Stack, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { ControlAIButton } from '../../../components/ControlAIButton';
+import { MyStopGenerationButton } from '../../../components/StopAIGeneration';
 
-export default function ChannelScreen() {
+const MyStreamingMessageView = (props) => (
+  <View style={{ padding: 10 }}>
+    <StreamingMessageView {...props} />
+  </View>
+);
+
+const AIMessageList = () => {
   const router = useRouter();
   const { setThread, channel } = useContext(AppContext);
+  const flatListRef = useRef(null);
+
+  return (
+    <MessageList
+      additionalFlatListProps={{
+        maintainVisibleContentPosition: {
+          autoscrollToTopThreshold: 0,
+          minIndexForVisible: 0,
+        },
+      }}
+      onThreadSelect={(thread) => {
+        setThread(thread);
+        router.push(`/channel/${channel.cid}/thread/${thread.cid}`);
+      }}
+      setFlatListRef={(ref) => (flatListRef.current = ref)}
+    />
+  );
+};
+
+export default function ChannelScreen() {
+  const { channel } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   if (!channel) {
@@ -23,14 +58,14 @@ export default function ChannelScreen() {
           audioRecordingEnabled={true}
           channel={channel}
           keyboardVerticalOffset={headerHeight}
+          StreamingMessageView={MyStreamingMessageView}
+          initialScrollToFirstUnreadMessage
         >
           <View style={{ flex: 1 }}>
-            <MessageList
-              onThreadSelect={(thread) => {
-                setThread(thread);
-                router.push(`/channel/${channel.cid}/thread/${thread.cid}`);
-              }}
-            />
+            <MyStopGenerationButton channel={channel} />
+            <AIMessageList />
+            <ControlAIButton channel={channel} />
+            <AITypingIndicatorView />
             <MessageInput />
           </View>
         </Channel>

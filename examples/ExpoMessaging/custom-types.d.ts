@@ -27,7 +27,9 @@ declare module 'stream-chat' {
 
   interface CustomUserData extends DefaultUserData {}
 
-  interface CustomMessageData extends DefaultMessageData {}
+  interface CustomMessageData extends DefaultMessageData {
+    ai_generated?: boolean;
+  }
 
   interface CustomPollOptionData extends DefaultPollOptionData {}
 
