@@ -50,7 +50,6 @@ const getTab = (key: string) => {
         icon: <DraftsTab />,
         iconActive: <DraftsTab active />,
         title: 'Drafts',
-        notification: <ChannelsUnreadCountBadge />,
       };
     case 'ThreadsScreen':
       return {
