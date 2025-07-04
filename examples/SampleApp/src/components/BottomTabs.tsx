@@ -12,6 +12,7 @@ import { MentionsTab } from '../icons/MentionsTab';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { Route } from '@react-navigation/native';
 import { DraftsTab } from '../icons/DraftsTab';
+import { RemindersTab } from '../icons/ReminderTab';
 
 const styles = StyleSheet.create({
   notification: {
@@ -64,6 +65,13 @@ const getTab = (key: string) => {
         iconActive: <MentionsTab active />,
         title: 'Mentions',
       };
+    case 'RemindersScreen':
+      return {
+        icon: <RemindersTab />,
+        iconActive: <RemindersTab active />,
+        title: 'Reminders',
+      };
+    // Add more cases for other tabs as needed
     default:
       return null;
   }

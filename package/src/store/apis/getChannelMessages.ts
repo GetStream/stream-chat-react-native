@@ -51,6 +51,17 @@ export const getChannelMessages = async ({
     messageIdsVsPolls[message.poll_id] = pollsById[message.poll_id];
   });
 
+  const messageIdsVsReminders: Record<string, TableRow<'reminders'>> = {};
+  const reminders = (await SqliteClient.executeSql.apply(
+    null,
+    createSelectQuery('reminders', ['*'], {
+      messageId: messageIds,
+    }),
+  )) as unknown as TableRow<'reminders'>[];
+  reminders.forEach((reminder) => {
+    messageIdsVsReminders[reminder.messageId] = reminder;
+  });
+
   // Populate the messages.
   const cidVsMessages: Record<string, MessageResponse[]> = {};
   messageRows.forEach((m) => {
@@ -65,6 +76,7 @@ export const getChannelMessages = async ({
           messageRow: m,
           pollRow: messageIdsVsPolls[m.poll_id],
           reactionRows: messageIdVsReactions[m.id],
+          reminderRow: messageIdsVsReminders[m.id],
         }),
       );
     }

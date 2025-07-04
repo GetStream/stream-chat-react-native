@@ -10,8 +10,10 @@ import {
   OverlayProvider,
   setupCommandUIMiddlewares,
   SqliteClient,
+  Streami18n,
   ThemeProvider,
   useOverlayContext,
+  enTranslations,
 } from 'stream-chat-react-native';
 import { getMessaging } from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
@@ -201,16 +203,28 @@ const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;
 }> = ({ chatClient }) => {
   const streamChatTheme = useStreamChatTheme();
+  const streami18n = new Streami18n();
+
+  streami18n.registerTranslation('en', {
+    ...enTranslations,
+    'Due since {{ dueSince }}': 'Due since {{ dueSince }}',
+    'Due {{ timeLeft }}': 'Due {{ timeLeft }}',
+    'duration/Message reminder': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
+    'duration/Remind Me': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
+    'timestamp/Remind me': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
+    'timestamp/ReminderNotification': '{{ timestamp | timestampFormatter(calendar: true) }}',
+  });
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <OverlayProvider value={{ style: streamChatTheme }}>
+      <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
         <Chat
           client={chatClient}
           enableOfflineSupport
           // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
           ImageComponent={FastImage}
           isMessageAIGenerated={isMessageAIGenerated}
+          i18nInstance={streami18n}
         >
           <AppOverlayProvider>
             <UserSearchProvider>

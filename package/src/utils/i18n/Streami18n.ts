@@ -1,5 +1,6 @@
 import Dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
+import duration from 'dayjs/plugin/duration';
 import localeData from 'dayjs/plugin/localeData';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -465,6 +466,7 @@ export class Streami18n {
        * For some reason Dayjs.isDayjs(this.DateTimeParser()) doesn't work.
        */
       if (this.DateTimeParser && isDayJs(this.DateTimeParser)) {
+        this.DateTimeParser.extend(duration);
         this.DateTimeParser.extend(LocalizedFormat);
         this.DateTimeParser.extend(calendar);
         this.DateTimeParser.extend(localeData);

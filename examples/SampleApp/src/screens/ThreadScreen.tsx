@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Channel, Thread, ThreadType, useTheme, useTypingString } from 'stream-chat-react-native';
+import {
+  Channel,
+  MessageActionsParams,
+  Thread,
+  ThreadType,
+  useChatContext,
+  useTheme,
+  useTranslationContext,
+  useTypingString,
+} from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -11,6 +20,8 @@ import type { RouteProp } from '@react-navigation/native';
 import type { StackNavigatorParamList } from '../types';
 import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
+import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
+import { channelMessageActions } from '../utils/messageActions.tsx';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -61,6 +72,22 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       colors: { white },
     },
   } = useTheme();
+  const { client: chatClient } = useChatContext();
+  const { t } = useTranslationContext();
+
+  const messageActions = useCallback(
+    (params: MessageActionsParams) => {
+      if (!chatClient) {
+        return [];
+      }
+      return channelMessageActions({
+        params,
+        chatClient,
+        t,
+      });
+    },
+    [chatClient, t],
+  );
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
@@ -69,6 +96,8 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         channel={channel}
         enforceUniqueReaction
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        messageActions={messageActions}
+        MessageHeader={MessageReminderHeader}
         thread={thread}
         threadList
       >

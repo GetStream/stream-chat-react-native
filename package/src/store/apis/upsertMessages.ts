@@ -3,6 +3,7 @@ import type { LocalMessage, MessageResponse } from 'stream-chat';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
+import { mapReminderToStorable } from '../mappers/mapReminderToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
@@ -18,6 +19,7 @@ export const upsertMessages = async ({
   const storableUsers: Array<ReturnType<typeof mapUserToStorable>> = [];
   const storableReactions: Array<ReturnType<typeof mapReactionToStorable>> = [];
   const storablePolls: Array<ReturnType<typeof mapPollToStorable>> = [];
+  const storableReminders: Array<ReturnType<typeof mapReminderToStorable>> = [];
 
   messages?.forEach((message: MessageResponse | LocalMessage) => {
     storableMessages.push(mapMessageToStorable(message));
@@ -33,6 +35,9 @@ export const upsertMessages = async ({
     if (message.poll) {
       storablePolls.push(mapPollToStorable(message.poll));
     }
+    if (message.reminder) {
+      storableReminders.push(mapReminderToStorable(message.reminder));
+    }
   });
 
   const finalQueries = [
@@ -42,6 +47,9 @@ export const upsertMessages = async ({
       createUpsertQuery('reactions', storableReaction),
     ),
     ...storablePolls.map((storablePoll) => createUpsertQuery('poll', storablePoll)),
+    ...storableReminders.map((storableReminder) =>
+      createUpsertQuery('reminders', storableReminder),
+    ),
   ];
 
   SqliteClient.logger?.('info', 'upsertMessages', {
@@ -49,6 +57,7 @@ export const upsertMessages = async ({
     messages: storableMessages,
     polls: storablePolls,
     reactions: storableReactions,
+    reminders: storableReminders,
     users: storableUsers,
   });
 

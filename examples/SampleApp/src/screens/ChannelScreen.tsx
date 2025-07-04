@@ -13,6 +13,8 @@ import {
   useTheme,
   useTypingString,
   AITypingIndicatorView,
+  useTranslationContext,
+  MessageActionsParams,
 } from 'stream-chat-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -25,6 +27,8 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
+import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
+import { channelMessageActions } from '../utils/messageActions.tsx';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -115,10 +119,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
-    theme: {
-      colors: { white },
-    },
+    theme: { colors },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
@@ -159,12 +162,27 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     [channel, navigation],
   );
 
+  const messageActions = useCallback(
+    (params: MessageActionsParams) => {
+      if (!chatClient) {
+        return [];
+      }
+      return channelMessageActions({
+        params,
+        chatClient,
+        t,
+        colors,
+      });
+    },
+    [chatClient, colors, t],
+  );
+
   if (!channel || !chatClient) {
     return null;
   }
 
   return (
-    <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>
+    <View style={[styles.flex, { backgroundColor: colors.white, paddingBottom: bottom }]}>
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
@@ -172,6 +190,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         enforceUniqueReaction
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        messageActions={messageActions}
+        MessageHeader={MessageReminderHeader}
         messageId={messageId}
         NetworkDownIndicator={() => null}
         thread={selectedThread}
