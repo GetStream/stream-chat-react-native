@@ -83,7 +83,6 @@ module.exports = Promise.resolve().then(() => {
 
   return {
     extends: [`${__dirname}/monorepo-setup.js`],
-    dryRun: true,
     workspaces: lernaPackage.packages,
     filterPath: process.env.FILTER_PATH,
     tagFormat: process.env.TAG_FORMAT,
