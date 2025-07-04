@@ -20,13 +20,17 @@ export * from './utils/queryUsers';
 export * from './utils/utils';
 
 export { default as enTranslations } from './i18n/en.json';
+export { default as esTranslations } from './i18n/es.json';
 export { default as frTranslations } from './i18n/fr.json';
+export { default as heTranslations } from './i18n/he.json';
 export { default as hiTranslations } from './i18n/hi.json';
 export { default as itTranslations } from './i18n/it.json';
+export { default as jaTranslations } from './i18n/ja.json';
+export { default as koTranslations } from './i18n/ko.json';
 export { default as nlTranslations } from './i18n/nl.json';
+export { default as ptBRTranslations } from './i18n/pt-br.json';
 export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
-export { default as heTranslations } from './i18n/he.json';
 
 export { SqliteClient } from './store/SqliteClient';
 export { OfflineDB } from './store/OfflineDB';
