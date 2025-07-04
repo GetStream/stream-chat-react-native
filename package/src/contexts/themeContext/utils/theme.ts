@@ -456,6 +456,8 @@ export type Theme = {
     reactionButton: {
       filledColor: ColorValue;
       unfilledColor: ColorValue;
+      filledBackgroundColor: ColorValue;
+      unfilledBackgroundColor: ColorValue;
     };
     reactionPicker: {
       buttonContainer: ViewStyle;
@@ -1222,7 +1224,9 @@ export const defaultTheme: Theme = {
     },
     bottomSheet: {},
     reactionButton: {
+      filledBackgroundColor: Colors.light_blue,
       filledColor: Colors.accent_blue,
+      unfilledBackgroundColor: Colors.white,
       unfilledColor: Colors.grey,
     },
     reactionPicker: {
