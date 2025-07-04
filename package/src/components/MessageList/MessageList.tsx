@@ -535,8 +535,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
     const handleEvent = async (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
+      const isMyOwnMessage = event.message?.user?.id === client.user?.id;
+
       // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState.
-      if (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) {
+      if (
+        (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
+        !isMyOwnMessage
+      ) {
         setChannelUnreadState((prev) => {
           const previousUnreadCount = prev?.unread_messages ?? 0;
           const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
@@ -749,12 +754,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const isLastReadMessage =
         channelUnreadState?.last_read_message_id === message.id ||
         (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
-      const isMyMessage = message.user?.id === client.userID;
 
       const showUnreadSeparator =
         isLastReadMessage &&
         !isNewestMessage &&
-        !isMyMessage &&
         // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
         (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
 
