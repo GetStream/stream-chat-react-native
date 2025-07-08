@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useChatContext, useStateStore, useTheme } from 'stream-chat-react-native';
-import { PaginatorState, ReminderResponse } from 'stream-chat';
+import { Event, PaginatorState, ReminderResponse } from 'stream-chat';
 import { ReminderItem } from './ReminderItem';
-import { useIsFocused } from '@react-navigation/native';
 
 const selector = (nextValue: PaginatorState<ReminderResponse>) =>
   ({
     isLoading: nextValue.isLoading,
-    items: nextValue.items,
+    reminders: nextValue.items,
   }) as const;
 
 const tabs = [
@@ -24,6 +23,25 @@ type TabItemType = {
   title: string;
 };
 
+// Utility to sort reminders by remind_at date in ascending order
+const sortRemindersByDate = (reminders: ReminderResponse[]) => {
+  return reminders.sort((a, b) => {
+    if (!a.remind_at || !b.remind_at) {
+      return 0; // If either remind_at is missing, keep original order
+    }
+    // Sort by remind_at date
+    return new Date(a.remind_at).getTime() - new Date(b.remind_at).getTime();
+  });
+};
+
+const isReminderOverdue = (reminder?: ReminderResponse) => {
+  return reminder?.remind_at && new Date(reminder.remind_at) < new Date();
+};
+
+const isReminderUpcoming = (reminder?: ReminderResponse) => {
+  return reminder?.remind_at && new Date(reminder.remind_at) > new Date();
+};
+
 export const RemindersList = () => {
   const [selectedTab, setSelectedTab] = useState<TabItemType>(tabs[0]);
   const {
@@ -31,24 +49,84 @@ export const RemindersList = () => {
       colors: { accent_blue, grey_gainsboro },
     },
   } = useTheme();
-  const isFocused = useIsFocused();
   const { client } = useChatContext();
-  const { isLoading, items } = useStateStore(client.reminders.paginator.state, selector);
-  const [reminders, setReminders] = useState<ReminderResponse[] | undefined>([]);
+  const { isLoading, reminders } = useStateStore(client.reminders.paginator.state, selector);
+  const [data, setData] = useState<ReminderResponse[]>(reminders ?? []);
 
   useEffect(() => {
-    setReminders(items);
-  }, [items]);
+    client.reminders.paginator.sort = { remind_at: 1 };
+    client.reminders.paginator.state.subscribeWithSelector(
+      ({ items }) => [items],
+      ([items]) => {
+        setData(items ?? []);
+      },
+    );
+  }, [client.reminders.paginator]);
 
   useEffect(() => {
-    if (isFocused) {
-      client.reminders.paginator.sort = { remind_at: 1 };
-      client.reminders.queryNextReminders();
+    if (selectedTab.key === 'all') {
+      return;
     }
-  }, [client.reminders, isFocused]);
+    const handleReminderDeleted = (event: Event) => {
+      if (!event.reminder?.message_id) {
+        return;
+      }
+      setData((prevData) => {
+        return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+      });
+    };
+
+    const handleReminderCreated = (event: Event) => {
+      setData((prevData) => {
+        if (!event.reminder) {
+          return prevData;
+        }
+        const updatedData = [...prevData, event.reminder];
+        return sortRemindersByDate(updatedData);
+      });
+    };
+
+    const handleReminderUpdated = (event: Event) => {
+      const { reminder } = event;
+      setData((prevData) => {
+        if (!reminder) {
+          return prevData; // No update needed if reminder is undefined
+        }
+        const existingReminder = prevData.find((item) => item.message.id === reminder?.message_id);
+        if (!existingReminder) {
+          return prevData; // No update needed if reminder not found
+        }
+
+        if (existingReminder.remind_at && !event.reminder?.remind_at) {
+          return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+        }
+        if (!existingReminder.remind_at && event.reminder?.remind_at) {
+          return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+        }
+        if (isReminderOverdue(existingReminder) && !isReminderOverdue(event.reminder)) {
+          return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+        }
+        if (isReminderUpcoming(existingReminder) && !isReminderUpcoming(event.reminder)) {
+          return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+        }
+
+        return prevData;
+      });
+    };
+
+    const listeners = [
+      client.on('reminder.created', handleReminderCreated),
+      client.on('reminder.deleted', handleReminderDeleted),
+      client.on('reminder.updated', handleReminderUpdated),
+    ];
+
+    return () => {
+      listeners.forEach((l) => l.unsubscribe());
+    };
+  }, [client, selectedTab]);
 
   const onEndReached = useCallback(() => {
-    client.reminders.paginator.next();
+    client.reminders.queryNextReminders();
   }, [client.reminders]);
 
   const onChangeTab = useCallback(
@@ -73,7 +151,6 @@ export const RemindersList = () => {
           remind_at: { $eq: null },
         };
       }
-      await client.reminders.queryNextReminders();
     },
     [client.reminders],
   );
@@ -82,17 +159,9 @@ export const RemindersList = () => {
     await client.reminders.queryNextReminders();
   }, [client.reminders]);
 
-  const onDeleteItemHandler = useCallback((id: string) => {
-    setReminders((prevReminders) =>
-      prevReminders?.filter((reminder) => reminder.message_id !== id),
-    );
-  }, []);
-
   const renderItem = useCallback(
-    ({ item }: { item: ReminderResponse }) => (
-      <ReminderItem {...item} key={item.message_id} onDeleteHandler={onDeleteItemHandler} />
-    ),
-    [onDeleteItemHandler],
+    ({ item }: { item: ReminderResponse }) => <ReminderItem {...item} />,
+    [],
   );
 
   const renderEmptyComponent = useCallback(
@@ -128,8 +197,8 @@ export const RemindersList = () => {
       </View>
 
       <FlatList
-        contentContainerStyle={{ flexGrow: 1 }}
-        data={reminders}
+        style={{ flexGrow: 1 }}
+        data={data}
         refreshing={isLoading}
         onRefresh={onRefresh}
         keyExtractor={(item) => item.message.id}
