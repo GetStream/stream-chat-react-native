@@ -5,6 +5,8 @@ import { Stack, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
+import InputButtons from '../../../components/InputButtons';
+import { isAttachmentEqualHandler, LocationCard } from '../../../components/LocationCard';
 
 export default function ChannelScreen() {
   const router = useRouter();
@@ -15,14 +17,32 @@ export default function ChannelScreen() {
     return <AuthProgressLoader />;
   }
 
+  const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
+    payload,
+  ) => {
+    const { message, defaultHandler, emitter } = payload;
+    const { latitude, longitude, ended_at } = message.attachments?.[0] || {};
+    if (emitter === 'messageContent') {
+      if (message?.attachments?.[0]?.type === 'location') {
+        router.push(
+          `/map/${message.id}?latitude=${latitude}&longitude=${longitude}&ended_at=${ended_at}`,
+        );
+      }
+    }
+    defaultHandler?.();
+  };
+
   return (
     <SafeAreaView>
       <Stack.Screen options={{ title: 'Channel Screen' }} />
       {channel && (
         <Channel
           audioRecordingEnabled={true}
+          Card={LocationCard}
           channel={channel}
+          isAttachmentEqual={isAttachmentEqualHandler}
           keyboardVerticalOffset={headerHeight}
+          onPressMessage={onPressMessage}
         >
           <View style={{ flex: 1 }}>
             <MessageList
@@ -31,7 +51,7 @@ export default function ChannelScreen() {
                 router.push(`/channel/${channel.cid}/thread/${thread.cid}`);
               }}
             />
-            <MessageInput />
+            <MessageInput InputButtons={InputButtons} />
           </View>
         </Channel>
       )}

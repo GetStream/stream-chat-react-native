@@ -9,6 +9,7 @@ import {
 import { AuthProgressLoader } from './AuthProgressLoader';
 import { STREAM_API_KEY, user, userToken } from '../constants';
 import { useStreamChatTheme } from '../useStreamChatTheme';
+import { LiveLocationContextProvider } from '../context/LiveLocationContext';
 
 const streami18n = new Streami18n({
   language: 'en',
@@ -33,7 +34,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   return (
     <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        {children}
+        <LiveLocationContextProvider>{children}</LiveLocationContextProvider>
       </Chat>
     </OverlayProvider>
   );
