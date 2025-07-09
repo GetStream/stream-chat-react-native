@@ -132,19 +132,14 @@ export const useQueryReminders = () => {
     };
   }, [client]);
 
-  const onEndReached = useCallback(async () => {
-    await client.reminders.queryNextReminders();
-  }, [client.reminders]);
-
-  const onRefresh = useCallback(async () => {
+  const loadNext = useCallback(async () => {
     await client.reminders.queryNextReminders();
   }, [client.reminders]);
 
   return {
     data,
     isLoading,
-    onEndReached,
-    onRefresh,
+    loadNext,
     setData,
   };
 };

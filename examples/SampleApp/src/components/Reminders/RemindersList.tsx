@@ -28,7 +28,7 @@ export const RemindersList = () => {
   } = useTheme();
   const { client } = useChatContext();
 
-  const { data, isLoading, onEndReached, onRefresh } = useQueryReminders();
+  const { data, isLoading, loadNext } = useQueryReminders();
 
   useEffect(() => {
     client.reminders.paginator.filters = {};
@@ -61,6 +61,10 @@ export const RemindersList = () => {
     },
     [client.reminders],
   );
+
+  const onRefresh = useCallback(async () => {
+    await client.reminders.queryNextReminders();
+  }, [client.reminders]);
 
   const renderEmptyComponent = useCallback(
     () => (
@@ -102,7 +106,7 @@ export const RemindersList = () => {
         keyExtractor={(item) => item.message_id}
         renderItem={renderItem}
         ListEmptyComponent={renderEmptyComponent}
-        onEndReached={onEndReached}
+        onEndReached={loadNext}
       />
     </View>
   );
