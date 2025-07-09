@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useChatContext, useTheme, useQueryReminders } from 'stream-chat-react-native';
 import { ReminderResponse } from 'stream-chat';
 import { ReminderItem } from './ReminderItem';
@@ -62,10 +70,6 @@ export const RemindersList = () => {
     [client.reminders],
   );
 
-  const onRefresh = useCallback(async () => {
-    await client.reminders.queryNextReminders();
-  }, [client.reminders]);
-
   const renderEmptyComponent = useCallback(
     () => (
       <Text style={styles.emptyContainer}>
@@ -74,6 +78,14 @@ export const RemindersList = () => {
     ),
     [selectedTab],
   );
+
+  const renderFooter = useCallback(() => {
+    if (isLoading) {
+      return (
+        <ActivityIndicator size={'small'} color={accent_blue} style={{ marginVertical: 16 }} />
+      );
+    }
+  }, [accent_blue, isLoading]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -101,12 +113,11 @@ export const RemindersList = () => {
       <FlatList
         style={{ flexGrow: 1 }}
         data={data}
-        refreshing={isLoading}
-        onRefresh={onRefresh}
         keyExtractor={(item) => item.message_id}
         renderItem={renderItem}
         ListEmptyComponent={renderEmptyComponent}
         onEndReached={loadNext}
+        ListFooterComponent={renderFooter}
       />
     </View>
   );
