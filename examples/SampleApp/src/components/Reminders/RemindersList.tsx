@@ -64,15 +64,12 @@ export const RemindersList = () => {
   }, [client.reminders.paginator]);
 
   useEffect(() => {
-    if (selectedTab.key === 'all') {
-      return;
-    }
     const handleReminderDeleted = (event: Event) => {
       if (!event.reminder?.message_id) {
         return;
       }
       setData((prevData) => {
-        return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+        return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
       });
     };
 
@@ -87,27 +84,30 @@ export const RemindersList = () => {
     };
 
     const handleReminderUpdated = (event: Event) => {
+      if (selectedTab.key === 'all') {
+        return;
+      }
       const { reminder } = event;
       setData((prevData) => {
         if (!reminder) {
           return prevData; // No update needed if reminder is undefined
         }
-        const existingReminder = prevData.find((item) => item.message.id === reminder?.message_id);
+        const existingReminder = prevData.find((item) => item.message_id === reminder?.message_id);
         if (!existingReminder) {
           return prevData; // No update needed if reminder not found
         }
 
         if (existingReminder.remind_at && !event.reminder?.remind_at) {
-          return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+          return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
         }
         if (!existingReminder.remind_at && event.reminder?.remind_at) {
-          return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+          return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
         }
         if (isReminderOverdue(existingReminder) && !isReminderOverdue(event.reminder)) {
-          return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+          return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
         }
         if (isReminderUpcoming(existingReminder) && !isReminderUpcoming(event.reminder)) {
-          return prevData.filter((item) => item.message.id !== event.reminder?.message_id);
+          return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
         }
 
         return prevData;
@@ -151,6 +151,7 @@ export const RemindersList = () => {
           remind_at: { $eq: null },
         };
       }
+      await client.reminders.queryNextReminders();
     },
     [client.reminders],
   );
@@ -201,7 +202,7 @@ export const RemindersList = () => {
         data={data}
         refreshing={isLoading}
         onRefresh={onRefresh}
-        keyExtractor={(item) => item.message.id}
+        keyExtractor={(item) => item.message_id}
         renderItem={renderItem}
         ListEmptyComponent={renderEmptyComponent}
         onEndReached={onEndReached}

@@ -53,20 +53,20 @@ export const ReminderItem = (
       {
         text: 'Remove',
         onPress: async () => {
-          await client.reminders.deleteReminder(item.message.id);
-          onDeleteHandler?.(item.message.id);
+          await client.reminders.deleteReminder(item.message_id);
+          onDeleteHandler?.(item.message_id);
         },
         style: 'destructive',
       },
     ]);
-  }, [client.reminders, item.message.id, onDeleteHandler]);
+  }, [client.reminders, item.message_id, onDeleteHandler]);
 
   const updateButtons = useMemo(() => {
     const buttons: AlertButton[] = client.reminders.scheduledOffsetsMs.map((offsetMs) => ({
       text: t('timestamp/Remind me', { milliseconds: offsetMs }),
       onPress: async () => {
         await client.reminders.upsertReminder({
-          messageId: item.message.id,
+          messageId: item.message_id,
           remind_at: new Date(new Date().getTime() + offsetMs).toISOString(),
         });
       },
@@ -77,7 +77,7 @@ export const ReminderItem = (
       text: 'Clear Due Date',
       onPress: async () => {
         await client.reminders.upsertReminder({
-          messageId: item.message.id,
+          messageId: item.message_id,
           remind_at: null,
         });
       },
@@ -90,7 +90,7 @@ export const ReminderItem = (
     });
 
     return buttons;
-  }, [client.reminders, item.message.id, t]);
+  }, [client.reminders, item.message_id, t]);
 
   const updateReminder = useCallback(() => {
     Alert.alert('Edit Reminder Time', 'When would you like to be reminded?', updateButtons);
@@ -127,7 +127,7 @@ export const ReminderItem = (
       >
         <View style={styles.header}>
           <Text style={styles.name}>
-            {message.type !== 'reply' ? `# ${channelName}` : `Thread in # ${channelName}`}
+            {message?.type !== 'reply' ? `# ${channelName}` : `Thread in # ${channelName}`}
           </Text>
           <ReminderBanner {...item} />
         </View>

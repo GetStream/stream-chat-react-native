@@ -18,8 +18,8 @@ export const ReminderBanner = (item: ReminderResponse) => {
     },
   } = useTheme();
   const { t } = useTranslationContext();
-  const { message } = item;
-  const reminder = useMessageReminder(message.id);
+  const { message_id } = item;
+  const reminder = useMessageReminder(message_id);
   const { timeLeftMs } = useStateStore(reminder?.state, reminderStateSelector) ?? {};
   const stopRefreshBoundaryMs = reminder?.timer.stopRefreshBoundaryMs;
   const stopRefreshTimeStamp =
