@@ -1,5 +1,22 @@
 # Change Log
 
+## [8.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.0.0...v8.1.0) (2025-07-09)
+
+
+### Features
+
+* add reminders implementation ([#3141](https://github.com/GetStream/stream-chat-react-native/issues/3141)) ([11c3307](https://github.com/GetStream/stream-chat-react-native/commit/11c33075954be074a702ac84a96c83b6e299b9b5))
+
+
+### Bug Fixes
+
+* add export for message composer api context ([#3153](https://github.com/GetStream/stream-chat-react-native/issues/3153)) ([ed4d6ae](https://github.com/GetStream/stream-chat-react-native/commit/ed4d6aed3074d42b9b2124a598f7df90d33bcbaf))
+* add missing translations export from the SDK ([#3146](https://github.com/GetStream/stream-chat-react-native/issues/3146)) ([f526037](https://github.com/GetStream/stream-chat-react-native/commit/f5260370cbf439ae9be43cb8795cd0fee37b79fc))
+* add reaction button bg theme for filled and unfilled case ([#3147](https://github.com/GetStream/stream-chat-react-native/issues/3147)) ([6541b5e](https://github.com/GetStream/stream-chat-react-native/commit/6541b5e8bae2e26f94ef02a7f5c8a5d17ca6a910))
+* channel preview message display in channel preview ([#3143](https://github.com/GetStream/stream-chat-react-native/issues/3143)) ([1452240](https://github.com/GetStream/stream-chat-react-native/commit/145224000d11c48e7669aa1930a684e3eccb4fd5))
+* thread messages not being autoscrolled on initial load ([#3158](https://github.com/GetStream/stream-chat-react-native/issues/3158)) ([7ff1c06](https://github.com/GetStream/stream-chat-react-native/commit/7ff1c067ad19b9098dee333c48eee7d062d528e0))
+* unread underlay display for own messages ([#3145](https://github.com/GetStream/stream-chat-react-native/issues/3145)) ([a6d7dd3](https://github.com/GetStream/stream-chat-react-native/commit/a6d7dd39208e71f2e1805d316692d3f36d2b1307))
+
 ## [8.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v7.2.1...v8.0.0) (2025-06-26)
 
 
