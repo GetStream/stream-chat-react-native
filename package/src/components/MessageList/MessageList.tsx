@@ -626,13 +626,15 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
 
   useEffect(() => {
-    if (!processedMessageList.length) {
-      return;
-    }
     if (threadList) {
       setAutoscrollToRecent(true);
       return;
     }
+
+    if (!processedMessageList.length) {
+      return;
+    }
+
     const notLatestSet = channel.state.messages !== channel.state.latestMessages;
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
