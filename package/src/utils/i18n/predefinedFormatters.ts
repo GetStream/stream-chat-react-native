@@ -1,7 +1,19 @@
+import { isDayjs } from 'dayjs';
+
+import type { Duration as DayjsDuration } from 'dayjs/plugin/duration';
+
 import { getDateString } from './getDateString';
-import { PredefinedFormatters, TimestampFormatterOptions } from './types';
+import { DurationFormatterOptions, PredefinedFormatters, TimestampFormatterOptions } from './types';
 
 export const predefinedFormatters: PredefinedFormatters = {
+  durationFormatter:
+    (streamI18n) =>
+    (value, _, { format, withSuffix }: DurationFormatterOptions) => {
+      if (format && isDayjs(streamI18n.DateTimeParser)) {
+        return (streamI18n.DateTimeParser.duration(value) as DayjsDuration).format(format);
+      }
+      return streamI18n.DateTimeParser.duration(value).humanize(!!withSuffix);
+    },
   timestampFormatter:
     (streamI18n) =>
     (
