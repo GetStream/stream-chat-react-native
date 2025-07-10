@@ -27,6 +27,7 @@ export default function ChannelListScreen() {
       <ChannelList
         filters={memoizedFilters}
         onSelect={(channel) => {
+          console.log('Selected channel:', channel.id);
           setChannel(channel);
           router.push(`/channel/${channel.cid}`);
         }}

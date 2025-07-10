@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useEffect } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import { ActivityIndicator, Platform, SafeAreaView, View } from 'react-native';
 import {
   AITypingIndicatorView,
   Channel,
@@ -30,8 +30,9 @@ const AIMessageList = () => {
       additionalFlatListProps={{
         maintainVisibleContentPosition: {
           autoscrollToTopThreshold: 0,
-          minIndexForVisible: 0,
+          minIndexForVisible: Platform.select({ ios: 0, android: 0 }),
         },
+        ListHeaderComponent: null,
       }}
       onThreadSelect={(thread) => {
         setThread(thread);
