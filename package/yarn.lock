@@ -8314,10 +8314,10 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
-stream-chat@^9.9.0:
-  version "9.9.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.9.0.tgz#59ac996e6e0ca6b3e3a0041954ae99a43541ec13"
-  integrity sha512-4tqedL7NfDhwJIKRBKGdvNu4x0ifKO+qxyc9TEWe+LLaW3Qed4txKysrVKnDfj/rx3iZuIwrMV7VeW5yxZfP5w==
+stream-chat@^9.11.0:
+  version "9.11.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.11.0.tgz#412b5f2f55cc3b76e862d88cb3e95b9720493575"
+  integrity sha512-mnf86LMBPmCZUrmrU6bdaOUoxRqpXUvw7prl4b5q6WPNWZ+p/41UN8vllBAaZvAS7jPj9JYWvbhUe40VZ6o8/g==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
