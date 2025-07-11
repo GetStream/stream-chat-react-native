@@ -39,7 +39,7 @@ const getInitials = (fullName: string) =>
     .split(' ')
     .slice(0, 2)
     .map((name) => name.charAt(0))
-    .join(' ');
+    .join('');
 
 export type AvatarProps = {
   /** size in pixels */
