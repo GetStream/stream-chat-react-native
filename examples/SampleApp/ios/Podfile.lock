@@ -2425,7 +2425,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.7.1)
-  - stream-chat-react-native (8.0.0):
+  - stream-chat-react-native (8.1.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2872,7 +2872,7 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  stream-chat-react-native: ab733c7105d4e46deccbf6e1c0267b8c230a25ca
+  stream-chat-react-native: 399fa98f1f2ac5e1188dde21b050f0afb5dc86ce
   Yoga: b2eaabf17044cd4273a661b14eb83f9fd2c90491
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
