@@ -249,6 +249,24 @@ export const tables: Tables = {
     ],
     primaryKey: ['userId', 'cid'],
   },
+  reminders: {
+    columns: {
+      channelCid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      messageId: 'TEXT NOT NULL',
+      remindAt: 'TEXT',
+      updatedAt: 'TEXT',
+      userId: 'TEXT NOT NULL',
+    },
+    indexes: [
+      {
+        columns: ['messageId'],
+        name: 'index_reminders',
+        unique: false,
+      },
+    ],
+    primaryKey: ['messageId'],
+  },
   users: {
     columns: {
       banned: 'BOOLEAN DEFAULT FALSE',
@@ -409,6 +427,14 @@ export type Schema = {
     lastReadMessageId?: string;
     unreadMessages?: number;
     userId?: string;
+  };
+  reminders: {
+    channelCid: string;
+    createdAt: string;
+    messageId: string;
+    updatedAt: string;
+    userId: string;
+    remindAt?: string;
   };
   users: {
     id: string;

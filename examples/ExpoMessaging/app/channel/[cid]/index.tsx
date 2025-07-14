@@ -7,10 +7,11 @@ import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
 import InputButtons from '../../../components/InputButtons';
 import { isAttachmentEqualHandler, LocationCard } from '../../../components/LocationCard';
+import { MessageLocation } from '../../../components/MessageLocation';
 
 export default function ChannelScreen() {
   const router = useRouter();
-  const { setThread, channel } = useContext(AppContext);
+  const { setThread, channel, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   if (!channel) {
@@ -42,7 +43,9 @@ export default function ChannelScreen() {
           channel={channel}
           isAttachmentEqual={isAttachmentEqualHandler}
           keyboardVerticalOffset={headerHeight}
+          MessageLocation={MessageLocation}
           onPressMessage={onPressMessage}
+          thread={thread}
         >
           <View style={{ flex: 1 }}>
             <MessageList

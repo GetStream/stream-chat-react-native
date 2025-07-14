@@ -14,7 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
           # pulls all commits (needed for semantic release to correctly version)
           fetch-depth: '0'
       # pulls all tags (needed for semantic release to correctly version)
@@ -36,7 +35,6 @@ jobs:
         run: yarn release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
       - name: Merge back changes
         run: |
           git stash

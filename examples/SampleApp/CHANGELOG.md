@@ -1,5 +1,17 @@
 # Change Log
 
+## [4.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.0.0...sampleapp@v4.1.0) (2025-07-09)
+
+
+### Features
+
+* add reminders implementation ([#3141](https://github.com/GetStream/stream-chat-react-native/issues/3141)) ([11c3307](https://github.com/GetStream/stream-chat-react-native/commit/11c33075954be074a702ac84a96c83b6e299b9b5))
+
+
+### Bug Fixes
+
+* remove erroneous unread indicator from drafts tab ([59a32ee](https://github.com/GetStream/stream-chat-react-native/commit/59a32eed16b2751605bfa1be850f4e42046837a2))
+
 ## [4.0.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.3...sampleapp@v4.0.0) (2025-06-26)
 
 
