@@ -413,6 +413,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
             isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
             isMessageErrorType ? errorContainer : {},
             contentContainer,
+            message?.pinned ? { paddingVertical: 4 } : {},
           ]}
           testID='message-components'
         >
