@@ -8,7 +8,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 
 export default function ChannelScreen() {
   const router = useRouter();
-  const { setThread, channel } = useContext(AppContext);
+  const { setThread, channel, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   if (!channel) {
@@ -23,6 +23,7 @@ export default function ChannelScreen() {
           audioRecordingEnabled={true}
           channel={channel}
           keyboardVerticalOffset={headerHeight}
+          thread={thread}
         >
           <View style={{ flex: 1 }}>
             <MessageList
