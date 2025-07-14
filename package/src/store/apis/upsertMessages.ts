@@ -1,25 +1,27 @@
-import type { MessageResponse } from 'stream-chat';
+import type { LocalMessage, MessageResponse } from 'stream-chat';
 
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
+import { mapReminderToStorable } from '../mappers/mapReminderToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
 export const upsertMessages = async ({
-  flush = true,
+  execute = true,
   messages,
 }: {
-  messages: MessageResponse[];
-  flush?: boolean;
+  messages: (MessageResponse | LocalMessage)[];
+  execute?: boolean;
 }) => {
   const storableMessages: Array<ReturnType<typeof mapMessageToStorable>> = [];
   const storableUsers: Array<ReturnType<typeof mapUserToStorable>> = [];
   const storableReactions: Array<ReturnType<typeof mapReactionToStorable>> = [];
   const storablePolls: Array<ReturnType<typeof mapPollToStorable>> = [];
+  const storableReminders: Array<ReturnType<typeof mapReminderToStorable>> = [];
 
-  messages?.forEach((message: MessageResponse) => {
+  messages?.forEach((message: MessageResponse | LocalMessage) => {
     storableMessages.push(mapMessageToStorable(message));
     if (message.user) {
       storableUsers.push(mapUserToStorable(message.user));
@@ -33,6 +35,9 @@ export const upsertMessages = async ({
     if (message.poll) {
       storablePolls.push(mapPollToStorable(message.poll));
     }
+    if (message.reminder) {
+      storableReminders.push(mapReminderToStorable(message.reminder));
+    }
   });
 
   const finalQueries = [
@@ -42,17 +47,21 @@ export const upsertMessages = async ({
       createUpsertQuery('reactions', storableReaction),
     ),
     ...storablePolls.map((storablePoll) => createUpsertQuery('poll', storablePoll)),
+    ...storableReminders.map((storableReminder) =>
+      createUpsertQuery('reminders', storableReminder),
+    ),
   ];
 
   SqliteClient.logger?.('info', 'upsertMessages', {
-    flush,
+    execute,
     messages: storableMessages,
     polls: storablePolls,
     reactions: storableReactions,
+    reminders: storableReminders,
     users: storableUsers,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(finalQueries);
   }
 

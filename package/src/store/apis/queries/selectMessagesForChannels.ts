@@ -30,7 +30,7 @@ export const selectMessagesForChannels = async (
         *,
         ROW_NUMBER() OVER (
           PARTITION BY cid
-          ORDER BY cast(strftime('%s', createdAt) AS INTEGER) DESC
+          ORDER BY createdAt DESC
         ) RowNum
       FROM messages
       WHERE cid in (${questionMarks})
@@ -38,8 +38,8 @@ export const selectMessagesForChannels = async (
     LEFT JOIN
       users b
     ON b.id = a.userId
-    WHERE RowNum < 200
-    ORDER BY cast(strftime('%s', a.createdAt) AS INTEGER) ASC`,
+    WHERE RowNum < 25
+    ORDER BY a.createdAt ASC`,
     cids,
   );
 

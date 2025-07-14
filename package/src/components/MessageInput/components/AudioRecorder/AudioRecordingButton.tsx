@@ -10,39 +10,41 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { Mic } from '../../../../icons/Mic';
 import { AudioRecordingReturnType, NativeHandlers } from '../../../../native';
 
-type AudioRecordingButtonPropsWithContext = Pick<
-  MessageInputContextValue,
-  'asyncMessagesMinimumPressDuration'
-> & {
-  /**
-   * The current voice recording that is in progress.
-   */
-  recording: AudioRecordingReturnType;
-  /**
-   * Size of the mic button.
-   */
-  buttonSize?: number;
-  /**
-   * Handler to determine what should happen on long press of the mic button.
-   */
-  handleLongPress?: () => void;
-  /**
-   * Handler to determine what should happen on press of the mic button.
-   */
-  handlePress?: () => void;
-  /**
-   * Boolean to determine if the audio recording permissions are granted.
-   */
-  permissionsGranted?: boolean;
-  /**
-   * Function to start the voice recording.
-   */
-  startVoiceRecording?: () => Promise<void>;
-};
+export type AudioRecordingButtonProps = Partial<
+  Pick<MessageInputContextValue, 'asyncMessagesMinimumPressDuration'> & {
+    /**
+     * The current voice recording that is in progress.
+     */
+    recording: AudioRecordingReturnType;
+    /**
+     * Size of the mic button.
+     */
+    buttonSize?: number;
+    /**
+     * Handler to determine what should happen on long press of the mic button.
+     */
+    handleLongPress?: () => void;
+    /**
+     * Handler to determine what should happen on press of the mic button.
+     */
+    handlePress?: () => void;
+    /**
+     * Boolean to determine if the audio recording permissions are granted.
+     */
+    permissionsGranted?: boolean;
+    /**
+     * Function to start the voice recording.
+     */
+    startVoiceRecording?: () => Promise<void>;
+  }
+>;
 
-const AudioRecordingButtonWithContext = (props: AudioRecordingButtonPropsWithContext) => {
+/**
+ * Component to display the mic button on the Message Input.
+ */
+export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
   const {
-    asyncMessagesMinimumPressDuration,
+    asyncMessagesMinimumPressDuration: propAsyncMessagesMinimumPressDuration,
     buttonSize,
     handleLongPress,
     handlePress,
@@ -50,6 +52,11 @@ const AudioRecordingButtonWithContext = (props: AudioRecordingButtonPropsWithCon
     recording,
     startVoiceRecording,
   } = props;
+  const { asyncMessagesMinimumPressDuration: contextAsyncMessagesMinimumPressDuration } =
+    useMessageInputContext();
+
+  const asyncMessagesMinimumPressDuration =
+    propAsyncMessagesMinimumPressDuration || contextAsyncMessagesMinimumPressDuration;
 
   const {
     theme: {
@@ -114,51 +121,6 @@ const AudioRecordingButtonWithContext = (props: AudioRecordingButtonPropsWithCon
       <Mic fill={grey} size={32} {...micIcon} />
     </Pressable>
   );
-};
-
-const areEqual = (
-  prevProps: AudioRecordingButtonPropsWithContext,
-  nextProps: AudioRecordingButtonPropsWithContext,
-) => {
-  const {
-    asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
-    recording: prevRecording,
-  } = prevProps;
-  const {
-    asyncMessagesMinimumPressDuration: nextAsyncMessagesMinimumPressDuration,
-    recording: nextRecording,
-  } = nextProps;
-
-  const asyncMessagesMinimumPressDurationEqual =
-    prevAsyncMessagesMinimumPressDuration === nextAsyncMessagesMinimumPressDuration;
-  if (!asyncMessagesMinimumPressDurationEqual) {
-    return false;
-  }
-
-  const recordingEqual = prevRecording === nextRecording;
-  if (!recordingEqual) {
-    return false;
-  }
-
-  return true;
-};
-
-const MemoizedAudioRecordingButton = React.memo(
-  AudioRecordingButtonWithContext,
-  areEqual,
-) as typeof AudioRecordingButtonWithContext;
-
-export type AudioRecordingButtonProps = Partial<AudioRecordingButtonPropsWithContext> & {
-  recording: AudioRecordingReturnType;
-};
-
-/**
- * Component to display the mic button on the Message Input.
- */
-export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
-  const { asyncMessagesMinimumPressDuration } = useMessageInputContext();
-
-  return <MemoizedAudioRecordingButton {...{ asyncMessagesMinimumPressDuration }} {...props} />;
 };
 
 const styles = StyleSheet.create({

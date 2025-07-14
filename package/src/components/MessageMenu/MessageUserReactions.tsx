@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -80,6 +80,12 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     setSelectedReaction(reactionType);
   };
 
+  useEffect(() => {
+    if (selectedReaction && reactionTypes.length > 0 && !reactionTypes.includes(selectedReaction)) {
+      setSelectedReaction(reactionTypes[0]);
+    }
+  }, [reactionTypes, selectedReaction]);
+
   const messageReactions = useMemo(
     () =>
       reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
@@ -141,7 +147,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   );
 
   const renderHeader = () => (
-    <Text style={[styles.reactionsText, reactionsText]}>{t<string>('Message Reactions')}</Text>
+    <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>
   );
 
   const selectorReactions: ReactionSelectorItemType[] = messageReactions.map((reaction) => ({

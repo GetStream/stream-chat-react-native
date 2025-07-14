@@ -30,9 +30,7 @@ export const ChannelListHeaderNetworkDownIndicator = () => {
       style={[styles.container, { backgroundColor: `${grey_dark}E6` }, container]}
       testID='network-down-indicator'
     >
-      <Text style={[styles.errorText, { color: white }, errorText]}>
-        {t<string>('Reconnecting...')}
-      </Text>
+      <Text style={[styles.errorText, { color: white }, errorText]}>{t('Reconnecting...')}</Text>
     </View>
   );
 };

@@ -16,7 +16,7 @@ import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { Message } from '../../Message';
-import { MessageContent } from '../../MessageSimple/MessageContent';
+import { MessageContent } from '../MessageContent';
 
 describe('MessageContent', () => {
   let channel;
@@ -39,13 +39,11 @@ describe('MessageContent', () => {
 
     renderMessage = (options) =>
       render(
-        <ChannelsStateProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} {...options} />
-            </Channel>
-          </Chat>
-        </ChannelsStateProvider>,
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} {...options} />
+          </Channel>
+        </Chat>,
       );
   });
 

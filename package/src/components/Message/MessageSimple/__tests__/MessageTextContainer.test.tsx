@@ -22,9 +22,9 @@ import { Chat } from '../../../Chat/Chat';
 import { MessageList } from '../../../MessageList/MessageList';
 import { MessageTextContainer } from '../MessageTextContainer';
 
-afterEach(cleanup);
-
 describe('MessageTextContainer', () => {
+  afterEach(cleanup);
+
   it('should render message text container', async () => {
     const staticUser = generateStaticUser(1);
     const message = generateMessage({

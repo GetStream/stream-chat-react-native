@@ -33,7 +33,7 @@ export const MessageEditedTimestamp = (props: MessageEditedTimestampProps) => {
 
   return (
     <View style={[styles.container, editedTimestampContainer]}>
-      <Text style={[styles.text, { color: grey }, editedLabel]}>{t<string>('Edited') + ' '}</Text>
+      <Text style={[styles.text, { color: grey }, editedLabel]}>{t('Edited') + ' '}</Text>
       {MessageTimestamp && (
         <MessageTimestamp
           timestamp={message.message_text_updated_at}

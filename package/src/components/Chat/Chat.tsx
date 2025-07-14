@@ -1,32 +1,29 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Image, Platform } from 'react-native';
 
-import type { Channel, StreamChat } from 'stream-chat';
+import { Channel, OfflineDBState } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
 
-import { useSyncDatabase } from './hooks/useSyncDatabase';
-
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
-import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
+import { DeepPartial, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
   DEFAULT_USER_LANGUAGE,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../hooks';
 import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
 import { NativeHandlers } from '../../native';
-import { SqliteClient } from '../../store/SqliteClient';
+import { OfflineDB } from '../../store/OfflineDB';
 
-import { DBSyncManager } from '../../utils/DBSyncManager';
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import { version } from '../../version.json';
 
@@ -134,6 +131,12 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
     style?: DeepPartial<Theme>;
   };
 
+const selector = (nextValue: OfflineDBState) =>
+  ({
+    initialized: nextValue.initialized,
+    userId: nextValue.userId,
+  }) as const;
+
 const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const {
     children,
@@ -152,18 +155,18 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   // Setup translators
   const translators = useStreami18n(i18nInstance);
 
+  const translationContextValue = useMemo(
+    () => ({ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }),
+    [client.user?.language, translators],
+  );
+
   /**
    * Setup connection event listeners
    */
   const { connectionRecovering, isOnline } = useIsOnline(client, closeConnectionOnBackground);
 
-  const [initialisedDatabaseConfig, setInitialisedDatabaseConfig] = useState<{
-    initialised: boolean;
-    userID?: string;
-  }>({
-    initialised: false,
-    userID: client.userID,
-  });
+  const { initialized: offlineDbInitialized, userId: offlineDbUserId } =
+    useStateStore(client.offlineDb?.state, selector) ?? {};
 
   /**
    * Setup muted user listener
@@ -212,30 +215,18 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       return;
     }
 
-    const initializeDatabase = () => {
-      // This acts as a lock for some very rare occurrences of concurrency
-      // issues we've encountered before with the QuickSqliteClient being
-      // uninitialized before it's being invoked.
-      setInitialisedDatabaseConfig({ initialised: false, userID });
-      SqliteClient.initializeDatabase()
-        .then(async () => {
-          setInitialisedDatabaseConfig({ initialised: true, userID });
-          await DBSyncManager.init(client as unknown as StreamChat);
-        })
-        .catch((error) => {
-          console.log('Error Initializing DB:', error);
-        });
+    const initializeDatabase = async () => {
+      if (!client.offlineDb) {
+        client.setOfflineDBApi(new OfflineDB({ client }));
+      }
+
+      if (client.offlineDb) {
+        await client.offlineDb.init(userID);
+      }
     };
 
     initializeDatabase();
-
-    return () => {
-      if (userID && enableOfflineSupport) {
-        SqliteClient.closeDB();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userID, enableOfflineSupport]);
+  }, [userID, enableOfflineSupport, client]);
 
   useEffect(() => {
     if (!client) {
@@ -244,19 +235,18 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
     client.threads.registerSubscriptions();
     client.polls.registerSubscriptions();
+    client.reminders.registerSubscriptions();
+    client.reminders.initTimers();
 
     return () => {
       client.threads.unregisterSubscriptions();
       client.polls.unregisterSubscriptions();
+      client.reminders.unregisterSubscriptions();
+      client.reminders.clearTimers();
     };
   }, [client]);
 
-  // In case something went wrong, make sure to also unsubscribe the listener
-  // on unmount if it exists to prevent a memory leak.
-  useEffect(() => () => DBSyncManager.connectionChangedListener?.unsubscribe(), []);
-
-  const initialisedDatabase =
-    initialisedDatabaseConfig.initialised && userID === initialisedDatabaseConfig.userID;
+  const initialisedDatabase = !!offlineDbInitialized && userID === offlineDbUserId;
 
   const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisedDatabase);
 
@@ -273,12 +263,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     setActiveChannel,
   });
 
-  useSyncDatabase({
-    client,
-    enableOfflineSupport,
-    initialisedDatabase,
-  });
-
   if (userID && enableOfflineSupport && !initialisedDatabase) {
     // if user id has been set and offline support is enabled, we need to wait for database to be initialised
     return LoadingIndicator ? <LoadingIndicator /> : null;
@@ -286,9 +270,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   return (
     <ChatProvider value={chatContext}>
-      <TranslationProvider
-        value={{ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }}
-      >
+      <TranslationProvider value={translationContextValue}>
         <ThemeProvider style={style}>
           <ChannelsStateProvider>{children}</ChannelsStateProvider>
         </ThemeProvider>
@@ -310,7 +292,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
  * - setActiveChannel - function to set the currently active channel
  */
 export const Chat = (props: PropsWithChildren<ChatProps>) => {
-  const { style } = useOverlayContext();
+  const { theme } = useTheme();
 
-  return <ChatWithContext {...{ style }} {...props} />;
+  return <ChatWithContext style={theme as DeepPartial<Theme>} {...props} />;
 };

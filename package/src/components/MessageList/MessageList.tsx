@@ -39,10 +39,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
-import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -149,7 +145,6 @@ type MessageListPropsWithContext = Pick<
   Pick<ChatContextValue, 'client'> &
   Pick<ImageGalleryContextValue, 'setMessages'> &
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
-  Pick<OverlayContextValue, 'overlay'> &
   Pick<
     MessagesContextValue,
     | 'DateHeader'
@@ -278,7 +273,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     noGroupByUser,
     onListScroll,
     onThreadSelect,
-    overlay,
     reloadChannel,
     ScrollToBottomButton,
     selectedPicker,
@@ -341,12 +335,14 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(false);
 
+  const minIndexForVisible = Math.min(1, processedMessageList.length);
+
   const maintainVisibleContentPosition = useMemo(
     () => ({
       autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
-      minIndexForVisible: 1,
+      minIndexForVisible,
     }),
-    [autoscrollToRecent],
+    [autoscrollToRecent, minIndexForVisible],
   );
 
   /**
@@ -421,10 +417,20 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   });
 
+  const messagesLength = useRef<number>(processedMessageList.length);
+
   /**
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
+    // we need this check to make sure that regular list change do not trigger
+    // the unread notification to appear (for example if the old last read messages
+    // go out of the viewport).
+    if (processedMessageList.length !== messagesLength.current) {
+      return;
+    }
+    messagesLength.current = processedMessageList.length;
+
     if (!viewableItems.length) {
       setIsUnreadNotificationOpen(false);
       return;
@@ -529,8 +535,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
     const handleEvent = async (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
-      // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState.
-      if (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) {
+      const isMyOwnMessage = event.message?.user?.id === client.user?.id;
+      // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState when its a received message.
+      if (
+        (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
+        !isMyOwnMessage
+      ) {
         setChannelUnreadState((prev) => {
           const previousUnreadCount = prev?.unread_messages ?? 0;
           const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
@@ -616,13 +626,15 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
 
   useEffect(() => {
-    if (!rawMessageList.length) {
-      return;
-    }
     if (threadList) {
       setAutoscrollToRecent(true);
       return;
     }
+
+    if (!processedMessageList.length) {
+      return;
+    }
+
     const notLatestSet = channel.state.messages !== channel.state.latestMessages;
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
@@ -633,7 +645,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
     latestNonCurrentMessageBeforeUpdateRef.current = undefined;
-    const latestCurrentMessageAfterUpdate = rawMessageList[rawMessageList.length - 1];
+    const latestCurrentMessageAfterUpdate = processedMessageList[0];
     if (!latestCurrentMessageAfterUpdate) {
       setAutoscrollToRecent(true);
       return;
@@ -658,7 +670,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, rawMessageList, threadList]);
+  }, [channel, processedMessageList, threadList]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
@@ -1253,7 +1265,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
-          scrollEnabled={overlay === 'none'}
           showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
           style={flatListStyle}
           testID='message-flat-list'
@@ -1330,7 +1341,6 @@ export const MessageList = (props: MessageListProps) => {
     UnreadMessagesNotification,
   } = useMessagesContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
-  const { overlay } = useOverlayContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
 
   return (
@@ -1365,7 +1375,6 @@ export const MessageList = (props: MessageListProps) => {
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,
-        overlay,
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,

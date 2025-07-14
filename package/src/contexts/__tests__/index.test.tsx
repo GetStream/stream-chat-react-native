@@ -13,7 +13,6 @@ import {
   useOverlayContext,
   useOwnCapabilitiesContext,
   usePaginatedMessageListContext,
-  useSuggestionsContext,
   useTheme,
   useThreadContext,
   useTypingContext,
@@ -44,10 +43,6 @@ describe('contexts hooks in a component throws an error with message when not wr
     [
       useOwnCapabilitiesContext,
       'The useOwnCapabilitiesContext hook was called outside the Channel Component. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
-    ],
-    [
-      useSuggestionsContext,
-      'The useSuggestionsContext hook was called outside of the SuggestionsContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
     ],
     [
       useTypingContext,

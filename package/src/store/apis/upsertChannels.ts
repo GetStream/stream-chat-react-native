@@ -1,6 +1,6 @@
-import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-chat';
+import type { ChannelAPIResponse, ChannelMemberResponse } from 'stream-chat';
 
-import { upsertCidsForQuery } from './upsertCidsForQuery';
+import { upsertDraft } from './upsertDraft';
 import { upsertMembers } from './upsertMembers';
 
 import { upsertMessages } from './upsertMessages';
@@ -13,16 +13,12 @@ import type { PreparedQueries } from '../types';
 
 export const upsertChannels = async ({
   channels,
-  filters,
-  flush = true,
+  execute = true,
   isLatestMessagesSet,
-  sort,
 }: {
   channels: ChannelAPIResponse[];
-  filters?: ChannelFilters;
-  flush?: boolean;
+  execute?: boolean;
   isLatestMessagesSet?: boolean;
-  sort?: ChannelSort;
 }) => {
   // Update the database only if the query is provided.
   let queries: PreparedQueries[] = [];
@@ -33,25 +29,25 @@ export const upsertChannels = async ({
     channelIds,
   });
 
-  if (filters || sort) {
-    queries = queries.concat(
-      await upsertCidsForQuery({
-        cids: channelIds,
-        filters,
-        flush: false,
-        sort,
-      }),
-    );
-  }
-
   for (const channel of channels) {
     queries.push(createUpsertQuery('channels', mapChannelDataToStorable(channel.channel)));
 
-    const { members, messages, read } = channel;
+    const { draft, members, membership, messages, read } = channel;
+    if (
+      membership &&
+      !members.includes((m: ChannelMemberResponse) => m.user?.id === membership.user?.id)
+    ) {
+      members.push({ ...membership, user_id: membership.user?.id });
+    }
+
+    if (draft) {
+      queries = queries.concat(await upsertDraft({ draft, execute: false }));
+    }
+
     queries = queries.concat(
       await upsertMembers({
         cid: channel.channel.cid,
-        flush: false,
+        execute: false,
         members,
       }),
     );
@@ -60,7 +56,7 @@ export const upsertChannels = async ({
       queries = queries.concat(
         await upsertReads({
           cid: channel.channel.cid,
-          flush: false,
+          execute: false,
           reads: read,
         }),
       );
@@ -69,14 +65,14 @@ export const upsertChannels = async ({
     if (isLatestMessagesSet) {
       queries = queries.concat(
         await upsertMessages({
-          flush: false,
+          execute: false,
           messages,
         }),
       );
     }
   }
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 

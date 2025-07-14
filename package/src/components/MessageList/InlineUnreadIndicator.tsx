@@ -20,7 +20,7 @@ export const InlineUnreadIndicator = () => {
       accessibilityLabel='Inline unread indicator'
       style={[styles.container, { backgroundColor: light_gray }, container]}
     >
-      <Text style={[styles.text, { color: grey }, text]}>{t<string>('Unread Messages')}</Text>
+      <Text style={[styles.text, { color: grey }, text]}>{t('Unread Messages')}</Text>
     </View>
   );
 };

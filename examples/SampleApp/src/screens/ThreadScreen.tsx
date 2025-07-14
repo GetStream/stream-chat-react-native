@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
+  MessageActionsParams,
   Thread,
   ThreadType,
-  useAttachmentPickerContext,
+  useChatContext,
   useTheme,
+  useTranslationContext,
   useTypingString,
 } from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
@@ -17,6 +19,9 @@ import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
 import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
+import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
+import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
+import { channelMessageActions } from '../utils/messageActions.tsx';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -46,6 +51,8 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
     subtitleText = (parentMessage?.user as UserResponse)?.name;
   }
 
+  useCreateDraftFocusEffect();
+
   return (
     <ScreenHeader
       inSafeArea
@@ -65,13 +72,22 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       colors: { white },
     },
   } = useTheme();
-  const { setSelectedImages } = useAttachmentPickerContext();
+  const { client: chatClient } = useChatContext();
+  const { t } = useTranslationContext();
 
-  useEffect(() => {
-    setSelectedImages([]);
-    return () => setSelectedImages([]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const messageActions = useCallback(
+    (params: MessageActionsParams) => {
+      if (!chatClient) {
+        return [];
+      }
+      return channelMessageActions({
+        params,
+        chatClient,
+        t,
+      });
+    },
+    [chatClient, t],
+  );
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
@@ -79,7 +95,9 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         audioRecordingEnabled={true}
         channel={channel}
         enforceUniqueReaction
-        keyboardVerticalOffset={0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        messageActions={messageActions}
+        MessageHeader={MessageReminderHeader}
         thread={thread}
         threadList
       >

@@ -28,7 +28,7 @@ import type { PreparedBatchQueries, PreparedQueries, Scalar, Table } from './typ
  * This way usage @op-engineering/op-sqlite package is scoped to a single class/file.
  */
 export class SqliteClient {
-  static dbVersion = 8;
+  static dbVersion = 12;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
@@ -96,6 +96,7 @@ export class SqliteClient {
       });
       await this.db.executeBatch(finalQueries);
     } catch (e) {
+      this.db?.execute('ROLLBACK');
       this.logger?.('error', 'SqlBatch queries failed', {
         error: e,
         queries,
@@ -164,6 +165,7 @@ export class SqliteClient {
         await SqliteClient.dropTables();
         await SqliteClient.updateUserPragmaVersion(SqliteClient.dbVersion);
       }
+
       SqliteClient.logger?.('info', 'create tables if not exists', {
         tables: Object.keys(tables),
       });
@@ -176,6 +178,8 @@ export class SqliteClient {
       );
 
       await SqliteClient.executeSqlBatch(q);
+
+      return true;
     } catch (e) {
       console.log('Error initializing DB', e);
       this.logger?.('error', 'Error initializing DB', {
@@ -183,6 +187,8 @@ export class SqliteClient {
         dbname: SqliteClient.dbName,
         error: e,
       });
+
+      return false;
     }
   };
 

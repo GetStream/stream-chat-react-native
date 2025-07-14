@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { act, ReactTestInstance } from 'react-test-renderer';
+import { ReactTestInstance } from 'react-test-renderer';
 
-import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';

@@ -26,7 +26,7 @@ yarn install
 cd package && yarn install
 ```
 
-3. Move to the `expo-package` directory and install the dependencies:
+3. Move to the `package/expo-package` directory and install the dependencies:
 
 ```bash
 cd expo-package && yarn install

@@ -10,7 +10,7 @@
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
 [![Build Status](https://github.com/GetStream/stream-chat-react-native/actions/workflows/release.yml/badge.svg)](https://github.com/GetStream/stream-chat-react-native/actions)
 [![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.io/chat/docs/sdk/reactnative)
-![JS Bundle Size](https://img.shields.io/badge/js_bundle_size-469%20KB-blue)
+![JS Bundle Size](https://img.shields.io/badge/js_bundle_size-283%20KB-blue)
 
 <img align="right" src="https://getstream.imgix.net/images/ios-chat-tutorial/iphone_chat_art@3x.png?auto=format,enhance" width="50%" />
 

@@ -58,8 +58,7 @@ const getChannelDefaults = (
   { id, type }: { [key: string]: any } = { id: uuidv4(), type: 'messaging' },
 ) => ({
   _client: {},
-  cid: `${type}:${id}`,
-  data: {
+  channel: {
     cid: `${type}:${id}`,
     config: {
       ...defaultConfig,
@@ -74,7 +73,9 @@ const getChannelDefaults = (
     type,
     updated_at: '2020-04-28T11:20:48.578147Z',
   },
+  cid: `${type}:${id}`,
   id,
+  messages: [],
   state: defaultState,
   type,
 });
@@ -97,25 +98,37 @@ export const generateChannelResponse = (
     channel?: Record<string, any>;
     id?: string;
     messages?: Record<string, any>[];
+    members?: Record<string, any>[];
+    read?: Record<string, any>[];
     type?: string;
-  } = { channel: {}, id: uuidv4(), messages: [], type: 'messaging' },
+  } = { channel: {}, id: uuidv4(), members: [], messages: [], read: [], type: 'messaging' },
 ) => {
-  const { channel = {}, id = uuidv4(), messages = [], type = 'messaging', ...rest } = customValues;
+  const {
+    channel = {},
+    id = uuidv4(),
+    messages = [],
+    members = [],
+    read,
+    type = 'messaging',
+    ...rest
+  } = customValues;
 
   const defaults = getChannelDefaults();
   return {
     channel: {
-      ...defaults.data,
+      ...defaults.channel,
       ...{
         cid: `${type}:${id}`,
         ...channel,
         id,
+        member_count: members.length,
         type,
         user: generateUser(),
       },
     },
-    members: [],
+    members,
     messages,
+    read,
     ...rest,
   };
 };

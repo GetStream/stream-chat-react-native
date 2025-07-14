@@ -1,6 +1,4 @@
-import type { MessageLabel, Role } from 'stream-chat';
-
-import type { PendingTaskTypes } from './types';
+import type { MessageLabel, PendingTaskTypes, Role } from 'stream-chat';
 
 import type { ValueOf } from '../types/types';
 
@@ -62,8 +60,50 @@ export const tables: Tables = {
     },
     primaryKey: ['cid'],
   },
+  draft: {
+    columns: {
+      cid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      draftMessageId: 'TEXT NOT NULL',
+      parentId: 'TEXT',
+      quotedMessageId: 'TEXT',
+    },
+    foreignKeys: [
+      {
+        column: 'draftMessageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'draftMessage',
+        referenceTableColumn: 'id',
+      },
+    ],
+    indexes: [
+      {
+        columns: ['cid', 'draftMessageId'],
+        name: 'index_draft',
+        unique: false,
+      },
+    ],
+    primaryKey: ['cid', 'draftMessageId'],
+  },
+  draftMessage: {
+    columns: {
+      attachments: 'TEXT',
+      custom: 'TEXT',
+      id: 'TEXT NOT NULL',
+      mentionedUsers: 'TEXT',
+      parentId: 'TEXT',
+      poll_id: 'TEXT',
+      quotedMessageId: 'TEXT',
+      showInChannel: 'BOOLEAN DEFAULT FALSE',
+      silent: 'BOOLEAN DEFAULT FALSE',
+      text: 'TEXT',
+      type: 'TEXT',
+    },
+    primaryKey: ['id'],
+  },
   members: {
     columns: {
+      archivedAt: 'TEXT',
       banned: 'BOOLEAN DEFAULT FALSE',
       channelRole: 'TEXT',
       cid: 'TEXT NOT NULL',
@@ -72,6 +112,7 @@ export const tables: Tables = {
       invited: 'BOOLEAN',
       inviteRejectedAt: 'TEXT',
       isModerator: 'BOOLEAN',
+      pinnedAt: 'TEXT',
       role: 'TEXT',
       shadowBanned: 'BOOLEAN DEFAULT FALSE',
       updatedAt: 'TEXT',
@@ -135,6 +176,7 @@ export const tables: Tables = {
       id: 'INTEGER PRIMARY KEY AUTOINCREMENT',
       messageId: 'TEXT',
       payload: 'TEXT',
+      threadId: 'TEXT',
       type: 'TEXT',
     },
   },
@@ -207,6 +249,24 @@ export const tables: Tables = {
     ],
     primaryKey: ['userId', 'cid'],
   },
+  reminders: {
+    columns: {
+      channelCid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      messageId: 'TEXT NOT NULL',
+      remindAt: 'TEXT',
+      updatedAt: 'TEXT',
+      userId: 'TEXT NOT NULL',
+    },
+    indexes: [
+      {
+        columns: ['messageId'],
+        name: 'index_reminders',
+        unique: false,
+      },
+    ],
+    primaryKey: ['messageId'],
+  },
   users: {
     columns: {
       banned: 'BOOLEAN DEFAULT FALSE',
@@ -269,7 +329,28 @@ export type Schema = {
     truncatedById?: string;
     updatedAt?: string;
   };
+  draft: {
+    draftMessageId: string;
+    cid: string;
+    createdAt: string;
+    parentId?: string;
+    quotedMessageId?: string;
+  };
+  draftMessage: {
+    id: string;
+    attachments?: string;
+    custom?: string;
+    mentionedUsers?: string;
+    parentId?: string;
+    poll_id?: string;
+    quotedMessageId?: string;
+    showInChannel?: boolean;
+    silent?: boolean;
+    text: string;
+    type?: MessageLabel;
+  };
   members: {
+    archivedAt?: string;
     cid: string;
     banned?: boolean;
     channelRole?: Role;
@@ -282,6 +363,7 @@ export type Schema = {
     shadowBanned?: boolean;
     updatedAt?: string;
     userId?: string;
+    pinnedAt?: string;
   };
   messages: {
     attachments: string;
@@ -304,6 +386,7 @@ export type Schema = {
     createdAt: string;
     id: number;
     messageId: string;
+    threadId: string;
     payload: string;
     type: ValueOf<PendingTaskTypes>;
   };
@@ -344,6 +427,14 @@ export type Schema = {
     lastReadMessageId?: string;
     unreadMessages?: number;
     userId?: string;
+  };
+  reminders: {
+    channelCid: string;
+    createdAt: string;
+    messageId: string;
+    updatedAt: string;
+    userId: string;
+    remindAt?: string;
   };
   users: {
     id: string;

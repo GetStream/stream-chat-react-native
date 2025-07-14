@@ -19,7 +19,6 @@ import {
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { upsertCidsForQuery } from '../../store/apis/upsertCidsForQuery';
 import type { ChannelListEventListenerOptions } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
@@ -321,7 +320,7 @@ export const ChannelList = (props: ChannelListProps) => {
   ]);
 
   useEffect(() => {
-    channelManager.setOptions({ abortInFlightQuery: true, lockChannelOrder });
+    channelManager.setOptions({ abortInFlightQuery: false, lockChannelOrder });
   }, [channelManager, lockChannelOrder]);
 
   useEffect(() => {
@@ -343,7 +342,6 @@ export const ChannelList = (props: ChannelListProps) => {
     refreshing,
     refreshList,
     reloadList,
-    staticChannelsActive,
   } = usePaginatedChannels({
     channelManager,
     enableOfflineSupport,
@@ -357,26 +355,6 @@ export const ChannelList = (props: ChannelListProps) => {
     onChannelUpdated,
     setChannels: channelManager.setChannels,
   });
-
-  const channelIdsStr = channels?.reduce((acc, channel) => `${acc}${channel.cid}`, '');
-
-  useEffect(() => {
-    if (
-      channels == null ||
-      !channelListInitialized ||
-      staticChannelsActive ||
-      !enableOfflineSupport
-    ) {
-      return;
-    }
-
-    upsertCidsForQuery({
-      cids: channels.map((c) => c.cid),
-      filters,
-      sort,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelIdsStr, staticChannelsActive]);
 
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,

@@ -1,60 +1,35 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import {
-  MessageInputContextValue,
-  useMessageInputContext,
-} from '../../contexts/messageInputContext/MessageInputContext';
+import { MessageComposerState } from 'stream-chat';
+
+import { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../hooks/useStateStore';
 import { Check } from '../../icons';
 
-const styles = StyleSheet.create({
-  checkBox: {
-    alignItems: 'center',
-    borderRadius: 3,
-    borderWidth: 2,
-    height: 16,
-    justifyContent: 'center',
-    width: 16,
-  },
-  container: {
-    flexDirection: 'row',
-    marginHorizontal: 2,
-    marginTop: 8,
-  },
-  innerContainer: {
-    flexDirection: 'row',
-  },
-  text: {
-    fontSize: 13,
-    marginLeft: 12,
-  },
+const stateSelector = (state: MessageComposerState) => ({
+  showReplyInChannel: state.showReplyInChannel,
 });
 
 export type ShowThreadMessageInChannelButtonWithContextProps = Pick<
-  MessageInputContextValue,
-  'sendThreadMessageInChannel' | 'setSendThreadMessageInChannel'
+  ThreadContextValue,
+  'allowThreadMessagesInChannel'
 > &
-  Pick<ThreadContextValue, 'allowThreadMessagesInChannel'> &
-  Pick<TranslationContextValue, 't'> & {
-    threadList?: boolean;
-  };
+  Pick<TranslationContextValue, 't'> & { threadList?: ChannelContextValue['threadList'] };
 
 export const ShowThreadMessageInChannelButtonWithContext = (
   props: ShowThreadMessageInChannelButtonWithContextProps,
 ) => {
-  const {
-    allowThreadMessagesInChannel,
-    sendThreadMessageInChannel,
-    setSendThreadMessageInChannel,
-    t,
-    threadList,
-  } = props;
+  const { allowThreadMessagesInChannel, t, threadList } = props;
+  const messageComposer = useMessageComposer();
+  const { showReplyInChannel } = useStateStore(messageComposer.state, stateSelector);
 
   const {
     theme: {
@@ -72,20 +47,22 @@ export const ShowThreadMessageInChannelButtonWithContext = (
     },
   } = useTheme();
 
+  const onPressHandler = useCallback(() => {
+    messageComposer.toggleShowReplyInChannel();
+  }, [messageComposer]);
+
   if (!threadList || !allowThreadMessagesInChannel) {
     return null;
   }
 
   return (
     <View style={[styles.container, container]} testID='show-thread-message-in-channel-button'>
-      <TouchableOpacity
-        onPress={() => setSendThreadMessageInChannel((prevSendInChannel) => !prevSendInChannel)}
-      >
+      <Pressable onPress={onPressHandler} style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}>
         <View style={[styles.innerContainer, innerContainer]}>
           <View
             style={[
               styles.checkBox,
-              sendThreadMessageInChannel
+              showReplyInChannel
                 ? {
                     backgroundColor: accent_blue,
                     borderColor: accent_blue,
@@ -94,15 +71,11 @@ export const ShowThreadMessageInChannelButtonWithContext = (
                 : { borderColor: grey, ...checkBoxInactive },
             ]}
           >
-            {sendThreadMessageInChannel && (
-              <Check height={16} pathFill={white} width={16} {...check} />
-            )}
+            {showReplyInChannel && <Check height={16} pathFill={white} width={16} {...check} />}
           </View>
-          <Text style={[styles.text, { color: grey }, text]}>
-            {t<string>('Also send to channel')}
-          </Text>
+          <Text style={[styles.text, { color: grey }, text]}>{t('Also send to channel')}</Text>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
@@ -113,25 +86,17 @@ const areEqual = (
 ) => {
   const {
     allowThreadMessagesInChannel: prevAllowThreadMessagesInChannel,
-    sendThreadMessageInChannel: prevSendThreadMessageInChannel,
     t: prevT,
     threadList: prevThreadList,
   } = prevProps;
   const {
     allowThreadMessagesInChannel: nextAllowThreadMessagesInChannel,
-    sendThreadMessageInChannel: nexSendThreadMessageInChannel,
     t: nextT,
     threadList: nextThreadList,
   } = nextProps;
 
   const tEqual = prevT === nextT;
   if (!tEqual) {
-    return false;
-  }
-
-  const sendThreadMessageInChannelEqual =
-    prevSendThreadMessageInChannel === nexSendThreadMessageInChannel;
-  if (!sendThreadMessageInChannelEqual) {
     return false;
   }
 
@@ -160,14 +125,11 @@ export type ShowThreadMessageInChannelButtonProps =
 export const ShowThreadMessageInChannelButton = (props: ShowThreadMessageInChannelButtonProps) => {
   const { t } = useTranslationContext();
   const { allowThreadMessagesInChannel } = useThreadContext();
-  const { sendThreadMessageInChannel, setSendThreadMessageInChannel } = useMessageInputContext();
 
   return (
     <MemoizedShowThreadMessageInChannelButton
       {...{
         allowThreadMessagesInChannel,
-        sendThreadMessageInChannel,
-        setSendThreadMessageInChannel,
         t,
       }}
       {...props}
@@ -177,3 +139,26 @@ export const ShowThreadMessageInChannelButton = (props: ShowThreadMessageInChann
 
 ShowThreadMessageInChannelButton.displayName =
   'ShowThreadMessageInChannelButton{messageInput{showThreadMessageInChannelButton}}';
+
+const styles = StyleSheet.create({
+  checkBox: {
+    alignItems: 'center',
+    borderRadius: 3,
+    borderWidth: 2,
+    height: 16,
+    justifyContent: 'center',
+    width: 16,
+  },
+  container: {
+    flexDirection: 'row',
+    marginHorizontal: 2,
+    marginTop: 8,
+  },
+  innerContainer: {
+    flexDirection: 'row',
+  },
+  text: {
+    fontSize: 13,
+    marginLeft: 12,
+  },
+});

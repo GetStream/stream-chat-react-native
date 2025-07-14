@@ -8,12 +8,12 @@ import type { PreparedQueries } from '../types';
 
 export const upsertReads = async ({
   cid,
-  flush = true,
+  execute = true,
   reads,
 }: {
   cid: string;
   reads: ReadResponse[];
-  flush?: boolean;
+  execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];
 
@@ -31,12 +31,12 @@ export const upsertReads = async ({
   queries.push(...storableReads.map((storableRead) => createUpsertQuery('reads', storableRead)));
 
   SqliteClient.logger?.('info', 'upsertReads', {
-    flush,
+    execute,
     reads: storableReads,
     users: storableUsers,
   });
 
-  if (flush) {
+  if (execute) {
     await SqliteClient.executeSqlBatch(queries);
   }
 
