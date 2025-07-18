@@ -282,21 +282,23 @@ const ReplyWithContext = (props: ReplyPropsWithContext) => {
               text:
                 quotedMessage.type === 'deleted'
                   ? `_${t('Message deleted')}_`
-                  : pollName
-                    ? `📊 ${pollName}`
-                    : quotedMessage.text
-                      ? quotedMessage.text.length > 170
-                        ? `${quotedMessage.text.slice(0, 170)}...`
-                        : quotedMessage.text
-                      : messageType === FileTypes.Image
-                        ? t('Photo')
-                        : messageType === FileTypes.Video
-                          ? t('Video')
-                          : messageType === FileTypes.File ||
-                              messageType === FileTypes.Audio ||
-                              messageType === FileTypes.VoiceRecording
-                            ? trimmedLastAttachmentTitle || ''
-                            : '',
+                  : quotedMessage.shared_location
+                    ? '📍' + t('Location')
+                    : pollName
+                      ? `📊 ${pollName}`
+                      : quotedMessage.text
+                        ? quotedMessage.text.length > 170
+                          ? `${quotedMessage.text.slice(0, 170)}...`
+                          : quotedMessage.text
+                        : messageType === FileTypes.Image
+                          ? t('Photo')
+                          : messageType === FileTypes.Video
+                            ? t('Video')
+                            : messageType === FileTypes.File ||
+                                messageType === FileTypes.Audio ||
+                                messageType === FileTypes.VoiceRecording
+                              ? trimmedLastAttachmentTitle || ''
+                              : '',
             }}
             onlyEmojis={onlyEmojis}
             styles={{
