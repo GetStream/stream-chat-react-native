@@ -1,4 +1,6 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigatorParamList } from '../types';
+import { RouteProp } from '@react-navigation/native';
 import {
   Platform,
   Pressable,
@@ -8,12 +10,19 @@ import {
   Image,
   Text,
 } from 'react-native';
-import { useContext, useMemo, useCallback, useRef } from 'react';
-import { AppContext } from '../../context/AppContext';
-import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-expo';
+import { useMemo, useCallback, useRef } from 'react';
+import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { MapMarker, Marker } from 'react-native-maps';
 import { SharedLocationResponse, StreamChat } from 'stream-chat';
+import { useStreamChatContext } from '../context/StreamChatContext';
+
+export type MapScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'MapScreen'>;
+export type MapScreenRouteProp = RouteProp<StackNavigatorParamList, 'MapScreen'>;
+export type MapScreenProps = {
+  navigation: MapScreenNavigationProp;
+  route: MapScreenRouteProp;
+};
 
 export type SharedLiveLocationParamsStringType = SharedLocationResponse & {
   latitude: string;
@@ -29,28 +38,33 @@ const MapScreenFooter = ({
   client: StreamChat;
   shared_location: SharedLocationResponse;
   locationResponse?: SharedLocationResponse;
-  isLiveLocationStopped?: boolean;
+  isLiveLocationStopped: boolean | null;
 }) => {
-  const { channel } = useContext(AppContext);
+  const { channel } = useStreamChatContext();
   const { end_at, user_id } = shared_location;
   const {
     theme: {
       colors: { accent_blue, accent_red, grey },
     },
   } = useTheme();
-  const liveLocationActive = isLiveLocationStopped ? false : new Date(end_at) > new Date();
+  const liveLocationActive = isLiveLocationStopped
+    ? false
+    : end_at && new Date(end_at) > new Date();
   const endedAtDate = end_at ? new Date(end_at) : null;
   const formattedEndedAt = endedAtDate ? endedAtDate.toLocaleString() : '';
 
   const stopSharingLiveLocation = useCallback(async () => {
-    await channel.stopLiveLocationSharing(locationResponse);
+    if (!locationResponse) {
+      return;
+    }
+    await channel?.stopLiveLocationSharing(locationResponse);
   }, [channel, locationResponse]);
 
   if (!end_at) {
     return null;
   }
 
-  const isCurrentUser = user_id === client.user.id;
+  const isCurrentUser = user_id === client.user?.id;
   if (!isCurrentUser) {
     return (
       <View style={styles.footer}>
@@ -94,10 +108,10 @@ const MapScreenFooter = ({
   );
 };
 
-export default function MapScreen() {
+export const MapScreen = ({ route }: MapScreenProps) => {
   const { client } = useChatContext();
-  const shared_location = useLocalSearchParams<SharedLiveLocationParamsStringType>();
-  const { channel } = useContext(AppContext);
+  const shared_location = route.params as SharedLocationResponse;
+  const { channel } = useStreamChatContext();
   const mapRef = useRef<MapView | null>(null);
   const markerRef = useRef<MapMarker | null>(null);
   const {
@@ -109,22 +123,25 @@ export default function MapScreen() {
   const { width, height } = useWindowDimensions();
   const aspect_ratio = width / height;
 
-  const onLocationUpdate = useCallback((location: SharedLocationResponse) => {
-    const newPosition = {
-      latitude: location.latitude,
-      longitude: location.longitude,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.1 * aspect_ratio,
-    };
-    // Animate the map to the new position
-    if (mapRef.current?.animateToRegion) {
-      mapRef.current.animateToRegion(newPosition, 500);
-    }
-    // This is android only
-    if (Platform.OS === 'android' && markerRef.current?.animateMarkerToCoordinate) {
-      markerRef.current.animateMarkerToCoordinate(newPosition, 500);
-    }
-  }, []);
+  const onLocationUpdate = useCallback(
+    (location: SharedLocationResponse) => {
+      const newPosition = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1 * aspect_ratio,
+      };
+      // Animate the map to the new position
+      if (mapRef.current?.animateToRegion) {
+        mapRef.current.animateToRegion(newPosition, 500);
+      }
+      // This is android only
+      if (Platform.OS === 'android' && markerRef.current?.animateMarkerToCoordinate) {
+        markerRef.current.animateMarkerToCoordinate(newPosition, 500);
+      }
+    },
+    [aspect_ratio],
+  );
 
   const { isLiveLocationStopped, locationResponse } = useHandleLiveLocationEvents({
     channel,
@@ -137,19 +154,19 @@ export default function MapScreen() {
     const longitudeDelta = latitudeDelta * aspect_ratio;
 
     return {
-      latitude: parseFloat(shared_location.latitude),
-      longitude: parseFloat(shared_location.longitude),
+      latitude: shared_location.latitude,
+      longitude: shared_location.longitude,
       latitudeDelta,
       longitudeDelta,
     };
-  }, [aspect_ratio]);
+  }, [aspect_ratio, shared_location.latitude, shared_location.longitude]);
 
   const region = useMemo(() => {
     const latitudeDelta = 0.1;
     const longitudeDelta = latitudeDelta * aspect_ratio;
     return {
-      latitude: locationResponse?.latitude,
-      longitude: locationResponse?.longitude,
+      latitude: locationResponse?.latitude ?? 0,
+      longitude: locationResponse?.longitude ?? 0,
       latitudeDelta,
       longitudeDelta,
     };
@@ -157,7 +174,6 @@ export default function MapScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <Stack.Screen options={{ title: 'Map Screen' }} />
       <MapView
         cameraZoomRange={{ maxCenterCoordinateDistance: 3000 }}
         initialRegion={initialRegion}
@@ -167,16 +183,16 @@ export default function MapScreen() {
         {shared_location.end_at ? (
           <Marker
             coordinate={
-              !locationResponse
-                ? { latitude: initialRegion.latitude, longitude: initialRegion.longitude }
-                : { latitude: region.latitude, longitude: region.longitude }
+              locationResponse
+                ? { latitude: region.latitude, longitude: region.longitude }
+                : { latitude: initialRegion.latitude, longitude: initialRegion.longitude }
             }
             ref={markerRef}
           >
             <View style={styles.markerWrapper}>
               <Image
                 style={[styles.markerImage, { borderColor: accent_blue }]}
-                source={{ uri: client.user.image }}
+                source={{ uri: client.user?.image }}
               />
             </View>
           </Marker>
@@ -192,7 +208,7 @@ export default function MapScreen() {
       />
     </SafeAreaView>
   );
-}
+};
 
 const IMAGE_SIZE = 35;
 

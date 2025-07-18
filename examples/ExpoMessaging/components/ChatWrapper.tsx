@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import {
   Chat,
+  enTranslations,
   OverlayProvider,
   SqliteClient,
   Streami18n,
@@ -9,7 +10,6 @@ import {
 import { AuthProgressLoader } from './AuthProgressLoader';
 import { STREAM_API_KEY, user, userToken } from '../constants';
 import { useStreamChatTheme } from '../useStreamChatTheme';
-import { LiveLocationContextProvider } from '../context/LiveLocationContext';
 
 const streami18n = new Streami18n({
   language: 'en',
@@ -25,6 +25,11 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
     userData: user,
     tokenOrProvider: userToken,
   });
+
+  streami18n.registerTranslation('en', {
+    ...enTranslations,
+    'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
+  });
   const theme = useStreamChatTheme();
 
   if (!chatClient) {
@@ -34,7 +39,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   return (
     <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <LiveLocationContextProvider>{children}</LiveLocationContextProvider>
+        {children}
       </Chat>
     </OverlayProvider>
   );

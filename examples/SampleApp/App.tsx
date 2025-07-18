@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   Chat,
   createTextComposerEmojiMiddleware,
+  LiveLocationManagerProvider,
   OverlayProvider,
   setupCommandUIMiddlewares,
   SqliteClient,
@@ -40,6 +41,19 @@ import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 import { init, SearchIndex } from 'emoji-mart';
 import data from '@emoji-mart/data';
+import Geolocation from '@react-native-community/geolocation';
+import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
+import FastImage from 'react-native-fast-image';
+import { StreamChatProvider } from './src/context/StreamChatContext';
+import { MapScreen } from './src/screens/MapScreen';
+import { watchLocation } from './src/utils/watchLocation';
+
+Geolocation.setRNConfiguration({
+  skipPermissionRequests: false,
+  authorizationLevel: 'always',
+});
 
 import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-chat';
 
@@ -51,11 +65,6 @@ if (__DEV__) {
     console.info('Local DB reset');
   });
 }
-
-import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
-import FastImage from 'react-native-fast-image';
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 console.assert = () => null;
@@ -184,17 +193,21 @@ const App = () => {
   );
 };
 
+const getDeviceId = () => 'stream-chat-react-native-sample-app';
+
 const DrawerNavigator: React.FC = () => (
-  <Drawer.Navigator
-    drawerContent={MenuDrawer}
-    screenOptions={{
-      drawerStyle: {
-        width: 300,
-      },
-    }}
-  >
-    <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
-  </Drawer.Navigator>
+  <LiveLocationManagerProvider watchLocation={watchLocation} getDeviceId={getDeviceId}>
+    <Drawer.Navigator
+      drawerContent={MenuDrawer}
+      screenOptions={{
+        drawerStyle: {
+          width: 300,
+        },
+      }}
+    >
+      <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
+    </Drawer.Navigator>
+  </LiveLocationManagerProvider>
 );
 
 const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
@@ -213,6 +226,7 @@ const DrawerNavigatorWrapper: React.FC<{
     'duration/Remind Me': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
     'timestamp/Remind me': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
     'timestamp/ReminderNotification': '{{ timestamp | timestampFormatter(calendar: true) }}',
+    'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
   });
 
   return (
@@ -226,11 +240,13 @@ const DrawerNavigatorWrapper: React.FC<{
           isMessageAIGenerated={isMessageAIGenerated}
           i18nInstance={streami18n}
         >
-          <AppOverlayProvider>
-            <UserSearchProvider>
-              <DrawerNavigator />
-            </UserSearchProvider>
-          </AppOverlayProvider>
+          <StreamChatProvider>
+            <AppOverlayProvider>
+              <UserSearchProvider>
+                <DrawerNavigator />
+              </UserSearchProvider>
+            </AppOverlayProvider>
+          </StreamChatProvider>
         </Chat>
       </OverlayProvider>
     </GestureHandlerRootView>
@@ -277,6 +293,11 @@ const HomeScreen = () => {
           gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
           headerShown: false,
         }}
+      />
+      <Stack.Screen
+        name='MapScreen'
+        component={MapScreen}
+        options={{ headerTitle: 'Location', headerBackTitle: 'Back' }}
       />
       <Stack.Screen
         component={NewDirectMessagingScreen}

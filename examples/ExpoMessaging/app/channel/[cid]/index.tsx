@@ -6,8 +6,7 @@ import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
 import InputButtons from '../../../components/InputButtons';
-import { isAttachmentEqualHandler, LocationCard } from '../../../components/LocationCard';
-import { MessageLocation } from '../../../components/MessageLocation';
+import { MessageLocation } from '../../../components/LiveLocation/MessageLocation';
 
 export default function ChannelScreen() {
   const router = useRouter();
@@ -22,13 +21,13 @@ export default function ChannelScreen() {
     payload,
   ) => {
     const { message, defaultHandler, emitter } = payload;
-    const { latitude, longitude, ended_at } = message.attachments?.[0] || {};
-    if (emitter === 'messageContent') {
-      if (message?.attachments?.[0]?.type === 'location') {
-        router.push(
-          `/map/${message.id}?latitude=${latitude}&longitude=${longitude}&ended_at=${ended_at}`,
-        );
-      }
+    const { shared_location } = message;
+    if (emitter === 'messageContent' && shared_location) {
+      // Create url params from shared_location
+      const params = Object.entries(shared_location)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+      router.push(`/map/${message.id}?${params}`);
     }
     defaultHandler?.();
   };
@@ -39,12 +38,10 @@ export default function ChannelScreen() {
       {channel && (
         <Channel
           audioRecordingEnabled={true}
-          Card={LocationCard}
           channel={channel}
-          isAttachmentEqual={isAttachmentEqualHandler}
+          onPressMessage={onPressMessage}
           keyboardVerticalOffset={headerHeight}
           MessageLocation={MessageLocation}
-          onPressMessage={onPressMessage}
           thread={thread}
         >
           <View style={{ flex: 1 }}>

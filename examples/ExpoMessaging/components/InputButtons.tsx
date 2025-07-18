@@ -1,45 +1,27 @@
-import React from 'react';
-import { Alert, Pressable, StyleSheet } from 'react-native';
-import { Channel, useChannelContext, InputButtons as DefaultInputButtons } from 'stream-chat-expo';
-import * as Location from 'expo-location';
-import { useLiveLocationContext } from '../context/LiveLocationContext';
+import React, { useState } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
+import { Channel, InputButtons as DefaultInputButtons } from 'stream-chat-expo';
 import { ShareLocationIcon } from '../icons/ShareLocationIcon';
+import { LiveLocationCreateModal } from './LiveLocation/CreateModal';
 
 const InputButtons: NonNullable<React.ComponentProps<typeof Channel>['InputButtons']> = (props) => {
-  const { channel: currentChannel } = useChannelContext();
-  const { startLiveLocation } = useLiveLocationContext();
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const sendLiveLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission to access location was denied');
-      return;
-    }
-    const location = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.High,
-      distanceInterval: 0,
-    });
+  const onRequestClose = () => {
+    setModalVisible(false);
+  };
 
-    if (location) {
-      const response = await currentChannel.sendMessage({
-        attachments: [
-          {
-            type: 'location',
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          },
-        ],
-      });
-      await startLiveLocation(response.message.id);
-    }
+  const onOpenModal = () => {
+    setModalVisible(true);
   };
 
   return (
     <>
       <DefaultInputButtons {...props} hasCommands={false} />
-      <Pressable style={styles.liveLocationButton} onPress={sendLiveLocation}>
+      <Pressable style={styles.liveLocationButton} onPress={onOpenModal}>
         <ShareLocationIcon />
       </Pressable>
+      <LiveLocationCreateModal visible={modalVisible} onRequestClose={onRequestClose} />
     </>
   );
 };

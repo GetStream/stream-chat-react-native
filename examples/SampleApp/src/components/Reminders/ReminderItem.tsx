@@ -16,7 +16,7 @@ import { getPreviewFromMessage } from '../../utils/getPreviewOfMessage';
 export const ReminderItem = (
   item: ReminderResponse & { onDeleteHandler?: (id: string) => void },
 ) => {
-  const { channel, message, onDeleteHandler } = item;
+  const { channel, message } = item;
   const navigation = useNavigation();
   const { client } = useChatContext();
   const { t } = useTranslationContext();
@@ -54,12 +54,11 @@ export const ReminderItem = (
         text: 'Remove',
         onPress: async () => {
           await client.reminders.deleteReminder(item.message_id);
-          onDeleteHandler?.(item.message_id);
         },
         style: 'destructive',
       },
     ]);
-  }, [client.reminders, item.message_id, onDeleteHandler]);
+  }, [client.reminders, item.message_id]);
 
   const updateButtons = useMemo(() => {
     const buttons: AlertButton[] = client.reminders.scheduledOffsetsMs.map((offsetMs) => ({
