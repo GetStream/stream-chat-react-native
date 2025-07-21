@@ -23,9 +23,8 @@ export const mapMessageToStorable = (
     poll_id,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reminder,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    shared_location,
     reaction_groups,
+    shared_location,
     text,
     type,
     updated_at,
@@ -43,6 +42,7 @@ export const mapMessageToStorable = (
     messageTextUpdatedAt: mapDateTimeToStorable(message_text_updated_at),
     poll_id: poll_id || '',
     reactionGroups: JSON.stringify(reaction_groups),
+    shared_location: JSON.stringify(shared_location),
     text,
     type,
     updatedAt: mapDateTimeToStorable(updated_at),
