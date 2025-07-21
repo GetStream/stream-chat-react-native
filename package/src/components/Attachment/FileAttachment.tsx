@@ -123,13 +123,13 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
           style={[
             styles.details,
             {
-              maxWidth: vw(60),
+              flex: 1,
             },
             details,
             stylesProp.details,
           ]}
         >
-          <Text numberOfLines={2} style={[styles.title, { color: black }, title, stylesProp.title]}>
+          <Text numberOfLines={1} style={[styles.title, { color: black }, title, stylesProp.title]}>
             {attachment.title}
           </Text>
           <Text style={[styles.size, { color: grey }, fileSize, stylesProp.size]}>
