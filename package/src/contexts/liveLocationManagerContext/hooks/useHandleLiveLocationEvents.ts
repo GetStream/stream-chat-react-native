@@ -40,26 +40,17 @@ export const useHandleLiveLocationEvents = ({
       if (!message || !message.shared_location) {
         return;
       }
+      const { shared_location } = message;
       if (message.id === messageId) {
         setLocationResponse(message.shared_location);
         onLocationUpdate?.(message.shared_location);
       }
-    };
-
-    const handleLiveLocationStop = (event: Event) => {
-      const { live_location } = event;
-      if (!live_location) {
-        return;
+      if (shared_location.end_at && shared_location.end_at <= new Date().toISOString()) {
+        setIsLiveLocationStopped(true);
       }
-      setIsLiveLocationStopped(true);
-      setLocationResponse(live_location);
-      onLocationUpdate?.(live_location);
     };
 
-    const listener = [
-      channel.on('message.updated', handleMessageUpdate),
-      client.on('live_location_sharing.stopped', handleLiveLocationStop),
-    ];
+    const listener = [channel.on('message.updated', handleMessageUpdate)];
 
     return () => {
       listener.forEach((l) => l.unsubscribe());

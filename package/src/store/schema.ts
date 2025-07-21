@@ -101,6 +101,35 @@ export const tables: Tables = {
     },
     primaryKey: ['id'],
   },
+  locations: {
+    columns: {
+      channelCid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      createdByDeviceId: 'TEXT',
+      endAt: 'TEXT',
+      latitude: 'REAL NOT NULL',
+      longitude: 'REAL NOT NULL',
+      messageId: 'TEXT NOT NULL',
+      updatedAt: 'TEXT',
+      userId: 'TEXT NOT NULL',
+    },
+    foreignKeys: [
+      {
+        column: 'messageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'messages',
+        referenceTableColumn: 'id',
+      },
+    ],
+    indexes: [
+      {
+        columns: ['channelCid', 'messageId'],
+        name: 'index_locations',
+        unique: false,
+      },
+    ],
+    primaryKey: ['channelCid', 'messageId'],
+  },
   members: {
     columns: {
       archivedAt: 'TEXT',
@@ -258,6 +287,14 @@ export const tables: Tables = {
       updatedAt: 'TEXT',
       userId: 'TEXT NOT NULL',
     },
+    foreignKeys: [
+      {
+        column: 'messageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'messages',
+        referenceTableColumn: 'id',
+      },
+    ],
     indexes: [
       {
         columns: ['messageId'],
@@ -435,6 +472,17 @@ export type Schema = {
     updatedAt: string;
     userId: string;
     remindAt?: string;
+  };
+  locations: {
+    channelCid: string;
+    createdAt: string;
+    createdByDeviceId: string;
+    endAt?: string;
+    latitude: number;
+    longitude: number;
+    messageId: string;
+    updatedAt: string;
+    userId: string;
   };
   users: {
     id: string;

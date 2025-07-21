@@ -23,6 +23,8 @@ export const mapMessageToStorable = (
     poll_id,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reminder,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    shared_location,
     reaction_groups,
     text,
     type,
