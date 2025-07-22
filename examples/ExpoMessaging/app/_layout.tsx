@@ -8,14 +8,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LiveLocationManagerProvider } from 'stream-chat-expo';
 import { watchLocation } from '../utils/watchLocation';
 
-const getDeviceId = () => 'stream-chat-react-native-expo-sample-app';
-
 export default function Layout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={styles.container}>
         <ChatWrapper>
-          <LiveLocationManagerProvider watchLocation={watchLocation} getDeviceId={getDeviceId}>
+          <LiveLocationManagerProvider watchLocation={watchLocation}>
             <AppProvider>
               <Stack />
             </AppProvider>

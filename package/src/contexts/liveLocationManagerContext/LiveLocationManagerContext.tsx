@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
 
+import { Platform } from 'react-native';
+
 import { LiveLocationManager, WatchLocation } from 'stream-chat';
 
 import { useChatContext } from '../chatContext/ChatContext';
@@ -18,7 +20,7 @@ export const useLiveLocationManagerContext = () => {
 
 export type LiveLocationManagerProviderProps = {
   watchLocation: WatchLocation;
-  getDeviceId: () => string;
+  getDeviceId?: () => string;
 };
 
 export const LiveLocationManagerProvider = (
@@ -34,16 +36,20 @@ export const LiveLocationManagerProvider = (
     // Create a new instance of LiveLocationManager with the client and utility functions
     return new LiveLocationManager({
       client,
-      getDeviceId,
+      getDeviceId: getDeviceId ?? (() => `react-native-${Platform.OS}-${client.userID}`),
       watchLocation,
     });
   }, [client, getDeviceId, watchLocation]);
 
   useEffect(() => {
-    liveLocationManager?.init();
+    if (!liveLocationManager) {
+      return;
+    }
+    // Initialize the live location manager
+    liveLocationManager.init();
 
     return () => {
-      liveLocationManager?.unregisterSubscriptions();
+      liveLocationManager.unregisterSubscriptions();
     };
   }, [liveLocationManager]);
 

@@ -192,10 +192,8 @@ const App = () => {
   );
 };
 
-const getDeviceId = () => 'stream-chat-react-native-sample-app';
-
 const DrawerNavigator: React.FC = () => (
-  <LiveLocationManagerProvider watchLocation={watchLocation} getDeviceId={getDeviceId}>
+  <LiveLocationManagerProvider watchLocation={watchLocation}>
     <Drawer.Navigator
       drawerContent={MenuDrawer}
       screenOptions={{
