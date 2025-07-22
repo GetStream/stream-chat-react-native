@@ -6,7 +6,7 @@ import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
 import InputButtons from '../../../components/InputButtons';
-import { MessageLocation } from '../../../components/LiveLocation/MessageLocation';
+import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
 
 export default function ChannelScreen() {
   const router = useRouter();

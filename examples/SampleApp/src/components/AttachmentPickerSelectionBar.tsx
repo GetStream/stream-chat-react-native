@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AttachmentPickerSelectionBar, useMessageInputContext } from 'stream-chat-react-native';
 import { ShareLocationIcon } from '../icons/ShareLocationIcon';
-import { LiveLocationCreateModal } from './LiveLocation/CreateLocationModal';
+import { LiveLocationCreateModal } from './LocationSharing/CreateLocationModal';
 
 export const CustomAttachmentPickerSelectionBar = () => {
   const [modalVisible, setModalVisible] = useState(false);

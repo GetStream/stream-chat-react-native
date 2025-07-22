@@ -41,6 +41,12 @@
     },
     "scheme": "ExpoMessaging",
     "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ],
       "expo-router",
       [
         "expo-image-picker",
@@ -63,12 +69,7 @@
           "microphonePermission": "$(PRODUCT_NAME) would like to use your microphone for voice recording."
         }
       ],
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
-        }
-      ],
+
       "./plugins/keyboardInsetMainActivityListener.js"
     ]
   }

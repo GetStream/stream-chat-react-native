@@ -25,7 +25,7 @@ import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
-import { MessageLocation } from '../components/LiveLocation/MessageLocation.tsx';
+import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
