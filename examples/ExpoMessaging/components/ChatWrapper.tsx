@@ -26,6 +26,11 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
     tokenOrProvider: userToken,
   });
 
+  streami18n.registerTranslation('en', {
+    ...enTranslations,
+    'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
+  });
+
   const theme = useStreamChatTheme();
 
   if (!chatClient) {

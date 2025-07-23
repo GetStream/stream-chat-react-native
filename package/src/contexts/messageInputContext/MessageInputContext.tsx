@@ -579,10 +579,7 @@ export const MessageInputProvider = ({
 
     try {
       const composition = await messageComposer.compose();
-      // This is added to ensure the input box is cleared if there's no change and user presses on the send button.
-      if (!composition && editedMessage) {
-        clearEditingState();
-      }
+
       if (!composition || !composition.message) return;
 
       const { localMessage, message, sendOptions } = composition;

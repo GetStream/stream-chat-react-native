@@ -14,6 +14,7 @@ import {
   Streami18n,
   ThemeProvider,
   useOverlayContext,
+  enTranslations,
 } from 'stream-chat-react-native';
 import { getMessaging } from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
@@ -214,6 +215,17 @@ const DrawerNavigatorWrapper: React.FC<{
 }> = ({ chatClient }) => {
   const streamChatTheme = useStreamChatTheme();
   const streami18n = new Streami18n();
+
+  streami18n.registerTranslation('en', {
+    ...enTranslations,
+    'Due since {{ dueSince }}': 'Due since {{ dueSince }}',
+    'Due {{ timeLeft }}': 'Due {{ timeLeft }}',
+    'duration/Message reminder': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
+    'duration/Remind Me': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
+    'timestamp/Remind me': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
+    'timestamp/ReminderNotification': '{{ timestamp | timestampFormatter(calendar: true) }}',
+    'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
+  });
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
