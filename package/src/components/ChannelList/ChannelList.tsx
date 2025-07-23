@@ -2,7 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
-import { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
+import {
+  Channel,
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  Event,
+  QueryChannelsRequestType,
+} from 'stream-chat';
 
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
@@ -215,6 +222,15 @@ export type ChannelListProps = Partial<
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available sorting fields
    * */
   sort?: ChannelSort;
+
+  /**
+   * A function that overrides the default ChannelManager queryChannels method, which is StreamChat.queryChannels.
+   * It is particularly useful whenever we want to pass specific cids that we want to query but also want to
+   * paginate over them (which is not possible through normal filters). It comes with with several rules/assumptions:
+   * - StreamChat.queryChannels has to be called inside of queryChannelsOverride (as it updates important client state)
+   * - The return type has to be Channel[] (which is the return type of StreamChat.queryChannels)
+   */
+  queryChannelsOverride?: QueryChannelsRequestType;
 };
 
 const DEFAULT_FILTERS = {};
@@ -268,6 +284,7 @@ export const ChannelList = (props: ChannelListProps) => {
     setFlatListRef,
     Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
+    queryChannelsOverride,
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -318,6 +335,12 @@ export const ChannelList = (props: ChannelListProps) => {
     onRemovedFromChannel,
     sort,
   ]);
+
+  useEffect(() => {
+    if (queryChannelsOverride) {
+      channelManager.setQueryChannelsRequest(queryChannelsOverride);
+    }
+  }, [channelManager, queryChannelsOverride]);
 
   useEffect(() => {
     channelManager.setOptions({ abortInFlightQuery: false, lockChannelOrder });
