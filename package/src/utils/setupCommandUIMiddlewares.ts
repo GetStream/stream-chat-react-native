@@ -11,6 +11,7 @@ export const setupCommandUIMiddlewares = (messageComposer: MessageComposer) => {
   messageComposer.compositionMiddlewareExecutor.insert({
     middleware: [createCommandInjectionMiddleware(messageComposer)],
     position: { after: 'stream-io/message-composer-middleware/attachments' },
+    unique: true,
   });
 
   messageComposer.draftCompositionMiddlewareExecutor.insert({
