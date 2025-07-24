@@ -104,7 +104,7 @@ export const LiveLocationCreateModal = ({
       description: 'Share your location in real-time',
       onPress: () => {
         const options: AlertButton[] = endedAtDurations.map((offsetMs) => ({
-          text: t('timestamp/Location end at', { milliseconds: offsetMs }),
+          text: t('duration/Location end at', { milliseconds: offsetMs }),
           onPress: async () => {
             if (location) {
               await messageComposer.locationComposer.setData({

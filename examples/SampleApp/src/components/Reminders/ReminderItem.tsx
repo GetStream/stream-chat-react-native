@@ -62,7 +62,7 @@ export const ReminderItem = (
 
   const updateButtons = useMemo(() => {
     const buttons: AlertButton[] = client.reminders.scheduledOffsetsMs.map((offsetMs) => ({
-      text: t('timestamp/Remind me', { milliseconds: offsetMs }),
+      text: t('duration/Remind Me', { milliseconds: offsetMs }),
       onPress: async () => {
         await client.reminders.upsertReminder({
           messageId: item.message_id,
