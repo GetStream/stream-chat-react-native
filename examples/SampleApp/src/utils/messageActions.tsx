@@ -66,7 +66,7 @@ export function channelMessageActions({
           'Select Reminder Time',
           'When would you like to be reminded?',
           chatClient.reminders.scheduledOffsetsMs.map((offsetMs) => ({
-            text: t('timestamp/Remind me', { milliseconds: offsetMs }),
+            text: t('duration/Remind Me', { milliseconds: offsetMs }),
             onPress: () => {
               chatClient.reminders
                 .upsertReminder({

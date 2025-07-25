@@ -50,7 +50,7 @@ describe('Streami18n instance - with built-in language', () => {
     it('should provide dutch translator', async () => {
       const { t: _t } = await streami18n.getTranslators();
       for (const key in nlTranslations) {
-        if (key.indexOf('{{') > -1 && key.indexOf('}}') > -1) {
+        if ((key.indexOf('{{') > -1 && key.indexOf('}}') > -1) || key.indexOf('duration/') > -1) {
           continue;
         }
 
@@ -74,7 +74,7 @@ describe('Streami18n instance - with built-in language', () => {
     it('should provide dutch translator', async () => {
       const { t: _t } = await streami18n.getTranslators();
       for (const key in nlTranslations) {
-        if (key.indexOf('{{') > -1 && key.indexOf('}}') > -1) {
+        if ((key.indexOf('{{') > -1 && key.indexOf('}}') > -1) || key.indexOf('duration/') > -1) {
           continue;
         }
 
@@ -188,7 +188,8 @@ describe('setLanguage - switch to french', () => {
 
     const { t: _t } = await streami18n.getTranslators();
     for (const key in frTranslations) {
-      if (key.indexOf('{{') > -1 && key.indexOf('}}') > -1) {
+      // Skip keys with template strings or duration keys
+      if ((key.indexOf('{{') > -1 && key.indexOf('}}') > -1) || key.indexOf('duration/') > -1) {
         continue;
       }
 

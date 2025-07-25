@@ -1,18 +1,23 @@
+import React from 'react';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ChatWrapper } from '../components/ChatWrapper';
 import { AppProvider } from '../context/AppContext';
 import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { LiveLocationManagerProvider } from 'stream-chat-expo';
+import { watchLocation } from '../utils/watchLocation';
 
 export default function Layout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={styles.container}>
         <ChatWrapper>
-          <AppProvider>
-            <Stack />
-          </AppProvider>
+          <LiveLocationManagerProvider watchLocation={watchLocation}>
+            <AppProvider>
+              <Stack />
+            </AppProvider>
+          </LiveLocationManagerProvider>
         </ChatWrapper>
       </GestureHandlerRootView>
     </SafeAreaProvider>

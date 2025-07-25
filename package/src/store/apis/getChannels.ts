@@ -1,5 +1,6 @@
 import type { ChannelAPIResponse } from 'stream-chat';
 
+import { getChannelActiveLocations } from './getChannelActiveLocations';
 import { getChannelMessages } from './getChannelMessages';
 import { getDraftForChannels } from './getDraftsForChannels';
 import { getMembers } from './getMembers';
@@ -27,20 +28,23 @@ export const getChannels = async ({
 }): Promise<Omit<ChannelAPIResponse, 'duration'>[]> => {
   SqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
 
-  const [channels, cidVsDraft, cidVsMembers, cidVsReads, cidVsMessages] = await Promise.all([
-    selectChannels({ channelIds }),
-    getDraftForChannels({ channelIds, currentUserId }),
-    getMembers({ channelIds }),
-    getReads({ channelIds }),
-    getChannelMessages({
-      channelIds,
-      currentUserId,
-    }),
-  ]);
+  const [channels, cidVsDraft, cidVsMembers, cidVsReads, cidVsMessages, cidVsActiveLocations] =
+    await Promise.all([
+      selectChannels({ channelIds }),
+      getDraftForChannels({ channelIds, currentUserId }),
+      getMembers({ channelIds }),
+      getReads({ channelIds }),
+      getChannelMessages({
+        channelIds,
+        currentUserId,
+      }),
+      getChannelActiveLocations({ channelIds }),
+    ]);
 
   // Enrich the channels with state
   return channels.map((c) => ({
     ...mapStorableToChannel(c),
+    active_live_locations: cidVsActiveLocations[c.cid] || [],
     draft: cidVsDraft[c.cid],
     members: cidVsMembers[c.cid] || [],
     membership: (cidVsMembers[c.cid] || []).find((member) => member.user_id === currentUserId),

@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import {
   Chat,
+  enTranslations,
   OverlayProvider,
   SqliteClient,
   Streami18n,
@@ -24,6 +25,12 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
     userData: user,
     tokenOrProvider: userToken,
   });
+
+  streami18n.registerTranslation('en', {
+    ...enTranslations,
+    'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
+  });
+
   const theme = useStreamChatTheme();
 
   if (!chatClient) {

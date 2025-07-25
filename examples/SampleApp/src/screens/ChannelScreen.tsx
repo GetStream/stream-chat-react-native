@@ -29,6 +29,9 @@ import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
+import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
+import { useStreamChatContext } from '../context/StreamChatContext.tsx';
+import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -122,6 +125,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     theme: { colors },
   } = useTheme();
   const { t } = useTranslationContext();
+  const { setThread } = useStreamChatContext();
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
@@ -151,15 +155,27 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     setSelectedThread(undefined);
   });
 
+  const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
+    payload,
+  ) => {
+    const { message, defaultHandler, emitter } = payload;
+    const { shared_location } = message ?? {};
+    if (emitter === 'messageContent' && shared_location) {
+      navigation.navigate('MapScreen', shared_location);
+    }
+    defaultHandler?.();
+  };
+
   const onThreadSelect = useCallback(
     (thread: LocalMessage | null) => {
       setSelectedThread(thread);
+      setThread(thread);
       navigation.navigate('ThreadScreen', {
         channel,
         thread,
       });
     },
-    [channel, navigation],
+    [channel, navigation, setThread],
   );
 
   const messageActions = useCallback(
@@ -185,13 +201,16 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     <View style={[styles.flex, { backgroundColor: colors.white, paddingBottom: bottom }]}>
       <Channel
         audioRecordingEnabled={true}
+        AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
+        onPressMessage={onPressMessage}
         disableTypingIndicator
         enforceUniqueReaction
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageActions={messageActions}
         MessageHeader={MessageReminderHeader}
+        MessageLocation={MessageLocation}
         messageId={messageId}
         NetworkDownIndicator={() => null}
         thread={selectedThread}
