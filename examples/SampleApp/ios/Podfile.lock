@@ -1581,6 +1581,30 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-geolocation (3.4.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-image-picker (8.2.1):
     - DoubleConversion
     - glog
@@ -1605,6 +1629,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-maps (1.20.1):
+    - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-safe-area-context (5.4.1):
@@ -2500,7 +2526,9 @@ DEPENDENCIES:
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - "react-native-document-picker (from `../node_modules/@react-native-documents/picker`)"
+  - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
@@ -2661,8 +2689,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-document-picker:
     :path: "../node_modules/@react-native-documents/picker"
+  react-native-geolocation:
+    :path: "../node_modules/@react-native-community/geolocation"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
+  react-native-maps:
+    :path: "../node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -2822,7 +2854,9 @@ SPEC CHECKSUMS:
   react-native-blob-util: e032f2a9d5779aa94934139a60fe5ed6c5071328
   react-native-cameraroll: 23d28040c32ca8b20661e0c41b56ab041779244b
   react-native-document-picker: 1f8a568fcd43ed5ad9e53307d487d1de21c340a4
+  react-native-geolocation: fcd6daeef13402b1cbb3aadc7711b4e6ed9d89e0
   react-native-image-picker: f6ece66f251f4a17aab08f5add7be6eb9e7f5356
+  react-native-maps: 9febd31278b35cd21e4fad2cf6fa708993be5dab
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-safe-area-context: 8cf8caf5fc0f5a5d3581b650579af9c85c16be04
   react-native-video: 6a236aa5c7619d4ba9b07ddf965a0b62b1702da3

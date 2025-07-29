@@ -28,6 +28,7 @@ export const mapStorableToMessage = ({
     messageTextUpdatedAt,
     poll_id,
     reactionGroups,
+    shared_location,
     updatedAt,
     user,
     ...rest
@@ -46,6 +47,7 @@ export const mapStorableToMessage = ({
     own_reactions: ownReactions,
     poll_id,
     reaction_groups: reactionGroups ? JSON.parse(reactionGroups) : {},
+    shared_location: shared_location ? JSON.parse(shared_location) : null,
     updated_at: updatedAt,
     user: mapStorableToUser(user),
     ...(pollRow ? { poll: mapStorableToPoll(pollRow) } : {}),

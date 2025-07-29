@@ -444,6 +444,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
         return !!message.poll_id;
       case 'ai_text':
         return isAIGenerated;
+      case 'location':
+        return !!message.shared_location;
       case 'text':
       default:
         return !!message.text;
@@ -914,6 +916,17 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const messageThemeEqual = prevMyMessageTheme === nextMyMessageTheme;
   if (!messageThemeEqual) {
+    return false;
+  }
+
+  const prevSharedLocation = prevMessage.shared_location;
+  const nextSharedLocation = nextMessage.shared_location;
+  const sharedLocationEqual =
+    prevSharedLocation?.latitude === nextSharedLocation?.latitude &&
+    prevSharedLocation?.longitude === nextSharedLocation?.longitude &&
+    prevSharedLocation?.end_at === nextSharedLocation?.end_at;
+
+  if (!sharedLocationEqual) {
     return false;
   }
 

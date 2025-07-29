@@ -5,12 +5,6 @@ export const deleteMessage = async ({ execute = true, id }: { id: string; execut
   const queries = [];
 
   queries.push(
-    createDeleteQuery('reactions', {
-      messageId: id,
-    }),
-  );
-
-  queries.push(
     createDeleteQuery('messages', {
       id,
     }),

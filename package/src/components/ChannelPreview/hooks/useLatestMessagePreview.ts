@@ -120,6 +120,13 @@ const getLatestMessageDisplayText = (
       ];
     }
   }
+  // Location messages
+  if (message.shared_location) {
+    return [
+      { bold: false, text: '📍' },
+      { bold: false, text: t('Location') },
+    ];
+  }
 
   if (message.text) {
     // rough guess optimization to limit string preview to max 100 characters
