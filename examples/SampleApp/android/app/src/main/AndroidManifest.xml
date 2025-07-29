@@ -4,6 +4,8 @@
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
   <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
   <queries>
     <intent>
@@ -31,5 +33,8 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+    <meta-data
+      android:name="com.google.android.geo.API_KEY"
+      android:value="AIzaSyDVh35biMyXbOjt74CQyO1dlqSMlrdHOOA" />
   </application>
 </manifest>

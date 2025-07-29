@@ -352,6 +352,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
+      | 'MessageLocation'
       | 'MessageMenu'
       | 'MessagePinnedHeader'
       | 'MessageReplies'
@@ -634,6 +635,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'ai_text',
       'text',
       'attachments',
+      'location',
     ],
     MessageDeleted = MessageDeletedDefault,
     MessageEditedTimestamp = MessageEditedTimestampDefault,
@@ -642,6 +644,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageHeader,
     messageId,
     MessageList = MessageListDefault,
+    MessageLocation,
     MessageMenu = MessageMenuDefault,
     MessagePinnedHeader = MessagePinnedHeaderDefault,
     MessageReactionPicker = MessageReactionPickerDefault,
@@ -1866,6 +1869,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageFooter,
     MessageHeader,
     MessageList,
+    MessageLocation,
     MessageMenu,
     MessagePinnedHeader,
     MessageReactionPicker,

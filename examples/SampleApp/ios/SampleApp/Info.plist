@@ -33,7 +33,9 @@
 			<true />
 		</dict>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string />
+		<string>$(PRODUCT_NAME) would like share live location when in use in a message.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>$(PRODUCT_NAME) would like share live location always in a message.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
 		<key>NSCameraUsageDescription</key>
@@ -54,8 +56,8 @@
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false />
 		<key>ITSAppUsesNonExemptEncryption</key>
-        <false />
-        <key>FirebaseAppDelegateProxyEnabled</key>
-        <true />
+		<false />
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<true />
 	</dict>
 </plist>

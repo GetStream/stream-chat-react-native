@@ -82,8 +82,13 @@ export type MessageContentType =
   | 'quoted_reply'
   | 'poll'
   | 'ai_text'
-  | 'text';
+  | 'text'
+  | 'location';
 export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
+
+export type MessageLocationProps = {
+  message: LocalMessage;
+};
 
 export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerated'> & {
   /**
@@ -225,6 +230,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   MessageFooter: React.ComponentType<MessageFooterProps>;
   MessageList: React.ComponentType<MessageListProps>;
+  MessageLocation?: React.ComponentType<MessageLocationProps>;
   /**
    * UI component for MessageMenu
    */

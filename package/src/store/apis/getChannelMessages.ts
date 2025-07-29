@@ -62,6 +62,19 @@ export const getChannelMessages = async ({
     messageIdsVsReminders[reminder.messageId] = reminder;
   });
 
+  const messagesWithSharedLocations = messageRows.filter((message) => !!message.shared_location);
+  const messageIdsVsLocations: Record<string, TableRow<'locations'>> = {};
+  const sharedLocationRows = (await SqliteClient.executeSql.apply(
+    null,
+    createSelectQuery('locations', ['*'], {
+      messageId: messagesWithSharedLocations.map((message) => message.id),
+    }),
+  )) as unknown as TableRow<'locations'>[];
+
+  sharedLocationRows.forEach((location) => {
+    messageIdsVsLocations[location.messageId] = location;
+  });
+
   // Populate the messages.
   const cidVsMessages: Record<string, MessageResponse[]> = {};
   messageRows.forEach((m) => {

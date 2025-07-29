@@ -92,6 +92,7 @@ export type MessageContentPropsWithContext = Pick<
     | 'Gallery'
     | 'isAttachmentEqual'
     | 'MessageError'
+    | 'MessageLocation'
     | 'myMessageTheme'
     | 'Reply'
     | 'StreamingMessageView'
@@ -136,6 +137,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     messageContentOrder,
     messageGroupedSingleOrBottom = false,
     MessageError,
+    MessageLocation,
     noBorder,
     onLongPress,
     onPress,
@@ -339,6 +341,13 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                   />
                 ) : null;
               }
+              case 'location':
+                return MessageLocation ? (
+                  <MessageLocation
+                    key={`message_location_${messageContentOrderIndex}`}
+                    message={message}
+                  />
+                ) : null;
               case 'ai_text':
                 return isAIGenerated ? (
                   <StreamingMessageView
@@ -491,6 +500,17 @@ const areEqual = (
     return false;
   }
 
+  const prevSharedLocation = prevMessage.shared_location;
+  const nextSharedLocation = nextMessage.shared_location;
+  const sharedLocationEqual =
+    prevSharedLocation?.latitude === nextSharedLocation?.latitude &&
+    prevSharedLocation?.longitude === nextSharedLocation?.longitude &&
+    prevSharedLocation?.end_at === nextSharedLocation?.end_at;
+
+  if (!sharedLocationEqual) {
+    return false;
+  }
+
   return true;
 };
 
@@ -533,6 +553,7 @@ export const MessageContent = (props: MessageContentProps) => {
     Gallery,
     isAttachmentEqual,
     MessageError,
+    MessageLocation,
     myMessageTheme,
     Reply,
     StreamingMessageView,
@@ -558,6 +579,7 @@ export const MessageContent = (props: MessageContentProps) => {
         message,
         messageContentOrder,
         MessageError,
+        MessageLocation,
         myMessageTheme,
         onLongPress,
         onPress,
