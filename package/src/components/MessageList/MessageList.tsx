@@ -594,7 +594,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       if (
         topMessageBeforeUpdate.current?.created_at &&
         topMessageAfterUpdate?.created_at &&
-        topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at
+        topMessageBeforeUpdate.current.created_at <= topMessageAfterUpdate.created_at
       ) {
         channelResyncScrollSet.current = false;
         setScrollToBottomButtonVisible(false);
