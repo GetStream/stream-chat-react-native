@@ -577,7 +577,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   useEffect(() => {
     /**
      * Condition to check if a message is removed from MessageList.
-     * Eg: This would happen when giphy search is cancelled, etc.
+     * Eg: This would happen when giphy search is cancelled, message is deleted with visibility "never" etc.
      * If such a case arises, we scroll to bottom.
      */
     const isMessageRemovedFromMessageList =
