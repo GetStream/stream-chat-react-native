@@ -576,6 +576,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   useEffect(() => {
     /**
+     * Condition to check if a message is removed from MessageList.
+     * Eg: This would happen when giphy search is cancelled, etc.
+     * If such a case arises, we scroll to bottom.
+     */
+    const isMessageRemovedFromMessageList =
+      messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current;
+    /**
      * Scroll down when
      * created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
      */
@@ -584,13 +591,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         return;
       }
 
-      /**
-       * Condition to check if a message is removed from MessageList.
-       * Eg: This would happen when giphy search is cancelled, etc.
-       * If such a case arises, we scroll to bottom.
-       */
-      const isMessageRemovedFromMessageList =
-        messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current;
       if (
         isMessageRemovedFromMessageList ||
         (topMessageBeforeUpdate.current?.created_at &&
@@ -615,8 +615,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       }
     };
 
-    // TODO: Think about if this is really needed?
-    if (threadList) {
+    if (threadList || isMessageRemovedFromMessageList) {
       scrollToBottomIfNeeded();
     }
 
