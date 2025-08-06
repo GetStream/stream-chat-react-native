@@ -202,6 +202,7 @@ const AppContext = React.createContext({} as AppContextType);
 
 const StackNavigator = () => {
   const { channel } = useContext(AppContext);
+  const { overlay } = useOverlayContext();
 
   return (
     <Stack.Navigator
@@ -217,6 +218,7 @@ const StackNavigator = () => {
           headerBackTitle: 'Back',
           headerRight: EmptyHeader,
           headerTitle: channel?.data?.name,
+          headerShown: overlay === 'none',
         })}
       />
       <Stack.Screen
