@@ -2,19 +2,13 @@ import React, { useEffect } from 'react';
 import { FlatList, Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   Easing,
-  Extrapolate,
+  Extrapolation,
   interpolate,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
@@ -32,10 +26,10 @@ import {
 import { ChannelMemberResponse } from 'stream-chat';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
-import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
 import { Archive } from '../icons/Archive';
 import { Pin } from '../icons/Pin';
+import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
 
 dayjs.extend(relativeTime);
 
@@ -106,7 +100,6 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
 
   const { overlay, setOverlay } = useAppOverlayContext();
-  const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useChannelInfoOverlayContext();
   const { vh, vw } = useViewport();
 
@@ -158,17 +151,24 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-    onActive: (evt) => {
+  const pan = Gesture.Pan()
+    .enabled(overlay === 'channelInfo')
+    .maxPointers(1)
+    .minDistance(10)
+    .onBegin(() => {
+      cancelAnimation(translateY);
+      offsetY.value = translateY.value;
+    })
+    .onUpdate((evt) => {
       translateY.value = offsetY.value + evt.translationY;
       overlayOpacity.value = interpolate(
         translateY.value,
         [0, halfScreenHeight],
         [1, 0.75],
-        Extrapolate.CLAMP,
+        Extrapolation.CLAMP,
       );
-    },
-    onFinish: (evt) => {
+    })
+    .onEnd((evt) => {
       const finalYPosition = evt.translationY + evt.velocityY * 0.1;
 
       if (finalYPosition > halfScreenHeight && translateY.value > 0) {
@@ -196,12 +196,13 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
         translateY.value = withTiming(0);
         overlayOpacity.value = withTiming(1);
       }
-    },
-    onStart: () => {
-      cancelAnimation(translateY);
-      offsetY.value = translateY.value;
-    },
-  });
+    });
+
+  const tap = Gesture.Tap()
+    .maxDistance(32)
+    .onEnd(() => {
+      runOnJS(setOverlay)('none');
+    });
 
   const panStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [
@@ -247,26 +248,19 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
         }, '')
     : '';
   const otherMembers = channel
-    ? Object.values<ChannelMemberResponse>(channel.state.members).filter((member) => member.user?.id !== clientId)
+    ? Object.values<ChannelMemberResponse>(channel.state.members).filter(
+        (member) => member.user?.id !== clientId,
+      )
     : [];
+
+  const { viewInfo, pinUnpin, archiveUnarchive, leaveGroup, deleteConversation, cancel } =
+    useChannelInfoOverlayActions({ channel, navigation, otherMembers });
 
   return (
     <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
-      <PanGestureHandler
-        enabled={overlay === 'channelInfo'}
-        maxPointers={1}
-        minDist={10}
-        onGestureEvent={onPan}
-      >
+      <GestureDetector gesture={pan}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
-          <TapGestureHandler
-            maxDist={32}
-            onHandlerStateChange={({ nativeEvent: { state } }) => {
-              if (state === State.END) {
-                setOverlay('none');
-              }
-            }}
-          >
+          <GestureDetector gesture={tap}>
             <Animated.View
               onLayout={({
                 nativeEvent: {
@@ -306,10 +300,10 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                               !!a?.online && !b?.online
                                 ? -1
                                 : a?.id === clientId && b?.id !== clientId
-                                ? -1
-                                : !!a?.online && !!b?.online
-                                ? 0
-                                : 1,
+                                  ? -1
+                                  : !!a?.online && !!b?.online
+                                    ? 0
+                                    : 1,
                             )}
                           horizontal
                           keyExtractor={(item, index) => `${item?.id}_${index}`}
@@ -332,24 +326,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={styles.flatList}
                         />
                       </View>
-                      <TapGestureHandler
-                        onHandlerStateChange={({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            setOverlay('none');
-                            if (navigation) {
-                              if (otherMembers.length === 1) {
-                                navigation.navigate('OneOnOneChannelDetailScreen', {
-                                  channel,
-                                });
-                              } else {
-                                navigation.navigate('GroupChannelDetailsScreen', {
-                                  channel,
-                                });
-                              }
-                            }
-                          }
-                        }}
-                      >
+                      <Pressable onPress={viewInfo}>
                         <View
                           style={[
                             styles.row,
@@ -363,24 +340,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           </View>
                           <Text style={[styles.rowText, { color: black }]}>View info</Text>
                         </View>
-                      </TapGestureHandler>
-                      <TapGestureHandler
-                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            try {
-                              if (membership?.pinned_at) {
-                                await channel.unpin();
-                              } else {
-                                await channel.pin();
-                              }
-                            } catch (error) {
-                              console.log('Error pinning/unpinning channel', error);
-                            }
-
-                            setOverlay('none');
-                          }
-                        }}
-                      >
+                      </Pressable>
+                      <Pressable onPress={pinUnpin}>
                         <View
                           style={[
                             styles.row,
@@ -396,24 +357,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             {membership?.pinned_at ? 'Unpin' : 'Pin'}
                           </Text>
                         </View>
-                      </TapGestureHandler>
-                      <TapGestureHandler
-                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            try {
-                              if (membership?.archived_at) {
-                                await channel.unarchive();
-                              } else {
-                                await channel.archive();
-                              }
-                            } catch (error) {
-                              console.log('Error archiving/unarchiving channel', error);
-                            }
-
-                            setOverlay('none');
-                          }
-                        }}
-                      >
+                      </Pressable>
+                      <Pressable onPress={archiveUnarchive}>
                         <View
                           style={[
                             styles.row,
@@ -429,47 +374,19 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             {membership?.archived_at ? 'Unarchive' : 'Archive'}
                           </Text>
                         </View>
-                      </TapGestureHandler>
+                      </Pressable>
 
                       {otherMembers.length > 1 && (
-                        <TapGestureHandler
-                          onHandlerStateChange={({ nativeEvent: { state } }) => {
-                            if (state === State.END) {
-                              if (clientId) {
-                                channel.removeMembers([clientId]);
-                              }
-                              setOverlay('none');
-                            }
-                          }}
-                        >
+                        <Pressable onPress={leaveGroup}>
                           <View style={[styles.row, { borderTopColor: border }]}>
                             <View style={styles.rowInner}>
                               <UserMinus pathFill={grey} />
                             </View>
                             <Text style={[styles.rowText, { color: black }]}>Leave Group</Text>
                           </View>
-                        </TapGestureHandler>
+                        </Pressable>
                       )}
-                      <TapGestureHandler
-                        onHandlerStateChange={({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            setData({
-                              confirmText: 'DELETE',
-                              onConfirm: () => {
-                                channel.delete();
-                                setOverlay('none');
-                              },
-                              subtext: `Are you sure you want to delete this ${
-                                otherMembers.length === 1 ? 'conversation' : 'group'
-                              }?`,
-                              title: `Delete ${
-                                otherMembers.length === 1 ? 'Conversation' : 'Group'
-                              }`,
-                            });
-                            setOverlay('confirmation');
-                          }
-                        }}
-                      >
+                      <Pressable onPress={deleteConversation}>
                         <View
                           style={[
                             styles.row,
@@ -485,14 +402,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             Delete conversation
                           </Text>
                         </View>
-                      </TapGestureHandler>
-                      <TapGestureHandler
-                        onHandlerStateChange={({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            setOverlay('none');
-                          }
-                        }}
-                      >
+                      </Pressable>
+                      <Pressable onPress={cancel}>
                         <View
                           style={[
                             styles.lastRow,
@@ -507,15 +418,15 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           </View>
                           <Text style={[styles.rowText, { color: black }]}>Cancel</Text>
                         </View>
-                      </TapGestureHandler>
+                      </Pressable>
                     </>
                   )}
                 </SafeAreaView>
               </Animated.View>
             </Animated.View>
-          </TapGestureHandler>
+          </GestureDetector>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </Animated.View>
   );
 };
