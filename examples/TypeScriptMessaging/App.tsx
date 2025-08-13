@@ -58,7 +58,6 @@ const user = {
   id: 'ron',
 };
 const filters = {
-  example: 'example-apps',
   members: { $in: ['ron'] },
   type: 'messaging',
 };
