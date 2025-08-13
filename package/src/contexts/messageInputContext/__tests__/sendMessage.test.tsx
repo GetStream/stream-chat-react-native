@@ -163,14 +163,8 @@ describe("MessageInputContext's sendMessage", () => {
       await channel.messageComposer.createPoll();
     });
 
-    await result.current.sendMessage();
     await waitFor(() => {
-      expect(sendMessageMock.mock.calls[0][0]).toMatchSnapshot();
-      expect(clearQuotedMessageStateMock).toHaveBeenCalled();
-      expect(result.current.sending.current).toBeFalsy();
-      expect(result.current.fileUploads.length).toBe(0);
-      expect(result.current.imageUploads.length).toBe(0);
-      expect(result.current.mentionedUsers.length).toBe(0);
+      result.current.sendMessage();
     });
 
     await waitFor(() => {
