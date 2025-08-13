@@ -27,6 +27,11 @@ export const useChannelPreviewData = (
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
 
   useEffect(() => {
+    const unsubscribe = channel.messageComposer.registerDraftEventSubscriptions();
+    return () => unsubscribe();
+  }, [channel.messageComposer]);
+
+  useEffect(() => {
     const { unsubscribe } = client.on('notification.mark_read', () => {
       setUnread(channel.countUnread());
     });

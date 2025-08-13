@@ -28,6 +28,7 @@ import {
 
 import { useViewport } from '../../../hooks/useViewport';
 
+import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
 import { useMessageData } from '../hooks/useMessageData';
 
@@ -91,6 +92,7 @@ export type MessageContentPropsWithContext = Pick<
     | 'Gallery'
     | 'isAttachmentEqual'
     | 'MessageError'
+    | 'MessageLocation'
     | 'myMessageTheme'
     | 'Reply'
     | 'StreamingMessageView'
@@ -135,6 +137,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     messageContentOrder,
     messageGroupedSingleOrBottom = false,
     MessageError,
+    MessageLocation,
     noBorder,
     onLongPress,
     onPress,
@@ -338,6 +341,13 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                   />
                 ) : null;
               }
+              case 'location':
+                return MessageLocation ? (
+                  <MessageLocation
+                    key={`message_location_${messageContentOrderIndex}`}
+                    message={message}
+                  />
+                ) : null;
               case 'ai_text':
                 return isAIGenerated ? (
                   <StreamingMessageView
@@ -412,27 +422,16 @@ const areEqual = (
     return false;
   }
 
-  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
-  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
-
-  const messageEqual =
-    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    prevMessage.reply_count === nextMessage.reply_count &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned &&
-    prevMessage.i18n === nextMessage.i18n;
+  const messageEqual = checkMessageEquality(prevMessage, nextMessage);
   if (!messageEqual) {
     return false;
   }
 
-  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
-  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
+  const quotedMessageEqual = checkQuotedMessageEquality(
+    prevMessage.quoted_message,
+    nextMessage.quoted_message,
+  );
 
-  const quotedMessageEqual =
-    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
   if (!quotedMessageEqual) {
     return false;
   }
@@ -459,6 +458,14 @@ const areEqual = (
         })
       : prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) {
+    return false;
+  }
+
+  const quotedMessageAttachmentsEqual =
+    prevMessage.quoted_message?.attachments?.length ===
+    nextMessage.quoted_message?.attachments?.length;
+
+  if (!quotedMessageAttachmentsEqual) {
     return false;
   }
 
@@ -490,6 +497,17 @@ const areEqual = (
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
   if (!messageThemeEqual) {
+    return false;
+  }
+
+  const prevSharedLocation = prevMessage.shared_location;
+  const nextSharedLocation = nextMessage.shared_location;
+  const sharedLocationEqual =
+    prevSharedLocation?.latitude === nextSharedLocation?.latitude &&
+    prevSharedLocation?.longitude === nextSharedLocation?.longitude &&
+    prevSharedLocation?.end_at === nextSharedLocation?.end_at;
+
+  if (!sharedLocationEqual) {
     return false;
   }
 
@@ -535,6 +553,7 @@ export const MessageContent = (props: MessageContentProps) => {
     Gallery,
     isAttachmentEqual,
     MessageError,
+    MessageLocation,
     myMessageTheme,
     Reply,
     StreamingMessageView,
@@ -560,6 +579,7 @@ export const MessageContent = (props: MessageContentProps) => {
         message,
         messageContentOrder,
         MessageError,
+        MessageLocation,
         myMessageTheme,
         onLongPress,
         onPress,

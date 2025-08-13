@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAttachmentPickerContext, useTheme } from 'stream-chat-react-native';
+import { useTheme } from 'stream-chat-react-native';
 
 import { ChannelsUnreadCountBadge } from './UnreadCountBadge';
 
@@ -122,13 +122,6 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
     },
   } = useTheme();
   const insets = useSafeAreaInsets();
-  const { setTopInset } = useAttachmentPickerContext();
-
-  useEffect(() => {
-    if (setTopInset) {
-      setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
-    }
-  }, [insets.top, setTopInset]);
 
   return (
     <View

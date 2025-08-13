@@ -48,11 +48,14 @@ const ContextConsumer = ({ context, fn }) => {
   return <View testID='children' />;
 };
 
+const channelType = 'messaging';
+const channelId = 'test-channel';
+const channelCid = `${channelType}:${channelId}`;
 let chatClient;
 let channel;
 
 const user = generateUser({ id: 'id', name: 'name' });
-const messages = [generateMessage({ user })];
+const messages = [generateMessage({ cid: channelCid, user })];
 
 const renderComponent = (props = {}, callback = () => {}, context = ChannelContext) =>
   render(
@@ -70,8 +73,11 @@ describe('Channel', () => {
   beforeEach(async () => {
     const members = [generateMember({ user })];
     const mockedChannel = generateChannelResponse({
+      cid: channelCid,
+      id: channelId,
       members,
       messages,
+      type: channelType,
     });
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);

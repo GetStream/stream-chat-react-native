@@ -24,6 +24,8 @@ describe('ReactionListTop', () => {
   const messages = [generateMessage({ user })];
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+    cleanup();
     const members = [generateMember({ user })];
     const mockedChannel = generateChannelResponse({
       members,
@@ -44,11 +46,6 @@ describe('ReactionListTop', () => {
           </Chat>
         </ChannelsStateProvider>,
       );
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-    cleanup();
   });
 
   it('renders the ReactionListTop component', async () => {

@@ -66,7 +66,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
         container,
       ]}
     >
-      <Text style={[styles.text, { color: white_snow }, text]}>{t<string>('Unread Messages')}</Text>
+      <Text style={[styles.text, { color: white_snow }, text]}>{t('Unread Messages')}</Text>
       <Pressable
         onPress={handleClose}
         style={({ pressed }) => [

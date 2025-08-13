@@ -57,7 +57,7 @@ export const PollInputDialog = ({
           <TextInput
             autoFocus={true}
             onChangeText={setDialogInput}
-            placeholder={t<string>('Ask a question')}
+            placeholder={t('Ask a question')}
             style={[styles.input, { color: black }, input]}
             value={dialogInput}
           />
@@ -67,7 +67,7 @@ export const PollInputDialog = ({
               style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
             >
               <Text style={[styles.button, { color: accent_dark_blue }, button]}>
-                {t<string>('Cancel')}
+                {t('Cancel')}
               </Text>
             </Pressable>
             <Pressable
@@ -77,9 +77,7 @@ export const PollInputDialog = ({
               }}
               style={({ pressed }) => ({ marginLeft: 32, opacity: pressed ? 0.5 : 1 })}
             >
-              <Text style={[styles.button, { color: accent_dark_blue }, button]}>
-                {t<string>('SEND')}
-              </Text>
+              <Text style={[styles.button, { color: accent_dark_blue }, button]}>{t('SEND')}</Text>
             </Pressable>
           </View>
         </View>

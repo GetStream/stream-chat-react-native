@@ -1,6 +1,7 @@
-import React, { PropsWithChildren, useRef } from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   Chat,
+  enTranslations,
   OverlayProvider,
   SqliteClient,
   Streami18n,
@@ -8,7 +9,6 @@ import {
 } from 'stream-chat-expo';
 import { AuthProgressLoader } from './AuthProgressLoader';
 import { STREAM_API_KEY, user, userToken } from '../constants';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStreamChatTheme } from '../useStreamChatTheme';
 
 const streami18n = new Streami18n({
@@ -16,16 +16,21 @@ const streami18n = new Streami18n({
 });
 
 SqliteClient.logger = (level, message, extraData) => {
-  console.log(level, `SqliteClient: ${message}`, extraData);
+  // console.log(level, `SqliteClient: ${message}`, extraData);
 };
 
 export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
-  const { bottom } = useSafeAreaInsets();
   const chatClient = useCreateChatClient({
     apiKey: STREAM_API_KEY,
     userData: user,
     tokenOrProvider: userToken,
   });
+
+  streami18n.registerTranslation('en', {
+    ...enTranslations,
+    'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
+  });
+
   const theme = useStreamChatTheme();
 
   if (!chatClient) {
@@ -33,12 +38,8 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   }
 
   return (
-    <OverlayProvider
-      bottomInset={bottom}
-      i18nInstance={streami18n}
-      value={{ style: theme }}
-    >
-      <Chat enableOfflineSupport client={chatClient} i18nInstance={streami18n}>
+    <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         {children}
       </Chat>
     </OverlayProvider>

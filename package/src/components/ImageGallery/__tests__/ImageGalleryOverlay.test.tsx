@@ -3,9 +3,7 @@ import React from 'react';
 import { State } from 'react-native-gesture-handler';
 import type { SharedValue } from 'react-native-reanimated';
 
-import { act } from 'react-test-renderer';
-
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { LocalMessage } from 'stream-chat';
 

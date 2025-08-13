@@ -270,14 +270,20 @@ export const OptimisticUpdates = () => {
       it('pending task should exist if sendMessage request fails', async () => {
         const newMessage = generateMessage();
 
+        jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue({
+          localMessage: newMessage,
+          message: newMessage,
+          options: {},
+        });
+
         render(
           <Chat client={chatClient} enableOfflineSupport>
-            <Channel channel={channel} initialValue={newMessage.text}>
+            <Channel channel={channel}>
               <CallbackEffectWithContext
                 callback={async ({ sendMessage }) => {
                   useMockedApis(chatClient, [erroredPostApi()]);
                   try {
-                    await sendMessage({ customMessageData: newMessage });
+                    await sendMessage();
                   } catch (e) {
                     // do nothing
                   }
@@ -446,6 +452,12 @@ export const OptimisticUpdates = () => {
       it('send message pending task should be executed after connection is recovered', async () => {
         const newMessage = generateMessage();
 
+        jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue({
+          localMessage: newMessage,
+          message: newMessage,
+          options: {},
+        });
+
         // initialValue is needed as a prop to trick the message input ctx into thinking
         // we are sending a message.
         render(
@@ -455,7 +467,7 @@ export const OptimisticUpdates = () => {
                 callback={async ({ sendMessage }) => {
                   useMockedApis(chatClient, [erroredPostApi()]);
                   try {
-                    await sendMessage({ customMessageData: newMessage });
+                    await sendMessage();
                   } catch (e) {
                     // do nothing
                   }

@@ -38,7 +38,7 @@ export const selectMessagesForChannels = async (
     LEFT JOIN
       users b
     ON b.id = a.userId
-    WHERE RowNum < 200
+    WHERE RowNum < 25
     ORDER BY a.createdAt ASC`,
     cids,
   );

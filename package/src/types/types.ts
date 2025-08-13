@@ -1,6 +1,12 @@
-import type { ChannelFilters, ChannelSort, ChannelState, FileReference } from 'stream-chat';
-
-import type { FileStateValue } from '../utils/utils';
+import type {
+  ChannelFilters,
+  ChannelSort,
+  ChannelState,
+  FileReference,
+  LocalAudioAttachment,
+  LocalUploadAttachment,
+  LocalVoiceRecordingAttachment,
+} from 'stream-chat';
 
 export enum FileTypes {
   Audio = 'audio',
@@ -14,41 +20,29 @@ export enum FileTypes {
 
 export type File = FileReference;
 
-/**
- * This is nothing but a substitute for the attachment type prior to sending the message.
- * This will change if we unify the file uploads to attachments.
- */
-export type FileUpload = {
-  file: File;
-  id: string;
-  state: FileStateValue;
+export type LocalAudioAttachmentType<CustomLocalMetadata = Record<string, unknown>> =
+  | LocalAudioAttachment<CustomLocalMetadata>
+  | LocalVoiceRecordingAttachment<CustomLocalMetadata>;
 
-  mime_type?: string;
-
-  type?: FileTypes;
-  url?: string;
-
-  thumb_url?: string;
-
+export type AudioConfig = {
   duration?: number;
-  waveform_data?: number[];
-
-  height?: number;
-  width?: number;
-};
-
-export type AudioUpload = FileUpload & {
   progress?: number;
   paused?: boolean;
 };
 
+export type AudioUpload<CustomLocalMetadata = Record<string, unknown>> =
+  LocalAudioAttachmentType<CustomLocalMetadata> & AudioConfig;
+
+export type UploadAttachmentPreviewProps<A extends LocalUploadAttachment> = {
+  attachment: A;
+  handleRetry: (
+    attachment: LocalUploadAttachment,
+  ) => void | Promise<LocalUploadAttachment | undefined>;
+  removeAttachments: (ids: string[]) => void;
+};
+
 export interface DefaultAttachmentData {
-  duration?: number;
-  file_size?: number;
-  mime_type?: string;
   originalFile?: File;
-  originalImage?: File;
-  waveform_data?: number[];
 }
 
 export interface DefaultUserData {
@@ -525,4 +519,17 @@ export type RNCLIRecordingOptions = {
 
 export type RNCLIAudioRecordingConfiguration = {
   options?: RNCLIRecordingOptions;
+};
+
+export type Emoji = {
+  id: string;
+  name: string;
+  skins: Array<{ native: string }>;
+  emoticons?: Array<string>;
+  keywords?: Array<string>;
+  native?: string;
+};
+
+export type EmojiSearchIndex = {
+  search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
 };

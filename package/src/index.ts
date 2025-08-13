@@ -4,29 +4,32 @@ import './polyfills';
 
 export * from './components';
 export * from './hooks';
-export { registerNativeHandlers } from './native';
+export { registerNativeHandlers, SoundReturnType, PlaybackStatus, RecordingStatus } from './native';
 export * from './contexts';
-export * from './emoji-data';
 
 export * from './icons';
 
+export * from './middlewares';
+
 export * from './types/types';
 
-export * from './utils/ACITriggerSettings';
 export * from './utils/patchMessageTextCommand';
 export * from './utils/i18n/Streami18n';
-export * from './utils/queryMembers';
-export * from './utils/queryUsers';
+export * from './utils/setupCommandUIMiddlewares';
 export * from './utils/utils';
 
 export { default as enTranslations } from './i18n/en.json';
+export { default as esTranslations } from './i18n/es.json';
 export { default as frTranslations } from './i18n/fr.json';
+export { default as heTranslations } from './i18n/he.json';
 export { default as hiTranslations } from './i18n/hi.json';
 export { default as itTranslations } from './i18n/it.json';
+export { default as jaTranslations } from './i18n/ja.json';
+export { default as koTranslations } from './i18n/ko.json';
 export { default as nlTranslations } from './i18n/nl.json';
+export { default as ptBRTranslations } from './i18n/pt-br.json';
 export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
-export { default as heTranslations } from './i18n/he.json';
 
 export { SqliteClient } from './store/SqliteClient';
 export { OfflineDB } from './store/OfflineDB';

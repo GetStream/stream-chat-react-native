@@ -71,9 +71,7 @@ const CustomChannelPreviewStatus = (
   );
 };
 
-export const ChannelPreview: React.FC<ChannelPreviewMessengerProps> = (
-  props,
-) => {
+export const ChannelPreview: React.FC<ChannelPreviewMessengerProps> = (props) => {
   const { channel } = props;
 
   const { setOverlay } = useAppOverlayContext();

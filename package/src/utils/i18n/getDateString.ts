@@ -1,9 +1,7 @@
-import type { TimestampFormatterOptions } from './predefinedFormatters';
+import { TimestampFormatterOptions } from './types';
 
-import {
-  isDayOrMoment,
-  TranslatorFunctions,
-} from '../../contexts/translationContext/TranslationContext';
+import { TranslatorFunctions } from '../../contexts/translationContext';
+import { isDayOrMoment } from '../../contexts/translationContext/isDayOrMoment';
 
 type DateFormatterOptions = TimestampFormatterOptions &
   Partial<TranslatorFunctions> & {

@@ -21,6 +21,10 @@ import {
 
 import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext';
 
+type State = {
+  bottom: number;
+};
+
 /**
  * View that moves out of the way when the keyboard appears by automatically
  * adjusting its height, position, or bottom padding.
@@ -46,6 +50,8 @@ export class KeyboardCompatibleView extends React.Component<
   _appStateSubscription: NativeEventSubscription | null = null;
   viewRef: React.RefObject<View | null>;
   _initialFrameHeight = 0;
+  _bottom: number = 0;
+
   constructor(props: KeyboardAvoidingViewProps) {
     super(props);
     this.state = {
@@ -93,27 +99,48 @@ export class KeyboardCompatibleView extends React.Component<
   };
 
   _onLayout: (event: LayoutChangeEvent) => void = (event) => {
+    event.persist();
+
+    const oldFrame = this._frame;
     this._frame = event.nativeEvent.layout;
     if (!this._initialFrameHeight) {
       // save the initial frame height, before the keyboard is visible
       this._initialFrameHeight = this._frame.height;
     }
 
-    this._updateBottomIfNecessary();
+    // update bottom height for the first time or when the height is changed
+    if (!oldFrame || oldFrame.height !== this._frame.height) {
+      this._updateBottomIfNecessary();
+    }
+
+    if (this.props.onLayout) {
+      this.props.onLayout(event);
+    }
+  };
+
+  // Avoid unnecessary renders if the KeyboardAvoidingView is disabled.
+  _setBottom = (value: number) => {
+    const enabled = this.props.enabled ?? true;
+    this._bottom = value;
+    if (enabled) {
+      this.setState({ bottom: value });
+    }
   };
 
   _updateBottomIfNecessary = () => {
-    if (this._keyboardEvent === null) {
-      this.setState({ bottom: 0 });
+    if (this._keyboardEvent == null) {
+      this._setBottom(0);
       return;
     }
 
     const { duration, easing, endCoordinates } = this._keyboardEvent;
     const height = this._relativeKeyboardHeight(endCoordinates);
 
-    if (this.state.bottom === height) {
+    if (this._bottom === height) {
       return;
     }
+
+    this._setBottom(height);
 
     if (duration && easing) {
       LayoutAnimation.configureNext({
@@ -125,7 +152,6 @@ export class KeyboardCompatibleView extends React.Component<
         },
       });
     }
-    this.setState({ bottom: height });
   };
 
   _handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -183,6 +209,13 @@ export class KeyboardCompatibleView extends React.Component<
       Keyboard.dismiss();
     });
   };
+
+  componentDidUpdate(_: KeyboardAvoidingViewProps, prevState: State): void {
+    const enabled = this.props.enabled ?? true;
+    if (enabled && this._bottom !== prevState.bottom) {
+      this.setState({ bottom: this._bottom });
+    }
+  }
 
   componentDidMount() {
     this._appStateSubscription = AppState.addEventListener('change', this._handleAppStateChange);

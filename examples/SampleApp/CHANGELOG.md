@@ -1,5 +1,53 @@
 # Change Log
 
+## [4.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.0.0...sampleapp@v4.1.0) (2025-07-09)
+
+
+### Features
+
+* add reminders implementation ([#3141](https://github.com/GetStream/stream-chat-react-native/issues/3141)) ([11c3307](https://github.com/GetStream/stream-chat-react-native/commit/11c33075954be074a702ac84a96c83b6e299b9b5))
+
+
+### Bug Fixes
+
+* remove erroneous unread indicator from drafts tab ([59a32ee](https://github.com/GetStream/stream-chat-react-native/commit/59a32eed16b2751605bfa1be850f4e42046837a2))
+
+## [4.0.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.3...sampleapp@v4.0.0) (2025-06-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* V7 release candidate
+
+* chore: add rc channel
+
+* fix: typo in branch name
+* Release V7
+
+* chore: remove dryRun
+
+* chore: bump stream-chat version to latest rc
+
+* chore: bump stream-chat to latest
+
+### Features
+
+* v8 ([#3137](https://github.com/GetStream/stream-chat-react-native/issues/3137)) ([c8b8b71](https://github.com/GetStream/stream-chat-react-native/commit/c8b8b716634f34dfa883cc878596143626294520)), closes [#3085](https://github.com/GetStream/stream-chat-react-native/issues/3085) [#2993](https://github.com/GetStream/stream-chat-react-native/issues/2993) [#3000](https://github.com/GetStream/stream-chat-react-native/issues/3000) [#3005](https://github.com/GetStream/stream-chat-react-native/issues/3005) [#3010](https://github.com/GetStream/stream-chat-react-native/issues/3010) [#3050](https://github.com/GetStream/stream-chat-react-native/issues/3050) [#3061](https://github.com/GetStream/stream-chat-react-native/issues/3061) [#3073](https://github.com/GetStream/stream-chat-react-native/issues/3073) [#3072](https://github.com/GetStream/stream-chat-react-native/issues/3072)
+
+### [3.1.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.2...sampleapp@v3.1.3) (2025-06-26)
+
+
+### Bug Fixes
+
+* android 35 keyboard issues ([#3134](https://github.com/GetStream/stream-chat-react-native/issues/3134)) ([241d1db](https://github.com/GetStream/stream-chat-react-native/commit/241d1db886fb85b5397f1ebde2e8d7a76c85abeb))
+
+### [3.1.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.1...sampleapp@v3.1.2) (2025-06-23)
+
+
+### Bug Fixes
+
+* sample app crash on start ([#3128](https://github.com/GetStream/stream-chat-react-native/issues/3128)) ([971087d](https://github.com/GetStream/stream-chat-react-native/commit/971087d0f81a33c8503853ad1a34cff8c3822fec))
+
 ### [3.1.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v3.1.0...sampleapp@v3.1.1) (2025-05-30)
 
 

@@ -1,212 +1,166 @@
-import React, { PropsWithChildren } from 'react';
-import { act } from 'react-test-renderer';
+import React from 'react';
 
-import { renderHook, waitFor } from '@testing-library/react-native';
+import { act, cleanup, renderHook, waitFor } from '@testing-library/react-native';
 
 import { LocalMessage } from 'stream-chat';
 
-import {
-  generateFileUploadPreview,
-  generateImageUploadPreview,
-} from '../../../mock-builders/generator/attachment';
-import { generateMessage } from '../../../mock-builders/generator/message';
-import { generateUser } from '../../../mock-builders/generator/user';
+import { Chat } from '../../../components';
+import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 
-import { FileState } from '../../../utils/utils';
-import * as AttachmentPickerContext from '../../attachmentPickerContext/AttachmentPickerContext';
+import { generateLocalFileUploadAttachmentData } from '../../../mock-builders/attachments';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import * as UseMessageComposerAPIContext from '../../messageComposerContext/MessageComposerAPIContext';
+
+import { MessageComposerAPIContextValue } from '../../messageComposerContext/MessageComposerAPIContext';
+import { MessageComposerProvider } from '../../messageComposerContext/MessageComposerContext';
+import {
+  OwnCapabilitiesContextValue,
+  OwnCapabilitiesProvider,
+} from '../../ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   InputMessageInputContextValue,
-  MessageInputContextValue,
   MessageInputProvider,
   useMessageInputContext,
 } from '../MessageInputContext';
 
-type WrapperType = Partial<InputMessageInputContextValue>;
+const Wrapper = ({ messageComposerContextValue, client, props }) => {
+  return (
+    <Chat client={client}>
+      <OwnCapabilitiesProvider value={{ sendMessage: true } as OwnCapabilitiesContextValue}>
+        <MessageComposerProvider value={messageComposerContextValue}>
+          <MessageInputProvider
+            value={
+              {
+                ...props,
+              } as InputMessageInputContextValue
+            }
+          >
+            {props.children}
+          </MessageInputProvider>
+        </MessageComposerProvider>
+      </OwnCapabilitiesProvider>
+    </Chat>
+  );
+};
 
-const Wrapper = ({ children, ...rest }: PropsWithChildren<WrapperType>) => (
-  <MessageInputProvider
-    value={
-      {
-        ...rest,
-      } as MessageInputContextValue
-    }
-  >
-    {children}
-  </MessageInputProvider>
-);
-
-const newMessage = generateMessage({ id: 'new-id' });
 describe("MessageInputContext's sendMessage", () => {
-  jest.spyOn(AttachmentPickerContext, 'useAttachmentPickerContext').mockImplementation(() => ({
-    setSelectedFiles: jest.fn(),
-    setSelectedImages: jest.fn(),
-  }));
-  const message: LocalMessage | undefined = generateMessage({
-    created_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
-    id: '7a85f744-cc89-4f82-a1d4-5456432cc8bf',
-    updated_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
-    user: generateUser({
-      id: '5d6f6322-567e-4e1e-af90-97ef1ed5cc23',
-      image: 'fc86ddcb-bac4-400c-9afd-b0c0a1c0cd33',
-      name: '50cbdd0e-ca7e-4478-9e2c-be0f1ac6a995',
-    }),
-  }) as unknown as LocalMessage;
+  let channel;
+  let chatClient;
 
-  it('exit sendMessage when file upload status failed', async () => {
-    const initialProps = {
-      editing: undefined,
-    };
-    const files = generateFileUploadPreview({ state: FileState.UPLOAD_FAILED });
-    const images = generateImageUploadPreview({ state: FileState.UPLOAD_FAILED });
-    const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps,
-      wrapper: (props) => (
-        <Wrapper
-          // @ts-ignore
-          editing={initialProps.editing}
-          {...props}
-        />
-      ),
-    });
-
-    act(() => {
-      result.current.setFileUploads([files]);
-      result.current.setImageUploads([images]);
-    });
-
-    act(() => {
-      result.current.sendMessage();
-    });
-
-    await expect(result.current.sending.current).toBeFalsy();
+  beforeEach(async () => {
+    const { client, channels } = await initiateClientWithChannels();
+    channel = channels[0];
+    chatClient = client;
   });
 
-  it('exit sendMessage when image upload status is uploading', async () => {
-    const images = generateImageUploadPreview({ state: FileState.UPLOADING });
-    const initialProps = {
-      editing: message,
-      sendImageAsync: true,
-    };
-
-    const { rerender, result } = renderHook(() => useMessageInputContext(), {
-      initialProps,
-      wrapper: (props) => (
-        <Wrapper
-          // @ts-ignore
-          editing={initialProps.editing}
-          sendImageAsync={initialProps.sendImageAsync}
-          {...props}
-        />
-      ),
-    });
-
-    act(() => {
-      result.current.setImageUploads([images]);
-      result.current.setMentionedUsers([]);
-      result.current.setText('');
-    });
-
-    await waitFor(() => {
-      result.current.sendMessage();
-    });
-
-    rerender({ editing: newMessage, sendImageAsync: true });
-
-    await waitFor(() => {
-      expect(result.current.asyncIds).toHaveLength(1);
-    });
-    await expect(result.current.sending.current).toBeFalsy();
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+    channel.messageComposer.clear();
   });
 
-  it('exit sendMessage when image upload status is uploading and sendImageAsync is available', async () => {
-    const images = generateImageUploadPreview({ state: FileState.UPLOADING });
-    const initialProps = {
-      editing: message,
-    };
-
-    const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps,
-      wrapper: (props) => (
-        <Wrapper
-          // @ts-ignore
-          editing={initialProps.editing}
-          {...props}
-        />
-      ),
-    });
-
-    act(() => {
-      result.current.setImageUploads([images]);
-      result.current.setMentionedUsers([]);
-      result.current.setText('');
-    });
-
-    act(() => {
-      result.current.sendMessage();
-    });
-
-    await expect(result.current.sending.current).toBeFalsy();
-  });
-
-  it('exit sendMessage when file upload status is uploading', async () => {
-    const files = generateFileUploadPreview({ state: FileState.UPLOADING });
-    const initialProps = {
-      editing: message,
-    };
-    const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps,
-      wrapper: (props) => (
-        <Wrapper
-          // @ts-ignore
-          editing={initialProps.editing}
-          {...props}
-        />
-      ),
-    });
-
-    act(() => {
-      result.current.setFileUploads([files]);
-      result.current.setMentionedUsers([]);
-      result.current.setText('');
-    });
-
-    act(() => {
-      result.current.sendMessage();
-    });
-
-    await expect(result.current.sending.current).toBeFalsy();
-  });
-
-  it('exit sendMessage when image upload status is uploaded successfully', async () => {
+  it('should get into the catch block if the message composer compose throws an error', async () => {
     const sendMessageMock = jest.fn();
-    const clearQuotedMessageStateMock = jest.fn();
-    const images = [
-      generateImageUploadPreview({ state: FileState.UPLOADED }),
-      generateImageUploadPreview({ state: FileState.FINISHED }),
-    ];
     const initialProps = {
-      clearQuotedMessageState: clearQuotedMessageStateMock,
-      editing: undefined,
-      quotedMessage: false,
       sendMessage: sendMessageMock,
     };
+    const consoleErrorMock = jest.spyOn(console, 'error');
+
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps,
       wrapper: (props) => (
         <Wrapper
-          clearQuotedMessageState={initialProps.clearQuotedMessageState}
-          editing={initialProps.editing}
-          quotedMessage={initialProps.quotedMessage}
-          sendMessage={initialProps.sendMessage}
-          {...props}
+          client={chatClient}
+          messageComposerContextValue={{ channel }}
+          props={{ ...props, ...initialProps }}
         />
       ),
     });
 
-    act(() => {
-      result.current.setImageUploads(images);
-      result.current.setMentionedUsers(['dummy1', 'dummy2']);
-      result.current.setText('');
+    const composerComposeMock = jest.spyOn(channel.messageComposer, 'compose');
+    composerComposeMock.mockRejectedValue(new Error('Error composing message'));
+
+    await waitFor(() => {
+      result.current.sendMessage();
+    });
+
+    await waitFor(() => {
+      expect(sendMessageMock).not.toHaveBeenCalled();
+      expect(consoleErrorMock).toHaveBeenCalled();
+    });
+  });
+
+  it('should get into the catch block if the sendMessage throws an error', async () => {
+    const sendMessageMock = jest.fn();
+    sendMessageMock.mockRejectedValue(new Error('Error sending message'));
+
+    const initialProps = {
+      sendMessage: sendMessageMock,
+    };
+    const consoleErrorMock = jest.spyOn(console, 'error');
+
+    const { result } = renderHook(() => useMessageInputContext(), {
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          client={chatClient}
+          messageComposerContextValue={{ channel }}
+          props={{ ...props, ...initialProps }}
+        />
+      ),
+    });
+
+    await act(async () => {
+      const text = 'Hello there';
+      await channel.messageComposer.textComposer.handleChange({
+        selection: {
+          end: text.length,
+          start: text.length,
+        },
+        text,
+      });
+    });
+
+    await waitFor(() => {
+      result.current.sendMessage();
+    });
+
+    await waitFor(() => {
+      expect(sendMessageMock).toHaveBeenCalled();
+      expect(consoleErrorMock).toHaveBeenCalled();
+    });
+  });
+
+  it('should not call composer clear if composition has poll id in it', async () => {
+    const sendMessageMock = jest.fn();
+    const clearSpy = jest.spyOn(channel.messageComposer, 'clear');
+    const initialProps = {
+      sendMessage: sendMessageMock,
+    };
+    const { pollComposer } = channel.messageComposer;
+    jest.spyOn(chatClient, 'createPoll').mockResolvedValue({ poll: { id: 'test-poll-id' } });
+
+    const { result } = renderHook(() => useMessageInputContext(), {
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          client={chatClient}
+          messageComposerContextValue={{ channel }}
+          props={{ ...props, ...initialProps }}
+        />
+      ),
+    });
+
+    await act(async () => {
+      await pollComposer.updateFields({
+        id: 'test-poll',
+        name: 'Test Poll',
+        options: [
+          { id: 1, text: '1' },
+          { id: 2, text: '2' },
+        ],
+      });
+      await channel.messageComposer.createPoll();
     });
 
     await result.current.sendMessage();
@@ -218,142 +172,103 @@ describe("MessageInputContext's sendMessage", () => {
       expect(result.current.imageUploads.length).toBe(0);
       expect(result.current.mentionedUsers.length).toBe(0);
     });
+
+    await waitFor(() => {
+      expect(clearSpy).not.toHaveBeenCalled();
+      expect(sendMessageMock).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it('exit sendMessage when image upload has an error and catch block is executed', () => {
-    const setQuotedMessageStateMock = jest.fn();
-    const clearQuotedMessageStateMock = jest.fn();
-    const generatedQuotedMessage: boolean | LocalMessage = message;
-    const images = [
-      generateImageUploadPreview({ state: FileState.UPLOADED }),
-      generateImageUploadPreview({ state: FileState.FINISHED }),
-    ];
+  it('should send message', async () => {
+    const sendMessageMock = jest.fn();
+    const clearSpy = jest.spyOn(channel.messageComposer, 'clear');
     const initialProps = {
-      clearQuotedMessageState: clearQuotedMessageStateMock,
-      editing: undefined,
-      quotedMessage: generatedQuotedMessage,
-      setQuotedMessageState: setQuotedMessageStateMock,
+      sendMessage: sendMessageMock,
     };
+
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps,
       wrapper: (props) => (
         <Wrapper
-          // @ts-ignore
-          clearEditingState={initialProps.clearQuotedMessageState}
-          editing={initialProps.editing}
-          quotedMessage={initialProps.quotedMessage}
-          setQuotedMessageState={initialProps.setQuotedMessageState}
-          {...props}
+          client={chatClient}
+          messageComposerContextValue={{ channel }}
+          props={{ ...props, ...initialProps }}
         />
       ),
     });
 
-    act(() => {
-      result.current.setImageUploads(images);
-      result.current.setMentionedUsers(['dummy1', 'dummy2']);
-      result.current.setText('');
+    await act(async () => {
+      const text = 'Hello there';
+      await channel.messageComposer.textComposer.handleChange({
+        selection: {
+          end: text.length,
+          start: text.length,
+        },
+        text,
+      });
     });
 
-    act(() => {
+    await waitFor(() => {
       result.current.sendMessage();
     });
 
-    expect(setQuotedMessageStateMock).toHaveBeenCalled();
-    expect(result.current.sending.current).toBeFalsy();
+    await waitFor(() => {
+      expect(clearSpy).toHaveBeenCalled();
+      expect(sendMessageMock).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+describe("MessageInputContext's editMessage", () => {
+  let channel;
+  let chatClient;
+
+  beforeAll(async () => {
+    const { client, channels } = await initiateClientWithChannels();
+    channel = channels[0];
+    chatClient = client;
   });
 
-  it('exit sendMessage when edit message is not boolean image upload status is uploaded successfully', () => {
-    const sendMessageMock = jest.fn();
-    const clearQuotedMessageStateMock = jest.fn();
-    const clearEditingStateMock = jest.fn();
-    const editMessageMock = jest.fn().mockResolvedValue({ data: {} });
-    const images = generateImageUploadPreview({ state: FileState.UPLOADED });
-    const generatedMessage: boolean | LocalMessage = message;
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
+  it('should clear the edited state when the composition is empty', async () => {
+    const editMessageMock = jest.fn();
     const initialProps = {
-      clearEditingState: clearEditingStateMock,
-      clearQuotedMessageState: clearQuotedMessageStateMock,
-      editing: generatedMessage,
       editMessage: editMessageMock,
-      quotedMessage: false,
-      sendMessage: sendMessageMock,
     };
+
+    const clearEditingStateMock = jest.fn();
+
+    jest.spyOn(UseMessageComposerAPIContext, 'useMessageComposerAPIContext').mockReturnValue({
+      clearEditingState: clearEditingStateMock,
+    } as unknown as MessageComposerAPIContextValue);
+
+    const message = generateMessage({
+      attachments: [generateLocalFileUploadAttachmentData()],
+      cid: 'messaging:channel-id',
+      text: 'test',
+    }) as LocalMessage;
+
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps,
       wrapper: (props) => (
         <Wrapper
-          clearEditingState={initialProps.clearEditingState}
-          clearQuotedMessageState={initialProps.clearQuotedMessageState}
-          editing={initialProps.editing}
-          editMessage={initialProps.editMessage}
-          quotedMessage={initialProps.quotedMessage}
-          sendMessage={initialProps.sendMessage}
-          {...props}
+          client={chatClient}
+          messageComposerContextValue={{ channel, editing: message }}
+          props={{ ...props, ...initialProps }}
         />
       ),
     });
 
-    act(() => {
-      result.current.setImageUploads([images]);
-      result.current.setMentionedUsers(['dummy1', 'dummy2']);
-      result.current.setText('');
-    });
-
-    act(() => {
+    await waitFor(() => {
       result.current.sendMessage();
     });
 
-    expect(editMessageMock.mock.calls[0][0]).toMatchSnapshot();
-    expect(clearEditingStateMock).toHaveBeenCalled();
-    expect(result.current.sending.current).toBeFalsy();
-    expect(result.current.fileUploads.length).toBe(0);
-    expect(result.current.imageUploads.length).toBe(0);
-    expect(result.current.mentionedUsers.length).toBe(0);
-  });
-
-  it('exit sendMessage when file upload status is uploaded successfully', () => {
-    const files = [
-      generateFileUploadPreview({ state: FileState.UPLOADED }),
-      generateFileUploadPreview({ state: FileState.FINISHED, type: 'video/mp4' }),
-      generateFileUploadPreview({ state: FileState.UPLOADED, type: 'audio/mp3' }),
-      generateFileUploadPreview({ state: FileState.FINISHED, type: 'image/jpeg' }),
-    ];
-    const sendMessageMock = jest.fn();
-    const clearQuotedMessageStateMock = jest.fn();
-    const initialProps = {
-      clearQuotedMessageState: clearQuotedMessageStateMock,
-      editing: undefined,
-      quotedMessage: false,
-      sendMessage: sendMessageMock,
-    };
-    const { result } = renderHook(() => useMessageInputContext(), {
-      initialProps,
-      wrapper: (props) => (
-        <Wrapper
-          // @ts-ignore
-          clearQuotedMessageState={initialProps.clearQuotedMessageState}
-          editing={initialProps.editing}
-          quotedMessage={initialProps.quotedMessage}
-          sendMessage={initialProps.sendMessage}
-          {...props}
-        />
-      ),
+    await waitFor(() => {
+      expect(clearEditingStateMock).toHaveBeenCalled();
     });
-
-    act(() => {
-      result.current.setFileUploads(files);
-      result.current.setMentionedUsers(['dummy1', 'dummy2']);
-      result.current.setText('');
-    });
-
-    act(() => {
-      result.current.sendMessage();
-    });
-
-    expect(sendMessageMock.mock.calls[0][0]).toMatchSnapshot();
-    expect(clearQuotedMessageStateMock).toHaveBeenCalled();
-    expect(result.current.sending.current).toBeFalsy();
-    expect(result.current.fileUploads.length).toBe(0);
-    expect(result.current.imageUploads.length).toBe(0);
-    expect(result.current.mentionedUsers.length).toBe(0);
   });
 });

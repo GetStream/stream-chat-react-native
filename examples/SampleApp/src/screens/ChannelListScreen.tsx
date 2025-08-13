@@ -18,6 +18,7 @@ import { useAppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
 import type { ChannelSort } from 'stream-chat';
+import { useStreamChatContext } from '../context/StreamChatContext';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -59,11 +60,7 @@ const baseFilters = {
   type: 'messaging',
 };
 
-const sort: ChannelSort = [
-  { pinned_at: -1 },
-  { last_message_at: -1 },
-  { updated_at: -1 },
-];
+const sort: ChannelSort = [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }];
 
 const options = {
   presence: true,
@@ -81,6 +78,7 @@ export const ChannelListScreen: React.FC = () => {
       colors: { black, grey, grey_gainsboro, grey_whisper, white, white_snow },
     },
   } = useTheme();
+  const { setChannel } = useStreamChatContext();
 
   const searchInputRef = useRef<TextInput | null>(null);
   const scrollRef = useRef<FlatList<Channel> | null>(null);
@@ -128,11 +126,12 @@ export const ChannelListScreen: React.FC = () => {
 
   const onSelect = useCallback(
     (channel: Channel) => {
+      setChannel(channel);
       navigation.navigate('ChannelScreen', {
         channel,
       });
     },
-    [navigation],
+    [navigation, setChannel],
   );
 
   const setScrollRef = useCallback(

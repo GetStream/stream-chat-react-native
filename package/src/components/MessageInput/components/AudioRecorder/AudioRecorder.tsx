@@ -187,9 +187,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
         <Animated.View
           style={[styles.slideToCancelContainer, slideToCancelStyle, slideToCancelContainer]}
         >
-          <Text style={[styles.slideToCancel, { color: grey_dark }]}>
-            {t<string>('Slide to Cancel')}
-          </Text>
+          <Text style={[styles.slideToCancel, { color: grey_dark }]}>{t('Slide to Cancel')}</Text>
           <ArrowLeft fill={grey_dark} size={24} {...arrowLeftIcon} />
         </Animated.View>
       </>

@@ -11,6 +11,8 @@ import type { RouteProp } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList, StackNavigatorParamList } from '../types';
+import { DraftsScreen } from './DraftScreen';
+import { RemindersScreen } from './RemindersScreen';
 
 const Tab = createBottomTabNavigator<BottomTabNavigatorParamList>();
 
@@ -30,6 +32,12 @@ export const ChatScreen: React.FC<Props> = () => (
     <Tab.Screen
       component={ThreadListScreen}
       name='ThreadsScreen'
+      options={{ headerShown: false }}
+    />
+    <Tab.Screen component={DraftsScreen} name='DraftsScreen' options={{ headerShown: false }} />
+    <Tab.Screen
+      component={RemindersScreen}
+      name='RemindersScreen'
       options={{ headerShown: false }}
     />
   </Tab.Navigator>

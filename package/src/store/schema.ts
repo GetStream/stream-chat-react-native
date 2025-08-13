@@ -60,6 +60,76 @@ export const tables: Tables = {
     },
     primaryKey: ['cid'],
   },
+  draft: {
+    columns: {
+      cid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      draftMessageId: 'TEXT NOT NULL',
+      parentId: 'TEXT',
+      quotedMessageId: 'TEXT',
+    },
+    foreignKeys: [
+      {
+        column: 'draftMessageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'draftMessage',
+        referenceTableColumn: 'id',
+      },
+    ],
+    indexes: [
+      {
+        columns: ['cid', 'draftMessageId'],
+        name: 'index_draft',
+        unique: false,
+      },
+    ],
+    primaryKey: ['cid', 'draftMessageId'],
+  },
+  draftMessage: {
+    columns: {
+      attachments: 'TEXT',
+      custom: 'TEXT',
+      id: 'TEXT NOT NULL',
+      mentionedUsers: 'TEXT',
+      parentId: 'TEXT',
+      poll_id: 'TEXT',
+      quotedMessageId: 'TEXT',
+      showInChannel: 'BOOLEAN DEFAULT FALSE',
+      silent: 'BOOLEAN DEFAULT FALSE',
+      text: 'TEXT',
+      type: 'TEXT',
+    },
+    primaryKey: ['id'],
+  },
+  locations: {
+    columns: {
+      channelCid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      createdByDeviceId: 'TEXT',
+      endAt: 'TEXT',
+      latitude: 'REAL NOT NULL',
+      longitude: 'REAL NOT NULL',
+      messageId: 'TEXT NOT NULL',
+      updatedAt: 'TEXT',
+      userId: 'TEXT NOT NULL',
+    },
+    foreignKeys: [
+      {
+        column: 'messageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'messages',
+        referenceTableColumn: 'id',
+      },
+    ],
+    indexes: [
+      {
+        columns: ['channelCid', 'messageId'],
+        name: 'index_locations',
+        unique: false,
+      },
+    ],
+    primaryKey: ['channelCid', 'messageId'],
+  },
   members: {
     columns: {
       archivedAt: 'TEXT',
@@ -105,6 +175,7 @@ export const tables: Tables = {
       messageTextUpdatedAt: 'TEXT',
       poll_id: 'TEXT',
       reactionGroups: 'TEXT',
+      shared_location: 'TEXT',
       text: "TEXT DEFAULT ''",
       type: 'TEXT',
       updatedAt: 'TEXT',
@@ -135,6 +206,7 @@ export const tables: Tables = {
       id: 'INTEGER PRIMARY KEY AUTOINCREMENT',
       messageId: 'TEXT',
       payload: 'TEXT',
+      threadId: 'TEXT',
       type: 'TEXT',
     },
   },
@@ -207,6 +279,32 @@ export const tables: Tables = {
     ],
     primaryKey: ['userId', 'cid'],
   },
+  reminders: {
+    columns: {
+      channelCid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      messageId: 'TEXT NOT NULL',
+      remindAt: 'TEXT',
+      updatedAt: 'TEXT',
+      userId: 'TEXT NOT NULL',
+    },
+    foreignKeys: [
+      {
+        column: 'messageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'messages',
+        referenceTableColumn: 'id',
+      },
+    ],
+    indexes: [
+      {
+        columns: ['messageId'],
+        name: 'index_reminders',
+        unique: false,
+      },
+    ],
+    primaryKey: ['messageId'],
+  },
   users: {
     columns: {
       banned: 'BOOLEAN DEFAULT FALSE',
@@ -269,6 +367,26 @@ export type Schema = {
     truncatedById?: string;
     updatedAt?: string;
   };
+  draft: {
+    draftMessageId: string;
+    cid: string;
+    createdAt: string;
+    parentId?: string;
+    quotedMessageId?: string;
+  };
+  draftMessage: {
+    id: string;
+    attachments?: string;
+    custom?: string;
+    mentionedUsers?: string;
+    parentId?: string;
+    poll_id?: string;
+    quotedMessageId?: string;
+    showInChannel?: boolean;
+    silent?: boolean;
+    text: string;
+    type?: MessageLabel;
+  };
   members: {
     archivedAt?: string;
     cid: string;
@@ -295,6 +413,7 @@ export type Schema = {
     messageTextUpdatedAt: string;
     poll_id: string;
     reactionGroups: string;
+    shared_location: string;
     type: MessageLabel;
     updatedAt: string;
     text?: string;
@@ -306,6 +425,7 @@ export type Schema = {
     createdAt: string;
     id: number;
     messageId: string;
+    threadId: string;
     payload: string;
     type: ValueOf<PendingTaskTypes>;
   };
@@ -346,6 +466,25 @@ export type Schema = {
     lastReadMessageId?: string;
     unreadMessages?: number;
     userId?: string;
+  };
+  reminders: {
+    channelCid: string;
+    createdAt: string;
+    messageId: string;
+    updatedAt: string;
+    userId: string;
+    remindAt?: string;
+  };
+  locations: {
+    channelCid: string;
+    createdAt: string;
+    createdByDeviceId: string;
+    endAt?: string;
+    latitude: number;
+    longitude: number;
+    messageId: string;
+    updatedAt: string;
+    userId: string;
   };
   users: {
     id: string;

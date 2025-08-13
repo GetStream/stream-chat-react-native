@@ -6,14 +6,12 @@ import type { ChannelContextValue } from 'stream-chat-react-native';
 
 import type { StackNavigatorParamList } from '../types';
 
-type ChannelListScreenNavigationProp = StackNavigationProp<
+export type ChannelListScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
   'ChannelListScreen'
 >;
 
-export type ChannelInfoOverlayData = Partial<
-  Pick<ChannelContextValue, 'channel'>
-> & {
+export type ChannelInfoOverlayData = Partial<Pick<ChannelContextValue, 'channel'>> & {
   clientId?: string;
   membership?: ChannelState['membership'];
   navigation?: ChannelListScreenNavigationProp;

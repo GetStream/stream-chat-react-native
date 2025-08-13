@@ -56,7 +56,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
         ]}
       >
         <Text style={[styles.addCommentButtonText, { color: accent_dark_blue }, text]}>
-          {ownAnswer ? t<string>('Update your comment') : t<string>('Add a comment')}
+          {ownAnswer ? t('Update your comment') : t('Add a comment')}
         </Text>
       </Pressable>
       {showAddCommentDialog ? (
@@ -64,7 +64,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
           closeDialog={() => setShowAddCommentDialog(false)}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
-          title={t<string>('Add a comment')}
+          title={t('Add a comment')}
           visible={showAddCommentDialog}
         />
       ) : null}
@@ -117,7 +117,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
             <Avatar image={answer.user?.image as string} size={20} />
           ) : null}
           <Text style={{ color: black, fontSize: 14, marginLeft: 2 }}>
-            {isAnonymous ? t<string>('Anonymous') : answer.user?.name}
+            {isAnonymous ? t('Anonymous') : answer.user?.name}
           </Text>
         </View>
         <Text style={{ color: black }}>{dateString}</Text>

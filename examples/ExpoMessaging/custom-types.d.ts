@@ -15,7 +15,9 @@ import {
 declare module 'stream-chat' {
   /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-  interface CustomAttachmentData extends DefaultAttachmentData {}
+  interface CustomAttachmentData extends DefaultAttachmentData {
+    ended_at?: string;
+  }
 
   interface CustomChannelData extends DefaultChannelData {}
 

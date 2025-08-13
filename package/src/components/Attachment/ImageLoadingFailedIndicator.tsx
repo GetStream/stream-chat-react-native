@@ -49,7 +49,7 @@ export const ImageLoadingFailedIndicator = (props: ImageLoadingFailedIndicatorPr
           style={styles.warningIconStyle}
           width={WARNING_ICON_SIZE}
         />
-        <Text style={[styles.errorText, { color: white }]}>{t<string>('Error loading')}</Text>
+        <Text style={[styles.errorText, { color: white }]}>{t('Error loading')}</Text>
       </View>
     </View>
   );

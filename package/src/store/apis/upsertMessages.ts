@@ -1,8 +1,10 @@
-import type { MessageResponse } from 'stream-chat';
+import type { LocalMessage, MessageResponse } from 'stream-chat';
 
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
+import { mapReminderToStorable } from '../mappers/mapReminderToStorable';
+import { mapSharedLocationToStorable } from '../mappers/mapSharedLocationToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
@@ -11,15 +13,17 @@ export const upsertMessages = async ({
   execute = true,
   messages,
 }: {
-  messages: MessageResponse[];
+  messages: (MessageResponse | LocalMessage)[];
   execute?: boolean;
 }) => {
   const storableMessages: Array<ReturnType<typeof mapMessageToStorable>> = [];
   const storableUsers: Array<ReturnType<typeof mapUserToStorable>> = [];
   const storableReactions: Array<ReturnType<typeof mapReactionToStorable>> = [];
   const storablePolls: Array<ReturnType<typeof mapPollToStorable>> = [];
+  const storableReminders: Array<ReturnType<typeof mapReminderToStorable>> = [];
+  const storableLocations: Array<ReturnType<typeof mapSharedLocationToStorable>> = [];
 
-  messages?.forEach((message: MessageResponse) => {
+  messages?.forEach((message: MessageResponse | LocalMessage) => {
     storableMessages.push(mapMessageToStorable(message));
     if (message.user) {
       storableUsers.push(mapUserToStorable(message.user));
@@ -33,6 +37,12 @@ export const upsertMessages = async ({
     if (message.poll) {
       storablePolls.push(mapPollToStorable(message.poll));
     }
+    if (message.reminder) {
+      storableReminders.push(mapReminderToStorable(message.reminder));
+    }
+    if (message.shared_location) {
+      storableLocations.push(mapSharedLocationToStorable(message.shared_location));
+    }
   });
 
   const finalQueries = [
@@ -42,13 +52,21 @@ export const upsertMessages = async ({
       createUpsertQuery('reactions', storableReaction),
     ),
     ...storablePolls.map((storablePoll) => createUpsertQuery('poll', storablePoll)),
+    ...storableReminders.map((storableReminder) =>
+      createUpsertQuery('reminders', storableReminder),
+    ),
+    ...storableLocations.map((storableLocation) =>
+      createUpsertQuery('locations', storableLocation),
+    ),
   ];
 
   SqliteClient.logger?.('info', 'upsertMessages', {
     execute,
+    locations: storableLocations,
     messages: storableMessages,
     polls: storablePolls,
     reactions: storableReactions,
+    reminders: storableReminders,
     users: storableUsers,
   });
 

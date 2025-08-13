@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Alert, Platform } from 'react-native';
 
+import { LocalVoiceRecordingAttachment } from 'stream-chat';
+
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
+
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import {
   AudioRecordingReturnType,
@@ -12,6 +16,7 @@ import {
 } from '../../../native';
 import type { File } from '../../../types/types';
 import { FileTypes } from '../../../types/types';
+import { generateRandomId } from '../../../utils/utils';
 import { resampleWaveformData } from '../utils/audioSampling';
 import { normalizeAudioLevel } from '../utils/normalizeAudioLevel';
 
@@ -31,8 +36,9 @@ export const useAudioController = () => {
   const [recording, setRecording] = useState<AudioRecordingReturnType>(undefined);
   const [recordingDuration, setRecordingDuration] = useState<number>(0);
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatusStates>('idle');
+  const { attachmentManager } = useMessageComposer();
 
-  const { sendMessage, uploadNewFile } = useMessageInputContext();
+  const { sendMessage } = useMessageInputContext();
 
   // For playback support in Expo CLI apps
   const soundRef = useRef<SoundReturnType | null>(null);
@@ -126,16 +132,17 @@ export const useAudioController = () => {
     if (recording && typeof recording !== 'string') {
       const uri = recording.getURI();
       if (uri && NativeHandlers.Sound?.initializeSound) {
-        soundRef.current = await NativeHandlers.Sound.initializeSound(
-          { uri },
-          {},
-          onVoicePlayerPlaybackStatusUpdate,
-        );
-        if (soundRef.current?.playAsync && soundRef.current.setProgressUpdateIntervalAsync) {
-          await soundRef.current.playAsync();
-          await soundRef.current.setProgressUpdateIntervalAsync(
-            Platform.OS === 'android' ? 100 : 60,
+        if (soundRef.current?.replayAsync) {
+          await soundRef.current.replayAsync({});
+        } else {
+          soundRef.current = await NativeHandlers.Sound.initializeSound(
+            { uri },
+            { progressUpdateIntervalMillis: Platform.OS === 'android' ? 100 : 60 },
+            onVoicePlayerPlaybackStatusUpdate,
           );
+          if (soundRef.current?.playAsync) {
+            await soundRef.current.playAsync();
+          }
         }
       }
     }
@@ -187,7 +194,7 @@ export const useAudioController = () => {
     if (accessGranted) {
       setPermissionsGranted(true);
       const recording = recordingInfo.recording;
-      if (recording && typeof recording !== 'string') {
+      if (recording && typeof recording !== 'string' && recording.setProgressUpdateInterval) {
         recording.setProgressUpdateInterval(Platform.OS === 'android' ? 100 : 60);
       }
       setRecording(recording);
@@ -275,11 +282,27 @@ export const useAudioController = () => {
       waveform_data: resampledWaveformData,
     };
 
+    const audioFile: LocalVoiceRecordingAttachment = {
+      asset_url:
+        typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
+      duration: durationInSeconds,
+      file_size: 0,
+      localMetadata: {
+        file,
+        id: generateRandomId(),
+        uploadState: 'pending',
+      },
+      mime_type: 'audio/aac',
+      title: `audio_recording_${date}.aac`,
+      type: FileTypes.VoiceRecording,
+      waveform_data: resampledWaveformData,
+    };
+
     if (multiSendEnabled) {
-      await uploadNewFile(file, FileTypes.VoiceRecording);
+      await attachmentManager.uploadAttachment(audioFile);
     } else {
       // FIXME: cannot call handleSubmit() directly as the function has stale reference to file uploads
-      await uploadNewFile(file, FileTypes.VoiceRecording);
+      await attachmentManager.uploadAttachment(audioFile);
       setIsScheduleForSubmit(true);
     }
     resetState();

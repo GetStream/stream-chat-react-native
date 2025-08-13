@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler, Keyboard, Platform, StyleSheet } from 'react-native';
 
 import BottomSheetOriginal from '@gorhom/bottom-sheet';
@@ -11,10 +11,8 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 
 import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
-import {
-  AttachmentPickerContextValue,
-  useAttachmentPickerContext,
-} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { MessageInputContextValue } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { NativeHandlers } from '../../native';
@@ -31,7 +29,7 @@ const styles = StyleSheet.create({
 });
 
 export type AttachmentPickerProps = Pick<
-  AttachmentPickerContextValue,
+  MessageInputContextValue,
   | 'AttachmentPickerBottomSheetHandle'
   | 'attachmentPickerBottomSheetHandleHeight'
   | 'attachmentSelectionBarHeight'
@@ -40,13 +38,15 @@ export type AttachmentPickerProps = Pick<
   /**
    * Custom UI component to render error component while opening attachment picker.
    *
-   * **Default** [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
+   * **Default**
+   * [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
    */
   AttachmentPickerError: React.ComponentType<AttachmentPickerErrorProps>;
   /**
    * Custom UI component to render error image for attachment picker
    *
-   * **Default** [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
+   * **Default**
+   * [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
    */
   AttachmentPickerErrorImage: React.ComponentType;
   /**
@@ -54,9 +54,11 @@ export type AttachmentPickerProps = Pick<
    */
   AttachmentPickerIOSSelectMorePhotos: React.ComponentType;
   /**
-   * Custom UI component to render overlay component, that shows up on top of [selected image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
+   * Custom UI component to render overlay component, that shows up on top of [selected
+   * image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
    *
-   * **Default** [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
+   * **Default**
+   * [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
    */
   ImageOverlaySelectedComponent: React.ComponentType;
   attachmentPickerErrorButtonText?: string;
@@ -87,17 +89,8 @@ export const AttachmentPicker = React.forwardRef(
         colors: { white },
       },
     } = useTheme();
-    const {
-      closePicker,
-      maxNumberOfFiles,
-      selectedFiles,
-      selectedImages,
-      selectedPicker,
-      setSelectedFiles,
-      setSelectedImages,
-      setSelectedPicker,
-      topInset,
-    } = useAttachmentPickerContext();
+    const { closePicker, selectedPicker, setSelectedPicker, topInset } =
+      useAttachmentPickerContext();
     const { vh: screenVh } = useScreenDimensions();
 
     const fullScreenHeight = screenVh(100);
@@ -157,7 +150,8 @@ export const AttachmentPicker = React.forwardRef(
       if (!NativeHandlers.oniOS14GalleryLibrarySelectionChange) {
         return;
       }
-      // ios 14 library selection change event is fired when user reselects the images that are permitted to be readable by the app
+      // ios 14 library selection change event is fired when user reselects the images that are permitted to be
+      // readable by the app
       const { unsubscribe } = NativeHandlers.oniOS14GalleryLibrarySelectionChange(() => {
         // we reset the cursor and has next page to true to facilitate fetching of the first page of photos again
         hasNextPageRef.current = true;
@@ -182,8 +176,7 @@ export const AttachmentPicker = React.forwardRef(
       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
       return () => backHandler.remove();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedPicker, closePicker]);
+    }, [selectedPicker, closePicker, setSelectedPicker]);
 
     useEffect(() => {
       const onKeyboardOpenHandler = () => {
@@ -207,8 +200,7 @@ export const AttachmentPicker = React.forwardRef(
           Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
         }
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [closePicker, selectedPicker]);
+    }, [closePicker, selectedPicker, setSelectedPicker]);
 
     useEffect(() => {
       if (currentIndex < 0) {
@@ -232,26 +224,21 @@ export const AttachmentPicker = React.forwardRef(
         !loadingPhotos
       ) {
         getMorePhotos();
-        // we do this only once on open for avoiding to request permissions in rationale dialog again and again on Android
+        // we do this only once on open for avoiding to request permissions in rationale dialog again and again on
+        // Android
         attemptedToLoadPhotosOnOpenRef.current = true;
       }
     }, [currentIndex, selectedPicker, getMorePhotos, loadingPhotos]);
 
-    const selectedPhotos = photos.map((asset) => ({
-      asset,
-      ImageOverlaySelectedComponent,
-      maxNumberOfFiles,
-      numberOfAttachmentPickerImageColumns,
-      numberOfUploads: selectedFiles.length + selectedImages.length,
-      // `id` is available for Expo MediaLibrary while Cameraroll doesn't share id therefore we use `uri`
-      selected:
-        selectedImages.some((image) => image.uri === asset.uri) ||
-        selectedFiles.some((file) => file.uri === asset.uri),
-      selectedFiles,
-      selectedImages,
-      setSelectedFiles,
-      setSelectedImages,
-    }));
+    const selectedPhotos = useMemo(
+      () =>
+        photos.map((asset) => ({
+          asset,
+          ImageOverlaySelectedComponent,
+          numberOfAttachmentPickerImageColumns,
+        })),
+      [photos, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns],
+    );
 
     const handleHeight = attachmentPickerBottomSheetHandleHeight;
 
@@ -302,6 +289,7 @@ export const AttachmentPicker = React.forwardRef(
             numColumns={numberOfAttachmentPickerImageColumns ?? 3}
             onEndReached={photoError ? undefined : getMorePhotos}
             renderItem={renderAttachmentPickerItem}
+            testID={'attachment-picker-list'}
           />
         </BottomSheet>
         {selectedPicker === 'images' && photoError && (

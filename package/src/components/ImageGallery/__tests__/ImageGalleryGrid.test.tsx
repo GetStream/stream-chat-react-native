@@ -1,9 +1,8 @@
 import React from 'react';
 
 import { Text, View } from 'react-native';
-import { act } from 'react-test-renderer';
 
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';

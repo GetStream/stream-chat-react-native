@@ -1,73 +1,51 @@
-import React from 'react';
-import type { GestureResponderEvent } from 'react-native';
+import React, { useCallback } from 'react';
+import type { GestureResponderEvent, PressableProps } from 'react-native';
 import { Pressable } from 'react-native';
 
-import {
-  isSuggestionCommand,
-  SuggestionsContextValue,
-  useSuggestionsContext,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Lightning } from '../../icons/Lightning';
 
-type CommandsButtonPropsWithContext = Pick<SuggestionsContextValue, 'suggestions'> & {
-  /** Function that opens commands selector */
-  handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
+export type CommandsButtonProps = {
+  /** Function that opens commands selector. */
+  handleOnPress?: PressableProps['onPress'];
 };
 
-const CommandsButtonWithContext = (props: CommandsButtonPropsWithContext) => {
-  const { handleOnPress, suggestions } = props;
+export const CommandsButton = (props: CommandsButtonProps) => {
+  const { handleOnPress } = props;
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+
+  const onPressHandler = useCallback(
+    async (event: GestureResponderEvent) => {
+      if (handleOnPress) {
+        handleOnPress(event);
+        return;
+      }
+
+      await textComposer.handleChange({
+        selection: {
+          end: 1,
+          start: 1,
+        },
+        text: '/',
+      });
+    },
+    [handleOnPress, textComposer],
+  );
 
   const {
     theme: {
-      colors: { accent_blue, grey },
+      colors: { grey },
       messageInput: { commandsButton },
     },
   } = useTheme();
 
   return (
-    <Pressable onPress={handleOnPress} style={[commandsButton]} testID='commands-button'>
-      <Lightning
-        fill={
-          suggestions && suggestions.data.some((suggestion) => isSuggestionCommand(suggestion))
-            ? accent_blue
-            : grey
-        }
-        size={32}
-      />
+    <Pressable onPress={onPressHandler} style={[commandsButton]} testID='commands-button'>
+      <Lightning fill={grey} size={32} />
     </Pressable>
   );
-};
-
-const areEqual = (
-  prevProps: CommandsButtonPropsWithContext,
-  nextProps: CommandsButtonPropsWithContext,
-) => {
-  const { suggestions: prevSuggestions } = prevProps;
-  const { suggestions: nextSuggestions } = nextProps;
-
-  const suggestionsEqual = !!prevSuggestions === !!nextSuggestions;
-  if (!suggestionsEqual) {
-    return false;
-  }
-
-  return true;
-};
-
-const MemoizedCommandsButton = React.memo(
-  CommandsButtonWithContext,
-  areEqual,
-) as typeof CommandsButtonWithContext;
-
-export type CommandsButtonProps = Partial<CommandsButtonPropsWithContext>;
-
-/**
- * UI Component for attach button in MessageInput component.
- */
-export const CommandsButton = (props: CommandsButtonProps) => {
-  const { suggestions } = useSuggestionsContext();
-
-  return <MemoizedCommandsButton {...{ suggestions }} {...props} />;
 };
 
 CommandsButton.displayName = 'CommandsButton{messageInput}';

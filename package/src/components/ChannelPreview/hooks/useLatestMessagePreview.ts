@@ -2,12 +2,15 @@ import { useMemo } from 'react';
 
 import { TFunction } from 'i18next';
 import type {
+  AttachmentManagerState,
   Channel,
   ChannelState,
+  DraftMessage,
   MessageResponse,
   PollState,
   PollVote,
   StreamChat,
+  TextComposerState,
   UserResponse,
 } from 'stream-chat';
 
@@ -26,6 +29,7 @@ export type LatestMessagePreview = {
   previews: {
     bold: boolean;
     text: string;
+    draft?: boolean;
   }[];
   status: number;
   created_at?: string | Date;
@@ -82,6 +86,7 @@ const getMentionUsers = (mentionedUser: UserResponse[] | undefined) => {
 const getLatestMessageDisplayText = (
   channel: Channel,
   client: StreamChat,
+  draftMessage: DraftMessage | undefined,
   message: LatestMessage | undefined,
   t: (key: string) => string,
   pollState: LatestMessagePreviewSelectorReturnType | undefined,
@@ -101,6 +106,28 @@ const getLatestMessageDisplayText = (
     ? `${messageSender === t('You') ? '' : '@'}${messageSender}: `
     : '';
   const boldOwner = messageSenderText.includes('@');
+  if (draftMessage) {
+    if (draftMessage.attachments?.length) {
+      return [
+        { bold: true, draft: true, text: 'Draft:' },
+        { bold: false, text: t('🏙 Attachment...') },
+      ];
+    }
+    if (draftMessage.text) {
+      return [
+        { bold: true, draft: true, text: 'Draft:' },
+        { bold: false, text: draftMessage.text },
+      ];
+    }
+  }
+  // Location messages
+  if (message.shared_location) {
+    return [
+      { bold: false, text: '📍' },
+      { bold: false, text: t('Location') },
+    ];
+  }
+
   if (message.text) {
     // rough guess optimization to limit string preview to max 100 characters
     const shortenedText = message.text.substring(0, 100).replace(/\n/g, ' ');
@@ -201,12 +228,13 @@ const getLatestMessageReadStatus = (
 const getLatestMessagePreview = (params: {
   channel: Channel;
   client: StreamChat;
+  draftMessage?: DraftMessage;
   pollState: LatestMessagePreviewSelectorReturnType | undefined;
   readEvents: boolean;
   t: TFunction;
   lastMessage?: ReturnType<ChannelState['formatMessage']> | MessageResponse;
 }) => {
-  const { channel, client, lastMessage, pollState, readEvents, t } = params;
+  const { channel, client, draftMessage, lastMessage, pollState, readEvents, t } = params;
 
   const messages = channel.state.messages;
 
@@ -231,10 +259,18 @@ const getLatestMessagePreview = (params: {
   return {
     created_at: message?.created_at,
     messageObject: message,
-    previews: getLatestMessageDisplayText(channel, client, message, t, pollState),
+    previews: getLatestMessageDisplayText(channel, client, draftMessage, message, t, pollState),
     status: getLatestMessageReadStatus(channel, client, message, readEvents),
   };
 };
+
+const textComposerStateSelector = (state: TextComposerState) => ({
+  text: state.text,
+});
+
+const stateSelector = (state: AttachmentManagerState) => ({
+  attachments: state.attachments,
+});
 
 /**
  * Hook to set the display preview for latest message on channel.
@@ -251,12 +287,34 @@ export const useLatestMessagePreview = (
   const { client } = useChatContext();
   const { t } = useTranslationContext();
 
+  const { text: draftText } = useStateStore(
+    channel.messageComposer.textComposer.state,
+    textComposerStateSelector,
+  );
+
+  const { attachments } = useStateStore(
+    channel.messageComposer.attachmentManager.state,
+    stateSelector,
+  );
+
+  const draftMessage: DraftMessage | undefined = useMemo(
+    () =>
+      !channel.messageComposer.compositionIsEmpty
+        ? {
+            attachments,
+            id: channel.messageComposer.id,
+            text: draftText,
+          }
+        : undefined,
+    [channel.messageComposer, attachments, draftText],
+  );
+
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
   const translatedLastMessage = useTranslatedMessage(lastMessage);
 
   const channelLastMessageString = translatedLastMessage
-    ? stringifyMessage(translatedLastMessage)
+    ? stringifyMessage({ message: translatedLastMessage })
     : '';
 
   const readEvents = useMemo(() => {
@@ -282,6 +340,7 @@ export const useLatestMessagePreview = (
     return getLatestMessagePreview({
       channel,
       client,
+      draftMessage,
       lastMessage: translatedLastMessage,
       pollState,
       readEvents,
@@ -290,6 +349,7 @@ export const useLatestMessagePreview = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     channelLastMessageString,
+    draftMessage,
     forceUpdate,
     readEvents,
     readStatus,

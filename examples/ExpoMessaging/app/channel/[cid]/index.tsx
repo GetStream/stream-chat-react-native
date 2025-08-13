@@ -1,24 +1,36 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { SafeAreaView, View } from 'react-native';
-import { Channel, MessageInput, MessageList, useAttachmentPickerContext } from 'stream-chat-expo';
+import { Channel, MessageInput, MessageList } from 'stream-chat-expo';
 import { Stack, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
+import InputButtons from '../../../components/InputButtons';
+import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
 
 export default function ChannelScreen() {
   const router = useRouter();
-  const { setThread, channel } = useContext(AppContext);
-  const { setTopInset } = useAttachmentPickerContext();
+  const { setThread, channel, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
-
-  useEffect(() => {
-    setTopInset(headerHeight);
-  }, [headerHeight, setTopInset]);
 
   if (!channel) {
     return <AuthProgressLoader />;
   }
+
+  const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
+    payload,
+  ) => {
+    const { message, defaultHandler, emitter } = payload;
+    const { shared_location } = message;
+    if (emitter === 'messageContent' && shared_location) {
+      // Create url params from shared_location
+      const params = Object.entries(shared_location)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+      router.push(`/map/${message.id}?${params}`);
+    }
+    defaultHandler?.();
+  };
 
   return (
     <SafeAreaView>
@@ -27,7 +39,10 @@ export default function ChannelScreen() {
         <Channel
           audioRecordingEnabled={true}
           channel={channel}
+          onPressMessage={onPressMessage}
           keyboardVerticalOffset={headerHeight}
+          MessageLocation={MessageLocation}
+          thread={thread}
         >
           <View style={{ flex: 1 }}>
             <MessageList
@@ -36,7 +51,7 @@ export default function ChannelScreen() {
                 router.push(`/channel/${channel.cid}/thread/${thread.cid}`);
               }}
             />
-            <MessageInput />
+            <MessageInput InputButtons={InputButtons} />
           </View>
         </Channel>
       )}

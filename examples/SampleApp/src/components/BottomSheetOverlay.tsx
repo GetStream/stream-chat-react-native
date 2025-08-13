@@ -1,18 +1,12 @@
 import React, { useEffect } from 'react';
 import { Keyboard, StyleSheet } from 'react-native';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   Easing,
-  Extrapolate,
+  Extrapolation,
   interpolate,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
@@ -74,8 +68,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
       ? withSpring(1, {
           damping: 600,
           mass: 0.5,
-          restDisplacementThreshold: 0.01,
-          restSpeedThreshold: 0.01,
+          energyThreshold: 0.01,
           stiffness: 200,
           velocity: 32,
         })
@@ -101,17 +94,24 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-    onActive: (evt) => {
+  const pan = Gesture.Pan()
+    .enabled(visible)
+    .maxPointers(1)
+    .minDistance(10)
+    .onBegin(() => {
+      cancelAnimation(translateY);
+      offsetY.value = translateY.value;
+    })
+    .onUpdate((evt) => {
       translateY.value = offsetY.value + evt.translationY;
       overlayOpacity.value = interpolate(
         translateY.value,
         [0, viewHeight.value / 2],
         [1, 0.75],
-        Extrapolate.CLAMP,
+        Extrapolation.CLAMP,
       );
-    },
-    onFinish: (evt) => {
+    })
+    .onEnd((evt) => {
       const finalYPosition = evt.translationY + evt.velocityY * 0.1;
 
       if (finalYPosition > viewHeight.value / 2 && translateY.value > 0) {
@@ -139,12 +139,14 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
         translateY.value = withTiming(0);
         overlayOpacity.value = withTiming(1);
       }
-    },
-    onStart: () => {
-      cancelAnimation(translateY);
-      offsetY.value = translateY.value;
-    },
-  });
+    });
+
+  const tap = Gesture.Tap()
+    .enabled(visible)
+    .maxDistance(32)
+    .onEnd(() => {
+      setOverlay('none');
+    });
 
   const panStyle = useAnimatedStyle(() => ({
     transform: [
@@ -168,45 +170,36 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
 
   return (
     <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
-      <PanGestureHandler enabled={visible} maxPointers={1} minDist={10} onGestureEvent={onPan}>
+      <GestureDetector gesture={pan}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
-          <TapGestureHandler
-            maxDist={32}
-            onHandlerStateChange={({ nativeEvent: { state } }) => {
-              if (state === State.END) {
-                setOverlay('none');
-              }
-            }}
-          >
+          <GestureDetector gesture={tap}>
             <Animated.View style={[styles.animatedContainer, panStyle]}>
               <KeyboardCompatibleView keyboardVerticalOffset={10}>
-                <TapGestureHandler>
-                  <Animated.View
-                    onLayout={({
-                      nativeEvent: {
-                        layout: { height },
-                      },
-                    }) => {
-                      viewHeight.value = height;
-                    }}
-                    style={[
-                      styles.container,
-                      showScreenStyle,
-                      {
-                        backgroundColor: white,
-                      },
-                      overlay === 'addMembers' ? styles.addMembers : undefined,
-                    ]}
-                  >
-                    {overlay === 'addMembers' && <AddMemberBottomSheet />}
-                    {overlay === 'confirmation' && <ConfirmationBottomSheet />}
-                  </Animated.View>
-                </TapGestureHandler>
+                <Animated.View
+                  onLayout={({
+                    nativeEvent: {
+                      layout: { height },
+                    },
+                  }) => {
+                    viewHeight.value = height;
+                  }}
+                  style={[
+                    styles.container,
+                    showScreenStyle,
+                    {
+                      backgroundColor: white,
+                    },
+                    overlay === 'addMembers' ? styles.addMembers : undefined,
+                  ]}
+                >
+                  {overlay === 'addMembers' && <AddMemberBottomSheet />}
+                  {overlay === 'confirmation' && <ConfirmationBottomSheet />}
+                </Animated.View>
               </KeyboardCompatibleView>
             </Animated.View>
-          </TapGestureHandler>
+          </GestureDetector>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </Animated.View>
   );
 };

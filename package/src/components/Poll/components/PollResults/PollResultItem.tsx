@@ -58,7 +58,7 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
       {ownCapabilities.queryPollVotes &&
       voteCountsByOption &&
       voteCountsByOption?.[option.id] > 5 ? (
-        <GenericPollButton onPress={onPressHandler} title={t<string>('Show All')} />
+        <GenericPollButton onPress={onPressHandler} title={t('Show All')} />
       ) : null}
       {showAllVotes ? (
         <Modal
@@ -104,7 +104,7 @@ export const PollResultsItem = ({ option }: PollResultItemProps) => {
       <View style={[styles.headerContainer, headerContainer]}>
         <Text style={[styles.title, { color: black }, title]}>{option.text}</Text>
         <Text style={[styles.voteCount, { color: black }, voteCount]}>
-          {t<string>('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+          {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
         </Text>
       </View>
       {latestVotesByOption?.[option.id]?.length > 0 ? (

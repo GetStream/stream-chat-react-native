@@ -26,6 +26,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { NativeHandlers } from '../../../native';
 
+import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { useMessageData } from '../hooks/useMessageData';
 
 const styles = StyleSheet.create({
@@ -69,10 +70,10 @@ export type MessageSimplePropsWithContext = Pick<
   | 'onlyEmojis'
   | 'otherAttachments'
   | 'showMessageStatus'
+  | 'setQuotedMessage'
 > &
   Pick<
     MessagesContextValue,
-    | 'clearQuotedMessageState'
     | 'enableMessageGroupingByUser'
     | 'enableSwipeToReply'
     | 'myMessageTheme'
@@ -89,7 +90,6 @@ export type MessageSimplePropsWithContext = Pick<
     | 'ReactionListBottom'
     | 'reactionListPosition'
     | 'ReactionListTop'
-    | 'setQuotedMessageState'
   > & {
     /**
      * Will determine whether the swipeable wrapper is always rendered for each
@@ -106,7 +106,6 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const { width } = Dimensions.get('screen');
   const {
     alignment,
-    clearQuotedMessageState,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
@@ -130,9 +129,9 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
-    setQuotedMessageState,
     showMessageStatus,
     shouldRenderSwipeableWrapper,
+    setQuotedMessage,
   } = props;
 
   const {
@@ -217,9 +216,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   );
 
   const onSwipeToReply = useCallback(() => {
-    clearQuotedMessageState();
-    setQuotedMessageState(message);
-  }, [clearQuotedMessageState, message, setQuotedMessageState]);
+    setQuotedMessage(message);
+  }, [setQuotedMessage, message]);
 
   const THRESHOLD = 25;
 
@@ -479,11 +477,6 @@ const areEqual = (
     otherAttachments: nextOtherAttachments,
   } = nextProps;
 
-  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
-  if (!repliesEqual) {
-    return false;
-  }
-
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) {
     return false;
@@ -493,9 +486,6 @@ const areEqual = (
   if (!groupStylesEqual) {
     return false;
   }
-
-  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
-  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) {
@@ -507,24 +497,15 @@ const areEqual = (
     return false;
   }
 
-  const messageEqual =
-    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
-    prevMessage.reply_count === nextMessage.reply_count &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text &&
-    prevMessage.i18n === nextMessage.i18n &&
-    prevMessage.pinned === nextMessage.pinned;
+  const messageEqual = checkMessageEquality(prevMessage, nextMessage);
   if (!messageEqual) {
     return false;
   }
 
-  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
-  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
-
-  const quotedMessageEqual =
-    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
+  const quotedMessageEqual = checkQuotedMessageEquality(
+    prevMessage.quoted_message,
+    nextMessage.quoted_message,
+  );
 
   if (!quotedMessageEqual) {
     return false;
@@ -551,6 +532,14 @@ const areEqual = (
         })
       : prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) {
+    return false;
+  }
+
+  const quotedMessageAttachmentsEqual =
+    prevMessage.quoted_message?.attachments?.length ===
+    nextMessage.quoted_message?.attachments?.length;
+
+  if (!quotedMessageAttachmentsEqual) {
     return false;
   }
 
@@ -611,9 +600,9 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     otherAttachments,
     showMessageStatus,
     isMessageAIGenerated,
+    setQuotedMessage,
   } = useMessageContext();
   const {
-    clearQuotedMessageState,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     MessageAvatar,
@@ -630,7 +619,6 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
-    setQuotedMessageState,
   } = useMessagesContext();
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
@@ -643,7 +631,6 @@ export const MessageSimple = (props: MessageSimpleProps) => {
       {...{
         alignment,
         channel,
-        clearQuotedMessageState,
         enableMessageGroupingByUser,
         enableSwipeToReply,
         groupStyles,
@@ -668,7 +655,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
         ReactionListBottom,
         reactionListPosition,
         ReactionListTop,
-        setQuotedMessageState,
+        setQuotedMessage,
         shouldRenderSwipeableWrapper,
         showMessageStatus,
       }}

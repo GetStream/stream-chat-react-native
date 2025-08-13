@@ -20,27 +20,22 @@ const styles = StyleSheet.create({
 });
 
 export const AttachmentPickerSelectionBar = () => {
+  const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
+
   const {
     attachmentSelectionBarHeight,
     CameraSelectorIcon,
-    closePicker,
     CreatePollIcon,
     FileSelectorIcon,
-    ImageSelectorIcon,
-    selectedPicker,
-    setSelectedPicker,
-    VideoRecorderSelectorIcon,
-  } = useAttachmentPickerContext();
-
-  const {
     hasCameraPicker,
     hasFilePicker,
     hasImagePicker,
-    imageUploads,
+    ImageSelectorIcon,
     openPollCreationDialog,
     pickFile,
     sendMessage,
     takeAndUploadImage,
+    VideoRecorderSelectorIcon,
   } = useMessageInputContext();
   const { threadList } = useChannelContext();
   const { hasCreatePoll } = useMessagesContext();
@@ -73,6 +68,18 @@ export const AttachmentPickerSelectionBar = () => {
     openPollCreationDialog?.({ sendMessage });
   };
 
+  const onCameraPickerPress = () => {
+    setSelectedPicker(undefined);
+    closePicker();
+    takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
+  };
+
+  const onVideoRecorderPickerPress = () => {
+    setSelectedPicker(undefined);
+    closePicker();
+    takeAndUploadImage('video');
+  };
+
   return (
     <View style={[styles.container, container, { height: attachmentSelectionBarHeight }]}>
       {hasImagePicker ? (
@@ -82,10 +89,7 @@ export const AttachmentPickerSelectionBar = () => {
           testID='upload-photo-touchable'
         >
           <View style={[styles.icon, icon]}>
-            <ImageSelectorIcon
-              numberOfImageUploads={imageUploads.length}
-              selectedPicker={selectedPicker}
-            />
+            <ImageSelectorIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}
@@ -96,42 +100,29 @@ export const AttachmentPickerSelectionBar = () => {
           testID='upload-file-touchable'
         >
           <View style={[styles.icon, icon]}>
-            <FileSelectorIcon
-              numberOfImageUploads={imageUploads.length}
-              selectedPicker={selectedPicker}
-            />
+            <FileSelectorIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}
       {hasCameraPicker ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
-          onPress={() => {
-            takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
-          }}
+          onPress={onCameraPickerPress}
           testID='take-photo-touchable'
         >
           <View style={[styles.icon, icon]}>
-            <CameraSelectorIcon
-              numberOfImageUploads={imageUploads.length}
-              selectedPicker={selectedPicker}
-            />
+            <CameraSelectorIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}
       {hasCameraPicker && Platform.OS === 'android' ? (
         <TouchableOpacity
           hitSlop={{ bottom: 15, top: 15 }}
-          onPress={() => {
-            takeAndUploadImage('video');
-          }}
+          onPress={onVideoRecorderPickerPress}
           testID='take-photo-touchable'
         >
           <View style={[styles.icon, { marginTop: 4 }, icon]}>
-            <VideoRecorderSelectorIcon
-              numberOfImageUploads={imageUploads.length}
-              selectedPicker={selectedPicker}
-            />
+            <VideoRecorderSelectorIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}

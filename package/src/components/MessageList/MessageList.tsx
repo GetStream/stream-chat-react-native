@@ -335,12 +335,14 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(false);
 
+  const minIndexForVisible = Math.min(1, processedMessageList.length);
+
   const maintainVisibleContentPosition = useMemo(
     () => ({
       autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
-      minIndexForVisible: 1,
+      minIndexForVisible,
     }),
-    [autoscrollToRecent],
+    [autoscrollToRecent, minIndexForVisible],
   );
 
   /**
@@ -533,8 +535,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
     const handleEvent = async (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
-      // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState.
-      if (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) {
+      const isMyOwnMessage = event.message?.user?.id === client.user?.id;
+      // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState when its a received message.
+      if (
+        (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
+        !isMyOwnMessage
+      ) {
         setChannelUnreadState((prev) => {
           const previousUnreadCount = prev?.unread_messages ?? 0;
           const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
@@ -570,6 +576,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   useEffect(() => {
     /**
+     * Condition to check if a message is removed from MessageList.
+     * Eg: This would happen when giphy search is cancelled, message is deleted with visibility "never" etc.
+     * If such a case arises, we scroll to bottom.
+     */
+    const isMessageRemovedFromMessageList =
+      messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current;
+    /**
      * Scroll down when
      * created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
      */
@@ -578,13 +591,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         return;
       }
 
-      /**
-       * Condition to check if a message is removed from MessageList.
-       * Eg: This would happen when giphy search is cancelled, etc.
-       * If such a case arises, we scroll to bottom.
-       */
-      const isMessageRemovedFromMessageList =
-        messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current;
       if (
         isMessageRemovedFromMessageList ||
         (topMessageBeforeUpdate.current?.created_at &&
@@ -609,8 +615,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       }
     };
 
-    // TODO: Think about if this is really needed?
-    if (threadList) {
+    if (threadList || isMessageRemovedFromMessageList) {
       scrollToBottomIfNeeded();
     }
 
@@ -620,13 +625,15 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
 
   useEffect(() => {
-    if (!rawMessageList.length) {
-      return;
-    }
     if (threadList) {
       setAutoscrollToRecent(true);
       return;
     }
+
+    if (!processedMessageList.length) {
+      return;
+    }
+
     const notLatestSet = channel.state.messages !== channel.state.latestMessages;
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
@@ -637,7 +644,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
     latestNonCurrentMessageBeforeUpdateRef.current = undefined;
-    const latestCurrentMessageAfterUpdate = rawMessageList[rawMessageList.length - 1];
+    const latestCurrentMessageAfterUpdate = processedMessageList[0];
     if (!latestCurrentMessageAfterUpdate) {
       setAutoscrollToRecent(true);
       return;
@@ -662,7 +669,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, rawMessageList, threadList]);
+  }, [channel, processedMessageList, threadList]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
@@ -747,12 +754,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const isLastReadMessage =
         channelUnreadState?.last_read_message_id === message.id ||
         (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
-      const isMyMessage = message.user?.id === client.userID;
 
       const showUnreadSeparator =
         isLastReadMessage &&
         !isNewestMessage &&
-        !isMyMessage &&
         // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
         (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
 

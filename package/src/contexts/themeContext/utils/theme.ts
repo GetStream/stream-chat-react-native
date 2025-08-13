@@ -169,13 +169,13 @@ export type Theme = {
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
-    message: TextStyle & {
-      fontWeight: TextStyle['fontWeight'];
-    };
     mutedStatus: {
       height: number;
       iconStyle: ViewStyle;
       width: number;
+    };
+    message: {
+      container: ViewStyle;
     };
     row: ViewStyle;
     title: TextStyle;
@@ -269,6 +269,16 @@ export type Theme = {
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
     attachmentSeparator: ViewStyle;
+    attachmentUnsupportedIndicator: {
+      container: ViewStyle;
+      warningIcon: IconProps;
+      text: TextStyle;
+    };
+    attachmentUploadPreviewList: {
+      filesFlatList: ViewStyle;
+      imagesFlatList: ViewStyle;
+      wrapper: ViewStyle;
+    };
     audioRecorder: {
       arrowLeftIcon: IconProps;
       checkContainer: ViewStyle;
@@ -307,13 +317,22 @@ export type Theme = {
       waveform: ViewStyle;
     };
     autoCompleteInputContainer: ViewStyle;
+    commandInput: {
+      closeButton: ViewStyle;
+      container: ViewStyle;
+      text: TextStyle;
+    };
     commandsButton: ViewStyle;
-    commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
     container: ViewStyle;
     cooldownTimer: {
       container: ViewStyle;
       text: TextStyle;
+    };
+    dismissAttachmentUpload: {
+      dismiss: ViewStyle;
+      dismissIcon: IconProps;
+      dismissIconColor: ColorValue;
     };
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
@@ -322,25 +341,24 @@ export type Theme = {
       editingBoxHeader: ViewStyle;
       editingBoxHeaderTitle: TextStyle;
     };
-    fileUploadPreview: {
-      dismiss: ViewStyle;
+    fileAttachmentUploadPreview: {
       fileContainer: ViewStyle;
       filenameText: TextStyle;
       fileSizeText: TextStyle;
       fileTextContainer: ViewStyle;
+      uploadProgressOverlay: ViewStyle;
+      wrapper: ViewStyle;
+    };
+    fileUploadPreview: {
       flatList: ViewStyle;
     };
     focusedInputBoxContainer: ViewStyle;
-    giphyCommandInput: {
-      giphyContainer: ViewStyle;
-      giphyText: TextStyle;
-    };
-    imageUploadPreview: {
-      dismiss: ViewStyle;
-      dismissIconColor: ColorValue;
-      flatList: ViewStyle;
+    imageAttachmentUploadPreview: {
       itemContainer: ViewStyle;
       upload: ImageStyle;
+    };
+    imageUploadPreview: {
+      flatList: ViewStyle;
     };
     inputBox: TextStyle;
     inputBoxContainer: ViewStyle;
@@ -405,6 +423,12 @@ export type Theme = {
       indicatorColor: string;
       overlay: ViewStyle;
     };
+    videoAttachmentUploadPreview: {
+      recorderIconContainer: ViewStyle;
+      recorderIcon: IconProps;
+      itemContainer: ViewStyle;
+      upload: ImageStyle;
+    };
   };
   messageList: {
     container: ViewStyle;
@@ -456,6 +480,8 @@ export type Theme = {
     reactionButton: {
       filledColor: ColorValue;
       unfilledColor: ColorValue;
+      filledBackgroundColor: ColorValue;
+      unfilledBackgroundColor: ColorValue;
     };
     reactionPicker: {
       buttonContainer: ViewStyle;
@@ -485,6 +511,9 @@ export type Theme = {
       title: TextStyle;
       unfilledBackgroundColor: ColorValue;
     };
+  };
+  messagePreview: {
+    message: TextStyle;
   };
   messageSimple: {
     actions: {
@@ -832,8 +861,9 @@ export type Theme = {
     dateText: TextStyle;
     headerRow: ViewStyle;
     infoRow: ViewStyle;
-    lastReplyText: TextStyle;
+    parentMessagePreviewContainer: ViewStyle;
     parentMessageText: TextStyle;
+    previewMessageContainer: ViewStyle;
     touchableWrapper: ViewStyle;
     unreadBubbleText: TextStyle;
     unreadBubbleWrapper: ViewStyle;
@@ -954,7 +984,7 @@ export const defaultTheme: Theme = {
     contentContainer: {},
     date: {},
     message: {
-      fontWeight: '400',
+      container: {},
     },
     mutedStatus: {
       height: 20,
@@ -1053,6 +1083,16 @@ export const defaultTheme: Theme = {
     attachButtonContainer: {},
     attachmentSelectionBar: {},
     attachmentSeparator: {},
+    attachmentUnsupportedIndicator: {
+      container: {},
+      text: {},
+      warningIcon: {},
+    },
+    attachmentUploadPreviewList: {
+      filesFlatList: {},
+      imagesFlatList: {},
+      wrapper: {},
+    },
     audioRecorder: {
       arrowLeftIcon: {},
       checkContainer: {},
@@ -1078,13 +1118,22 @@ export const defaultTheme: Theme = {
     },
     audioRecordingWaveform: { container: {}, waveform: {} },
     autoCompleteInputContainer: {},
+    commandInput: {
+      closeButton: {},
+      container: {},
+      text: {},
+    },
     commandsButton: {},
-    commandsButtonContainer: {},
     composerContainer: {},
     container: {},
     cooldownTimer: {
       container: {},
       text: {},
+    },
+    dismissAttachmentUpload: {
+      dismiss: {},
+      dismissIcon: {},
+      dismissIconColor: '',
     },
     editingBoxContainer: {},
     editingBoxHeader: {},
@@ -1093,25 +1142,24 @@ export const defaultTheme: Theme = {
       editingBoxHeader: {},
       editingBoxHeaderTitle: {},
     },
-    fileUploadPreview: {
-      dismiss: {},
+    fileAttachmentUploadPreview: {
       fileContainer: {},
       filenameText: {},
       fileSizeText: {},
       fileTextContainer: {},
+      uploadProgressOverlay: {},
+      wrapper: {},
+    },
+    fileUploadPreview: {
       flatList: {},
     },
     focusedInputBoxContainer: {},
-    giphyCommandInput: {
-      giphyContainer: {},
-      giphyText: {},
-    },
-    imageUploadPreview: {
-      dismiss: {},
-      dismissIconColor: '',
-      flatList: {},
+    imageAttachmentUploadPreview: {
       itemContainer: {},
       upload: {},
+    },
+    imageUploadPreview: {
+      flatList: {},
     },
     inputBox: {},
     inputBoxContainer: {},
@@ -1176,6 +1224,12 @@ export const defaultTheme: Theme = {
       indicatorColor: '',
       overlay: {},
     },
+    videoAttachmentUploadPreview: {
+      itemContainer: {},
+      recorderIcon: {},
+      recorderIconContainer: {},
+      upload: {},
+    },
   },
   messageList: {
     container: {},
@@ -1222,7 +1276,9 @@ export const defaultTheme: Theme = {
     },
     bottomSheet: {},
     reactionButton: {
+      filledBackgroundColor: Colors.light_blue,
       filledColor: Colors.accent_blue,
+      unfilledBackgroundColor: Colors.white,
       unfilledColor: Colors.grey,
     },
     reactionPicker: {
@@ -1253,6 +1309,9 @@ export const defaultTheme: Theme = {
       title: {},
       unfilledBackgroundColor: Colors.grey_gainsboro,
     },
+  },
+  messagePreview: {
+    message: {},
   },
   messageSimple: {
     actions: {
@@ -1628,8 +1687,9 @@ export const defaultTheme: Theme = {
     dateText: {},
     headerRow: {},
     infoRow: {},
-    lastReplyText: {},
+    parentMessagePreviewContainer: {},
     parentMessageText: {},
+    previewMessageContainer: {},
     touchableWrapper: {},
     unreadBubbleText: {},
     unreadBubbleWrapper: {},

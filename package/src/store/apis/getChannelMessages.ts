@@ -33,6 +33,8 @@ export const getChannelMessages = async ({
     }
     messageIdVsReactions[reaction.messageId].push(reaction);
   });
+
+  // Populate the polls.
   const messageIdsVsPolls: Record<string, TableRow<'poll'>> = {};
   const pollsById: Record<string, TableRow<'poll'>> = {};
   const messagesWithPolls = messageRows.filter((message) => !!message.poll_id);
@@ -49,6 +51,30 @@ export const getChannelMessages = async ({
     messageIdsVsPolls[message.poll_id] = pollsById[message.poll_id];
   });
 
+  const messageIdsVsReminders: Record<string, TableRow<'reminders'>> = {};
+  const reminders = (await SqliteClient.executeSql.apply(
+    null,
+    createSelectQuery('reminders', ['*'], {
+      messageId: messageIds,
+    }),
+  )) as unknown as TableRow<'reminders'>[];
+  reminders.forEach((reminder) => {
+    messageIdsVsReminders[reminder.messageId] = reminder;
+  });
+
+  const messagesWithSharedLocations = messageRows.filter((message) => !!message.shared_location);
+  const messageIdsVsLocations: Record<string, TableRow<'locations'>> = {};
+  const sharedLocationRows = (await SqliteClient.executeSql.apply(
+    null,
+    createSelectQuery('locations', ['*'], {
+      messageId: messagesWithSharedLocations.map((message) => message.id),
+    }),
+  )) as unknown as TableRow<'locations'>[];
+
+  sharedLocationRows.forEach((location) => {
+    messageIdsVsLocations[location.messageId] = location;
+  });
+
   // Populate the messages.
   const cidVsMessages: Record<string, MessageResponse[]> = {};
   messageRows.forEach((m) => {
@@ -63,6 +89,7 @@ export const getChannelMessages = async ({
           messageRow: m,
           pollRow: messageIdsVsPolls[m.poll_id],
           reactionRows: messageIdVsReactions[m.id],
+          reminderRow: messageIdsVsReminders[m.id],
         }),
       );
     }

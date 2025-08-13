@@ -2,13 +2,16 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type { ChannelState, LocalMessage, MessageResponse } from 'stream-chat';
+import type {
+  AttachmentLoadingState,
+  ChannelState,
+  LocalMessage,
+  MessageResponse,
+} from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
-import type { EmojiSearchIndex } from '../contexts/messageInputContext/MessageInputContext';
-import { compiledEmojis } from '../emoji-data';
 import type { TableRowJoinedUser } from '../store/types';
-import { FileTypes, ValueOf } from '../types/types';
+import { ValueOf } from '../types/types';
 
 export type ReactionData = {
   Icon: React.ComponentType<IconProps>;
@@ -16,13 +19,10 @@ export type ReactionData = {
 };
 
 export const FileState = Object.freeze({
-  // finished and uploaded state are the same thing. First is set on frontend,
-  // while later is set on backend side
-  // TODO: Unify both of them
+  BLOCKED: 'blocked',
+  FAILED: 'failed',
   FINISHED: 'finished',
-  NOT_SUPPORTED: 'not_supported',
-  UPLOAD_FAILED: 'upload_failed',
-  UPLOADED: 'uploaded',
+  PENDING: 'pending',
   UPLOADING: 'uploading',
 });
 
@@ -30,11 +30,13 @@ export const ProgressIndicatorTypes: {
   IN_PROGRESS: 'in_progress';
   INACTIVE: 'inactive';
   NOT_SUPPORTED: 'not_supported';
+  PENDING: 'pending';
   RETRY: 'retry';
 } = Object.freeze({
   IN_PROGRESS: 'in_progress',
   INACTIVE: 'inactive',
   NOT_SUPPORTED: 'not_supported',
+  PENDING: 'pending',
   RETRY: 'retry',
 });
 
@@ -44,25 +46,22 @@ export const MessageStatusTypes = {
   SENDING: 'sending',
 };
 
-export type FileStateValue = (typeof FileState)[keyof typeof FileState];
-
-type Progress = ValueOf<typeof ProgressIndicatorTypes>;
-type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
+export type Progress = ValueOf<typeof ProgressIndicatorTypes>;
+type IndicatorStatesMap = Record<AttachmentLoadingState, Progress | undefined>;
 
 export const getIndicatorTypeForFileState = (
-  fileState: FileStateValue,
+  fileState: AttachmentLoadingState,
   enableOfflineSupport: boolean,
-): Progress | null => {
+): Progress | undefined => {
   const indicatorMap: IndicatorStatesMap = {
     [FileState.UPLOADING]: enableOfflineSupport
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.IN_PROGRESS,
-    // If offline support is disabled, then there is no need
-    [FileState.UPLOAD_FAILED]: enableOfflineSupport
+    [FileState.BLOCKED]: ProgressIndicatorTypes.NOT_SUPPORTED,
+    [FileState.FAILED]: enableOfflineSupport
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.RETRY,
-    [FileState.NOT_SUPPORTED]: ProgressIndicatorTypes.NOT_SUPPORTED,
-    [FileState.UPLOADED]: ProgressIndicatorTypes.INACTIVE,
+    [FileState.PENDING]: ProgressIndicatorTypes.PENDING,
     [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,
   };
 
@@ -97,48 +96,6 @@ export const isBouncedMessage = (message: LocalMessage) =>
  */
 export const isEditedMessage = (message: LocalMessage) => !!message.message_text_updated_at;
 
-/**
- * Default emoji search index for auto complete text input
- */
-export const defaultEmojiSearchIndex: EmojiSearchIndex = {
-  search: (query) => {
-    try {
-      const results = [];
-
-      for (const emoji of compiledEmojis) {
-        if (results.length >= 10) {
-          return results;
-        }
-        if (emoji.names.some((name) => name.includes(query))) {
-          // Aggregate skins as different toned emojis - if skins are present
-          if (emoji.skins) {
-            results.push({
-              ...emoji,
-              name: `${emoji.name}-tone-1`,
-              skins: undefined,
-            });
-            emoji.skins.forEach((tone, index) =>
-              results.push({
-                ...emoji,
-                name: `${emoji.name}-tone-${index + 2}`,
-                skins: undefined,
-                unicode: tone,
-              }),
-            );
-          } else {
-            results.push(emoji);
-          }
-        }
-      }
-
-      return results;
-    } catch (error) {
-      console.warn('Error searching emojis:', error);
-      throw error;
-    }
-  },
-};
-
 export const makeImageCompatibleUrl = (url: string) =>
   (url.indexOf('//') === 0 ? `https:${url}` : url).trim();
 
@@ -155,7 +112,7 @@ export const getUrlWithoutParams = (url?: string) => {
   return url.substring(0, url.indexOf('?'));
 };
 
-export const isLocalUrl = (url: string) => url.indexOf('http') !== 0;
+export const isLocalUrl = (url: string) => !url.includes('http');
 
 export const generateRandomId = (a = ''): string =>
   a
@@ -186,8 +143,15 @@ export const hasOnlyEmojis = (text: string) => {
  * @param {LocalMessage} message - the message object to be stringified
  * @returns {string} The stringified message
  */
-export const stringifyMessage = (message: MessageResponse | LocalMessage): string => {
+export const stringifyMessage = ({
+  message,
+  includeReactions = true,
+}: {
+  message: MessageResponse | LocalMessage;
+  includeReactions?: boolean;
+}): string => {
   const {
+    attachments,
     deleted_at,
     i18n,
     latest_reactions,
@@ -198,6 +162,10 @@ export const stringifyMessage = (message: MessageResponse | LocalMessage): strin
     type,
     updated_at,
   } = message;
+  const baseFieldsString = `${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}${attachments?.length}`;
+  if (!includeReactions) {
+    return baseFieldsString;
+  }
   return `${
     latest_reactions ? latest_reactions.map(({ type, user }) => `${type}${user?.id}`).join() : ''
   }${
@@ -209,7 +177,7 @@ export const stringifyMessage = (message: MessageResponse | LocalMessage): strin
           )
           .join()
       : ''
-  }${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}`;
+  }${baseFieldsString}`;
 };
 
 /**
@@ -218,7 +186,13 @@ export const stringifyMessage = (message: MessageResponse | LocalMessage): strin
  * @returns {string} The mapped message string
  */
 export const reduceMessagesToString = (messages: LocalMessage[]): string =>
-  messages.map(stringifyMessage).join();
+  messages
+    .map((message) =>
+      message?.quoted_message
+        ? `${stringifyMessage({ message })}_${message.quoted_message.type}_${message.quoted_message.deleted_at}_${message.quoted_message.text}_${message.quoted_message.updated_at}`
+        : stringifyMessage({ message }),
+    )
+    .join();
 
 /**
  * Utility to get the file name from the path using regex.
@@ -232,18 +206,6 @@ export const getFileNameFromPath = (path: string) => {
   const pattern = /[^/]+\.[^/]+$/;
   const match = path.match(pattern);
   return match ? match[0] : '';
-};
-
-export const getFileTypeFromMimeType = (mimeType: string) => {
-  const fileType = mimeType.split('/')[0];
-  if (fileType === 'image') {
-    return FileTypes.Image;
-  } else if (fileType === 'video') {
-    return FileTypes.Video;
-  } else if (fileType === 'audio') {
-    return FileTypes.Audio;
-  }
-  return FileTypes.File;
 };
 
 /**
@@ -329,4 +291,64 @@ export const findInMessagesByDate = (
   }
 
   return { index: -1 };
+};
+
+/**
+ * The purpose of this function is to compare two messages and determine if they are equal.
+ * It checks various properties of the messages, such as status, type, text, pinned state, updated_at timestamp, i18n data, and reply count.
+ * If all these properties match, it returns true, indicating that the messages are considered equal.
+ * If any of the properties differ, it returns false, indicating that the messages are not equal.
+ * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
+ */
+export const checkMessageEquality = (
+  prevMessage?: LocalMessage,
+  nextMessage?: LocalMessage,
+): boolean => {
+  const prevMessageExists = !!prevMessage;
+  const nextMessageExists = !!nextMessage;
+  if (!prevMessageExists && !nextMessageExists) {
+    return true;
+  }
+  if (prevMessageExists !== nextMessageExists) {
+    return false;
+  }
+  const messageEqual =
+    prevMessage?.status === nextMessage?.status &&
+    prevMessage?.type === nextMessage?.type &&
+    prevMessage?.text === nextMessage?.text &&
+    prevMessage?.pinned === nextMessage?.pinned &&
+    prevMessage?.i18n === nextMessage?.i18n &&
+    prevMessage?.reply_count === nextMessage?.reply_count &&
+    prevMessage?.updated_at?.getTime?.() === nextMessage?.updated_at?.getTime?.() &&
+    prevMessage?.deleted_at?.getTime?.() === nextMessage?.deleted_at?.getTime?.();
+
+  return messageEqual;
+};
+
+/**
+ * The purpose of this function is to compare two quoted messages and determine if they are equal.
+ * It checks various properties of the messages, such as status, type, text, updated_at timestamp, and deleted_at.
+ * If all these properties match, it returns true, indicating that the messages are considered equal.
+ * If any of the properties differ, it returns false, indicating that the messages are not equal.
+ * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
+ */
+export const checkQuotedMessageEquality = (
+  prevQuotedMessage?: LocalMessage,
+  nextQuotedMessage?: LocalMessage,
+): boolean => {
+  const prevQuotedMessageExists = !!prevQuotedMessage;
+  const nextQuotedMessageExists = !!nextQuotedMessage;
+  if (!prevQuotedMessageExists && !nextQuotedMessageExists) {
+    return true;
+  }
+  if (prevQuotedMessageExists !== nextQuotedMessageExists) {
+    return false;
+  }
+  const quotedMessageEqual =
+    prevQuotedMessage?.type === nextQuotedMessage?.type &&
+    prevQuotedMessage?.text === nextQuotedMessage?.text &&
+    prevQuotedMessage?.updated_at?.getTime?.() === nextQuotedMessage?.updated_at?.getTime?.() &&
+    prevQuotedMessage?.deleted_at?.getTime?.() === nextQuotedMessage?.deleted_at?.getTime?.();
+
+  return quotedMessageEqual;
 };
