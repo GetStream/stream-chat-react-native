@@ -38,4 +38,17 @@ allprojects {
     }
 }
 
+project(':app') {
+    afterEvaluate {
+        if (tasks.findByName("preBuild")) {
+            tasks.preBuild.doFirst {
+                exec {
+                    workingDir rootDir
+                    commandLine './gradlew', 'generateCodegenArtifactsFromSchema'
+                }
+            }
+        }
+    }
+}
+
 apply plugin: "com.facebook.react.rootproject"
