@@ -40,11 +40,5 @@ class MainApplication : Application(), ReactApplication {
     override fun onCreate() {
         super.onCreate()
         loadReactNative(this)
-        val packages = PackageList(this@MainApplication).packages
-            for (pkg in packages) {
-                if (pkg is ViewManagerOnDemandReactPackage) {
-                    Log.d("ViewManagerCheck", "👀 Found ViewManager package: ${pkg.javaClass.name}")
-                }
-            }
     }
 }
