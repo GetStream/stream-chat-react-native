@@ -22,26 +22,29 @@
 		<string>????</string>
 		<key>CFBundleVersion</key>
 		<string>154</string>
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<true />
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false />
 		<key>LSRequiresIPhoneOS</key>
 		<true />
 		<key>NSAppTransportSecurity</key>
 		<dict>
-			<!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 			<key>NSAllowsArbitraryLoads</key>
 			<false />
 			<key>NSAllowsLocalNetworking</key>
 			<true />
 		</dict>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>$(PRODUCT_NAME) would like share live location when in use in a message.</string>
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>$(PRODUCT_NAME) would like share live location always in a message.</string>
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>$(PRODUCT_NAME) would like to use your camera to share image in a message.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>$(PRODUCT_NAME) would like share live location always in a message.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>$(PRODUCT_NAME) would like share live location when in use in a message.</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>$(PRODUCT_NAME) would like to use your microphone for voice recording.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIRequiredDeviceCapabilities</key>
@@ -55,9 +58,5 @@
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false />
-		<key>ITSAppUsesNonExemptEncryption</key>
-		<false />
-		<key>FirebaseAppDelegateProxyEnabled</key>
-		<true />
 	</dict>
 </plist>
