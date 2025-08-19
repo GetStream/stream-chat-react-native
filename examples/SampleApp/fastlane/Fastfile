@@ -33,6 +33,8 @@ lane :deploy_to_testflight_qa do |options|
     xcodeproj: xcode_project
   )
 
+  xcversion(version: "16.1")
+
   current_build_number = app_store_build_number(
       api_key: appstore_api_key,
       live: false,
