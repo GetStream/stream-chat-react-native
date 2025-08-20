@@ -36,7 +36,11 @@ type AutoCompleteInputPropsWithContext = TextInputProps &
      * that would happen if we put this in the MessageInputContext
      */
     cooldownActive?: boolean;
-    TextInputComponent?: React.ComponentType<TextInputProps>;
+    TextInputComponent?: React.ComponentType<
+      TextInputProps & {
+        ref: React.Ref<RNTextInput> | undefined;
+      }
+    >;
   };
 
 type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
@@ -53,7 +57,14 @@ const configStateSelector = (state: MessageComposerConfig) => ({
 const MAX_NUMBER_OF_LINES = 5;
 
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
-  const { channel, cooldownActive = false, setInputBoxRef, t, TextInputComponent, ...rest } = props;
+  const {
+    channel,
+    cooldownActive = false,
+    setInputBoxRef,
+    t,
+    TextInputComponent = RNTextInput,
+    ...rest
+  } = props;
   const [localText, setLocalText] = useState('');
   const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
@@ -114,12 +125,8 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     [],
   );
 
-  if (TextInputComponent) {
-    return <TextInputComponent {...rest} />;
-  }
-
   return (
-    <RNTextInput
+    <TextInputComponent
       autoFocus={!!command}
       editable={enabled}
       maxLength={maxMessageLength}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, TextInputProps, View } from 'react-native';
+import { Modal, SafeAreaView, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 
 import {
   Gesture,
@@ -153,7 +153,11 @@ type MessageInputPropsWithContext = Pick<
   Pick<TranslationContextValue, 't'> &
   Pick<MessageComposerAPIContextValue, 'clearEditingState'> & {
     editing: boolean;
-    TextInputComponent?: React.ComponentType<TextInputProps>;
+    TextInputComponent?: React.ComponentType<
+      TextInputProps & {
+        ref: React.Ref<TextInput> | undefined;
+      }
+    >;
   };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
