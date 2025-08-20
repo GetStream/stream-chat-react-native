@@ -4249,6 +4249,17 @@ form-data@^4.0.0:
     es-set-tostringtag "^2.1.0"
     mime-types "^2.1.12"
 
+form-data@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.4.tgz#784cdcce0669a9d68e94d11ac4eea98088edd2c4"
+  integrity sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    es-set-tostringtag "^2.1.0"
+    hasown "^2.0.2"
+    mime-types "^2.1.12"
+
 fresh@0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
@@ -5643,6 +5654,11 @@ linkifyjs@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.3.1.tgz#1f246ebf4be040002accd1f4535b6af7c7e37898"
   integrity sha512-DRSlB9DKVW04c4SUdGvKK5FR6be45lTU9M76JnngqPeeGDqPwYc0zdUErtsNVMtxPXgUWV4HbXbnC4sNyBxkYg==
+
+linkifyjs@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.3.2.tgz#d97eb45419aabf97ceb4b05a7adeb7b8c8ade2b1"
+  integrity sha512-NT1CJtq3hHIreOianA8aSXn6Cw0JzYOuDQbOrSPe7gqFnCpKP++MQe3ODgO3oh2GJFORkAAdqredOa60z63GbA==
 
 locate-path@^5.0.0:
   version "5.0.0"
@@ -7303,19 +7319,19 @@ stream-chat-react-native-core@8.1.0:
   version "0.0.0"
   uid ""
 
-stream-chat@^9.13.0:
-  version "9.13.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.13.0.tgz#f303921bf5300a4d48f29cc54902579f91e9ee21"
-  integrity sha512-sI81k1lNQwBUXx+wuX0jSLrKh5kOZYA/eg8A+VNgC40tF+QWtY0rUsgnprsAPlIwPuYyKxAiZAzGTFWWkZ2qsA==
+stream-chat@^9.17.0:
+  version "9.17.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.17.0.tgz#540cf1ea03b08a394d6140696aae8528e9ba9ce2"
+  integrity sha512-ys6K73wIVWs5+qsfPJ9wumEUtgbMXYVbH1dhmAZ1oYtQ01dY/avsvt25PYDakVjKeyrnT+y8T/xEzfeF/WDJsg==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
     axios "^1.6.0"
     base64-js "^1.5.1"
-    form-data "^4.0.0"
+    form-data "^4.0.4"
     isomorphic-ws "^5.0.0"
     jsonwebtoken "^9.0.2"
-    linkifyjs "^4.2.0"
+    linkifyjs "^4.3.2"
     ws "^8.18.1"
 
 stream-chat@^9.9.0:
