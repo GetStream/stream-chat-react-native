@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   I18nManager,
-  NativeSyntheticEvent,
+  TextInput as RNTextInput,
   StyleSheet,
-  TextInput,
-  TextInputContentSizeChangeEventData,
+  TextInputContentSizeChangeEvent,
   TextInputProps,
-  TextInputSelectionChangeEventData,
+  TextInputSelectionChangeEvent,
 } from 'react-native';
 
 import { MessageComposerConfig, TextComposerState } from 'stream-chat';
@@ -37,6 +36,11 @@ type AutoCompleteInputPropsWithContext = TextInputProps &
      * that would happen if we put this in the MessageInputContext
      */
     cooldownActive?: boolean;
+    TextInputComponent?: React.ComponentType<
+      TextInputProps & {
+        ref: React.Ref<RNTextInput> | undefined;
+      }
+    >;
   };
 
 type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
@@ -53,7 +57,14 @@ const configStateSelector = (state: MessageComposerConfig) => ({
 const MAX_NUMBER_OF_LINES = 5;
 
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
-  const { channel, cooldownActive = false, setInputBoxRef, t, ...rest } = props;
+  const {
+    channel,
+    cooldownActive = false,
+    setInputBoxRef,
+    t,
+    TextInputComponent = RNTextInput,
+    ...rest
+  } = props;
   const [localText, setLocalText] = useState('');
   const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
@@ -74,7 +85,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   }, [text]);
 
   const handleSelectionChange = useCallback(
-    (e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
+    (e: TextInputSelectionChangeEvent) => {
       const { selection } = e.nativeEvent;
       textComposer.setSelection(selection);
     },
@@ -108,16 +119,14 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   }, [command, cooldownActive, t]);
 
   const handleContentSizeChange = useCallback(
-    ({
-      nativeEvent: { contentSize },
-    }: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) => {
+    ({ nativeEvent: { contentSize } }: TextInputContentSizeChangeEvent) => {
       setTextHeight(contentSize.height);
     },
     [],
   );
 
   return (
-    <TextInput
+    <TextInputComponent
       autoFocus={!!command}
       editable={enabled}
       maxLength={maxMessageLength}
