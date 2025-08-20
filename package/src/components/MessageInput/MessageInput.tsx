@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Modal, SafeAreaView, StyleSheet, TextInputProps, View } from 'react-native';
 
 import {
   Gesture,
@@ -151,7 +151,10 @@ type MessageInputPropsWithContext = Pick<
   > &
   Pick<MessagesContextValue, 'Reply'> &
   Pick<TranslationContextValue, 't'> &
-  Pick<MessageComposerAPIContextValue, 'clearEditingState'> & { editing: boolean };
+  Pick<MessageComposerAPIContextValue, 'clearEditingState'> & {
+    editing: boolean;
+    TextInputComponent?: React.ComponentType<TextInputProps>;
+  };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
@@ -207,6 +210,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
+    TextInputComponent,
     watchers,
   } = props;
 
@@ -504,6 +508,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                         <AutoCompleteInput
                           cooldownActive={!!cooldownRemainingSeconds}
+                          TextInputComponent={TextInputComponent}
                           {...additionalTextInputProps}
                         />
                       </View>
