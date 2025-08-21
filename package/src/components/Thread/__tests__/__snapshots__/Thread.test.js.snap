@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Thread should match thread snapshot 1`] = `
 <View
@@ -162,7 +162,7 @@ exports[`Thread should match thread snapshot 1`] = `
         removeClippedSubviews={false}
         renderItem={[Function]}
         scrollEventThrottle={0.0001}
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator={false}
         stickyHeaderIndices={[]}
         style={
           [
@@ -179,7 +179,6 @@ exports[`Thread should match thread snapshot 1`] = `
                 "width": "100%",
               },
               {},
-              undefined,
               undefined,
             ],
           ]
@@ -236,11 +235,6 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
-              style={
-                [
-                  undefined,
-                ]
-              }
               testID="message-list-item-0"
             >
               <View
@@ -590,13 +584,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
               </View>
             </View>
-            <View
-              style={
-                [
-                  undefined,
-                ]
-              }
-            />
+            <View />
           </View>
           <View
             onFocusCapture={[Function]}
@@ -617,11 +605,6 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
-              style={
-                [
-                  undefined,
-                ]
-              }
               testID="message-list-item-1"
             >
               <View
@@ -971,13 +954,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
               </View>
             </View>
-            <View
-              style={
-                [
-                  undefined,
-                ]
-              }
-            />
+            <View />
           </View>
           <View
             onFocusCapture={[Function]}
@@ -998,11 +975,6 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
-              style={
-                [
-                  undefined,
-                ]
-              }
               testID="message-list-item-2"
             >
               <View
