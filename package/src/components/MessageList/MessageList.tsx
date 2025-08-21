@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   FlatListProps,
   FlatList as FlatListType,
-  Platform,
   ScrollViewProps,
   StyleSheet,
   View,
@@ -739,9 +738,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage]);
 
-  // TODO: do not apply on RN 0.73 and above
-  const shouldApplyAndroidWorkaround = inverted && Platform.OS === 'android';
-
   const renderItem = useCallback(
     ({ index, item: message }: { index: number; item: LocalMessage }) => {
       if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
@@ -785,10 +781,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       );
 
       return (
-        <View
-          style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}
-          testID={`message-list-item-${index}`}
-        >
+        <View testID={`message-list-item-${index}`}>
           {message.type === 'system' ? (
             <MessageSystem
               message={message}
@@ -832,7 +825,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       myMessageTheme,
       onThreadSelect,
       screenPadding,
-      shouldApplyAndroidWorkaround,
       shouldShowUnreadUnderlay,
       threadList,
     ],
@@ -1153,30 +1145,26 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const ListFooterComponent = useCallback(
     () => (
-      <View style={shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined}>
+      <View>
         <FooterComponent />
       </View>
     ),
-    [shouldApplyAndroidWorkaround, FooterComponent],
+    [FooterComponent],
   );
 
   const ListHeaderComponent = useCallback(
     () => (
-      <View style={shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined}>
+      <View>
         <HeaderComponent />
       </View>
     ),
-    [shouldApplyAndroidWorkaround, HeaderComponent],
+    [HeaderComponent],
   );
 
   const ItemSeparatorComponent = additionalFlatListProps?.ItemSeparatorComponent;
   const WrappedItemSeparatorComponent = useCallback(
-    () => (
-      <View style={[shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined]}>
-        {ItemSeparatorComponent ? <ItemSeparatorComponent /> : null}
-      </View>
-    ),
-    [ItemSeparatorComponent, shouldApplyAndroidWorkaround],
+    () => <View>{ItemSeparatorComponent ? <ItemSeparatorComponent /> : null}</View>,
+    [ItemSeparatorComponent],
   );
 
   // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
@@ -1195,13 +1183,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }
 
   const flatListStyle = useMemo(
-    () => [
-      styles.listContainer,
-      listContainer,
-      additionalFlatListProps?.style,
-      shouldApplyAndroidWorkaround ? styles.invertAndroid : undefined,
-    ],
-    [additionalFlatListProps?.style, listContainer, shouldApplyAndroidWorkaround],
+    () => [styles.listContainer, listContainer, additionalFlatListProps?.style],
+    [additionalFlatListProps?.style, listContainer],
   );
 
   const flatListContentContainerStyle = useMemo(
@@ -1241,7 +1224,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           data={processedMessageList}
           extraData={disabled}
-          inverted={shouldApplyAndroidWorkaround ? false : inverted}
+          inverted={inverted}
           ItemSeparatorComponent={WrappedItemSeparatorComponent}
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
@@ -1264,7 +1247,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
-          showsVerticalScrollIndicator={!shouldApplyAndroidWorkaround}
+          showsVerticalScrollIndicator={false}
           style={flatListStyle}
           testID='message-flat-list'
           viewabilityConfig={flatListViewabilityConfig}
