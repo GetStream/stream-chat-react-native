@@ -1143,29 +1143,14 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   }
 
-  const ListFooterComponent = useCallback(
-    () => (
-      <View>
-        <FooterComponent />
-      </View>
-    ),
-    [FooterComponent],
-  );
+  const ListFooterComponent = useCallback(() => <FooterComponent />, [FooterComponent]);
 
-  const ListHeaderComponent = useCallback(
-    () => (
-      <View>
-        <HeaderComponent />
-      </View>
-    ),
-    [HeaderComponent],
-  );
+  const ListHeaderComponent = useCallback(() => <HeaderComponent />, [HeaderComponent]);
 
   const ItemSeparatorComponent = additionalFlatListProps?.ItemSeparatorComponent;
-  const WrappedItemSeparatorComponent = useCallback(
-    () => <View>{ItemSeparatorComponent ? <ItemSeparatorComponent /> : null}</View>,
-    [ItemSeparatorComponent],
-  );
+  const WrappedItemSeparatorComponent = useCallback(() => {
+    return ItemSeparatorComponent ? <ItemSeparatorComponent /> : null;
+  }, [ItemSeparatorComponent]);
 
   // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
   let additionalFlatListPropsExcludingStyle:
