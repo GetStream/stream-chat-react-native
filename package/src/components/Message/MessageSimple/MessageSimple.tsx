@@ -74,6 +74,7 @@ export type MessageSimplePropsWithContext = Pick<
 > &
   Pick<
     MessagesContextValue,
+    | 'customMessageSwipeAction'
     | 'enableMessageGroupingByUser'
     | 'enableSwipeToReply'
     | 'myMessageTheme'
@@ -106,6 +107,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const { width } = Dimensions.get('screen');
   const {
     alignment,
+    channel,
+    customMessageSwipeAction,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
@@ -215,9 +218,13 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     shouldRenderSwipeableWrapper,
   );
 
-  const onSwipeToReply = useCallback(() => {
+  const onSwipeActionHandler = useCallback(() => {
+    if (customMessageSwipeAction) {
+      customMessageSwipeAction({ channel, message });
+      return;
+    }
     setQuotedMessage(message);
-  }, [setQuotedMessage, message]);
+  }, [channel, customMessageSwipeAction, message, setQuotedMessage]);
 
   const THRESHOLD = 25;
 
@@ -260,7 +267,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
         })
         .onEnd(() => {
           if (translateX.value >= THRESHOLD) {
-            runOnJS(onSwipeToReply)();
+            runOnJS(onSwipeActionHandler)();
             if (triggerHaptic) {
               runOnJS(triggerHaptic)('impactMedium');
             }
@@ -284,7 +291,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     [
       isSwiping,
       messageSwipeToReplyHitSlop,
-      onSwipeToReply,
+      onSwipeActionHandler,
       touchStart,
       translateX,
       triggerHaptic,
@@ -603,6 +610,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     setQuotedMessage,
   } = useMessageContext();
   const {
+    customMessageSwipeAction,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     MessageAvatar,
@@ -631,6 +639,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
       {...{
         alignment,
         channel,
+        customMessageSwipeAction,
         enableMessageGroupingByUser,
         enableSwipeToReply,
         groupStyles,

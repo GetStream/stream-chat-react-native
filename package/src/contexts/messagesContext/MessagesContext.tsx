@@ -4,6 +4,7 @@ import { PressableProps, ViewProps } from 'react-native';
 
 import type {
   Attachment,
+  Channel,
   ChannelState,
   CommandSuggestion,
   LocalMessage,
@@ -361,6 +362,14 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Accepts the same props as Card component.
    */
   CardHeader?: React.ComponentType<CardProps>;
+
+  customMessageSwipeAction?: ({
+    channel,
+    message,
+  }: {
+    channel: Channel;
+    message: LocalMessage;
+  }) => void;
 
   /**
    * Full override of the delete message button in the Message Actions
