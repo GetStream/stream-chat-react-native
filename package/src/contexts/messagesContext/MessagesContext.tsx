@@ -363,6 +363,11 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   CardHeader?: React.ComponentType<CardProps>;
 
+  /**
+   * Custom handler to handle message swipe action.
+   *
+   * The default behaviour is swipe to reply for this.
+   */
   customMessageSwipeAction?: ({
     channel,
     message,
