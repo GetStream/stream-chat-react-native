@@ -1143,27 +1143,14 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   }
 
-  const ListFooterComponent = useCallback(() => <FooterComponent />, [FooterComponent]);
-
-  const ListHeaderComponent = useCallback(() => <HeaderComponent />, [HeaderComponent]);
-
-  const ItemSeparatorComponent = additionalFlatListProps?.ItemSeparatorComponent;
-  const WrappedItemSeparatorComponent = useCallback(() => {
-    return ItemSeparatorComponent ? <ItemSeparatorComponent /> : null;
-  }, [ItemSeparatorComponent]);
-
   // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
   let additionalFlatListPropsExcludingStyle:
-    | Omit<
-        NonNullable<typeof additionalFlatListProps>,
-        'style' | 'contentContainerStyle' | 'ItemSeparatorComponent'
-      >
+    | Omit<NonNullable<typeof additionalFlatListProps>, 'style' | 'contentContainerStyle'>
     | undefined;
 
   if (additionalFlatListProps) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { contentContainerStyle, ItemSeparatorComponent, style, ...rest } =
-      additionalFlatListProps;
+    const { contentContainerStyle, style, ...rest } = additionalFlatListProps;
     additionalFlatListPropsExcludingStyle = rest;
   }
 
@@ -1210,11 +1197,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           data={processedMessageList}
           extraData={disabled}
           inverted={inverted}
-          ItemSeparatorComponent={WrappedItemSeparatorComponent}
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
-          ListFooterComponent={ListFooterComponent}
-          ListHeaderComponent={ListHeaderComponent}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           /**
             If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
             bottom (10 offset or below).
