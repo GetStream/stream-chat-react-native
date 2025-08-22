@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -24,6 +24,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
+import { useStableCallback } from '../../../hooks/useStableCallback';
 import { NativeHandlers } from '../../../native';
 
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
@@ -74,6 +75,7 @@ export type MessageSimplePropsWithContext = Pick<
 > &
   Pick<
     MessagesContextValue,
+    | 'customMessageSwipeAction'
     | 'enableMessageGroupingByUser'
     | 'enableSwipeToReply'
     | 'myMessageTheme'
@@ -106,6 +108,8 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const { width } = Dimensions.get('screen');
   const {
     alignment,
+    channel,
+    customMessageSwipeAction,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
@@ -215,9 +219,13 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     shouldRenderSwipeableWrapper,
   );
 
-  const onSwipeToReply = useCallback(() => {
+  const onSwipeActionHandler = useStableCallback(() => {
+    if (customMessageSwipeAction) {
+      customMessageSwipeAction({ channel, message });
+      return;
+    }
     setQuotedMessage(message);
-  }, [setQuotedMessage, message]);
+  });
 
   const THRESHOLD = 25;
 
@@ -260,7 +268,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
         })
         .onEnd(() => {
           if (translateX.value >= THRESHOLD) {
-            runOnJS(onSwipeToReply)();
+            runOnJS(onSwipeActionHandler)();
             if (triggerHaptic) {
               runOnJS(triggerHaptic)('impactMedium');
             }
@@ -284,7 +292,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
     [
       isSwiping,
       messageSwipeToReplyHitSlop,
-      onSwipeToReply,
+      onSwipeActionHandler,
       touchStart,
       translateX,
       triggerHaptic,
@@ -603,6 +611,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     setQuotedMessage,
   } = useMessageContext();
   const {
+    customMessageSwipeAction,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     MessageAvatar,
@@ -631,6 +640,7 @@ export const MessageSimple = (props: MessageSimpleProps) => {
       {...{
         alignment,
         channel,
+        customMessageSwipeAction,
         enableMessageGroupingByUser,
         enableSwipeToReply,
         groupStyles,
