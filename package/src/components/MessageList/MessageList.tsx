@@ -1143,10 +1143,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   }
 
-  const ListFooterComponent = useCallback(() => <FooterComponent />, [FooterComponent]);
-
-  const ListHeaderComponent = useCallback(() => <HeaderComponent />, [HeaderComponent]);
-
   const ItemSeparatorComponent = additionalFlatListProps?.ItemSeparatorComponent;
   const WrappedItemSeparatorComponent = useCallback(() => {
     return ItemSeparatorComponent ? <ItemSeparatorComponent /> : null;
@@ -1213,8 +1209,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           ItemSeparatorComponent={WrappedItemSeparatorComponent}
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
-          ListFooterComponent={ListFooterComponent}
-          ListHeaderComponent={ListHeaderComponent}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           /**
             If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
             bottom (10 offset or below).
