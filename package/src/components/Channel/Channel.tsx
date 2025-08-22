@@ -304,6 +304,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'CardCover'
       | 'CardFooter'
       | 'CardHeader'
+      | 'customMessageSwipeAction'
       | 'DateHeader'
       | 'deletedMessagesVisibilityType'
       | 'disableTypingIndicator'
@@ -550,6 +551,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
     CreatePollContent,
+    customMessageSwipeAction,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
     disableKeyboardCompatibleView = false,
@@ -1814,6 +1816,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     CardFooter,
     CardHeader,
     channelId,
+    customMessageSwipeAction,
     DateHeader,
     deletedMessagesVisibilityType,
     deleteMessage,

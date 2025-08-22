@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  View,
+} from 'react-native';
 
 import {
   Gesture,
@@ -52,6 +60,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useStableCallback } from '../../hooks/useStableCallback';
 import { useStateStore } from '../../hooks/useStateStore';
 import {
   isAudioRecorderAvailable,
@@ -432,6 +441,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const shouldDisplayStopAIGeneration =
     [AIStates.Thinking, AIStates.Generating].includes(aiState) && !!StopMessageStreamingButton;
 
+  const onFocusHandler = useStableCallback(() => {
+    inputBoxRef.current?.focus();
+  });
+
   return (
     <>
       <View
@@ -489,7 +502,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   <View style={[styles.optionsContainer, optionsContainer]}>
                     {InputButtons && <InputButtons />}
                   </View>
-                  <View
+                  <Pressable
+                    onPress={onFocusHandler}
                     style={[
                       styles.inputBoxContainer,
                       {
@@ -517,7 +531,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         />
                       </View>
                     )}
-                  </View>
+                  </Pressable>
                 </>
               )}
 
