@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Modal,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  TextInput,
-  TextInputProps,
-  View,
-} from 'react-native';
+import { Modal, SafeAreaView, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 
 import {
   Gesture,
@@ -60,7 +52,6 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { useStableCallback } from '../../hooks/useStableCallback';
 import { useStateStore } from '../../hooks/useStateStore';
 import {
   isAudioRecorderAvailable,
@@ -79,8 +70,6 @@ const styles = StyleSheet.create({
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingLeft: 16,
-    paddingRight: 16,
   },
   composerContainer: {
     alignItems: 'center',
@@ -101,7 +90,7 @@ const styles = StyleSheet.create({
   optionsContainer: {
     flexDirection: 'row',
   },
-  replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
+  replyContainer: { paddingBottom: 0, paddingHorizontal: 8, paddingTop: 8 },
   sendButtonContainer: {},
   suggestionsListContainer: {
     position: 'absolute',
@@ -441,10 +430,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const shouldDisplayStopAIGeneration =
     [AIStates.Thinking, AIStates.Generating].includes(aiState) && !!StopMessageStreamingButton;
 
-  const onFocusHandler = useStableCallback(() => {
-    inputBoxRef.current?.focus();
-  });
-
   return (
     <>
       <View
@@ -502,13 +487,11 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   <View style={[styles.optionsContainer, optionsContainer]}>
                     {InputButtons && <InputButtons />}
                   </View>
-                  <Pressable
-                    onPress={onFocusHandler}
+                  <View
                     style={[
                       styles.inputBoxContainer,
                       {
                         borderColor: grey_whisper,
-                        paddingVertical: command ? 8 : 12,
                       },
                       inputBoxContainer,
                       isFocused ? focusedInputBoxContainer : null,
@@ -519,6 +502,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         <Reply />
                       </View>
                     )}
+
                     <AttachmentUploadPreviewList />
                     {command ? (
                       <CommandInput disabled={!isOnline} />
@@ -531,7 +515,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         />
                       </View>
                     )}
-                  </Pressable>
+                  </View>
                 </>
               )}
 
