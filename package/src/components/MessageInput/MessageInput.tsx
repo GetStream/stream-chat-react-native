@@ -70,8 +70,6 @@ const styles = StyleSheet.create({
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingLeft: 16,
-    paddingRight: 16,
   },
   composerContainer: {
     alignItems: 'center',
@@ -92,7 +90,7 @@ const styles = StyleSheet.create({
   optionsContainer: {
     flexDirection: 'row',
   },
-  replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
+  replyContainer: { paddingBottom: 0, paddingHorizontal: 8, paddingTop: 8 },
   sendButtonContainer: {},
   suggestionsListContainer: {
     position: 'absolute',
@@ -494,7 +492,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       styles.inputBoxContainer,
                       {
                         borderColor: grey_whisper,
-                        paddingVertical: command ? 8 : 12,
                       },
                       inputBoxContainer,
                       isFocused ? focusedInputBoxContainer : null,
@@ -505,6 +502,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         <Reply />
                       </View>
                     )}
+
                     <AttachmentUploadPreviewList />
                     {command ? (
                       <CommandInput disabled={!isOnline} />

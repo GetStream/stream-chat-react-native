@@ -185,7 +185,7 @@ const UnMemoizedAttachmentUploadListPreview = (
   }
 
   return (
-    <View style={[wrapper]}>
+    <View style={[styles.wrapper, wrapper]}>
       {imageUploads.length ? (
         <FlatList
           data={imageUploads}
@@ -264,10 +264,13 @@ export const AttachmentUploadPreviewList = (props: AttachmentUploadPreviewListPr
 const styles = StyleSheet.create({
   attachmentSeparator: {
     borderBottomWidth: 1,
-    marginBottom: 10,
+    marginVertical: 8,
   },
-  filesFlatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
-  imagesFlatList: { paddingBottom: 12 },
+  filesFlatList: { maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
+  imagesFlatList: {},
+  wrapper: {
+    paddingTop: 12,
+  },
 });
 
 AttachmentUploadPreviewList.displayName =

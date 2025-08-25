@@ -142,6 +142,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
         {
           color: black,
           maxHeight: (textHeight || 17) * numberOfLines,
+          paddingHorizontal: command ? 4 : 16,
           textAlign: I18nManager.isRTL ? 'right' : 'left',
         },
         inputBox,
@@ -205,8 +206,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     includeFontPadding: false, // for android vertical text centering
-    padding: 0, // removal of default text input padding on android
-    paddingTop: 0, // removal of iOS top padding for weird centering
+    paddingVertical: 12,
     textAlignVertical: 'center', // for android vertical text centering
   },
 });

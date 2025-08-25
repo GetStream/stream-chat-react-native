@@ -2135,7 +2135,6 @@ exports[`Thread should match thread snapshot 1`] = `
               },
               {
                 "borderColor": "#ECEBEB",
-                "paddingVertical": 12,
               },
               {},
               null,
@@ -2148,8 +2147,6 @@ exports[`Thread should match thread snapshot 1`] = `
                 {
                   "alignItems": "center",
                   "flexDirection": "row",
-                  "paddingLeft": 16,
-                  "paddingRight": 16,
                 },
                 {},
               ]
@@ -2171,13 +2168,13 @@ exports[`Thread should match thread snapshot 1`] = `
                     "flex": 1,
                     "fontSize": 16,
                     "includeFontPadding": false,
-                    "padding": 0,
-                    "paddingTop": 0,
+                    "paddingVertical": 12,
                     "textAlignVertical": "center",
                   },
                   {
                     "color": "#000000",
                     "maxHeight": 85,
+                    "paddingHorizontal": 16,
                     "textAlign": "left",
                   },
                   {},
