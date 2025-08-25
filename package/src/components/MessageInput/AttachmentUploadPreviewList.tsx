@@ -264,10 +264,10 @@ export const AttachmentUploadPreviewList = (props: AttachmentUploadPreviewListPr
 const styles = StyleSheet.create({
   attachmentSeparator: {
     borderBottomWidth: 1,
-    marginVertical: 8,
+    marginBottom: 10,
   },
-  filesFlatList: { maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
-  imagesFlatList: {},
+  filesFlatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
+  imagesFlatList: { paddingBottom: 12 },
 });
 
 AttachmentUploadPreviewList.displayName =
