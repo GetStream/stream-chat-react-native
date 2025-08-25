@@ -63,6 +63,7 @@ import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 
 const styles = StyleSheet.create({
+  attachmentPreviewListContainer: { paddingTop: 12 },
   attachmentSeparator: {
     borderBottomWidth: 1,
     marginBottom: 10,
@@ -70,8 +71,6 @@ const styles = StyleSheet.create({
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingLeft: 16,
-    paddingRight: 16,
   },
   composerContainer: {
     alignItems: 'center',
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
   optionsContainer: {
     flexDirection: 'row',
   },
-  replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
+  replyContainer: { paddingBottom: 0, paddingHorizontal: 8, paddingTop: 8 },
   sendButtonContainer: {},
   suggestionsListContainer: {
     position: 'absolute',
@@ -231,6 +230,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     theme: {
       colors: { border, grey_whisper, white, white_smoke },
       messageInput: {
+        attachmentPreviewListContainer,
         attachmentSelectionBar,
         autoCompleteInputContainer,
         composerContainer,
@@ -494,7 +494,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       styles.inputBoxContainer,
                       {
                         borderColor: grey_whisper,
-                        paddingVertical: command ? 8 : 12,
                       },
                       inputBoxContainer,
                       isFocused ? focusedInputBoxContainer : null,
@@ -505,7 +504,16 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         <Reply />
                       </View>
                     )}
-                    <AttachmentUploadPreviewList />
+                    {attachments.length > 0 ? (
+                      <View
+                        style={[
+                          styles.attachmentPreviewListContainer,
+                          attachmentPreviewListContainer,
+                        ]}
+                      >
+                        <AttachmentUploadPreviewList />
+                      </View>
+                    ) : null}
                     {command ? (
                       <CommandInput disabled={!isOnline} />
                     ) : (

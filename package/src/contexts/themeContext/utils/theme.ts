@@ -267,6 +267,7 @@ export type Theme = {
   messageInput: {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
+    attachmentPreviewListContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
     attachmentSeparator: ViewStyle;
     attachmentUnsupportedIndicator: {
@@ -1081,6 +1082,7 @@ export const defaultTheme: Theme = {
   messageInput: {
     attachButton: {},
     attachButtonContainer: {},
+    attachmentPreviewListContainer: {},
     attachmentSelectionBar: {},
     attachmentSeparator: {},
     attachmentUnsupportedIndicator: {
