@@ -29,12 +29,13 @@ export const ReactionButton = (props: ReactionButtonProps) => {
   const { Icon, onPress, selected, type } = props;
   const {
     theme: {
+      colors: { light_blue, accent_blue, white, grey },
       messageMenu: {
         reactionButton: {
-          filledBackgroundColor,
-          filledColor,
-          unfilledBackgroundColor,
-          unfilledColor,
+          filledBackgroundColor = light_blue,
+          filledColor = accent_blue,
+          unfilledBackgroundColor = white,
+          unfilledColor = grey,
         },
         reactionPicker: { buttonContainer, reactionIconSize },
       },

@@ -60,18 +60,18 @@ export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
   const {
     theme: {
-      colors: { black },
+      colors: { accent_blue, black, light_blue, grey, grey_gainsboro },
       messageSimple: {
         reactionListBottom: {
           item: {
             container,
             countText,
-            filledBackgroundColor,
+            filledBackgroundColor = light_blue,
             icon,
-            iconFillColor,
+            iconFillColor = accent_blue,
             iconSize,
-            iconUnFillColor,
-            unfilledBackgroundColor,
+            iconUnFillColor = grey,
+            unfilledBackgroundColor = grey_gainsboro,
           },
         },
       },

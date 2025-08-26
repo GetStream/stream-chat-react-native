@@ -478,10 +478,10 @@ export type Theme = {
       height?: number;
     };
     reactionButton: {
-      filledColor: ColorValue;
-      unfilledColor: ColorValue;
-      filledBackgroundColor: ColorValue;
-      unfilledBackgroundColor: ColorValue;
+      filledColor?: ColorValue;
+      unfilledColor?: ColorValue;
+      filledBackgroundColor?: ColorValue;
+      unfilledBackgroundColor?: ColorValue;
     };
     reactionPicker: {
       buttonContainer: ViewStyle;
@@ -497,11 +497,11 @@ export type Theme = {
       avatarSize: number;
       container: ViewStyle;
       contentContainer: ViewStyle;
-      filledBackgroundColor: ColorValue;
+      filledBackgroundColor?: ColorValue;
       flatlistColumnContainer: ViewStyle;
       flatlistContainer: ViewStyle;
-      iconFilledColor: ColorValue;
-      iconUnFilledColor: ColorValue;
+      iconFilledColor?: ColorValue;
+      iconUnFilledColor?: ColorValue;
       radius: number;
       reactionBubble: ViewStyle;
       reactionBubbleBackground: ViewStyle;
@@ -509,7 +509,7 @@ export type Theme = {
       reactionSelectorContainer: ViewStyle;
       reactionsText: TextStyle;
       title: TextStyle;
-      unfilledBackgroundColor: ColorValue;
+      unfilledBackgroundColor?: ColorValue;
     };
   };
   messagePreview: {
@@ -660,12 +660,12 @@ export type Theme = {
       item: {
         container: ViewStyle;
         countText: TextStyle;
-        filledBackgroundColor: ColorValue;
+        filledBackgroundColor?: ColorValue;
         icon: ViewStyle;
-        iconFillColor: ColorValue;
+        iconFillColor?: ColorValue;
         iconSize: number;
-        iconUnFillColor: ColorValue;
-        unfilledBackgroundColor: ColorValue;
+        iconUnFillColor?: ColorValue;
+        unfilledBackgroundColor?: ColorValue;
       };
     };
     reactionListTop: {
@@ -1275,12 +1275,7 @@ export const defaultTheme: Theme = {
       title: {},
     },
     bottomSheet: {},
-    reactionButton: {
-      filledBackgroundColor: Colors.light_blue,
-      filledColor: Colors.accent_blue,
-      unfilledBackgroundColor: Colors.white,
-      unfilledColor: Colors.grey,
-    },
+    reactionButton: {},
     reactionPicker: {
       buttonContainer: {},
       container: {},
@@ -1295,11 +1290,8 @@ export const defaultTheme: Theme = {
       avatarSize: 64,
       container: {},
       contentContainer: {},
-      filledBackgroundColor: Colors.light_blue,
       flatlistColumnContainer: {},
       flatlistContainer: {},
-      iconFilledColor: Colors.accent_blue,
-      iconUnFilledColor: Colors.grey,
       radius: 2,
       reactionBubble: {},
       reactionBubbleBackground: {},
@@ -1307,7 +1299,6 @@ export const defaultTheme: Theme = {
       reactionSelectorContainer: {},
       reactionsText: {},
       title: {},
-      unfilledBackgroundColor: Colors.grey_gainsboro,
     },
   },
   messagePreview: {
@@ -1481,12 +1472,8 @@ export const defaultTheme: Theme = {
       item: {
         container: {},
         countText: {},
-        filledBackgroundColor: Colors.light_blue,
         icon: {},
-        iconFillColor: Colors.accent_blue,
         iconSize: 16,
-        iconUnFillColor: Colors.grey,
-        unfilledBackgroundColor: Colors.grey_gainsboro,
       },
     },
     reactionListTop: {
@@ -1533,7 +1520,7 @@ export const defaultTheme: Theme = {
       container: {},
     },
     targetedMessageContainer: {},
-    unreadUnderlayColor: Colors.bg_gradient_start,
+    unreadUnderlayColor: undefined,
     videoThumbnail: {
       container: {},
       roundedView: {},
