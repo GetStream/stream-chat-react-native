@@ -1520,7 +1520,6 @@ export const defaultTheme: Theme = {
       container: {},
     },
     targetedMessageContainer: {},
-    unreadUnderlayColor: undefined,
     videoThumbnail: {
       container: {},
       roundedView: {},
