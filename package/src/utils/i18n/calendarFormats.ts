@@ -1,11 +1,4 @@
-type CalendarFormats = {
-  lastDay: string;
-  lastWeek: string;
-  nextDay: string;
-  nextWeek: string;
-  sameDay: string;
-  sameElse: string;
-};
+import { CalendarFormats } from './Streami18n';
 
 /**
  * Calendar formats for different languages.
