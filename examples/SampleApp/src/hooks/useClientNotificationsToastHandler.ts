@@ -1,8 +1,7 @@
 import type { Notification } from 'stream-chat';
-import { useClientNotifications } from 'stream-chat-react-native';
+import { useClientNotifications, useInAppNotificationsState } from 'stream-chat-react-native';
 
 import { useEffect, useMemo, useRef } from 'react';
-import { useToastState } from './useToastState';
 
 export const usePreviousNotifications = (notifications: Notification[]) => {
   const prevNotifications = useRef<Notification[]>(notifications);
@@ -16,9 +15,7 @@ export const usePreviousNotifications = (notifications: Notification[]) => {
     };
   }, [notifications]);
 
-  useEffect(() => {
-    prevNotifications.current = notifications;
-  }, [notifications]);
+  prevNotifications.current = notifications;
 
   return difference;
 };
@@ -29,11 +26,11 @@ export const usePreviousNotifications = (notifications: Notification[]) => {
  */
 export const useClientNotificationsToastHandler = () => {
   const { notifications } = useClientNotifications();
-  const { openToast, closeToast } = useToastState();
+  const { openInAppNotification, closeInAppNotification } = useInAppNotificationsState();
   const { added, removed } = usePreviousNotifications(notifications);
 
   useEffect(() => {
-    added.forEach(openToast);
-    removed.forEach((notification) => closeToast(notification.id));
-  }, [added, closeToast, openToast, removed]);
+    added.forEach(openInAppNotification);
+    removed.forEach((notification) => closeInAppNotification(notification.id));
+  }, [added, closeInAppNotification, openInAppNotification, removed]);
 };

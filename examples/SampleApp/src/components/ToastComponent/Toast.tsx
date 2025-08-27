@@ -1,8 +1,7 @@
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useToastState } from '../../hooks/useToastState';
 import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from 'stream-chat-react-native';
+import { useInAppNotificationsState, useTheme } from 'stream-chat-react-native';
 import type { Notification } from 'stream-chat';
 
 const { width } = Dimensions.get('window');
@@ -15,7 +14,7 @@ const severityIconMap: Record<Notification['severity'], string> = {
 };
 
 export const Toast = () => {
-  const { closeToast, notifications } = useToastState();
+  const { closeInAppNotification, notifications } = useInAppNotificationsState();
   const { top } = useSafeAreaInsets();
   const {
     theme: {
@@ -40,7 +39,7 @@ export const Toast = () => {
           <View style={styles.content}>
             <Text style={[styles.message, { color: white_smoke }]}>{notification.message}</Text>
           </View>
-          <TouchableOpacity onPress={() => closeToast(notification.id)}>
+          <TouchableOpacity onPress={() => closeInAppNotification(notification.id)}>
             <Text style={[styles.close, { color: white_smoke }]}>✕</Text>
           </TouchableOpacity>
         </Animated.View>

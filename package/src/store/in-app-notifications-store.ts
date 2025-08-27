@@ -1,21 +1,21 @@
 import { Notification, StateStore } from 'stream-chat';
 
-export type ToastState = {
+export type InAppNotificationsState = {
   notifications: Notification[];
 };
 
-const INITIAL_STATE: ToastState = {
+const INITIAL_STATE: InAppNotificationsState = {
   notifications: [],
 };
 
-export const toastStore = new StateStore<ToastState>(INITIAL_STATE);
+export const inAppNotificationsStore = new StateStore<InAppNotificationsState>(INITIAL_STATE);
 
-export const openToast = (notification: Notification) => {
+export const openInAppNotification = (notification: Notification) => {
   if (!notification.id) {
     console.warn('Notification must have an id to be opened!');
     return;
   }
-  const { notifications } = toastStore.getLatestValue();
+  const { notifications } = inAppNotificationsStore.getLatestValue();
 
   // Prevent duplicate notifications
   if (notifications.some((n) => n.id === notification.id)) {
@@ -23,18 +23,18 @@ export const openToast = (notification: Notification) => {
     return;
   }
 
-  toastStore.partialNext({
+  inAppNotificationsStore.partialNext({
     notifications: [...notifications, notification],
   });
 };
 
-export const closeToast = (id: string) => {
+export const closeInAppNotification = (id: string) => {
   if (!id) {
     console.warn('Notification id is required to be closed!');
     return;
   }
-  const { notifications } = toastStore.getLatestValue();
-  toastStore.partialNext({
+  const { notifications } = inAppNotificationsStore.getLatestValue();
+  inAppNotificationsStore.partialNext({
     notifications: notifications.filter((notification) => notification.id !== id),
   });
 };
