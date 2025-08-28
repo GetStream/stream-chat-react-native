@@ -525,7 +525,7 @@ const Bullet = ({ index, style }: BulletProps) => (
 );
 
 const ListRow = ({ children, style }: PropsWithChildren<ViewProps>) => (
-  <Text style={style}>{children}</Text>
+  <View style={style}>{children}</View>
 );
 
 const ListItem = ({ children, style }: PropsWithChildren<TextProps>) => (
