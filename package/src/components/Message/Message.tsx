@@ -279,8 +279,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const { client } = chatContext;
   const {
     theme: {
-      colors: { targetedMessageBackground },
-      messageSimple: { targetedMessageContainer, unreadUnderlayColor, wrapper },
+      colors: { targetedMessageBackground, bg_gradient_start },
+      messageSimple: { targetedMessageContainer, unreadUnderlayColor = bg_gradient_start, wrapper },
       screenPadding,
     },
   } = useTheme();

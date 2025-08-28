@@ -141,6 +141,15 @@ Dayjs.updateLocale('tr', {
   calendar: calendarFormats.tr,
 });
 
+export type CalendarFormats = {
+  lastDay: string;
+  lastWeek: string;
+  nextDay: string;
+  nextWeek: string;
+  sameDay: string;
+  sameElse: string;
+};
+
 const en_locale = {
   formats: {},
   months: [
@@ -176,7 +185,7 @@ const supportsTz = (dateTimeParser: unknown): dateTimeParser is TimezoneParser =
 
 type Streami18nOptions = {
   DateTimeParser?: DateTimeParserModule;
-  dayjsLocaleConfigForLanguage?: Partial<ILocale>;
+  dayjsLocaleConfigForLanguage?: Partial<ILocale & { calendar: CalendarFormats }>;
   debug?: boolean;
   disableDateTimeTranslations?: boolean;
   formatters?: Partial<PredefinedFormatters> & CustomFormatters;
