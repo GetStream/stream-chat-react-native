@@ -7,3 +7,5 @@ export * from './useStableCallback';
 export * from './useLoadingImage';
 export * from './useMessageReminder';
 export * from './useQueryReminders';
+export * from './useClientNotifications';
+export * from './useInAppNotificationsState';
