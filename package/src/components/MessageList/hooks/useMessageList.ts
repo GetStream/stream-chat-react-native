@@ -11,6 +11,7 @@ import {
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
+import { useRafCoalescedValue } from '../../../hooks';
 import { DateSeparators, getDateSeparators } from '../utils/getDateSeparators';
 import { getGroupStyles } from '../utils/getGroupStyles';
 
@@ -110,14 +111,19 @@ export const useMessageList = (params: UseMessageListParams) => {
     return newMessageList;
   }, [client.userID, deletedMessagesVisibilityType, messageList]);
 
-  return {
-    /** Date separators */
-    dateSeparatorsRef,
-    /** Message group styles */
-    messageGroupStylesRef,
-    /** Messages enriched with dates/readby/groups and also reversed in order */
-    processedMessageList,
-    /** Raw messages from the channel state */
-    rawMessageList: messageList,
-  };
+  const data = useRafCoalescedValue(processedMessageList);
+
+  return useMemo(
+    () => ({
+      /** Date separators */
+      dateSeparatorsRef,
+      /** Message group styles */
+      messageGroupStylesRef,
+      /** Messages enriched with dates/readby/groups and also reversed in order */
+      processedMessageList: data,
+      /** Raw messages from the channel state */
+      rawMessageList: messageList,
+    }),
+    [data, messageList],
+  );
 };

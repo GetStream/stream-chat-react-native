@@ -338,10 +338,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const maintainVisibleContentPosition = useMemo(
     () => ({
-      autoscrollToTopThreshold: autoscrollToRecent ? 10 : undefined,
+      autoscrollToTopThreshold: 64,
       minIndexForVisible,
     }),
-    [autoscrollToRecent, minIndexForVisible],
+    [minIndexForVisible],
   );
 
   /**
@@ -1218,7 +1218,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
+          scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
+          // @ts-expect-error react-native internal
+          strictMode={true}
           style={flatListStyle}
           testID='message-flat-list'
           viewabilityConfig={flatListViewabilityConfig}
