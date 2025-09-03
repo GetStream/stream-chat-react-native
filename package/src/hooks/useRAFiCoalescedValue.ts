@@ -38,7 +38,7 @@ import { useEffect, useRef, useState } from 'react';
  * @param value The upstream value that may change multiple times within a single frame.
  * @returns A value that updates **at most once per frame** with the latest input.
  */
-export const useRafCoalescedValue = <S>(value: S): S => {
+export const useRAFCoalescedValue = <S>(value: S): S => {
   const [emitted, setEmitted] = useState<S>(value);
   const pendingRef = useRef<S>(value);
   const rafIdRef = useRef<number | null>(null);

@@ -11,7 +11,7 @@ import {
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
-import { useRafCoalescedValue } from '../../../hooks';
+import { useRAFCoalescedValue } from '../../../hooks';
 import { DateSeparators, getDateSeparators } from '../utils/getDateSeparators';
 import { getGroupStyles } from '../utils/getGroupStyles';
 
@@ -112,7 +112,7 @@ export const useMessageList = (params: UseMessageListParams) => {
     return newMessageList;
   }, [client.userID, deletedMessagesVisibilityType, messageList]);
 
-  const rafColeasedProcessedMessageList = useRafCoalescedValue(processedMessageList);
+  const rafColeasedProcessedMessageList = useRAFCoalescedValue(processedMessageList);
 
   const data = isLiveStreaming ? rafColeasedProcessedMessageList : processedMessageList;
 
