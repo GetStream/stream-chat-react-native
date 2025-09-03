@@ -222,6 +222,11 @@ type MessageListPropsWithContext = Pick<
      * ```
      */
     setFlatListRef?: (ref: FlatListType<LocalMessage> | null) => void;
+    /**
+     * If true, the message list will be used in a live-streaming scenario.
+     * This flag is used to make sure that the auto scroll behaves well, if multiple messages are received.
+     */
+    isLiveStreaming?: boolean;
   };
 
 /**
@@ -256,6 +261,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     InlineUnreadIndicator,
     inverted = true,
     isListActive = false,
+    isLiveStreaming = false,
     legacyImageViewerSwipeBehaviour,
     loadChannelAroundMessage,
     loading,
@@ -336,12 +342,17 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const minIndexForVisible = Math.min(1, processedMessageList.length);
 
+  const autoscrollToTopThreshold = useMemo(
+    () => (isLiveStreaming ? 64 : autoscrollToRecent ? 10 : undefined),
+    [autoscrollToRecent, isLiveStreaming],
+  );
+
   const maintainVisibleContentPosition = useMemo(
     () => ({
-      autoscrollToTopThreshold: 64,
+      autoscrollToTopThreshold,
       minIndexForVisible,
     }),
-    [minIndexForVisible],
+    [autoscrollToTopThreshold, minIndexForVisible],
   );
 
   /**
@@ -652,7 +663,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       latestNonCurrentMessageBeforeUpdate?.id === latestCurrentMessageAfterUpdate.id;
     // if didMergeMessageSetsWithNoUpdates=false, we got new messages
     // so we should scroll to bottom if we are near the bottom already
-    setAutoscrollToRecent(!didMergeMessageSetsWithNoUpdates);
+    const shouldForceScrollToRecent =
+      !didMergeMessageSetsWithNoUpdates ||
+      processedMessageList.length - messageListLengthBeforeUpdate.current > 0;
+
+    setAutoscrollToRecent(shouldForceScrollToRecent);
 
     if (!didMergeMessageSetsWithNoUpdates) {
       const shouldScrollToRecentOnNewOwnMessage = shouldScrollToRecentOnNewOwnMessageRef.current();
@@ -667,8 +682,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         }, WAIT_FOR_SCROLL_TIMEOUT); // flatlist might take a bit to update, so a small delay is needed
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, processedMessageList, threadList]);
+  }, [channel, threadList, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
@@ -1218,10 +1232,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
-          scrollEventThrottle={16}
+          scrollEventThrottle={isLiveStreaming ? 16 : undefined}
           showsVerticalScrollIndicator={false}
           // @ts-expect-error react-native internal
-          strictMode={true}
+          strictMode={isLiveStreaming ? true : false}
           style={flatListStyle}
           testID='message-flat-list'
           viewabilityConfig={flatListViewabilityConfig}

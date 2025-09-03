@@ -19,6 +19,7 @@ export type UseMessageListParams = {
   deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
   noGroupByUser?: boolean;
   threadList?: boolean;
+  isLiveStreaming?: boolean;
 };
 
 export type GroupType = string;
@@ -49,7 +50,7 @@ export const shouldIncludeMessageInList = (
 };
 
 export const useMessageList = (params: UseMessageListParams) => {
-  const { noGroupByUser, threadList } = params;
+  const { noGroupByUser, threadList, isLiveStreaming } = params;
   const { client } = useChatContext();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
   const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
@@ -111,7 +112,9 @@ export const useMessageList = (params: UseMessageListParams) => {
     return newMessageList;
   }, [client.userID, deletedMessagesVisibilityType, messageList]);
 
-  const data = useRafCoalescedValue(processedMessageList);
+  const rafColeasedProcessedMessageList = useRafCoalescedValue(processedMessageList);
+
+  const data = isLiveStreaming ? rafColeasedProcessedMessageList : processedMessageList;
 
   return useMemo(
     () => ({
