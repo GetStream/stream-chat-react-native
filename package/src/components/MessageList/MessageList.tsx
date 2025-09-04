@@ -225,6 +225,8 @@ type MessageListPropsWithContext = Pick<
     /**
      * If true, the message list will be used in a live-streaming scenario.
      * This flag is used to make sure that the auto scroll behaves well, if multiple messages are received.
+     *
+     * This flag is experimental and is subject to change.
      */
     isLiveStreaming?: boolean;
   };
@@ -319,6 +321,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    */
   const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
     useMessageList({
+      isLiveStreaming,
       noGroupByUser,
       threadList,
     });
