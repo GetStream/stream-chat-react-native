@@ -226,7 +226,9 @@ type MessageListPropsWithContext = Pick<
      * If true, the message list will be used in a live-streaming scenario.
      * This flag is used to make sure that the auto scroll behaves well, if multiple messages are received.
      *
-     * This flag is experimental and is subject to change.
+     * This flag is experimental and is subject to change. Please test thoroughly before using it.
+     *
+     * @experimental
      */
     isLiveStreaming?: boolean;
   };
@@ -1238,7 +1240,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           scrollEventThrottle={isLiveStreaming ? 16 : undefined}
           showsVerticalScrollIndicator={false}
           // @ts-expect-error react-native internal
-          strictMode={isLiveStreaming ? true : false}
+          strictMode={isLiveStreaming}
           style={flatListStyle}
           testID='message-flat-list'
           viewabilityConfig={flatListViewabilityConfig}

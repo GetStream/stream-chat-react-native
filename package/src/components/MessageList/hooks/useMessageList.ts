@@ -112,9 +112,7 @@ export const useMessageList = (params: UseMessageListParams) => {
     return newMessageList;
   }, [client.userID, deletedMessagesVisibilityType, messageList]);
 
-  const rafColeasedProcessedMessageList = useRAFCoalescedValue(processedMessageList);
-
-  const data = isLiveStreaming ? rafColeasedProcessedMessageList : processedMessageList;
+  const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 
   return useMemo(
     () => ({

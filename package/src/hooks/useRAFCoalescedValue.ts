@@ -36,16 +36,19 @@ import { useEffect, useRef, useState } from 'react';
  * - Do not cancel/reschedule on prop changes; cancellation is handled on unmount only.
  *
  * @param value The upstream value that may change multiple times within a single frame.
+ * @param isEnabled Determines whether the hook should be run or not (useful for cases where
+ * we want to conditionally use RAF when certain feature feature flags are enabled). If `false`,
+ * it will simply pass the data through (maintaining the reference as well).
  * @returns A value that updates **at most once per frame** with the latest input.
  */
-export const useRAFCoalescedValue = <S>(value: S): S => {
+export const useRAFCoalescedValue = <S>(value: S, isEnabled: boolean | undefined): S => {
   const [emitted, setEmitted] = useState<S>(value);
   const pendingRef = useRef<S>(value);
   const rafIdRef = useRef<number | null>(null);
 
   // If `value` changes, schedule a single RAF to publish the latest one.
   useEffect(() => {
-    if (value === pendingRef.current) return;
+    if (value === pendingRef.current || !isEnabled) return;
     pendingRef.current = value;
 
     // already scheduled the next frame, skip
@@ -57,7 +60,7 @@ export const useRAFCoalescedValue = <S>(value: S): S => {
     };
 
     rafIdRef.current = requestAnimationFrame(run);
-  }, [value]);
+  }, [value, isEnabled]);
 
   useEffect(() => {
     return () => {
@@ -69,5 +72,5 @@ export const useRAFCoalescedValue = <S>(value: S): S => {
     };
   }, []);
 
-  return emitted;
+  return isEnabled ? emitted : value;
 };
