@@ -1,5 +1,6 @@
 # Change Log
 
+
 ## [8.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.0.0...v8.1.0) (2025-07-09)
 
 
