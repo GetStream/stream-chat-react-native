@@ -11,6 +11,7 @@ import {
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
+import { useRAFCoalescedValue } from '../../../hooks';
 import { DateSeparators, getDateSeparators } from '../utils/getDateSeparators';
 import { getGroupStyles } from '../utils/getGroupStyles';
 
@@ -18,6 +19,7 @@ export type UseMessageListParams = {
   deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
   noGroupByUser?: boolean;
   threadList?: boolean;
+  isLiveStreaming?: boolean;
 };
 
 export type GroupType = string;
@@ -48,7 +50,7 @@ export const shouldIncludeMessageInList = (
 };
 
 export const useMessageList = (params: UseMessageListParams) => {
-  const { noGroupByUser, threadList } = params;
+  const { noGroupByUser, threadList, isLiveStreaming } = params;
   const { client } = useChatContext();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
   const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
@@ -110,14 +112,19 @@ export const useMessageList = (params: UseMessageListParams) => {
     return newMessageList;
   }, [client.userID, deletedMessagesVisibilityType, messageList]);
 
-  return {
-    /** Date separators */
-    dateSeparatorsRef,
-    /** Message group styles */
-    messageGroupStylesRef,
-    /** Messages enriched with dates/readby/groups and also reversed in order */
-    processedMessageList,
-    /** Raw messages from the channel state */
-    rawMessageList: messageList,
-  };
+  const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
+
+  return useMemo(
+    () => ({
+      /** Date separators */
+      dateSeparatorsRef,
+      /** Message group styles */
+      messageGroupStylesRef,
+      /** Messages enriched with dates/readby/groups and also reversed in order */
+      processedMessageList: data,
+      /** Raw messages from the channel state */
+      rawMessageList: messageList,
+    }),
+    [data, messageList],
+  );
 };
