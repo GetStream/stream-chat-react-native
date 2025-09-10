@@ -14,7 +14,7 @@ import {
   MessageInput as DefaultMessageInput,
   MessageInputProps,
 } from '../MessageInput/MessageInput';
-import type { MessageListProps } from '../MessageList/MessageList';
+import { MessageListFlashList, MessageListFlashListProps } from '../MessageList/MessageFlashList';
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
   Pick<MessagesContextValue, 'MessageList'> &
@@ -36,7 +36,7 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
      * Additional props for underlying MessageList component.
      * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-list/#props
      * */
-    additionalMessageListProps?: Partial<MessageListProps>;
+    additionalMessageListProps?: Partial<MessageListFlashListProps>;
     /** Make input focus on mounting thread */
     autoFocus?: boolean;
     /** Closes thread on dismount, defaults to true */
@@ -108,8 +108,8 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   return (
     <React.Fragment key={`thread-${thread.id}`}>
-      <MessageList
-        FooterComponent={MemoizedThreadFooterComponent}
+      <MessageListFlashList
+        HeaderComponent={MemoizedThreadFooterComponent}
         threadList
         {...additionalMessageListProps}
       />

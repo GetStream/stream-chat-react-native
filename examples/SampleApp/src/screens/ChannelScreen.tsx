@@ -5,7 +5,7 @@ import {
   Channel,
   ChannelAvatar,
   MessageInput,
-  MessageList,
+  MessageListFlashList,
   ThreadContextValue,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
@@ -198,7 +198,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   }
 
   return (
-    <View style={[styles.flex, { backgroundColor: colors.white, paddingBottom: bottom }]}>
+    <View style={[styles.flex, { backgroundColor: colors.white_snow, paddingBottom: bottom }]}>
       <Channel
         audioRecordingEnabled={true}
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
@@ -216,7 +216,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
-        <MessageList onThreadSelect={onThreadSelect} />
+        <MessageListFlashList onThreadSelect={onThreadSelect} />
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
       </Channel>
