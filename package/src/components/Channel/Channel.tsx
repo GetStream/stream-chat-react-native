@@ -1972,7 +1972,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
                         <View style={{ height: '100%' }}>{children}</View>
-                        <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                        {isImageMediaLibraryAvailable() && (
+                          <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                        )}
                       </MessageInputProvider>
                     </MessageComposerProvider>
                   </AttachmentPickerProvider>
