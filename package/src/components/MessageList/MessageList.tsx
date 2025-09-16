@@ -67,11 +67,6 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   flex: { flex: 1 },
-  invertAndroid: {
-    // Invert the Y AND X axis to prevent a react native issue that can lead to ANRs on android 13
-    // details: https://github.com/Expensify/App/pull/12820
-    transform: [{ scaleX: -1 }, { scaleY: -1 }],
-  },
   listContainer: {
     flex: 1,
     width: '100%',
@@ -425,9 +420,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // we need this check to make sure that regular list change do not trigger
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
-    if (processedMessageList.length !== messagesLength.current) {
-      return;
-    }
     messagesLength.current = processedMessageList.length;
 
     if (!viewableItems.length) {

@@ -92,9 +92,6 @@ export const useMessageFlashList = (params: UseMessageListParams) => {
     ],
   );
 
-  const messageGroupStylesRef = useRef<MessageGroupStyles>(messageGroupStyles);
-  messageGroupStylesRef.current = messageGroupStyles;
-
   const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList = [];
     for (const message of messageList) {
@@ -104,11 +101,14 @@ export const useMessageFlashList = (params: UseMessageListParams) => {
           userId: client.userID,
         })
       ) {
-        newMessageList.unshift(message);
+        newMessageList.push(message);
       }
     }
     return newMessageList;
   }, [client.userID, deletedMessagesVisibilityType, messageList]);
+
+  const messageGroupStylesRef = useRef<MessageGroupStyles>(messageGroupStyles);
+  messageGroupStylesRef.current = messageGroupStyles;
 
   return {
     /** Date separators */
@@ -116,7 +116,7 @@ export const useMessageFlashList = (params: UseMessageListParams) => {
     /** Message group styles */
     messageGroupStylesRef,
     /** Messages enriched with dates/readby/groups and also reversed in order */
-    processedMessageList: messageList,
+    processedMessageList,
     /** Raw messages from the channel state */
     rawMessageList: messageList,
   };

@@ -64,7 +64,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     disabled,
     loadMoreThread,
     MessageInput = DefaultMessageInput,
-    MessageList,
+    // MessageList,
     onThreadDismount,
     parentMessagePreventPress = true,
     thread,
