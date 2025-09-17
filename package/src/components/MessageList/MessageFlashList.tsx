@@ -468,11 +468,11 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
 
   useEffect(() => {
     const handleEvent = (event: Event) => {
-      if (event.message?.user?.id === client.userID) {
-        setAutoScrollToRecent(true);
-      } else {
+      if (event.message?.user?.id !== client.userID) {
         if (!scrollToBottomButtonVisible) {
-          setAutoScrollToRecent(true);
+          flashListRef.current?.scrollToEnd({
+            animated: true,
+          });
         } else {
           setAutoScrollToRecent(false);
         }
