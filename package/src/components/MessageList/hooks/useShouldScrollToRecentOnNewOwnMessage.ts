@@ -31,7 +31,7 @@ export function useShouldScrollToRecentOnNewOwnMessage(
     if (rawMessageList && rawMessageList.length) {
       if (!initialFocusRegistered.current) {
         initialFocusRegistered.current = true;
-        const lastMessage = rawMessageList[0];
+        const lastMessage = rawMessageList[rawMessageList.length - 1];
         if (lastMessage && lastMessage.user?.id === currentUserId) {
           lastFocusedOwnMessageId.current = lastMessage.id;
         }

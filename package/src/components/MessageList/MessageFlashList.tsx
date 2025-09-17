@@ -6,7 +6,7 @@ import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat'
 
 import { useMessageFlashList } from './hooks/useMessageFlashList';
 
-import { useShouldScrollToRecentOnNewOwnMessageFlashList } from './hooks/useShouldScrollToRecentOnNewOwnMessageFlashList';
+import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
@@ -33,7 +33,7 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../hooks';
@@ -265,13 +265,20 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
 
   const messageListLengthBeforeUpdate = useRef(0);
   const channelResyncScrollSet = useRef<boolean>(true);
+  const { theme } = useTheme();
 
   const {
-    theme: {
-      colors: { white_snow },
-      messageList: { container, contentContainer, listContainer },
-    },
-  } = useTheme();
+    colors: { white_snow },
+    messageList: { container, contentContainer, listContainer },
+  } = theme;
+
+  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
+
+  const modifiedTheme = useMemo(
+    () => mergeThemes({ style: myMessageTheme, theme }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [myMessageThemeString, theme],
+  );
 
   const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
     useMessageFlashList({
@@ -290,7 +297,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
 
   const messageListLengthAfterUpdate = processedMessageList.length;
 
-  const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessageFlashList(
+  const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,
     client.userID,
   );
@@ -301,7 +308,6 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
   );
 
   const maintainVisibleContentPosition = useMemo(() => {
-    console.log('autoScrollToRecent', autoScrollToRecent);
     return {
       autoscrollToBottomThreshold: autoScrollToRecent || threadList ? 10 : undefined,
       startRenderingFromBottom: true,
@@ -451,9 +457,6 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
     }
     const didMergeMessageSetsWithNoUpdates =
       latestNonCurrentMessageBeforeUpdate?.id === latestCurrentMessageAfterUpdate.id;
-
-    // TODO: FIX THIS
-    // setAutoScrollToRecent(!didMergeMessageSetsWithNoUpdates);
 
     if (!didMergeMessageSetsWithNoUpdates) {
       const shouldScrollToRecentOnNewOwnMessage = shouldScrollToRecentOnNewOwnMessageRef.current();
@@ -693,7 +696,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
           {message.type === 'system' ? (
             <MessageSystem message={message} />
           ) : wrapMessageInTheme ? (
-            <ThemeProvider>
+            <ThemeProvider mergedStyle={modifiedTheme}>
               <View testID={`message-list-item-${index}`}>
                 {renderDateSeperator}
                 {renderMessage}
@@ -725,6 +728,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
       highlightedMessageId,
       lastReceivedId,
       messageGroupStylesRef,
+      modifiedTheme,
       myMessageTheme,
       onThreadSelect,
       shouldShowUnreadUnderlay,
