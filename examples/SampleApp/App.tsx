@@ -223,6 +223,7 @@ const DrawerNavigatorWrapper: React.FC<{
       <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
         <Chat
           client={chatClient}
+          enableOfflineSupport
           // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
           ImageComponent={FastImage}
           isMessageAIGenerated={isMessageAIGenerated}
