@@ -4,13 +4,13 @@ import { ScrollViewProps, StyleSheet, View, ViewabilityConfig, ViewToken } from 
 import { FlashList, FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
-import { useMessageFlashList } from './hooks/useMessageFlashList';
-
+import { useMessageList } from './hooks/useMessageList';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
-import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
+
+import { getLastReceivedMessageFlashList } from './utils/getLastReceivedMessageFlashList';
 
 import {
   AttachmentPickerContextValue,
@@ -263,7 +263,6 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
    */
   const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const messageListLengthBeforeUpdate = useRef(0);
   const channelResyncScrollSet = useRef<boolean>(true);
   const { theme } = useTheme();
 
@@ -281,7 +280,8 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
   );
 
   const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
-    useMessageFlashList({
+    useMessageList({
+      isFlashList: true,
       noGroupByUser,
       threadList,
     });
@@ -295,6 +295,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
 
   const latestNonCurrentMessageBeforeUpdateRef = useRef<LocalMessage>(undefined);
 
+  const messageListLengthBeforeUpdate = useRef(0);
   const messageListLengthAfterUpdate = processedMessageList.length;
 
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
@@ -303,7 +304,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
   );
 
   const lastReceivedId = useMemo(
-    () => getLastReceivedMessage(processedMessageList)?.id,
+    () => getLastReceivedMessageFlashList(processedMessageList)?.id,
     [processedMessageList],
   );
 
@@ -338,13 +339,10 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
       loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
     } else {
       scrollToDebounceTimeoutRef.current = setTimeout(() => {
-        if (!flashListRef.current) {
-          return;
-        }
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
         // now scroll to it
-        flashListRef.current.scrollToIndex({
+        flashListRef.current?.scrollToIndex({
           animated: true,
           index: indexOfParentInMessageList,
           viewPosition: 0.5,
@@ -352,8 +350,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
         setTargetedMessage(undefined);
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetedMessage]);
+  }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
@@ -460,7 +457,6 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
 
     if (!didMergeMessageSetsWithNoUpdates) {
       const shouldScrollToRecentOnNewOwnMessage = shouldScrollToRecentOnNewOwnMessageRef.current();
-
       // we should scroll to bottom where ever we are now
       // as we have sent a new own message
       if (shouldScrollToRecentOnNewOwnMessage) {
@@ -469,6 +465,9 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
     }
   }, [channel, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, threadList]);
 
+  /**
+   * Effect to scroll to the bottom of the message list when a new message is received if the scroll to bottom button is not visible.
+   */
   useEffect(() => {
     const handleEvent = (event: Event) => {
       if (event.message?.user?.id !== client.userID) {
