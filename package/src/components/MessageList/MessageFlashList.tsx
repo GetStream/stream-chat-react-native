@@ -183,6 +183,43 @@ type MessageListFlashListPropsWithContext = Pick<
 
 const WAIT_FOR_SCROLL_TIMEOUT = 200;
 
+const getItemTypeInternal = (message: LocalMessage) => {
+  if (message.type === 'regular') {
+    if ((message.attachments?.length ?? 0) > 0) {
+      return 'message-with-attachments';
+    }
+
+    if (message.poll_id) {
+      return 'message-with-poll';
+    }
+
+    if (message.quoted_message_id) {
+      return 'message-with-quote';
+    }
+
+    if (message.shared_location) {
+      return 'message-with-shared-location';
+    }
+
+    if (message.text) {
+      const text = message.text;
+      if (text.length <= 20) {
+        return 'short-message-with-text';
+      }
+
+      if (text.length <= 100) {
+        return 'medium-message-with-text';
+      }
+
+      return 'message-with-text';
+    }
+
+    return 'message-with-nothing';
+  }
+
+  return 'unresolvable-type';
+};
+
 const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
@@ -310,6 +347,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
 
   const maintainVisibleContentPosition = useMemo(() => {
     return {
+      animateAutoscrollToBottom: true,
       autoscrollToBottomThreshold: autoScrollToRecent || threadList ? 10 : undefined,
       startRenderingFromBottom: true,
     };
@@ -460,7 +498,9 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
       // we should scroll to bottom where ever we are now
       // as we have sent a new own message
       if (shouldScrollToRecentOnNewOwnMessage) {
-        setAutoScrollToRecent(true);
+        flashListRef.current?.scrollToEnd({
+          animated: true,
+        });
       }
     }
   }, [channel, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, threadList]);
@@ -1021,6 +1061,11 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
     [contentContainer],
   );
 
+  const getItemType = useStableCallback((item: LocalMessage) => {
+    const type = getItemTypeInternal(item);
+    return client.userID === item.user?.id ? `own-${type}` : type;
+  });
+
   if (loading) {
     return (
       <View style={[styles.container, { backgroundColor: white_snow }, container]}>
@@ -1042,6 +1087,8 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
         <FlashList
           contentContainerStyle={flatListContentContainerStyle}
           data={processedMessageList}
+          drawDistance={1500}
+          getItemType={getItemType}
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
           ListFooterComponent={FooterComponent}
