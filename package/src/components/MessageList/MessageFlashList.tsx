@@ -310,6 +310,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
 
   const maintainVisibleContentPosition = useMemo(() => {
     return {
+      animateAutoscrollToBottom: true,
       autoscrollToBottomThreshold: autoScrollToRecent || threadList ? 10 : undefined,
       startRenderingFromBottom: true,
     };
@@ -460,7 +461,9 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
       // we should scroll to bottom where ever we are now
       // as we have sent a new own message
       if (shouldScrollToRecentOnNewOwnMessage) {
-        setAutoScrollToRecent(true);
+        flashListRef.current?.scrollToEnd({
+          animated: true,
+        });
       }
     }
   }, [channel, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, threadList]);
