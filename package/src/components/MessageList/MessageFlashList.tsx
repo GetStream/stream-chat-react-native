@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollViewProps, StyleSheet, View, ViewabilityConfig, ViewToken } from 'react-native';
+import {
+  LayoutChangeEvent,
+  ScrollViewProps,
+  StyleSheet,
+  View,
+  ViewabilityConfig,
+  ViewToken,
+} from 'react-native';
 
 import { FlashList, FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
@@ -957,10 +964,13 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
     onEndReachedTracker.current = {};
   });
 
+  const currentScrollOffsetRef = useRef(0);
+
   const handleScroll: ScrollViewProps['onScroll'] = useStableCallback((event) => {
     const messageListHasMessages = processedMessageList.length > 0;
     const nativeEvent = event.nativeEvent;
     const offset = nativeEvent.contentOffset.y;
+    currentScrollOffsetRef.current = offset;
     const visibleLength = nativeEvent.layoutMeasurement.height;
     const contentLength = nativeEvent.contentSize.height;
 
@@ -1066,6 +1076,22 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
     return client.userID === item.user?.id ? `own-${type}` : type;
   });
 
+  const currentListHeightRef = useRef<number | undefined>(undefined);
+
+  const onLayout = useStableCallback((e: LayoutChangeEvent) => {
+    const { height } = e.nativeEvent.layout;
+    if (!currentListHeightRef.current) {
+      currentListHeightRef.current = height;
+      return;
+    }
+
+    const changedBy = currentListHeightRef.current - height;
+    flashListRef.current?.scrollToOffset({
+      offset: currentScrollOffsetRef.current + changedBy,
+    });
+    currentListHeightRef.current = height;
+  });
+
   if (loading) {
     return (
       <View style={[styles.container, { backgroundColor: white_snow }, container]}>
@@ -1076,6 +1102,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
 
   return (
     <View
+      onLayout={onLayout}
       style={[styles.container, { backgroundColor: white_snow }, container]}
       testID='message-flat-list-wrapper'
     >
@@ -1087,7 +1114,7 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
         <FlashList
           contentContainerStyle={flatListContentContainerStyle}
           data={processedMessageList}
-          drawDistance={1500}
+          drawDistance={800}
           getItemType={getItemType}
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
