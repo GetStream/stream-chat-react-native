@@ -179,7 +179,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   InlineDateSeparator: React.ComponentType<InlineDateSeparatorProps>;
   /**
    * UI component for InlineUnreadIndicator
-   * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
+   * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
 
@@ -214,12 +214,12 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   messageContentOrder: MessageContentType[];
   /**
    * UI component for MessageDeleted
-   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageDeleted.tsx)
+   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageDeleted.tsx)
    */
   MessageDeleted: React.ComponentType<MessageDeletedProps>;
   /**
    * UI component for MessageEditedTimestamp
-   * Defaults to: [MessageEditedTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageEditedTimestamp.tsx)
+   * Defaults to: [MessageEditedTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageEditedTimestamp.tsx)
    */
   MessageEditedTimestamp: React.ComponentType<MessageEditedTimestampProps>;
   /**
@@ -246,12 +246,12 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   MessageReactionPicker: React.ComponentType<MessageReactionPickerProps>;
   /**
    * UI component for MessageReplies
-   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageReplies.tsx)
+   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageReplies.tsx)
    */
   MessageReplies: React.ComponentType<MessageRepliesProps>;
   /**
    * UI Component for MessageRepliesAvatars
-   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageRepliesAvatars.tsx)
+   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageRepliesAvatars.tsx)
    */
   MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps>;
   /**
