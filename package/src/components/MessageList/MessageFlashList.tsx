@@ -204,6 +204,10 @@ const getItemTypeInternal = (message: LocalMessage) => {
       return 'message-with-quote';
     }
 
+    if (message.parent_id) {
+      return 'message-with-threads';
+    }
+
     if (message.shared_location) {
       return 'message-with-shared-location';
     }
