@@ -61,7 +61,8 @@ const flatListViewabilityConfig: ViewabilityConfig = {
 };
 
 const hasReadLastMessage = (channel: Channel, userId: string) => {
-  const latestMessageIdInChannel = channel.state.latestMessages.slice(-1)[0]?.id;
+  const latestMessageIdInChannel =
+    channel.state.latestMessages[channel.state.latestMessages.length - 1]?.id;
   const lastReadMessageIdServer = channel.state.read[userId]?.last_read_message_id;
   return latestMessageIdInChannel === lastReadMessageIdServer;
 };
@@ -214,11 +215,11 @@ const getItemTypeInternal = (message: LocalMessage) => {
 
     if (message.text) {
       const text = message.text;
-      if (text.length <= 20) {
+      if (text.length <= 50) {
         return 'short-message-with-text';
       }
 
-      if (text.length <= 100) {
+      if (text.length <= 200) {
         return 'medium-message-with-text';
       }
 
