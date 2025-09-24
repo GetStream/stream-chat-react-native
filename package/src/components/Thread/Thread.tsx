@@ -15,6 +15,18 @@ import {
   MessageInputProps,
 } from '../MessageInput/MessageInput';
 import { MessageListFlashList, MessageListFlashListProps } from '../MessageList/MessageFlashList';
+import { MessageListProps } from '../MessageList/MessageList';
+
+// @ts-expect-error - FlashList is not defined in the global scope
+let FlashList;
+
+try {
+  FlashList = require('@shopify/flash-list').FlashList;
+} catch (e) {
+  console.error(
+    'The package @shopify/flash-list is not installed. Installing this package will enable the use of the FlashList component.',
+  );
+}
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
   Pick<MessagesContextValue, 'MessageList'> &
@@ -36,7 +48,14 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
      * Additional props for underlying MessageList component.
      * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-list/#props
      * */
-    additionalMessageListProps?: Partial<MessageListFlashListProps>;
+    additionalMessageListProps?: Partial<MessageListProps>;
+    /**
+     * @experimental This prop is experimental and is subject to change.
+     *
+     * Additional props for underlying MessageListFlashList component.
+     * Available props - https://shopify.github.io/flash-list/docs/usage
+     */
+    additionalMessageListFlashListProps?: Partial<MessageListFlashListProps>;
     /** Make input focus on mounting thread */
     autoFocus?: boolean;
     /** Closes thread on dismount, defaults to true */
@@ -58,13 +77,14 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const {
     additionalMessageInputProps,
     additionalMessageListProps,
+    additionalMessageListFlashListProps,
     autoFocus = true,
     closeThread,
     closeThreadOnDismount = true,
     disabled,
     loadMoreThread,
     MessageInput = DefaultMessageInput,
-    // MessageList,
+    MessageList,
     onThreadDismount,
     parentMessagePreventPress = true,
     thread,
@@ -108,11 +128,20 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   return (
     <React.Fragment key={`thread-${thread.id}`}>
-      <MessageListFlashList
-        HeaderComponent={MemoizedThreadFooterComponent}
-        threadList
-        {...additionalMessageListProps}
-      />
+      {/* @ts-expect-error - FlashList is not defined in the global scope */}
+      {FlashList ? (
+        <MessageListFlashList
+          HeaderComponent={MemoizedThreadFooterComponent}
+          threadList
+          {...additionalMessageListFlashListProps}
+        />
+      ) : (
+        <MessageList
+          FooterComponent={MemoizedThreadFooterComponent}
+          threadList
+          {...additionalMessageListProps}
+        />
+      )}
       <MessageInput
         additionalTextInputProps={{
           autoFocus,
