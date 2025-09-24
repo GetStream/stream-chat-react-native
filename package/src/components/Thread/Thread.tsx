@@ -10,23 +10,13 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
+import { isFlashListAvailable } from '../../native';
 import {
   MessageInput as DefaultMessageInput,
   MessageInputProps,
 } from '../MessageInput/MessageInput';
-import { MessageListFlashList, MessageListFlashListProps } from '../MessageList/MessageFlashList';
+import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
 import { MessageListProps } from '../MessageList/MessageList';
-
-// @ts-expect-error - FlashList is not defined in the global scope
-let FlashList;
-
-try {
-  FlashList = require('@shopify/flash-list').FlashList;
-} catch (e) {
-  console.error(
-    'The package @shopify/flash-list is not installed. Installing this package will enable the use of the FlashList component.',
-  );
-}
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
   Pick<MessagesContextValue, 'MessageList'> &
@@ -55,7 +45,7 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
      * Additional props for underlying MessageListFlashList component.
      * Available props - https://shopify.github.io/flash-list/docs/usage
      */
-    additionalMessageListFlashListProps?: Partial<MessageListFlashListProps>;
+    additionalMessageFlashListProps?: Partial<MessageFlashListProps>;
     /** Make input focus on mounting thread */
     autoFocus?: boolean;
     /** Closes thread on dismount, defaults to true */
@@ -77,7 +67,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const {
     additionalMessageInputProps,
     additionalMessageListProps,
-    additionalMessageListFlashListProps,
+    additionalMessageFlashListProps,
     autoFocus = true,
     closeThread,
     closeThreadOnDismount = true,
@@ -128,12 +118,11 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   return (
     <React.Fragment key={`thread-${thread.id}`}>
-      {/* @ts-expect-error - FlashList is not defined in the global scope */}
-      {FlashList ? (
-        <MessageListFlashList
+      {isFlashListAvailable() ? (
+        <MessageFlashList
           HeaderComponent={MemoizedThreadFooterComponent}
           threadList
-          {...additionalMessageListFlashListProps}
+          {...additionalMessageFlashListProps}
         />
       ) : (
         <MessageList

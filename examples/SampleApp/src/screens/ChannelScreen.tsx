@@ -5,7 +5,7 @@ import {
   Channel,
   ChannelAvatar,
   MessageInput,
-  MessageListFlashList,
+  MessageFlashList,
   ThreadContextValue,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
@@ -216,7 +216,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
-        <MessageListFlashList onThreadSelect={onThreadSelect} />
+        <MessageFlashList onThreadSelect={onThreadSelect} />
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
       </Channel>

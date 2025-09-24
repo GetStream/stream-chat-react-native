@@ -440,3 +440,16 @@ export const isImageMediaLibraryAvailable = () =>
   !!NativeHandlers.iOS14RefreshGallerySelection &&
   !!NativeHandlers.oniOS14GalleryLibrarySelectionChange &&
   !!NativeHandlers.getLocalAssetUri;
+
+// Use this function to get the FlashList component from the @shopify/flash-list package
+export function getFlashList() {
+  try {
+    return require('@shopify/flash-list').FlashList;
+  } catch {
+    console.log(
+      'You can also use the MessageFlashList component by installing the @shopify/flash-list package to optimize the performance of the MessageList component.',
+    );
+  }
+}
+
+export const isFlashListAvailable = () => !!getFlashList();

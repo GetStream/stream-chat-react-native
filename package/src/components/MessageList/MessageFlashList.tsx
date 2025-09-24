@@ -8,7 +8,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import { FlashListProps, FlashListRef } from '@shopify/flash-list';
+import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
@@ -44,18 +44,8 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../hooks';
+import { getFlashList } from '../../native';
 import { FileTypes } from '../../types/types';
-
-// @ts-expect-error - FlashList is not defined in the global scope
-let FlashList;
-
-try {
-  FlashList = require('@shopify/flash-list').FlashList;
-} catch (e) {
-  console.error(
-    'The package @shopify/flash-list is not installed. Installing this package will enable the use of the FlashList component.',
-  );
-}
 
 const keyExtractor = (item: LocalMessage) => {
   if (item.id) {
@@ -92,7 +82,7 @@ const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageRe
   return previousLastMessage;
 };
 
-type MessageListFlashListPropsWithContext = Pick<
+type MessageFlashListPropsWithContext = Pick<
   AttachmentPickerContextValue,
   'closePicker' | 'selectedPicker' | 'setSelectedPicker'
 > &
@@ -251,7 +241,7 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'unresolvable-type';
 };
 
-const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithContext) => {
+const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
@@ -1124,7 +1114,8 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
     );
   }
 
-  // @ts-expect-error - FlashList is not defined in the global scope
+  const FlashList = getFlashList();
+
   if (!FlashList) {
     throw new Error(
       'The package @shopify/flash-list is not installed. Installing this package will enable the use of the FlashList component.',
@@ -1190,9 +1181,9 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
   );
 };
 
-export type MessageListFlashListProps = Partial<MessageListFlashListPropsWithContext>;
+export type MessageFlashListProps = Partial<MessageFlashListPropsWithContext>;
 
-export const MessageListFlashList = (props: MessageListFlashListProps) => {
+export const MessageFlashList = (props: MessageFlashListProps) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
     channel,
@@ -1239,7 +1230,7 @@ export const MessageListFlashList = (props: MessageListFlashListProps) => {
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
 
   return (
-    <MessageListFlashListWithContext
+    <MessageFlashListWithContext
       {...{
         channel,
         channelUnreadState,
