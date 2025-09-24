@@ -8,7 +8,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import { FlashList, FlashListProps, FlashListRef } from '@shopify/flash-list';
+import { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
@@ -45,6 +45,17 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 
 import { useStableCallback } from '../../hooks';
 import { FileTypes } from '../../types/types';
+
+// @ts-expect-error - FlashList is not defined in the global scope
+let FlashList;
+
+try {
+  FlashList = require('@shopify/flash-list').FlashList;
+} catch (e) {
+  console.error(
+    'The package @shopify/flash-list is not installed. Installing this package will enable the use of the FlashList component.',
+  );
+}
 
 const keyExtractor = (item: LocalMessage) => {
   if (item.id) {
@@ -1110,6 +1121,13 @@ const MessageListFlashListWithContext = (props: MessageListFlashListPropsWithCon
       <View style={[styles.container, { backgroundColor: white_snow }, container]}>
         <LoadingIndicator listType='message' />
       </View>
+    );
+  }
+
+  // @ts-expect-error - FlashList is not defined in the global scope
+  if (!FlashList) {
+    throw new Error(
+      'The package @shopify/flash-list is not installed. Installing this package will enable the use of the FlashList component.',
     );
   }
 

@@ -1859,7 +1859,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-cameraroll (7.10.2):
+  - react-native-cameraroll (7.10.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3493,7 +3493,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 8f620d1794c6b59a8c3862c3ae820a2e9e6c9bb0
   React-microtasksnativemodule: dcf5321c9a41659a6718df8a5f202af1577c6825
   react-native-blob-util: a511afccff6511544ebf56928e6afdf837b037a7
-  react-native-cameraroll: 5c5fb716af11f6178dca48271ae065cd786a0a02
+  react-native-cameraroll: 8c3ba9b6f511cf645778de19d5039b61d922fdfb
   react-native-document-picker: b37cf6660ad9087b782faa78a1e67687fac15bfd
   react-native-geolocation: b7f68b8c04e36ee669c630dbc48dd42cf93a0a41
   react-native-image-picker: 9bceb747cd6cde22a3416ffdc819d11b5b11f156
