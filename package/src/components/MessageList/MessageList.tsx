@@ -436,6 +436,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // we need this check to make sure that regular list change do not trigger
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
+    if (processedMessageList.length !== messagesLength.current) {
+      return;
+    }
     messagesLength.current = processedMessageList.length;
 
     if (!viewableItems.length) {
