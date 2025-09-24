@@ -44,8 +44,15 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../hooks';
-import { getFlashList } from '../../native';
 import { FileTypes } from '../../types/types';
+
+let FlashList;
+
+try {
+  FlashList = require('@shopify/flash-list').FlashList;
+} catch {
+  FlashList = undefined;
+}
 
 const keyExtractor = (item: LocalMessage) => {
   if (item.id) {
@@ -1113,8 +1120,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       </View>
     );
   }
-
-  const FlashList = getFlashList();
 
   if (!FlashList) {
     throw new Error(

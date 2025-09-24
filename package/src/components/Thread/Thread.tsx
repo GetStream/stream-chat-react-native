@@ -10,13 +10,20 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { isFlashListAvailable } from '../../native';
 import {
   MessageInput as DefaultMessageInput,
   MessageInputProps,
 } from '../MessageInput/MessageInput';
 import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
 import { MessageListProps } from '../MessageList/MessageList';
+
+let FlashList;
+
+try {
+  FlashList = require('@shopify/flash-list').FlashList;
+} catch {
+  FlashList = undefined;
+}
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
   Pick<MessagesContextValue, 'MessageList'> &
@@ -118,7 +125,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   return (
     <React.Fragment key={`thread-${thread.id}`}>
-      {isFlashListAvailable() ? (
+      {FlashList ? (
         <MessageFlashList
           HeaderComponent={MemoizedThreadFooterComponent}
           threadList
