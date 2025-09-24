@@ -213,6 +213,10 @@ const getItemTypeInternal = (message: LocalMessage) => {
       return 'message-with-shared-location';
     }
 
+    if (message.deleted_at) {
+      return 'deleted-message';
+    }
+
     if (message.text) {
       const text = message.text;
       if (text.length <= 50) {
@@ -227,6 +231,10 @@ const getItemTypeInternal = (message: LocalMessage) => {
     }
 
     return 'message-with-nothing';
+  }
+
+  if (message.type === 'system') {
+    return 'system-message';
   }
 
   return 'unresolvable-type';
