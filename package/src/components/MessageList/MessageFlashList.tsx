@@ -457,7 +457,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
      * If such a case arises, we scroll to bottom.
      */
     const isMessageRemovedFromMessageList =
-      messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current;
+      messageListLengthBeforeUpdate.current - messageListLengthAfterUpdate === 1;
 
     /**
      * Scroll down when
@@ -484,6 +484,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           if (channel.countUnread() > 0) {
             markRead();
           }
+          setAutoScrollToRecent(false);
         }, WAIT_FOR_SCROLL_TIMEOUT);
       }
     };
