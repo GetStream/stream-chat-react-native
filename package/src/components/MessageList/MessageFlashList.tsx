@@ -473,7 +473,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         setScrollToBottomButtonVisible(false);
         resetPaginationTrackersRef.current();
 
-        console.log('scrollToEnd 1');
         setAutoScrollToRecent(true);
         setTimeout(() => {
           channelResyncScrollSet.current = true;
