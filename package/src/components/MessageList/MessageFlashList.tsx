@@ -468,7 +468,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         return;
       }
 
-      if (isMessageRemovedFromMessageList) {
+      if (
+        isMessageRemovedFromMessageList ||
+        (topMessageBeforeUpdate.current?.created_at &&
+          topMessageAfterUpdate?.created_at &&
+          topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
+      ) {
         channelResyncScrollSet.current = false;
         setScrollToBottomButtonVisible(false);
         resetPaginationTrackersRef.current();
