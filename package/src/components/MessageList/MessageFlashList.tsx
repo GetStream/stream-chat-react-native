@@ -1188,6 +1188,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
 export type MessageFlashListProps = Partial<MessageFlashListPropsWithContext>;
 
+/**
+ * This is a @experimental component.
+ * It is implemented using @shopify/flash-list package to optimize the performance of the MessageList component.
+ * The implementation is experimental and is subject to change.
+ * Please feel free to report any issues or suggestions.
+ */
 export const MessageFlashList = (props: MessageFlashListProps) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
