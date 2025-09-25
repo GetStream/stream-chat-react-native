@@ -197,7 +197,7 @@ type MessageFlashListPropsWithContext = Pick<
     setFlatListRef?: (ref: FlashListRef<LocalMessage> | null) => void;
   };
 
-const WAIT_FOR_SCROLL_TIMEOUT = 200;
+const WAIT_FOR_SCROLL_TIMEOUT = 0;
 
 const getItemTypeInternal = (message: LocalMessage) => {
   if (message.type === 'regular') {
@@ -433,17 +433,17 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
     try {
       if (indexOfParentInMessageList === -1) {
+        clearTimeout(scrollToDebounceTimeoutRef.current);
         await loadChannelAroundMessage({ messageId });
         setTargetedMessage(messageId);
 
-        setTimeout(() => {
-          // now scroll to it with animated=true
-          flashListRef.current?.scrollToIndex({
-            animated: true,
-            index: indexOfParentInMessageList,
-            viewPosition: 0.5, // try to place message in the center of the screen
-          });
-        }, WAIT_FOR_SCROLL_TIMEOUT);
+        // now scroll to it with animated=true
+        flashListRef.current?.scrollToIndex({
+          animated: true,
+          index: indexOfParentInMessageList,
+          viewPosition: 0.5, // try to place message in the center of the screen
+        });
+        return;
       }
     } catch (e) {
       console.warn('Error while scrolling to message', e);
@@ -468,16 +468,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         return;
       }
 
-      if (
-        isMessageRemovedFromMessageList ||
-        (topMessageBeforeUpdate.current?.created_at &&
-          topMessageAfterUpdate?.created_at &&
-          topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
-      ) {
+      if (isMessageRemovedFromMessageList) {
         channelResyncScrollSet.current = false;
         setScrollToBottomButtonVisible(false);
         resetPaginationTrackersRef.current();
 
+        console.log('scrollToEnd 1');
         setAutoScrollToRecent(true);
         setTimeout(() => {
           channelResyncScrollSet.current = true;
@@ -960,7 +956,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const offset = nativeEvent.contentOffset.y;
     const visibleLength = nativeEvent.layoutMeasurement.height;
     const contentLength = nativeEvent.contentSize.height;
-    if (!channel) {
+    if (!channel || !channelResyncScrollSet.current) {
       return;
     }
 
