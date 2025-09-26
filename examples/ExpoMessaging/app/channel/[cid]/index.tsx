@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { SafeAreaView, View } from 'react-native';
-import { Channel, MessageInput, MessageList } from 'stream-chat-expo';
+import { Channel, MessageInput, MessageFlashList } from 'stream-chat-expo';
 import { Stack, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
@@ -45,7 +45,7 @@ export default function ChannelScreen() {
           thread={thread}
         >
           <View style={{ flex: 1 }}>
-            <MessageList
+            <MessageFlashList
               onThreadSelect={(thread) => {
                 setThread(thread);
                 router.push(`/channel/${channel.cid}/thread/${thread.cid}`);

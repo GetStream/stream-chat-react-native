@@ -20,6 +20,7 @@ export type UseMessageListParams = {
   noGroupByUser?: boolean;
   threadList?: boolean;
   isLiveStreaming?: boolean;
+  isFlashList?: boolean;
 };
 
 export type GroupType = string;
@@ -50,7 +51,7 @@ export const shouldIncludeMessageInList = (
 };
 
 export const useMessageList = (params: UseMessageListParams) => {
-  const { noGroupByUser, threadList, isLiveStreaming } = params;
+  const { noGroupByUser, threadList, isLiveStreaming, isFlashList } = params;
   const { client } = useChatContext();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
   const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
@@ -106,11 +107,15 @@ export const useMessageList = (params: UseMessageListParams) => {
           userId: client.userID,
         })
       ) {
-        newMessageList.unshift(message);
+        if (isFlashList) {
+          newMessageList.push(message);
+        } else {
+          newMessageList.unshift(message);
+        }
       }
     }
     return newMessageList;
-  }, [client.userID, deletedMessagesVisibilityType, messageList]);
+  }, [client.userID, deletedMessagesVisibilityType, isFlashList, messageList]);
 
   const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 
