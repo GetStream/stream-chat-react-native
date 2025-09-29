@@ -217,10 +217,6 @@ const getItemTypeInternal = (message: LocalMessage) => {
       return 'message-with-shared-location';
     }
 
-    if (message.deleted_at) {
-      return 'deleted-message';
-    }
-
     if (message.text) {
       return 'message-with-text';
     }
@@ -228,11 +224,15 @@ const getItemTypeInternal = (message: LocalMessage) => {
     return 'message-with-nothing';
   }
 
+  if (message.type === 'deleted') {
+    return 'deleted-message';
+  }
+
   if (message.type === 'system') {
     return 'system-message';
   }
 
-  return 'unresolvable-type';
+  return 'generic-message';
 };
 
 const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
