@@ -141,6 +141,10 @@ const SecretMenuMessageListConfigItem = ({
   </TouchableOpacity>
 );
 
+/*
+* TODO: Please rewrite this entire component.
+*/
+
 export const SecretMenu = ({
   close,
   visible,
