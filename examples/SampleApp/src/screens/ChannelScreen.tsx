@@ -32,6 +32,7 @@ import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
+import { MessageList } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -118,7 +119,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
-  const { chatClient } = useAppContext();
+  const { chatClient, messageListImplementation } = useAppContext();
   const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
@@ -216,7 +217,11 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
-        <MessageFlashList onThreadSelect={onThreadSelect} />
+        {messageListImplementation === 'flashlist' ? (
+          <MessageFlashList onThreadSelect={onThreadSelect} />
+        ) : (
+          <MessageList onThreadSelect={onThreadSelect} />
+        )}
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
       </Channel>
