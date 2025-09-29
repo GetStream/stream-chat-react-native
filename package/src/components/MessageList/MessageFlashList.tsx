@@ -226,15 +226,6 @@ const getItemTypeInternal = (message: LocalMessage) => {
     }
 
     if (message.text) {
-      const text = message.text;
-      if (text.length <= 50) {
-        return 'short-message-with-text';
-      }
-
-      if (text.length <= 200) {
-        return 'medium-message-with-text';
-      }
-
       return 'message-with-text';
     }
 
