@@ -227,7 +227,7 @@ class ExpoAudioRecordingAdapter {
       onRecordingStatusUpdate(status);
     }, progressUpdateInterval);
     this.uri = null;
-    await this.recording.prepareToRecordAsync(this.options);
+    await this.recording.prepareToRecordAsync();
     this.recording.record();
   };
 
