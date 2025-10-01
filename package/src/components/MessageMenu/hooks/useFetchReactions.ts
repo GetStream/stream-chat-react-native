@@ -22,44 +22,47 @@ export const useFetchReactions = ({
   const [next, setNext] = useState<string | undefined>(undefined);
   const messageId = message?.id;
 
-  const { client, enableOfflineSupport } = useChatContext();
+  const { client } = useChatContext();
 
   const sortString = useMemo(() => JSON.stringify(sort), [sort]);
 
-  const fetchReactions = useCallback(async () => {
-    if (!messageId) {
-      return;
-    }
-    try {
-      const response = await client.queryReactions(
-        messageId,
-        reactionType ? { type: reactionType } : {},
-        sort,
-        { limit, next },
-      );
-      if (response) {
-        setReactions((prevReactions) =>
-          next ? [...prevReactions, ...response.reactions] : response.reactions,
-        );
-        setNext(response.next);
-        setLoading(false);
+  const fetchReactions = useCallback(
+    async (next: string | undefined) => {
+      if (!messageId) {
+        return;
       }
-    } catch (error) {
-      console.log('Error fetching reactions: ', error);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, messageId, reactionType, sortString, next, limit, enableOfflineSupport]);
+      try {
+        const response = await client.queryReactions(
+          messageId,
+          reactionType ? { type: reactionType } : {},
+          sort,
+          { limit, next },
+        );
+        if (response) {
+          setNext(response.next);
+
+          setReactions((prevReactions) =>
+            next ? [...prevReactions, ...response.reactions] : response.reactions,
+          );
+          setLoading(false);
+        }
+      } catch (error) {
+        console.log('Error fetching reactions: ', error);
+      }
+    },
+    [messageId, client, reactionType, sort, limit],
+  );
 
   const loadNextPage = useCallback(async () => {
     if (next) {
-      await fetchReactions();
+      await fetchReactions(next);
     }
   }, [fetchReactions, next]);
 
   useEffect(() => {
     setReactions([]);
     setNext(undefined);
-    fetchReactions();
+    fetchReactions(undefined);
   }, [fetchReactions, messageId, reactionType, sortString]);
 
   useEffect(() => {
