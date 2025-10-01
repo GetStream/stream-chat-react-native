@@ -195,6 +195,15 @@ type MessageFlashListPropsWithContext = Pick<
      * ```
      */
     setFlatListRef?: (ref: FlashListRef<LocalMessage> | null) => void;
+    /**
+     * If true, the message list will be used in a live-streaming scenario.
+     * This flag is used to make sure that the auto scroll behaves well, if multiple messages are received.
+     *
+     * This flag is experimental and is subject to change. Please test thoroughly before using it.
+     *
+     * @experimental
+     */
+    isLiveStreaming?: boolean;
   };
 
 const WAIT_FOR_SCROLL_TIMEOUT = 0;
@@ -257,6 +266,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     InlineDateSeparator,
     InlineUnreadIndicator,
     isListActive = false,
+    isLiveStreaming = false,
     legacyImageViewerSwipeBehaviour,
     loadChannelAroundMessage,
     loading,
@@ -334,6 +344,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
     useMessageList({
       isFlashList: true,
+      isLiveStreaming,
       noGroupByUser,
       threadList,
     });
@@ -363,10 +374,14 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const maintainVisibleContentPosition = useMemo(() => {
     return {
       animateAutoscrollToBottom: true,
-      autoscrollToBottomThreshold: autoScrollToRecent || threadList ? 10 : undefined,
+      autoscrollToBottomThreshold: isLiveStreaming
+        ? 64
+        : autoScrollToRecent || threadList
+          ? 10
+          : undefined,
       startRenderingFromBottom: true,
     };
-  }, [autoScrollToRecent, threadList]);
+  }, [autoScrollToRecent, threadList, isLiveStreaming]);
 
   useEffect(() => {
     if (disabled) {
@@ -1144,6 +1159,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
+          scrollEventThrottle={isLiveStreaming ? 16 : undefined}
           showsVerticalScrollIndicator={false}
           style={flatListStyle}
           testID='message-flash-list'
