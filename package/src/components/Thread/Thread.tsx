@@ -14,7 +14,16 @@ import {
   MessageInput as DefaultMessageInput,
   MessageInputProps,
 } from '../MessageInput/MessageInput';
-import type { MessageListProps } from '../MessageList/MessageList';
+import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
+import { MessageListProps } from '../MessageList/MessageList';
+
+let FlashList;
+
+try {
+  FlashList = require('@shopify/flash-list').FlashList;
+} catch {
+  FlashList = undefined;
+}
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
   Pick<MessagesContextValue, 'MessageList'> &
@@ -37,6 +46,13 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
      * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-list/#props
      * */
     additionalMessageListProps?: Partial<MessageListProps>;
+    /**
+     * @experimental This prop is experimental and is subject to change.
+     *
+     * Additional props for underlying MessageListFlashList component.
+     * Available props - https://shopify.github.io/flash-list/docs/usage
+     */
+    additionalMessageFlashListProps?: Partial<MessageFlashListProps>;
     /** Make input focus on mounting thread */
     autoFocus?: boolean;
     /** Closes thread on dismount, defaults to true */
@@ -58,6 +74,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const {
     additionalMessageInputProps,
     additionalMessageListProps,
+    additionalMessageFlashListProps,
     autoFocus = true,
     closeThread,
     closeThreadOnDismount = true,
@@ -108,11 +125,19 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   return (
     <React.Fragment key={`thread-${thread.id}`}>
-      <MessageList
-        FooterComponent={MemoizedThreadFooterComponent}
-        threadList
-        {...additionalMessageListProps}
-      />
+      {FlashList ? (
+        <MessageFlashList
+          HeaderComponent={MemoizedThreadFooterComponent}
+          threadList
+          {...additionalMessageFlashListProps}
+        />
+      ) : (
+        <MessageList
+          FooterComponent={MemoizedThreadFooterComponent}
+          threadList
+          {...additionalMessageListProps}
+        />
+      )}
       <MessageInput
         additionalTextInputProps={{
           autoFocus,
