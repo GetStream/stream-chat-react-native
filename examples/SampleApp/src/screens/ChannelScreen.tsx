@@ -5,6 +5,7 @@ import {
   Channel,
   ChannelAvatar,
   MessageInput,
+  MessageList,
   MessageFlashList,
   ThreadContextValue,
   useAttachmentPickerContext,
@@ -32,7 +33,6 @@ import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
-import { MessageList } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
