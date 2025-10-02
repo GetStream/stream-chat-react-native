@@ -37,6 +37,10 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
+  OwnCapabilitiesContextValue,
+  useOwnCapabilitiesContext,
+} from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -93,6 +97,7 @@ type MessageFlashListPropsWithContext = Pick<
   AttachmentPickerContextValue,
   'closePicker' | 'selectedPicker' | 'setSelectedPicker'
 > &
+  Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
     ChannelContextValue,
     | 'channel'
@@ -269,6 +274,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     Message,
     MessageSystem,
     myMessageTheme,
+    readEvents,
     NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
@@ -630,7 +636,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
-    if (!viewableItems.length) {
+    if (!viewableItems.length || !readEvents) {
       setIsUnreadNotificationOpen(false);
       return;
     }
@@ -1227,6 +1233,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   } = useMessagesContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
+  const { readEvents } = useOwnCapabilitiesContext();
 
   return (
     <MessageFlashListWithContext
@@ -1260,6 +1267,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,
+        readEvents,
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
