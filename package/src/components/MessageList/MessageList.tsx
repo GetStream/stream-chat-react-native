@@ -38,6 +38,10 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
+  OwnCapabilitiesContextValue,
+  useOwnCapabilitiesContext,
+} from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -115,6 +119,7 @@ type MessageListPropsWithContext = Pick<
   AttachmentPickerContextValue,
   'closePicker' | 'selectedPicker' | 'setSelectedPicker'
 > &
+  Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
     ChannelContextValue,
     | 'channel'
@@ -277,6 +282,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     noGroupByUser,
     onListScroll,
     onThreadSelect,
+    readEvents,
     reloadChannel,
     ScrollToBottomButton,
     selectedPicker,
@@ -441,7 +447,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
     messagesLength.current = processedMessageList.length;
 
-    if (!viewableItems.length) {
+    if (!viewableItems.length || !readEvents) {
       setIsUnreadNotificationOpen(false);
       return;
     }
@@ -1294,6 +1300,7 @@ export const MessageList = (props: MessageListProps) => {
   } = useChannelContext();
   const { client } = useChatContext();
   const { setMessages } = useImageGalleryContext();
+  const { readEvents } = useOwnCapabilitiesContext();
   const {
     DateHeader,
     disableTypingIndicator,
@@ -1345,6 +1352,7 @@ export const MessageList = (props: MessageListProps) => {
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,
+        readEvents,
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
