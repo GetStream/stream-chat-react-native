@@ -21,7 +21,7 @@ export const Sound = {
           playsInSilentMode: true,
         });
         const sound = new ExpoAudioSoundAdapter(source, initialStatus, onPlaybackStatusUpdate);
-        await sound.loadAsync(source, initialStatus);
+        await sound.loadAsync(initialStatus);
         return sound;
       }
     : AudioComponent
@@ -96,7 +96,7 @@ class ExpoAudioSoundAdapter {
   };
 
   // eslint-disable-next-line require-await
-  loadAsync = async (source, initialStatus) => {
+  loadAsync = async (initialStatus) => {
     this.initialShouldCorrectPitch = initialStatus.shouldCorrectPitch;
     this.initialPitchCorrectionQuality = initialStatus.pitchCorrectionQuality;
   };
