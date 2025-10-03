@@ -313,7 +313,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
-  const [autoScrollToRecent, setAutoScrollToRecent] = useState(false);
 
   const stickyHeaderDateRef = useRef<Date | undefined>(undefined);
   /**
@@ -380,14 +379,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const maintainVisibleContentPosition = useMemo(() => {
     return {
       animateAutoscrollToBottom: true,
-      autoscrollToBottomThreshold: isLiveStreaming
-        ? 64
-        : autoScrollToRecent || threadList
-          ? 10
-          : undefined,
+      autoscrollToBottomThreshold: 1,
       startRenderingFromBottom: true,
     };
-  }, [autoScrollToRecent, threadList, isLiveStreaming]);
+  }, []);
 
   useEffect(() => {
     if (disabled) {
@@ -486,13 +481,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         setScrollToBottomButtonVisible(false);
         resetPaginationTrackersRef.current();
 
-        setAutoScrollToRecent(true);
         setTimeout(() => {
           channelResyncScrollSet.current = true;
           if (channel.countUnread() > 0) {
             markRead();
           }
-          setAutoScrollToRecent(false);
         }, WAIT_FOR_SCROLL_TIMEOUT);
       }
     };
@@ -515,7 +508,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
         channel.state.latestMessages[channel.state.latestMessages.length - 1];
-      setAutoScrollToRecent(false);
       setScrollToBottomButtonVisible(true);
       return;
     }
@@ -524,7 +516,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     const latestCurrentMessageAfterUpdate = processedMessageList[processedMessageList.length - 1];
     if (!latestCurrentMessageAfterUpdate) {
-      setAutoScrollToRecent(true);
       return;
     }
     const didMergeMessageSetsWithNoUpdates =
@@ -541,28 +532,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       }
     }
   }, [channel, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, threadList]);
-
-  /**
-   * Effect to scroll to the bottom of the message list when a new message is received if the scroll to bottom button is not visible.
-   */
-  useEffect(() => {
-    const handleEvent = (event: Event) => {
-      if (event.message?.user?.id !== client.userID) {
-        if (!scrollToBottomButtonVisible) {
-          flashListRef.current?.scrollToEnd({
-            animated: true,
-          });
-        } else {
-          setAutoScrollToRecent(false);
-        }
-      }
-    };
-    const listener: ReturnType<typeof channel.on> = channel.on('message.new', handleEvent);
-
-    return () => {
-      listener?.unsubscribe();
-    };
-  }, [channel, client.userID, scrollToBottomButtonVisible]);
 
   /**
    * Effect to mark the channel as read when the user scrolls to the bottom of the message list.

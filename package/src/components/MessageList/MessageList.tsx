@@ -348,10 +348,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const minIndexForVisible = Math.min(1, processedMessageList.length);
 
-  const autoscrollToTopThreshold = useMemo(
-    () => (isLiveStreaming ? 64 : autoscrollToRecent ? 10 : undefined),
-    [autoscrollToRecent, isLiveStreaming],
-  );
+  const autoscrollToTopThreshold = autoscrollToRecent ? (isLiveStreaming ? 64 : 10) : undefined;
 
   const maintainVisibleContentPosition = useMemo(
     () => ({
