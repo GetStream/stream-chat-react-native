@@ -106,7 +106,7 @@ Goals: API stability, backward compatibility, predictable releases, strong test 
 ## CI expectations
 
 - Mandatory: build, lint, type check, unit/integration tests, (optionally) E2E smoke
-- Node versions: those listed in matrix (see workflow YAML)
+- Node versions: those listed in matrix (see workflow YAML files under `.github/workflows/`)
 - Failing or flaky tests: fix or quarantine with justification PR comment (temporary)
 - Zero new warnings
 
@@ -138,6 +138,11 @@ Goals: API stability, backward compatibility, predictable releases, strong test 
 - Clear Metro cache if module resolution has issues: `yarn react-native start --reset-cache` (for RN CLI) or `yarn expo start --dev-client -c` (for `Expo`)
 - Test on iOS + Android for native module or platform-specific UI changes
 - Avoid unguarded web-only APIs in shared code
+- If the apps in `/examples` are failing to build or install, run:
+  - `watchman watch-del-all && rm -rf ~/Library/Developer/Xcode/DerivedData/*`
+  - `(cd ios && bundle exec pod install)` (for RN CLI based sample apps)
+  - `npx expo prebuild` (if changes have been done in `app.json` of `ExpoMessaging`)
+  - `rm -rf ios && rm -rf android` (if new native modules have been installed in `ExpoMessaging`)
 
 ## Linting & formatting
 
@@ -162,7 +167,11 @@ Goals: API stability, backward compatibility, predictable releases, strong test 
 
 ## Prohibited edits
 
-- Do not edit build artifacts (`lib/`, generated types where present)
+- Do not edit build artifacts
+  - `package/lib`
+  - `ios` and `android` directories in `ExpoMessaging`
+  - `ios/build` and `android/build` in the other sample apps
+  - `node_modules` everywhere
 - Do not bypass lint/type errors with force merges
 
 ## Quick agent checklist (per commit)
