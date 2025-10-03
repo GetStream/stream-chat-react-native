@@ -20,7 +20,7 @@ export const Sound = {
         await ExpoAudioComponent.setAudioModeAsync({
           playsInSilentMode: true,
         });
-        const sound = new ExpoAudioSoundAdapter(onPlaybackStatusUpdate);
+        const sound = new ExpoAudioSoundAdapter(source, initialStatus, onPlaybackStatusUpdate);
         await sound.loadAsync(source, initialStatus);
         return sound;
       }
@@ -64,7 +64,12 @@ class ExpoAudioSoundAdapter {
   private initialShouldCorrectPitch;
   private onPlaybackStatusUpdate;
 
-  constructor(onPlaybackStatusUpdate: (playbackStatus: PlaybackStatus) => void) {
+  constructor(
+    source,
+    initialStatus,
+    onPlaybackStatusUpdate: (playbackStatus: PlaybackStatus) => void,
+  ) {
+    this.player = expoCreateSoundPlayer?.(source, initialStatus.progressUpdateIntervalMillis);
     this.onPlaybackStatusUpdate = (playbackStatus: ExpoAudioPlaybackStatus) => {
       onPlaybackStatusUpdate(expoAudioToExpoAvStatusAdapter(playbackStatus));
       if (playbackStatus.didJustFinish) {
@@ -92,7 +97,6 @@ class ExpoAudioSoundAdapter {
 
   // eslint-disable-next-line require-await
   loadAsync = async (source, initialStatus) => {
-    this.player = expoCreateSoundPlayer?.(source, initialStatus.progressUpdateIntervalMillis);
     this.initialShouldCorrectPitch = initialStatus.shouldCorrectPitch;
     this.initialPitchCorrectionQuality = initialStatus.pitchCorrectionQuality;
   };
@@ -126,6 +130,7 @@ class ExpoAudioSoundAdapter {
   replayAsync: SoundReturnType['replayAsync'] = async () => {
     this.subscribeStatusEventListener();
     this.player.seekTo(0);
+    this.player.play();
   };
 
   // eslint-disable-next-line require-await
