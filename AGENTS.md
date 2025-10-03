@@ -81,14 +81,6 @@ Goals: API stability, backward compatibility, predictable releases, strong test 
 - Prefer lazy loading for optional heavy modules
 - Avoid unnecessary large dependency additions
 
-## Accessibility (a11y)
-
-- All interactive elements keyboard accessible
-- Provide ARIA roles/labels where semantic tags insufficient
-- Maintain color contrast (WCAG AA)
-- Do not convey state by color alone
-- Announce dynamic content changes (ARIA live regions if needed)
-
 ## Error & logging policy
 
 - Public API: throw descriptive errors or return typed error results (consistent with existing patterns)
