@@ -54,7 +54,7 @@ Goals: API stability, backward compatibility, predictable releases, strong test 
 | Watch (if available)    | `yarn start` (add if absent) |
 | Lint                    | `yarn lint`                  |
 | Fix lint (if separate)  | `yarn lint --fix`            |
-| Unit tests (CI profile) | `yarn test:ci:all`           |
+| Unit tests (CI profile) | `yarn test:unit`             |
 
 ## API design principles
 
