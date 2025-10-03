@@ -376,13 +376,15 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [processedMessageList],
   );
 
+  const [should, setShould] = useState(true);
+
   const maintainVisibleContentPosition = useMemo(() => {
     return {
       animateAutoscrollToBottom: true,
-      autoscrollToBottomThreshold: 1,
+      autoscrollToBottomThreshold: should ? 1 : undefined,
       startRenderingFromBottom: true,
     };
-  }, []);
+  }, [should]);
 
   useEffect(() => {
     if (disabled) {
@@ -403,6 +405,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       (message) => message?.id === targetedMessage,
     );
 
+    setShould(false);
     // the message we want to scroll to has not been loaded in the state yet
     if (indexOfParentInMessageList === -1) {
       loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
@@ -416,41 +419,14 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           index: indexOfParentInMessageList,
           viewPosition: 0.5,
         });
+        setShould(true);
         setTargetedMessage(undefined);
-      }, WAIT_FOR_SCROLL_TIMEOUT);
+      }, 100);
     }
   }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
 
-  const goToMessage = useStableCallback(async (messageId: string) => {
-    const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === messageId,
-    );
-    if (indexOfParentInMessageList !== -1) {
-      flashListRef.current?.scrollToIndex({
-        animated: true,
-        index: indexOfParentInMessageList,
-        viewPosition: 0.5,
-      });
-      setTargetedMessage(messageId);
-      return;
-    }
-    try {
-      if (indexOfParentInMessageList === -1) {
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-        await loadChannelAroundMessage({ messageId });
-        setTargetedMessage(messageId);
-
-        // now scroll to it with animated=true
-        flashListRef.current?.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        return;
-      }
-    } catch (e) {
-      console.warn('Error while scrolling to message', e);
-    }
+  const goToMessage = useStableCallback((messageId: string) => {
+    setTargetedMessage(messageId);
   });
 
   useEffect(() => {
