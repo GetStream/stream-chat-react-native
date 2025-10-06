@@ -1,17 +1,40 @@
-import React, { useContext } from 'react';
-import { SafeAreaView, View } from 'react-native';
-import { Channel, MessageInput, MessageFlashList } from 'stream-chat-expo';
-import { Stack, useRouter } from 'expo-router';
+import React, { useContext, useEffect, useState } from 'react';
+import type { Channel as StreamChatChannel } from 'stream-chat';
+import { Channel, MessageInput, MessageFlashList, useChatContext } from 'stream-chat-expo';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
 import InputButtons from '../../../components/InputButtons';
 import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ChannelScreen() {
+  const { client } = useChatContext();
   const router = useRouter();
-  const { setThread, channel, thread } = useContext(AppContext);
+  const params = useLocalSearchParams();
+  const navigateThroughPushNotification = params.push_notification as string;
+  const channelId = params.cid as string;
+  const [channelFromParams, setChannelFromParams] = useState<StreamChatChannel | undefined>(
+    undefined,
+  );
+
+  // Effect to fetch channel from params if channel is navigated through push notification
+  useEffect(() => {
+    const initChannel = async () => {
+      if (navigateThroughPushNotification) {
+        const channel = client?.channel('messaging', channelId);
+        await channel?.watch();
+        setChannelFromParams(channel);
+      }
+    };
+    initChannel();
+  }, [navigateThroughPushNotification, channelId, client]);
+
+  const { setThread, channel: channelContext, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
+
+  const channel = channelFromParams || channelContext;
 
   if (!channel) {
     return <AuthProgressLoader />;
@@ -32,29 +55,30 @@ export default function ChannelScreen() {
     defaultHandler?.();
   };
 
+  if (!channel) {
+    return null;
+  }
+
   return (
-    <SafeAreaView>
+    <Channel
+      audioRecordingEnabled={true}
+      channel={channel}
+      onPressMessage={onPressMessage}
+      keyboardVerticalOffset={headerHeight}
+      MessageLocation={MessageLocation}
+      thread={thread}
+    >
       <Stack.Screen options={{ title: 'Channel Screen' }} />
-      {channel && (
-        <Channel
-          audioRecordingEnabled={true}
-          channel={channel}
-          onPressMessage={onPressMessage}
-          keyboardVerticalOffset={headerHeight}
-          MessageLocation={MessageLocation}
-          thread={thread}
-        >
-          <View style={{ flex: 1 }}>
-            <MessageFlashList
-              onThreadSelect={(thread) => {
-                setThread(thread);
-                router.push(`/channel/${channel.cid}/thread/${thread.cid}`);
-              }}
-            />
-            <MessageInput InputButtons={InputButtons} />
-          </View>
-        </Channel>
-      )}
-    </SafeAreaView>
+
+      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
+        <MessageFlashList
+          onThreadSelect={(thread) => {
+            setThread(thread);
+            router.push(`/channel/${channel.cid}/thread/${thread.cid}`);
+          }}
+        />
+        <MessageInput InputButtons={InputButtons} />
+      </SafeAreaView>
+    </Channel>
   );
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "860064972837",
+    "project_id": "stream-expo-app",
+    "storage_bucket": "stream-expo-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860064972837:android:e1e26ae08c894c10f17fcc",
+        "android_client_info": {
+          "package_name": "io.getstream.iOS.expomessagingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZKv8XIbhmAdYzINf0kpVlUrtYgNZ5XgU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
