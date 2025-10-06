@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Channel, Thread } from 'stream-chat-expo';
 import { Stack } from 'expo-router';
 import { AppContext } from '../../../../../context/AppContext';
@@ -24,13 +24,7 @@ export default function ThreadScreen() {
     >
       <Stack.Screen options={{ title: 'Thread Screen' }} />
 
-      <SafeAreaView
-        edges={['bottom']}
-        style={{
-          flex: 1,
-          justifyContent: 'flex-start',
-        }}
-      >
+      <SafeAreaView edges={['bottom']} style={styles.container}>
         <Thread
           onThreadDismount={() => {
             setThread(undefined);
@@ -40,3 +34,10 @@ export default function ThreadScreen() {
     </Channel>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+});

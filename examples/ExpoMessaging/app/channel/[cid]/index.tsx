@@ -8,6 +8,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import InputButtons from '../../../components/InputButtons';
 import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native';
 
 export default function ChannelScreen() {
   const { client } = useChatContext();
@@ -70,7 +71,7 @@ export default function ChannelScreen() {
     >
       <Stack.Screen options={{ title: 'Channel Screen' }} />
 
-      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
         <MessageFlashList
           onThreadSelect={(thread) => {
             setThread(thread);
@@ -82,3 +83,9 @@ export default function ChannelScreen() {
     </Channel>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
