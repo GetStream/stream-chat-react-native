@@ -1,11 +1,6 @@
-import ReactNativePackageJSON from 'react-native/package.json';
+import { Platform } from 'react-native';
 
 export const getReactNativeVersion = () => {
-  const version = ReactNativePackageJSON.version;
-  const [major, minor, patch] = version.split('.');
-  return {
-    major: Number(major),
-    minor: Number(minor),
-    patch: Number(patch),
-  };
+  const version = Platform.constants.reactNativeVersion;
+  return version;
 };
