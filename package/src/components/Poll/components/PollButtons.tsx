@@ -1,5 +1,9 @@
-import React, { useCallback, useState } from 'react';
-import { Modal, SafeAreaView } from 'react-native';
+import React, { PropsWithChildren, useCallback, useState } from 'react';
+import { Modal, SafeAreaView as RNSafeAreaView, ViewStyle } from 'react-native';
+import {
+  SafeAreaProvider,
+  SafeAreaView as SafeAreaViewOriginal,
+} from 'react-native-safe-area-context';
 
 import { GenericPollButton, PollButtonProps } from './Button';
 import { PollAnswersList } from './PollAnswersList';
@@ -9,7 +13,22 @@ import { PollAllOptions } from './PollOption';
 import { PollResults } from './PollResults';
 
 import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
+import { getReactNativeVersion } from '../../../utils/getReactNativeVersion';
 import { usePollState } from '../hooks/usePollState';
+
+// This is a workaround to support SafeAreaView on React Native 0.81.0+
+const SafeAreaViewWrapper = ({ children, style }: PropsWithChildren<{ style: ViewStyle }>) => {
+  if (getReactNativeVersion().minor >= 81) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaViewOriginal edges={['bottom', 'top']} style={style}>
+          {children}
+        </SafeAreaViewOriginal>
+      </SafeAreaProvider>
+    );
+  }
+  return <RNSafeAreaView style={style}>{children}</RNSafeAreaView>;
+};
 
 export const ViewResultsButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
@@ -32,19 +51,21 @@ export const ViewResultsButton = (props: PollButtonProps) => {
     },
   } = useTheme();
 
+  const onRequestClose = useCallback(() => {
+    setShowResults(false);
+  }, []);
+
   return (
     <>
       <GenericPollButton onPress={onPressHandler} title={t('View Results')} />
       {showResults ? (
-        <Modal
-          animationType='slide'
-          onRequestClose={() => setShowResults(false)}
-          visible={showResults}
-        >
-          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader onPress={() => setShowResults(false)} title={t('Poll Results')} />
-            <PollResults message={message} poll={poll} />
-          </SafeAreaView>
+        <Modal animationType='slide' onRequestClose={onRequestClose} visible={showResults}>
+          <SafeAreaProvider>
+            <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
+              <PollResults message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </SafeAreaProvider>
         </Modal>
       ) : null}
     </>
@@ -67,6 +88,10 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
     setShowAllOptions(true);
   }, [message, onPress, poll]);
 
+  const onRequestClose = useCallback(() => {
+    setShowAllOptions(false);
+  }, []);
+
   const {
     theme: {
       colors: { white },
@@ -82,15 +107,13 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
         />
       ) : null}
       {showAllOptions ? (
-        <Modal
-          animationType='slide'
-          onRequestClose={() => setShowAllOptions(false)}
-          visible={showAllOptions}
-        >
-          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader onPress={() => setShowAllOptions(false)} title={t('Poll Options')} />
-            <PollAllOptions message={message} poll={poll} />
-          </SafeAreaView>
+        <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAllOptions}>
+          <SafeAreaProvider>
+            <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
+              <PollAllOptions message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </SafeAreaProvider>
         </Modal>
       ) : null}
     </>
@@ -119,6 +142,10 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
     },
   } = useTheme();
 
+  const onRequestClose = useCallback(() => {
+    setShowAnswers(false);
+  }, []);
+
   return (
     <>
       {answersCount && answersCount > 0 ? (
@@ -128,15 +155,13 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
         />
       ) : null}
       {showAnswers ? (
-        <Modal
-          animationType='slide'
-          onRequestClose={() => setShowAnswers(false)}
-          visible={showAnswers}
-        >
-          <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader onPress={() => setShowAnswers(false)} title={t('Poll Comments')} />
-            <PollAnswersList message={message} poll={poll} />
-          </SafeAreaView>
+        <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAnswers}>
+          <SafeAreaProvider>
+            <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
+              <PollAnswersList message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </SafeAreaProvider>
         </Modal>
       ) : null}
     </>
@@ -159,6 +184,10 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
     setShowAddOptionDialog(true);
   }, [message, onPress, poll]);
 
+  const onRequestClose = useCallback(() => {
+    setShowAddOptionDialog(false);
+  }, []);
+
   return (
     <>
       {!isClosed && allowUserSuggestedOptions ? (
@@ -166,7 +195,7 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
       ) : null}
       {showAddOptionDialog ? (
         <PollInputDialog
-          closeDialog={() => setShowAddOptionDialog(false)}
+          closeDialog={onRequestClose}
           onSubmit={addOption}
           title={t('Suggest an option')}
           visible={showAddOptionDialog}
@@ -192,6 +221,10 @@ export const AddCommentButton = (props: PollButtonProps) => {
     setShowAddCommentDialog(true);
   }, [message, onPress, poll]);
 
+  const onRequestClose = useCallback(() => {
+    setShowAddCommentDialog(false);
+  }, []);
+
   return (
     <>
       {!isClosed && allowAnswers ? (
@@ -199,7 +232,7 @@ export const AddCommentButton = (props: PollButtonProps) => {
       ) : null}
       {showAddCommentDialog ? (
         <PollInputDialog
-          closeDialog={() => setShowAddCommentDialog(false)}
+          closeDialog={onRequestClose}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
           title={t('Add a comment')}

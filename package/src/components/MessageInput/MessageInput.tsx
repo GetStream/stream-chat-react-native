@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
+import {
+  Modal,
+  SafeAreaView as RNSafeAreaView,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  View,
+} from 'react-native';
 
 import {
   Gesture,
@@ -15,6 +22,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+
+import { SafeAreaView as SafeAreaViewOriginal } from 'react-native-safe-area-context';
 
 import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
 
@@ -58,9 +67,13 @@ import {
   isImageMediaLibraryAvailable,
   NativeHandlers,
 } from '../../native';
+import { getReactNativeVersion } from '../../utils/getReactNativeVersion';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
+
+// This is a workaround to support SafeAreaView on React Native 0.81.0+
+const SafeAreaView = getReactNativeVersion().minor >= 81 ? SafeAreaViewOriginal : RNSafeAreaView;
 
 const styles = StyleSheet.create({
   attachmentSeparator: {
