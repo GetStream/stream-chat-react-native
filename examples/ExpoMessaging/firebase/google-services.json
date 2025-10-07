@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:860064972837:android:e1e26ae08c894c10f17fcc",
+        "mobilesdk_app_id": "1:860064972837:android:101025e38fd23297f17fcc",
         "android_client_info": {
-          "package_name": "io.getstream.iOS.expomessagingapp"
+          "package_name": "io.getstream.android.expomessagingapp"
         }
       },
       "oauth_client": [],

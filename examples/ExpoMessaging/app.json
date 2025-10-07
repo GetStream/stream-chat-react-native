@@ -29,7 +29,7 @@
           "apiKey": "AIzaSyDVh35biMyXbOjt74CQyO1dlqSMlrdHOOA"
         }
       },
-      "package": "io.getstream.iOS.expomessagingapp",
+      "package": "io.getstream.android.expomessagingapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
