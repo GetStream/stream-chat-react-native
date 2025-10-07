@@ -281,7 +281,6 @@ export const useImageGalleryGestures = ({
          */
         const finalXPosition = event.translationX - event.velocityX * 0.3;
         const finalYPosition = event.translationY + event.velocityY * 0.1;
-        console.log(finalXPosition);
 
         /**
          * If there is a next photo, the image is lined up to the right
