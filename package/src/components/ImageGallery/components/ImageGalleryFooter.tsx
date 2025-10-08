@@ -30,10 +30,9 @@ import {
 } from '../../../native';
 
 import { FileTypes } from '../../../types/types';
-import { getReactNativeVersion } from '../../../utils/getReactNativeVersion';
 import type { Photo } from '../ImageGallery';
 
-const SafeAreaView = getReactNativeVersion().minor >= 81 ? SafeAreaViewOriginal : RNSafeAreaView;
+const SafeAreaView = SafeAreaViewOriginal ?? RNSafeAreaView;
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)

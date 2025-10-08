@@ -23,12 +23,11 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
-import { getReactNativeVersion } from '../../../utils/getReactNativeVersion';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
 
 // This is a workaround to support SafeAreaView on React Native 0.81.0+
-const SafeAreaView = getReactNativeVersion().minor >= 81 ? SafeAreaViewOriginal : RNSafeAreaView;
+const SafeAreaView = SafeAreaViewOriginal ?? RNSafeAreaView;
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)

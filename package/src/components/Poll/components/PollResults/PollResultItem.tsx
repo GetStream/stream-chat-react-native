@@ -25,14 +25,13 @@ import {
   useTranslationContext,
 } from '../../../../contexts';
 
-import { getReactNativeVersion } from '../../../../utils/getReactNativeVersion';
 import { usePollState } from '../../hooks/usePollState';
 import { GenericPollButton } from '../Button';
 import { PollModalHeader } from '../PollModalHeader';
 
 // This is a workaround to support SafeAreaView on React Native 0.81.0+
 const SafeAreaViewWrapper = ({ children, style }: PropsWithChildren<{ style: ViewStyle }>) => {
-  if (getReactNativeVersion().minor >= 81) {
+  if (SafeAreaViewOriginal) {
     return (
       <SafeAreaProvider>
         <SafeAreaViewOriginal edges={['bottom', 'top']} style={style}>

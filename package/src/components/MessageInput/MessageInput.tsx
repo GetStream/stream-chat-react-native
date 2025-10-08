@@ -67,13 +67,12 @@ import {
   isImageMediaLibraryAvailable,
   NativeHandlers,
 } from '../../native';
-import { getReactNativeVersion } from '../../utils/getReactNativeVersion';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 
 // This is a workaround to support SafeAreaView on React Native 0.81.0+
-const SafeAreaView = getReactNativeVersion().minor >= 81 ? SafeAreaViewOriginal : RNSafeAreaView;
+const SafeAreaView = SafeAreaViewOriginal ?? RNSafeAreaView;
 
 const styles = StyleSheet.create({
   attachmentSeparator: {
