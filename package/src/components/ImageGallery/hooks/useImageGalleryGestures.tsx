@@ -4,6 +4,7 @@ import { Gesture, GestureType } from 'react-native-gesture-handler';
 import {
   cancelAnimation,
   Easing,
+  ReduceMotion,
   runOnJS,
   SharedValue,
   useSharedValue,
@@ -242,8 +243,8 @@ export const useImageGalleryGestures = ({
          */
         translateX.value =
           scale.value !== offsetScale.value
-            ? offsetX.value * localEvtScale - event.translationX
-            : offsetX.value - event.translationX;
+            ? offsetX.value * localEvtScale + event.translationX
+            : offsetX.value + event.translationX;
         translateY.value =
           isSwiping.value !== IsSwiping.TRUE
             ? scale.value !== offsetScale.value
@@ -285,12 +286,14 @@ export const useImageGalleryGestures = ({
          * If there is a next photo, the image is lined up to the right
          * edge, the swipe is to the left, and the final position is more
          * than half the screen width, move to the next image
+         *
+         * As we move towards the left to move to next image, the translationX value will be negative on X axis.
          */
         if (
           index < photoLength - 1 &&
           Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value < 0 &&
-          finalXPosition < -halfScreenWidth &&
+          finalXPosition > halfScreenWidth &&
           isSwiping.value === IsSwiping.TRUE
         ) {
           cancelAnimation(translationX);
@@ -310,13 +313,15 @@ export const useImageGalleryGestures = ({
           /**
            * If there is a previous photo, the image is lined up to the left
            * edge, the swipe is to the right, and the final position is more
-           * than half the screen width, move to the previous image
+           * than half the screen width, move to the previous image.
+           *
+           * As we move towards the right to move to previous image, the translationX value will be positive on X axis.
            */
         } else if (
           index > 0 &&
           Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value > 0 &&
-          finalXPosition > halfScreenWidth &&
+          finalXPosition < -halfScreenWidth &&
           isSwiping.value === IsSwiping.TRUE
         ) {
           cancelAnimation(translationX);
@@ -370,9 +375,11 @@ export const useImageGalleryGestures = ({
          */
         translateY.value =
           currentImageHeight * scale.value < screenHeight
-            ? withTiming(0)
+            ? withTiming(0, { reduceMotion: ReduceMotion.Never })
             : translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
-              ? withTiming((currentImageHeight / 2) * scale.value - halfScreenHeight)
+              ? withTiming((currentImageHeight / 2) * scale.value - halfScreenHeight, {
+                  reduceMotion: ReduceMotion.Never,
+                })
               : translateY.value < (-currentImageHeight / 2) * scale.value + halfScreenHeight
                 ? withTiming((-currentImageHeight / 2) * scale.value + halfScreenHeight)
                 : withDecay({
