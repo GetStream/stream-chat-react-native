@@ -38,7 +38,10 @@ export const useCreateMessageComposer = ({
       const tag = MessageComposer.constructTag(cachedEditedMessage);
 
       const cachedComposer = queueCache.get(tag);
-      if (cachedComposer) return cachedComposer;
+      if (cachedComposer) {
+        cachedComposer.editedMessage = cachedEditedMessage;
+        return cachedComposer;
+      }
 
       return new MessageComposer({
         client,
