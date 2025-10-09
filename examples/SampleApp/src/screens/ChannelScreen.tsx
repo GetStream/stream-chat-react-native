@@ -119,7 +119,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
-  const { chatClient, messageListImplementation, messageListMode } = useAppContext();
+  const { chatClient, messageListImplementation, messageListMode, messageListPruning } =
+    useAppContext();
   const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
@@ -215,6 +216,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         messageId={messageId}
         NetworkDownIndicator={() => null}
         thread={selectedThread}
+        maximumMessageLimit={messageListPruning}
       >
         <ChannelHeader channel={channel} />
         {messageListImplementation === 'flashlist' ? (

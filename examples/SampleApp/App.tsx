@@ -62,6 +62,7 @@ import AsyncStore from './src/utils/AsyncStore.ts';
 import {
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
+  MessageListPruningConfigItem,
 } from './src/components/SecretMenu.tsx';
 
 init({ data });
@@ -100,6 +101,9 @@ const App = () => {
   >(undefined);
   const [messageListMode, setMessageListMode] = useState<
     MessageListModeConfigItem['mode'] | undefined
+  >(undefined);
+  const [messageListPruning, setMessageListPruning] = useState<
+    MessageListPruningConfigItem['value'] | undefined
   >(undefined);
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
@@ -151,10 +155,15 @@ const App = () => {
         '@stream-rn-sampleapp-messagelist-mode',
         { mode: 'default' },
       );
+      const messageListPruningStoredValue = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messagelist-pruning',
+        { value: undefined },
+      );
       setMessageListImplementation(
         messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
       );
       setMessageListMode(messageListModeStoredValue?.mode as MessageListModeConfigItem['mode']);
+      setMessageListPruning(messageListPruningStoredValue?.value as MessageListPruningConfigItem['value']);
     };
     getMessageListConfig();
     return () => {
@@ -218,6 +227,7 @@ const App = () => {
               switchUser,
               messageListImplementation,
               messageListMode,
+              messageListPruning,
             }}
           >
             {isConnecting && !chatClient ? (
