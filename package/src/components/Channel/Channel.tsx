@@ -87,6 +87,7 @@ import { useStableCallback, useViewport } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
+import { usePrunableMessageList } from '../../hooks/usePrunableMessageList';
 import {
   LOLReaction,
   LoveReaction,
@@ -284,6 +285,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'maxTimeBetweenGroupedMessages'
       | 'NetworkDownIndicator'
       | 'StickyHeader'
+      | 'maximumMessageLimit'
     >
   > &
   Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
@@ -706,6 +708,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     VideoAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
+    maximumMessageLimit,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -761,7 +764,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   } = useChannelDataState(channel);
 
   const {
-    copyMessagesStateFromChannel,
+    copyMessagesStateFromChannel: rawCopyMessagesStateFromChannel,
     loadChannelAroundMessage: loadChannelAroundMessageFn,
     loadChannelAtFirstUnreadMessage,
     loadInitialMessagesStateFromChannel,
@@ -772,6 +775,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   } = useMessageListPagination({
     channel,
   });
+
+  const { setMessages: copyMessagesStateFromChannel, viewabilityChangedCallback } =
+    usePrunableMessageList({ maximumMessageLimit, setMessages: rawCopyMessagesStateFromChannel });
 
   const setReadThrottled = useMemo(
     () =>
@@ -1684,6 +1690,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     overrideCapabilities: overrideOwnCapabilities,
   });
 
+  console.log('TEST: ', maximumMessageLimit);
+
   const channelContext = useCreateChannelContext({
     channel,
     channelUnreadState,
@@ -1702,6 +1710,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loading: channelMessagesState.loading,
     LoadingIndicator,
     markRead,
+    maximumMessageLimit,
     maxTimeBetweenGroupedMessages,
     members: channelState.members ?? {},
     NetworkDownIndicator,
@@ -1804,6 +1813,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadMore,
     loadMoreRecent,
     messages: channelMessagesState.messages ?? [],
+    viewabilityChangedCallback,
   });
 
   const messagesContext = useCreateMessagesContext({

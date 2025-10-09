@@ -118,6 +118,7 @@ type MessageFlashListPropsWithContext = Pick<
     | 'StickyHeader'
     | 'targetedMessage'
     | 'threadList'
+    | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
   Pick<ImageGalleryContextValue, 'setMessages'> &
@@ -281,6 +282,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     loadMoreRecentThread,
     loadMoreThread,
     markRead,
+    maximumMessageLimit,
     Message,
     MessageSystem,
     myMessageTheme,
@@ -346,13 +348,18 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [myMessageThemeString, theme],
   );
 
-  const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
-    useMessageList({
-      isFlashList: true,
-      isLiveStreaming,
-      noGroupByUser,
-      threadList,
-    });
+  const {
+    dateSeparatorsRef,
+    messageGroupStylesRef,
+    processedMessageList,
+    rawMessageList,
+    viewabilityChangedCallback,
+  } = useMessageList({
+    isFlashList: true,
+    isLiveStreaming,
+    noGroupByUser,
+    threadList,
+  });
 
   /**
    * We need topMessage and channelLastRead values to set the initial scroll position.
@@ -376,15 +383,15 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [processedMessageList],
   );
 
-  const [should, setShould] = useState(true);
+  const [autoscrollToRecent, setAutoscrollToRecent] = useState(true);
 
   const maintainVisibleContentPosition = useMemo(() => {
     return {
       animateAutoscrollToBottom: true,
-      autoscrollToBottomThreshold: should ? 1 : undefined,
+      autoscrollToBottomThreshold: autoscrollToRecent ? 1 : undefined,
       startRenderingFromBottom: true,
     };
-  }, [should]);
+  }, [autoscrollToRecent]);
 
   useEffect(() => {
     if (disabled) {
@@ -405,7 +412,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       (message) => message?.id === targetedMessage,
     );
 
-    setShould(false);
+    setAutoscrollToRecent(false);
     // the message we want to scroll to has not been loaded in the state yet
     if (indexOfParentInMessageList === -1) {
       loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
@@ -419,7 +426,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           index: indexOfParentInMessageList,
           viewPosition: 0.5,
         });
-        setShould(true);
+        setAutoscrollToRecent(true);
         setTargetedMessage(undefined);
       }, 100);
     }
@@ -466,14 +473,14 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       }
     };
 
-    if (isMessageRemovedFromMessageList) {
+    if (isMessageRemovedFromMessageList && !maximumMessageLimit) {
       scrollToBottomIfNeeded();
     }
 
     messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
     topMessageBeforeUpdate.current = topMessageAfterUpdate;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
+  }, [messageListLengthAfterUpdate, topMessageAfterUpdate?.id, maximumMessageLimit]);
 
   useEffect(() => {
     if (!processedMessageList.length) {
@@ -655,6 +662,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (!viewableItems) {
       return;
     }
+    viewabilityChangedCallback({ inverted: false, viewableItems });
     if (!hideStickyDateHeader) {
       updateStickyHeaderDateIfNeeded(viewableItems);
     }
@@ -1165,6 +1173,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     loading,
     LoadingIndicator,
     markRead,
+    maximumMessageLimit,
     NetworkDownIndicator,
     reloadChannel,
     scrollToFirstUnreadThreshold,
@@ -1224,6 +1233,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         loadMoreRecentThread,
         loadMoreThread,
         markRead,
+        maximumMessageLimit,
         Message,
         MessageSystem,
         myMessageTheme,
