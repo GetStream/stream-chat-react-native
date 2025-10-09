@@ -119,7 +119,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
-  const { chatClient, messageListImplementation } = useAppContext();
+  const { chatClient, messageListImplementation, messageListMode } = useAppContext();
   const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
@@ -218,9 +218,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       >
         <ChannelHeader channel={channel} />
         {messageListImplementation === 'flashlist' ? (
-          <MessageFlashList onThreadSelect={onThreadSelect} />
+          <MessageFlashList onThreadSelect={onThreadSelect} isLiveStreaming={messageListMode === 'livestream'} />
         ) : (
-          <MessageList onThreadSelect={onThreadSelect} />
+          <MessageList onThreadSelect={onThreadSelect} isLiveStreaming={messageListMode === 'livestream'} />
         )}
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
