@@ -400,6 +400,18 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [disabled]);
 
+  const indexToScrollToRef = useRef<number | undefined>(undefined);
+
+  const initialIndexToScrollTo = useMemo(() => {
+    return targetedMessage
+      ? processedMessageList.findIndex((message) => message?.id === targetedMessage)
+      : -1;
+  }, [processedMessageList, targetedMessage]);
+
+  useEffect(() => {
+    indexToScrollToRef.current = initialIndexToScrollTo;
+  }, [initialIndexToScrollTo]);
+
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
    * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
@@ -431,8 +443,28 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
 
-  const goToMessage = useStableCallback((messageId: string) => {
-    setTargetedMessage(messageId);
+  const goToMessage = useStableCallback(async (messageId: string) => {
+    const indexOfParentInMessageList = processedMessageList.findIndex(
+      (message) => message?.id === messageId,
+    );
+
+    indexToScrollToRef.current = indexOfParentInMessageList;
+
+    try {
+      if (indexOfParentInMessageList === -1) {
+        clearTimeout(scrollToDebounceTimeoutRef.current);
+        await loadChannelAroundMessage({ messageId, setTargetedMessage });
+      } else {
+        flashListRef.current?.scrollToIndex({
+          animated: true,
+          index: indexOfParentInMessageList,
+          viewPosition: 0.5,
+        });
+        setTargetedMessage(messageId);
+      }
+    } catch (e) {
+      console.warn('Error while scrolling to message', e);
+    }
   });
 
   useEffect(() => {
@@ -494,6 +526,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       setScrollToBottomButtonVisible(true);
       return;
     } else {
+      indexToScrollToRef.current = undefined;
       setAutoscrollToRecent(true);
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
@@ -1107,6 +1140,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           data={processedMessageList}
           drawDistance={800}
           getItemType={getItemType}
+          initialScrollIndex={
+            indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
+          }
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
           ListFooterComponent={FooterComponent}
