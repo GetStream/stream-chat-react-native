@@ -389,6 +389,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     return {
       animateAutoscrollToBottom: true,
       autoscrollToBottomThreshold: autoscrollToRecent ? 1 : undefined,
+      disabled: !autoscrollToRecent,
       startRenderingFromBottom: true,
     };
   }, [autoscrollToRecent]);
@@ -412,7 +413,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       (message) => message?.id === targetedMessage,
     );
 
-    setAutoscrollToRecent(false);
     // the message we want to scroll to has not been loaded in the state yet
     if (indexOfParentInMessageList === -1) {
       loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
@@ -426,9 +426,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           index: indexOfParentInMessageList,
           viewPosition: 0.5,
         });
-        setAutoscrollToRecent(true);
         setTargetedMessage(undefined);
-      }, 100);
+      }, WAIT_FOR_SCROLL_TIMEOUT);
     }
   }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
 
@@ -491,8 +490,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
         channel.state.latestMessages[channel.state.latestMessages.length - 1];
+      setAutoscrollToRecent(false);
       setScrollToBottomButtonVisible(true);
       return;
+    } else {
+      setAutoscrollToRecent(true);
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
     latestNonCurrentMessageBeforeUpdateRef.current = undefined;
