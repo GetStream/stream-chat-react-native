@@ -1077,15 +1077,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }
 
   const flatListStyle = useMemo(
-    () => ({ ...styles.listContainer, ...listContainer, ...additionalFlashListProps?.style }),
+    () => [styles.listContainer, listContainer, additionalFlashListProps?.style],
     [additionalFlashListProps?.style, listContainer],
   );
 
   const flatListContentContainerStyle = useMemo(
-    () => ({
-      ...styles.contentContainer,
-      ...contentContainer,
-    }),
+    () => [styles.contentContainer, contentContainer],
     [contentContainer],
   );
 
