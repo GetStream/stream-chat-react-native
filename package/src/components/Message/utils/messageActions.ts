@@ -25,6 +25,8 @@ export type MessageActionsParams = {
   showMessageReactions: boolean;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
+  // Optional Actions
+  deleteForMe?: MessageActionType;
 } & Pick<MessageContextValue, 'message' | 'isMyMessage'>;
 
 export type MessageActionsProp = (param: MessageActionsParams) => MessageActionType[];
