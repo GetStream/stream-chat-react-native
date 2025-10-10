@@ -492,10 +492,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       setAutoscrollToRecent(false);
       setScrollToBottomButtonVisible(true);
       return;
+    } else {
+      setAutoscrollToRecent(true);
     }
-
-    setAutoscrollToRecent(true);
-
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
     latestNonCurrentMessageBeforeUpdateRef.current = undefined;
 
