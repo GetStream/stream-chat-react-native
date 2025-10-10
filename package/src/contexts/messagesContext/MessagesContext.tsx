@@ -404,6 +404,8 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   handleBan?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
   handleCopy?: (message: LocalMessage) => Promise<void>;
+  /** Handler to access when a delete for me message action is invoked */
+  handleDeleteForMe?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a delete message action is invoked */
   handleDelete?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when an edit message action is invoked */

@@ -155,6 +155,7 @@ export type MessagePropsWithContext = Pick<
     | 'handleBan'
     | 'handleCopy'
     | 'handleDelete'
+    | 'handleDeleteForMe'
     | 'handleEdit'
     | 'handleFlag'
     | 'handleMarkUnread'
@@ -228,6 +229,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     groupStyles = ['bottom'],
     handleBan,
     handleCopy,
+    handleDeleteForMe,
     handleDelete,
     handleEdit,
     handleFlag,
@@ -508,12 +510,14 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     setEditingState,
     setQuotedMessage,
     supportedReactions,
+    updateMessage,
   });
 
   const {
     banUser,
     copyMessage,
     deleteMessage,
+    deleteForMeMessage,
     editMessage,
     flagMessage,
     handleReaction,
@@ -534,6 +538,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleBan,
     handleCopy,
     handleDelete,
+    handleDeleteForMe,
     handleEdit,
     handleFlag,
     handleMarkUnread,
@@ -565,6 +570,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       : messageActionsProp({
           banUser,
           copyMessage,
+          deleteForMe: deleteForMeMessage,
           deleteMessage,
           dismissOverlay,
           editMessage,

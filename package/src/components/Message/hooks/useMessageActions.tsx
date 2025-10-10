@@ -38,6 +38,7 @@ export type MessageActionsHookProps = Pick<
   | 'sendReaction'
   | 'handleBan'
   | 'handleCopy'
+  | 'handleDeleteForMe'
   | 'handleDelete'
   | 'handleEdit'
   | 'handleFlag'
@@ -72,6 +73,7 @@ export const useMessageActions = ({
   enforceUniqueReaction,
   handleBan,
   handleCopy,
+  handleDeleteForMe,
   handleDelete,
   handleEdit,
   handleFlag,
@@ -92,6 +94,7 @@ export const useMessageActions = ({
   supportedReactions,
   t,
   setQuotedMessage,
+  updateMessage,
 }: MessageActionsHookProps) => {
   const {
     theme: {
@@ -100,6 +103,7 @@ export const useMessageActions = ({
   } = useTheme();
   const {
     handleCopyMessage,
+    handleDeleteForMeMessage,
     handleDeleteMessage,
     handleEditMessage,
     handleFlagMessage,
@@ -122,6 +126,7 @@ export const useMessageActions = ({
     setEditingState,
     setQuotedMessage,
     supportedReactions,
+    updateMessage,
   });
 
   const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
@@ -179,6 +184,20 @@ export const useMessageActions = ({
     actionType: 'deleteMessage',
     icon: <Delete fill={accent_red} size={24} />,
     title: t('Delete Message'),
+    titleStyle: { color: accent_red },
+  };
+
+  const deleteForMeMessage: MessageActionType = {
+    action: () => {
+      dismissOverlay();
+      if (handleDeleteForMe) {
+        handleDeleteForMe(message);
+      }
+      handleDeleteForMeMessage();
+    },
+    actionType: 'deleteForMe',
+    icon: <Delete fill={accent_red} size={24} />,
+    title: t('Delete for me'),
     titleStyle: { color: accent_red },
   };
 
@@ -319,6 +338,7 @@ export const useMessageActions = ({
   return {
     banUser,
     copyMessage,
+    deleteForMeMessage,
     deleteMessage,
     editMessage,
     flagMessage,
