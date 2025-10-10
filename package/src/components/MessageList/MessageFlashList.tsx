@@ -400,26 +400,17 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [disabled]);
 
-  /**
-   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
-   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
-   */
-  useEffect(() => {
-    if (!targetedMessage) {
-      return;
-    }
-
+  const goToMessage = useStableCallback(async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === targetedMessage,
+      (message) => message?.id === messageId,
     );
 
     // the message we want to scroll to has not been loaded in the state yet
     if (indexOfParentInMessageList === -1) {
-      loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
+      await loadChannelAroundMessage({ messageId, setTargetedMessage });
     } else {
       scrollToDebounceTimeoutRef.current = setTimeout(() => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
-
         // now scroll to it
         flashListRef.current?.scrollToIndex({
           animated: true,
@@ -429,11 +420,19 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         setTargetedMessage(undefined);
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
-  }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
-
-  const goToMessage = useStableCallback((messageId: string) => {
-    setTargetedMessage(messageId);
   });
+
+  /**
+   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
+   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
+   */
+  useEffect(() => {
+    if (!targetedMessage) {
+      return;
+    }
+
+    goToMessage(targetedMessage);
+  }, [targetedMessage, goToMessage]);
 
   useEffect(() => {
     /**

@@ -713,7 +713,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     try {
       if (indexOfParentInMessageList === -1) {
         await loadChannelAroundMessage({ messageId });
-        return;
       } else {
         if (!flatListRef.current) {
           return;
@@ -729,7 +728,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           index: indexOfParentInMessageList,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
-        return;
       }
     } catch (e) {
       console.warn('Error while scrolling to message', e);
@@ -745,34 +743,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       return;
     }
     scrollToDebounceTimeoutRef.current = setTimeout(async () => {
-      const indexOfParentInMessageList = processedMessageList.findIndex(
-        (message) => message?.id === targetedMessage,
-      );
-
-      // the message we want to scroll to has not been loaded in the state yet
-      if (indexOfParentInMessageList === -1) {
-        await loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
-      } else {
-        if (!flatListRef.current) {
-          return;
-        }
-        // By a fresh scroll we should clear the retries for the previous failed scroll
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-        clearTimeout(failScrollTimeoutId.current);
-        // reset the retry count
-        scrollToIndexFailedRetryCountRef.current = 0;
-        // now scroll to it
-        flatListRef.current.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        setTargetedMessage(undefined);
-      }
+      await goToMessage(targetedMessage);
     }, WAIT_FOR_SCROLL_TIMEOUT);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetedMessage]);
+    return () => {
+      clearTimeout(scrollToDebounceTimeoutRef.current);
+    };
+  }, [goToMessage, targetedMessage]);
 
   const renderItem = useCallback(
     ({ index, item: message }: { index: number; item: LocalMessage }) => {
