@@ -385,6 +385,14 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(true);
 
+  useEffect(() => {
+    if (autoscrollToRecent && flashListRef.current) {
+      flashListRef.current.scrollToEnd({
+        animated: true,
+      });
+    }
+  }, [autoscrollToRecent]);
+
   const maintainVisibleContentPosition = useMemo(() => {
     return {
       animateAutoscrollToBottom: true,
