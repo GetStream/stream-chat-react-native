@@ -70,7 +70,7 @@ export function usePrunableMessageList({
       return;
     }
 
-    channel.state.pruneFromEnd(maximumMessageLimit);
+    channel.state.pruneOldest(maximumMessageLimit);
 
     rawSetMessages(channel);
   });
