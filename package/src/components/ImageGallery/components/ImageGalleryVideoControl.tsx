@@ -63,7 +63,11 @@ export const ImageGalleryVideoControl = React.memo(
       // Note: Not particularly sure why this was ever added, but
       // will keep it for now for backwards compatibility.
       if (progress === 1) {
-        // For expo CLI
+        // For expo CLI, expo-av
+        if (videoRef.current?.setPositionAsync) {
+          await videoRef.current.setPositionAsync(0);
+        }
+        // For expo CLI, expo-video
         if (videoRef.current?.replay) {
           await videoRef.current.replay();
         }
