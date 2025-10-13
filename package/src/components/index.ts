@@ -170,6 +170,7 @@ export * from './MessageMenu/hooks/useFetchReactions';
 export * from './MessagePreview/MessagePreview';
 
 export * from './ProgressControl/ProgressControl';
+export * from './ProgressControl/WaveProgressBar';
 export * from './Poll';
 
 export * from './Reply/Reply';
