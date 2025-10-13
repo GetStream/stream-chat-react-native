@@ -1,15 +1,27 @@
 import { NativeModules } from 'react-native';
 
-import type { Options, ResizeFormat, Response } from './types';
+import type {
+  ImpactFeedbackType,
+  NotificationFeedbackType,
+  Options,
+  ResizeFormat,
+  Response,
+} from './types';
 export type { ResizeFormat, ResizeMode, Response } from './types';
+import NativeStreamChatHapticsModule from './NativeStreamChatHapticsModule';
+import NativeStreamChatReactNative from './NativeStreamChatReactNative';
 
 // @ts-ignore
 // eslint-disable-next-line no-underscore-dangle
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
 const ImageResizer = isTurboModuleEnabled
-  ? require('./NativeStreamChatReactNative').default
+  ? NativeStreamChatReactNative
   : NativeModules.StreamChatReactNative;
+
+const Haptics = isTurboModuleEnabled
+  ? NativeStreamChatHapticsModule
+  : NativeModules.StreamChatHapticsModule;
 
 const defaultOptions: Options = {
   mode: 'contain',
@@ -41,6 +53,18 @@ async function createResizedImage(
     outputPath,
     keepMeta,
   );
+}
+
+export async function notificationFeedback(type: NotificationFeedbackType) {
+  await Haptics.notificationFeedback(type);
+}
+
+export async function impactFeedback(type: ImpactFeedbackType) {
+  await Haptics.impactFeedback(type);
+}
+
+export async function selectionFeedback() {
+  await Haptics.selectionFeedback();
 }
 
 export default {

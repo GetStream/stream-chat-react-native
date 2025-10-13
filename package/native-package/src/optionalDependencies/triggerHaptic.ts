@@ -1,46 +1,36 @@
-let ReactNativeHapticFeedback;
+import { impactFeedback, notificationFeedback, selectionFeedback } from '../native';
 
-try {
-  ReactNativeHapticFeedback = require('react-native-haptic-feedback').default;
-} catch (e) {
-  console.warn('react-native-haptic-feedback is not installed.');
-}
+import { ImpactFeedbackType, NotificationFeedbackType } from '../native/types';
 
-/**
- * Since react-native-haptic-feedback isn't installed by default, we've
- * copied the types from the package here.
- *
- * @see https://github.com/junina-de/react-native-haptic-feedback/blob/master/index.d.ts
- * */
-export type HapticFeedbackTypes =
-  | 'selection'
+type HapticFeedbackTypes =
+  | 'impactHeavy'
   | 'impactLight'
   | 'impactMedium'
-  | 'impactHeavy'
-  | 'rigid'
-  | 'soft'
-  | 'notificationSuccess'
-  | 'notificationWarning'
   | 'notificationError'
-  | 'clockTick'
-  | 'contextClick'
-  | 'keyboardPress'
-  | 'keyboardRelease'
-  | 'keyboardTap'
-  | 'longPress'
-  | 'textHandleMove'
-  | 'virtualKey'
-  | 'virtualKeyRelease'
-  | 'effectClick'
-  | 'effectDoubleClick'
-  | 'effectHeavyClick'
-  | 'effectTick';
+  | 'notificationSuccess'
+  | 'notificationWarning';
 
-export const triggerHaptic = ReactNativeHapticFeedback
-  ? (method: HapticFeedbackTypes) => {
-      ReactNativeHapticFeedback.trigger(method, {
-        enableVibrateFallback: false,
-        ignoreAndroidSystemSettings: false,
-      });
-    }
-  : () => {};
+export const triggerHaptic = async (method: HapticFeedbackTypes) => {
+  switch (method) {
+    case 'impactHeavy':
+      await impactFeedback(ImpactFeedbackType.Heavy);
+      break;
+    case 'impactLight':
+      await impactFeedback(ImpactFeedbackType.Light);
+      break;
+    case 'impactMedium':
+      await impactFeedback(ImpactFeedbackType.Medium);
+      break;
+    case 'notificationError':
+      await notificationFeedback(NotificationFeedbackType.Error);
+      break;
+    case 'notificationSuccess':
+      await notificationFeedback(NotificationFeedbackType.Success);
+      break;
+    case 'notificationWarning':
+      await notificationFeedback(NotificationFeedbackType.Warning);
+      break;
+    default:
+      await selectionFeedback();
+  }
+};
