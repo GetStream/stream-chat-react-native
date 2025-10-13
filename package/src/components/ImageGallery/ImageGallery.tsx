@@ -309,14 +309,8 @@ export const ImageGallery = (props: Props) => {
       }
     };
 
-    const newIndex = photos.findIndex(
-      (photo) =>
-        photo.messageId === selectedMessage?.messageId &&
-        stripQueryFromUrl(photo.uri) === stripQueryFromUrl(selectedMessage?.url || ''),
-    );
-
-    runOnUI(updatePosition)(newIndex);
-  }, [selectedMessage, photos, index, translationX, fullWindowWidth]);
+    runOnUI(updatePosition)(photoSelectedIndex);
+  }, [fullWindowWidth, index, photoSelectedIndex, translationX]);
 
   /**
    * Image heights are not provided and therefore need to be calculated.
@@ -389,7 +383,7 @@ export const ImageGallery = (props: Props) => {
   const pagerStyle = useAnimatedStyle<ImageStyle>(
     () => ({
       transform: [
-        { scaleX: -1 },
+        { scaleX: 1 },
         {
           translateX: translationX.value,
         },

@@ -35,7 +35,10 @@ export const SlideInView = ({
 
   const animatedStyle = useAnimatedStyle(
     () => ({
-      height: withSpring(visible ? animatedHeight.value : 0, { damping: 10 }),
+      height: withSpring(visible ? animatedHeight.value : 0, {
+        damping: 20,
+        overshootClamping: true,
+      }),
       opacity: withTiming(visible ? 1 : 0, { duration: 500 }),
     }),
     [visible],
@@ -55,6 +58,7 @@ export const SlideInView = ({
 const isAndroid = Platform.OS === 'android';
 
 type NotificationConfigItem = { label: string; name: string; id: string };
+type MessageListImplementationConfigItem = { label: string; id: string };
 
 const SecretMenuNotificationConfigItem = ({
   notificationConfigItem,
@@ -120,6 +124,27 @@ const SecretMenuNotificationConfigItem = ({
   );
 };
 
+const SecretMenuMessageListConfigItem = ({
+  messageListImplementationConfigItem,
+  storeMessageListImplementation,
+  isSelected,
+}: {
+  messageListImplementationConfigItem: MessageListImplementationConfigItem;
+  storeMessageListImplementation: (item: MessageListImplementationConfigItem) => void;
+  isSelected: boolean;
+}) => (
+  <TouchableOpacity
+    style={[styles.notificationItemContainer, { borderColor: isSelected ? 'green' : 'gray' }]}
+    onPress={() => storeMessageListImplementation(messageListImplementationConfigItem)}
+  >
+    <Text style={styles.notificationItem}>{messageListImplementationConfigItem.label}</Text>
+  </TouchableOpacity>
+);
+
+/*
+* TODO: Please rewrite this entire component.
+*/
+
 export const SecretMenu = ({
   close,
   visible,
@@ -130,6 +155,9 @@ export const SecretMenu = ({
   chatClient: StreamChat;
 }) => {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+  const [selectedMessageListImplementation, setSelectedMessageListImplementation] = useState<
+    string | null
+  >(null);
   const {
     theme: {
       colors: { black, grey },
@@ -144,21 +172,42 @@ export const SecretMenu = ({
     [],
   );
 
+  const messageListImplementationConfigItems = useMemo(
+    () => [
+      { label: 'FlashList', id: 'flashlist' },
+      { label: 'FlatList', id: 'flatlist' },
+    ],
+    [],
+  );
+
   useEffect(() => {
-    const getSelectedProvider = async () => {
-      const provider = await AsyncStore.getItem(
+    const getSelectedConfig = async () => {
+      const notificationProvider = await AsyncStore.getItem(
         '@stream-rn-sampleapp-push-provider',
         notificationConfigItems[0],
       );
-      setSelectedProvider(provider?.id ?? 'firebase');
+      const messageListImplementation = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messagelist-implementation',
+        messageListImplementationConfigItems[0],
+      );
+      setSelectedProvider(notificationProvider?.id ?? 'firebase');
+      setSelectedMessageListImplementation(messageListImplementation?.id ?? 'flashlist');
     };
-    getSelectedProvider();
-  }, [notificationConfigItems]);
+    getSelectedConfig();
+  }, [notificationConfigItems, messageListImplementationConfigItems]);
 
   const storeProvider = useCallback(async (item: NotificationConfigItem) => {
     await AsyncStore.setItem('@stream-rn-sampleapp-push-provider', item);
     setSelectedProvider(item.id);
   }, []);
+
+  const storeMessageListImplementation = useCallback(
+    async (item: MessageListImplementationConfigItem) => {
+      await AsyncStore.setItem('@stream-rn-sampleapp-messagelist-implementation', item);
+      setSelectedMessageListImplementation(item.id);
+    },
+    [],
+  );
 
   const removeAllDevices = useCallback(async () => {
     const { devices } = await chatClient.getDevices(chatClient.userID);
@@ -169,12 +218,7 @@ export const SecretMenu = ({
 
   return (
     <SlideInView visible={visible}>
-      <View
-        style={[
-          menuDrawerStyles.menuItem,
-          { alignItems: 'flex-start' },
-        ]}
-      >
+      <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
         <Notification height={24} pathFill={grey} width={24} />
         <View>
           <Text
@@ -195,6 +239,22 @@ export const SecretMenu = ({
                 notificationConfigItem={item}
                 storeProvider={storeProvider}
                 isSelected={item.id === selectedProvider}
+              />
+            ))}
+          </View>
+        </View>
+      </View>
+      <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+        <Notification height={24} pathFill={grey} width={24} />
+        <View>
+          <Text style={[menuDrawerStyles.menuTitle]}>Message List implementation</Text>
+          <View style={{ marginLeft: 16 }}>
+            {messageListImplementationConfigItems.map((item) => (
+              <SecretMenuMessageListConfigItem
+                key={item.id}
+                messageListImplementationConfigItem={item}
+                storeMessageListImplementation={storeMessageListImplementation}
+                isSelected={item.id === selectedMessageListImplementation}
               />
             ))}
           </View>

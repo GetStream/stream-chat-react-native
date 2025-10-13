@@ -115,7 +115,16 @@ export * from './Message/utils/messageActions';
 export * from '../utils/removeReservedFields';
 
 export * from './MessageInput/AttachButton';
+export * from './MessageInput/AttachmentUploadPreviewList';
 export * from './MessageInput/CommandsButton';
+export * from './MessageInput/CooldownTimer';
+export * from './MessageInput/InputButtons';
+export * from './MessageInput/MessageInput';
+export * from './MessageInput/MoreOptionsButton';
+export * from './MessageInput/SendButton';
+export * from './MessageInput/SendMessageDisallowedIndicator';
+export * from './MessageInput/ShowThreadMessageInChannelButton';
+export * from './MessageInput/StopMessageStreamingButton';
 export * from './MessageInput/components/AudioRecorder/AudioRecorder';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingButton';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingInProgress';
@@ -123,19 +132,13 @@ export * from './MessageInput/components/AudioRecorder/AudioRecordingLockIndicat
 export * from './MessageInput/components/AudioRecorder/AudioRecordingPreview';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 export * from './MessageInput/components/CommandInput';
-export * from './MessageInput/CooldownTimer';
-export * from './MessageInput/AttachmentUploadPreviewList';
-export * from './MessageInput/InputButtons';
-export * from './MessageInput/MessageInput';
-export * from './MessageInput/MoreOptionsButton';
-export * from './MessageInput/SendButton';
-export * from './MessageInput/StopMessageStreamingButton';
-export * from './MessageInput/ShowThreadMessageInChannelButton';
-export * from './MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+
 export * from './MessageInput/components/AttachmentPreview/AttachmentUnsupportedIndicator';
+export * from './MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 export * from './MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
+export * from './MessageInput/hooks/useAudioController';
 
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';
@@ -145,6 +148,7 @@ export * from './MessageList/InlineLoadingMoreIndicator';
 export * from './MessageList/InlineLoadingMoreRecentIndicator';
 export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';
+export * from './MessageList/MessageFlashList';
 export * from './MessageList/MessageSystem';
 export * from './MessageList/NetworkDownIndicator';
 export * from './MessageList/ScrollToBottomButton';
@@ -166,6 +170,7 @@ export * from './MessageMenu/hooks/useFetchReactions';
 export * from './MessagePreview/MessagePreview';
 
 export * from './ProgressControl/ProgressControl';
+export * from './ProgressControl/WaveProgressBar';
 export * from './Poll';
 
 export * from './Reply/Reply';

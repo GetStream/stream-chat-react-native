@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -138,16 +138,20 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     [propReactions, fetchedReactions],
   );
 
-  const renderItem = ({ item }: { item: Reaction }) => (
-    <MessageUserReactionsItem
-      MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-      reaction={item}
-      supportedReactions={supportedReactions ?? []}
-    />
+  const renderItem = useCallback(
+    ({ item }: { item: Reaction }) => (
+      <MessageUserReactionsItem
+        MessageUserReactionsAvatar={MessageUserReactionsAvatar}
+        reaction={item}
+        supportedReactions={supportedReactions ?? []}
+      />
+    ),
+    [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
   );
 
-  const renderHeader = () => (
-    <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>
+  const renderHeader = useCallback(
+    () => <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>,
+    [t, reactionsText],
   );
 
   const selectorReactions: ReactionSelectorItemType[] = messageReactions.map((reaction) => ({

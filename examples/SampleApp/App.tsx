@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DevSettings, LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
@@ -58,6 +58,7 @@ Geolocation.setRNConfiguration({
 import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-chat';
 import { Toast } from './src/components/ToastComponent/Toast';
 import { useClientNotificationsToastHandler } from './src/hooks/useClientNotificationsToastHandler';
+import AsyncStore from './src/utils/AsyncStore.ts';
 
 init({ data });
 
@@ -90,6 +91,7 @@ const Stack = createStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
+  const [messageListImplementation, setMessageListImplementation] = useState<'flashlist' | 'flatlist' | null>(null);
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
 
@@ -131,6 +133,14 @@ const App = () => {
         }
       }
     });
+    const getMessageListImplementation = async () => {
+      const storedValue = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messagelist-implementation',
+        { id: 'flashlist' }
+      );
+      setMessageListImplementation(storedValue?.id as ('flashlist' | 'flatlist'));
+    }
+    getMessageListImplementation();
     return () => {
       unsubscribeOnNotificationOpen();
       unsubscribeForegroundEvent();
@@ -162,6 +172,10 @@ const App = () => {
     });
   }, [chatClient]);
 
+  if (!messageListImplementation) {
+    return;
+  }
+
   return (
     <SafeAreaProvider
       style={{
@@ -180,7 +194,7 @@ const App = () => {
             dark: colorScheme === 'dark',
           }}
         >
-          <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser }}>
+          <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser, messageListImplementation }}>
             {isConnecting && !chatClient ? (
               <LoadingScreen />
             ) : chatClient ? (

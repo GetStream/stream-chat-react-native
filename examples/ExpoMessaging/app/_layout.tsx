@@ -7,8 +7,16 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LiveLocationManagerProvider } from 'stream-chat-expo';
 import { watchLocation } from '../utils/watchLocation';
+import { UserProvider, useUserContext } from '@/context/UserContext';
+import UserLogin from '@/components/UserLogin';
 
-export default function Layout() {
+function Layout() {
+  const { user } = useUserContext();
+
+  if (!user) {
+    return <UserLogin />;
+  }
+
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={styles.container}>
@@ -21,6 +29,14 @@ export default function Layout() {
         </ChatWrapper>
       </GestureHandlerRootView>
     </SafeAreaProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <UserProvider>
+      <Layout />
+    </UserProvider>
   );
 }
 

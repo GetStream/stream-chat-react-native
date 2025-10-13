@@ -9,6 +9,7 @@ type AppContextType = {
   loginUser: (config: LoginConfig) => void;
   logout: () => void;
   switchUser: (userId?: string) => void;
+  messageListImplementation: 'flatlist' | 'flashlist';
 };
 
 export const AppContext = React.createContext({} as AppContextType);

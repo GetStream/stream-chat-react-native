@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  FlatListProps,
-  FlatList as FlatListType,
+  LayoutChangeEvent,
   ScrollViewProps,
   StyleSheet,
   View,
@@ -9,15 +8,16 @@ import {
   ViewToken,
 } from 'react-native';
 
+import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
-
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
-import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
+
+import { getLastReceivedMessageFlashList } from './utils/getLastReceivedMessageFlashList';
 
 import {
   AttachmentPickerContextValue,
@@ -28,7 +28,6 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
-import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -51,35 +50,13 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 import { useStableCallback } from '../../hooks';
 import { FileTypes } from '../../types/types';
 
-// This is just to make sure that the scrolling happens in a different task queue.
-// TODO: Think if we really need this and strive to remove it if we can.
-const WAIT_FOR_SCROLL_TIMEOUT = 0;
-const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    width: '100%',
-  },
-  contentContainer: {
-    /**
-     * paddingBottom is set to 4 to account for the default date
-     * header and inline indicator alignment. The top margin is 8
-     * on the header but 4 on the inline date, this adjusts the spacing
-     * to allow the "first" inline date to align with the date header.
-     */
-    paddingBottom: 4,
-  },
-  flex: { flex: 1 },
-  listContainer: {
-    flex: 1,
-    width: '100%',
-  },
-  stickyHeader: {
-    position: 'absolute',
-    top: 0,
-  },
-});
+let FlashList;
+
+try {
+  FlashList = require('@shopify/flash-list').FlashList;
+} catch {
+  FlashList = undefined;
+}
 
 const keyExtractor = (item: LocalMessage) => {
   if (item.id) {
@@ -96,7 +73,8 @@ const flatListViewabilityConfig: ViewabilityConfig = {
 };
 
 const hasReadLastMessage = (channel: Channel, userId: string) => {
-  const latestMessageIdInChannel = channel.state.latestMessages.slice(-1)[0]?.id;
+  const latestMessageIdInChannel =
+    channel.state.latestMessages[channel.state.latestMessages.length - 1]?.id;
   const lastReadMessageIdServer = channel.state.read[userId]?.last_read_message_id;
   return latestMessageIdInChannel === lastReadMessageIdServer;
 };
@@ -115,7 +93,7 @@ const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageRe
   return previousLastMessage;
 };
 
-type MessageListPropsWithContext = Pick<
+type MessageFlashListPropsWithContext = Pick<
   AttachmentPickerContextValue,
   'closePicker' | 'selectedPicker' | 'setSelectedPicker'
 > &
@@ -179,7 +157,7 @@ type MessageListPropsWithContext = Pick<
      *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
      * ```
      */
-    additionalFlatListProps?: Partial<FlatListProps<LocalMessage>>;
+    additionalFlashListProps?: Partial<FlashListProps<LocalMessage>>;
     /**
      * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
      * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
@@ -221,33 +199,53 @@ type MessageListPropsWithContext = Pick<
      *  }}
      * ```
      */
-    setFlatListRef?: (ref: FlatListType<LocalMessage> | null) => void;
-    /**
-     * If true, the message list will be used in a live-streaming scenario.
-     * This flag is used to make sure that the auto scroll behaves well, if multiple messages are received.
-     *
-     * This flag is experimental and is subject to change. Please test thoroughly before using it.
-     *
-     * @experimental
-     */
-    isLiveStreaming?: boolean;
+    setFlatListRef?: (ref: FlashListRef<LocalMessage> | null) => void;
   };
 
-/**
- * The message list component renders a list of messages. It consumes the following contexts:
- *
- * [ChannelContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/)
- * [ChatContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/chat-context/)
- * [MessagesContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/)
- * [ThreadContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/thread-context/)
- * [TranslationContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
- */
-const MessageListWithContext = (props: MessageListPropsWithContext) => {
+const WAIT_FOR_SCROLL_TIMEOUT = 0;
+
+const getItemTypeInternal = (message: LocalMessage) => {
+  if (message.type === 'regular') {
+    if ((message.attachments?.length ?? 0) > 0) {
+      return 'message-with-attachments';
+    }
+
+    if (message.poll_id) {
+      return 'message-with-poll';
+    }
+
+    if (message.quoted_message_id) {
+      return 'message-with-quote';
+    }
+
+    if (message.shared_location) {
+      return 'message-with-shared-location';
+    }
+
+    if (message.text) {
+      return 'message-with-text';
+    }
+
+    return 'message-with-nothing';
+  }
+
+  if (message.type === 'deleted') {
+    return 'deleted-message';
+  }
+
+  if (message.type === 'system') {
+    return 'system-message';
+  }
+
+  return 'generic-message';
+};
+
+const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
-    additionalFlatListProps,
+    additionalFlashListProps,
     channel,
     channelUnreadState,
     client,
@@ -256,16 +254,14 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     disabled,
     disableTypingIndicator,
     EmptyStateIndicator,
-    FlatList,
-    FooterComponent = InlineLoadingMoreIndicator,
-    HeaderComponent = LoadingMoreRecentIndicator,
+    // FlatList,
+    FooterComponent = LoadingMoreRecentIndicator,
+    HeaderComponent = InlineLoadingMoreIndicator,
     hideStickyDateHeader,
     highlightedMessageId,
     InlineDateSeparator,
     InlineUnreadIndicator,
-    inverted = true,
     isListActive = false,
-    isLiveStreaming = false,
     legacyImageViewerSwipeBehaviour,
     loadChannelAroundMessage,
     loading,
@@ -278,11 +274,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     Message,
     MessageSystem,
     myMessageTheme,
+    readEvents,
     NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
-    readEvents,
     reloadChannel,
     ScrollToBottomButton,
     selectedPicker,
@@ -301,66 +297,15 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     TypingIndicatorContainer,
     UnreadMessagesNotification,
   } = props;
+  const flashListRef = useRef<FlashListRef<LocalMessage> | null>(null);
+
+  const [hasMoved, setHasMoved] = useState(false);
+  const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
-  const { theme } = useTheme();
+  const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
+  const [autoScrollToRecent, setAutoScrollToRecent] = useState(false);
 
-  const {
-    colors: { white_snow },
-    messageList: { container, contentContainer, listContainer, messageContainer },
-    screenPadding,
-  } = theme;
-
-  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
-
-  const modifiedTheme = useMemo(
-    () => mergeThemes({ style: myMessageTheme, theme }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [myMessageThemeString, theme],
-  );
-
-  /**
-   * NOTE: rawMessageList changes only when messages array state changes
-   * processedMessageList changes on any state change
-   */
-  const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
-    useMessageList({
-      isLiveStreaming,
-      noGroupByUser,
-      threadList,
-    });
-  const messageListLengthBeforeUpdate = useRef(0);
-  const messageListLengthAfterUpdate = processedMessageList.length;
-
-  /**
-   * We need topMessage and channelLastRead values to set the initial scroll position.
-   * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
-   */
-  const topMessageBeforeUpdate = useRef<LocalMessage>(undefined);
-  const latestNonCurrentMessageBeforeUpdateRef = useRef<LocalMessage>(undefined);
-  const topMessageAfterUpdate: LocalMessage | undefined = rawMessageList[0];
-
-  const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
-    rawMessageList,
-    client.userID,
-  );
-
-  const [autoscrollToRecent, setAutoscrollToRecent] = useState(false);
-
-  const minIndexForVisible = Math.min(1, processedMessageList.length);
-
-  const autoscrollToTopThreshold = useMemo(
-    () => (isLiveStreaming ? 64 : autoscrollToRecent ? 10 : undefined),
-    [autoscrollToRecent, isLiveStreaming],
-  );
-
-  const maintainVisibleContentPosition = useMemo(
-    () => ({
-      autoscrollToTopThreshold,
-      minIndexForVisible,
-    }),
-    [autoscrollToTopThreshold, minIndexForVisible],
-  );
-
+  const stickyHeaderDateRef = useRef<Date | undefined>(undefined);
   /**
    * We want to call onEndReached and onStartReached only once, per content length.
    * We keep track of calls to these functions per content length, with following trackers.
@@ -371,170 +316,238 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const onStartReachedInPromise = useRef<Promise<void> | null>(null);
   const onEndReachedInPromise = useRef<Promise<void> | null>(null);
 
-  const flatListRef = useRef<FlatListType<LocalMessage> | null>(null);
-
-  const channelResyncScrollSet = useRef<boolean>(true);
-
   /**
    * The timeout id used to debounce our scrollToIndex calls on messageList updates
    */
   const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  /**
-   * The timeout id used to temporarily load the initial scroll set flag
-   */
-  const onScrollEventTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const channelResyncScrollSet = useRef<boolean>(true);
+  const { theme } = useTheme();
+
+  const {
+    colors: { white_snow },
+    messageList: { container, contentContainer, listContainer },
+  } = theme;
+
+  const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
+
+  const modifiedTheme = useMemo(
+    () => mergeThemes({ style: myMessageTheme, theme }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [myMessageThemeString, theme],
+  );
+
+  const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
+    useMessageList({
+      isFlashList: true,
+      noGroupByUser,
+      threadList,
+    });
 
   /**
-   * Last messageID that was scrolled to after loading a new message list,
-   * this flag keeps track of it so that we dont scroll to it again on target message set
+   * We need topMessage and channelLastRead values to set the initial scroll position.
+   * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
    */
-  const messageIdLastScrolledToRef = useRef<string>(undefined);
-  const [hasMoved, setHasMoved] = useState(false);
+  const topMessageBeforeUpdate = useRef<LocalMessage>(undefined);
+  const topMessageAfterUpdate: LocalMessage | undefined = rawMessageList[0];
+
+  const latestNonCurrentMessageBeforeUpdateRef = useRef<LocalMessage>(undefined);
+
+  const messageListLengthBeforeUpdate = useRef(0);
+  const messageListLengthAfterUpdate = processedMessageList.length;
+
+  const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
+    rawMessageList,
+    client.userID,
+  );
+
   const lastReceivedId = useMemo(
-    () => getLastReceivedMessage(processedMessageList)?.id,
+    () => getLastReceivedMessageFlashList(processedMessageList)?.id,
     [processedMessageList],
   );
-  const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
 
-  const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
-  const stickyHeaderDateRef = useRef<Date | undefined>(undefined);
-
-  // ref for channel to use in useEffect without triggering it on channel change
-  const channelRef = useRef(channel);
-  channelRef.current = channel;
-
-  const updateStickyHeaderDateIfNeeded = useStableCallback((viewableItems: ViewToken[]) => {
-    if (!viewableItems.length) {
-      return;
-    }
-
-    const lastItem = viewableItems[viewableItems.length - 1];
-
-    if (lastItem) {
-      if (
-        !channel.state.messagePagination.hasPrev &&
-        processedMessageList[processedMessageList.length - 1].id === lastItem.item.id
-      ) {
-        setStickyHeaderDate(undefined);
-        return;
-      }
-      const isMessageTypeDeleted = lastItem.item.type === 'deleted';
-
-      if (
-        lastItem?.item?.created_at &&
-        !isMessageTypeDeleted &&
-        typeof lastItem.item.created_at !== 'string' &&
-        lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
-      ) {
-        stickyHeaderDateRef.current = lastItem.item.created_at;
-        setStickyHeaderDate(lastItem.item.created_at);
-      }
-    }
-  });
-
-  const messagesLength = useRef<number>(processedMessageList.length);
-
-  /**
-   * This function should show or hide the unread indicator depending on the
-   */
-  const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
-    // we need this check to make sure that regular list change do not trigger
-    // the unread notification to appear (for example if the old last read messages
-    // go out of the viewport).
-    if (processedMessageList.length !== messagesLength.current) {
-      return;
-    }
-    messagesLength.current = processedMessageList.length;
-
-    if (!viewableItems.length || !readEvents) {
-      setIsUnreadNotificationOpen(false);
-      return;
-    }
-
-    if (selectedPicker === 'images') {
-      setIsUnreadNotificationOpen(false);
-      return;
-    }
-
-    const lastItem = viewableItems[viewableItems.length - 1];
-
-    if (lastItem) {
-      const lastItemMessage = lastItem.item;
-      const lastItemCreatedAt = lastItemMessage.created_at;
-
-      const unreadIndicatorDate = channelUnreadState?.last_read.getTime();
-      const lastItemDate = lastItemCreatedAt.getTime();
-
-      if (
-        !channel.state.messagePagination.hasPrev &&
-        processedMessageList[processedMessageList.length - 1].id === lastItemMessage.id
-      ) {
-        setIsUnreadNotificationOpen(false);
-        return;
-      }
-      /**
-       * This is a special case where there is a single long message by the sender.
-       * When a message is sent, we mark it as read before it actually has a `created_at` timestamp.
-       * This is a workaround to prevent the unread indicator from showing when the message is sent.
-       */
-      if (
-        viewableItems.length === 1 &&
-        channel.countUnread() === 0 &&
-        lastItemMessage.user.id === client.userID
-      ) {
-        setIsUnreadNotificationOpen(false);
-        return;
-      }
-      if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
-        setIsUnreadNotificationOpen(true);
-      } else {
-        setIsUnreadNotificationOpen(false);
-      }
-    }
-  });
-
-  /**
-   * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
-   * Thus useRef.
-   */
-  const unstableOnViewableItemsChanged = ({
-    viewableItems,
-  }: {
-    viewableItems: ViewToken[] | undefined;
-  }) => {
-    if (!viewableItems) {
-      return;
-    }
-    if (!hideStickyDateHeader) {
-      updateStickyHeaderDateIfNeeded(viewableItems);
-    }
-    updateStickyUnreadIndicator(viewableItems);
-  };
-
-  const onViewableItemsChanged = useRef(unstableOnViewableItemsChanged);
-  onViewableItemsChanged.current = unstableOnViewableItemsChanged;
-
-  const stableOnViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
-      onViewableItemsChanged.current({ viewableItems });
-    },
-    [],
-  );
-
-  /**
-   * Resets the pagination trackers, doing so cancels currently scheduled loading more calls
-   */
-  const resetPaginationTrackersRef = useRef(() => {
-    onStartReachedTracker.current = {};
-    onEndReachedTracker.current = {};
-  });
+  const maintainVisibleContentPosition = useMemo(() => {
+    return {
+      animateAutoscrollToBottom: true,
+      autoscrollToBottomThreshold: autoScrollToRecent || threadList ? 10 : undefined,
+      startRenderingFromBottom: true,
+    };
+  }, [autoScrollToRecent, threadList]);
 
   useEffect(() => {
     if (disabled) {
       setScrollToBottomButtonVisible(false);
     }
   }, [disabled]);
+
+  /**
+   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
+   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
+   */
+  useEffect(() => {
+    if (!targetedMessage) {
+      return;
+    }
+
+    const indexOfParentInMessageList = processedMessageList.findIndex(
+      (message) => message?.id === targetedMessage,
+    );
+
+    // the message we want to scroll to has not been loaded in the state yet
+    if (indexOfParentInMessageList === -1) {
+      loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
+    } else {
+      scrollToDebounceTimeoutRef.current = setTimeout(() => {
+        clearTimeout(scrollToDebounceTimeoutRef.current);
+
+        // now scroll to it
+        flashListRef.current?.scrollToIndex({
+          animated: true,
+          index: indexOfParentInMessageList,
+          viewPosition: 0.5,
+        });
+        setTargetedMessage(undefined);
+      }, WAIT_FOR_SCROLL_TIMEOUT);
+    }
+  }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
+
+  const goToMessage = useStableCallback(async (messageId: string) => {
+    const indexOfParentInMessageList = processedMessageList.findIndex(
+      (message) => message?.id === messageId,
+    );
+    if (indexOfParentInMessageList !== -1) {
+      flashListRef.current?.scrollToIndex({
+        animated: true,
+        index: indexOfParentInMessageList,
+        viewPosition: 0.5,
+      });
+      setTargetedMessage(messageId);
+      return;
+    }
+    try {
+      if (indexOfParentInMessageList === -1) {
+        clearTimeout(scrollToDebounceTimeoutRef.current);
+        await loadChannelAroundMessage({ messageId });
+        setTargetedMessage(messageId);
+
+        // now scroll to it with animated=true
+        flashListRef.current?.scrollToIndex({
+          animated: true,
+          index: indexOfParentInMessageList,
+          viewPosition: 0.5, // try to place message in the center of the screen
+        });
+        return;
+      }
+    } catch (e) {
+      console.warn('Error while scrolling to message', e);
+    }
+  });
+
+  useEffect(() => {
+    /**
+     * Condition to check if a message is removed from MessageList.
+     * Eg: This would happen when giphy search is cancelled, message is deleted with visibility "never" etc.
+     * If such a case arises, we scroll to bottom.
+     */
+    const isMessageRemovedFromMessageList =
+      messageListLengthBeforeUpdate.current - messageListLengthAfterUpdate === 1;
+
+    /**
+     * Scroll down when
+     * created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
+     */
+    const scrollToBottomIfNeeded = () => {
+      if (!client || !channel || processedMessageList.length === 0) {
+        return;
+      }
+
+      if (
+        isMessageRemovedFromMessageList ||
+        (topMessageBeforeUpdate.current?.created_at &&
+          topMessageAfterUpdate?.created_at &&
+          topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
+      ) {
+        channelResyncScrollSet.current = false;
+        setScrollToBottomButtonVisible(false);
+        resetPaginationTrackersRef.current();
+
+        setAutoScrollToRecent(true);
+        setTimeout(() => {
+          channelResyncScrollSet.current = true;
+          if (channel.countUnread() > 0) {
+            markRead();
+          }
+          setAutoScrollToRecent(false);
+        }, WAIT_FOR_SCROLL_TIMEOUT);
+      }
+    };
+
+    if (isMessageRemovedFromMessageList) {
+      scrollToBottomIfNeeded();
+    }
+
+    messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
+    topMessageBeforeUpdate.current = topMessageAfterUpdate;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
+
+  useEffect(() => {
+    if (!processedMessageList.length) {
+      return;
+    }
+
+    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
+    if (notLatestSet) {
+      latestNonCurrentMessageBeforeUpdateRef.current =
+        channel.state.latestMessages[channel.state.latestMessages.length - 1];
+      setAutoScrollToRecent(false);
+      setScrollToBottomButtonVisible(true);
+      return;
+    }
+    const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
+    latestNonCurrentMessageBeforeUpdateRef.current = undefined;
+
+    const latestCurrentMessageAfterUpdate = processedMessageList[processedMessageList.length - 1];
+    if (!latestCurrentMessageAfterUpdate) {
+      setAutoScrollToRecent(true);
+      return;
+    }
+    const didMergeMessageSetsWithNoUpdates =
+      latestNonCurrentMessageBeforeUpdate?.id === latestCurrentMessageAfterUpdate.id;
+
+    if (!didMergeMessageSetsWithNoUpdates) {
+      const shouldScrollToRecentOnNewOwnMessage = shouldScrollToRecentOnNewOwnMessageRef.current();
+      // we should scroll to bottom where ever we are now
+      // as we have sent a new own message
+      if (shouldScrollToRecentOnNewOwnMessage) {
+        flashListRef.current?.scrollToEnd({
+          animated: true,
+        });
+      }
+    }
+  }, [channel, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, threadList]);
+
+  /**
+   * Effect to scroll to the bottom of the message list when a new message is received if the scroll to bottom button is not visible.
+   */
+  useEffect(() => {
+    const handleEvent = (event: Event) => {
+      if (event.message?.user?.id !== client.userID) {
+        if (!scrollToBottomButtonVisible) {
+          flashListRef.current?.scrollToEnd({
+            animated: true,
+          });
+        } else {
+          setAutoScrollToRecent(false);
+        }
+      }
+    };
+    const listener: ReturnType<typeof channel.on> = channel.on('message.new', handleEvent);
+
+    return () => {
+      listener?.unsubscribe();
+    };
+  }, [channel, client.userID, scrollToBottomButtonVisible]);
 
   /**
    * Effect to mark the channel as read when the user scrolls to the bottom of the message list.
@@ -590,173 +603,113 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     threadList,
   ]);
 
-  useEffect(() => {
-    /**
-     * Condition to check if a message is removed from MessageList.
-     * Eg: This would happen when giphy search is cancelled, message is deleted with visibility "never" etc.
-     * If such a case arises, we scroll to bottom.
-     */
-    const isMessageRemovedFromMessageList =
-      messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current;
-    /**
-     * Scroll down when
-     * created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
-     */
-    const scrollToBottomIfNeeded = () => {
-      if (!client || !channel || rawMessageList.length === 0) {
-        return;
-      }
-
-      if (
-        isMessageRemovedFromMessageList ||
-        (topMessageBeforeUpdate.current?.created_at &&
-          topMessageAfterUpdate?.created_at &&
-          topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
-      ) {
-        channelResyncScrollSet.current = false;
-        setScrollToBottomButtonVisible(false);
-        resetPaginationTrackersRef.current();
-
-        setTimeout(() => {
-          flatListRef.current?.scrollToOffset({
-            offset: 0,
-          });
-        }, WAIT_FOR_SCROLL_TIMEOUT);
-        setTimeout(() => {
-          channelResyncScrollSet.current = true;
-          if (channel.countUnread() > 0) {
-            markRead();
-          }
-        }, 500);
-      }
-    };
-
-    if (threadList || isMessageRemovedFromMessageList) {
-      scrollToBottomIfNeeded();
-    }
-
-    messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
-    topMessageBeforeUpdate.current = topMessageAfterUpdate;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
-
-  useEffect(() => {
-    if (threadList) {
-      setAutoscrollToRecent(true);
+  const updateStickyHeaderDateIfNeeded = useStableCallback((viewableItems: ViewToken[]) => {
+    if (!viewableItems.length) {
       return;
     }
 
-    if (!processedMessageList.length) {
+    const lastItem = viewableItems[0];
+
+    if (!lastItem) return;
+
+    if (
+      !channel.state.messagePagination.hasPrev &&
+      processedMessageList[0].id === lastItem.item.id
+    ) {
+      setStickyHeaderDate(undefined);
       return;
     }
+    const isMessageTypeDeleted = lastItem.item.type === 'deleted';
 
-    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
-    if (notLatestSet) {
-      latestNonCurrentMessageBeforeUpdateRef.current =
-        channel.state.latestMessages[channel.state.latestMessages.length - 1];
-      setAutoscrollToRecent(false);
-      setScrollToBottomButtonVisible(true);
-      return;
-    }
-    const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
-    latestNonCurrentMessageBeforeUpdateRef.current = undefined;
-    const latestCurrentMessageAfterUpdate = processedMessageList[0];
-    if (!latestCurrentMessageAfterUpdate) {
-      setAutoscrollToRecent(true);
-      return;
-    }
-    const didMergeMessageSetsWithNoUpdates =
-      latestNonCurrentMessageBeforeUpdate?.id === latestCurrentMessageAfterUpdate.id;
-    // if didMergeMessageSetsWithNoUpdates=false, we got new messages
-    // so we should scroll to bottom if we are near the bottom already
-    const shouldForceScrollToRecent =
-      !didMergeMessageSetsWithNoUpdates ||
-      processedMessageList.length - messageListLengthBeforeUpdate.current > 0;
-
-    setAutoscrollToRecent(shouldForceScrollToRecent);
-
-    if (!didMergeMessageSetsWithNoUpdates) {
-      const shouldScrollToRecentOnNewOwnMessage = shouldScrollToRecentOnNewOwnMessageRef.current();
-      // we should scroll to bottom where ever we are now
-      // as we have sent a new own message
-      if (shouldScrollToRecentOnNewOwnMessage) {
-        setTimeout(() => {
-          flatListRef.current?.scrollToOffset({
-            animated: true,
-            offset: 0,
-          });
-        }, WAIT_FOR_SCROLL_TIMEOUT); // flatlist might take a bit to update, so a small delay is needed
-      }
-    }
-  }, [channel, threadList, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef]);
-
-  const goToMessage = useStableCallback(async (messageId: string) => {
-    const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === messageId,
-    );
-    try {
-      if (indexOfParentInMessageList === -1) {
-        await loadChannelAroundMessage({ messageId });
-        return;
-      } else {
-        if (!flatListRef.current) {
-          return;
-        }
-        clearTimeout(failScrollTimeoutId.current);
-        scrollToIndexFailedRetryCountRef.current = 0;
-        // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
-        messageIdLastScrolledToRef.current = messageId;
-        setTargetedMessage(messageId);
-        // now scroll to it with animated=true
-        flatListRef.current.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        return;
-      }
-    } catch (e) {
-      console.warn('Error while scrolling to message', e);
+    if (
+      lastItem?.item?.created_at &&
+      !isMessageTypeDeleted &&
+      typeof lastItem.item.created_at !== 'string' &&
+      lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
+    ) {
+      stickyHeaderDateRef.current = lastItem.item.created_at;
+      setStickyHeaderDate(lastItem.item.created_at);
     }
   });
 
   /**
-   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
-   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
+   * This function should show or hide the unread indicator depending on the
    */
-  useEffect(() => {
-    if (!targetedMessage) {
+  const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
+    if (!viewableItems.length || !readEvents) {
+      setIsUnreadNotificationOpen(false);
       return;
     }
-    scrollToDebounceTimeoutRef.current = setTimeout(async () => {
-      const indexOfParentInMessageList = processedMessageList.findIndex(
-        (message) => message?.id === targetedMessage,
-      );
 
-      // the message we want to scroll to has not been loaded in the state yet
-      if (indexOfParentInMessageList === -1) {
-        await loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
-      } else {
-        if (!flatListRef.current) {
-          return;
-        }
-        // By a fresh scroll we should clear the retries for the previous failed scroll
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-        clearTimeout(failScrollTimeoutId.current);
-        // reset the retry count
-        scrollToIndexFailedRetryCountRef.current = 0;
-        // now scroll to it
-        flatListRef.current.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        setTargetedMessage(undefined);
-      }
-    }, WAIT_FOR_SCROLL_TIMEOUT);
+    if (selectedPicker === 'images') {
+      setIsUnreadNotificationOpen(false);
+      return;
+    }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetedMessage]);
+    const lastItem = viewableItems[0];
+
+    if (!lastItem) return;
+
+    const lastItemMessage = lastItem.item;
+    const lastItemCreatedAt = lastItemMessage.created_at;
+
+    const unreadIndicatorDate = channelUnreadState?.last_read.getTime();
+    const lastItemDate = lastItemCreatedAt.getTime();
+
+    if (
+      !channel.state.messagePagination.hasPrev &&
+      processedMessageList[0].id === lastItemMessage.id
+    ) {
+      setIsUnreadNotificationOpen(false);
+      return;
+    }
+    /**
+     * This is a special case where there is a single long message by the sender.
+     * When a message is sent, we mark it as read before it actually has a `created_at` timestamp.
+     * This is a workaround to prevent the unread indicator from showing when the message is sent.
+     */
+    if (
+      viewableItems.length === 1 &&
+      channel.countUnread() === 0 &&
+      lastItemMessage.user.id === client.userID
+    ) {
+      setIsUnreadNotificationOpen(false);
+      return;
+    }
+    if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
+      setIsUnreadNotificationOpen(true);
+    } else {
+      setIsUnreadNotificationOpen(false);
+    }
+  });
+
+  /**
+   * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
+   * Thus useRef.
+   */
+  const unstableOnViewableItemsChanged = ({
+    viewableItems,
+  }: {
+    viewableItems: ViewToken[] | undefined;
+  }) => {
+    if (!viewableItems) {
+      return;
+    }
+    if (!hideStickyDateHeader) {
+      updateStickyHeaderDateIfNeeded(viewableItems);
+    }
+    updateStickyUnreadIndicator(viewableItems);
+  };
+
+  const onViewableItemsChanged = useRef(unstableOnViewableItemsChanged);
+  onViewableItemsChanged.current = unstableOnViewableItemsChanged;
+
+  const stableOnViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
+      onViewableItemsChanged.current({ viewableItems });
+    },
+    [],
+  );
 
   const renderItem = useCallback(
     ({ index, item: message }: { index: number; item: LocalMessage }) => {
@@ -795,7 +748,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           message={message}
           onThreadSelect={onThreadSelect}
           showUnreadUnderlay={showUnreadUnderlay}
-          style={[messageContainer]}
           threadList={threadList}
         />
       );
@@ -803,10 +755,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       return (
         <View testID={`message-list-item-${index}`}>
           {message.type === 'system' ? (
-            <MessageSystem
-              message={message}
-              style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-            />
+            <MessageSystem message={message} />
           ) : wrapMessageInTheme ? (
             <ThemeProvider mergedStyle={modifiedTheme}>
               <View testID={`message-list-item-${index}`}>
@@ -839,229 +788,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       goToMessage,
       highlightedMessageId,
       lastReceivedId,
-      messageContainer,
       messageGroupStylesRef,
       modifiedTheme,
       myMessageTheme,
       onThreadSelect,
-      screenPadding,
       shouldShowUnreadUnderlay,
       threadList,
     ],
-  );
-
-  /**
-   * We are keeping full control on message pagination, and not relying on react-native for it.
-   * The reasons being,
-   * 1. FlatList doesn't support onStartReached prop
-   * 2. `onEndReached` function prop available on react-native, gets executed
-   *    once per content length (and thats actually a nice optimization strategy).
-   *    But it also means, we always need to prioritize onEndReached above our
-   *    logic for `onStartReached`.
-   * 3. `onEndReachedThreshold` prop decides - at which scroll position to call `onEndReached`.
-   *    Its a factor of content length (which is necessary for "real" infinite scroll). But on
-   *    the other hand, it also makes calls to `onEndReached` (and this `channel.query`) way
-   *    too early during scroll, which we don't really need. So we are going to instead
-   *    keep some fixed offset distance, to decide when to call `loadMore` or `loadMoreRecent`.
-   *
-   * We are still gonna keep the optimization, which react-native does - only call onEndReached
-   * once per content length.
-   */
-
-  /**
-   * 1. Makes a call to `loadMoreRecent` function, which queries more recent messages.
-   * 2. Ensures that we call `loadMoreRecent`, once per content length
-   * 3. If the call to `loadMore` is in progress, we wait for it to finish to make sure scroll doesn't jump.
-   */
-  const maybeCallOnStartReached = useStableCallback(async () => {
-    // If onStartReached has already been called for given data length, then ignore.
-    if (
-      processedMessageList?.length &&
-      onStartReachedTracker.current[processedMessageList.length]
-    ) {
-      return;
-    }
-
-    if (processedMessageList?.length) {
-      onStartReachedTracker.current[processedMessageList.length] = true;
-    }
-
-    const callback = () => {
-      onStartReachedInPromise.current = null;
-
-      return Promise.resolve();
-    };
-
-    const onError = () => {
-      /** Release the onStartReached trigger after 2 seconds, to try again */
-      setTimeout(() => {
-        onStartReachedTracker.current = {};
-      }, 2000);
-    };
-
-    // If onEndReached is in progress, better to wait for it to finish for smooth UX
-    if (onEndReachedInPromise.current) {
-      await onEndReachedInPromise.current;
-    }
-    onStartReachedInPromise.current = (
-      threadList && !!threadInstance && loadMoreRecentThread
-        ? loadMoreRecentThread({})
-        : loadMoreRecent()
-    )
-      .then(callback)
-      .catch(onError);
-  });
-
-  /**
-   * 1. Makes a call to `loadMore` function, which queries more older messages.
-   * 2. Ensures that we call `loadMore`, once per content length
-   * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
-   */
-  const maybeCallOnEndReached = useStableCallback(async () => {
-    // If onEndReached has already been called for given messageList length, then ignore.
-    if (processedMessageList?.length && onEndReachedTracker.current[processedMessageList.length]) {
-      return;
-    }
-
-    if (processedMessageList?.length) {
-      onEndReachedTracker.current[processedMessageList.length] = true;
-    }
-
-    const callback = () => {
-      onEndReachedInPromise.current = null;
-      return Promise.resolve();
-    };
-
-    const onError = () => {
-      /** Release the onEndReachedTracker trigger after 2 seconds, to try again */
-      setTimeout(() => {
-        onEndReachedTracker.current = {};
-      }, 2000);
-    };
-
-    // If onStartReached is in progress, better to wait for it to finish for smooth UX
-    if (onStartReachedInPromise.current) {
-      await onStartReachedInPromise.current;
-    }
-    onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
-      .then(callback)
-      .catch(onError);
-  });
-
-  const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = useStableCallback((event) => {
-    const nativeEvent = event.nativeEvent;
-    clearTimeout(onScrollEventTimeoutRef.current);
-    const offset = nativeEvent.contentOffset.y;
-    const visibleLength = nativeEvent.layoutMeasurement.height;
-    const contentLength = nativeEvent.contentSize.height;
-    if (!channel || !channelResyncScrollSet.current) {
-      return;
-    }
-
-    // Check if scroll has reached either start of end of list.
-    const isScrollAtStart = offset < 100;
-    const isScrollAtEnd = contentLength - visibleLength - offset < 100;
-
-    if (isScrollAtStart) {
-      maybeCallOnStartReached();
-    }
-
-    if (isScrollAtEnd) {
-      maybeCallOnEndReached();
-    }
-  });
-
-  const handleScroll: ScrollViewProps['onScroll'] = useStableCallback((event) => {
-    const messageListHasMessages = processedMessageList.length > 0;
-    const offset = event.nativeEvent.contentOffset.y;
-    // Show scrollToBottom button once scroll position goes beyond 150.
-    const isScrollAtBottom = offset <= 150;
-
-    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
-
-    const showScrollToBottomButton =
-      messageListHasMessages && ((!threadList && notLatestSet) || !isScrollAtBottom);
-
-    /**
-     * 1. If I scroll up -> show scrollToBottom button.
-     * 2. If I scroll to bottom of screen
-     *    |-> hide scrollToBottom button.
-     *    |-> if channel is unread, call markRead().
-     */
-    setScrollToBottomButtonVisible(showScrollToBottomButton);
-
-    if (onListScroll) {
-      onListScroll(event);
-    }
-  });
-
-  const goToNewMessages = useStableCallback(async () => {
-    const isNotLatestSet = channel.state.messages !== channel.state.latestMessages;
-
-    if (isNotLatestSet) {
-      resetPaginationTrackersRef.current();
-      await reloadChannel();
-    } else if (flatListRef.current) {
-      flatListRef.current.scrollToOffset({
-        animated: true,
-        offset: 0,
-      });
-    }
-
-    setScrollToBottomButtonVisible(false);
-    /**
-     *  When we are not in the bottom of the list, and we receive new messages, we need to mark the channel as read.
-     We would still need to show the unread label, where the first unread message appeared so we don't update the channelUnreadState.
-     */
-    await markRead({
-      updateChannelUnreadState: false,
-    });
-  });
-
-  const scrollToIndexFailedRetryCountRef = useRef<number>(0);
-  const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const onScrollToIndexFailedRef = useRef<FlatListProps<LocalMessage>['onScrollToIndexFailed']>(
-    (info) => {
-      // We got a failure as we tried to scroll to an item that was outside the render length
-      if (!flatListRef.current) {
-        return;
-      }
-      // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
-      // since we used only an average offset... we won't go to the center of the item yet
-      // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
-      failScrollTimeoutId.current = setTimeout(() => {
-        try {
-          flatListRef.current?.scrollToIndex({
-            animated: true,
-            index: info.index,
-            viewPosition: 0.5, // try to place message in the center of the screen
-          });
-          if (messageIdLastScrolledToRef.current) {
-            // in case the target message was cleared out
-            // the state being set again will trigger the highlight again
-            setTargetedMessage(messageIdLastScrolledToRef.current);
-          }
-          scrollToIndexFailedRetryCountRef.current = 0;
-        } catch (e) {
-          if (
-            !onScrollToIndexFailedRef.current ||
-            scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
-          ) {
-            scrollToIndexFailedRetryCountRef.current = 0;
-            return;
-          }
-          // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
-          // Scrolling to an index not in range of the Flatlist's data will result in a crash that
-          // won't call onScrollToIndexFailed.
-          // By catching this error we retry scrolling by calling onScrollToIndexFailedRef
-          scrollToIndexFailedRetryCountRef.current += 1;
-          onScrollToIndexFailedRef.current(info);
-        }
-      }, WAIT_FOR_SCROLL_TIMEOUT);
-
-      // Only when index is greater than 0 and in range of items in FlatList
-      // this onScrollToIndexFailed will be called again
-    },
   );
 
   const messagesWithImages =
@@ -1117,6 +850,188 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     threadList,
   ]);
 
+  /**
+   * We are keeping full control on message pagination, and not relying on react-native for it.
+   * The reasons being,
+   * 1. FlatList doesn't support onStartReached prop
+   * 2. `onEndReached` function prop available on react-native, gets executed
+   *    once per content length (and thats actually a nice optimization strategy).
+   *    But it also means, we always need to prioritize onEndReached above our
+   *    logic for `onStartReached`.
+   * 3. `onEndReachedThreshold` prop decides - at which scroll position to call `onEndReached`.
+   *    Its a factor of content length (which is necessary for "real" infinite scroll). But on
+   *    the other hand, it also makes calls to `onEndReached` (and this `channel.query`) way
+   *    too early during scroll, which we don't really need. So we are going to instead
+   *    keep some fixed offset distance, to decide when to call `loadMore` or `loadMoreRecent`.
+   *
+   * We are still gonna keep the optimization, which react-native does - only call onEndReached
+   * once per content length.
+   */
+
+  /**
+   * 1. Makes a call to `loadMore` function, which queries more older messages.
+   * 2. Ensures that we call `loadMore`, once per content length
+   * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
+   */
+  const maybeCallOnStartReached = useStableCallback(async () => {
+    // If onEndReached has already been called for given messageList length, then ignore.
+    if (
+      processedMessageList?.length &&
+      onStartReachedTracker.current[processedMessageList.length]
+    ) {
+      return;
+    }
+
+    if (processedMessageList?.length) {
+      onStartReachedTracker.current[processedMessageList.length] = true;
+    }
+
+    const callback = () => {
+      onStartReachedInPromise.current = null;
+      return Promise.resolve();
+    };
+
+    const onError = () => {
+      /** Release the onEndReachedTracker trigger after 2 seconds, to try again */
+      setTimeout(() => {
+        onStartReachedTracker.current = {};
+      }, 2000);
+    };
+
+    // If onStartReached is in progress, better to wait for it to finish for smooth UX
+    if (onEndReachedInPromise.current) {
+      await onEndReachedInPromise.current;
+    }
+    onStartReachedInPromise.current = (
+      threadList && !!threadInstance && loadMoreRecentThread
+        ? loadMoreRecentThread({})
+        : loadMoreRecent()
+    )
+      .then(callback)
+      .catch(onError);
+  });
+
+  /**
+   * 1. Makes a call to `loadMoreRecent` function, which queries more recent messages.
+   * 2. Ensures that we call `loadMoreRecent`, once per content length
+   * 3. If the call to `loadMore` is in progress, we wait for it to finish to make sure scroll doesn't jump.
+   */
+  const maybeCallOnEndReached = useStableCallback(async () => {
+    // If onStartReached has already been called for given data length, then ignore.
+    if (processedMessageList?.length && onEndReachedTracker.current[processedMessageList.length]) {
+      return;
+    }
+
+    if (processedMessageList?.length) {
+      onEndReachedTracker.current[processedMessageList.length] = true;
+    }
+
+    const callback = () => {
+      onEndReachedInPromise.current = null;
+
+      return Promise.resolve();
+    };
+
+    const onError = () => {
+      /** Release the onStartReached trigger after 2 seconds, to try again */
+      setTimeout(() => {
+        onEndReachedTracker.current = {};
+      }, 2000);
+    };
+
+    // If onEndReached is in progress, better to wait for it to finish for smooth UX
+    if (onStartReachedInPromise.current) {
+      await onStartReachedInPromise.current;
+    }
+
+    onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
+      .then(callback)
+      .catch(onError);
+  });
+
+  const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = useStableCallback((event) => {
+    const nativeEvent = event.nativeEvent;
+    const offset = nativeEvent.contentOffset.y;
+    const visibleLength = nativeEvent.layoutMeasurement.height;
+    const contentLength = nativeEvent.contentSize.height;
+    if (!channel || !channelResyncScrollSet.current) {
+      return;
+    }
+
+    // Check if scroll has reached either start of end of list.
+    const isScrollAtEnd = offset < 100;
+    const isScrollAtStart = contentLength - visibleLength - offset < 100;
+
+    if (isScrollAtEnd) {
+      maybeCallOnEndReached();
+    }
+
+    if (isScrollAtStart) {
+      maybeCallOnStartReached();
+    }
+  });
+
+  /**
+   * Resets the pagination trackers, doing so cancels currently scheduled loading more calls
+   */
+  const resetPaginationTrackersRef = useRef(() => {
+    onStartReachedTracker.current = {};
+    onEndReachedTracker.current = {};
+  });
+
+  const currentScrollOffsetRef = useRef(0);
+
+  const handleScroll: ScrollViewProps['onScroll'] = useStableCallback((event) => {
+    const messageListHasMessages = processedMessageList.length > 0;
+    const nativeEvent = event.nativeEvent;
+    const offset = nativeEvent.contentOffset.y;
+    currentScrollOffsetRef.current = offset;
+    const visibleLength = nativeEvent.layoutMeasurement.height;
+    const contentLength = nativeEvent.contentSize.height;
+
+    // Show scrollToBottom button once scroll position goes beyond 150.
+    const isScrollAtStart = contentLength - visibleLength - offset < 150;
+
+    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
+
+    const showScrollToBottomButton =
+      messageListHasMessages && ((!threadList && notLatestSet) || !isScrollAtStart);
+
+    /**
+     * 1. If I scroll up -> show scrollToBottom button.
+     * 2. If I scroll to bottom of screen
+     *    |-> hide scrollToBottom button.
+     *    |-> if channel is unread, call markRead().
+     */
+    setScrollToBottomButtonVisible(showScrollToBottomButton);
+
+    if (onListScroll) {
+      onListScroll(event);
+    }
+  });
+
+  const goToNewMessages = useStableCallback(async () => {
+    const isNotLatestSet = channel.state.messages !== channel.state.latestMessages;
+
+    if (isNotLatestSet) {
+      resetPaginationTrackersRef.current();
+      await reloadChannel();
+    } else if (flashListRef.current) {
+      flashListRef.current.scrollToEnd({
+        animated: true,
+      });
+    }
+
+    setScrollToBottomButtonVisible(false);
+    /**
+     *  When we are not in the bottom of the list, and we receive new messages, we need to mark the channel as read.
+     We would still need to show the unread label, where the first unread message appeared so we don't update the channelUnreadState.
+     */
+    await markRead({
+      updateChannelUnreadState: false,
+    });
+  });
+
   const dismissImagePicker = useStableCallback(() => {
     if (selectedPicker) {
       setSelectedPicker(undefined);
@@ -1134,8 +1049,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     onUserScrollEvent(event);
   });
 
-  const refCallback = useStableCallback((ref: FlatListType<LocalMessage>) => {
-    flatListRef.current = ref;
+  const refCallback = useStableCallback((ref: FlashListRef<LocalMessage>) => {
+    flashListRef.current = ref;
 
     if (setFlatListRef) {
       setFlatListRef(ref);
@@ -1147,50 +1062,50 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     setIsUnreadNotificationOpen(false);
   });
 
-  const debugRef = useDebugContext();
-
-  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
-
-  if (isDebugModeEnabled) {
-    if (debugRef.current.setEventType) {
-      debugRef.current.setEventType('send');
-    }
-    if (debugRef.current.setSendEventParams) {
-      debugRef.current.setSendEventParams({
-        action: thread ? 'ThreadList' : 'Messages',
-        data: processedMessageList,
-      });
-    }
-  }
-
   // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
-  let additionalFlatListPropsExcludingStyle:
-    | Omit<NonNullable<typeof additionalFlatListProps>, 'style' | 'contentContainerStyle'>
+  let additionalFlashListPropsExcludingStyle:
+    | Omit<NonNullable<typeof additionalFlashListProps>, 'style' | 'contentContainerStyle'>
     | undefined;
 
-  if (additionalFlatListProps) {
+  if (additionalFlashListProps) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { contentContainerStyle, style, ...rest } = additionalFlatListProps;
-    additionalFlatListPropsExcludingStyle = rest;
+    const { contentContainerStyle, style, ...rest } = additionalFlashListProps;
+    additionalFlashListPropsExcludingStyle = rest;
   }
 
   const flatListStyle = useMemo(
-    () => [styles.listContainer, listContainer, additionalFlatListProps?.style],
-    [additionalFlatListProps?.style, listContainer],
+    () => ({ ...styles.listContainer, ...listContainer, ...additionalFlashListProps?.style }),
+    [additionalFlashListProps?.style, listContainer],
   );
 
   const flatListContentContainerStyle = useMemo(
-    () => [
-      styles.contentContainer,
-      additionalFlatListProps?.contentContainerStyle,
-      contentContainer,
-    ],
-    [additionalFlatListProps?.contentContainerStyle, contentContainer],
+    () => ({
+      ...styles.contentContainer,
+      ...contentContainer,
+    }),
+    [contentContainer],
   );
 
-  if (!FlatList) {
-    return null;
-  }
+  const getItemType = useStableCallback((item: LocalMessage) => {
+    const type = getItemTypeInternal(item);
+    return client.userID === item.user?.id ? `own-${type}` : type;
+  });
+
+  const currentListHeightRef = useRef<number | undefined>(undefined);
+
+  const onLayout = useStableCallback((e: LayoutChangeEvent) => {
+    const { height } = e.nativeEvent.layout;
+    if (!currentListHeightRef.current) {
+      currentListHeightRef.current = height;
+      return;
+    }
+
+    const changedBy = currentListHeightRef.current - height;
+    flashListRef.current?.scrollToOffset({
+      offset: currentScrollOffsetRef.current + changedBy,
+    });
+    currentListHeightRef.current = height;
+  });
 
   if (loading) {
     return (
@@ -1200,52 +1115,46 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     );
   }
 
+  if (!FlashList) {
+    throw new Error(
+      'The package @shopify/flash-list is not installed. Installing this package will enable the use of the FlashList component.',
+    );
+  }
+
   return (
     <View
+      onLayout={onLayout}
       style={[styles.container, { backgroundColor: white_snow }, container]}
       testID='message-flat-list-wrapper'
     >
-      {/* Don't show the empty list indicator for Thread messages */}
       {processedMessageList.length === 0 && !thread ? (
         <View style={[styles.flex, { backgroundColor: white_snow }]} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
       ) : (
-        <FlatList
+        <FlashList
           contentContainerStyle={flatListContentContainerStyle}
-          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           data={processedMessageList}
-          extraData={disabled}
-          inverted={inverted}
+          drawDistance={800}
+          getItemType={getItemType}
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
           ListFooterComponent={FooterComponent}
           ListHeaderComponent={HeaderComponent}
-          /**
-            If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
-            bottom (10 offset or below).
-            minIndexForVisible = 1 means that beyond the item at index 1 we will not change the position on list updates,
-            however it is not used when autoscrollToTopThreshold = 10.
-          */
           maintainVisibleContentPosition={maintainVisibleContentPosition}
-          maxToRenderPerBatch={30}
           onMomentumScrollEnd={onUserScrollEvent}
           onScroll={handleScroll}
           onScrollBeginDrag={onScrollBeginDrag}
           onScrollEndDrag={onScrollEndDrag}
-          onScrollToIndexFailed={onScrollToIndexFailedRef.current}
           onTouchEnd={dismissImagePicker}
           onViewableItemsChanged={stableOnViewableItemsChanged}
           ref={refCallback}
           renderItem={renderItem}
-          scrollEventThrottle={isLiveStreaming ? 16 : undefined}
           showsVerticalScrollIndicator={false}
-          // @ts-expect-error react-native internal
-          strictMode={isLiveStreaming}
           style={flatListStyle}
-          testID='message-flat-list'
+          testID='message-flash-list'
           viewabilityConfig={flatListViewabilityConfig}
-          {...additionalFlatListPropsExcludingStyle}
+          {...additionalFlashListPropsExcludingStyle}
         />
       )}
       <View style={styles.stickyHeader}>
@@ -1271,9 +1180,15 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   );
 };
 
-export type MessageListProps = Partial<MessageListPropsWithContext>;
+export type MessageFlashListProps = Partial<MessageFlashListPropsWithContext>;
 
-export const MessageList = (props: MessageListProps) => {
+/**
+ * This is a @experimental component.
+ * It is implemented using @shopify/flash-list package to optimize the performance of the MessageList component.
+ * The implementation is experimental and is subject to change.
+ * Please feel free to report any issues or suggestions.
+ */
+export const MessageFlashList = (props: MessageFlashListProps) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
     channel,
@@ -1300,7 +1215,6 @@ export const MessageList = (props: MessageListProps) => {
   } = useChannelContext();
   const { client } = useChatContext();
   const { setMessages } = useImageGalleryContext();
-  const { readEvents } = useOwnCapabilitiesContext();
   const {
     DateHeader,
     disableTypingIndicator,
@@ -1319,9 +1233,10 @@ export const MessageList = (props: MessageListProps) => {
   } = useMessagesContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
+  const { readEvents } = useOwnCapabilitiesContext();
 
   return (
-    <MessageListWithContext
+    <MessageFlashListWithContext
       {...{
         channel,
         channelUnreadState,
@@ -1376,3 +1291,29 @@ export const MessageList = (props: MessageListProps) => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    width: '100%',
+  },
+  contentContainer: {
+    /**
+     * paddingBottom is set to 4 to account for the default date
+     * header and inline indicator alignment. The top margin is 8
+     * on the header but 4 on the inline date, this adjusts the spacing
+     * to allow the "first" inline date to align with the date header.
+     */
+    paddingBottom: 4,
+  },
+  flex: { flex: 1 },
+  listContainer: {
+    flex: 1,
+    width: '100%',
+  },
+  stickyHeader: {
+    position: 'absolute',
+    top: 0,
+  },
+});

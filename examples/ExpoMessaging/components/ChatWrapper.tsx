@@ -7,9 +7,13 @@ import {
   Streami18n,
   useCreateChatClient,
 } from 'stream-chat-expo';
+import { UserResponse } from 'stream-chat';
 import { AuthProgressLoader } from './AuthProgressLoader';
-import { STREAM_API_KEY, user, userToken } from '../constants';
-import { useStreamChatTheme } from '../useStreamChatTheme';
+import { useStreamChatTheme } from '../hooks/useStreamChatTheme';
+import { useUserContext } from '@/context/UserContext';
+import { STREAM_API_KEY, USER_TOKENS } from '@/constants/ChatUsers';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+import '../utils/backgroundMessageHandler';
 
 const streami18n = new Streami18n({
   language: 'en',
@@ -20,11 +24,14 @@ SqliteClient.logger = (level, message, extraData) => {
 };
 
 export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
+  const { user } = useUserContext();
   const chatClient = useCreateChatClient({
     apiKey: STREAM_API_KEY,
-    userData: user,
-    tokenOrProvider: userToken,
+    userData: user as UserResponse,
+    tokenOrProvider: USER_TOKENS[user?.id as string],
   });
+
+  usePushNotifications({ chatClient });
 
   streami18n.registerTranslation('en', {
     ...enTranslations,
