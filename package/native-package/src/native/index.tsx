@@ -10,6 +10,8 @@ import type {
 export type { ResizeFormat, ResizeMode, Response } from './types';
 import NativeStreamChatHapticsModule from './NativeStreamChatHapticsModule';
 import NativeStreamChatReactNative from './NativeStreamChatReactNative';
+import NativeStreamChatImageCompress from './NativeStreamChatImageCompress';
+import { CompressImageOptions } from './types/compressImage';
 
 // @ts-ignore
 // eslint-disable-next-line no-underscore-dangle
@@ -22,6 +24,10 @@ const ImageResizer = isTurboModuleEnabled
 const Haptics = isTurboModuleEnabled
   ? NativeStreamChatHapticsModule
   : NativeModules.StreamChatHapticsModule;
+
+const ImageCompress = isTurboModuleEnabled
+  ? NativeStreamChatImageCompress
+  : NativeModules.StreamChatImageCompress;
 
 const defaultOptions: Options = {
   mode: 'contain',
@@ -65,6 +71,10 @@ export async function impactFeedback(type: ImpactFeedbackType) {
 
 export async function selectionFeedback() {
   await Haptics.selectionFeedback();
+}
+
+export async function compressImage(imageURL: string, options: CompressImageOptions) {
+  return await ImageCompress.compressImage(imageURL, options);
 }
 
 export default {

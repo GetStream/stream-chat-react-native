@@ -18,6 +18,8 @@ Pod::Spec.new do |s|
 
   s.ios.framework = 'AssetsLibrary', 'MobileCoreServices'
 
+  s.dependency "SDWebImageWebPCoder"
+
   if respond_to?(:install_modules_dependencies, true)
     install_modules_dependencies(s)
   else
