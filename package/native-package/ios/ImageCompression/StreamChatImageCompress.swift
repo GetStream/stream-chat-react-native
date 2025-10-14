@@ -72,7 +72,7 @@ class StreamChatImageCompress: NSObject {
     }
 
     if let formatString = dict["format"] as? String,
-        let format = ImageFormat(rawValue: formatString.lowercased()) {
+      let format = ImageFormat(rawValue: formatString.lowercased()) {
       options.format = format
     }
 
