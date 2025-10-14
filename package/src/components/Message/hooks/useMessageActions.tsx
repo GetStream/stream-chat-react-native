@@ -92,7 +92,6 @@ export const useMessageActions = ({
   supportedReactions,
   t,
   setQuotedMessage,
-  updateMessage,
 }: MessageActionsHookProps) => {
   const {
     theme: {
@@ -123,7 +122,6 @@ export const useMessageActions = ({
     setEditingState,
     setQuotedMessage,
     supportedReactions,
-    updateMessage,
   });
 
   const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;

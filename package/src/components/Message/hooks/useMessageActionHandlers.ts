@@ -21,12 +21,7 @@ export const useMessageActionHandlers = ({
   setQuotedMessage,
 }: Pick<
   MessagesContextValue,
-  | 'sendReaction'
-  | 'deleteMessage'
-  | 'updateMessage'
-  | 'deleteReaction'
-  | 'retrySendMessage'
-  | 'supportedReactions'
+  'sendReaction' | 'deleteMessage' | 'deleteReaction' | 'retrySendMessage' | 'supportedReactions'
 > &
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &

@@ -508,7 +508,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     setEditingState,
     setQuotedMessage,
     supportedReactions,
-    updateMessage,
   });
 
   const {
