@@ -19,7 +19,6 @@ export const useMessageActionHandlers = ({
   sendReaction,
   setEditingState,
   setQuotedMessage,
-  updateMessage,
 }: Pick<
   MessagesContextValue,
   | 'sendReaction'
@@ -70,17 +69,6 @@ export const useMessageActionHandlers = ({
       ],
       { cancelable: false },
     );
-  };
-
-  const handleDeleteForMeMessage = async () => {
-    try {
-      const { message: deletedMessage } = await client.deleteMessage(message.id, {
-        deleteForMe: true,
-      });
-      updateMessage(deletedMessage);
-    } catch (error) {
-      console.log('Error deleting message for me:', error);
-    }
   };
 
   const handleToggleMuteUser = async () => {
@@ -199,7 +187,6 @@ export const useMessageActionHandlers = ({
 
   return {
     handleCopyMessage,
-    handleDeleteForMeMessage,
     handleDeleteMessage,
     handleEditMessage,
     handleFlagMessage,

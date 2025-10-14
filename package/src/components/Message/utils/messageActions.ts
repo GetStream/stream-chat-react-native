@@ -1,4 +1,5 @@
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { isClipboardAvailable } from '../../../native';
 
@@ -25,9 +26,8 @@ export type MessageActionsParams = {
   showMessageReactions: boolean;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
-  // Optional Actions
-  deleteForMe?: MessageActionType;
-} & Pick<MessageContextValue, 'message' | 'isMyMessage'>;
+} & Pick<MessageContextValue, 'message' | 'isMyMessage'> &
+  Pick<MessagesContextValue, 'updateMessage'>;
 
 export type MessageActionsProp = (param: MessageActionsParams) => MessageActionType[];
 

@@ -321,7 +321,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'giphyVersion'
       | 'handleBan'
       | 'handleCopy'
-      | 'handleDeleteForMe'
       | 'handleDelete'
       | 'handleEdit'
       | 'handleFlag'
@@ -580,7 +579,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleAttachButtonPress,
     handleBan,
     handleCopy,
-    handleDeleteForMe,
     handleDelete,
     handleEdit,
     handleFlag,
@@ -1839,7 +1837,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBan,
     handleCopy,
     handleDelete,
-    handleDeleteForMe,
     handleEdit,
     handleFlag,
     handleMarkUnread,
