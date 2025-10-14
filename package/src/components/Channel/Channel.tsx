@@ -9,6 +9,7 @@ import {
   Channel as ChannelClass,
   ChannelState,
   Channel as ChannelType,
+  DeleteMessageOptions,
   EventHandler,
   LocalMessage,
   localMessageToNewMessagePayload,
@@ -322,6 +323,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'handleBan'
       | 'handleCopy'
       | 'handleDelete'
+      | 'handleDeleteForMe'
       | 'handleEdit'
       | 'handleFlag'
       | 'handleMarkUnread'
@@ -580,6 +582,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBan,
     handleCopy,
     handleDelete,
+    handleDeleteForMe,
     handleEdit,
     handleFlag,
     handleMarkUnread,
@@ -1509,7 +1512,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const deleteMessage: MessagesContextValue['deleteMessage'] = useStableCallback(
-    async (message, hardDelete = false) => {
+    async (message, optionsOrHardDelete = false) => {
+      let options: DeleteMessageOptions = {};
+      if (typeof optionsOrHardDelete === 'boolean') {
+        options = optionsOrHardDelete ? { hardDelete: true } : {};
+      } else if (optionsOrHardDelete?.deleteForMe) {
+        options = { deleteForMe: true };
+      } else if (optionsOrHardDelete?.hardDelete) {
+        options = { hardDelete: true };
+      }
       if (!channel.id) {
         throw new Error('Channel has not been initialized yet');
       }
@@ -1528,7 +1539,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-      const data = await client.deleteMessage(message.id, hardDelete);
+      const data = await client.deleteMessage(message.id, options);
 
       if (data?.message) {
         updateMessage({ ...data.message });
@@ -1837,6 +1848,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBan,
     handleCopy,
     handleDelete,
+    handleDeleteForMe,
     handleEdit,
     handleFlag,
     handleMarkUnread,

@@ -121,6 +121,7 @@ export type MessagePressableHandlerPayload = PressableHandlerPayload & {
 export type MessageActionHandlers = {
   copyMessage: () => void;
   deleteMessage: () => void;
+  deleteForMeMessage: () => void;
   editMessage: () => void;
   flagMessage: () => void;
   markUnread: () => Promise<void>;
@@ -155,6 +156,7 @@ export type MessagePropsWithContext = Pick<
     | 'handleBan'
     | 'handleCopy'
     | 'handleDelete'
+    | 'handleDeleteForMe'
     | 'handleEdit'
     | 'handleFlag'
     | 'handleMarkUnread'
@@ -229,6 +231,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleBan,
     handleCopy,
     handleDelete,
+    handleDeleteForMe,
     handleEdit,
     handleFlag,
     handleMarkUnread,
@@ -487,6 +490,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const {
     handleCopyMessage,
     handleDeleteMessage,
+    handleDeleteForMeMessage,
     handleEditMessage,
     handleFlagMessage,
     handleMarkUnreadMessage,
@@ -514,6 +518,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     banUser,
     copyMessage,
     deleteMessage,
+    deleteForMeMessage,
     editMessage,
     flagMessage,
     handleReaction,
@@ -534,6 +539,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleBan,
     handleCopy,
     handleDelete,
+    handleDeleteForMe,
     handleEdit,
     handleFlag,
     handleMarkUnread,
@@ -565,6 +571,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       : messageActionsProp({
           banUser,
           copyMessage,
+          deleteForMeMessage,
           deleteMessage,
           dismissOverlay,
           editMessage,
@@ -587,6 +594,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const actionHandlers: MessageActionHandlers = {
     copyMessage: handleCopyMessage,
+    deleteForMeMessage: handleDeleteForMeMessage,
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
     flagMessage: handleFlagMessage,

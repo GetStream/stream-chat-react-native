@@ -21,7 +21,7 @@ export function channelMessageActions({
   t: TranslationContextValue['t'];
   colors?: typeof Colors;
 }) {
-  const { dismissOverlay, updateMessage } = params;
+  const { dismissOverlay, deleteForMeMessage } = params;
   const actions = messageActions(params);
 
   // We cannot use the useMessageReminder hook here because it is a hook.
@@ -99,10 +99,7 @@ export function channelMessageActions({
         {
           text: 'Delete',
           onPress: async () => {
-            const { message: deletedMessage } = await chatClient.deleteMessage(params.message.id, {
-              deleteForMe: true,
-            });
-            updateMessage(deletedMessage);
+            await deleteForMeMessage?.action();
             dismissOverlay();
           },
           style: 'destructive',
