@@ -158,8 +158,9 @@ export const useAudioController = () => {
     }
     // For Expo CLI
     if (soundRef.current?.stopAsync && soundRef.current?.unloadAsync) {
-      await soundRef.current.stopAsync();
+      await soundRef.current?.stopAsync();
       await soundRef.current?.unloadAsync();
+      soundRef.current = null;
     }
   };
 
@@ -247,9 +248,7 @@ export const useAudioController = () => {
     if (recordingStatus === 'recording') {
       await stopVoiceRecording();
     }
-    if (!paused) {
-      await stopVoicePlayer();
-    }
+    await stopVoicePlayer();
     resetState();
     NativeHandlers.triggerHaptic('impactMedium');
   };
@@ -320,11 +319,9 @@ export const useAudioController = () => {
     recordingDuration,
     recordingStatus,
     setMicLocked,
-    setRecording,
-    setRecordingDuration,
-    setRecordingStatus,
-    setWaveformData,
+    startVoicePlayer,
     startVoiceRecording,
+    stopVoicePlayer,
     stopVoiceRecording,
     uploadVoiceRecording,
     waveformData,

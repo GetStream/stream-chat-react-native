@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  SafeAreaView,
+  SafeAreaView as RNSafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,6 +15,8 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
+import { SafeAreaView as SafeAreaViewOriginal } from 'react-native-safe-area-context';
+
 import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -27,12 +29,14 @@ import {
   VideoType,
 } from '../../../native';
 
+import { FileTypes } from '../../../types/types';
+import type { Photo } from '../ImageGallery';
+
+const SafeAreaView = SafeAreaViewOriginal ?? RNSafeAreaView;
+
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
   : SafeAreaView;
-
-import { FileTypes } from '../../../types/types';
-import type { Photo } from '../ImageGallery';
 
 export type ImageGalleryFooterCustomComponent = ({
   openGridView,
@@ -179,7 +183,10 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, footerStyle, container]}>
+      <ReanimatedSafeAreaView
+        edges={['bottom']}
+        style={[{ backgroundColor: white }, footerStyle, container]}
+      >
         {photo.type === FileTypes.Video ? (
           videoControlElement ? (
             videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
@@ -205,7 +212,7 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
                 {t('{{ index }} of {{ photoLength }}', {
-                  index: photoLength - selectedIndex,
+                  index: selectedIndex + 1,
                   photoLength,
                 })}
               </Text>

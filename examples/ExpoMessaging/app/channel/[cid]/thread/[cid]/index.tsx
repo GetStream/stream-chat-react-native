@@ -1,42 +1,43 @@
 import React, { useContext } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Channel, Thread } from 'stream-chat-expo';
 import { Stack } from 'expo-router';
 import { AppContext } from '../../../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ThreadScreen() {
   const { channel, thread, setThread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
-  if (channel === undefined) {
+  if (!channel) {
     return null;
   }
 
   return (
-    <SafeAreaView>
+    <Channel
+      audioRecordingEnabled={true}
+      channel={channel}
+      keyboardVerticalOffset={headerHeight}
+      thread={thread}
+      threadList
+    >
       <Stack.Screen options={{ title: 'Thread Screen' }} />
 
-      <Channel
-        audioRecordingEnabled={true}
-        channel={channel}
-        keyboardVerticalOffset={headerHeight}
-        thread={thread}
-        threadList
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'flex-start',
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <Thread
+          onThreadDismount={() => {
+            setThread(undefined);
           }}
-        >
-          <Thread
-            onThreadDismount={() => {
-              setThread(undefined);
-            }}
-          />
-        </View>
-      </Channel>
-    </SafeAreaView>
+        />
+      </SafeAreaView>
+    </Channel>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+});

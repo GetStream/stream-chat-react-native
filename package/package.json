@@ -22,6 +22,7 @@
     "README.md"
   ],
   "scripts": {
+    "install-all": "(yarn install --force && (cd native-package && yarn install --force) && (cd expo-package && yarn install --force))",
     "build": "rimraf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",
     "build-translations": "i18next",
     "copy-translations": "echo '\u001b[34mℹ\u001b[0m Copying translation files to \u001b[34mlib/typescript/i18n\u001b[0m' && cp -R -f ./src/i18n ./lib/typescript/i18n && echo '\u001b[32m✓\u001b[0m Done Copying Translations'",
@@ -90,6 +91,7 @@
     "react-native": ">=0.73.0",
     "react-native-gesture-handler": ">=2.18.0",
     "react-native-reanimated": ">=3.16.0",
+    "react-native-safe-area-context": ">=5.4.1",
     "react-native-svg": ">=15.8.0"
   },
   "peerDependenciesMeta": {
@@ -152,6 +154,7 @@
     "react-native-builder-bob": "0.40.11",
     "react-native-gesture-handler": "^2.26.0",
     "react-native-reanimated": "3.18.0",
+    "react-native-safe-area-context": "^5.6.1",
     "react-native-svg": "15.12.0",
     "react-test-renderer": "19.1.0",
     "rimraf": "^6.0.1",
