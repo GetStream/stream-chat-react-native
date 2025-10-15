@@ -21,7 +21,10 @@
       "usesIcloudStorage": true,
       "bundleIdentifier": "io.getstream.iOS.expomessagingapp",
       "appleTeamId": "EHV7XZLAHA",
-      "googleServicesFile": "./firebase/GoogleService-Info.plist"
+      "googleServicesFile": "./firebase/GoogleService-Info.plist",
+      "entitlements": {
+        "aps-environment": "development"
+      }
     },
     "android": {
       "config": {
