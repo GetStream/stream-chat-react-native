@@ -21,6 +21,7 @@ export const useCreateChannelContext = ({
   LoadingIndicator,
   markRead,
   maxTimeBetweenGroupedMessages,
+  maximumMessageLimit,
   members,
   NetworkDownIndicator,
   read,
@@ -64,6 +65,7 @@ export const useCreateChannelContext = ({
       loading,
       LoadingIndicator,
       markRead,
+      maximumMessageLimit,
       maxTimeBetweenGroupedMessages,
       members,
       NetworkDownIndicator,
@@ -96,6 +98,7 @@ export const useCreateChannelContext = ({
       targetedMessage,
       threadList,
       watcherCount,
+      maximumMessageLimit,
     ],
   );
 

@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { ChannelState } from 'stream-chat';
 
+import { ViewabilityChangedCallbackInput } from '../../hooks/usePrunableMessageList';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -24,6 +25,10 @@ export type PaginatedMessageListContextValue = {
    * Messages from client state
    */
   messages: ChannelState['messages'];
+  /**
+   * A callback that is to be passed to onViewableItemsChanged in the underlying `MessageList`
+   */
+  viewabilityChangedCallback: (config: ViewabilityChangedCallbackInput) => void;
   /**
    * Has more messages to load
    */

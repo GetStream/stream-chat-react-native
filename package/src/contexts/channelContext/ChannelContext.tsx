@@ -148,6 +148,12 @@ export type ChannelContextValue = {
    */
   maxTimeBetweenGroupedMessages?: number;
   /**
+   * The maximum number of messages that can be loaded into the state when new messages arrive.
+   * Any excess messages will be pruned from the back of the list (oldest first), unless we are
+   * currently near them within the viewport.
+   */
+  maximumMessageLimit?: number;
+  /**
    * Custom UI component for sticky header of channel.
    *
    * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)

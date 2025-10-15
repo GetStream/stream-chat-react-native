@@ -5,6 +5,7 @@ import {
   Channel,
   ChannelAvatar,
   MessageInput,
+  MessageList,
   MessageFlashList,
   ThreadContextValue,
   useAttachmentPickerContext,
@@ -32,7 +33,6 @@ import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
-import { MessageList } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -119,7 +119,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
-  const { chatClient, messageListImplementation } = useAppContext();
+  const { chatClient, messageListImplementation, messageListMode, messageListPruning } =
+    useAppContext();
   const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
@@ -215,12 +216,13 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         messageId={messageId}
         NetworkDownIndicator={() => null}
         thread={selectedThread}
+        maximumMessageLimit={messageListPruning}
       >
         <ChannelHeader channel={channel} />
         {messageListImplementation === 'flashlist' ? (
-          <MessageFlashList onThreadSelect={onThreadSelect} />
+          <MessageFlashList onThreadSelect={onThreadSelect} isLiveStreaming={messageListMode === 'livestream'} />
         ) : (
-          <MessageList onThreadSelect={onThreadSelect} />
+          <MessageList onThreadSelect={onThreadSelect} isLiveStreaming={messageListMode === 'livestream'} />
         )}
         <AITypingIndicatorView channel={channel} />
         <MessageInput />

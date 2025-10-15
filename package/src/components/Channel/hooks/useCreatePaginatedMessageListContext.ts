@@ -15,6 +15,7 @@ export const useCreatePaginatedMessageListContext = ({
   messages,
   setLoadingMore,
   setLoadingMoreRecent,
+  viewabilityChangedCallback,
 }: PaginatedMessageListContextValue & {
   channelId?: string;
 }) => {
@@ -31,9 +32,10 @@ export const useCreatePaginatedMessageListContext = ({
       messages,
       setLoadingMore,
       setLoadingMoreRecent,
+      viewabilityChangedCallback,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channelId, hasMore, loadingMore, loadingMoreRecent, messagesStr],
+    [channelId, hasMore, loadingMore, loadingMoreRecent, messagesStr, viewabilityChangedCallback],
   );
 
   return paginatedMessagesContext;
