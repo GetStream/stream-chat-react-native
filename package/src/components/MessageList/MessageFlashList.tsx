@@ -463,11 +463,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         clearTimeout(scrollToDebounceTimeoutRef.current);
         await loadChannelAroundMessage({ messageId, setTargetedMessage });
       } else {
-        flashListRef.current?.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5,
-        });
         setTargetedMessage(messageId);
       }
     } catch (e) {
@@ -1094,11 +1089,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [contentContainer],
   );
 
-  const getItemType = useStableCallback((item: LocalMessage) => {
-    const type = getItemTypeInternal(item);
-    return client.userID === item.user?.id ? `own-${type}` : type;
-  });
-
   const currentListHeightRef = useRef<number | undefined>(undefined);
 
   const onLayout = useStableCallback((e: LayoutChangeEvent) => {
@@ -1144,7 +1134,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           contentContainerStyle={flatListContentContainerStyle}
           data={processedMessageList}
           drawDistance={800}
-          getItemType={getItemType}
+          getItemType={getItemTypeInternal}
           initialScrollIndex={
             indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
           }
