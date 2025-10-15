@@ -637,8 +637,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       }
     };
 
-    if (!maximumMessageLimit && (threadList || isMessageRemovedFromMessageList)) {
-      scrollToBottomIfNeeded();
+    if (threadList || isMessageRemovedFromMessageList) {
+      if (maximumMessageLimit) {
+        // pruning has happened, reset the trackers
+        resetPaginationTrackersRef.current();
+      } else {
+        scrollToBottomIfNeeded();
+      }
     }
 
     messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
