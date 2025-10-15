@@ -235,7 +235,6 @@ class ExpoAudioRecordingAdapter {
     clearInterval(this.recordingStateInterval);
     await this.recording.stop();
     this.uri = this.recording.uri;
-    this.recording.release();
   };
 
   getURI = () => this.uri;

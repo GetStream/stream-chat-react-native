@@ -69,7 +69,9 @@ class ExpoAudioSoundAdapter {
     initialStatus,
     onPlaybackStatusUpdate: (playbackStatus: PlaybackStatus) => void,
   ) {
-    this.player = expoCreateSoundPlayer?.(source, initialStatus.progressUpdateIntervalMillis);
+    this.player = expoCreateSoundPlayer?.(source, {
+      updateInterval: initialStatus.progressUpdateIntervalMillis,
+    });
     this.onPlaybackStatusUpdate = (playbackStatus: ExpoAudioPlaybackStatus) => {
       onPlaybackStatusUpdate(expoAudioToExpoAvStatusAdapter(playbackStatus));
       if (playbackStatus.didJustFinish) {
