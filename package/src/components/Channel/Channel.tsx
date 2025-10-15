@@ -1690,8 +1690,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     overrideCapabilities: overrideOwnCapabilities,
   });
 
-  console.log('TEST: ', maximumMessageLimit);
-
   const channelContext = useCreateChannelContext({
     channel,
     channelUnreadState,
