@@ -397,7 +397,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     return {
       animateAutoscrollToBottom: true,
       autoscrollToBottomThreshold: autoscrollToRecent ? 1 : undefined,
-      disabled: !autoscrollToRecent,
       startRenderingFromBottom: true,
     };
   }, [autoscrollToRecent]);
