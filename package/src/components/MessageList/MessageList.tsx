@@ -140,6 +140,7 @@ type MessageListPropsWithContext = Pick<
     | 'StickyHeader'
     | 'targetedMessage'
     | 'threadList'
+    | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
   Pick<ImageGalleryContextValue, 'setMessages'> &
@@ -275,6 +276,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     loadMoreRecentThread,
     loadMoreThread,
     markRead,
+    maximumMessageLimit,
     Message,
     MessageSystem,
     myMessageTheme,
@@ -322,12 +324,17 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const { dateSeparatorsRef, messageGroupStylesRef, processedMessageList, rawMessageList } =
-    useMessageList({
-      isLiveStreaming,
-      noGroupByUser,
-      threadList,
-    });
+  const {
+    dateSeparatorsRef,
+    messageGroupStylesRef,
+    processedMessageList,
+    rawMessageList,
+    viewabilityChangedCallback,
+  } = useMessageList({
+    isLiveStreaming,
+    noGroupByUser,
+    threadList,
+  });
   const messageListLengthBeforeUpdate = useRef(0);
   const messageListLengthAfterUpdate = processedMessageList.length;
 
@@ -348,10 +355,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const minIndexForVisible = Math.min(1, processedMessageList.length);
 
-  const autoscrollToTopThreshold = useMemo(
-    () => (isLiveStreaming ? 64 : autoscrollToRecent ? 10 : undefined),
-    [autoscrollToRecent, isLiveStreaming],
-  );
+  const autoscrollToTopThreshold = autoscrollToRecent ? (isLiveStreaming ? 300 : 10) : undefined;
 
   const maintainVisibleContentPosition = useMemo(
     () => ({
@@ -503,6 +507,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }: {
     viewableItems: ViewToken[] | undefined;
   }) => {
+    viewabilityChangedCallback({ inverted, viewableItems });
+
     if (!viewableItems) {
       return;
     }
@@ -632,13 +638,18 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     };
 
     if (threadList || isMessageRemovedFromMessageList) {
-      scrollToBottomIfNeeded();
+      if (maximumMessageLimit) {
+        // pruning has happened, reset the trackers
+        resetPaginationTrackersRef.current();
+      } else {
+        scrollToBottomIfNeeded();
+      }
     }
 
     messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
     topMessageBeforeUpdate.current = topMessageAfterUpdate;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
+  }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id, maximumMessageLimit]);
 
   useEffect(() => {
     if (threadList) {
@@ -673,7 +684,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       !didMergeMessageSetsWithNoUpdates ||
       processedMessageList.length - messageListLengthBeforeUpdate.current > 0;
 
-    setAutoscrollToRecent(shouldForceScrollToRecent);
+    // we don't want this behaviour while pruning, as it may scroll unnecessarily in
+    // certain scenarios
+    if ((maximumMessageLimit && shouldForceScrollToRecent) || !maximumMessageLimit) {
+      setAutoscrollToRecent(shouldForceScrollToRecent);
+    }
 
     if (!didMergeMessageSetsWithNoUpdates) {
       const shouldScrollToRecentOnNewOwnMessage = shouldScrollToRecentOnNewOwnMessageRef.current();
@@ -688,7 +703,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         }, WAIT_FOR_SCROLL_TIMEOUT); // flatlist might take a bit to update, so a small delay is needed
       }
     }
-  }, [channel, threadList, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef]);
+  }, [
+    channel,
+    threadList,
+    processedMessageList,
+    shouldScrollToRecentOnNewOwnMessageRef,
+    maximumMessageLimit,
+  ]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
     const indexOfParentInMessageList = processedMessageList.findIndex(
@@ -1288,6 +1309,7 @@ export const MessageList = (props: MessageListProps) => {
     loadChannelAroundMessage,
     loading,
     LoadingIndicator,
+    maximumMessageLimit,
     markRead,
     NetworkDownIndicator,
     reloadChannel,
@@ -1348,6 +1370,7 @@ export const MessageList = (props: MessageListProps) => {
         loadMoreRecentThread,
         loadMoreThread,
         markRead,
+        maximumMessageLimit,
         Message,
         MessageSystem,
         myMessageTheme,

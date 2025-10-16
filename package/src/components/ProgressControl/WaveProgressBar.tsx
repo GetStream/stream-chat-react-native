@@ -110,6 +110,7 @@ export const WaveProgressBar = React.memo(
     } = useTheme();
 
     const pan = Gesture.Pan()
+      .enabled(showProgressDrag)
       .maxPointers(1)
       .onStart((event) => {
         const currentProgress = (state.value + event.x) / fullWidth;

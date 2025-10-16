@@ -12,12 +12,37 @@ import {
   View,
   Platform,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
-import { Close, Notification, Delete, useTheme } from 'stream-chat-react-native';
+import { Close, Edit, Notification, Delete, Folder, ZIP, useTheme } from 'stream-chat-react-native';
 import { styles as menuDrawerStyles } from './MenuDrawer.tsx';
 import AsyncStore from '../utils/AsyncStore.ts';
 import { StreamChat } from 'stream-chat';
 import { LabeledTextInput } from '../screens/AdvancedUserSelectorScreen.tsx';
+
+const isAndroid = Platform.OS === 'android';
+
+export type NotificationConfigItem = { label: string; name: string; id: string };
+export type MessageListImplementationConfigItem = { label: string; id: 'flatlist' | 'flashlist' };
+export type MessageListModeConfigItem = { label: string; mode: 'default' | 'livestream' };
+export type MessageListPruningConfigItem = { label: string; value: 100 | 500 | 1000 | undefined };
+
+const messageListImplementationConfigItems: MessageListImplementationConfigItem[] = [
+  { label: 'FlatList', id: 'flatlist' },
+  { label: 'FlashList', id: 'flashlist' },
+];
+
+const messageListModeConfigItems: MessageListModeConfigItem[] = [
+  { label: 'Default', mode: 'default' },
+  { label: 'Livestreaming', mode: 'livestream' },
+];
+
+const messageListPruningConfigItems: MessageListPruningConfigItem[] = [
+  { label: 'None', value: undefined },
+  { label: '100 Messages', value: 100 },
+  { label: '500 Messages', value: 500 },
+  { label: '1000 Messages', value: 1000 },
+];
 
 export const SlideInView = ({
   visible,
@@ -54,11 +79,6 @@ export const SlideInView = ({
     </Animated.View>
   );
 };
-
-const isAndroid = Platform.OS === 'android';
-
-type NotificationConfigItem = { label: string; name: string; id: string };
-type MessageListImplementationConfigItem = { label: string; id: string };
 
 const SecretMenuNotificationConfigItem = ({
   notificationConfigItem,
@@ -124,7 +144,7 @@ const SecretMenuNotificationConfigItem = ({
   );
 };
 
-const SecretMenuMessageListConfigItem = ({
+const SecretMenuMessageListImplementationConfigItem = ({
   messageListImplementationConfigItem,
   storeMessageListImplementation,
   isSelected,
@@ -141,9 +161,43 @@ const SecretMenuMessageListConfigItem = ({
   </TouchableOpacity>
 );
 
+const SecretMenuMessageListModeConfigItem = ({
+  messageListModeConfigItem,
+  storeMessageListMode,
+  isSelected,
+}: {
+  messageListModeConfigItem: MessageListModeConfigItem;
+  storeMessageListMode: (item: MessageListModeConfigItem) => void;
+  isSelected: boolean;
+}) => (
+  <TouchableOpacity
+    style={[styles.notificationItemContainer, { borderColor: isSelected ? 'green' : 'gray' }]}
+    onPress={() => storeMessageListMode(messageListModeConfigItem)}
+  >
+    <Text style={styles.notificationItem}>{messageListModeConfigItem.label}</Text>
+  </TouchableOpacity>
+);
+
+const SecretMenuMessageListPruningConfigItem = ({
+  messageListPruningConfigItem,
+  storeMessageListPruning,
+  isSelected,
+}: {
+  messageListPruningConfigItem: MessageListPruningConfigItem;
+  storeMessageListPruning: (item: MessageListPruningConfigItem) => void;
+  isSelected: boolean;
+}) => (
+  <TouchableOpacity
+    style={[styles.notificationItemContainer, { borderColor: isSelected ? 'green' : 'gray' }]}
+    onPress={() => storeMessageListPruning(messageListPruningConfigItem)}
+  >
+    <Text style={styles.notificationItem}>{messageListPruningConfigItem.label}</Text>
+  </TouchableOpacity>
+);
+
 /*
-* TODO: Please rewrite this entire component.
-*/
+ * TODO: Please rewrite this entire component.
+ */
 
 export const SecretMenu = ({
   close,
@@ -156,7 +210,13 @@ export const SecretMenu = ({
 }) => {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [selectedMessageListImplementation, setSelectedMessageListImplementation] = useState<
-    string | null
+    MessageListImplementationConfigItem['id'] | null
+  >(null);
+  const [selectedMessageListMode, setSelectedMessageListMode] = useState<
+    MessageListModeConfigItem['mode'] | null
+  >(null);
+  const [selectedMessageListPruning, setSelectedMessageListPruning] = useState<
+    MessageListPruningConfigItem['value'] | null
   >(null);
   const {
     theme: {
@@ -172,14 +232,6 @@ export const SecretMenu = ({
     [],
   );
 
-  const messageListImplementationConfigItems = useMemo(
-    () => [
-      { label: 'FlashList', id: 'flashlist' },
-      { label: 'FlatList', id: 'flatlist' },
-    ],
-    [],
-  );
-
   useEffect(() => {
     const getSelectedConfig = async () => {
       const notificationProvider = await AsyncStore.getItem(
@@ -190,11 +242,23 @@ export const SecretMenu = ({
         '@stream-rn-sampleapp-messagelist-implementation',
         messageListImplementationConfigItems[0],
       );
-      setSelectedProvider(notificationProvider?.id ?? 'firebase');
-      setSelectedMessageListImplementation(messageListImplementation?.id ?? 'flashlist');
+      const messageListMode = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messagelist-mode',
+        messageListModeConfigItems[0],
+      );
+      const messageListPruning = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messagelist-pruning',
+        messageListPruningConfigItems[0],
+      );
+      setSelectedProvider(notificationProvider?.id ?? notificationConfigItems[0].id);
+      setSelectedMessageListImplementation(
+        messageListImplementation?.id ?? messageListImplementationConfigItems[0].id,
+      );
+      setSelectedMessageListMode(messageListMode?.mode ?? messageListModeConfigItems[0].mode);
+      setSelectedMessageListPruning(messageListPruning?.value);
     };
     getSelectedConfig();
-  }, [notificationConfigItems, messageListImplementationConfigItems]);
+  }, [notificationConfigItems]);
 
   const storeProvider = useCallback(async (item: NotificationConfigItem) => {
     await AsyncStore.setItem('@stream-rn-sampleapp-push-provider', item);
@@ -209,6 +273,16 @@ export const SecretMenu = ({
     [],
   );
 
+  const storeMessageListMode = useCallback(async (item: MessageListModeConfigItem) => {
+    await AsyncStore.setItem('@stream-rn-sampleapp-messagelist-mode', item);
+    setSelectedMessageListMode(item.mode);
+  }, []);
+
+  const storeMessageListPruning = useCallback(async (item: MessageListPruningConfigItem) => {
+    await AsyncStore.setItem('@stream-rn-sampleapp-messagelist-pruning', item);
+    setSelectedMessageListPruning(item.value);
+  }, []);
+
   const removeAllDevices = useCallback(async () => {
     const { devices } = await chatClient.getDevices(chatClient.userID);
     for (const device of devices ?? []) {
@@ -218,74 +292,108 @@ export const SecretMenu = ({
 
   return (
     <SlideInView visible={visible}>
-      <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
-        <Notification height={24} pathFill={grey} width={24} />
-        <View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ height: 500 }}>
+        <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+          <Notification height={24} pathFill={grey} width={24} />
+          <View>
+            <Text
+              style={[
+                menuDrawerStyles.menuTitle,
+                {
+                  color: black,
+                  marginTop: 4,
+                },
+              ]}
+            >
+              Notification Provider
+            </Text>
+            <View style={{ marginLeft: 16 }}>
+              {notificationConfigItems.map((item) => (
+                <SecretMenuNotificationConfigItem
+                  key={item.id}
+                  notificationConfigItem={item}
+                  storeProvider={storeProvider}
+                  isSelected={item.id === selectedProvider}
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+        <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+          <Folder height={20} pathFill={grey} width={20} />
+          <View>
+            <Text style={[menuDrawerStyles.menuTitle]}>Message List implementation</Text>
+            <View style={{ marginLeft: 16 }}>
+              {messageListImplementationConfigItems.map((item) => (
+                <SecretMenuMessageListImplementationConfigItem
+                  key={item.id}
+                  messageListImplementationConfigItem={item}
+                  storeMessageListImplementation={storeMessageListImplementation}
+                  isSelected={item.id === selectedMessageListImplementation}
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+        <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+          <Edit height={20} pathFill={grey} width={20} />
+          <View>
+            <Text style={[menuDrawerStyles.menuTitle]}>Message List mode</Text>
+            <View style={{ marginLeft: 16 }}>
+              {messageListModeConfigItems.map((item) => (
+                <SecretMenuMessageListModeConfigItem
+                  key={item.mode}
+                  messageListModeConfigItem={item}
+                  storeMessageListMode={storeMessageListMode}
+                  isSelected={item.mode === selectedMessageListMode}
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+        <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+          <ZIP height={20} pathFill={grey} width={20} />
+          <View>
+            <Text style={[menuDrawerStyles.menuTitle]}>Message List pruning</Text>
+            <View style={{ marginLeft: 16 }}>
+              {messageListPruningConfigItems.map((item) => (
+                <SecretMenuMessageListPruningConfigItem
+                  key={item.value ?? 0}
+                  messageListPruningConfigItem={item}
+                  storeMessageListPruning={storeMessageListPruning}
+                  isSelected={item.value === selectedMessageListPruning}
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+        <TouchableOpacity onPress={removeAllDevices} style={menuDrawerStyles.menuItem}>
+          <Delete height={24} size={24} pathFill={grey} width={24} />
           <Text
             style={[
               menuDrawerStyles.menuTitle,
               {
                 color: black,
-                marginTop: 4,
               },
             ]}
           >
-            Notification Provider
+            Remove all devices
           </Text>
-          <View style={{ marginLeft: 16 }}>
-            {notificationConfigItems.map((item) => (
-              <SecretMenuNotificationConfigItem
-                key={item.id}
-                notificationConfigItem={item}
-                storeProvider={storeProvider}
-                isSelected={item.id === selectedProvider}
-              />
-            ))}
-          </View>
-        </View>
-      </View>
-      <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
-        <Notification height={24} pathFill={grey} width={24} />
-        <View>
-          <Text style={[menuDrawerStyles.menuTitle]}>Message List implementation</Text>
-          <View style={{ marginLeft: 16 }}>
-            {messageListImplementationConfigItems.map((item) => (
-              <SecretMenuMessageListConfigItem
-                key={item.id}
-                messageListImplementationConfigItem={item}
-                storeMessageListImplementation={storeMessageListImplementation}
-                isSelected={item.id === selectedMessageListImplementation}
-              />
-            ))}
-          </View>
-        </View>
-      </View>
-      <TouchableOpacity onPress={removeAllDevices} style={menuDrawerStyles.menuItem}>
-        <Delete height={24} size={24} pathFill={grey} width={24} />
-        <Text
-          style={[
-            menuDrawerStyles.menuTitle,
-            {
-              color: black,
-            },
-          ]}
-        >
-          Remove all devices
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={close} style={menuDrawerStyles.menuItem}>
-        <Close height={24} pathFill={grey} width={24} />
-        <Text
-          style={[
-            menuDrawerStyles.menuTitle,
-            {
-              color: black,
-            },
-          ]}
-        >
-          Close
-        </Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={close} style={menuDrawerStyles.menuItem}>
+          <Close height={24} pathFill={grey} width={24} />
+          <Text
+            style={[
+              menuDrawerStyles.menuTitle,
+              {
+                color: black,
+              },
+            ]}
+          >
+            Close
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
       <View style={menuDrawerStyles.menuItem}>
         <View style={[styles.separator, { backgroundColor: grey }]} />
       </View>

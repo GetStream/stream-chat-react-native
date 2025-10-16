@@ -59,6 +59,11 @@ import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-ch
 import { Toast } from './src/components/ToastComponent/Toast';
 import { useClientNotificationsToastHandler } from './src/hooks/useClientNotificationsToastHandler';
 import AsyncStore from './src/utils/AsyncStore.ts';
+import {
+  MessageListImplementationConfigItem,
+  MessageListModeConfigItem,
+  MessageListPruningConfigItem,
+} from './src/components/SecretMenu.tsx';
 
 init({ data });
 
@@ -91,7 +96,15 @@ const Stack = createStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
-  const [messageListImplementation, setMessageListImplementation] = useState<'flashlist' | 'flatlist' | null>(null);
+  const [messageListImplementation, setMessageListImplementation] = useState<
+    MessageListImplementationConfigItem['id'] | undefined
+  >(undefined);
+  const [messageListMode, setMessageListMode] = useState<
+    MessageListModeConfigItem['mode'] | undefined
+  >(undefined);
+  const [messageListPruning, setMessageListPruning] = useState<
+    MessageListPruningConfigItem['value'] | undefined
+  >(undefined);
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
 
@@ -133,14 +146,26 @@ const App = () => {
         }
       }
     });
-    const getMessageListImplementation = async () => {
-      const storedValue = await AsyncStore.getItem(
+    const getMessageListConfig = async () => {
+      const messageListImplementationStoredValue = await AsyncStore.getItem(
         '@stream-rn-sampleapp-messagelist-implementation',
-        { id: 'flashlist' }
+        { id: 'flatlist' },
       );
-      setMessageListImplementation(storedValue?.id as ('flashlist' | 'flatlist'));
-    }
-    getMessageListImplementation();
+      const messageListModeStoredValue = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messagelist-mode',
+        { mode: 'default' },
+      );
+      const messageListPruningStoredValue = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messagelist-pruning',
+        { value: undefined },
+      );
+      setMessageListImplementation(
+        messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
+      );
+      setMessageListMode(messageListModeStoredValue?.mode as MessageListModeConfigItem['mode']);
+      setMessageListPruning(messageListPruningStoredValue?.value as MessageListPruningConfigItem['value']);
+    };
+    getMessageListConfig();
     return () => {
       unsubscribeOnNotificationOpen();
       unsubscribeForegroundEvent();
@@ -172,7 +197,7 @@ const App = () => {
     });
   }, [chatClient]);
 
-  if (!messageListImplementation) {
+  if (!messageListImplementation || !messageListMode) {
     return;
   }
 
@@ -194,7 +219,17 @@ const App = () => {
             dark: colorScheme === 'dark',
           }}
         >
-          <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser, messageListImplementation }}>
+          <AppContext.Provider
+            value={{
+              chatClient,
+              loginUser,
+              logout,
+              switchUser,
+              messageListImplementation,
+              messageListMode,
+              messageListPruning,
+            }}
+          >
             {isConnecting && !chatClient ? (
               <LoadingScreen />
             ) : chatClient ? (

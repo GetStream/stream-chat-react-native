@@ -56,7 +56,7 @@ export const useMessageList = (params: UseMessageListParams) => {
   const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
   const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
     useMessagesContext();
-  const { messages } = usePaginatedMessageListContext();
+  const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
   const messageList = threadList ? threadMessages : messages;
 
@@ -129,7 +129,8 @@ export const useMessageList = (params: UseMessageListParams) => {
       processedMessageList: data,
       /** Raw messages from the channel state */
       rawMessageList: messageList,
+      viewabilityChangedCallback,
     }),
-    [data, messageList],
+    [data, messageList, viewabilityChangedCallback],
   );
 };

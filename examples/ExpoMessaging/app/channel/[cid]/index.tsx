@@ -1,6 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import type { Channel as StreamChatChannel } from 'stream-chat';
-import { Channel, MessageInput, MessageFlashList, useChatContext } from 'stream-chat-expo';
+import {
+  Channel,
+  MessageInput,
+  useChatContext,
+  MessageFlashList,
+  ThreadContextValue,
+} from 'stream-chat-expo';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
@@ -45,7 +51,7 @@ export default function ChannelScreen() {
     payload,
   ) => {
     const { message, defaultHandler, emitter } = payload;
-    const { shared_location } = message;
+    const { shared_location } = message ?? {};
     if (emitter === 'messageContent' && shared_location) {
       // Create url params from shared_location
       const params = Object.entries(shared_location)
@@ -61,26 +67,26 @@ export default function ChannelScreen() {
   }
 
   return (
-    <Channel
-      audioRecordingEnabled={true}
-      channel={channel}
-      onPressMessage={onPressMessage}
-      keyboardVerticalOffset={headerHeight}
-      MessageLocation={MessageLocation}
-      thread={thread}
-    >
-      <Stack.Screen options={{ title: 'Channel Screen' }} />
+    <SafeAreaView edges={['bottom']} style={styles.container}>
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        onPressMessage={onPressMessage}
+        keyboardVerticalOffset={headerHeight}
+        MessageLocation={MessageLocation}
+        thread={thread}
+      >
+        <Stack.Screen options={{ title: 'Channel Screen' }} />
 
-      <SafeAreaView edges={['bottom']} style={styles.container}>
         <MessageFlashList
-          onThreadSelect={(thread) => {
+          onThreadSelect={(thread: ThreadContextValue['thread']) => {
             setThread(thread);
-            router.push(`/channel/${channel.cid}/thread/${thread.cid}`);
+            router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
           }}
         />
         <MessageInput InputButtons={InputButtons} />
-      </SafeAreaView>
-    </Channel>
+      </Channel>
+    </SafeAreaView>
   );
 }
 
