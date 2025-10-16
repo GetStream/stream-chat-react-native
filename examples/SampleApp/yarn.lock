@@ -2620,12 +2620,10 @@
     read-yaml-file "^2.1.0"
     strip-json-comments "^3.1.1"
 
-"@shopify/flash-list@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-2.0.3.tgz#222427d1e09bf5cdd8a219d0a5a80f6f1d20465d"
-  integrity sha512-jUlHuZFoPdqRCDvOqsb2YkTttRPyV8Tb/EjCx3gE2wjr4UTM+fE0Ltv9bwBg0K7yo/SxRNXaW7xu5utusRb0xA==
-  dependencies:
-    tslib "2.8.1"
+"@shopify/flash-list@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-2.1.0.tgz#b1eefcf9fbd01ca04a5f24a6003cda3b46a59f64"
+  integrity sha512-/EIQlptG456yM5o9qNmNsmaZEFEOGvG3WGyb6GUAxSLlcKUGlPUkPI2NLW5wQSDEY4xSRa5zocUI+9xwmsM4Kg==
 
 "@sideway/address@^4.1.5":
   version "4.1.5"
@@ -3473,6 +3471,15 @@ available-typed-arrays@^1.0.7:
   integrity sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==
   dependencies:
     possible-typed-array-names "^1.0.0"
+
+axios@^1.12.2:
+  version "1.12.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.12.2.tgz#6c307390136cf7a2278d09cec63b136dfc6e6da7"
+  integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.4"
+    proxy-from-env "^1.1.0"
 
 axios@^1.6.0:
   version "1.7.9"
@@ -8179,14 +8186,14 @@ stream-chat-react-native-core@8.1.0:
   version "0.0.0"
   uid ""
 
-stream-chat@^9.17.0:
-  version "9.17.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.17.0.tgz#540cf1ea03b08a394d6140696aae8528e9ba9ce2"
-  integrity sha512-ys6K73wIVWs5+qsfPJ9wumEUtgbMXYVbH1dhmAZ1oYtQ01dY/avsvt25PYDakVjKeyrnT+y8T/xEzfeF/WDJsg==
+stream-chat@^9.23.0:
+  version "9.23.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.23.0.tgz#e7e5cf729861597e7198907c1cab22a57d68a2fc"
+  integrity sha512-UW112HYsLnYb4RMIXBtAouNQCCe0weVzNivjezsw+JKK1b/TX0JLBi+wK25mBUEO+coOGKfXiye6IB3gao8ipw==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
-    axios "^1.6.0"
+    axios "^1.12.2"
     base64-js "^1.5.1"
     form-data "^4.0.4"
     isomorphic-ws "^5.0.0"
@@ -8450,15 +8457,15 @@ ts-api-utils@^2.1.0:
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-2.1.0.tgz#595f7094e46eed364c13fd23e75f9513d29baf91"
   integrity sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==
 
-tslib@2.8.1, tslib@^2.1.0, tslib@^2.4.0:
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
-  integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
-
 tslib@^1.8.1:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
+
+tslib@^2.1.0, tslib@^2.4.0:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
+  integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
 
 tsutils@^3.21.0:
   version "3.21.0"
