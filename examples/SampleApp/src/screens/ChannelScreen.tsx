@@ -220,9 +220,15 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       >
         <ChannelHeader channel={channel} />
         {messageListImplementation === 'flashlist' ? (
-          <MessageFlashList onThreadSelect={onThreadSelect} isLiveStreaming={messageListMode === 'livestream'} />
+          <MessageFlashList
+            onThreadSelect={onThreadSelect}
+            isLiveStreaming={messageListMode === 'livestream'}
+          />
         ) : (
-          <MessageList onThreadSelect={onThreadSelect} isLiveStreaming={messageListMode === 'livestream'} />
+          <MessageList
+            onThreadSelect={onThreadSelect}
+            isLiveStreaming={messageListMode === 'livestream'}
+          />
         )}
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
