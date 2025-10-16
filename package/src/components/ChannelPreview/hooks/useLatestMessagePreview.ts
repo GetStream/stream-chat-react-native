@@ -4,9 +4,8 @@ import { TFunction } from 'i18next';
 import type {
   AttachmentManagerState,
   Channel,
-  ChannelState,
   DraftMessage,
-  MessageResponse,
+  LocalMessage,
   PollState,
   PollVote,
   StreamChat,
@@ -22,10 +21,8 @@ import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 
 import { stringifyMessage } from '../../../utils/utils';
 
-type LatestMessage = ReturnType<ChannelState['formatMessage']> | MessageResponse;
-
 export type LatestMessagePreview = {
-  messageObject: LatestMessage | undefined;
+  messageObject: LocalMessage | undefined;
   previews: {
     bold: boolean;
     text: string;
@@ -48,7 +45,7 @@ const selector = (nextValue: PollState): LatestMessagePreviewSelectorReturnType 
 });
 
 const getMessageSenderName = (
-  message: LatestMessage | undefined,
+  message: LocalMessage | undefined,
   currentUserId: string | undefined,
   t: (key: string) => string,
   membersLength: number,
@@ -87,7 +84,7 @@ const getLatestMessageDisplayText = (
   channel: Channel,
   client: StreamChat,
   draftMessage: DraftMessage | undefined,
-  message: LatestMessage | undefined,
+  message: LocalMessage | undefined,
   t: (key: string) => string,
   pollState: LatestMessagePreviewSelectorReturnType | undefined,
 ) => {
@@ -194,16 +191,18 @@ export enum MessageReadStatus {
   NOT_SENT_BY_CURRENT_USER = 0,
   UNREAD = 1,
   READ = 2,
+  DELIVERED = 3,
 }
 
 const getLatestMessageReadStatus = (
   channel: Channel,
   client: StreamChat,
-  message: LatestMessage | undefined,
+  lastMessage: LocalMessage | undefined,
   readEvents: boolean,
 ): MessageReadStatus => {
   const currentUserId = client.userID;
-  if (!message || currentUserId !== message.user?.id || readEvents === false) {
+  const isLastMessageOwn = currentUserId === lastMessage?.user?.id;
+  if (!lastMessage || !isLastMessageOwn || !readEvents) {
     return MessageReadStatus.NOT_SENT_BY_CURRENT_USER;
   }
 
@@ -212,10 +211,10 @@ const getLatestMessageReadStatus = (
     delete readList[currentUserId];
   }
 
-  const messageUpdatedAt = message.updated_at
-    ? typeof message.updated_at === 'string'
-      ? new Date(message.updated_at)
-      : message.updated_at
+  const messageUpdatedAt = lastMessage.updated_at
+    ? typeof lastMessage.updated_at === 'string'
+      ? new Date(lastMessage.updated_at)
+      : lastMessage.updated_at
     : undefined;
 
   return Object.values(readList).some(
@@ -232,7 +231,7 @@ const getLatestMessagePreview = (params: {
   pollState: LatestMessagePreviewSelectorReturnType | undefined;
   readEvents: boolean;
   t: TFunction;
-  lastMessage?: ReturnType<ChannelState['formatMessage']> | MessageResponse;
+  lastMessage?: LocalMessage;
 }) => {
   const { channel, client, draftMessage, lastMessage, pollState, readEvents, t } = params;
 
@@ -282,7 +281,7 @@ const stateSelector = (state: AttachmentManagerState) => ({
 export const useLatestMessagePreview = (
   channel: Channel,
   forceUpdate: number,
-  lastMessage?: ReturnType<ChannelState['formatMessage']> | MessageResponse,
+  lastMessage?: LocalMessage,
 ) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
@@ -328,8 +327,6 @@ export const useLatestMessagePreview = (
     return read_events;
   }, [channelConfigExists, channel]);
 
-  const readStatus = getLatestMessageReadStatus(channel, client, translatedLastMessage, readEvents);
-
   const pollId = lastMessage?.poll_id ?? '';
   const poll = client.polls.fromState(pollId);
   const pollState: LatestMessagePreviewSelectorReturnType =
@@ -352,7 +349,6 @@ export const useLatestMessagePreview = (
     draftMessage,
     forceUpdate,
     readEvents,
-    readStatus,
     latestVotesByOption,
     createdBy,
     name,
