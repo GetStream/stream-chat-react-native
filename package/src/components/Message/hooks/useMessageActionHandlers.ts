@@ -66,6 +66,14 @@ export const useMessageActionHandlers = ({
     );
   };
 
+  const handleDeleteForMeMessage = async () => {
+    if (!message.id) {
+      return;
+    }
+
+    await deleteMessage(message, { deleteForMe: true });
+  };
+
   const handleToggleMuteUser = async () => {
     if (!message.user?.id) {
       return;
@@ -182,6 +190,7 @@ export const useMessageActionHandlers = ({
 
   return {
     handleCopyMessage,
+    handleDeleteForMeMessage,
     handleDeleteMessage,
     handleEditMessage,
     handleFlagMessage,

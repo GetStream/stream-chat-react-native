@@ -24,6 +24,7 @@ export const mapStorableToMessage = ({
   const {
     createdAt,
     deletedAt,
+    deletedForMe,
     extraData,
     messageTextUpdatedAt,
     poll_id,
@@ -42,6 +43,7 @@ export const mapStorableToMessage = ({
     attachments: messageRow.attachments ? JSON.parse(messageRow.attachments) : [],
     created_at: createdAt,
     deleted_at: deletedAt,
+    deleted_for_me: deletedForMe,
     latest_reactions: latestReactions,
     message_text_updated_at: messageTextUpdatedAt,
     own_reactions: ownReactions,

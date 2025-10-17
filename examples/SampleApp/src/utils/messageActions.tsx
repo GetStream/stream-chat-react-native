@@ -2,6 +2,7 @@ import { Alert } from 'react-native';
 import { StreamChat } from 'stream-chat';
 import {
   Colors,
+  Delete,
   messageActions,
   MessageActionsParams,
   Time,
@@ -20,7 +21,7 @@ export function channelMessageActions({
   t: TranslationContextValue['t'];
   colors?: typeof Colors;
 }) {
-  const { dismissOverlay } = params;
+  const { dismissOverlay, deleteForMeMessage } = params;
   const actions = messageActions(params);
 
   // We cannot use the useMessageReminder hook here because it is a hook.
@@ -87,6 +88,27 @@ export function channelMessageActions({
     actionType: reminder ? 'remove-reminder' : 'remind-me',
     title: reminder ? 'Remove Reminder' : 'Remind Me',
     icon: <Bell height={24} width={24} />,
+  });
+  actions.push({
+    action: async () => {
+      Alert.alert('Delete for me', 'Are you sure you want to delete this message for me?', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            await deleteForMeMessage?.action();
+            dismissOverlay();
+          },
+          style: 'destructive',
+        },
+      ]);
+    },
+    actionType: 'deleteForMe',
+    icon: <Delete fill={colors?.accent_red} size={24} />,
+    title: t('Delete for me'),
   });
 
   return actions;

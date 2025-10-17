@@ -12,6 +12,7 @@ export const mapMessageToStorable = (
     cid,
     created_at,
     deleted_at,
+    deleted_for_me,
     id,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     latest_reactions,
@@ -37,6 +38,7 @@ export const mapMessageToStorable = (
     cid: cid || '',
     createdAt: mapDateTimeToStorable(created_at),
     deletedAt: mapDateTimeToStorable(deleted_at),
+    deletedForMe: deleted_for_me,
     extraData: JSON.stringify(extraData),
     id,
     messageTextUpdatedAt: mapDateTimeToStorable(message_text_updated_at),

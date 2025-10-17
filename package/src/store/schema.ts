@@ -170,6 +170,7 @@ export const tables: Tables = {
       cid: 'TEXT NOT NULL',
       createdAt: 'TEXT',
       deletedAt: 'TEXT',
+      deletedForMe: 'BOOLEAN DEFAULT FALSE',
       extraData: 'TEXT',
       id: 'TEXT',
       messageTextUpdatedAt: 'TEXT',
@@ -408,6 +409,7 @@ export type Schema = {
     cid: string;
     createdAt: string;
     deletedAt: string;
+    deletedForMe?: boolean;
     extraData: string;
     id: string;
     messageTextUpdatedAt: string;
