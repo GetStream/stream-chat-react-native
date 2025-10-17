@@ -3,7 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { ChannelPreviewProps } from './ChannelPreview';
 import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
-import { MessageReadStatus } from './hooks/useLatestMessagePreview';
+
+import { MessageDeliveryStatus } from './hooks/useMessageDeliveryStatus';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -38,7 +39,7 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
     },
   } = useTheme();
 
-  const created_at = latestMessagePreview.messageObject?.created_at;
+  const created_at = latestMessagePreview?.created_at;
   const latestMessageDate = created_at ? new Date(created_at) : new Date();
 
   const formattedDate = useMemo(
@@ -55,9 +56,11 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
 
   return (
     <View style={styles.flexRow}>
-      {status === MessageReadStatus.READ ? (
+      {status === MessageDeliveryStatus.READ ? (
         <CheckAll pathFill={accent_blue} {...checkAllIcon} />
-      ) : status === MessageReadStatus.UNREAD ? (
+      ) : status === MessageDeliveryStatus.DELIVERED ? (
+        <CheckAll pathFill={grey} {...checkAllIcon} />
+      ) : status === MessageDeliveryStatus.SENT ? (
         <Check pathFill={grey} {...checkIcon} />
       ) : null}
       <Text style={[styles.date, { color: grey }, date]}>

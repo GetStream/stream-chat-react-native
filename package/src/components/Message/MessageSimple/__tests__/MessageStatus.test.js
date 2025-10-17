@@ -42,6 +42,8 @@ describe('MessageStatus', () => {
     chatClient = await getTestClientWithUser(user1);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.id);
+
+    channel.state.members = Object.fromEntries(members.map((member) => [member.user_id, member]));
   });
   afterEach(cleanup);
 
@@ -56,33 +58,19 @@ describe('MessageStatus', () => {
       </ChannelsStateProvider>,
     );
 
-  it('should render message status with delivered container', async () => {
-    const user = generateUser();
-    const message = generateMessage({ user });
-
-    const { getByTestId } = renderMessageStatus({
-      lastReceivedId: message.id,
-      message: { ...message, status: 'received' },
-    });
-
-    await waitFor(() => {
-      expect(getByTestId('delivered-container')).toBeTruthy();
-    });
-  });
-
   it('should render message status with read by container', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
     const readBy = 2;
 
-    const { getByTestId, getByText, rerender, toJSON } = renderMessageStatus({
-      lastReceivedId: message.id,
+    const { getByLabelText, getByText, rerender, toJSON } = renderMessageStatus({
+      deliveredBy: 2,
       message,
       readBy,
     });
 
     await waitFor(() => {
-      expect(getByTestId('read-by-container')).toBeTruthy();
+      expect(getByLabelText('Read by count')).toBeTruthy();
       expect(getByText((readBy - 1).toString())).toBeTruthy();
     });
 
@@ -105,21 +93,29 @@ describe('MessageStatus', () => {
 
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
-      expect(getByTestId('read-by-container')).toBeTruthy();
+      expect(getByLabelText('Read by count')).toBeTruthy();
       expect(getByText((readBy - 1).toString())).toBeTruthy();
     });
   });
 
-  it('should render message status with sending container', async () => {
-    const user = generateUser();
-    const message = generateMessage({ user });
-
-    const { getByTestId } = renderMessageStatus({
-      message: { ...message, status: 'sending' },
-    });
-
-    await waitFor(() => {
-      expect(getByTestId('sending-container')).toBeTruthy();
-    });
-  });
+  it.each([
+    [1, 1, 'sending', 'Sending'],
+    [2, 2, 'received', 'Read'],
+    [1, 1, 'received', 'Sent'],
+    [2, 1, 'received', 'Delivered'],
+  ])(
+    'should render message status with %s container when deliveredBy is %s and readBy is %s and status is %s',
+    async (deliveredBy, readBy, status, accessibilityLabel) => {
+      const user = generateUser();
+      const message = generateMessage({ user });
+      const { getByLabelText } = renderMessageStatus({
+        deliveredBy,
+        message: { ...message, status },
+        readBy,
+      });
+      await waitFor(() => {
+        expect(getByLabelText(accessibilityLabel)).toBeTruthy();
+      });
+    },
+  );
 });

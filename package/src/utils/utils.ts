@@ -41,6 +41,7 @@ export const ProgressIndicatorTypes: {
 });
 
 export const MessageStatusTypes = {
+  DELIVERED: 'delivered',
   FAILED: 'failed',
   RECEIVED: 'received',
   SENDING: 'sending',
