@@ -1,7 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../../contexts/channelContext/ChannelContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -12,14 +15,11 @@ import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
 import { MessageStatusTypes } from '../../../utils/utils';
 
-export type MessageStatusPropsWithContext = Pick<
-  MessageContextValue,
-  'message' | 'readBy' | 'threadList'
->;
+export type MessageStatusPropsWithContext = Pick<ChannelContextValue, 'channel'> &
+  Pick<MessageContextValue, 'deliveredBy' | 'message' | 'readBy' | 'threadList'>;
 
 const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
-  const { channel } = useChannelContext();
-  const { message, readBy, threadList } = props;
+  const { channel, deliveredBy, message, readBy, threadList } = props;
 
   const {
     theme: {
@@ -30,68 +30,72 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     },
   } = useTheme();
 
-  if (message.status === MessageStatusTypes.SENDING) {
-    return (
-      <View style={[styles.statusContainer, statusContainer]} testID='sending-container'>
-        <Time {...timeIcon} />
-      </View>
-    );
-  }
-
-  if (threadList || message.status === MessageStatusTypes.FAILED) {
+  if (threadList || message.status === MessageStatusTypes.FAILED || message.type === 'error') {
     return null;
   }
 
-  if (readBy) {
-    const members = channel?.state.members;
-    const otherMembers = Object.values(members).filter(
-      (member) => member.user_id !== message.user?.id,
-    );
-    const hasOtherMembersGreaterThanOne = otherMembers.length > 1;
-    const hasReadByGreaterThanOne = typeof readBy === 'number' && readBy > 1;
-    const shouldDisplayReadByCount = hasOtherMembersGreaterThanOne && hasReadByGreaterThanOne;
-    const countOfReadBy =
-      typeof readBy === 'number' && hasOtherMembersGreaterThanOne ? readBy - 1 : 0;
-    const showDoubleCheck = hasReadByGreaterThanOne || readBy === true;
+  const hasReadByGreaterThanOne = typeof readBy === 'number' && readBy > 1;
 
-    return (
-      <View style={[styles.statusContainer, statusContainer]}>
-        {shouldDisplayReadByCount ? (
-          <Text
-            style={[styles.readByCount, { color: accent_blue }, readByCount]}
-            testID='read-by-container'
-          >
-            {countOfReadBy}
-          </Text>
-        ) : null}
-        {message.type !== 'error' ? (
-          showDoubleCheck ? (
-            <CheckAll pathFill={accent_blue} {...checkAllIcon} />
-          ) : (
-            <Check pathFill={grey_dark} {...checkIcon} />
-          )
-        ) : null}
-      </View>
-    );
-  }
+  // Variables to determine the status of the message
+  const read = hasReadByGreaterThanOne || readBy === true;
+  const delivered = deliveredBy > 1;
+  const sending = message.status === MessageStatusTypes.SENDING;
+  const sent =
+    message.status === MessageStatusTypes.RECEIVED &&
+    !delivered &&
+    !read &&
+    message.type !== 'ephemeral';
 
-  if (message.status === MessageStatusTypes.RECEIVED && message.type !== 'ephemeral') {
-    return (
-      <View style={[styles.statusContainer, statusContainer]} testID='delivered-container'>
-        <Check pathFill={grey_dark} {...checkIcon} />
-      </View>
-    );
-  }
+  const members = channel?.state.members;
+  const isGroupChannel = Object.keys(members).length > 2;
 
-  return null;
+  const shouldDisplayReadByCount = isGroupChannel && hasReadByGreaterThanOne;
+  const countOfReadBy = typeof readBy === 'number' && shouldDisplayReadByCount ? readBy - 1 : 0;
+
+  return (
+    <View style={[styles.statusContainer, statusContainer]}>
+      {shouldDisplayReadByCount ? (
+        <Text
+          accessibilityLabel='Read by count'
+          style={[styles.readByCount, { color: accent_blue }, readByCount]}
+        >
+          {countOfReadBy}
+        </Text>
+      ) : null}
+      {read ? (
+        <CheckAll pathFill={accent_blue} {...checkAllIcon} accessibilityLabel='Read' />
+      ) : delivered ? (
+        <CheckAll pathFill={grey_dark} {...checkAllIcon} accessibilityLabel='Delivered' />
+      ) : sending ? (
+        <Time pathFill={grey_dark} {...timeIcon} accessibilityLabel='Sending' />
+      ) : sent ? (
+        <Check pathFill={grey_dark} {...checkIcon} accessibilityLabel='Sent' />
+      ) : null}
+    </View>
+  );
 };
 
 const areEqual = (
   prevProps: MessageStatusPropsWithContext,
   nextProps: MessageStatusPropsWithContext,
 ) => {
-  const { message: prevMessage, readBy: prevReadBy, threadList: prevThreadList } = prevProps;
-  const { message: nextMessage, readBy: nextReadBy, threadList: nextThreadList } = nextProps;
+  const {
+    deliveredBy: prevDeliveredBy,
+    message: prevMessage,
+    readBy: prevReadBy,
+    threadList: prevThreadList,
+  } = prevProps;
+  const {
+    deliveredBy: nextDeliveredBy,
+    message: nextMessage,
+    readBy: nextReadBy,
+    threadList: nextThreadList,
+  } = nextProps;
+
+  const deliveredByEqual = prevDeliveredBy === nextDeliveredBy;
+  if (!deliveredByEqual) {
+    return false;
+  }
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) {
@@ -120,9 +124,12 @@ const MemoizedMessageStatus = React.memo(
 export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 
 export const MessageStatus = (props: MessageStatusProps) => {
-  const { message, readBy, threadList } = useMessageContext();
+  const { channel } = useChannelContext();
+  const { deliveredBy, message, readBy, threadList } = useMessageContext();
 
-  return <MemoizedMessageStatus {...{ message, readBy, threadList }} {...props} />;
+  return (
+    <MemoizedMessageStatus {...{ channel, deliveredBy, message, readBy, threadList }} {...props} />
+  );
 };
 
 MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';

@@ -88,8 +88,10 @@ export type MessageContextValue = {
   /** The images attached to a message */
   otherAttachments: Attachment[];
   reactions: ReactionSummary[];
-  /** Whether or not the message has been read by the current user */
+  /** Read count of the message */
   readBy: number | boolean;
+  /** Delivery count of the message */
+  deliveredBy: number;
   /** React set state function to set the state of `isEditedMessageOpen` */
   setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
   /**
