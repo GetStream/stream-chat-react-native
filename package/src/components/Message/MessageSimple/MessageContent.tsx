@@ -423,7 +423,7 @@ const areEqual = (
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned &&
     prevMessage.i18n === nextMessage.i18n &&
-    prevMessage.updated_at.getTime() === nextMessage.updated_at.getTime();
+    prevMessage?.updated_at?.getTime?.() === nextMessage?.updated_at?.getTime?.();
   if (!messageEqual) {
     return false;
   }
