@@ -3,11 +3,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { LocalMessage } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 export const useMessageReadData = ({ message }: { message: LocalMessage }) => {
   const { channel } = useChannelContext();
-  const { client } = useChatContext();
   const calculate = useCallback(() => {
     if (!message.created_at) {
       return 0;
@@ -25,7 +23,7 @@ export const useMessageReadData = ({ message }: { message: LocalMessage }) => {
   useEffect(() => {
     const { unsubscribe } = channel.on('message.read', () => setReadBy(calculate()));
     return unsubscribe;
-  }, [channel, calculate, client.user?.id]);
+  }, [channel, calculate]);
 
   return readBy;
 };
