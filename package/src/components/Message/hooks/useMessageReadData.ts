@@ -23,13 +23,7 @@ export const useMessageReadData = ({ message }: { message: LocalMessage }) => {
   const [readBy, setReadBy] = useState<number>(calculate());
 
   useEffect(() => {
-    const { unsubscribe } = channel.on('message.read', (event) => {
-      /**
-       * Optimization to only calculate when the event is from a different user.
-       * i.e. we don't show read status for received messages.
-       */
-      if (event.user?.id !== client.user?.id) setReadBy(calculate());
-    });
+    const { unsubscribe } = channel.on('message.read', () => setReadBy(calculate()));
     return unsubscribe;
   }, [channel, calculate, client.user?.id]);
 
