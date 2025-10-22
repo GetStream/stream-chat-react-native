@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { StreamChat, PushProvider, DeliveredMessageConfirmation } from 'stream-chat';
+import { StreamChat, PushProvider } from 'stream-chat';
 import {
   getMessaging,
   AuthorizationStatus,
-  setBackgroundMessageHandler,
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
@@ -13,7 +12,6 @@ import AsyncStore from '../utils/AsyncStore';
 
 import type { LoginConfig } from '../types';
 import { PermissionsAndroid, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const messaging = getMessaging();
 
@@ -40,38 +38,6 @@ const displayNotification = async (
     });
   }
 };
-
-setBackgroundMessageHandler(messaging, async (remoteMessage) => {
-  try {
-    const loginConfigStringified = await AsyncStorage.getItem('@stream-rn-sampleapp-login-config');
-    const loginConfig = JSON.parse(loginConfigStringified ?? '');
-    const chatClient = StreamChat.getInstance(loginConfig.apiKey);
-    chatClient._setToken({ id: loginConfig.userId }, loginConfig.userToken);
-
-    const notification = remoteMessage.data;
-
-    const deliverMessageConfirmation = [
-      {
-        cid: notification?.cid,
-        id: notification?.id,
-      },
-    ];
-
-    await chatClient?.markChannelsDelivered({
-      latest_delivered_messages: deliverMessageConfirmation as DeliveredMessageConfirmation[],
-    });
-
-    // create the android channel to send the notification to
-    const channelId = await notifee.createChannel({
-      id: 'chat-messages',
-      name: 'Chat Messages',
-    });
-    // display the notification
-    await displayNotification(remoteMessage, channelId);
-  } catch (error) {
-    console.error(error);
-  }
-});
 
 // Request Push Notification permission from device.
 const requestNotificationPermission = async () => {
