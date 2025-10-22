@@ -59,17 +59,17 @@ export const useAnimatedGalleryStyle = ({
         {
           scale: selected ? scale.value / 8 : oneEighth,
         },
-        { scaleX: -1 },
+        { scaleX: 1 },
       ],
     };
   }, [previous, selected]);
 
   const animatedStyles = useAnimatedStyle(() => {
-    const xScaleOffset = -7 * screenWidth * (0.5 + index);
+    const xScaleOffset = 7 * screenWidth * (0.5 + index);
     const yScaleOffset = -screenHeight * 3.5;
     return {
       transform: [
-        { scaleX: -1 },
+        { scaleX: 1 },
         { translateY: yScaleOffset },
         {
           translateX: -xScaleOffset,

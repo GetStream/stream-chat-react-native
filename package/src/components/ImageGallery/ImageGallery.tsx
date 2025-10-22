@@ -378,7 +378,7 @@ export const ImageGallery = (props: Props) => {
   );
 
   /**
-   * This transition and scaleX reverse lets use scroll left
+   * This transition and scaleX reverse lets use scroll right
    */
   const pagerStyle = useAnimatedStyle<ImageStyle>(
     () => ({
