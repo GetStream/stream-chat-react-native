@@ -163,7 +163,9 @@ const App = () => {
         messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
       );
       setMessageListMode(messageListModeStoredValue?.mode as MessageListModeConfigItem['mode']);
-      setMessageListPruning(messageListPruningStoredValue?.value as MessageListPruningConfigItem['value']);
+      setMessageListPruning(
+        messageListPruningStoredValue?.value as MessageListPruningConfigItem['value'],
+      );
     };
     getMessageListConfig();
     return () => {
