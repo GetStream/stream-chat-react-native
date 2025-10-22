@@ -34,7 +34,6 @@ const Markdown = (props: PropsWithChildren<MarkdownProps>) => {
       merge(
         {},
         SimpleMarkdown.defaultRules,
-        { ...SimpleMarkdown.defaultRules },
         getLocalRules(mergedStyles, { onLink }),
         rulesProp,
       ) as unknown as ParserRules,
