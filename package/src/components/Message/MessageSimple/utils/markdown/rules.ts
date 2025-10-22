@@ -1,504 +1,3 @@
-// import React from 'react';
-//
-// import { Text, View } from 'react-native';
-//
-// import SimpleMarkdown from '@khanacademy/simple-markdown';
-// import { head, includes, map, noop, size, some } from 'lodash';
-//
-// import { MarkdownStyle } from '../../../../../contexts';
-//
-// import { MarkdownOptions } from './index';
-//
-// export const getLocalRules = (styles: MarkdownStyle, opts: MarkdownOptions = {}) => {
-//   const LINK_INSIDE = '(?:\\[[^\\]]*\\]|[^\\]]|\\](?=[^\\[]*\\]))*';
-//   const LINK_HREF_AND_TITLE = '\\s*<?([^\\s]*?)>?(?:\\s+[\'"]([\\s\\S]*?)[\'"])?\\s*';
-//   const pressHandler = function (target) {
-//     if (opts.onLink) {
-//       opts.onLink(target).catch(function (error) {
-//         console.log('There has been a problem with this action. ' + error.message);
-//         throw error;
-//       });
-//     }
-//   };
-//   const parseInline = function (parse, content, state) {
-//     const isCurrentlyInline = state.inline || false;
-//     state.inline = true;
-//     const result = parse(content, state);
-//     state.inline = isCurrentlyInline;
-//     return result;
-//   };
-//   const parseCaptureInline = function (capture, parse, state) {
-//     return {
-//       content: parseInline(parse, capture[2], state),
-//     };
-//   };
-//   return {
-//     autolink: {
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         const _pressHandler = () => {
-//           pressHandler(node.target);
-//         };
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.autolink,
-//             onPress: _pressHandler,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//     blockQuote: {
-//       react(node, output, { ...state }) {
-//         state.withinQuote = true;
-//
-//         const img = React.createElement(View, {
-//           key: state.key - state.key,
-//           style: [styles.blockQuoteSectionBar, styles.blockQuoteBar],
-//         });
-//
-//         const blockQuote = React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.blockQuoteText,
-//           },
-//           output(node.content, state),
-//         );
-//
-//         return React.createElement(
-//           View,
-//           {
-//             key: state.key,
-//             style: [styles.blockQuoteSection, styles.blockQuoteText],
-//           },
-//           [img, blockQuote],
-//         );
-//       },
-//     },
-//     br: {
-//       react(node, output, { ...state }) {
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.br,
-//           },
-//           '\n\n',
-//         );
-//       },
-//     },
-//     codeBlock: {
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.codeBlock,
-//           },
-//           node.content,
-//         );
-//       },
-//     },
-//     del: {
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.del,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//     em: {
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         state.style = {
-//           ...(state.style || {}),
-//           ...styles.em,
-//         };
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.em,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//     heading: {
-//       match: SimpleMarkdown.blockRegex(/^ *(#{1,6}) *([^\n]+?) *#* *(?:\n *)+/),
-//       react(node, output, { ...state }) {
-//         // const newState = {...state};
-//         state.withinText = true;
-//         state.withinHeading = true;
-//
-//         state.style = {
-//           ...(state.style || {}),
-//           ...styles[`heading${node.level}`],
-//         };
-//
-//         const ret = React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: state.style,
-//           },
-//           output(node.content, state),
-//         );
-//         return ret;
-//       },
-//     },
-//     hr: {
-//       react(node, output, { ...state }) {
-//         return React.createElement(View, { key: state.key, style: styles.hr });
-//       },
-//     },
-//     image: {
-//       match: () => null,
-//     },
-//     inlineCode: {
-//       parse: parseCaptureInline,
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.inlineCode,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//     link: {
-//       match: SimpleMarkdown.inlineRegex(
-//         new RegExp('^\\[(' + LINK_INSIDE + ')\\]\\(' + LINK_HREF_AND_TITLE + '\\)'),
-//       ),
-//       react(node, output, { ...state }) {
-//         state.withinLink = true;
-//         const _pressHandler = () => {
-//           pressHandler(node.target);
-//         };
-//         const link = React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.autolink,
-//             onPress: _pressHandler,
-//           },
-//           output(node.content, state),
-//         );
-//         state.withinLink = false;
-//         return link;
-//       },
-//     },
-//     list: {
-//       react(node, output, { ...state }) {
-//         let numberIndex = 1;
-//         const items = map(node.items, function (item, i) {
-//           let bullet;
-//           state.withinList = false;
-//
-//           if (node.ordered) {
-//             bullet = React.createElement(
-//               Text,
-//               { key: 0, style: [styles.text, styles.listItemNumber] },
-//               numberIndex + '. ',
-//             );
-//           } else {
-//             bullet = React.createElement(
-//               Text,
-//               { key: 0, style: [styles.text, styles.listItemBullet] },
-//               '\u2022 ',
-//             );
-//           }
-//
-//           if (item.length > 1) {
-//             if (item[1].type == 'list') {
-//               state.withinList = true;
-//             }
-//           }
-//
-//           const content = output(item, state);
-//           let listItem;
-//           if (
-//             includes(['text', 'paragraph', 'strong'], (head(item) || {}).type) &&
-//             state.withinList == false
-//           ) {
-//             state.withinList = true;
-//             listItem = React.createElement(
-//               Text,
-//               {
-//                 style: [styles.listItemText, { marginBottom: 0 }],
-//                 key: 1,
-//               },
-//               content,
-//             );
-//           } else {
-//             listItem = React.createElement(
-//               View,
-//               {
-//                 style: styles.listItemText,
-//                 key: 1,
-//               },
-//               content,
-//             );
-//           }
-//           state.withinList = false;
-//           numberIndex++;
-//
-//           return React.createElement(
-//             View,
-//             {
-//               key: i,
-//               style: styles.listRow,
-//             },
-//             [bullet, listItem],
-//           );
-//         });
-//
-//         return React.createElement(View, { key: state.key, style: styles.list }, items);
-//       },
-//     },
-//     sublist: {
-//       react(node, output, { ...state }) {
-//         const items = map(node.items, function (item, i) {
-//           let bullet;
-//           if (node.ordered) {
-//             bullet = React.createElement(
-//               Text,
-//               { key: 0, style: [styles.text, styles.listItemNumber] },
-//               i + 1 + '. ',
-//             );
-//           } else {
-//             bullet = React.createElement(
-//               Text,
-//               { key: 0, style: [styles.text, styles.listItemBullet] },
-//               '\u2022 ',
-//             );
-//           }
-//
-//           const content = output(item, state);
-//           let listItem;
-//           state.withinList = true;
-//           if (includes(['text', 'paragraph', 'strong'], (head(item) || {}).type)) {
-//             listItem = React.createElement(
-//               Text,
-//               {
-//                 style: styles.listItemText,
-//                 key: 1,
-//               },
-//               content,
-//             );
-//           } else {
-//             listItem = React.createElement(
-//               View,
-//               {
-//                 style: styles.listItem,
-//                 key: 1,
-//               },
-//               content,
-//             );
-//           }
-//           state.withinList = false;
-//           return React.createElement(
-//             View,
-//             {
-//               key: i,
-//               style: styles.listRow,
-//             },
-//             [bullet, listItem],
-//           );
-//         });
-//
-//         return React.createElement(View, { key: state.key, style: styles.sublist }, items);
-//       },
-//     },
-//     mailto: {
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.mailto,
-//             onPress: noop,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//     newline: {
-//       react(node, output, { ...state }) {
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.newline,
-//           },
-//           '\n',
-//         );
-//       },
-//     },
-//     paragraph: {
-//       react(node, output, { ...state }) {
-//         let paragraphStyle = styles.paragraph;
-//         // Allow image to drop in next line within the paragraph
-//         if (some(node.content, { type: 'image' })) {
-//           state.withinParagraphWithImage = true;
-//           const paragraph = React.createElement(
-//             View,
-//             {
-//               key: state.key,
-//               style: styles.paragraphWithImage,
-//             },
-//             output(node.content, state),
-//           );
-//           state.withinParagraphWithImage = false;
-//           return paragraph;
-//         } else if (size(node.content) < 3 && some(node.content, { type: 'strong' })) {
-//           // align to center for Strong only content
-//           // require a check of content array size below 3,
-//           // as parse will include additional space as `text`
-//           paragraphStyle = styles.paragraphCenter;
-//         }
-//         if (state.withinList) {
-//           paragraphStyle = [paragraphStyle, styles.noMargin];
-//         }
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: paragraphStyle,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//     strong: {
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         state.style = {
-//           ...(state.style || {}),
-//           ...styles.strong,
-//         };
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: state.style,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//     table: {
-//       react(node, output, { ...state }) {
-//         const headers = map(node.header, function (content, i) {
-//           return React.createElement(
-//             Text,
-//             {
-//               key: i,
-//               style: styles.tableHeaderCell,
-//             },
-//             output(content, state),
-//           );
-//         });
-//
-//         const header = React.createElement(View, { key: -1, style: styles.tableHeader }, headers);
-//
-//         const rows = map(node.cells, function (row, r) {
-//           const cells = map(row, function (content, c) {
-//             return React.createElement(
-//               View,
-//               {
-//                 key: c,
-//                 style: styles.tableRowCell,
-//               },
-//               output(content, state),
-//             );
-//           });
-//           const rowStyles = [styles.tableRow];
-//           if (node.cells.length - 1 == r) {
-//             rowStyles.push(styles.tableRowLast);
-//           }
-//           return React.createElement(View, { key: r, style: rowStyles }, cells);
-//         });
-//
-//         return React.createElement(View, { key: state.key, style: styles.table }, [header, rows]);
-//       },
-//     },
-//     text: {
-//       react(node, output, { ...state }) {
-//         let textStyle = {
-//           ...styles.text,
-//           ...(state.style || {}),
-//         };
-//
-//         if (state.withinLink) {
-//           textStyle = [styles.text, styles.autolink];
-//         }
-//
-//         if (state.withinQuote) {
-//           textStyle = [styles.text, styles.blockQuoteText];
-//         }
-//
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: textStyle,
-//           },
-//           node.content,
-//         );
-//       },
-//     },
-//     u: {
-//       // u will to the same as strong, to avoid the View nested inside text problem
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         state.style = {
-//           ...(state.style || {}),
-//           ...styles.u,
-//         };
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.strong,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//     url: {
-//       react(node, output, { ...state }) {
-//         state.withinText = true;
-//         const _pressHandler = () => {
-//           pressHandler(node.target);
-//         };
-//         return React.createElement(
-//           Text,
-//           {
-//             key: state.key,
-//             style: styles.autolink,
-//             onPress: _pressHandler,
-//           },
-//           output(node.content, state),
-//         );
-//       },
-//     },
-//   };
-// };
-
 import React from 'react';
 import { Text, TextStyle, View, ViewStyle } from 'react-native';
 
@@ -584,19 +83,13 @@ export const getLocalRules = (
 
   const parseCaptureInline: ParseFunction = (capture, parse, state) => {
     return {
-      content: parseInline(
-        parse,
-        // capture[2] is the inner content for inline code
-        String((capture as unknown as RegExpMatchArray)[2] ?? ''),
-        state as MarkdownState,
-      ),
-      type: 'inlineCode', // type is ignored by your renderer; safe to include
-    } as unknown as SingleASTNode;
+      content: parseInline(parse, capture[2], state as MarkdownState),
+    };
   };
 
   return {
     autolink: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         const n = node as NodeWithContent & TargetNode;
         const onPress = () => pressHandler(n.target);
@@ -612,7 +105,7 @@ export const getLocalRules = (
       },
     },
     blockQuote: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinQuote = true;
         const n = node as NodeWithContent;
 
@@ -641,7 +134,7 @@ export const getLocalRules = (
       },
     },
     br: {
-      react(_node: SingleASTNode, _output: Output<React.ReactNode>, state: MarkdownState) {
+      react(_node: SingleASTNode, _output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         return React.createElement(
           Text,
           {
@@ -653,7 +146,7 @@ export const getLocalRules = (
       },
     },
     codeBlock: {
-      react(node: SingleASTNode, _output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, _output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         const n = node as NodeWithStringContent;
         return React.createElement(
@@ -667,7 +160,7 @@ export const getLocalRules = (
       },
     },
     del: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         const n = node as NodeWithContent;
         return React.createElement(
@@ -681,7 +174,7 @@ export const getLocalRules = (
       },
     },
     em: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         state.style = {
           ...(state.style || {}),
@@ -700,7 +193,7 @@ export const getLocalRules = (
     },
     heading: {
       match: SimpleMarkdown.blockRegex(/^ *(#{1,6}) *([^\n]+?) *#* *(?:\n *)+/) as MatchFunction,
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         state.withinHeading = true;
 
@@ -724,7 +217,7 @@ export const getLocalRules = (
       },
     },
     hr: {
-      react(_node: SingleASTNode, _output: Output<React.ReactNode>, state: MarkdownState) {
+      react(_node: SingleASTNode, _output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         return React.createElement(View, { key: state.key, style: styles.hr });
       },
     },
@@ -734,7 +227,7 @@ export const getLocalRules = (
     },
     inlineCode: {
       parse: parseCaptureInline,
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         const n = node as NodeWithContent;
         return React.createElement(
@@ -751,7 +244,7 @@ export const getLocalRules = (
       match: SimpleMarkdown.inlineRegex(
         new RegExp('^\\[(' + LINK_INSIDE + ')\\]\\(' + LINK_HREF_AND_TITLE + '\\)'),
       ) as MatchFunction,
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinLink = true;
         const n = node as NodeWithContent & TargetNode;
         const onPress = () => pressHandler(n.target);
@@ -769,7 +262,7 @@ export const getLocalRules = (
       },
     },
     list: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         let numberIndex = 1;
         const n = node as ListNode;
 
@@ -840,7 +333,7 @@ export const getLocalRules = (
       },
     },
     mailto: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         const n = node as NodeWithContent;
         return React.createElement(
@@ -855,7 +348,7 @@ export const getLocalRules = (
       },
     },
     newline: {
-      react(_node: SingleASTNode, _output: Output<React.ReactNode>, state: MarkdownState) {
+      react(_node: SingleASTNode, _output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         return React.createElement(
           Text,
           {
@@ -867,7 +360,7 @@ export const getLocalRules = (
       },
     },
     paragraph: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         const n = node as NodeWithContent;
         let paragraphStyle: TextStyle | (TextStyle | undefined)[] | undefined = styles.paragraph;
 
@@ -902,7 +395,7 @@ export const getLocalRules = (
       },
     },
     strong: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         state.style = {
           ...(state.style || {}),
@@ -920,7 +413,7 @@ export const getLocalRules = (
       },
     },
     sublist: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         const n = node as ListNode;
 
         const items = map(n.items as SingleASTNode[][], (item, i) => {
@@ -976,7 +469,7 @@ export const getLocalRules = (
       },
     },
     table: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         const n = node as TableNode;
 
         const headers = map(n.header, (content, i) =>
@@ -1014,7 +507,7 @@ export const getLocalRules = (
       },
     },
     text: {
-      react(node: SingleASTNode, _output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, _output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         const n = node as NodeWithStringContent;
         let textStyle: TextStyle | (TextStyle | ViewStyle | undefined)[] = {
           ...styles.text,
@@ -1041,7 +534,7 @@ export const getLocalRules = (
     },
     u: {
       // u will do the same as strong, to avoid the View nested inside text problem
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         state.style = {
           ...(state.style || {}),
@@ -1059,7 +552,7 @@ export const getLocalRules = (
       },
     },
     url: {
-      react(node: SingleASTNode, output: Output<React.ReactNode>, state: MarkdownState) {
+      react(node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) {
         state.withinText = true;
         const n = node as NodeWithContent & TargetNode;
         const onPress = () => pressHandler(n.target);
