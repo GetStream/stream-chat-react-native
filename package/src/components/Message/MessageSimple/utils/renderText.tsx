@@ -10,25 +10,24 @@ import {
 } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-// @ts-expect-error
-import Markdown from 'react-native-markdown-package';
+
 import Animated, { clamp, scrollTo, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 
-import {
-  DefaultRules,
-  defaultRules,
+import SimpleMarkdown, {
   MatchFunction,
   NodeOutput,
   Output,
   ParseFunction,
-  parseInline,
   SingleASTNode,
   State,
-} from 'simple-markdown';
+} from '@khanacademy/simple-markdown';
+
+const { defaultRules, parseInline } = SimpleMarkdown;
 
 import type { LocalMessage, UserResponse } from 'stream-chat';
 
 import { generateMarkdownText } from './generateMarkdownText';
+import Markdown, { MarkdownRules } from './markdown';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
@@ -154,8 +153,6 @@ const defaultMarkdownStyles: MarkdownStyle = {
 const mentionsParseFunction: ParseFunction = (capture, parse, state) => ({
   content: parseInline(parse, capture[0], state),
 });
-
-export type MarkdownRules = Partial<DefaultRules>;
 
 export type RenderTextParams = Partial<
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'preventPress'>
@@ -450,7 +447,7 @@ export const renderText = (params: RenderTextParams) => {
       }-${JSON.stringify(colors)}`}
       onLink={onLink}
       rules={{
-        ...customRules,
+        ...(customRules as unknown as MarkdownRules),
         ...markdownRules,
       }}
       styles={styles}

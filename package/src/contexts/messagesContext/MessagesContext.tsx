@@ -45,7 +45,7 @@ import type { MessageTextProps } from '../../components/Message/MessageSimple/Me
 import { MessageTimestampProps } from '../../components/Message/MessageSimple/MessageTimestamp';
 import { ReactionListBottomProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListBottom';
 import type { ReactionListTopProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListTop';
-import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
+import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/markdown';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
 import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';

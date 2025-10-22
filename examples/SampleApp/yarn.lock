@@ -2041,6 +2041,18 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@khanacademy/perseus-utils@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@khanacademy/perseus-utils/-/perseus-utils-2.1.0.tgz#a405f5e740e73a1345f2b172ff34260b6d87f57e"
+  integrity sha512-QgN9qW1hnoCGkErSVwCJ5SmWAqlcgXA3TvtMjsyv8LiYbAS4/ZMQOHIuq5P7u0t1i6tp02w7Qjbz/COsxyHg/A==
+
+"@khanacademy/simple-markdown@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@khanacademy/simple-markdown/-/simple-markdown-2.1.0.tgz#7fcbbcb4d0eda7d0dfb09c2ae35f0b9eb1e07dcf"
+  integrity sha512-U9yemDLqP3ehAhUdBhzVfZe9h10wWbkrIkfFf2ejSO/cUSFZwjt+KRfZtZK6q2HY+RkNYUjALDpwJu7LkrY1gw==
+  dependencies:
+    "@khanacademy/perseus-utils" "2.1.0"
+
 "@napi-rs/wasm-runtime@^0.2.11":
   version "0.2.11"
   resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.11.tgz#192c1610e1625048089ab4e35bc0649ce478500e"
