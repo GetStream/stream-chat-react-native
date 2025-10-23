@@ -15,8 +15,6 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
 
-import { isImageMediaLibraryAvailable } from '../../native';
-
 type AttachButtonPropsWithContext = Pick<
   MessageInputContextValue,
   'handleAttachButtonPress' | 'toggleAttachmentPicker'
@@ -77,7 +75,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
       handleAttachButtonPress();
       return;
     }
-    if (isImageMediaLibraryAvailable() && !disableAttachmentPicker) {
+    if (!disableAttachmentPicker) {
       toggleAttachmentPicker();
     } else {
       attachButtonHandler();
