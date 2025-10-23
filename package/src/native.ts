@@ -50,7 +50,11 @@ type PickImageAssetType = {
   cancelled?: boolean;
 };
 
-type PickImage = () => Promise<PickImageAssetType> | never;
+export type PickImageOptions = {
+  maxNumberOfFiles?: number;
+};
+
+type PickImage = (options?: PickImageOptions) => Promise<PickImageAssetType> | never;
 
 type SaveFileOptions = {
   fileName: string;
