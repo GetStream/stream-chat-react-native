@@ -259,7 +259,9 @@ const debounceOptions = {
 };
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
-  Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>> &
+  Partial<
+    Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset' | 'disableAttachmentPicker'>
+  > &
   Partial<
     Pick<
       AttachmentPickerProps,
@@ -556,6 +558,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     customMessageSwipeAction,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
+    disableAttachmentPicker = !isImageMediaLibraryAvailable(),
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
@@ -1679,10 +1682,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       bottomInset,
       bottomSheetRef,
       closePicker: () => closePicker(bottomSheetRef),
+      disableAttachmentPicker,
       openPicker: () => openPicker(bottomSheetRef),
       topInset,
     }),
-    [bottomInset, bottomSheetRef, closePicker, openPicker, topInset],
+    [bottomInset, bottomSheetRef, closePicker, openPicker, topInset, disableAttachmentPicker],
   );
 
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
@@ -1980,7 +1984,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
                         <View style={{ height: '100%' }}>{children}</View>
-                        {isImageMediaLibraryAvailable() && (
+                        {!disableAttachmentPicker && (
                           <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
                         )}
                       </MessageInputProvider>
