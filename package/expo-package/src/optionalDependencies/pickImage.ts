@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { PickImageOptions } from 'stream-chat-react-native-core';
 let ImagePicker;
 
 try {
@@ -14,7 +15,7 @@ if (!ImagePicker) {
 }
 
 export const pickImage = ImagePicker
-  ? async () => {
+  ? async ({ maxNumberOfFiles }: PickImageOptions = {}) => {
       try {
         let permissionGranted = true;
         if (Platform.OS === 'ios') {
@@ -35,6 +36,7 @@ export const pickImage = ImagePicker
             allowsMultipleSelection: true,
             mediaTypes: ['images', 'videos'],
             preferredAssetRepresentationMode: 'current',
+            selectionLimit: maxNumberOfFiles,
           });
 
           const canceled = result.canceled;
