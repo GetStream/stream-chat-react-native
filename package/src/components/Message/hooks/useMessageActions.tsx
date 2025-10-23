@@ -39,6 +39,7 @@ export type MessageActionsHookProps = Pick<
   | 'handleBan'
   | 'handleCopy'
   | 'handleDelete'
+  | 'handleDeleteForMe'
   | 'handleEdit'
   | 'handleFlag'
   | 'handleQuotedReply'
@@ -73,6 +74,7 @@ export const useMessageActions = ({
   handleBan,
   handleCopy,
   handleDelete,
+  handleDeleteForMe,
   handleEdit,
   handleFlag,
   handleMarkUnread,
@@ -101,6 +103,7 @@ export const useMessageActions = ({
   const {
     handleCopyMessage,
     handleDeleteMessage,
+    handleDeleteForMeMessage,
     handleEditMessage,
     handleFlagMessage,
     handleMarkUnreadMessage,
@@ -180,6 +183,19 @@ export const useMessageActions = ({
     icon: <Delete fill={accent_red} size={24} />,
     title: t('Delete Message'),
     titleStyle: { color: accent_red },
+  };
+
+  const deleteForMeMessage: MessageActionType = {
+    action: () => {
+      dismissOverlay();
+      if (handleDeleteForMe) {
+        handleDeleteForMe(message);
+      }
+      handleDeleteForMeMessage();
+    },
+    actionType: 'deleteForMeMessage',
+    icon: <Delete fill={accent_red} size={24} />,
+    title: t('Delete for me'),
   };
 
   const editMessage: MessageActionType = {
@@ -319,6 +335,7 @@ export const useMessageActions = ({
   return {
     banUser,
     copyMessage,
+    deleteForMeMessage,
     deleteMessage,
     editMessage,
     flagMessage,

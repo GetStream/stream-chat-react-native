@@ -1,5 +1,5 @@
 import { Alert, Image, Pressable, StyleSheet, View } from 'react-native';
-import { ChannelList } from 'stream-chat-expo';
+import { ChannelList, SqliteClient } from 'stream-chat-expo';
 import { useCallback, useContext, useMemo } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { ChannelSort } from 'stream-chat';
@@ -19,7 +19,13 @@ const LogoutButton = () => {
   const onLogoutHandler = useCallback(() => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', onPress: logOut },
+      {
+        text: 'Logout',
+        onPress: () => {
+          SqliteClient.resetDB();
+          logOut();
+        },
+      },
     ]);
   }, [logOut]);
 
