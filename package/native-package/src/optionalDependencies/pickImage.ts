@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { PickImageOptions } from 'stream-chat-react-native-core';
 let ImagePicker;
 
 try {
@@ -8,11 +9,12 @@ try {
 }
 
 export const pickImage = ImagePicker
-  ? async () => {
+  ? async ({ maxNumberOfFiles }: PickImageOptions = {}) => {
       try {
         const result = await ImagePicker.launchImageLibrary({
           assetRepresentationMode: 'current',
           mediaType: 'mixed',
+          selectionLimit: maxNumberOfFiles,
         });
         const canceled = result.didCancel;
         const errorCode = result.errorCode;

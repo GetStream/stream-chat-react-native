@@ -495,7 +495,7 @@ export const MessageInputProvider = ({
       return;
     }
 
-    const result = await NativeHandlers.pickImage();
+    const result = await NativeHandlers.pickImage({ maxNumberOfFiles: availableUploadSlots });
     if (result.askToOpenSettings) {
       Alert.alert(
         t('Allow access to your Gallery'),

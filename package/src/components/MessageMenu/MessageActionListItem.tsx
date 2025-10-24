@@ -8,6 +8,7 @@ export type ActionType =
   | 'blockUser'
   | 'copyMessage'
   | 'deleteMessage'
+  | 'deleteForMeMessage'
   | 'editMessage'
   | 'flagMessage'
   | 'markUnread'

@@ -49,6 +49,10 @@ export const ImageAttachmentUploadPreview = ({
     setLoading(false);
   }, []);
 
+  const onErrorHandler = useCallback(() => {
+    setLoading(false);
+  }, []);
+
   return (
     <View style={[styles.itemContainer, itemContainer]} testID={'image-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
@@ -57,6 +61,7 @@ export const ImageAttachmentUploadPreview = ({
         type={indicatorType}
       >
         <Image
+          onError={onErrorHandler}
           onLoadEnd={onLoadEndHandler}
           resizeMode='cover'
           source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}

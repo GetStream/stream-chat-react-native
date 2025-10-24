@@ -9,6 +9,7 @@ import {
   Channel as ChannelClass,
   ChannelState,
   Channel as ChannelType,
+  DeleteMessageOptions,
   EventHandler,
   LocalMessage,
   localMessageToNewMessagePayload,
@@ -259,7 +260,9 @@ const debounceOptions = {
 };
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
-  Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>> &
+  Partial<
+    Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset' | 'disableAttachmentPicker'>
+  > &
   Partial<
     Pick<
       AttachmentPickerProps,
@@ -324,6 +327,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'handleBan'
       | 'handleCopy'
       | 'handleDelete'
+      | 'handleDeleteForMe'
       | 'handleEdit'
       | 'handleFlag'
       | 'handleMarkUnread'
@@ -556,6 +560,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     customMessageSwipeAction,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
+    disableAttachmentPicker = !isImageMediaLibraryAvailable(),
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
@@ -582,6 +587,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBan,
     handleCopy,
     handleDelete,
+    handleDeleteForMe,
     handleEdit,
     handleFlag,
     handleMarkUnread,
@@ -1515,7 +1521,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const deleteMessage: MessagesContextValue['deleteMessage'] = useStableCallback(
-    async (message, hardDelete = false) => {
+    async (message, optionsOrHardDelete = false) => {
+      let options: DeleteMessageOptions = {};
+      if (typeof optionsOrHardDelete === 'boolean') {
+        options = optionsOrHardDelete ? { hardDelete: true } : {};
+      } else if (optionsOrHardDelete?.deleteForMe) {
+        options = { deleteForMe: true };
+      } else if (optionsOrHardDelete?.hardDelete) {
+        options = { hardDelete: true };
+      }
       if (!channel.id) {
         throw new Error('Channel has not been initialized yet');
       }
@@ -1534,7 +1548,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       threadInstance?.upsertReplyLocally({ message: updatedMessage });
 
-      const data = await client.deleteMessage(message.id, hardDelete);
+      const data = await client.deleteMessage(message.id, options);
 
       if (data?.message) {
         updateMessage({ ...data.message });
@@ -1679,10 +1693,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       bottomInset,
       bottomSheetRef,
       closePicker: () => closePicker(bottomSheetRef),
+      disableAttachmentPicker,
       openPicker: () => openPicker(bottomSheetRef),
       topInset,
     }),
-    [bottomInset, bottomSheetRef, closePicker, openPicker, topInset],
+    [bottomInset, bottomSheetRef, closePicker, openPicker, topInset, disableAttachmentPicker],
   );
 
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
@@ -1845,6 +1860,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBan,
     handleCopy,
     handleDelete,
+    handleDeleteForMe,
     handleEdit,
     handleFlag,
     handleMarkUnread,
@@ -1980,7 +1996,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
                         <View style={{ height: '100%' }}>{children}</View>
-                        {isImageMediaLibraryAvailable() && (
+                        {!disableAttachmentPicker && (
                           <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
                         )}
                       </MessageInputProvider>

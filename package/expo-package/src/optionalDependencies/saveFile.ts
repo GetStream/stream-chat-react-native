@@ -1,7 +1,7 @@
 let FileSystem;
 
 try {
-  FileSystem = require('expo-file-system');
+  FileSystem = require('expo-file-system/legacy');
 } catch (e) {
   // do nothing
 }
