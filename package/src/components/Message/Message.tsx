@@ -147,13 +147,13 @@ export type MessagePropsWithContext = Pick<
       | 'handleReaction'
       | 'message'
       | 'isMessageAIGenerated'
-      | 'deliveredBy'
+      | 'deliveredToCount'
       | 'readBy'
     >
   > &
   Pick<
     MessageContextValue,
-    'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'deliveredBy'
+    'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'deliveredToCount'
   > &
   Pick<
     MessagesContextValue,
@@ -228,7 +228,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     chatContext,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
-    deliveredBy,
+    deliveredToCount,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
@@ -627,7 +627,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     actionsEnabled,
     alignment,
     channel,
-    deliveredBy,
+    deliveredToCount,
     dismissOverlay,
     files: attachments.files,
     goToMessage,
@@ -769,7 +769,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWithContext) => {
   const {
     chatContext: { mutedUsers: prevMutedUsers },
-    deliveredBy: prevDeliveredBy,
+    deliveredToCount: prevDeliveredBy,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -784,7 +784,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
   } = prevProps;
   const {
     chatContext: { mutedUsers: nextMutedUsers },
-    deliveredBy: nextDeliveredBy,
+    deliveredToCount: nextDeliveredBy,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
@@ -973,7 +973,7 @@ export const Message = (props: MessageProps) => {
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
   const readBy = useMessageReadData({ message });
-  const deliveredBy = useMessageDeliveredData({ message });
+  const deliveredToCount = useMessageDeliveredData({ message });
   const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
@@ -982,7 +982,7 @@ export const Message = (props: MessageProps) => {
       {...{
         channel,
         chatContext,
-        deliveredBy,
+        deliveredToCount,
         dismissKeyboard,
         enforceUniqueReaction,
         members,

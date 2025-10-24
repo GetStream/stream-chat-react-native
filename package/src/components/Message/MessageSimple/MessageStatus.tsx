@@ -16,10 +16,10 @@ import { Time } from '../../../icons/Time';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 export type MessageStatusPropsWithContext = Pick<ChannelContextValue, 'channel'> &
-  Pick<MessageContextValue, 'deliveredBy' | 'message' | 'readBy' | 'threadList'>;
+  Pick<MessageContextValue, 'deliveredToCount' | 'message' | 'readBy' | 'threadList'>;
 
 const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
-  const { channel, deliveredBy, message, readBy, threadList } = props;
+  const { channel, deliveredToCount, message, readBy, threadList } = props;
 
   const {
     theme: {
@@ -38,7 +38,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
 
   // Variables to determine the status of the message
   const read = hasReadByGreaterThanOne || readBy === true;
-  const delivered = deliveredBy > 1;
+  const delivered = deliveredToCount > 1;
   const sending = message.status === MessageStatusTypes.SENDING;
   const sent =
     message.status === MessageStatusTypes.RECEIVED &&
@@ -80,13 +80,13 @@ const areEqual = (
   nextProps: MessageStatusPropsWithContext,
 ) => {
   const {
-    deliveredBy: prevDeliveredBy,
+    deliveredToCount: prevDeliveredBy,
     message: prevMessage,
     readBy: prevReadBy,
     threadList: prevThreadList,
   } = prevProps;
   const {
-    deliveredBy: nextDeliveredBy,
+    deliveredToCount: nextDeliveredBy,
     message: nextMessage,
     readBy: nextReadBy,
     threadList: nextThreadList,
@@ -125,10 +125,13 @@ export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 
 export const MessageStatus = (props: MessageStatusProps) => {
   const { channel } = useChannelContext();
-  const { deliveredBy, message, readBy, threadList } = useMessageContext();
+  const { deliveredToCount, message, readBy, threadList } = useMessageContext();
 
   return (
-    <MemoizedMessageStatus {...{ channel, deliveredBy, message, readBy, threadList }} {...props} />
+    <MemoizedMessageStatus
+      {...{ channel, deliveredToCount, message, readBy, threadList }}
+      {...props}
+    />
   );
 };
 

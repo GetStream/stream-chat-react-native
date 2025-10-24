@@ -64,7 +64,7 @@ describe('MessageStatus', () => {
     const readBy = 2;
 
     const { getByLabelText, getByText, rerender, toJSON } = renderMessageStatus({
-      deliveredBy: 2,
+      deliveredToCount: 2,
       message,
       readBy,
     });
@@ -104,12 +104,12 @@ describe('MessageStatus', () => {
     [1, 1, 'received', 'Sent'],
     [2, 1, 'received', 'Delivered'],
   ])(
-    'should render message status with %s container when deliveredBy is %s and readBy is %s and status is %s',
-    async (deliveredBy, readBy, status, accessibilityLabel) => {
+    'should render message status with %s container when deliveredToCount is %s and readBy is %s and status is %s',
+    async (deliveredToCount, readBy, status, accessibilityLabel) => {
       const user = generateUser();
       const message = generateMessage({ user });
       const { getByLabelText } = renderMessageStatus({
-        deliveredBy,
+        deliveredToCount,
         message: { ...message, status },
         readBy,
       });

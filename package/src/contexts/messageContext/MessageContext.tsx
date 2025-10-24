@@ -91,7 +91,7 @@ export type MessageContextValue = {
   /** Read count of the message */
   readBy: number | boolean;
   /** Delivery count of the message */
-  deliveredBy: number;
+  deliveredToCount: number;
   /** React set state function to set the state of `isEditedMessageOpen` */
   setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
   /**
