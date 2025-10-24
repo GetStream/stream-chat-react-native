@@ -62,11 +62,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { useStateStore } from '../../hooks/useStateStore';
-import {
-  isAudioRecorderAvailable,
-  isImageMediaLibraryAvailable,
-  NativeHandlers,
-} from '../../native';
+import { isAudioRecorderAvailable, NativeHandlers } from '../../native';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
@@ -112,7 +108,7 @@ const styles = StyleSheet.create({
 
 type MessageInputPropsWithContext = Pick<
   AttachmentPickerContextValue,
-  'bottomInset' | 'selectedPicker'
+  'bottomInset' | 'disableAttachmentPicker' | 'selectedPicker'
 > &
   Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
@@ -207,6 +203,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     cooldownEndsAt,
     CooldownTimer,
     CreatePollContent,
+    disableAttachmentPicker,
     editing,
     Input,
     inputBoxRef,
@@ -564,7 +561,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>
         <AutoCompleteSuggestionList />
       </View>
-      {isImageMediaLibraryAvailable() && selectedPicker ? (
+      {!disableAttachmentPicker && selectedPicker ? (
         <View
           style={[
             {
@@ -784,7 +781,8 @@ export const MessageInput = (props: MessageInputProps) => {
     uploadNewFile,
     VideoRecorderSelectorIcon,
   } = useMessageInputContext();
-  const { bottomInset, bottomSheetRef, selectedPicker } = useAttachmentPickerContext();
+  const { bottomInset, bottomSheetRef, disableAttachmentPicker, selectedPicker } =
+    useAttachmentPickerContext();
   const messageComposer = useMessageComposer();
   const editing = !!messageComposer.editedMessage;
   const { clearEditingState } = useMessageComposerAPIContext();
@@ -835,6 +833,7 @@ export const MessageInput = (props: MessageInputProps) => {
         CooldownTimer,
         CreatePollContent,
         CreatePollIcon,
+        disableAttachmentPicker,
         editing,
         FileSelectorIcon,
         ImageSelectorIcon,
