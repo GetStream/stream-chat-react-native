@@ -29,6 +29,7 @@ export type AttachmentPickerContextValue = {
   topInset: number;
 
   selectedPicker?: 'images';
+  disableAttachmentPicker?: boolean;
 };
 
 export const AttachmentPickerContext = React.createContext(
