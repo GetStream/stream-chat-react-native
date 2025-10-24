@@ -1,0 +1,37 @@
+import { useCallback, useEffect, useState } from 'react';
+
+import { Event, LocalMessage } from 'stream-chat';
+
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+
+export const useMessageDeliveredData = ({ message }: { message: LocalMessage }) => {
+  const { channel } = useChannelContext();
+  const { client } = useChatContext();
+  const calculate = useCallback(() => {
+    if (!message.created_at) {
+      return 0;
+    }
+    const messageRef = {
+      msgId: message.id,
+      timestampMs: new Date(message.created_at).getTime(),
+    };
+    return channel.messageReceiptsTracker.deliveredForMessage(messageRef).length;
+  }, [channel, message]);
+
+  const [deliveredToCount, setDeliveredToCount] = useState<number>(calculate());
+
+  useEffect(() => {
+    const { unsubscribe } = channel.on('message.delivered', (event: Event) => {
+      /**
+       * An optimization to only re-calculate if the event is received by a different user.
+       */
+      if (event.user?.id !== client.user?.id) {
+        setDeliveredToCount(calculate());
+      }
+    });
+    return unsubscribe;
+  }, [channel, calculate, client.user?.id]);
+
+  return deliveredToCount;
+};

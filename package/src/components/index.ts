@@ -157,7 +157,8 @@ export * from './MessageList/TypingIndicatorContainer';
 export * from './MessageList/utils/getDateSeparators';
 export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
-export * from './MessageList/utils/getReadState';
+export * from './Message/hooks/useMessageDeliveryData';
+export * from './Message/hooks/useMessageReadData';
 
 export * from './MessageMenu/MessageActionList';
 export * from './MessageMenu/MessageActionListItem';

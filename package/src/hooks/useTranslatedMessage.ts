@@ -1,10 +1,10 @@
-import type { LocalMessage, MessageResponse, TranslationLanguages } from 'stream-chat';
+import type { LocalMessage, TranslationLanguages } from 'stream-chat';
 
 import { useTranslationContext } from '../contexts/translationContext/TranslationContext';
 
 type TranslationKey = `${TranslationLanguages}_text`;
 
-export const useTranslatedMessage = (message?: MessageResponse | LocalMessage) => {
+export const useTranslatedMessage = (message?: LocalMessage) => {
   const { userLanguage } = useTranslationContext();
 
   const translationKey: TranslationKey = `${userLanguage}_text`;

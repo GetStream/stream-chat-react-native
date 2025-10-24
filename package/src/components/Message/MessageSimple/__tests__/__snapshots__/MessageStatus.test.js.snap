@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MessageStatus should render message status with read by container 1`] = `
 <View
@@ -31,6 +31,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
       }
     >
       <Text
+        accessibilityLabel="Read by count"
         style={
           [
             {
@@ -44,11 +45,11 @@ exports[`MessageStatus should render message status with read by container 1`] =
             {},
           ]
         }
-        testID="read-by-container"
       >
         1
       </Text>
       <RNSVGSvgView
+        accessibilityLabel="Read"
         align="xMidYMid"
         bbHeight={16}
         bbWidth={16}

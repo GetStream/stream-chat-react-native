@@ -1,7 +1,7 @@
 import { type SetStateAction, useEffect, useMemo, useState } from 'react';
 
 import throttle from 'lodash/throttle';
-import type { Channel, ChannelState, Event, MessageResponse, StreamChat } from 'stream-chat';
+import type { Channel, Event, LocalMessage, MessageResponse, StreamChat } from 'stream-chat';
 
 import { useIsChannelMuted } from './useIsChannelMuted';
 
@@ -16,7 +16,7 @@ const setLastMessageThrottleOptions = { leading: true, trailing: true };
 const refreshUnreadCountThrottleTimeout = 400;
 const refreshUnreadCountThrottleOptions = setLastMessageThrottleOptions;
 
-type LastMessageType = ReturnType<ChannelState['formatMessage']> | MessageResponse;
+type LastMessageType = LocalMessage | MessageResponse;
 
 export const useChannelPreviewData = (
   channel: Channel,
@@ -172,7 +172,11 @@ export const useChannelPreviewData = (
     return () => listeners.forEach((l) => l.unsubscribe());
   }, [channel, refreshUnreadCount, forceUpdate, channelListForceUpdate, setLastMessage]);
 
-  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, lastMessage);
+  const latestMessagePreview = useLatestMessagePreview(
+    channel,
+    forceUpdate,
+    lastMessage as LocalMessage,
+  );
 
   return { latestMessagePreview, muted, unread };
 };

@@ -6,6 +6,8 @@ import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
+import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
+import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
@@ -46,7 +48,6 @@ import {
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
-import { getReadState } from '../MessageList/utils/getReadState';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -143,10 +144,18 @@ export type MessagePropsWithContext = Pick<
   Partial<
     Omit<
       MessageContextValue,
-      'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated' | 'readBy'
+      | 'groupStyles'
+      | 'handleReaction'
+      | 'message'
+      | 'isMessageAIGenerated'
+      | 'deliveredToCount'
+      | 'readBy'
     >
   > &
-  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy'> &
+  Pick<
+    MessageContextValue,
+    'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'deliveredToCount'
+  > &
   Pick<
     MessagesContextValue,
     | 'sendReaction'
@@ -221,6 +230,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     chatContext,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
+    deliveredToCount,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
@@ -626,6 +636,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     actionsEnabled,
     alignment,
     channel,
+    deliveredToCount,
     dismissOverlay,
     files: attachments.files,
     goToMessage,
@@ -767,6 +778,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWithContext) => {
   const {
     chatContext: { mutedUsers: prevMutedUsers },
+    deliveredToCount: prevDeliveredBy,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -781,6 +793,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
   } = prevProps;
   const {
     chatContext: { mutedUsers: nextMutedUsers },
+    deliveredToCount: nextDeliveredBy,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
@@ -792,6 +805,11 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     readBy: nextReadBy,
     t: nextT,
   } = nextProps;
+
+  const deliveredByEqual = prevDeliveredBy === nextDeliveredBy;
+  if (!deliveredByEqual) {
+    return false;
+  }
 
   const readByEqual = prevReadBy === nextReadBy;
   if (!readByEqual) {
@@ -957,13 +975,14 @@ export type MessageProps = Partial<
  */
 export const Message = (props: MessageProps) => {
   const { message } = props;
-  const { channel, enforceUniqueReaction, members, read } = useChannelContext();
+  const { channel, enforceUniqueReaction, members } = useChannelContext();
   const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
-  const readBy = useMemo(() => getReadState(message, read), [message, read]);
+  const readBy = useMessageReadData({ message });
+  const deliveredToCount = useMessageDeliveredData({ message });
   const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
@@ -972,6 +991,7 @@ export const Message = (props: MessageProps) => {
       {...{
         channel,
         chatContext,
+        deliveredToCount,
         dismissKeyboard,
         enforceUniqueReaction,
         members,
