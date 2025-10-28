@@ -4,7 +4,10 @@ import { Pressable } from 'react-native';
 
 import { NativeAttachmentPicker } from './components/NativeAttachmentPicker';
 
-import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import {
+  AttachmentPickerContextValue,
+  useAttachmentPickerContext,
+} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -12,22 +15,21 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
 
-import { isImageMediaLibraryAvailable } from '../../native';
-
 type AttachButtonPropsWithContext = Pick<
   MessageInputContextValue,
   'handleAttachButtonPress' | 'toggleAttachmentPicker'
-> & {
-  disabled?: boolean;
-  /** Function that opens attachment options bottom sheet */
-  handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
-  selectedPicker?: 'images';
-};
+> &
+  Pick<AttachmentPickerContextValue, 'disableAttachmentPicker' | 'selectedPicker'> & {
+    disabled?: boolean;
+    /** Function that opens attachment options bottom sheet */
+    handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
+  };
 
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
   const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
   const {
+    disableAttachmentPicker,
     disabled = false,
     handleAttachButtonPress,
     handleOnPress,
@@ -73,7 +75,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
       handleAttachButtonPress();
       return;
     }
-    if (isImageMediaLibraryAvailable()) {
+    if (!disableAttachmentPicker) {
       toggleAttachmentPicker();
     } else {
       attachButtonHandler();
@@ -132,12 +134,17 @@ export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
  * UI Component for attach button in MessageInput component.
  */
 export const AttachButton = (props: AttachButtonProps) => {
-  const { selectedPicker } = useAttachmentPickerContext();
+  const { disableAttachmentPicker, selectedPicker } = useAttachmentPickerContext();
   const { handleAttachButtonPress, toggleAttachmentPicker } = useMessageInputContext();
 
   return (
     <MemoizedAttachButton
-      {...{ handleAttachButtonPress, selectedPicker, toggleAttachmentPicker }}
+      {...{
+        disableAttachmentPicker,
+        handleAttachButtonPress,
+        selectedPicker,
+        toggleAttachmentPicker,
+      }}
       {...props}
     />
   );
