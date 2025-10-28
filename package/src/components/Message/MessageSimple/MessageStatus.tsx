@@ -1,10 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../../contexts/channelContext/ChannelContext';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -15,11 +12,15 @@ import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
 import { MessageStatusTypes } from '../../../utils/utils';
 
-export type MessageStatusPropsWithContext = Pick<ChannelContextValue, 'channel'> &
-  Pick<MessageContextValue, 'deliveredToCount' | 'message' | 'readBy' | 'threadList'>;
+export type MessageStatusPropsWithContext = Pick<
+  MessageContextValue,
+  'deliveredToCount' | 'message' | 'readBy' | 'threadList'
+> & {
+  channelMembersCount: number;
+};
 
 const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
-  const { channel, deliveredToCount, message, readBy, threadList } = props;
+  const { channelMembersCount, deliveredToCount, message, readBy, threadList } = props;
 
   const {
     theme: {
@@ -46,8 +47,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     !read &&
     message.type !== 'ephemeral';
 
-  const members = channel?.state.members;
-  const isGroupChannel = Object.keys(members).length > 2;
+  const isGroupChannel = channelMembersCount > 2;
 
   const shouldDisplayReadByCount = isGroupChannel && hasReadByGreaterThanOne;
   const countOfReadBy = typeof readBy === 'number' && shouldDisplayReadByCount ? readBy - 1 : 0;
@@ -84,12 +84,14 @@ const areEqual = (
     message: prevMessage,
     readBy: prevReadBy,
     threadList: prevThreadList,
+    channelMembersCount: prevChannelMembersCount,
   } = prevProps;
   const {
     deliveredToCount: nextDeliveredBy,
     message: nextMessage,
     readBy: nextReadBy,
     threadList: nextThreadList,
+    channelMembersCount: nextChannelMembersCount,
   } = nextProps;
 
   const deliveredByEqual = prevDeliveredBy === nextDeliveredBy;
@@ -107,6 +109,11 @@ const areEqual = (
     return false;
   }
 
+  const channelMembersCountEqual = prevChannelMembersCount === nextChannelMembersCount;
+  if (!channelMembersCountEqual) {
+    return false;
+  }
+
   const messageEqual =
     prevMessage.status === nextMessage.status && prevMessage.type === nextMessage.type;
   if (!messageEqual) {
@@ -121,15 +128,19 @@ const MemoizedMessageStatus = React.memo(
   areEqual,
 ) as typeof MessageStatusWithContext;
 
-export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
+export type MessageStatusProps = Partial<MessageStatusPropsWithContext> & {
+  channelMembersCount: number;
+};
 
 export const MessageStatus = (props: MessageStatusProps) => {
   const { channel } = useChannelContext();
   const { deliveredToCount, message, readBy, threadList } = useMessageContext();
 
+  const channelMembersCount = channel?.state.members?.length;
+
   return (
     <MemoizedMessageStatus
-      {...{ channel, deliveredToCount, message, readBy, threadList }}
+      {...{ channel, channelMembersCount, deliveredToCount, message, readBy, threadList }}
       {...props}
     />
   );
