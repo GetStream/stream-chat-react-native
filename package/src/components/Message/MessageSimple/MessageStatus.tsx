@@ -128,15 +128,13 @@ const MemoizedMessageStatus = React.memo(
   areEqual,
 ) as typeof MessageStatusWithContext;
 
-export type MessageStatusProps = Partial<MessageStatusPropsWithContext> & {
-  channelMembersCount: number;
-};
+export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 
 export const MessageStatus = (props: MessageStatusProps) => {
   const { channel } = useChannelContext();
   const { deliveredToCount, message, readBy, threadList } = useMessageContext();
 
-  const channelMembersCount = channel?.state.members?.length;
+  const channelMembersCount = Object.keys(channel?.state.members).length;
 
   return (
     <MemoizedMessageStatus
