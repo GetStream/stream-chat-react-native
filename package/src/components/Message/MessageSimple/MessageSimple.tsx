@@ -1,7 +1,18 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
-import { MessageBubble, SwipableMessageBubble } from './MessageBubble';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+import Animated, {
+  Extrapolation,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+
+const AnimatedWrapper = Animated.createAnimatedComponent(View);
 
 import {
   MessageContextValue,
@@ -13,7 +24,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import { useStableCallback } from '../../../hooks/useStableCallback';
+import { NativeHandlers } from '../../../native';
 
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { useMessageData } from '../hooks/useMessageData';
@@ -24,6 +35,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   contentContainer: {},
+  contentWrapper: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
   lastMessageContainer: {
     marginBottom: 12,
   },
@@ -36,6 +51,9 @@ const styles = StyleSheet.create({
   messageGroupedTopContainer: {},
   rightAlignItems: {
     alignItems: 'flex-end',
+  },
+  swipeContentContainer: {
+    position: 'absolute',
   },
 });
 
@@ -56,7 +74,6 @@ export type MessageSimplePropsWithContext = Pick<
 > &
   Pick<
     MessagesContextValue,
-    | 'customMessageSwipeAction'
     | 'enableMessageGroupingByUser'
     | 'enableSwipeToReply'
     | 'myMessageTheme'
@@ -89,8 +106,6 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
   const { width } = Dimensions.get('screen');
   const {
     alignment,
-    channel,
-    customMessageSwipeAction,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
@@ -130,11 +145,13 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
           receiverMessageBackgroundColor,
           senderMessageBackgroundColor,
         },
+        contentWrapper,
         headerWrapper,
         lastMessageContainer,
         messageGroupedSingleOrBottomContainer,
         messageGroupedTopContainer,
         reactionListTop: { position: reactionPosition },
+        swipeContentContainer,
       },
     },
   } = useTheme();
@@ -191,13 +208,182 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
 
   const repliesCurveColor = isMessageReceivedOrErrorType ? grey_gainsboro : backgroundColor;
 
-  const onSwipeActionHandler = useStableCallback(() => {
-    if (customMessageSwipeAction) {
-      customMessageSwipeAction({ channel, message });
-      return;
-    }
+  const translateX = useSharedValue(0);
+  const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
+  const isSwiping = useSharedValue<boolean>(false);
+  const [shouldRenderAnimatedWrapper, setShouldRenderAnimatedWrapper] = useState<boolean>(
+    shouldRenderSwipeableWrapper,
+  );
+
+  const onSwipeToReply = useCallback(() => {
     setQuotedMessage(message);
-  });
+  }, [setQuotedMessage, message]);
+
+  const THRESHOLD = 25;
+  const MINIMUM_DISTANCE = 8;
+
+  const triggerHaptic = NativeHandlers.triggerHaptic;
+
+  const swipeGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .hitSlop(messageSwipeToReplyHitSlop)
+        .onBegin((event) => {
+          touchStart.value = { x: event.x, y: event.y };
+        })
+        .onTouchesMove((event, state) => {
+          if (!touchStart.value || !event.changedTouches.length) {
+            state.fail();
+            return;
+          }
+
+          const xDiff = Math.abs(event.changedTouches[0].x - touchStart.value.x);
+          const yDiff = Math.abs(event.changedTouches[0].y - touchStart.value.y);
+          const isHorizontalPanning = xDiff > yDiff;
+          const hasMinimumDistance = xDiff > MINIMUM_DISTANCE || yDiff > MINIMUM_DISTANCE;
+
+          // Only activate if there's significant horizontal movement
+          if (isHorizontalPanning && hasMinimumDistance) {
+            state.activate();
+            isSwiping.value = true;
+            if (!shouldRenderSwipeableWrapper) {
+              runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
+            }
+          } else if (hasMinimumDistance) {
+            state.fail();
+          }
+        })
+        .onStart(() => {
+          translateX.value = 0;
+        })
+        .onChange(({ translationX }) => {
+          if (translationX > 0) {
+            translateX.value = translationX;
+          }
+        })
+        .onEnd(() => {
+          if (translateX.value >= THRESHOLD) {
+            runOnJS(onSwipeToReply)();
+            if (triggerHaptic) {
+              runOnJS(triggerHaptic)('impactMedium');
+            }
+          }
+          isSwiping.value = false;
+          translateX.value = withSpring(
+            0,
+            {
+              dampingRatio: 1,
+              duration: 500,
+              overshootClamping: true,
+              stiffness: 1,
+            },
+            () => {
+              if (!shouldRenderSwipeableWrapper) {
+                runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
+              }
+            },
+          );
+        }),
+    [
+      isSwiping,
+      messageSwipeToReplyHitSlop,
+      onSwipeToReply,
+      touchStart,
+      translateX,
+      triggerHaptic,
+      shouldRenderSwipeableWrapper,
+    ],
+  );
+
+  const messageBubbleAnimatedStyle = useAnimatedStyle(
+    () => ({
+      transform: [{ translateX: translateX.value }],
+    }),
+    [],
+  );
+
+  const swipeContentAnimatedStyle = useAnimatedStyle(
+    () => ({
+      opacity: interpolate(translateX.value, [0, THRESHOLD], [0, 1]),
+      transform: [
+        {
+          translateX: interpolate(
+            translateX.value,
+            [0, THRESHOLD],
+            [-THRESHOLD, 0],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    }),
+    [],
+  );
+
+  const renderMessageBubble = useMemo(
+    () => (
+      <View style={[styles.contentWrapper, contentWrapper]}>
+        <MessageContent
+          backgroundColor={backgroundColor}
+          isVeryLastMessage={isVeryLastMessage}
+          messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+          noBorder={noBorder}
+          setMessageContentWidth={setMessageContentWidth}
+        />
+        {reactionListPosition === 'top' && ReactionListTop ? (
+          <ReactionListTop messageContentWidth={messageContentWidth} />
+        ) : null}
+      </View>
+    ),
+    [
+      messageContentWidth,
+      reactionListPosition,
+      MessageContent,
+      ReactionListTop,
+      backgroundColor,
+      contentWrapper,
+      isVeryLastMessage,
+      messageGroupedSingleOrBottom,
+      noBorder,
+    ],
+  );
+
+  const renderAnimatedMessageBubble = useMemo(
+    () => (
+      <GestureDetector gesture={swipeGesture}>
+        <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
+          {shouldRenderAnimatedWrapper ? (
+            <>
+              <AnimatedWrapper
+                style={[
+                  styles.swipeContentContainer,
+                  swipeContentAnimatedStyle,
+                  swipeContentContainer,
+                ]}
+              >
+                {MessageSwipeContent ? <MessageSwipeContent /> : null}
+              </AnimatedWrapper>
+              <AnimatedWrapper pointerEvents='box-none' style={messageBubbleAnimatedStyle}>
+                {renderMessageBubble}
+              </AnimatedWrapper>
+            </>
+          ) : (
+            renderMessageBubble
+          )}
+        </View>
+      </GestureDetector>
+    ),
+    [
+      MessageSwipeContent,
+      contentWrapper,
+      shouldRenderAnimatedWrapper,
+      messageBubbleAnimatedStyle,
+      messageSwipeToReplyHitSlop,
+      renderMessageBubble,
+      swipeContentAnimatedStyle,
+      swipeContentContainer,
+      swipeGesture,
+    ],
+  );
 
   return (
     <View
@@ -257,35 +443,7 @@ const MessageSimpleWithContext = (props: MessageSimplePropsWithContext) => {
             )}
             {message.pinned ? <MessagePinnedHeader /> : null}
           </View>
-          {enableSwipeToReply ? (
-            <SwipableMessageBubble
-              backgroundColor={backgroundColor}
-              isVeryLastMessage={isVeryLastMessage}
-              MessageContent={MessageContent}
-              messageContentWidth={messageContentWidth}
-              messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-              MessageSwipeContent={MessageSwipeContent}
-              messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
-              noBorder={noBorder}
-              onSwipe={onSwipeActionHandler}
-              reactionListPosition={reactionListPosition}
-              ReactionListTop={ReactionListTop}
-              setMessageContentWidth={setMessageContentWidth}
-              shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
-            />
-          ) : (
-            <MessageBubble
-              backgroundColor={backgroundColor}
-              isVeryLastMessage={isVeryLastMessage}
-              MessageContent={MessageContent}
-              messageContentWidth={messageContentWidth}
-              messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-              noBorder={noBorder}
-              reactionListPosition={reactionListPosition}
-              ReactionListTop={ReactionListTop}
-              setMessageContentWidth={setMessageContentWidth}
-            />
-          )}
+          {enableSwipeToReply ? renderAnimatedMessageBubble : renderMessageBubble}
           {reactionListPosition === 'bottom' && ReactionListBottom ? <ReactionListBottom /> : null}
           <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
           <MessageFooter date={message.created_at} isDeleted={!!isMessageTypeDeleted} />
@@ -448,7 +606,6 @@ export const MessageSimple = (props: MessageSimpleProps) => {
     setQuotedMessage,
   } = useMessageContext();
   const {
-    customMessageSwipeAction,
     enableMessageGroupingByUser,
     enableSwipeToReply,
     MessageAvatar,
@@ -477,7 +634,6 @@ export const MessageSimple = (props: MessageSimpleProps) => {
       {...{
         alignment,
         channel,
-        customMessageSwipeAction,
         enableMessageGroupingByUser,
         enableSwipeToReply,
         groupStyles,
