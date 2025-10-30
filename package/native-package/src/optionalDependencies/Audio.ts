@@ -6,12 +6,15 @@ import {
   AudioSourceAndroidType,
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
-  AVModeIOSOption,
+  AVModeIOSOptionAudioRecorderPlayer,
+  AVModeIOSOptionNitroSound,
   OutputFormatAndroidType,
   RNCLIRecordingOptions as RecordingOptions,
 } from 'stream-chat-react-native-core';
 
 let AudioRecorderPackage;
+let AudioRecorderPackageAudioRecorderPlayer;
+let AudioRecorderPackageNitroSound;
 let audioRecorderPlayer;
 
 let RNBlobUtil;
@@ -23,11 +26,26 @@ try {
 }
 
 try {
-  AudioRecorderPackage = require('react-native-audio-recorder-player').default;
-  audioRecorderPlayer = new AudioRecorderPackage();
-  audioRecorderPlayer.setSubscriptionDuration(Platform.OS === 'android' ? 0.1 : 0.06);
+  AudioRecorderPackageNitroSound = require('react-native-nitro-sound');
 } catch (e) {
-  console.log('react-native-audio-recorder-player is not installed.');
+  console.log(
+    'The package react-native-audio-recorder-player is deprecated. Please install react-native-nitro-sound instead.',
+  );
+}
+
+try {
+  AudioRecorderPackageAudioRecorderPlayer = require('react-native-audio-recorder-player').default;
+} catch (e) {
+  // do nothing
+}
+
+AudioRecorderPackage = AudioRecorderPackageNitroSound || AudioRecorderPackageAudioRecorderPlayer;
+if (AudioRecorderPackageNitroSound) {
+  audioRecorderPlayer = AudioRecorderPackageNitroSound.createSound();
+  audioRecorderPlayer.setSubscriptionDuration(Platform.OS === 'android' ? 0.1 : 0.06);
+} else if (AudioRecorderPackageAudioRecorderPlayer) {
+  audioRecorderPlayer = new AudioRecorderPackageAudioRecorderPlayer();
+  audioRecorderPlayer.setSubscriptionDuration(Platform.OS === 'android' ? 0.1 : 0.06);
 }
 
 const verifyAndroidPermissions = async () => {
@@ -91,13 +109,18 @@ class _Audio {
   audioRecordingConfiguration: AudioRecordingConfiguration = {
     options: {
       audioSet: {
+        // Android specific properties
         AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
         AudioSourceAndroid: AudioSourceAndroidType.MIC,
+        OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+
+        // iOS specific properties
         AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
         AVFormatIDKeyIOS: AVEncodingOption.aac,
-        AVModeIOS: AVModeIOSOption.spokenaudio,
+        AVModeIOS: AudioRecorderPackageNitroSound
+          ? AVModeIOSOptionNitroSound.spokenaudio
+          : AVModeIOSOptionAudioRecorderPlayer.spokenaudio,
         AVNumberOfChannelsKeyIOS: 2,
-        OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
       },
       isMeteringEnabled: true,
     },
@@ -134,7 +157,7 @@ class _Audio {
         ios: 'sound.aac',
       });
       const recording = await audioRecorderPlayer.startRecorder(
-        path,
+        AudioRecorderPackageAudioRecorderPlayer ? path : undefined,
         this.audioRecordingConfiguration.options.audioSet,
         this.audioRecordingConfiguration.options.isMeteringEnabled,
       );

@@ -30,6 +30,7 @@
     "@stream-io/flat-list-mvcp": ">=0.10.3",
     "react-native": ">=0.73.0",
     "react-native-audio-recorder-player": ">=3.6.13",
+    "react-native-nitro-sound": ">=0.2.9",
     "react-native-blob-util": ">=0.21.1",
     "react-native-haptic-feedback": ">=2.3.0",
     "react-native-image-picker": ">=7.1.2",
@@ -59,6 +60,9 @@
       "optional": true
     },
     "react-native-audio-recorder-player": {
+      "optional": true
+    },
+    "react-native-nitro-sound": {
       "optional": true
     },
     "react-native-video": {
