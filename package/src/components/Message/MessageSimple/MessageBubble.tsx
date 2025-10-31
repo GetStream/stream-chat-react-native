@@ -101,6 +101,7 @@ export const SwipableMessageBubble = React.memo(
     );
 
     const SWIPABLE_THRESHOLD = 25;
+    const MINIMUM_DISTANCE = 8;
 
     const triggerHaptic = NativeHandlers.triggerHaptic;
 
@@ -120,14 +121,17 @@ export const SwipableMessageBubble = React.memo(
             const xDiff = Math.abs(event.changedTouches[0].x - touchStart.value.x);
             const yDiff = Math.abs(event.changedTouches[0].y - touchStart.value.y);
             const isHorizontalPanning = xDiff > yDiff;
+            const hasMinimumDistance = xDiff > MINIMUM_DISTANCE || yDiff > MINIMUM_DISTANCE;
 
-            if (isHorizontalPanning) {
+            // Only activate if there's significant horizontal movement
+            if (isHorizontalPanning && hasMinimumDistance) {
               state.activate();
               isSwiping.value = true;
               if (!shouldRenderSwipeableWrapper) {
                 runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
               }
-            } else {
+            } else if (hasMinimumDistance) {
+              // If there's significant movement but not horizontal, fail the gesture
               state.fail();
             }
           })
