@@ -11,10 +11,19 @@ export const mapReadToStorable = ({
   cid: string;
   read: ReadResponse;
 }): TableRow<'reads'> => {
-  const { last_read, unread_messages, user, last_read_message_id } = read;
+  const {
+    last_read,
+    unread_messages,
+    user,
+    last_read_message_id,
+    last_delivered_at,
+    last_delivered_message_id,
+  } = read;
 
   return {
     cid,
+    lastDeliveredAt: mapDateTimeToStorable(last_delivered_at),
+    lastDeliveredMessageId: last_delivered_message_id,
     lastRead: mapDateTimeToStorable(last_read),
     lastReadMessageId: last_read_message_id,
     unreadMessages: unread_messages,
