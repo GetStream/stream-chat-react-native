@@ -2734,22 +2734,13 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.12.2:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.12.2.tgz#6c307390136cf7a2278d09cec63b136dfc6e6da7"
-  integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
+axios@^1.12.2, axios@^1.6.0:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.1.tgz#45b62dc8fe04e0e92274e08b98e910ba3d7963a7"
+  integrity sha512-hU4EGxxt+j7TQijx1oYdAjw4xuIp1wRQSsbMFwSthCWeBQur1eF+qJ5iQ5sN3Tw8YRzQNKb8jszgBdMDVqwJcw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.4"
-    proxy-from-env "^1.1.0"
-
-axios@^1.6.0:
-  version "1.7.9"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.9.tgz#d7d071380c132a24accda1b2cfc1535b79ec650a"
-  integrity sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==
-  dependencies:
-    follow-redirects "^1.15.6"
-    form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
 babel-jest@30.0.0:
@@ -7321,12 +7312,29 @@ stream-chat-react-native-core@8.1.0:
     use-sync-external-store "^1.5.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "8.1.0"
+  dependencies:
+    "@gorhom/bottom-sheet" "^5.1.8"
+    "@ungap/structured-clone" "^1.3.0"
+    dayjs "1.11.13"
+    emoji-regex "^10.4.0"
+    i18next "^25.2.1"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.3.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.35"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^2.0.0"
+    stream-chat "^9.23.0"
+    use-sync-external-store "^1.5.0"
 
 "stream-chat-react-native@link:../../package/native-package":
-  version "0.0.0"
-  uid ""
+  version "8.1.0"
+  dependencies:
+    es6-symbol "^3.1.3"
+    mime "^4.0.7"
+    stream-chat-react-native-core "8.1.0"
 
 stream-chat@^9.23.0:
   version "9.24.0"
