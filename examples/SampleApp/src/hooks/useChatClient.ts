@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { StreamChat, PushProvider } from 'stream-chat';
-import { getMessaging, AuthorizationStatus } from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  AuthorizationStatus,
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import { SqliteClient } from 'stream-chat-react-native';
 import { USER_TOKENS, USERS } from '../ChatUsers';
@@ -10,6 +14,30 @@ import type { LoginConfig } from '../types';
 import { PermissionsAndroid, Platform } from 'react-native';
 
 const messaging = getMessaging();
+
+const displayNotification = async (
+  remoteMessage: FirebaseMessagingTypes.RemoteMessage,
+  channelId: string,
+) => {
+  const { stream, ...rest } = remoteMessage.data ?? {};
+  const data = {
+    ...rest,
+    ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+  };
+  if (data.body && data.title) {
+    await notifee.displayNotification({
+      android: {
+        channelId,
+        pressAction: {
+          id: 'default',
+        },
+      },
+      body: data.body as string,
+      title: data.title as string,
+      data,
+    });
+  }
+};
 
 // Request Push Notification permission from device.
 const requestNotificationPermission = async () => {
@@ -94,34 +122,12 @@ export const useChatClient = () => {
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging.onMessage(async (remoteMessage) => {
-        const { stream, ...rest } = remoteMessage.data ?? {};
-        const data = {
-          ...rest,
-          ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
-        };
         const channelId = await notifee.createChannel({
           id: 'foreground',
           name: 'Foreground Messages',
         });
-        // create the android channel to send the notification to
-        // display the notification on foreground
-        const notification = remoteMessage.notification ?? {};
-        const body = (data.body ?? notification.body) as string;
-        const title = (data.title ?? notification.title) as string;
 
-        if (body && title) {
-          await notifee.displayNotification({
-            android: {
-              channelId,
-              pressAction: {
-                id: 'default',
-              },
-            },
-            body,
-            title,
-            data,
-          });
-        }
+        await displayNotification(remoteMessage, channelId);
       });
 
       unsubscribePushListenersRef.current = () => {

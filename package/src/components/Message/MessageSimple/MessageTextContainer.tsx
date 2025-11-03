@@ -71,7 +71,7 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
     },
   } = theme;
 
-  const translatedMessage = useTranslatedMessage(message) as LocalMessage;
+  const translatedMessage = useTranslatedMessage(message);
 
   if (!message.text) {
     return null;
@@ -94,7 +94,7 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
             ...markdownStyles,
             ...(onlyEmojis ? onlyEmojiMarkdown : {}),
           },
-          message: translatedMessage,
+          message: translatedMessage as LocalMessage,
           messageOverlay,
           messageTextNumberOfLines,
           onLongPress,
