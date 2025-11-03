@@ -6,7 +6,7 @@ import {
   AudioSourceAndroidType,
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
-  AVModeIOSOptionAudioRecorderPlayer,
+  AVModeIOSOption,
   AVModeIOSOptionNitroSound,
   OutputFormatAndroidType,
   RNCLIRecordingOptions as RecordingOptions,
@@ -119,7 +119,7 @@ class _Audio {
         AVFormatIDKeyIOS: AVEncodingOption.aac,
         AVModeIOS: AudioRecorderPackageNitroSound
           ? AVModeIOSOptionNitroSound.spokenaudio
-          : AVModeIOSOptionAudioRecorderPlayer.spokenaudio,
+          : AVModeIOSOption.spokenaudio,
         AVNumberOfChannelsKeyIOS: 2,
       },
       isMeteringEnabled: true,

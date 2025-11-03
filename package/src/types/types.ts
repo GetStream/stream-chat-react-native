@@ -438,7 +438,7 @@ export enum AVEncodingOption {
 }
 
 // TODO: Remove this enum when audio recorder player is removed completely
-export enum AVModeIOSOptionAudioRecorderPlayer {
+export enum AVModeIOSOption {
   gamechat = 'gamechat',
   measurement = 'measurement',
   movieplayback = 'movieplayback',
@@ -461,7 +461,7 @@ export enum AVModeIOSOptionNitroSound {
   voiceprompt = 'voicePrompt',
 }
 
-export type AVModeIOSType = AVModeIOSOptionAudioRecorderPlayer | AVModeIOSOptionNitroSound;
+export type AVModeIOSType = AVModeIOSOption | AVModeIOSOptionNitroSound;
 
 export enum AVEncoderAudioQualityIOSType {
   min = 0,
