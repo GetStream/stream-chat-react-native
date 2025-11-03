@@ -20,7 +20,7 @@ import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { StackNavigatorParamList } from '../types';
 import { ChannelState } from 'stream-chat';
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type ChannelListScreenNavigationProp = StackNavigationProp<
+type ChannelListScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'ChannelListScreen'
 >;

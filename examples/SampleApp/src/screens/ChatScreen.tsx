@@ -8,7 +8,7 @@ import { MentionsScreen } from './MentionsScreen';
 import { BottomTabs } from '../components/BottomTabs';
 
 import type { RouteProp } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { BottomTabNavigatorParamList, StackNavigatorParamList } from '../types';
 import { DraftsScreen } from './DraftScreen';
@@ -16,7 +16,10 @@ import { RemindersScreen } from './RemindersScreen';
 
 const Tab = createBottomTabNavigator<BottomTabNavigatorParamList>();
 
-type ChatScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'MessagingScreen'>;
+type ChatScreenNavigationProp = NativeStackNavigationProp<
+  StackNavigatorParamList,
+  'MessagingScreen'
+>;
 type ChatScreenRouteProp = RouteProp<StackNavigatorParamList, 'MessagingScreen'>;
 
 type Props = {

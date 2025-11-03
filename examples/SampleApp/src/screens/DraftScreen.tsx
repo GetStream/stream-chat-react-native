@@ -1,5 +1,5 @@
 import React from 'react';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { BottomTabNavigatorParamList } from '../types';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from 'stream-chat-react-native';
@@ -7,7 +7,7 @@ import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { DraftsList } from '../components/DraftsList';
 
 export type DraftsScreenProps = {
-  navigation: StackNavigationProp<BottomTabNavigatorParamList, 'DraftsScreen'>;
+  navigation: NativeStackNavigationProp<BottomTabNavigatorParamList, 'DraftsScreen'>;
 };
 
 export const DraftsScreen: React.FC<DraftsScreenProps> = () => {

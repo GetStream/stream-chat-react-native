@@ -266,6 +266,8 @@ export const tables: Tables = {
   reads: {
     columns: {
       cid: 'TEXT NOT NULL',
+      lastDeliveredAt: 'TEXT',
+      lastDeliveredMessageId: 'TEXT',
       lastRead: 'TEXT NOT NULL',
       lastReadMessageId: 'TEXT',
       unreadMessages: 'INTEGER DEFAULT 0',
@@ -468,6 +470,8 @@ export type Schema = {
     lastReadMessageId?: string;
     unreadMessages?: number;
     userId?: string;
+    lastDeliveredAt?: string;
+    lastDeliveredMessageId?: string;
   };
   reminders: {
     channelCid: string;

@@ -4,15 +4,16 @@ import { TFunction } from 'i18next';
 import type {
   AttachmentManagerState,
   Channel,
-  ChannelState,
   DraftMessage,
-  MessageResponse,
+  LocalMessage,
   PollState,
   PollVote,
   StreamChat,
   TextComposerState,
   UserResponse,
 } from 'stream-chat';
+
+import { MessageDeliveryStatus, useMessageDeliveryStatus } from './useMessageDeliveryStatus';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -22,16 +23,14 @@ import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 
 import { stringifyMessage } from '../../../utils/utils';
 
-type LatestMessage = ReturnType<ChannelState['formatMessage']> | MessageResponse;
-
 export type LatestMessagePreview = {
-  messageObject: LatestMessage | undefined;
+  messageObject: LocalMessage | undefined;
   previews: {
     bold: boolean;
     text: string;
     draft?: boolean;
   }[];
-  status: number;
+  status?: MessageDeliveryStatus;
   created_at?: string | Date;
 };
 
@@ -48,7 +47,7 @@ const selector = (nextValue: PollState): LatestMessagePreviewSelectorReturnType 
 });
 
 const getMessageSenderName = (
-  message: LatestMessage | undefined,
+  message: LocalMessage | undefined,
   currentUserId: string | undefined,
   t: (key: string) => string,
   membersLength: number,
@@ -87,7 +86,7 @@ const getLatestMessageDisplayText = (
   channel: Channel,
   client: StreamChat,
   draftMessage: DraftMessage | undefined,
-  message: LatestMessage | undefined,
+  message: LocalMessage | undefined,
   t: (key: string) => string,
   pollState: LatestMessagePreviewSelectorReturnType | undefined,
 ) => {
@@ -194,47 +193,23 @@ export enum MessageReadStatus {
   NOT_SENT_BY_CURRENT_USER = 0,
   UNREAD = 1,
   READ = 2,
+  DELIVERED = 3,
 }
-
-const getLatestMessageReadStatus = (
-  channel: Channel,
-  client: StreamChat,
-  message: LatestMessage | undefined,
-  readEvents: boolean,
-): MessageReadStatus => {
-  const currentUserId = client.userID;
-  if (!message || currentUserId !== message.user?.id || readEvents === false) {
-    return MessageReadStatus.NOT_SENT_BY_CURRENT_USER;
-  }
-
-  const readList = { ...channel.state.read };
-  if (currentUserId) {
-    delete readList[currentUserId];
-  }
-
-  const messageUpdatedAt = message.updated_at
-    ? typeof message.updated_at === 'string'
-      ? new Date(message.updated_at)
-      : message.updated_at
-    : undefined;
-
-  return Object.values(readList).some(
-    ({ last_read }) => messageUpdatedAt && messageUpdatedAt < last_read,
-  )
-    ? MessageReadStatus.READ
-    : MessageReadStatus.UNREAD;
-};
 
 const getLatestMessagePreview = (params: {
   channel: Channel;
   client: StreamChat;
   draftMessage?: DraftMessage;
   pollState: LatestMessagePreviewSelectorReturnType | undefined;
-  readEvents: boolean;
+  /**
+   * @deprecated This parameter is no longer used and will be removed in the next major release.
+   */
+  readEvents?: boolean;
+  lastMessage?: LocalMessage;
+  status?: MessageDeliveryStatus;
   t: TFunction;
-  lastMessage?: ReturnType<ChannelState['formatMessage']> | MessageResponse;
 }) => {
-  const { channel, client, draftMessage, lastMessage, pollState, readEvents, t } = params;
+  const { channel, client, draftMessage, lastMessage, pollState, status, t } = params;
 
   const messages = channel.state.messages;
 
@@ -248,7 +223,7 @@ const getLatestMessagePreview = (params: {
           text: t('Nothing yet...'),
         },
       ],
-      status: MessageReadStatus.NOT_SENT_BY_CURRENT_USER,
+      status: MessageDeliveryStatus.NOT_SENT_BY_CURRENT_USER,
     };
   }
 
@@ -260,7 +235,7 @@ const getLatestMessagePreview = (params: {
     created_at: message?.created_at,
     messageObject: message,
     previews: getLatestMessageDisplayText(channel, client, draftMessage, message, t, pollState),
-    status: getLatestMessageReadStatus(channel, client, message, readEvents),
+    status,
   };
 };
 
@@ -275,6 +250,9 @@ const stateSelector = (state: AttachmentManagerState) => ({
 /**
  * Hook to set the display preview for latest message on channel.
  *
+ * FIXME: This hook is very poorly implemented and needs to be refactored with granular hooks
+ * to avoid unnecessary re-renders and to make the code more readable.
+ *
  * @param {*} channel Channel object
  *
  * @returns {object} latest message preview e.g.. { text: 'this was last message ...', created_at: '11/12/2020', messageObject: { originalMessageObject } }
@@ -282,7 +260,7 @@ const stateSelector = (state: AttachmentManagerState) => ({
 export const useLatestMessagePreview = (
   channel: Channel,
   forceUpdate: number,
-  lastMessage?: ReturnType<ChannelState['formatMessage']> | MessageResponse,
+  lastMessage?: LocalMessage,
 ) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
@@ -328,7 +306,11 @@ export const useLatestMessagePreview = (
     return read_events;
   }, [channelConfigExists, channel]);
 
-  const readStatus = getLatestMessageReadStatus(channel, client, translatedLastMessage, readEvents);
+  const { status } = useMessageDeliveryStatus({
+    channel,
+    isReadEventsEnabled: readEvents,
+    lastMessage: lastMessage as LocalMessage,
+  });
 
   const pollId = lastMessage?.poll_id ?? '';
   const poll = client.polls.fromState(pollId);
@@ -343,16 +325,15 @@ export const useLatestMessagePreview = (
       draftMessage,
       lastMessage: translatedLastMessage,
       pollState,
-      readEvents,
+      status,
       t,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     channelLastMessageString,
+    status,
     draftMessage,
     forceUpdate,
-    readEvents,
-    readStatus,
     latestVotesByOption,
     createdBy,
     name,

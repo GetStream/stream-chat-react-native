@@ -8,7 +8,7 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -63,7 +63,7 @@ const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
   );
 };
 
-export type NewGroupChannelAddMemberScreenNavigationProp = StackNavigationProp<
+export type NewGroupChannelAddMemberScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'NewGroupChannelAddMemberScreen'
 >;

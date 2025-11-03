@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DevSettings, LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   Chat,
@@ -92,8 +92,8 @@ notifee.onBackgroundEvent(async ({ detail, type }) => {
 });
 
 const Drawer = createDrawerNavigator();
-const Stack = createStackNavigator<StackNavigatorParamList>();
-const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
+const Stack = createNativeStackNavigator<StackNavigatorParamList>();
+const UserSelectorStack = createNativeStackNavigator<UserSelectorParamList>();
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const [messageListImplementation, setMessageListImplementation] = useState<
@@ -163,7 +163,9 @@ const App = () => {
         messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
       );
       setMessageListMode(messageListModeStoredValue?.mode as MessageListModeConfigItem['mode']);
-      setMessageListPruning(messageListPruningStoredValue?.value as MessageListPruningConfigItem['value']);
+      setMessageListPruning(
+        messageListPruningStoredValue?.value as MessageListPruningConfigItem['value'],
+      );
     };
     getMessageListConfig();
     return () => {

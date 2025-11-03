@@ -9,7 +9,7 @@ import { ChannelsUnreadCountBadge } from './UnreadCountBadge';
 import { GoBack } from '../icons/GoBack';
 
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
-  StackNavigationProp<StackNavigatorParamList>
+  NativeStackNavigationProp<StackNavigatorParamList>
 >;
 
 export const BackButton: React.FC<{
