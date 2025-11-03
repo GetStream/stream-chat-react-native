@@ -18,7 +18,7 @@ import { StreamLogo } from '../icons/StreamLogo';
 import { Settings } from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { UserSelectorParamList } from '../types';
 
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type UserSelectorScreenNavigationProp = StackNavigationProp<
+export type UserSelectorScreenNavigationProp = NativeStackNavigationProp<
   UserSelectorParamList,
   'UserSelectorScreen'
 >;

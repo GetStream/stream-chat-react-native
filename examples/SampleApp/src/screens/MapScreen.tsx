@@ -1,4 +1,4 @@
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackNavigatorParamList } from '../types';
 import { RouteProp } from '@react-navigation/native';
 import {
@@ -17,7 +17,10 @@ import MapView, { MapMarker, Marker } from 'react-native-maps';
 import { SharedLocationResponse, StreamChat } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
 
-export type MapScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'MapScreen'>;
+export type MapScreenNavigationProp = NativeStackNavigationProp<
+  StackNavigatorParamList,
+  'MapScreen'
+>;
 export type MapScreenRouteProp = RouteProp<StackNavigatorParamList, 'MapScreen'>;
 export type MapScreenProps = {
   navigation: MapScreenNavigationProp;

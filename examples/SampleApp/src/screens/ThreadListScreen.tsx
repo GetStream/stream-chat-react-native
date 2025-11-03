@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme, ThreadList } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 });
 
 export type ThreadsScreenProps = {
-  navigation: StackNavigationProp<BottomTabNavigatorParamList, 'ThreadsScreen'>;
+  navigation: NativeStackNavigationProp<BottomTabNavigatorParamList, 'ThreadsScreen'>;
 };
 
 export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {

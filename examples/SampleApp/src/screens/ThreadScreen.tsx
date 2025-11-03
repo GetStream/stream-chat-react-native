@@ -23,7 +23,7 @@ import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.ts
 import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 
@@ -35,7 +35,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type ThreadScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'ThreadScreen'>;
+type ThreadScreenNavigationProp = NativeStackNavigationProp<
+  StackNavigatorParamList,
+  'ThreadScreen'
+>;
 type ThreadScreenRouteProp = RouteProp<StackNavigatorParamList, 'ThreadScreen'>;
 
 type ThreadScreenProps = {
