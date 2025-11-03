@@ -25,7 +25,7 @@ import { Pin } from '../icons/Pin';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { RouteProp } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -106,7 +106,7 @@ type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   'OneOnOneChannelDetailScreen'
 >;
 
-type OneOnOneChannelDetailScreenNavigationProp = StackNavigationProp<
+type OneOnOneChannelDetailScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'OneOnOneChannelDetailScreen'
 >;

@@ -10,7 +10,7 @@ import { useAppContext } from '../context/AppContext';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
 
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from './NetworkDownIndicator';
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 
 type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
-  StackNavigationProp<StackNavigatorParamList>
+  NativeStackNavigationProp<StackNavigatorParamList>
 >;
 
 export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream Chat' }) => {

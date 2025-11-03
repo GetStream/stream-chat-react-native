@@ -1,19 +1,17 @@
 import React, { useContext, useState } from 'react';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ChannelState } from 'stream-chat';
 import type { ChannelContextValue } from 'stream-chat-react-native';
 
 import type { StackNavigatorParamList } from '../types';
 
-type GroupChannelDetailsScreenNavigationProp = StackNavigationProp<
+type GroupChannelDetailsScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'GroupChannelDetailsScreen'
 >;
 
-export type UserInfoOverlayData = Partial<
-  Pick<ChannelContextValue, 'channel'>
-> & {
+export type UserInfoOverlayData = Partial<Pick<ChannelContextValue, 'channel'>> & {
   member?: ChannelState['members'][0];
   navigation?: GroupChannelDetailsScreenNavigationProp;
 };

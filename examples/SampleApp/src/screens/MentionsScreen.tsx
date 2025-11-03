@@ -8,7 +8,7 @@ import { MessageSearchList } from '../components/MessageSearch/MessageSearchList
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 import { useScrollToTop } from '@react-navigation/native';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
 import { useAppContext } from '../context/AppContext';
@@ -44,7 +44,7 @@ const EmptyMentionsSearchIndicator = () => {
 };
 
 export type MentionsScreenProps = {
-  navigation: StackNavigationProp<BottomTabNavigatorParamList, 'MentionsScreen'>;
+  navigation: NativeStackNavigationProp<BottomTabNavigatorParamList, 'MentionsScreen'>;
 };
 
 export const MentionsScreen: React.FC<MentionsScreenProps> = () => {

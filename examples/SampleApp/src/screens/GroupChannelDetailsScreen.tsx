@@ -35,7 +35,7 @@ import { Picture } from '../icons/Picture';
 import { RemoveUser } from '../icons/RemoveUser';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Channel, UserResponse } from 'stream-chat';
 
 import type { StackNavigatorParamList } from '../types';
@@ -127,7 +127,7 @@ type GroupChannelDetailsProps = {
   route: GroupChannelDetailsRouteProp;
 };
 
-type GroupChannelDetailsScreenNavigationProp = StackNavigationProp<
+type GroupChannelDetailsScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'GroupChannelDetailsScreen'
 >;

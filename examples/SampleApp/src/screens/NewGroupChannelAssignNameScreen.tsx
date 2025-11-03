@@ -9,7 +9,7 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -69,7 +69,7 @@ const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
   );
 };
 
-type NewGroupChannelAssignNameScreenNavigationProp = StackNavigationProp<
+type NewGroupChannelAssignNameScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'NewGroupChannelAssignNameScreen'
 >;

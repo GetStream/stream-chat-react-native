@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 
 import { ChannelState } from 'stream-chat';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ChannelContextValue } from 'stream-chat-react-native';
 
 import type { StackNavigatorParamList } from '../types';
 
-export type ChannelListScreenNavigationProp = StackNavigationProp<
+export type ChannelListScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'ChannelListScreen'
 >;

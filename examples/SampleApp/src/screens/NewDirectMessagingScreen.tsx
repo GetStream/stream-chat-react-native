@@ -18,7 +18,7 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 
 import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
@@ -104,7 +104,7 @@ const EmptyMessagesIndicator = () => {
   );
 };
 
-export type NewDirectMessagingScreenNavigationProp = StackNavigationProp<
+export type NewDirectMessagingScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'NewDirectMessagingScreen'
 >;
