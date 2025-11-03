@@ -18,7 +18,7 @@ import {
   MessageActionsParams,
 } from 'stream-chat-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppContext } from '../context/AppContext';
@@ -34,7 +34,7 @@ import { MessageLocation } from '../components/LocationSharing/MessageLocation.t
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 
-export type ChannelScreenNavigationProp = StackNavigationProp<
+export type ChannelScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
   'ChannelScreen'
 >;

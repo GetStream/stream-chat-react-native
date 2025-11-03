@@ -40,7 +40,7 @@ export const DefaultThreadListEmptyPlaceholder = () => <EmptyStateIndicator list
 export const DefaultThreadListLoadingIndicator = () => <LoadingIndicator listType='threads' />;
 export const DefaultThreadListLoadingNextIndicator = () => <LoadingIndicator />;
 
-const DefaultThreadListItem = (props: { item: Thread }) => <ThreadListItem thread={props.item} />;
+const renderItem = (props: { item: Thread }) => <ThreadListItem thread={props.item} />;
 
 const ThreadListComponent = () => {
   const {
@@ -73,7 +73,7 @@ const ThreadListComponent = () => {
         ListEmptyComponent={ThreadListEmptyPlaceholder}
         ListFooterComponent={isLoadingNext ? ThreadListLoadingMoreIndicator : null}
         onEndReached={loadMore}
-        renderItem={DefaultThreadListItem}
+        renderItem={renderItem}
         testID='thread-flatlist'
         {...additionalFlatListProps}
       />
