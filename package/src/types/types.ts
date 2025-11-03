@@ -437,6 +437,7 @@ export enum AVEncodingOption {
   wav = 'wav',
 }
 
+// TODO: Remove this enum when audio recorder player is removed completely
 export enum AVModeIOSOption {
   gamechat = 'gamechat',
   measurement = 'measurement',
@@ -448,15 +449,19 @@ export enum AVModeIOSOption {
   voiceprompt = 'voiceprompt',
 }
 
-export type AVModeIOSType =
-  | AVModeIOSOption.gamechat
-  | AVModeIOSOption.measurement
-  | AVModeIOSOption.movieplayback
-  | AVModeIOSOption.spokenaudio
-  | AVModeIOSOption.videochat
-  | AVModeIOSOption.videorecording
-  | AVModeIOSOption.voicechat
-  | AVModeIOSOption.voiceprompt;
+// TODO: Change it to AVModeIOSOption when audio recorder player is removed completely
+export enum AVModeIOSOptionNitroSound {
+  gamechat = 'gameChatAudio',
+  measurement = 'measurement',
+  movieplayback = 'moviePlayback',
+  spokenaudio = 'spokenAudio',
+  videochat = 'videoChat',
+  videorecording = 'videoRecording',
+  voicechat = 'voiceChat',
+  voiceprompt = 'voicePrompt',
+}
+
+export type AVModeIOSType = AVModeIOSOption | AVModeIOSOptionNitroSound;
 
 export enum AVEncoderAudioQualityIOSType {
   min = 0,
