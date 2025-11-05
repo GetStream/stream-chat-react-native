@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Image,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,6 +13,7 @@ import { useAppContext } from '../context/AppContext';
 import { SecretMenu } from './SecretMenu.tsx';
 
 import type { DrawerContentComponentProps } from '@react-navigation/drawer';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const styles = StyleSheet.create({
   avatar: {

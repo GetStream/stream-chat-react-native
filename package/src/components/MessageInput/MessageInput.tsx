@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Modal,
-  SafeAreaView as RNSafeAreaView,
-  StyleSheet,
-  TextInput,
-  TextInputProps,
-  View,
-} from 'react-native';
+import { Modal, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 
 import {
   Gesture,
@@ -22,8 +15,6 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-
-import { SafeAreaView as SafeAreaViewOriginal } from 'react-native-safe-area-context';
 
 import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
 
@@ -66,9 +57,7 @@ import { isAudioRecorderAvailable, NativeHandlers } from '../../native';
 import { AIStates, useAIState } from '../AITypingIndicatorView';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
-
-// This is a workaround to support SafeAreaView on React Native 0.81.0+
-const SafeAreaView = SafeAreaViewOriginal ?? RNSafeAreaView;
+import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
 const styles = StyleSheet.create({
   attachmentSeparator: {
@@ -584,13 +573,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             visible={showPollCreationDialog}
           >
             <GestureHandlerRootView style={{ flex: 1 }}>
-              <SafeAreaView style={{ backgroundColor: white, flex: 1 }}>
+              <SafeAreaViewWrapper style={{ flex: 1 }}>
                 <CreatePoll
                   closePollCreationDialog={closePollCreationDialog}
                   CreatePollContent={CreatePollContent}
                   sendMessage={sendMessage}
                 />
-              </SafeAreaView>
+              </SafeAreaViewWrapper>
             </GestureHandlerRootView>
           </Modal>
         </View>

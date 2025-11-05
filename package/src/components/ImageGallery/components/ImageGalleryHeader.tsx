@@ -1,13 +1,6 @@
 import React, { useMemo, useState } from 'react';
 
-import {
-  Pressable,
-  SafeAreaView as RNSafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import Animated, {
   Extrapolation,
@@ -16,7 +9,7 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-import { SafeAreaView as SafeAreaViewOriginal } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -25,9 +18,6 @@ import { Close } from '../../../icons';
 
 import { getDateString } from '../../../utils/i18n/getDateString';
 import type { Photo } from '../ImageGallery';
-
-// This is a workaround to support SafeAreaView on React Native 0.81.0+
-const SafeAreaView = SafeAreaViewOriginal ?? RNSafeAreaView;
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
