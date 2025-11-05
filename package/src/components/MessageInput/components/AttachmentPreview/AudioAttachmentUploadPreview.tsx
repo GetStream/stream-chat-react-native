@@ -41,7 +41,7 @@ export const AudioAttachmentUploadPreview = ({
   const finalAttachment = useMemo(
     () => ({
       ...attachment,
-      asset_url: attachment.asset_url || (attachment.localMetadata.file as FileReference).uri,
+      asset_url: attachment.asset_url ?? (attachment.localMetadata.file as FileReference).uri,
       id: attachment.localMetadata.id,
       ...audioAttachmentConfig,
     }),
