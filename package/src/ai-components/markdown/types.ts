@@ -74,6 +74,12 @@ export type MarkdownStyle = Partial<{
   blockQuoteText: TextStyle | ViewStyle;
   br: TextStyle;
   codeBlock: TextStyle;
+  codeBlockLineNumberGutter: ViewStyle;
+  codeBlockContainer: ViewStyle;
+  codeBlockWrapper: ViewStyle;
+  codeBlockLineNumberCell: TextStyle;
+  codeBlockHeaderContainer: ViewStyle;
+  codeBlockHeaderTitle: TextStyle;
   del: TextStyle;
   em: TextStyle;
   heading: TextStyle;

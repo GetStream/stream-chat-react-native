@@ -6,7 +6,6 @@ import type {
   RuleRenderFunction,
 } from '../types.ts';
 import { MarkdownReactiveScrollView } from '../../components';
-import styles from '../styles.ts';
 import type { SingleASTNode } from '@khanacademy/simple-markdown';
 import { useCallback, useMemo } from 'react';
 

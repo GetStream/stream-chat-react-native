@@ -70,9 +70,38 @@ export default StyleSheet.create({
     backgroundColor: colors.code_block,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
     fontWeight: '500',
-    marginVertical: 8,
     color: colors.black,
-    padding: 8,
+    paddingLeft: 8,
+    lineHeight: 14,
+  },
+  codeBlockWrapper: {
+    backgroundColor: colors.code_block,
+    borderRadius: 8,
+    marginVertical: 8,
+    padding: 12,
+  },
+  codeBlockContainer: {
+    flexDirection: 'row',
+  },
+  codeBlockLineNumberGutter: {
+    flexDirection: 'column',
+    color: colors.black,
+  },
+  codeBlockLineNumberCell: {
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+    color: colors.grey,
+    paddingVertical: 1, // should be (codeBlock.lineHeight - this.fontSize) / 2
+    fontSize: 12,
+  },
+  codeBlockHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  codeBlockHeaderTitle: {
+    fontSize: 12,
+    color: colors.grey,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
   },
   del: {
     textDecorationLine: 'line-through',

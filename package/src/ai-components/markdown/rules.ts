@@ -94,6 +94,30 @@ export const getLocalRules = (
     };
   };
 
+  const parseFence: ParseFunction = (capture) => {
+    // capture[2] = language string (may be undefined/empty)
+    // capture[3] = code content
+    let lang = (capture[2] || '').trim() || undefined;
+    let content = capture[3] || '';
+
+    // If we've found no lang on the fence line (the opening fence) but the first code line
+    // is a lone token, treat it as lang and strip it from content. Helps with some specific
+    // use-cases such as "```<newline>sql<newline>...".
+    if (!lang) {
+      const nl = content.indexOf('\n');
+      const firstLine = (nl === -1 ? content : content.slice(0, nl)).trim();
+      if (/^[A-Za-z0-9_+.-]+$/.test(firstLine)) {
+        lang = firstLine;
+        content = nl === -1 ? '' : content.slice(nl + 1);
+      }
+    }
+
+    // Mirror your trimming behavior
+    content = content.replace(/\n+$/, '');
+
+    return { type: 'codeBlock', lang, content };
+  };
+
   const enrichedRenderFunction =
     (
       render: RuleRenderFunction,
@@ -120,6 +144,15 @@ export const getLocalRules = (
     },
     codeBlock: {
       react: enrichedRenderFunction(renderCodeBlock),
+    },
+    fence: {
+      match: SimpleMarkdown.blockRegex(
+        // 1: fence (``` or ~~~)
+        // 2: info string (lang etc.) - SAME CAPTURE INDEX AS YOURS
+        // 3: code content
+        /^ {0,3}(`{3,}|~{3,})[ \t]*(\S+)?[ \t]*\r?\n([\s\S]*?)\r?\n?(?: {0,3})\1[ \t]*(?:\r?\n+|$)/,
+      ),
+      parse: parseFence,
     },
     del: {
       react: enrichedRenderFunction(renderStrikethrough),

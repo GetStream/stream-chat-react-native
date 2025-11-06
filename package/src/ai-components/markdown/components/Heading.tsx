@@ -18,7 +18,7 @@ export const Heading = ({ children, node, styles }: MarkdownComponentProps) => {
     : DEFAULT_HEADING_LEVEL;
   const headingStyle = useMemo(
     () => styles[`heading${headingLevel ?? ''}`],
-    [headingLevel],
+    [headingLevel, styles],
   );
   return <Text style={headingStyle}>{children}</Text>;
 };

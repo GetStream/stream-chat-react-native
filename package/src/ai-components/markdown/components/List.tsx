@@ -1,7 +1,6 @@
 import type {
   BulletProps,
   MarkdownComponentProps,
-  MarkdownOutputProps,
   RuleRenderFunction,
 } from '../types.ts';
 import { Text, type TextProps, View, type ViewProps } from 'react-native';
@@ -24,7 +23,7 @@ export const List = ({
 
         if (item === null) {
           return (
-            <ListRow key={index} style={styles?.listRow} testID="list-item">
+            <ListRow key={index} style={styles?.listRow} testID='list-item'>
               <Bullet
                 index={node.ordered && indexAfterStart}
                 style={
@@ -41,7 +40,7 @@ export const List = ({
         const style = isSublistWithinText ? { marginBottom: 0 } : {};
 
         return (
-          <ListRow key={index} style={styles?.listRow} testID="list-item">
+          <ListRow key={index} style={styles?.listRow} testID='list-item'>
             <Bullet
               index={node.ordered && indexAfterStart}
               style={
