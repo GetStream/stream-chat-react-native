@@ -63,7 +63,7 @@
   "devDependencies": {
     "@babel/core": "^7.27.4",
     "@babel/runtime": "^7.27.6",
-    "@react-native-community/cli": "19.1.1",
+    "@react-native-community/cli": "20.0.0",
     "@react-native-community/cli-platform-android": "19.1.1",
     "@react-native-community/cli-platform-ios": "19.1.1",
     "@react-native/babel-preset": "0.80.2",
