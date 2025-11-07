@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  SafeAreaView as RNSafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,8 +13,6 @@ import Animated, {
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-
-import { SafeAreaView as SafeAreaViewOriginal } from 'react-native-safe-area-context';
 
 import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
 
@@ -30,9 +27,8 @@ import {
 } from '../../../native';
 
 import { FileTypes } from '../../../types/types';
+import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 import type { Photo } from '../ImageGallery';
-
-const SafeAreaView = SafeAreaViewOriginal ?? RNSafeAreaView;
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
