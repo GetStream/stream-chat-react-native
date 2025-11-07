@@ -9,14 +9,13 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
 import { getDateString } from '../../../utils/i18n/getDateString';
+import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent

@@ -14,8 +14,6 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -29,6 +27,7 @@ import {
 } from '../../../native';
 
 import { FileTypes } from '../../../types/types';
+import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent

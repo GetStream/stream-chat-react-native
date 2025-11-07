@@ -1,6 +1,12 @@
 import React, { PropsWithChildren } from 'react';
-import { ViewStyle } from 'react-native';
-import { SafeAreaProvider, SafeAreaView, SafeAreaViewProps } from 'react-native-safe-area-context';
+import { SafeAreaView as RNFSafeAreaView, ViewStyle } from 'react-native';
+import {
+  SafeAreaProvider,
+  SafeAreaView as SafeAreaViewOriginal,
+  SafeAreaViewProps,
+} from 'react-native-safe-area-context';
+
+export const SafeAreaView = SafeAreaViewOriginal ?? RNFSafeAreaView;
 
 export const SafeAreaViewWrapper = ({
   children,
