@@ -4,14 +4,13 @@ import {
   I18nManager,
   LogBox,
   Platform,
-  SafeAreaView,
   useColorScheme,
   View,
 } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Channel as ChannelType, ChannelSort } from 'stream-chat';
 import {
   Channel,
@@ -118,7 +117,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView edges={['bottom']}>
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
@@ -162,7 +161,7 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView edges={['bottom']}>
       <Channel
         audioRecordingEnabled={true}
         channel={channel}

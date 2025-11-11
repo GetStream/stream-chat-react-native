@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FlatList, Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { FlatList, Keyboard, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
@@ -30,6 +30,7 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 import { Archive } from '../icons/Archive';
 import { Pin } from '../icons/Pin';
 import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 dayjs.extend(relativeTime);
 
@@ -274,7 +275,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
               <Animated.View
                 style={[styles.containerInner, { backgroundColor: white }, showScreenStyle]}
               >
-                <SafeAreaView>
+                <SafeAreaView edges={['bottom']}>
                   {channel && (
                     <>
                       <View style={styles.detailsContainer}>
