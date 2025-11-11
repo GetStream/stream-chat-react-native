@@ -10,27 +10,18 @@ import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 
 import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-import { AudioConfig, UploadAttachmentPreviewProps } from '../../../../types/types';
+import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
 export type AudioAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<
     LocalAudioAttachment<CustomLocalMetadata> | LocalVoiceRecordingAttachment<CustomLocalMetadata>
-  > & {
-    audioAttachmentConfig: AudioConfig;
-    onLoad: (index: string, duration: number) => void;
-    onPlayPause: (index: string, pausedStatus?: boolean) => void;
-    onProgress: (index: string, progress: number) => void;
-  };
+  >;
 
 export const AudioAttachmentUploadPreview = ({
   attachment,
-  audioAttachmentConfig,
   handleRetry,
   removeAttachments,
-  onLoad,
-  onPlayPause,
-  onProgress,
 }: AudioAttachmentUploadPreviewProps) => {
   const { enableOfflineSupport } = useChatContext();
   const indicatorType = getIndicatorTypeForFileState(
@@ -43,9 +34,8 @@ export const AudioAttachmentUploadPreview = ({
       ...attachment,
       asset_url: (attachment.localMetadata.file as FileReference).uri,
       id: attachment.localMetadata.id,
-      ...audioAttachmentConfig,
     }),
-    [attachment, audioAttachmentConfig],
+    [attachment],
   );
 
   const onRetryHandler = useCallback(() => {
@@ -66,9 +56,6 @@ export const AudioAttachmentUploadPreview = ({
         <AudioAttachment
           hideProgressBar={true}
           item={finalAttachment}
-          onLoad={onLoad}
-          onPlayPause={onPlayPause}
-          onProgress={onProgress}
           showSpeedSettings={false}
           titleMaxLength={12}
         />

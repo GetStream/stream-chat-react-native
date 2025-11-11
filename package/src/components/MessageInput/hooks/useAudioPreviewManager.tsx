@@ -8,6 +8,8 @@ import { AudioConfig } from '../../../types/types';
  * Manages the state of audio attachments for preview and playback.
  * @param files The audio files to manage.
  * @returns An object containing the state and handlers for audio attachments.
+ *
+ * @deprecated This is deprecated and will be removed in the future.
  */
 export const useAudioPreviewManager = (files: LocalAttachment[]) => {
   const [audioAttachmentsStateMap, setAudioAttachmentsStateMap] = useState<
