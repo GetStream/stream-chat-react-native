@@ -32,9 +32,9 @@ const makeAudioPlayerId = ({
 export const useAudioPlayerControl = ({
   duration,
   mimeType,
-  playerRef,
   playbackRates,
   requester = '',
+  type,
   uri,
   id: fileId,
 }: UseAudioPlayerControlProps) => {
@@ -47,10 +47,10 @@ export const useAudioPlayerControl = ({
         id,
         mimeType: mimeType ?? '',
         playbackRates,
-        playerRef: playerRef ?? null,
+        type: type ?? 'audio',
         uri: uri ?? '',
       }),
-    [audioPlayerPool, duration, id, mimeType, playbackRates, playerRef, uri],
+    [audioPlayerPool, duration, id, mimeType, playbackRates, type, uri],
   );
 
   return {

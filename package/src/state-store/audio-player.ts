@@ -1,12 +1,13 @@
 import { StateStore } from 'stream-chat';
 
-import { NativeHandlers, SoundReturnType } from '../native';
+import { AVPlaybackStatusToSet, NativeHandlers, PlaybackStatus, SoundReturnType } from '../native';
 
 export type AudioDescriptor = {
   id: string;
   uri: string;
   duration: number;
   mimeType: string;
+  type: 'voiceRecording' | 'audio';
 };
 
 export type AudioPlayerState = {
@@ -20,6 +21,12 @@ export type AudioPlayerState = {
 
 const DEFAULT_PLAYBACK_RATES = [1.0, 1.5, 2.0];
 
+const DEFAULT_PLAYER_SETTINGS = {
+  pitchCorrectionQuality: 'high',
+  progressUpdateIntervalMillis: 100,
+  shouldCorrectPitch: true,
+} as AVPlaybackStatusToSet;
+
 const INITIAL_STATE: AudioPlayerState = {
   currentPlaybackRate: 1.0,
   duration: 0,
@@ -31,26 +38,90 @@ const INITIAL_STATE: AudioPlayerState = {
 
 export type AudioPlayerOptions = AudioDescriptor & {
   playbackRates?: number[];
-  playerRef: React.RefObject<SoundReturnType | null> | null;
 };
+
+const isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
 
 export class AudioPlayer {
   state: StateStore<AudioPlayerState>;
-  playerRef: React.RefObject<SoundReturnType | null> | null;
+  playerRef: SoundReturnType | null = null;
   private _id: string;
-  private isExpoCLI: boolean;
+  private type: 'voiceRecording' | 'audio';
 
   constructor(options: AudioPlayerOptions) {
     this._id = options.id;
+    this.type = options.type;
     const playbackRates = options.playbackRates ?? DEFAULT_PLAYBACK_RATES;
     this.state = new StateStore<AudioPlayerState>({
       ...INITIAL_STATE,
       currentPlaybackRate: playbackRates[0],
+      duration: options.duration * 1000,
       playbackRates,
     });
-    this.playerRef = options.playerRef;
-    this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
+    this.initPlayer({ uri: options.uri });
   }
+
+  // Initialize the expo player
+  // In the future we will also initialize the native cli player here.
+  initPlayer = async ({ uri, playerRef }: { uri?: string; playerRef?: SoundReturnType }) => {
+    if (playerRef) {
+      this.playerRef = playerRef;
+      return;
+    }
+    if (!isExpoCLI || !uri) {
+      return;
+    }
+    if (NativeHandlers.Sound?.initializeSound) {
+      this.playerRef = await NativeHandlers.Sound?.initializeSound(
+        { uri },
+        DEFAULT_PLAYER_SETTINGS,
+        this.onPlaybackStatusUpdate,
+      );
+    }
+  };
+
+  // This should be a arrow function to avoid binding the function to the instance
+  onPlaybackStatusUpdate = async (playbackStatus: PlaybackStatus) => {
+    if (!playbackStatus.isLoaded) {
+      // Update your UI for the unloaded state
+      if (playbackStatus.error) {
+        console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
+      }
+    } else {
+      const { durationMillis, positionMillis } = playbackStatus;
+      // Update your UI for the loaded state
+      // This is done for Expo CLI where we don't get file duration from file picker
+
+      // The duration given by the expo-av is not same as the one of the voice recording, so we take the actual duration for voice recording.
+      if (this.type !== 'voiceRecording') {
+        this.duration = durationMillis;
+      }
+
+      // Update the position of the audio player when it is playing
+      if (playbackStatus.isPlaying) {
+        if (this.type === 'voiceRecording') {
+          if (positionMillis <= this.duration) {
+            this.position = positionMillis;
+          }
+        } else {
+          if (positionMillis <= durationMillis) {
+            this.position = positionMillis;
+          }
+        }
+      } else {
+        // Update your UI for the paused state
+      }
+
+      if (playbackStatus.isBuffering) {
+        // Update your UI for the buffering state
+      }
+
+      // Update the UI when the audio is finished playing
+      if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
+        await this.stop();
+      }
+    }
+  };
 
   get isPlaying() {
     return this.state.getLatestValue().isPlaying;
@@ -122,8 +193,8 @@ export class AudioPlayer {
     if (!this.playerRef) {
       return;
     }
-    if (this.playerRef.current?.setRateAsync) {
-      await this.playerRef.current.setRateAsync(nextPlaybackRate, true, 'high');
+    if (this.playerRef?.setRateAsync) {
+      await this.playerRef.setRateAsync(nextPlaybackRate, true, 'high');
     }
   }
 
@@ -131,13 +202,13 @@ export class AudioPlayer {
     if (this.isPlaying || !this.playerRef) {
       return;
     }
-    if (this.isExpoCLI) {
-      if (this.playerRef.current?.playAsync) {
-        this.playerRef.current.playAsync();
+    if (isExpoCLI) {
+      if (this.playerRef?.playAsync) {
+        this.playerRef.playAsync();
       }
     } else {
-      if (this.playerRef.current?.resume) {
-        this.playerRef.current.resume();
+      if (this.playerRef?.resume) {
+        this.playerRef.resume();
       }
     }
     this.state.partialNext({
@@ -149,13 +220,13 @@ export class AudioPlayer {
     if (!this.isPlaying || !this.playerRef) {
       return;
     }
-    if (this.isExpoCLI) {
-      if (this.playerRef.current?.pauseAsync) {
-        this.playerRef.current.pauseAsync();
+    if (isExpoCLI) {
+      if (this.playerRef?.pauseAsync) {
+        this.playerRef.pauseAsync();
       }
     } else {
-      if (this.playerRef.current?.pause) {
-        this.playerRef.current.pause();
+      if (this.playerRef?.pause) {
+        this.playerRef.pause();
       }
     }
     this.state.partialNext({
@@ -175,20 +246,20 @@ export class AudioPlayer {
     if (!this.playerRef) {
       return;
     }
-    if (this.isExpoCLI) {
+    if (isExpoCLI) {
       if (positionInSeconds === 0) {
         // If currentTime is 0, we should replay the video from 0th position.
-        if (this.playerRef.current?.replayAsync) {
-          await this.playerRef.current.replayAsync({});
+        if (this.playerRef?.replayAsync) {
+          await this.playerRef.replayAsync({});
         }
       } else {
-        if (this.playerRef.current?.setPositionAsync) {
-          await this.playerRef.current.setPositionAsync(positionInSeconds);
+        if (this.playerRef?.setPositionAsync) {
+          await this.playerRef.setPositionAsync(positionInSeconds);
         }
       }
     } else {
-      if (this.playerRef.current?.seek) {
-        this.playerRef.current.seek(positionInSeconds);
+      if (this.playerRef?.seek) {
+        this.playerRef.seek(positionInSeconds);
       }
     }
     this.position = positionInSeconds;
@@ -201,6 +272,12 @@ export class AudioPlayer {
   }
 
   onRemove() {
+    if (isExpoCLI) {
+      if (this.playerRef?.stopAsync && this.playerRef.unloadAsync) {
+        this.playerRef.stopAsync();
+        this.playerRef.unloadAsync();
+      }
+    }
     this.playerRef = null;
     this.state.partialNext({
       ...INITIAL_STATE,

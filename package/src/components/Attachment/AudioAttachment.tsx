@@ -16,7 +16,6 @@ import { useAudioPlayerControl } from '../../hooks/useAudioPlayerControl';
 import { Audio, Pause, Play } from '../../icons';
 import {
   NativeHandlers,
-  PlaybackStatus,
   SoundReturnType,
   VideoPayloadData,
   VideoProgressData,
@@ -61,39 +60,41 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     testID,
     titleMaxLength,
   } = props;
+  const isVoiceRecording = isVoiceRecordingAttachment(item);
 
   const { audioPlayer, toggleAudio, playAudio, pauseAudio } = useAudioPlayerControl({
     duration: item.duration ?? 0,
     mimeType: item.mime_type ?? '',
-    playerRef: soundRef,
+    type: isVoiceRecording ? 'voiceRecording' : 'audio',
     uri: item.asset_url ?? '',
   });
   const { duration, isPlaying, position, progress, currentPlaybackRate } = useStateStore(
     audioPlayer.state,
     audioPlayerSelector,
   );
-  const isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
-  const isVoiceRecording = isVoiceRecordingAttachment(item);
+
+  // Initialize the player for native cli apps
+  useEffect(() => {
+    if (soundRef.current) {
+      audioPlayer.initPlayer({ playerRef: soundRef.current });
+    }
+  }, [audioPlayer]);
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
     // The duration given by the rn-video is not same as the one of the voice recording, so we take the actual duration for voice recording.
-    if (isVoiceRecording && item.duration) {
-      audioPlayer.duration = item.duration;
-    } else {
-      audioPlayer.duration = item.duration || payload.duration;
-    }
+    audioPlayer.duration = payload.duration * 1000;
   };
 
   /** This is for Native CLI Apps */
   const handleProgress = (data: VideoProgressData) => {
     const { currentTime } = data;
-    audioPlayer.position = currentTime;
+    audioPlayer.position = currentTime * 1000;
   };
 
   /** This is for Native CLI Apps */
   const onSeek = (seekResponse: VideoSeekResponse) => {
-    audioPlayer.position = seekResponse.currentTime;
+    audioPlayer.position = seekResponse.currentTime * 1000;
   };
 
   const handlePlayPause = () => {
@@ -113,86 +114,10 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   };
 
   const dragEnd = async (progress: number) => {
-    const position = isExpoCLI ? (progress * duration) / 1000 : progress * duration;
+    const position = (progress * duration) / 1000;
     await audioPlayer.seek(position);
     playAudio(audioPlayer.id);
   };
-
-  /** For Expo CLI */
-  const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
-    if (!playbackStatus.isLoaded) {
-      // Update your UI for the unloaded state
-      if (playbackStatus.error) {
-        console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
-      }
-    } else {
-      const { durationMillis, positionMillis } = playbackStatus;
-      // Update your UI for the loaded state
-      // This is done for Expo CLI where we don't get file duration from file picker
-      if (item.duration === 0) {
-        audioPlayer.duration = durationMillis;
-      } else {
-        // The duration given by the expo-av is not same as the one of the voice recording, so we take the actual duration for voice recording.
-        if (isVoiceRecording && item.duration) {
-          audioPlayer.duration = item.duration * 1000;
-        } else {
-          audioPlayer.duration = durationMillis;
-        }
-      }
-
-      // Update the position of the audio player when it is playing
-      if (playbackStatus.isPlaying) {
-        if (isVoiceRecording && item.duration) {
-          if (positionMillis <= item.duration * 1000) {
-            audioPlayer.position = positionMillis;
-          }
-        } else {
-          if (positionMillis <= durationMillis) {
-            audioPlayer.position = positionMillis;
-          }
-        }
-      } else {
-        // Update your UI for the paused state
-      }
-
-      if (playbackStatus.isBuffering) {
-        // Update your UI for the buffering state
-      }
-
-      // Update the UI when the audio is finished playing
-      if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
-        handleEnd();
-      }
-    }
-  };
-
-  // This is for Expo CLI, sound initialization is done here.
-  useEffect(() => {
-    if (isExpoCLI) {
-      const initiateSound = async () => {
-        if (item && item.asset_url && NativeHandlers.Sound?.initializeSound) {
-          soundRef.current = await NativeHandlers.Sound.initializeSound(
-            { uri: item.asset_url },
-            {
-              pitchCorrectionQuality: 'high',
-              progressUpdateIntervalMillis: 100,
-              shouldCorrectPitch: true,
-            },
-            onPlaybackStatusUpdate,
-          );
-        }
-      };
-      initiateSound();
-    }
-
-    return () => {
-      if (soundRef.current?.stopAsync && soundRef.current.unloadAsync) {
-        soundRef.current.stopAsync();
-        soundRef.current.unloadAsync();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const onSpeedChangeHandler = async () => {
     await audioPlayer.changePlaybackRate();
@@ -217,15 +142,15 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     },
   } = useTheme();
 
-  const positionInSeconds = isExpoCLI ? position / 1000 : position;
+  const positionInSeconds = position / 1000;
   const progressDuration = useMemo(
     () =>
       positionInSeconds
         ? positionInSeconds / 3600 >= 1
           ? dayjs.duration(positionInSeconds, 'second').format('HH:mm:ss')
           : dayjs.duration(positionInSeconds, 'second').format('mm:ss')
-        : dayjs.duration(isExpoCLI ? duration / 1000 : duration, 'second').format('mm:ss'),
-    [duration, isExpoCLI, positionInSeconds],
+        : dayjs.duration(duration / 1000, 'second').format('mm:ss'),
+    [duration, positionInSeconds],
   );
 
   return (
