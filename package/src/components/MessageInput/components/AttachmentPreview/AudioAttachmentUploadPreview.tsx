@@ -10,6 +10,7 @@ import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 
 import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
@@ -28,14 +29,22 @@ export const AudioAttachmentUploadPreview = ({
     attachment.localMetadata.uploadState,
     enableOfflineSupport,
   );
+  const messageComposer = useMessageComposer();
+  const isDraft = messageComposer.draftId;
+  const isEditing = messageComposer.editedMessage;
+  const assetUrl =
+    (isDraft || isEditing
+      ? attachment.asset_url
+      : (attachment.localMetadata.file as FileReference).uri) ??
+    (attachment.localMetadata.file as FileReference).uri;
 
   const finalAttachment = useMemo(
     () => ({
       ...attachment,
-      asset_url: attachment.asset_url ?? (attachment.localMetadata.file as FileReference).uri,
+      asset_url: assetUrl,
       id: attachment.localMetadata.id,
     }),
-    [attachment],
+    [attachment, assetUrl],
   );
 
   const onRetryHandler = useCallback(() => {
@@ -55,6 +64,7 @@ export const AudioAttachmentUploadPreview = ({
       >
         <AudioAttachment
           hideProgressBar={true}
+          isPreview={true}
           item={finalAttachment}
           showSpeedSettings={false}
           titleMaxLength={12}

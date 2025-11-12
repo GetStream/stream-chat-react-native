@@ -1,7 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { resampleWaveformData } from '../MessageInput/utils/audioSampling';
@@ -76,7 +81,6 @@ export const WaveProgressBar = React.memo(
       amplitudesCount = 70,
       filledColor,
       onEndDrag,
-      onPlayPause,
       onProgressDrag,
       onStartDrag,
       progress,
@@ -85,6 +89,7 @@ export const WaveProgressBar = React.memo(
     const eachWaveformWidth = WAVEFORM_WIDTH * 2;
     const fullWidth = (amplitudesCount - 1) * eachWaveformWidth;
     const state = useSharedValue(progress);
+    const isSliding = useRef(false);
     const [currentWaveformProgress, setCurrentWaveformProgress] = useState<number>(0);
 
     const waveFormNumberFromProgress = useCallback(
@@ -98,9 +103,16 @@ export const WaveProgressBar = React.memo(
       [fullWidth],
     );
 
-    useEffect(() => {
-      waveFormNumberFromProgress(progress);
-    }, [progress, waveFormNumberFromProgress]);
+    useAnimatedReaction(
+      () => progress,
+      (newProgress) => {
+        if (!isSliding.current) {
+          state.value = newProgress;
+        }
+        waveFormNumberFromProgress(newProgress);
+      },
+      [progress],
+    );
 
     const {
       theme: {
@@ -112,31 +124,21 @@ export const WaveProgressBar = React.memo(
     const pan = Gesture.Pan()
       .enabled(showProgressDrag)
       .maxPointers(1)
-      .onStart((event) => {
-        const currentProgress = (state.value + event.x) / fullWidth;
-        state.value = Math.max(0, Math.min(currentProgress, 1));
+      .onStart(() => {
+        isSliding.current = true;
         if (onStartDrag) {
           runOnJS(onStartDrag)(state.value);
         }
-        if (onPlayPause) {
-          runOnJS(onPlayPause)(true);
-        }
       })
       .onUpdate((event) => {
-        const currentProgress = (state.value + event.x) / fullWidth;
-        state.value = Math.max(0, Math.min(currentProgress, 1));
-        if (onProgressDrag) {
-          runOnJS(onProgressDrag)(state.value);
-        }
+        const newProgress = Math.max(0, Math.min(event.x / fullWidth, 1));
+        state.value = newProgress;
+        waveFormNumberFromProgress(newProgress);
       })
-      .onEnd((event) => {
-        const currentProgress = (state.value + event.x) / fullWidth;
-        state.value = Math.max(0, Math.min(currentProgress, 1));
+      .onEnd(() => {
+        isSliding.current = false;
         if (onEndDrag) {
           runOnJS(onEndDrag)(state.value);
-        }
-        if (onPlayPause) {
-          runOnJS(onPlayPause)(false);
         }
       });
 

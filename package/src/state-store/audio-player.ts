@@ -40,15 +40,15 @@ export type AudioPlayerOptions = AudioDescriptor & {
   playbackRates?: number[];
 };
 
-const isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
-
 export class AudioPlayer {
   state: StateStore<AudioPlayerState>;
   playerRef: SoundReturnType | null = null;
   private _id: string;
   private type: 'voiceRecording' | 'audio';
+  private isExpoCLI: boolean;
 
   constructor(options: AudioPlayerOptions) {
+    this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
     this._id = options.id;
     this.type = options.type;
     const playbackRates = options.playbackRates ?? DEFAULT_PLAYBACK_RATES;
@@ -68,7 +68,7 @@ export class AudioPlayer {
       this.playerRef = playerRef;
       return;
     }
-    if (!isExpoCLI || !uri) {
+    if (!this.isExpoCLI || !uri) {
       return;
     }
     if (NativeHandlers.Sound?.initializeSound) {
@@ -202,7 +202,7 @@ export class AudioPlayer {
     if (this.isPlaying || !this.playerRef) {
       return;
     }
-    if (isExpoCLI) {
+    if (this.isExpoCLI) {
       if (this.playerRef?.playAsync) {
         this.playerRef.playAsync();
       }
@@ -220,7 +220,7 @@ export class AudioPlayer {
     if (!this.isPlaying || !this.playerRef) {
       return;
     }
-    if (isExpoCLI) {
+    if (this.isExpoCLI) {
       if (this.playerRef?.pauseAsync) {
         this.playerRef.pauseAsync();
       }
@@ -246,7 +246,8 @@ export class AudioPlayer {
     if (!this.playerRef) {
       return;
     }
-    if (isExpoCLI) {
+    this.position = positionInSeconds;
+    if (this.isExpoCLI) {
       if (positionInSeconds === 0) {
         // If currentTime is 0, we should replay the video from 0th position.
         if (this.playerRef?.replayAsync) {
@@ -262,7 +263,6 @@ export class AudioPlayer {
         this.playerRef.seek(positionInSeconds);
       }
     }
-    this.position = positionInSeconds;
   }
 
   async stop() {
@@ -272,7 +272,7 @@ export class AudioPlayer {
   }
 
   onRemove() {
-    if (isExpoCLI) {
+    if (this.isExpoCLI) {
       if (this.playerRef?.stopAsync && this.playerRef.unloadAsync) {
         this.playerRef.stopAsync();
         this.playerRef.unloadAsync();

@@ -17,9 +17,10 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { isSoundPackageAvailable } from '../../native';
 
-export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'files'> &
+export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'files' | 'message'> &
   Pick<MessagesContextValue, 'Attachment' | 'AudioAttachment'> & {
     /**
+     * @deprecated Use message instead
      * The unique id for the message with file attachments
      */
     messageId: string;
@@ -30,7 +31,7 @@ export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'fil
   };
 
 const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithContext) => {
-  const { Attachment, AudioAttachment, files, messageId, styles: stylesProp = {} } = props;
+  const { Attachment, AudioAttachment, files, message, styles: stylesProp = {} } = props;
 
   const {
     theme: {
@@ -44,7 +45,7 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     <View style={[styles.container, container, stylesProp.container]}>
       {files.map((file, index) => (
         <View
-          key={`file-by-attachment-group-${messageId}-${index}`}
+          key={`file-by-attachment-group-${message.id}-${index}`}
           style={[
             { paddingBottom: index !== files.length - 1 ? 4 : 0 },
             stylesProp.attachmentContainer,
@@ -53,7 +54,7 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
         >
           {(isAudioAttachment(file) || isVoiceRecordingAttachment(file)) &&
           isSoundPackageAvailable() ? (
-            <AudioAttachment item={file} showSpeedSettings={true} />
+            <AudioAttachment item={file} message={message} showSpeedSettings={true} />
           ) : (
             <Attachment attachment={file} />
           )}
@@ -67,8 +68,13 @@ const areEqual = (
   prevProps: FileAttachmentGroupPropsWithContext,
   nextProps: FileAttachmentGroupPropsWithContext,
 ) => {
-  const { files: prevFiles } = prevProps;
-  const { files: nextFiles } = nextProps;
+  const { files: prevFiles, message: prevMessage } = prevProps;
+  const { files: nextFiles, message: nextMessage } = nextProps;
+
+  const messageEqual = prevMessage?.id === nextMessage?.id;
+  if (!messageEqual) {
+    return false;
+  }
 
   return prevFiles.length === nextFiles.length;
 };
@@ -86,7 +92,7 @@ export type FileAttachmentGroupProps = Partial<
 export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
   const { files: propFiles, messageId } = props;
 
-  const { files: contextFiles } = useMessageContext();
+  const { files: contextFiles, message } = useMessageContext();
 
   const { Attachment = AttachmentDefault, AudioAttachment } = useMessagesContext();
 
@@ -102,6 +108,7 @@ export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
         Attachment,
         AudioAttachment,
         files,
+        message,
         messageId,
       }}
     />

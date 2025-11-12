@@ -6,6 +6,7 @@ import duration from 'dayjs/plugin/duration';
 
 import {
   isVoiceRecordingAttachment,
+  LocalMessage,
   AudioAttachment as StreamAudioAttachment,
   VoiceRecordingAttachment as StreamVoiceRecordingAttachment,
 } from 'stream-chat';
@@ -26,16 +27,21 @@ import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
+const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
+const ONE_SECOND_IN_MILLISECONDS = 1000;
+
 dayjs.extend(duration);
 
 export type AudioAttachmentType = StreamAudioAttachment | StreamVoiceRecordingAttachment;
 
 export type AudioAttachmentProps = {
   item: AudioAttachmentType;
+  message?: LocalMessage;
   titleMaxLength?: number;
   hideProgressBar?: boolean;
   showSpeedSettings?: boolean;
   testID?: string;
+  isPreview?: boolean;
 };
 
 const audioPlayerSelector = (state: AudioPlayerState) => ({
@@ -56,15 +62,20 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   const {
     hideProgressBar = false,
     item,
+    message,
     showSpeedSettings = false,
     testID,
     titleMaxLength,
+    isPreview = false,
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
 
   const { audioPlayer, toggleAudio, playAudio, pauseAudio } = useAudioPlayerControl({
     duration: item.duration ?? 0,
     mimeType: item.mime_type ?? '',
+    requester: isPreview
+      ? 'preview'
+      : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,
     type: isVoiceRecording ? 'voiceRecording' : 'audio',
     uri: item.asset_url ?? '',
   });
@@ -80,21 +91,34 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     }
   }, [audioPlayer]);
 
+  // When a audio attachment in preview is removed, we need to remove the player from the pool
+  useEffect(
+    () => () => {
+      if (isPreview) {
+        audioPlayer.onRemove();
+      }
+    },
+    [audioPlayer, isPreview],
+  );
+
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
-    // The duration given by the rn-video is not same as the one of the voice recording, so we take the actual duration for voice recording.
-    audioPlayer.duration = payload.duration * 1000;
+    // If the attachment is a voice recording, we rely on the duration from the attachment as the one from the react-native-video is incorrect.
+    if (isVoiceRecording) {
+      return;
+    }
+    audioPlayer.duration = payload.duration * ONE_SECOND_IN_MILLISECONDS;
   };
 
   /** This is for Native CLI Apps */
   const handleProgress = (data: VideoProgressData) => {
     const { currentTime } = data;
-    audioPlayer.position = currentTime * 1000;
+    audioPlayer.position = currentTime * ONE_SECOND_IN_MILLISECONDS;
   };
 
   /** This is for Native CLI Apps */
   const onSeek = (seekResponse: VideoSeekResponse) => {
-    audioPlayer.position = seekResponse.currentTime * 1000;
+    audioPlayer.position = seekResponse.currentTime * ONE_SECOND_IN_MILLISECONDS;
   };
 
   const handlePlayPause = () => {
@@ -109,13 +133,13 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     pauseAudio(audioPlayer.id);
   };
 
-  const dragProgress = (progress: number) => {
-    audioPlayer.progress = progress;
+  const dragProgress = (currentProgress: number) => {
+    audioPlayer.progress = currentProgress;
   };
 
-  const dragEnd = async (progress: number) => {
-    const position = (progress * duration) / 1000;
-    await audioPlayer.seek(position);
+  const dragEnd = async (currentProgress: number) => {
+    const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
+    await audioPlayer.seek(positionInSeconds);
     playAudio(audioPlayer.id);
   };
 
@@ -142,15 +166,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     },
   } = useTheme();
 
-  const positionInSeconds = position / 1000;
   const progressDuration = useMemo(
     () =>
-      positionInSeconds
-        ? positionInSeconds / 3600 >= 1
-          ? dayjs.duration(positionInSeconds, 'second').format('HH:mm:ss')
-          : dayjs.duration(positionInSeconds, 'second').format('mm:ss')
-        : dayjs.duration(duration / 1000, 'second').format('mm:ss'),
-    [duration, positionInSeconds],
+      position
+        ? position / ONE_HOUR_IN_MILLISECONDS >= 1
+          ? dayjs.duration(position, 'milliseconds').format('HH:mm:ss')
+          : dayjs.duration(position, 'milliseconds').format('mm:ss')
+        : dayjs.duration(duration, 'milliseconds').format('mm:ss'),
+    [duration, position],
   );
 
   return (
