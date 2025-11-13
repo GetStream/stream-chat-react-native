@@ -99,7 +99,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
 
-  const { audioPlayer, toggleAudio, playAudio, pauseAudio } = useAudioPlayerControl({
+  const audioPlayer = useAudioPlayerControl({
     duration: item.duration ?? 0,
     mimeType: item.mime_type ?? '',
     requester: isPreview
@@ -151,7 +151,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   };
 
   const handlePlayPause = () => {
-    toggleAudio(audioPlayer.id);
+    audioPlayer.togglePlayPause();
   };
 
   const handleEnd = async () => {
@@ -159,7 +159,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   };
 
   const dragStart = () => {
-    pauseAudio(audioPlayer.id);
+    audioPlayer.pause();
   };
 
   const dragProgress = (currentProgress: number) => {
@@ -169,7 +169,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   const dragEnd = async (currentProgress: number) => {
     const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
     await audioPlayer.seek(positionInSeconds);
-    playAudio(audioPlayer.id);
+    audioPlayer.play();
   };
 
   const onSpeedChangeHandler = async () => {

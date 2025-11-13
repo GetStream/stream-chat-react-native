@@ -1,5 +1,7 @@
 import { StateStore } from 'stream-chat';
 
+import { AudioPlayerPool } from './audio-player-pool';
+
 import { AVPlaybackStatusToSet, NativeHandlers, PlaybackStatus, SoundReturnType } from '../native';
 
 export type AudioDescriptor = {
@@ -47,6 +49,8 @@ export class AudioPlayer {
   private _id: string;
   private type: 'voiceRecording' | 'audio';
   private isExpoCLI: boolean;
+  private _pool: AudioPlayerPool | null = null;
+
   /**
    * This is a temporary flag to manage audio player for voice recording in preview as the one in message list uses react-native-video.
    * We can get rid of this when we migrate to the react-native-nitro-sound everywhere.
@@ -171,6 +175,10 @@ export class AudioPlayer {
   }
 
   // Setters
+  set pool(pool: AudioPlayerPool) {
+    this._pool = pool;
+  }
+
   set duration(duration: number) {
     this.state.partialNext({
       duration,
@@ -219,9 +227,13 @@ export class AudioPlayer {
     }
   }
 
-  _playInternal() {
+  play() {
     if (this.isPlaying) {
       return;
+    }
+
+    if (this._pool) {
+      this._pool.requestPlay(this.id);
     }
 
     if (this.previewVoiceRecording) {
@@ -252,7 +264,7 @@ export class AudioPlayer {
     });
   }
 
-  _pauseInternal() {
+  pause() {
     if (!this.isPlaying) {
       return;
     }
@@ -282,13 +294,17 @@ export class AudioPlayer {
     this.state.partialNext({
       isPlaying: false,
     });
+
+    if (this._pool) {
+      this._pool.notifyPaused(this.id);
+    }
   }
 
   togglePlayPause() {
     if (this.isPlaying) {
-      this._pauseInternal();
+      this.pause();
     } else {
-      this._playInternal();
+      this.play();
     }
   }
 
@@ -325,7 +341,7 @@ export class AudioPlayer {
   async stop() {
     // First seek to 0 to stop the audio and then pause it
     await this.seek(0);
-    this._pauseInternal();
+    this.pause();
   }
 
   onRemove() {

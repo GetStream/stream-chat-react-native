@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useAudioPlayerPoolContext } from '../contexts/audioPlayerPoolContext/AudioPlayerPoolContext';
 import { AudioPlayerOptions } from '../state-store/audio-player';
@@ -55,10 +55,5 @@ export const useAudioPlayerControl = ({
     [audioPlayerPool, duration, id, mimeType, playbackRates, previewVoiceRecording, type, uri],
   );
 
-  return {
-    audioPlayer,
-    pauseAudio: useCallback((id: string) => audioPlayerPool?.pause(id), [audioPlayerPool]),
-    playAudio: useCallback((id: string) => audioPlayerPool?.play(id), [audioPlayerPool]),
-    toggleAudio: useCallback((id: string) => audioPlayerPool?.toggle(id), [audioPlayerPool]),
-  };
+  return audioPlayer;
 };

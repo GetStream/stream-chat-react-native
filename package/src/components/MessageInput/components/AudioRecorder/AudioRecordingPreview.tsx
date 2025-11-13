@@ -65,7 +65,7 @@ const audioPlayerSelector = (state: AudioPlayerState) => ({
 export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
   const { recordingDuration, uri, waveformData } = props;
 
-  const { audioPlayer, toggleAudio } = useAudioPlayerControl({
+  const audioPlayer = useAudioPlayerControl({
     duration: recordingDuration / ONE_SECOND_IN_MILLISECONDS,
     mimeType: 'audio/aac',
     // This is a temporary flag to manage audio player for voice recording in preview as the one in message list uses react-native-video.
@@ -104,7 +104,7 @@ export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
   } = useTheme();
 
   const handlePlayPause = () => {
-    toggleAudio(audioPlayer.id);
+    audioPlayer.togglePlayPause();
   };
 
   const progressDuration = useMemo(

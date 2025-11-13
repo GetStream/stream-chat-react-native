@@ -4,7 +4,7 @@ import { AudioPlayerPool } from '../../state-store/audio-player-pool';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type AudioPlayerPoolContextProps = {
-  playMultipleAudio: boolean;
+  allowConcurrentAudioPlayback: boolean;
 };
 
 export type AudioPlayerPoolContextValue = {
@@ -16,12 +16,12 @@ export const AudioPlayerPoolContext = createContext<AudioPlayerPoolContextValue>
 );
 
 export const AudioPlayerPoolProvider = ({
-  props,
+  props: { allowConcurrentAudioPlayback },
   children,
 }: PropsWithChildren<{ props: AudioPlayerPoolContextProps }>) => {
   const audioPlayerPool = useMemo(
-    () => new AudioPlayerPool({ multipleAudioPlayers: props.playMultipleAudio }),
-    [props.playMultipleAudio],
+    () => new AudioPlayerPool({ allowConcurrentAudioPlayback }),
+    [allowConcurrentAudioPlayback],
   );
   const audioPlayerPoolContextValue = useMemo(() => ({ audioPlayerPool }), [audioPlayerPool]);
 

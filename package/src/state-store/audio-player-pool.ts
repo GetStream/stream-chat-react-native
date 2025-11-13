@@ -1,75 +1,75 @@
 import { AudioPlayer, AudioPlayerOptions } from './audio-player';
 
 export type AudioPlayerPoolOptions = {
-  multipleAudioPlayers: boolean;
+  allowConcurrentAudioPlayback: boolean;
 };
 
 export class AudioPlayerPool {
-  audioPlayers: Map<string, AudioPlayer>;
-  multipleAudioPlayers: boolean;
-  constructor({ multipleAudioPlayers }: AudioPlayerPoolOptions) {
-    this.audioPlayers = new Map<string, AudioPlayer>();
-    this.multipleAudioPlayers = multipleAudioPlayers ?? false;
+  pool: Map<string, AudioPlayer>;
+  allowConcurrentAudioPlayback: boolean;
+  private currentlyPlayingId: string | null = null;
+
+  constructor({ allowConcurrentAudioPlayback }: AudioPlayerPoolOptions) {
+    this.pool = new Map<string, AudioPlayer>();
+    this.allowConcurrentAudioPlayback = allowConcurrentAudioPlayback ?? false;
   }
 
-  getPlayers() {
-    return Array.from(this.audioPlayers.values());
+  get players() {
+    return Array.from(this.pool.values());
   }
 
   getOrAddPlayer(params: AudioPlayerOptions) {
-    const player = this.audioPlayers.get(params.id);
+    const player = this.pool.get(params.id);
     if (player) {
       return player;
     }
     const newPlayer = new AudioPlayer(params);
+    newPlayer.pool = this;
 
-    this.audioPlayers.set(params.id, newPlayer);
+    this.pool.set(params.id, newPlayer);
     return newPlayer;
   }
 
   removePlayer(id: string) {
-    const player = this.audioPlayers.get(id);
+    const player = this.pool.get(id);
     if (!player) return;
     player.onRemove();
-    this.audioPlayers.delete(id);
+    this.pool.delete(id);
+
+    // Clear tracking if this was the currently playing player
+    if (!this.allowConcurrentAudioPlayback && this.currentlyPlayingId === id) {
+      this.currentlyPlayingId = null;
+    }
+  }
+
+  deregister(id: string) {
+    if (this.pool.has(id)) {
+      this.pool.delete(id);
+    }
   }
 
   clear() {
-    for (const player of this.audioPlayers.values()) {
+    for (const player of this.pool.values()) {
       this.removePlayer(player.id);
     }
+    this.currentlyPlayingId = null;
   }
 
-  play(id: string) {
-    const targetPlayer = this.audioPlayers.get(id);
-    if (!targetPlayer) return;
+  requestPlay(id: string) {
+    if (this.allowConcurrentAudioPlayback) return;
 
-    if (!this.multipleAudioPlayers) {
-      for (const [playerId, player] of this.audioPlayers) {
-        if (playerId !== id && player.isPlaying) {
-          // eslint-disable-next-line no-underscore-dangle
-          player._pauseInternal();
-        }
+    if (this.currentlyPlayingId && this.currentlyPlayingId !== id) {
+      const currentPlayer = this.pool.get(this.currentlyPlayingId);
+      if (currentPlayer && currentPlayer.isPlaying) {
+        currentPlayer.pause();
       }
     }
-    // eslint-disable-next-line no-underscore-dangle
-    targetPlayer._playInternal();
+    this.currentlyPlayingId = id;
   }
 
-  pause(id: string) {
-    const targetPlayer = this.audioPlayers.get(id);
-    if (!targetPlayer) return;
-    // eslint-disable-next-line no-underscore-dangle
-    targetPlayer._pauseInternal();
-  }
-
-  toggle(id: string) {
-    const targetPlayer = this.audioPlayers.get(id);
-    if (!targetPlayer) return;
-    if (targetPlayer.isPlaying) {
-      this.pause(id);
-    } else {
-      this.play(id);
+  notifyPaused(id: string) {
+    if (this.currentlyPlayingId === id) {
+      this.currentlyPlayingId = null;
     }
   }
 }
