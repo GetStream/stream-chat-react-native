@@ -104,7 +104,7 @@ export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
   } = useTheme();
 
   const handlePlayPause = () => {
-    audioPlayer.togglePlayPause();
+    audioPlayer.toggle();
   };
 
   const progressDuration = useMemo(

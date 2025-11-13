@@ -151,7 +151,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   };
 
   const handlePlayPause = () => {
-    audioPlayer.togglePlayPause();
+    audioPlayer.toggle();
   };
 
   const handleEnd = async () => {

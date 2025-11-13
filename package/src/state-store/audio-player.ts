@@ -300,7 +300,7 @@ export class AudioPlayer {
     }
   }
 
-  togglePlayPause() {
+  toggle() {
     if (this.isPlaying) {
       this.pause();
     } else {
