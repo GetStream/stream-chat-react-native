@@ -378,8 +378,12 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "center",
                                 "flexDirection": "row",
+                                "width": 200,
                               },
                               {},
+                              {
+                                "width": 0,
+                              },
                             ]
                           }
                         >
@@ -389,6 +393,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "center",
                                   "flexDirection": "row",
+                                  "width": 200,
                                 },
                                 {},
                               ]
@@ -747,8 +752,12 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "center",
                                 "flexDirection": "row",
+                                "width": 200,
                               },
                               {},
+                              {
+                                "width": 0,
+                              },
                             ]
                           }
                         >
@@ -758,6 +767,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "center",
                                   "flexDirection": "row",
+                                  "width": 200,
                                 },
                                 {},
                               ]
@@ -1154,8 +1164,12 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "center",
                                 "flexDirection": "row",
+                                "width": 200,
                               },
                               {},
+                              {
+                                "width": 0,
+                              },
                             ]
                           }
                         >
@@ -1165,6 +1179,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "center",
                                   "flexDirection": "row",
+                                  "width": 200,
                                 },
                                 {},
                               ]
@@ -1527,8 +1542,12 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "center",
                                 "flexDirection": "row",
+                                "width": 200,
                               },
                               {},
+                              {
+                                "width": 0,
+                              },
                             ]
                           }
                         >
@@ -1538,6 +1557,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "center",
                                   "flexDirection": "row",
+                                  "width": 200,
                                 },
                                 {},
                               ]

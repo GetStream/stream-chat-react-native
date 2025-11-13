@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
-  Extrapolation,
   interpolate,
   runOnJS,
   useAnimatedStyle,
@@ -138,7 +137,7 @@ export const SwipableMessageBubble = React.memo(
           .onStart(() => {
             translateX.value = 0;
           })
-          .onChange(({ translationX }) => {
+          .onUpdate(({ translationX }) => {
             if (translationX > 0) {
               translateX.value = translationX;
             }
@@ -177,51 +176,32 @@ export const SwipableMessageBubble = React.memo(
       ],
     );
 
-    const messageBubbleAnimatedStyle = useAnimatedStyle(
-      () => ({
-        transform: [{ translateX: translateX.value }],
-      }),
-      [],
-    );
-
     const swipeContentAnimatedStyle = useAnimatedStyle(
       () => ({
         opacity: interpolate(translateX.value, [0, SWIPABLE_THRESHOLD], [0, 1]),
-        transform: [
-          {
-            translateX: interpolate(
-              translateX.value,
-              [0, SWIPABLE_THRESHOLD],
-              [-SWIPABLE_THRESHOLD, 0],
-              Extrapolation.CLAMP,
-            ),
-          },
-        ],
+        width: translateX.value,
       }),
       [],
     );
 
     return (
       <GestureDetector gesture={swipeGesture}>
-        <View hitSlop={messageSwipeToReplyHitSlop} style={[styles.contentWrapper, contentWrapper]}>
+        <View
+          hitSlop={messageSwipeToReplyHitSlop}
+          style={[styles.contentWrapper, contentWrapper, { width: props.messageContentWidth }]}
+        >
           {shouldRenderAnimatedWrapper ? (
-            <>
-              <AnimatedWrapper
-                style={[
-                  styles.swipeContentContainer,
-                  swipeContentAnimatedStyle,
-                  swipeContentContainer,
-                ]}
-              >
-                {MessageSwipeContent ? <MessageSwipeContent /> : null}
-              </AnimatedWrapper>
-              <AnimatedWrapper pointerEvents='box-none' style={messageBubbleAnimatedStyle}>
-                <MessageBubble {...messageBubbleProps} />
-              </AnimatedWrapper>
-            </>
-          ) : (
-            <MessageBubble {...messageBubbleProps} />
-          )}
+            <AnimatedWrapper
+              style={[
+                styles.swipeContentContainer,
+                swipeContentAnimatedStyle,
+                swipeContentContainer,
+              ]}
+            >
+              {MessageSwipeContent ? <MessageSwipeContent /> : null}
+            </AnimatedWrapper>
+          ) : null}
+          <MessageBubble {...messageBubbleProps} />
         </View>
       </GestureDetector>
     );
@@ -232,8 +212,11 @@ const styles = StyleSheet.create({
   contentWrapper: {
     alignItems: 'center',
     flexDirection: 'row',
+    width: 200,
   },
   swipeContentContainer: {
-    position: 'absolute',
+    flexShrink: 0,
+    overflow: 'hidden',
+    position: 'relative',
   },
 });
