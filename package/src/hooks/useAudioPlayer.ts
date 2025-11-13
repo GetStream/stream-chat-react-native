@@ -9,6 +9,8 @@ export type UseSoundPlayerProps = {
 /**
  * This hook is used to play, pause, seek and change audio speed.
  * It handles both Expo CLI and Native CLI.
+ *
+ * @deprecated This is deprecated and will be removed in the future.
  */
 export const useAudioPlayer = (props: UseSoundPlayerProps) => {
   const { soundRef } = props;
@@ -40,24 +42,21 @@ export const useAudioPlayer = (props: UseSoundPlayerProps) => {
   }, [isExpoCLI, soundRef]);
 
   const seekAudio = useCallback(
-    async (currentTime: number) => {
+    async (currentTimeInSeconds: number = 0) => {
       if (isExpoCLI) {
-        if (currentTime === 0) {
+        if (currentTimeInSeconds === 0) {
           // If currentTime is 0, we should replay the video from 0th position.
           if (soundRef.current?.replayAsync) {
-            await soundRef.current.replayAsync({
-              positionMillis: 0,
-              shouldPlay: false,
-            });
+            await soundRef.current.replayAsync({});
           }
         } else {
           if (soundRef.current?.setPositionAsync) {
-            await soundRef.current.setPositionAsync(currentTime * 1000);
+            await soundRef.current.setPositionAsync(currentTimeInSeconds);
           }
         }
       } else {
         if (soundRef.current?.seek) {
-          soundRef.current.seek(currentTime);
+          soundRef.current.seek(currentTimeInSeconds);
         }
       }
     },
