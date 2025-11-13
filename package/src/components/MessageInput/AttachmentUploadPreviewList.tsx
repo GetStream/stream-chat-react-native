@@ -11,6 +11,8 @@ import {
   LocalImageAttachment,
 } from 'stream-chat';
 
+import { useAudioPreviewManager } from './hooks/useAudioPreviewManager';
+
 import { useMessageComposer } from '../../contexts';
 import { useAttachmentManagerState } from '../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import {
@@ -62,6 +64,15 @@ const UnMemoizedAttachmentUploadListPreview = (
   const fileUploads = useMemo(() => {
     return attachments.filter((attachment) => !isLocalImageAttachment(attachment));
   }, [attachments]);
+  const audioUploads = useMemo(() => {
+    return fileUploads.filter(
+      (attachment) =>
+        isLocalAudioAttachment(attachment) || isLocalVoiceRecordingAttachment(attachment),
+    );
+  }, [fileUploads]);
+
+  const { audioAttachmentsStateMap, onLoad, onProgress, onPlayPause } =
+    useAudioPreviewManager(audioUploads);
 
   const renderImageItem = useCallback(
     ({ item }: { item: LocalImageAttachment }) => {
@@ -89,7 +100,11 @@ const UnMemoizedAttachmentUploadListPreview = (
         return (
           <AudioAttachmentUploadPreview
             attachment={item}
+            audioAttachmentConfig={audioAttachmentsStateMap[item.localMetadata.id]}
             handleRetry={attachmentManager.uploadAttachment}
+            onLoad={onLoad}
+            onPlayPause={onPlayPause}
+            onProgress={onProgress}
             removeAttachments={attachmentManager.removeAttachments}
           />
         );
@@ -98,7 +113,11 @@ const UnMemoizedAttachmentUploadListPreview = (
           return (
             <AudioAttachmentUploadPreview
               attachment={item}
+              audioAttachmentConfig={audioAttachmentsStateMap[item.localMetadata.id]}
               handleRetry={attachmentManager.uploadAttachment}
+              onLoad={onLoad}
+              onPlayPause={onPlayPause}
+              onProgress={onProgress}
               removeAttachments={attachmentManager.removeAttachments}
             />
           );
@@ -138,7 +157,11 @@ const UnMemoizedAttachmentUploadListPreview = (
       VideoAttachmentUploadPreview,
       attachmentManager.removeAttachments,
       attachmentManager.uploadAttachment,
+      audioAttachmentsStateMap,
       flatListWidth,
+      onLoad,
+      onPlayPause,
+      onProgress,
     ],
   );
 

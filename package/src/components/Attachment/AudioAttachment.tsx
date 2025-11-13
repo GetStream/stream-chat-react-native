@@ -23,6 +23,7 @@ import {
   VideoSeekResponse,
 } from '../../native';
 import { AudioPlayerState } from '../../state-store/audio-player';
+import { AudioConfig } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
@@ -32,16 +33,44 @@ const ONE_SECOND_IN_MILLISECONDS = 1000;
 
 dayjs.extend(duration);
 
-export type AudioAttachmentType = StreamAudioAttachment | StreamVoiceRecordingAttachment;
+export type AudioAttachmentType = AudioConfig &
+  Pick<
+    StreamAudioAttachment | StreamVoiceRecordingAttachment,
+    'waveform_data' | 'asset_url' | 'title' | 'mime_type'
+  > & {
+    id: string;
+    type: 'audio' | 'voiceRecording';
+  };
 
 export type AudioAttachmentProps = {
   item: AudioAttachmentType;
   message?: LocalMessage;
   titleMaxLength?: number;
   hideProgressBar?: boolean;
+  /**
+   * If true, the speed settings button will be shown.
+   */
   showSpeedSettings?: boolean;
   testID?: string;
+  /**
+   * If true, the audio attachment is in preview mode in the message input.
+   */
   isPreview?: boolean;
+  /**
+   * Callback to be called when the audio is loaded
+   * @deprecated This is deprecated and will be removed in the future.
+   */
+  onLoad?: (index: string, duration: number) => void;
+  /**
+   * Callback to be called when the audio is played or paused
+   * @deprecated This is deprecated and will be removed in the future.
+   */
+  onPlayPause?: (index: string, pausedStatus?: boolean) => void;
+  /**
+   * Callback to be called when the audio progresses
+   * @deprecated This is deprecated and will be removed in the future.
+   */
+  onProgress?: (index: string, progress: number) => void;
 };
 
 const audioPlayerSelector = (state: AudioPlayerState) => ({

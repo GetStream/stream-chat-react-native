@@ -24,12 +24,29 @@ export type RecordingStatusStates = 'idle' | 'recording' | 'stopped';
 
 /**
  * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
+ *
+ * FIXME: Change the name to `useAudioRecorder` in the next major version as the hook will only be used for audio recording.
  */
 export const useAudioController = () => {
   const [micLocked, setMicLocked] = useState(false);
   const [permissionsGranted, setPermissionsGranted] = useState(true);
+  /**
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * Check: https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx on how to use the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
   const [paused, setPaused] = useState<boolean>(true);
+  /**
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * Check: https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx on how to use the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
   const [position, setPosition] = useState<number>(0);
+  /**
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * Check: https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx on how to use the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
   const [progress, setProgress] = useState<number>(0);
   const [waveformData, setWaveformData] = useState<number[]>([]);
   const [isScheduledForSubmit, setIsScheduleForSubmit] = useState(false);
@@ -40,7 +57,14 @@ export const useAudioController = () => {
 
   const { sendMessage } = useMessageInputContext();
 
-  // For playback support in Expo CLI apps
+  /**
+   * Reference to the sound object for playback support in Expo CLI apps
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * Check: https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx on how to use the global audio manager.
+   *
+   * FIXME: Remove this in the next major version.
+   */
   const soundRef = useRef<SoundReturnType | null>(null);
 
   // This effect stop the player from playing and stops audio recording on
@@ -60,6 +84,12 @@ export const useAudioController = () => {
     }
   }, [isScheduledForSubmit, sendMessage]);
 
+  /**
+   * Function to update the progress of the voice recording.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
   const onVoicePlayerProgressHandler = (currentPosition: number, playbackDuration: number) => {
     const currentProgress = currentPosition / playbackDuration;
     if (currentProgress === 1) {
@@ -70,6 +100,14 @@ export const useAudioController = () => {
     }
   };
 
+  /**
+   * Function to update the playback status of the voice recording.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * Check: https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx on how to use the global audio manager.
+   *
+   * FIXME: Remove this in the next major version.
+   */
   const onVoicePlayerPlaybackStatusUpdate = (status: PlaybackStatus) => {
     if (status.shouldPlay === undefined || status.shouldPlay === true) {
       setPosition(status?.currentPosition || status?.positionMillis);
@@ -90,6 +128,14 @@ export const useAudioController = () => {
     }
   };
 
+  /**
+   * Function to play or pause voice recording.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * Check: https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx on how to use the global audio manager.
+   *
+   * FIXME: Remove this in the next major version.
+   */
   const onVoicePlayerPlayPause = async () => {
     if (paused) {
       if (progress === 0) {
@@ -119,6 +165,11 @@ export const useAudioController = () => {
 
   /**
    * Function to start playing voice recording to preview it after recording.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * Check: https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx on how to use the global audio manager.
+   *
+   * FIXME: Remove this in the next major version.
    */
   const startVoicePlayer = async () => {
     if (!recording) {
@@ -150,6 +201,11 @@ export const useAudioController = () => {
 
   /**
    * Function to stop playing voice recording.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * Check: https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx on how to use the global audio manager.
+   *
+   * FIXME: Remove this in the next major version.
    */
   const stopVoicePlayer = async () => {
     // For Native CLI

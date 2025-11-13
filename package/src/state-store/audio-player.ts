@@ -47,8 +47,11 @@ export class AudioPlayer {
   private _id: string;
   private type: 'voiceRecording' | 'audio';
   private isExpoCLI: boolean;
-  // This is a temporary flag to manage audio player for voice recording in preview as the one in message list uses react-native-video.
-  private previewVoiceRecording: boolean;
+  /**
+   * This is a temporary flag to manage audio player for voice recording in preview as the one in message list uses react-native-video.
+   * We can get rid of this when we migrate to the react-native-nitro-sound everywhere.
+   */
+  private previewVoiceRecording?: boolean;
 
   constructor(options: AudioPlayerOptions) {
     this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
@@ -125,14 +128,9 @@ export class AudioPlayer {
       // Update the position of the audio player when it is playing
       if (playbackStatus.isPlaying) {
         // The duration given by the expo-av is not same as the one of the voice recording, so we take the actual duration for voice recording.
-        if (this.type === 'voiceRecording') {
-          if (positionMillis <= this.duration) {
-            this.position = positionMillis;
-          }
-        } else {
-          if (positionMillis <= durationMillis) {
-            this.position = positionMillis;
-          }
+        const duration = this.type === 'voiceRecording' ? this.duration : durationMillis;
+        if (positionMillis <= duration) {
+          this.position = positionMillis;
         }
       }
 
@@ -143,6 +141,7 @@ export class AudioPlayer {
     }
   };
 
+  // Getters
   get isPlaying() {
     return this.state.getLatestValue().isPlaying;
   }
@@ -171,6 +170,7 @@ export class AudioPlayer {
     return this._id;
   }
 
+  // Setters
   set duration(duration: number) {
     this.state.partialNext({
       duration,
@@ -197,6 +197,7 @@ export class AudioPlayer {
     });
   }
 
+  // Methods
   async changePlaybackRate() {
     let currentPlaybackRateIndex = this.state
       .getLatestValue()

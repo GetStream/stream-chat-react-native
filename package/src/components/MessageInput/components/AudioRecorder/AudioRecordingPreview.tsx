@@ -22,6 +22,34 @@ export type AudioRecordingPreviewProps = {
    * The waveform data to be presented to show the audio levels.
    */
   waveformData: number[];
+  /**
+   * Boolean used to show the paused state of the player.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
+  paused: boolean;
+  /**
+   * Number used to show the current position of the audio being played.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
+  position: number;
+  /**
+   * Number used to show the percentage of progress of the audio being played. It should be in 0-1 range.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
+  progress: number;
+  /**
+   * Function to play or pause the audio player.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
+  onVoicePlayerPlayPause?: () => Promise<void>;
 };
 
 const audioPlayerSelector = (state: AudioPlayerState) => ({

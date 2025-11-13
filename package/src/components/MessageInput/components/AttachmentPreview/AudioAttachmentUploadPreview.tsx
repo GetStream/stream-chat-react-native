@@ -11,18 +11,44 @@ import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { UploadAttachmentPreviewProps } from '../../../../types/types';
+import { AudioConfig, UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
 export type AudioAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<
     LocalAudioAttachment<CustomLocalMetadata> | LocalVoiceRecordingAttachment<CustomLocalMetadata>
-  >;
+  > & {
+    /**
+     * The audio attachment config
+     *
+     * @deprecated This is deprecated and will be removed in the future.
+     */
+    audioAttachmentConfig: AudioConfig;
+    /**
+     * Callback to be called when the audio is loaded
+     * @deprecated This is deprecated and will be removed in the future.
+     */
+    onLoad: (index: string, duration: number) => void;
+    /**
+     * Callback to be called when the audio is played or paused
+     * @deprecated This is deprecated and will be removed in the future.
+     */
+    onPlayPause: (index: string, pausedStatus?: boolean) => void;
+    /**
+     * Callback to be called when the audio progresses
+     * @deprecated This is deprecated and will be removed in the future.
+     */
+    onProgress: (index: string, progress: number) => void;
+  };
 
 export const AudioAttachmentUploadPreview = ({
   attachment,
+  audioAttachmentConfig,
   handleRetry,
   removeAttachments,
+  onLoad,
+  onPlayPause,
+  onProgress,
 }: AudioAttachmentUploadPreviewProps) => {
   const { enableOfflineSupport } = useChatContext();
   const indicatorType = getIndicatorTypeForFileState(
@@ -43,8 +69,9 @@ export const AudioAttachmentUploadPreview = ({
       ...attachment,
       asset_url: assetUrl,
       id: attachment.localMetadata.id,
+      ...audioAttachmentConfig,
     }),
-    [attachment, assetUrl],
+    [attachment, assetUrl, audioAttachmentConfig],
   );
 
   const onRetryHandler = useCallback(() => {
@@ -66,6 +93,9 @@ export const AudioAttachmentUploadPreview = ({
           hideProgressBar={true}
           isPreview={true}
           item={finalAttachment}
+          onLoad={onLoad}
+          onPlayPause={onPlayPause}
+          onProgress={onProgress}
           showSpeedSettings={false}
           titleMaxLength={12}
         />

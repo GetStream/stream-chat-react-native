@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { isAudioAttachment, isVoiceRecordingAttachment } from 'stream-chat';
+import { Attachment, isAudioAttachment, isVoiceRecordingAttachment } from 'stream-chat';
 
 import { Attachment as AttachmentDefault } from './Attachment';
 
@@ -30,8 +30,86 @@ export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'fil
     }>;
   };
 
+type FilesToDisplayType = Attachment & {
+  duration: number;
+  paused: boolean;
+  progress: number;
+};
+
 const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithContext) => {
   const { Attachment, AudioAttachment, files, message, styles: stylesProp = {} } = props;
+
+  const [filesToDisplay, setFilesToDisplay] = useState<FilesToDisplayType[]>(() =>
+    files.map((file) => ({ ...file, duration: file.duration || 0, paused: true, progress: 0 })),
+  );
+
+  useEffect(() => {
+    setFilesToDisplay(
+      files.map((file) => ({ ...file, duration: file.duration || 0, paused: true, progress: 0 })),
+    );
+  }, [files]);
+
+  /**
+   * Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
+   * @param index - The index of the audio
+   * @param duration - The duration of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
+  const onLoad = (index: string, duration: number) => {
+    setFilesToDisplay((prevFilesToDisplay) =>
+      prevFilesToDisplay.map((fileToDisplay, id) => ({
+        ...fileToDisplay,
+        duration: id.toString() === index ? duration : fileToDisplay.duration,
+      })),
+    );
+  };
+
+  /**
+   * Handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
+   * @param index - The index of the audio
+   * @param progress - The progress of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
+  const onProgress = (index: string, progress: number) => {
+    setFilesToDisplay((prevFilesToDisplay) =>
+      prevFilesToDisplay.map((filesToDisplay, id) => ({
+        ...filesToDisplay,
+        progress: id.toString() === index ? progress : filesToDisplay.progress,
+      })),
+    );
+  };
+
+  /**
+   * Handler which controls or sets the paused/played state of the audio.
+   * @param index - The index of the audio
+   * @param pausedStatus - The paused status of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
+  const onPlayPause = (index: string, pausedStatus?: boolean) => {
+    if (pausedStatus === false) {
+      // If the status is false we set the audio with the index as playing and the others as paused.
+      setFilesToDisplay((prevFilesToDisplay) =>
+        prevFilesToDisplay.map((fileToDisplay, id) => ({
+          ...fileToDisplay,
+          paused: id.toString() !== index,
+        })),
+      );
+    } else {
+      // If the status is true we simply set all the audio's paused state as true.
+      setFilesToDisplay((prevFilesToDisplay) =>
+        prevFilesToDisplay.map((fileToDisplay) => ({
+          ...fileToDisplay,
+          paused: true,
+        })),
+      );
+    }
+  };
 
   const {
     theme: {
@@ -43,7 +121,7 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>
-      {files.map((file, index) => (
+      {filesToDisplay.map((file, index) => (
         <View
           key={`file-by-attachment-group-${message.id}-${index}`}
           style={[
@@ -54,7 +132,14 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
         >
           {(isAudioAttachment(file) || isVoiceRecordingAttachment(file)) &&
           isSoundPackageAvailable() ? (
-            <AudioAttachment item={file} message={message} showSpeedSettings={true} />
+            <AudioAttachment
+              item={{ ...file, id: index.toString(), type: file.type }}
+              message={message}
+              onLoad={onLoad}
+              onPlayPause={onPlayPause}
+              onProgress={onProgress}
+              showSpeedSettings={true}
+            />
           ) : (
             <Attachment attachment={file} />
           )}
