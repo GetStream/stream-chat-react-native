@@ -21,7 +21,7 @@ export type PollOptionFullResultsProps = PollContextValue & {
   PollOptionFullResultsContent?: React.ComponentType<{ option: PollOption }>;
 };
 
-export const PollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => (
+export const renderPollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => (
   <PollVote vote={item} />
 );
 
@@ -65,7 +65,7 @@ export const PollOptionFullResultsContent = ({
         keyExtractor={(item) => `option_full_results_${item.id}`}
         ListHeaderComponent={PollOptionFullResultsHeader}
         onEndReached={() => hasNextPage && loadMore()}
-        renderItem={PollOptionFullResultsItem}
+        renderItem={renderPollOptionFullResultsItem}
         {...additionalFlatListProps}
       />
     </View>
