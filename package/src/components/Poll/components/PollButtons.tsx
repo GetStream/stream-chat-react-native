@@ -1,9 +1,5 @@
-import React, { PropsWithChildren, useCallback, useState } from 'react';
-import { Modal, SafeAreaView as RNSafeAreaView, ViewStyle } from 'react-native';
-import {
-  SafeAreaProvider,
-  SafeAreaView as SafeAreaViewOriginal,
-} from 'react-native-safe-area-context';
+import React, { useCallback, useState } from 'react';
+import { Modal } from 'react-native';
 
 import { GenericPollButton, PollButtonProps } from './Button';
 import { PollAnswersList } from './PollAnswersList';
@@ -13,21 +9,8 @@ import { PollAllOptions } from './PollOption';
 import { PollResults } from './PollResults';
 
 import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
+import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
 import { usePollState } from '../hooks/usePollState';
-
-// This is a workaround to support SafeAreaView on React Native 0.81.0+
-const SafeAreaViewWrapper = ({ children, style }: PropsWithChildren<{ style: ViewStyle }>) => {
-  if (SafeAreaViewOriginal) {
-    return (
-      <SafeAreaProvider>
-        <SafeAreaViewOriginal edges={['bottom', 'top']} style={style}>
-          {children}
-        </SafeAreaViewOriginal>
-      </SafeAreaProvider>
-    );
-  }
-  return <RNSafeAreaView style={style}>{children}</RNSafeAreaView>;
-};
 
 export const ViewResultsButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
@@ -59,12 +42,10 @@ export const ViewResultsButton = (props: PollButtonProps) => {
       <GenericPollButton onPress={onPressHandler} title={t('View Results')} />
       {showResults ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showResults}>
-          <SafeAreaProvider>
-            <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
-              <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
-              <PollResults message={message} poll={poll} />
-            </SafeAreaViewWrapper>
-          </SafeAreaProvider>
+          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+            <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
+            <PollResults message={message} poll={poll} />
+          </SafeAreaViewWrapper>
         </Modal>
       ) : null}
     </>
@@ -107,12 +88,10 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
       ) : null}
       {showAllOptions ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAllOptions}>
-          <SafeAreaProvider>
-            <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
-              <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
-              <PollAllOptions message={message} poll={poll} />
-            </SafeAreaViewWrapper>
-          </SafeAreaProvider>
+          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+            <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
+            <PollAllOptions message={message} poll={poll} />
+          </SafeAreaViewWrapper>
         </Modal>
       ) : null}
     </>
@@ -155,12 +134,10 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
       ) : null}
       {showAnswers ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAnswers}>
-          <SafeAreaProvider>
-            <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
-              <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
-              <PollAnswersList message={message} poll={poll} />
-            </SafeAreaViewWrapper>
-          </SafeAreaProvider>
+          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+            <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
+            <PollAnswersList message={message} poll={poll} />
+          </SafeAreaViewWrapper>
         </Modal>
       ) : null}
     </>

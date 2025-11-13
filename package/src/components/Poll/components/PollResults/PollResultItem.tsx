@@ -1,17 +1,5 @@
-import React, { PropsWithChildren, useCallback, useState } from 'react';
-import {
-  Modal,
-  SafeAreaView as RNSafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
-
-import {
-  SafeAreaProvider,
-  SafeAreaView as SafeAreaViewOriginal,
-} from 'react-native-safe-area-context';
+import React, { useCallback, useState } from 'react';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { LocalMessage, Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
@@ -25,23 +13,10 @@ import {
   useTranslationContext,
 } from '../../../../contexts';
 
+import { SafeAreaViewWrapper } from '../../../UIComponents/SafeAreaViewWrapper';
 import { usePollState } from '../../hooks/usePollState';
 import { GenericPollButton } from '../Button';
 import { PollModalHeader } from '../PollModalHeader';
-
-// This is a workaround to support SafeAreaView on React Native 0.81.0+
-const SafeAreaViewWrapper = ({ children, style }: PropsWithChildren<{ style: ViewStyle }>) => {
-  if (SafeAreaViewOriginal) {
-    return (
-      <SafeAreaProvider>
-        <SafeAreaViewOriginal edges={['bottom', 'top']} style={style}>
-          {children}
-        </SafeAreaViewOriginal>
-      </SafeAreaProvider>
-    );
-  }
-  return <RNSafeAreaView style={style}>{children}</RNSafeAreaView>;
-};
 
 export type ShowAllVotesButtonProps = {
   option: PollOption;
