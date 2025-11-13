@@ -38,6 +38,7 @@ const INITIAL_STATE: AudioPlayerState = {
 
 export type AudioPlayerOptions = AudioDescriptor & {
   playbackRates?: number[];
+  previewVoiceRecording?: boolean;
 };
 
 export class AudioPlayer {
@@ -46,11 +47,14 @@ export class AudioPlayer {
   private _id: string;
   private type: 'voiceRecording' | 'audio';
   private isExpoCLI: boolean;
+  // This is a temporary flag to manage audio player for voice recording in preview as the one in message list uses react-native-video.
+  private previewVoiceRecording: boolean;
 
   constructor(options: AudioPlayerOptions) {
     this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
     this._id = options.id;
     this.type = options.type;
+    this.previewVoiceRecording = options.previewVoiceRecording ?? false;
     const playbackRates = options.playbackRates ?? DEFAULT_PLAYBACK_RATES;
     this.state = new StateStore<AudioPlayerState>({
       ...INITIAL_STATE,
@@ -68,6 +72,19 @@ export class AudioPlayer {
       this.playerRef = playerRef;
       return;
     }
+    if (this.previewVoiceRecording) {
+      if (NativeHandlers.Audio?.startPlayer) {
+        await NativeHandlers.Audio.startPlayer(
+          uri,
+          {},
+          this.onVoiceRecordingPreviewPlaybackStatusUpdate,
+        );
+        if (NativeHandlers.Audio?.pausePlayer) {
+          await NativeHandlers.Audio.pausePlayer();
+        }
+      }
+      return;
+    }
     if (!this.isExpoCLI || !uri) {
       return;
     }
@@ -77,6 +94,15 @@ export class AudioPlayer {
         DEFAULT_PLAYER_SETTINGS,
         this.onPlaybackStatusUpdate,
       );
+    }
+  };
+
+  onVoiceRecordingPreviewPlaybackStatusUpdate = async (playbackStatus: PlaybackStatus) => {
+    const currentProgress = playbackStatus.currentPosition / playbackStatus.duration;
+    if (currentProgress === 1) {
+      await this.stop();
+    } else {
+      this.progress = currentProgress;
     }
   };
 
@@ -92,13 +118,13 @@ export class AudioPlayer {
       // Update your UI for the loaded state
       // This is done for Expo CLI where we don't get file duration from file picker
 
-      // The duration given by the expo-av is not same as the one of the voice recording, so we take the actual duration for voice recording.
       if (this.type !== 'voiceRecording') {
         this.duration = durationMillis;
       }
 
       // Update the position of the audio player when it is playing
       if (playbackStatus.isPlaying) {
+        // The duration given by the expo-av is not same as the one of the voice recording, so we take the actual duration for voice recording.
         if (this.type === 'voiceRecording') {
           if (positionMillis <= this.duration) {
             this.position = positionMillis;
@@ -108,12 +134,6 @@ export class AudioPlayer {
             this.position = positionMillis;
           }
         }
-      } else {
-        // Update your UI for the paused state
-      }
-
-      if (playbackStatus.isBuffering) {
-        // Update your UI for the buffering state
       }
 
       // Update the UI when the audio is finished playing
@@ -199,9 +219,24 @@ export class AudioPlayer {
   }
 
   _playInternal() {
-    if (this.isPlaying || !this.playerRef) {
+    if (this.isPlaying) {
       return;
     }
+
+    if (this.previewVoiceRecording) {
+      if (NativeHandlers.Audio?.resumePlayer) {
+        NativeHandlers.Audio.resumePlayer();
+      }
+      this.state.partialNext({
+        isPlaying: true,
+      });
+      return;
+    }
+
+    if (!this.playerRef) {
+      return;
+    }
+
     if (this.isExpoCLI) {
       if (this.playerRef?.playAsync) {
         this.playerRef.playAsync();
@@ -217,9 +252,23 @@ export class AudioPlayer {
   }
 
   _pauseInternal() {
-    if (!this.isPlaying || !this.playerRef) {
+    if (!this.isPlaying) {
       return;
     }
+    if (this.previewVoiceRecording) {
+      if (NativeHandlers.Audio?.pausePlayer) {
+        NativeHandlers.Audio.pausePlayer();
+      }
+      this.state.partialNext({
+        isPlaying: false,
+      });
+      return;
+    }
+
+    if (!this.playerRef) {
+      return;
+    }
+
     if (this.isExpoCLI) {
       if (this.playerRef?.pauseAsync) {
         this.playerRef.pauseAsync();
@@ -243,6 +292,13 @@ export class AudioPlayer {
   }
 
   async seek(positionInSeconds: number) {
+    if (this.previewVoiceRecording) {
+      this.position = positionInSeconds;
+      if (NativeHandlers.Audio?.seekToPlayer) {
+        NativeHandlers.Audio.seekToPlayer(positionInSeconds * 1000);
+      }
+      return;
+    }
     if (!this.playerRef) {
       return;
     }
@@ -272,6 +328,17 @@ export class AudioPlayer {
   }
 
   onRemove() {
+    if (this.previewVoiceRecording) {
+      if (NativeHandlers.Audio?.stopPlayer) {
+        NativeHandlers.Audio.stopPlayer();
+      }
+      this.state.partialNext({
+        ...INITIAL_STATE,
+        currentPlaybackRate: this.playbackRates[0],
+        playbackRates: DEFAULT_PLAYBACK_RATES,
+      });
+      return;
+    }
     if (this.isExpoCLI) {
       if (this.playerRef?.stopAsync && this.playerRef.unloadAsync) {
         this.playerRef.stopAsync();

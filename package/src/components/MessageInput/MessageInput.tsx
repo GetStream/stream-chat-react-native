@@ -311,11 +311,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
     deleteVoiceRecording,
     micLocked,
-    onVoicePlayerPlayPause,
-    paused,
     permissionsGranted,
-    position,
-    progress,
     recording,
     recordingDuration,
     recordingStatus,
@@ -449,10 +445,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             />
             {recordingStatus === 'stopped' ? (
               <AudioRecordingPreview
-                onVoicePlayerPlayPause={onVoicePlayerPlayPause}
-                paused={paused}
-                position={position}
-                progress={progress}
+                recordingDuration={recordingDuration}
+                uri={
+                  typeof recording !== 'string'
+                    ? (recording?.getURI() as string)
+                    : (recording as string)
+                }
                 waveformData={waveformData}
               />
             ) : micLocked ? (

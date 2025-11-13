@@ -33,6 +33,7 @@ export const useAudioPlayerControl = ({
   duration,
   mimeType,
   playbackRates,
+  previewVoiceRecording,
   requester = '',
   type,
   uri,
@@ -47,10 +48,11 @@ export const useAudioPlayerControl = ({
         id,
         mimeType: mimeType ?? '',
         playbackRates,
+        previewVoiceRecording,
         type: type ?? 'audio',
         uri: uri ?? '',
       }),
-    [audioPlayerPool, duration, id, mimeType, playbackRates, type, uri],
+    [audioPlayerPool, duration, id, mimeType, playbackRates, previewVoiceRecording, type, uri],
   );
 
   return {
