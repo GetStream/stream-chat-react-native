@@ -491,6 +491,10 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     newMessageStateUpdateThrottleInterval?: number;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
+    /**
+     * If true, multiple audio players will be allowed to play simultaneously
+     * @default true
+     */
     playMultipleAudio?: boolean;
     stateUpdateThrottleInterval?: number;
     /**
@@ -687,7 +691,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     openPollCreationDialog,
     overrideOwnCapabilities,
     PollContent,
-    playMultipleAudio = false,
+    playMultipleAudio = true,
     ReactionListBottom = ReactionListBottomDefault,
     reactionListPosition = 'top',
     ReactionListTop = ReactionListTopDefault,
