@@ -53,9 +53,9 @@ import {
   MessageContextValue,
 } from '../../contexts';
 import {
-  AudioPlayerPoolContextProps,
-  AudioPlayerPoolProvider,
-} from '../../contexts/audioPlayerPoolContext/AudioPlayerPoolContext';
+  AudioPlayerContextProps,
+  WithAudioPlayback,
+} from '../../contexts/audioPlayerContext/AudioPlayerContext';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
@@ -1667,7 +1667,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
   });
 
-  const audioPlayerPoolProviderProps = useMemo<AudioPlayerPoolContextProps>(
+  const audioPlayerProviderProps = useMemo<AudioPlayerContextProps>(
     () => ({
       allowConcurrentAudioPlayback,
     }),
@@ -2012,12 +2012,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                   <AttachmentPickerProvider value={attachmentPickerContext}>
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
-                        <AudioPlayerPoolProvider props={audioPlayerPoolProviderProps}>
+                        <WithAudioPlayback props={audioPlayerProviderProps}>
                           <View style={{ height: '100%' }}>{children}</View>
                           {!disableAttachmentPicker && (
                             <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
                           )}
-                        </AudioPlayerPoolProvider>
+                        </WithAudioPlayback>
                       </MessageInputProvider>
                     </MessageComposerProvider>
                   </AttachmentPickerProvider>

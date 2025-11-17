@@ -3,22 +3,22 @@ import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo
 import { AudioPlayerPool } from '../../state-store/audio-player-pool';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
-export type AudioPlayerPoolContextProps = {
+export type AudioPlayerContextProps = {
   allowConcurrentAudioPlayback: boolean;
 };
 
-export type AudioPlayerPoolContextValue = {
+export type AudioPlayerContextValue = {
   audioPlayerPool: AudioPlayerPool;
 };
 
-export const AudioPlayerPoolContext = createContext<AudioPlayerPoolContextValue>(
-  DEFAULT_BASE_CONTEXT_VALUE as AudioPlayerPoolContextValue,
+export const AudioPlayerContext = createContext<AudioPlayerContextValue>(
+  DEFAULT_BASE_CONTEXT_VALUE as AudioPlayerContextValue,
 );
 
-export const AudioPlayerPoolProvider = ({
+export const WithAudioPlayback = ({
   props: { allowConcurrentAudioPlayback },
   children,
-}: PropsWithChildren<{ props: AudioPlayerPoolContextProps }>) => {
+}: PropsWithChildren<{ props: AudioPlayerContextProps }>) => {
   const audioPlayerPool = useMemo(
     () => new AudioPlayerPool({ allowConcurrentAudioPlayback }),
     [allowConcurrentAudioPlayback],
@@ -33,10 +33,10 @@ export const AudioPlayerPoolProvider = ({
   );
 
   return (
-    <AudioPlayerPoolContext.Provider value={audioPlayerPoolContextValue}>
+    <AudioPlayerContext.Provider value={audioPlayerPoolContextValue}>
       {children}
-    </AudioPlayerPoolContext.Provider>
+    </AudioPlayerContext.Provider>
   );
 };
 
-export const useAudioPlayerPoolContext = () => useContext(AudioPlayerPoolContext);
+export const useAudioPlayerContext = () => useContext(AudioPlayerContext);

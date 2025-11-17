@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useAudioPlayerPoolContext } from '../contexts/audioPlayerPoolContext/AudioPlayerPoolContext';
+import { useAudioPlayerContext } from '../contexts/audioPlayerContext/AudioPlayerContext';
 import { AudioPlayerOptions } from '../state-store/audio-player';
 
 export type UseAudioPlayerControlProps = {
@@ -39,7 +39,7 @@ export const useAudioPlayerControl = ({
   uri,
   id: fileId,
 }: UseAudioPlayerControlProps) => {
-  const { audioPlayerPool } = useAudioPlayerPoolContext();
+  const { audioPlayerPool } = useAudioPlayerContext();
   const id = makeAudioPlayerId({ id: fileId, requester, src: uri ?? '' });
   const audioPlayer = useMemo(
     () =>
