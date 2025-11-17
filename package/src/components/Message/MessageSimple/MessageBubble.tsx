@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { SetStateAction, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
@@ -16,6 +16,7 @@ import { ReactionListTopProps } from './ReactionList/ReactionListTop';
 
 import { MessagesContextValue, useTheme } from '../../../contexts';
 
+import { useStableCallback } from '../../../hooks';
 import { NativeHandlers } from '../../../native';
 
 export type MessageBubbleProps = Pick<
@@ -104,6 +105,14 @@ export const SwipableMessageBubble = React.memo(
 
     const triggerHaptic = NativeHandlers.triggerHaptic;
 
+    const setMessageContentWidth = useStableCallback((valueOrCallback: SetStateAction<number>) => {
+      if (typeof valueOrCallback === 'number') {
+        props.setMessageContentWidth(Math.round(valueOrCallback));
+        return;
+      }
+      props.setMessageContentWidth(valueOrCallback);
+    });
+
     const swipeGesture = useMemo(
       () =>
         Gesture.Pan()
@@ -188,7 +197,11 @@ export const SwipableMessageBubble = React.memo(
       <GestureDetector gesture={swipeGesture}>
         <View
           hitSlop={messageSwipeToReplyHitSlop}
-          style={[styles.contentWrapper, contentWrapper, { width: props.messageContentWidth }]}
+          style={[
+            styles.contentWrapper,
+            contentWrapper,
+            props.messageContentWidth > 0 ? { width: props.messageContentWidth } : {},
+          ]}
         >
           {shouldRenderAnimatedWrapper ? (
             <AnimatedWrapper
@@ -201,7 +214,7 @@ export const SwipableMessageBubble = React.memo(
               {MessageSwipeContent ? <MessageSwipeContent /> : null}
             </AnimatedWrapper>
           ) : null}
-          <MessageBubble {...messageBubbleProps} />
+          <MessageBubble {...messageBubbleProps} setMessageContentWidth={setMessageContentWidth} />
         </View>
       </GestureDetector>
     );
@@ -212,7 +225,7 @@ const styles = StyleSheet.create({
   contentWrapper: {
     alignItems: 'center',
     flexDirection: 'row',
-    width: 200,
+    // width: 200,
   },
   swipeContentContainer: {
     flexShrink: 0,
