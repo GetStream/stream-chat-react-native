@@ -107,7 +107,7 @@ export const SwipableMessageBubble = React.memo(
 
     const setMessageContentWidth = useStableCallback((valueOrCallback: SetStateAction<number>) => {
       if (typeof valueOrCallback === 'number') {
-        props.setMessageContentWidth(Math.round(valueOrCallback));
+        props.setMessageContentWidth(Math.ceil(valueOrCallback));
         return;
       }
       props.setMessageContentWidth(valueOrCallback);
@@ -175,13 +175,13 @@ export const SwipableMessageBubble = React.memo(
             );
           }),
       [
-        isSwiping,
         messageSwipeToReplyHitSlop,
-        onSwipe,
         touchStart,
-        translateX,
-        triggerHaptic,
+        isSwiping,
         shouldRenderSwipeableWrapper,
+        translateX,
+        onSwipe,
+        triggerHaptic,
       ],
     );
 
@@ -200,7 +200,9 @@ export const SwipableMessageBubble = React.memo(
           style={[
             styles.contentWrapper,
             contentWrapper,
-            props.messageContentWidth > 0 ? { width: props.messageContentWidth } : {},
+            props.messageContentWidth > 0 && shouldRenderAnimatedWrapper
+              ? { width: props.messageContentWidth }
+              : {},
           ]}
         >
           {shouldRenderAnimatedWrapper ? (
