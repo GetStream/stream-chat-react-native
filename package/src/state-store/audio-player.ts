@@ -104,7 +104,7 @@ export class AudioPlayer {
     }
   };
 
-  onVoiceRecordingPreviewPlaybackStatusUpdate = async (playbackStatus: PlaybackStatus) => {
+  private onVoiceRecordingPreviewPlaybackStatusUpdate = async (playbackStatus: PlaybackStatus) => {
     const currentProgress = playbackStatus.currentPosition / playbackStatus.duration;
     if (currentProgress === 1) {
       await this.stop();
@@ -114,7 +114,7 @@ export class AudioPlayer {
   };
 
   // This should be a arrow function to avoid binding the function to the instance
-  onPlaybackStatusUpdate = async (playbackStatus: PlaybackStatus) => {
+  private onPlaybackStatusUpdate = async (playbackStatus: PlaybackStatus) => {
     if (!playbackStatus.isLoaded) {
       // Update your UI for the unloaded state
       if (playbackStatus.error) {
