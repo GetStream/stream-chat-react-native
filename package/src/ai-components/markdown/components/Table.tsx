@@ -4,7 +4,7 @@ import type {
   MarkdownOutputProps,
   MarkdownTableRowProps,
   RuleRenderFunction,
-} from '../types.ts';
+} from '../types';
 import { MarkdownReactiveScrollView } from '../../components';
 import type { SingleASTNode } from '@khanacademy/simple-markdown';
 import { useCallback, useMemo } from 'react';

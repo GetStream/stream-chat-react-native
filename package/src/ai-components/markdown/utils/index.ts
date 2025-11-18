@@ -1,1 +1,1 @@
-export * from './generateMarkdownText';
+export * from './generate-markdown-text';

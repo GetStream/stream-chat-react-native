@@ -1,5 +1,5 @@
 import { Text } from 'react-native';
-import type { MarkdownComponentProps, RuleRenderFunction } from '../types.ts';
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const NewLine = ({ styles }: MarkdownComponentProps) => (
   <Text style={styles.br}>{'\n'}</Text>

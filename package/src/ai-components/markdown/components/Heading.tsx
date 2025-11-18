@@ -3,7 +3,7 @@ import type {
   HeadingLevel,
   MarkdownComponentProps,
   RuleRenderFunction,
-} from '../types.ts';
+} from '../types';
 import { useMemo } from 'react';
 
 const DEFAULT_HEADING_LEVEL = undefined;

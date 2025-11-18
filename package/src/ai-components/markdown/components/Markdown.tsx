@@ -1,13 +1,13 @@
 import React, { type PropsWithChildren, useMemo } from 'react';
-import type { MarkdownProps } from '../types.ts';
+import type { MarkdownProps } from '../types';
 import { isArray, isEqual, merge } from 'lodash';
-import styles from '../styles.ts';
+import styles from '../styles';
 import SimpleMarkdown, {
   type OutputRules,
   type ParserRules,
   type ReactOutputRule,
 } from '@khanacademy/simple-markdown';
-import { getLocalRules } from '../rules.ts';
+import { getLocalRules } from '../rules';
 import { View } from 'react-native';
 
 const UnmemoizedMarkdown = (props: PropsWithChildren<MarkdownProps>) => {

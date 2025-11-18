@@ -1,1 +1,2 @@
-export * from './MarkdownReactiveScrollView.tsx';
+export * from './MarkdownReactiveScrollView';
+export * from './PerfText';

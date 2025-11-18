@@ -1,5 +1,5 @@
 import { Text, type TextStyle, View } from 'react-native';
-import type { MarkdownComponentProps, RuleRenderFunction } from '../types.ts';
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 import { size, some } from 'lodash';
 import { useMemo } from 'react';
 

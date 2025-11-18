@@ -1,5 +1,5 @@
 import { Text } from 'react-native';
-import type { MarkdownComponentProps, RuleRenderFunction } from '../types.ts';
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const Link = ({ children, styles, onPress }: MarkdownComponentProps) => (
   <Text style={styles.autolink} onPress={onPress} suppressHighlighting={false}>

@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import type { MarkdownComponentProps, RuleRenderFunction } from '../types.ts';
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const BlockQuote = ({ children, styles }: MarkdownComponentProps) => (
   <View style={styles.blockQuoteSection}>

@@ -1,5 +1,5 @@
 import { Text } from 'react-native';
-import type { MarkdownComponentProps, RuleRenderFunction } from '../types.ts';
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 import { useMemo } from 'react';
 
 export const TextUI = ({ children, styles, state }: MarkdownComponentProps) => {

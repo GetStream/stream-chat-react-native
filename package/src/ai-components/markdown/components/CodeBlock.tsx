@@ -1,9 +1,11 @@
 import { Pressable, type PressableProps, Text, View } from 'react-native';
-import type { MarkdownComponentProps, RuleRenderFunction } from '../types.ts';
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 import { MarkdownReactiveScrollView } from '../../components';
-// @ts-expect-error need to check what's up with the lib
-import SyntaxHighlighter from 'react-native-syntax-highlighter';
-import { type PropsWithChildren, useCallback, useMemo } from 'react';
+import { SyntaxHighlighter } from '../../syntax-highlighting';
+import React, { type PropsWithChildren, useCallback, useMemo } from 'react';
+import Chart from '../../charts/Chart';
+import { parseJsonChart } from '../../charts';
+import { parseMermaid } from '../../charts';
 
 export const CodeBlockCopyButton = ({
   onPress,
@@ -20,25 +22,14 @@ export const CodeBlockCopyButton = ({
 
 export const CodeBlock = ({ styles, node }: MarkdownComponentProps) => {
   const text = useMemo(() => node.content?.trim(), [node.content]);
-  const lineNumbers = useMemo(
-    () => Array.from({ length: text?.split('\n').length ?? 0 }, (_, i) => i),
-    [text],
-  );
 
   const CodeTag = useCallback(
     ({ children }: PropsWithChildren) => (
       <View style={styles.codeBlockContainer}>
-        <View style={styles.codeBlockLineNumberGutter}>
-          {lineNumbers.map((idx) => (
-            <Text style={styles.codeBlockLineNumberCell} key={idx}>
-              {`${idx + 1}.`}
-            </Text>
-          ))}
-        </View>
         <Text style={styles.codeBlock}>{children}</Text>
       </View>
     ),
-    [styles, lineNumbers],
+    [styles],
   );
 
   const CodeBlockHeader = useCallback(
@@ -60,6 +51,28 @@ export const CodeBlock = ({ styles, node }: MarkdownComponentProps) => {
     ),
     [CodeBlockHeader, styles.codeBlockWrapper],
   );
+
+  if (node.lang === 'mermaid') {
+    try {
+      const parsed = parseMermaid(text);
+      if (parsed) {
+        return <Chart spec={parsed} />;
+      }
+    } catch (_e) {
+      /* do nothing */
+    }
+  }
+
+  if (node.lang === 'json') {
+    try {
+      const parsed = parseJsonChart(text);
+      if (parsed) {
+        return <Chart spec={parsed} />;
+      }
+    } catch (_e) {
+      /* do nothing */
+    }
+  }
 
   return (
     <SyntaxHighlighter

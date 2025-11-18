@@ -7,7 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import { useStableCallback } from '../internal/hooks/useStableCallback.ts';
+import { useStableCallback } from '../internal/hooks/useStableCallback';
 
 export const MarkdownReactiveScrollView = ({ children }: PropsWithChildren) => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
