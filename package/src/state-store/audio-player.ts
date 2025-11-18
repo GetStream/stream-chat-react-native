@@ -296,7 +296,7 @@ export class AudioPlayer {
     });
 
     if (this._pool) {
-      this._pool.notifyPaused(this.id);
+      this._pool.notifyPaused();
     }
   }
 

@@ -1,6 +1,7 @@
 import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
 
-import { AudioPlayerPool } from '../../state-store/audio-player-pool';
+import { useStateStore } from '../../hooks/useStateStore';
+import { AudioPlayerPool, AudioPlayerPoolState } from '../../state-store/audio-player-pool';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type AudioPlayerContextProps = {
@@ -40,3 +41,14 @@ export const WithAudioPlayback = ({
 };
 
 export const useAudioPlayerContext = () => useContext(AudioPlayerContext);
+
+const activeAudioPlayerSelector = ({ activeAudioPlayer }: AudioPlayerPoolState) => ({
+  activeAudioPlayer,
+});
+
+export const useActiveAudioPlayer = () => {
+  const { audioPlayerPool } = useContext(AudioPlayerContext);
+  const { activeAudioPlayer } =
+    useStateStore(audioPlayerPool.state, activeAudioPlayerSelector) ?? {};
+  return activeAudioPlayer;
+};
