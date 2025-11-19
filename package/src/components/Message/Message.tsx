@@ -982,7 +982,7 @@ export const Message = (props: MessageProps) => {
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
   const readBy = useMessageReadData({ message });
-  const deliveredToCount = useMessageDeliveredData({ message });
+  const deliveredTo = useMessageDeliveredData({ message });
   const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
@@ -991,13 +991,13 @@ export const Message = (props: MessageProps) => {
       {...{
         channel,
         chatContext,
-        deliveredToCount,
+        deliveredToCount: deliveredTo.length,
         dismissKeyboard,
         enforceUniqueReaction,
         members,
         messagesContext,
         openThread,
-        readBy,
+        readBy: readBy.length,
         setEditingState,
         setQuotedMessage,
         t,
