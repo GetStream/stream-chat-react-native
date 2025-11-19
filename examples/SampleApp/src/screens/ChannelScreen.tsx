@@ -222,7 +222,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         audioRecordingEnabled={true}
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
-        enableSwipeToReply={false}
         onPressMessage={onPressMessage}
         disableTypingIndicator
         enforceUniqueReaction
