@@ -64,6 +64,7 @@ export * from './ChannelPreview/hooks/useChannelPreviewDisplayPresence';
 export * from './ChannelPreview/hooks/useLatestMessagePreview';
 export * from './ChannelPreview/hooks/useChannelPreviewData';
 export * from './ChannelPreview/hooks/useIsChannelMuted';
+export * from './ChannelPreview/hooks/useMessageDeliveryStatus';
 
 export * from './Chat/Chat';
 export * from './Chat/hooks/useCreateChatClient';
