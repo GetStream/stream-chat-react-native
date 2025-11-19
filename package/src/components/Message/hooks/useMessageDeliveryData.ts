@@ -19,10 +19,10 @@ export const useMessageDeliveredData = ({ message }: { message?: LocalMessage })
     return channel.messageReceiptsTracker.deliveredForMessage(messageRef);
   }, [channel, message]);
 
-  const [deliveredToCount, setDeliveredToCount] = useState<UserResponse[]>([]);
+  const [deliveredTo, setDeliveredTo] = useState<UserResponse[]>([]);
 
   useEffect(() => {
-    setDeliveredToCount(calculate());
+    setDeliveredTo(calculate());
   }, [calculate]);
 
   useEffect(() => {
@@ -31,11 +31,11 @@ export const useMessageDeliveredData = ({ message }: { message?: LocalMessage })
        * An optimization to only re-calculate if the event is received by a different user.
        */
       if (event.user?.id !== client.user?.id) {
-        setDeliveredToCount(calculate());
+        setDeliveredTo(calculate());
       }
     });
     return unsubscribe;
   }, [channel, calculate, client.user?.id]);
 
-  return deliveredToCount;
+  return deliveredTo;
 };
