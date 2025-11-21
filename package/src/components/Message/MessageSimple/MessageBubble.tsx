@@ -146,7 +146,7 @@ export const SwipableMessageBubble = React.memo(
           .onStart(() => {
             translateX.value = 0;
           })
-          .onUpdate(({ translationX }) => {
+          .onChange(({ translationX }) => {
             if (translationX > 0) {
               translateX.value = translationX;
             }
@@ -227,7 +227,6 @@ const styles = StyleSheet.create({
   contentWrapper: {
     alignItems: 'center',
     flexDirection: 'row',
-    // width: 200,
   },
   swipeContentContainer: {
     flexShrink: 0,
