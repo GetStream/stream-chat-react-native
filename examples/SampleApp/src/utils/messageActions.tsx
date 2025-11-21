@@ -1,8 +1,10 @@
+import React from 'react';
 import { Alert } from 'react-native';
-import { StreamChat } from 'stream-chat';
+import { LocalMessage, StreamChat } from 'stream-chat';
 import {
   Colors,
   Delete,
+  Eye,
   messageActions,
   MessageActionsParams,
   Time,
@@ -15,11 +17,13 @@ export function channelMessageActions({
   chatClient,
   colors,
   t,
+  handleMessageInfo,
 }: {
   params: MessageActionsParams;
   chatClient: StreamChat;
   t: TranslationContextValue['t'];
   colors?: typeof Colors;
+  handleMessageInfo: (message: LocalMessage) => void;
 }) {
   const { dismissOverlay, deleteForMeMessage } = params;
   const actions = messageActions(params);
@@ -109,6 +113,16 @@ export function channelMessageActions({
     actionType: 'deleteForMe',
     icon: <Delete fill={colors?.accent_red} size={24} />,
     title: t('Delete for me'),
+  });
+
+  actions.push({
+    action: () => {
+      dismissOverlay();
+      handleMessageInfo(params.message);
+    },
+    actionType: 'messageInfo',
+    icon: <Eye height={24} width={24} pathFill={colors?.grey} />,
+    title: 'Message Info',
   });
 
   return actions;

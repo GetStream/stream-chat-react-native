@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
@@ -33,6 +33,8 @@ import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
@@ -115,19 +117,20 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 
 // Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({
+  navigation,
   route: {
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
   const { chatClient, messageListImplementation, messageListMode, messageListPruning } =
     useAppContext();
-  const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
     theme: { colors },
   } = useTheme();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
+  const [selectedMessage, setSelectedMessage] = useState<LocalMessage | undefined>(undefined);
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
@@ -170,6 +173,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   const onThreadSelect = useCallback(
     (thread: LocalMessage | null) => {
+      if (!thread || !channel) {
+        return;
+      }
       setSelectedThread(thread);
       setThread(thread);
       navigation.navigate('ThreadScreen', {
@@ -178,6 +184,16 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       });
     },
     [channel, navigation, setThread],
+  );
+
+  const messageInfoBottomSheetRef = useRef<BottomSheet>(null);
+
+  const handleMessageInfo = useCallback(
+    (message: LocalMessage) => {
+      setSelectedMessage(message);
+      messageInfoBottomSheetRef.current?.snapToIndex(1);
+    },
+    [messageInfoBottomSheetRef],
   );
 
   const messageActions = useCallback(
@@ -190,9 +206,10 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         chatClient,
         t,
         colors,
+        handleMessageInfo,
       });
     },
-    [chatClient, colors, t],
+    [chatClient, colors, t, handleMessageInfo],
   );
 
   if (!channel || !chatClient) {
@@ -232,6 +249,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         )}
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
+        <MessageInfoBottomSheet message={selectedMessage} ref={messageInfoBottomSheetRef} />
       </Channel>
     </View>
   );

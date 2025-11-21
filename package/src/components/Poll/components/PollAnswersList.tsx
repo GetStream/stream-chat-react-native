@@ -126,7 +126,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   );
 };
 
-const PollAnswerListItemComponent = ({ item }: { item: PollAnswer }) => (
+const renderPollAnswerListItem = ({ item }: { item: PollAnswer }) => (
   <PollAnswerListItem answer={item} />
 );
 
@@ -149,7 +149,7 @@ export const PollAnswersListContent = ({
         data={pollAnswers}
         keyExtractor={(item) => `poll_answer_${item.id}`}
         onEndReached={() => hasNextPage && loadMore()}
-        renderItem={PollAnswerListItemComponent}
+        renderItem={renderPollAnswerListItem}
         {...additionalFlatListProps}
       />
       <AnswerListAddCommentButton />
