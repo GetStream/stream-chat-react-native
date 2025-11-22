@@ -79,13 +79,8 @@ export const SwipableMessageBubble = React.memo(
         'shouldRenderSwipeableWrapper' | 'messageSwipeToReplyHitSlop'
       > & { onSwipe: () => void },
   ) => {
-    const {
-      MessageSwipeContent,
-      shouldRenderSwipeableWrapper,
-      messageSwipeToReplyHitSlop,
-      onSwipe,
-      ...messageBubbleProps
-    } = props;
+    const { MessageSwipeContent, messageSwipeToReplyHitSlop, onSwipe, ...messageBubbleProps } =
+      props;
 
     const {
       theme: {
@@ -96,9 +91,7 @@ export const SwipableMessageBubble = React.memo(
     const translateX = useSharedValue(0);
     const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
     const isSwiping = useSharedValue<boolean>(false);
-    const [shouldRenderAnimatedWrapper, setShouldRenderAnimatedWrapper] = useState<boolean>(
-      shouldRenderSwipeableWrapper,
-    );
+    const [shouldRenderAnimatedWrapper, setShouldRenderAnimatedWrapper] = useState<boolean>(false);
 
     const SWIPABLE_THRESHOLD = 25;
     const MINIMUM_DISTANCE = 8;
@@ -134,10 +127,10 @@ export const SwipableMessageBubble = React.memo(
             // Only activate if there's significant horizontal movement
             if (isHorizontalPanning && hasMinimumDistance) {
               state.activate();
-              isSwiping.value = true;
-              if (!shouldRenderSwipeableWrapper) {
-                runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
+              if (!isSwiping.value) {
+                runOnJS(setShouldRenderAnimatedWrapper)(true);
               }
+              isSwiping.value = true;
             } else if (hasMinimumDistance) {
               // If there's significant movement but not horizontal, fail the gesture
               state.fail();
@@ -168,21 +161,11 @@ export const SwipableMessageBubble = React.memo(
                 stiffness: 1,
               },
               () => {
-                if (!shouldRenderSwipeableWrapper) {
-                  runOnJS(setShouldRenderAnimatedWrapper)(isSwiping.value);
-                }
+                runOnJS(setShouldRenderAnimatedWrapper)(false);
               },
             );
           }),
-      [
-        messageSwipeToReplyHitSlop,
-        touchStart,
-        isSwiping,
-        shouldRenderSwipeableWrapper,
-        translateX,
-        onSwipe,
-        triggerHaptic,
-      ],
+      [messageSwipeToReplyHitSlop, touchStart, isSwiping, translateX, onSwipe, triggerHaptic],
     );
 
     const swipeContentAnimatedStyle = useAnimatedStyle(
