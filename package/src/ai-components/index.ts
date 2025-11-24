@@ -2,7 +2,11 @@
 export * from './markdown';
 export * from './syntax-highlighting';
 export * from './charts';
+export * from './message-composer';
+export * from './MarkdownRichText';
 
 // components
 export * from './components';
-export * from './MarkdownRichText';
+
+// services
+export * from './services';

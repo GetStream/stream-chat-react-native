@@ -53,7 +53,6 @@ class PerfTextViewManager : SimpleViewManager<PerfTextView>() {
     if (sizeSp > 0) v.textSize = sizeSp.toFloat()
   }
 
-
   @ReactProp(name = "lineHeight")
   fun setLineHeight(v: PerfTextView, height: Double) {
     val targetPx = PixelUtil.toPixelFromDIP(height.toFloat())
@@ -64,8 +63,6 @@ class PerfTextViewManager : SimpleViewManager<PerfTextView>() {
       v.setLineSpacing(0.0f, 1.0f)
     };
   }
-
-
 
   @ReactProp(name = "fontFamily")
   fun setFontFamily(v: PerfTextView, family: String?) {
@@ -138,11 +135,10 @@ class PerfTextViewManager : SimpleViewManager<PerfTextView>() {
 
     view.measure(widthSpec, heightSpec)
 
-    val measuredWidthDp = ceil(PixelUtil.toDIPFromPixel(view.measuredWidth.toFloat()).toDouble()).toInt()
-    val measuredHeightDp = ceil(PixelUtil.toDIPFromPixel(view.measuredHeight.toFloat()).toDouble()).toInt()
+    val measuredWidthDp = ceil(PixelUtil.toDIPFromPixel(view.measuredWidth.toFloat()))
+    val measuredHeightDp = ceil(PixelUtil.toDIPFromPixel(view.measuredHeight.toFloat()))
 
     return YogaMeasureOutput.make(measuredWidthDp * 1.5f, measuredHeightDp * 1.0f)
-
   }
 }
 
