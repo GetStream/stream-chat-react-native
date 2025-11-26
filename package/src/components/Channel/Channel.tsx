@@ -7,6 +7,7 @@ import throttle from 'lodash/throttle';
 import { lookup } from 'mime-types';
 import {
   Channel as ChannelClass,
+  ChannelResponse,
   ChannelState,
   Channel as ChannelType,
   DeleteMessageOptions,
@@ -102,7 +103,6 @@ import {
   isImagePickerAvailable,
   NativeHandlers,
 } from '../../native';
-import * as dbApi from '../../store/apis';
 import { ChannelUnreadState, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
@@ -1300,9 +1300,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           attachment.image_url = uploadResponse.file;
           delete attachment.originalFile;
 
-          await dbApi.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          });
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...updatedMessage, cid: channel.cid },
+              }),
+            { method: 'upsertAppSettings' },
+          );
         }
 
         if (attachment.type !== FileTypes.Image && file?.uri) {
@@ -1321,9 +1325,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           }
 
           delete attachment.originalFile;
-          await dbApi.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          });
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...updatedMessage, cid: channel.cid },
+              }),
+            { method: 'upsertAppSettings' },
+          );
         }
       }
     }
@@ -1344,7 +1352,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       retrying?: boolean;
     }) => {
       let failedMessageUpdated = false;
-      const handleFailedMessage = async () => {
+      const handleFailedMessage = () => {
         if (!failedMessageUpdated) {
           const updatedMessage = {
             ...localMessage,
@@ -1355,11 +1363,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
           optimisticallyUpdatedNewMessages.delete(localMessage.id);
 
-          if (enableOfflineSupport) {
-            await dbApi.updateMessage({
-              message: updatedMessage,
-            });
-          }
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: updatedMessage,
+              }),
+            { method: 'upsertAppSettings' },
+          );
 
           failedMessageUpdated = true;
         }
@@ -1397,11 +1407,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             status: MessageStatusTypes.RECEIVED,
           };
 
-          if (enableOfflineSupport) {
-            await dbApi.updateMessage({
-              message: { ...newMessageResponse, cid: channel.cid },
-            });
-          }
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...newMessageResponse, cid: channel.cid },
+              }),
+            { method: 'upsertAppSettings' },
+          );
+
           if (retrying) {
             replaceMessage(localMessage, newMessageResponse);
           } else {
@@ -1425,15 +1438,22 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       threadInstance?.upsertReplyLocally?.({ message: localMessage });
       optimisticallyUpdatedNewMessages.add(localMessage.id);
 
-      if (enableOfflineSupport) {
-        // While sending a message, we add the message to local db with failed status, so that
-        // if app gets closed before message gets sent and next time user opens the app
-        // then user can see that message in failed state and can retry.
-        // If succesfull, it will be updated with received status.
-        await dbApi.upsertMessages({
-          messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
-        });
-      }
+      // While sending a message, we add the message to local db with failed status, so that
+      // if app gets closed before message gets sent and next time user opens the app
+      // then user can see that message in failed state and can retry.
+      // If succesfull, it will be updated with received status.
+      client.offlineDb?.executeQuerySafely(
+        async (db) => {
+          if (channel.data) {
+            await db.upsertChannelData({ channel: channel.data as unknown as ChannelResponse });
+          }
+          await db.upsertMessages({
+            // @ts-ignore
+            messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
+          });
+        },
+        { method: 'upsertAppSettings' },
+      );
 
       await sendMessageRequest({ localMessage, message, options });
     },
