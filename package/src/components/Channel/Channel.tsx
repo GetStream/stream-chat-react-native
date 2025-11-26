@@ -1305,7 +1305,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
               db.updateMessage({
                 message: { ...updatedMessage, cid: channel.cid },
               }),
-            { method: 'upsertAppSettings' },
+            { method: 'updateMessage' },
           );
         }
 
@@ -1330,7 +1330,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
               db.updateMessage({
                 message: { ...updatedMessage, cid: channel.cid },
               }),
-            { method: 'upsertAppSettings' },
+            { method: 'updateMessage' },
           );
         }
       }
@@ -1368,7 +1368,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
               db.updateMessage({
                 message: updatedMessage,
               }),
-            { method: 'upsertAppSettings' },
+            { method: 'updateMessage' },
           );
 
           failedMessageUpdated = true;
@@ -1412,7 +1412,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
               db.updateMessage({
                 message: { ...newMessageResponse, cid: channel.cid },
               }),
-            { method: 'upsertAppSettings' },
+            { method: 'updateMessage' },
           );
 
           if (retrying) {
@@ -1443,16 +1443,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // then user can see that message in failed state and can retry.
       // If succesfull, it will be updated with received status.
       client.offlineDb?.executeQuerySafely(
-        async (db) => {
-          if (channel.data) {
-            await db.upsertChannelData({ channel: channel.data as unknown as ChannelResponse });
-          }
-          await db.upsertMessages({
+        (db) =>
+          db.upsertMessages({
             // @ts-ignore
             messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
-          });
-        },
-        { method: 'upsertAppSettings' },
+          }),
+        { method: 'upsertMessages' },
       );
 
       await sendMessageRequest({ localMessage, message, options });
