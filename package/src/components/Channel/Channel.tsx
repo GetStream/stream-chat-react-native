@@ -7,7 +7,6 @@ import throttle from 'lodash/throttle';
 import { lookup } from 'mime-types';
 import {
   Channel as ChannelClass,
-  ChannelResponse,
   ChannelState,
   Channel as ChannelType,
   DeleteMessageOptions,
@@ -495,7 +494,10 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   } & Partial<
     Pick<
       InputMessageInputContextValue,
-      'openPollCreationDialog' | 'CreatePollContent' | 'StopMessageStreamingButton'
+      | 'openPollCreationDialog'
+      | 'CreatePollContent'
+      | 'StopMessageStreamingButton'
+      | 'allowSendBeforeAttachmentsUpload'
     >
   >;
 
@@ -571,6 +573,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
+    allowSendBeforeAttachmentsUpload = enableOfflineSupport,
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
@@ -1772,6 +1775,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
+    allowSendBeforeAttachmentsUpload,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
