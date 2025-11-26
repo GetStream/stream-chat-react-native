@@ -5047,9 +5047,9 @@ nested-error-stacks@~2.0.1:
   integrity sha512-SrQrok4CATudVzBS7coSz26QRSmlK9TzzoFbeKfcPBUFPjcQM9Rqvr/DlJkOrwI/0KcgvMub1n1g5Jt9EgRn4A==
 
 node-forge@^1.2.1, node-forge@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.3.1.tgz#be8da2af243b2417d5f646a770663a92b7e9ded3"
-  integrity sha512-dPEtOeMvF9VMcYV/1Wb8CPoVAXtp6MKMlcbAt4ddqmGqUJ6fQZFXkNZNkNlfevtNkGtaSoXf/vNNNSvgrdXwtA==
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.3.2.tgz#d0d2659a26eef778bf84d73e7f55c08144ee7750"
+  integrity sha512-6xKiQ+cph9KImrRh0VsjH2d8/GXA4FIMlgU4B757iI1ApvcyA9VlouP0yZJha01V+huImO+kKMU7ih+2+E14fw==
 
 node-int64@^0.4.0:
   version "0.4.0"
@@ -5992,8 +5992,10 @@ stream-buffers@2.2.x:
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
 "stream-chat-expo@link:../../package/expo-package":
-  version "0.0.0"
-  uid ""
+  version "8.1.0"
+  dependencies:
+    mime "^4.0.7"
+    stream-chat-react-native-core "8.1.0"
 
 stream-chat-react-native-core@8.1.0:
   version "8.1.0"
@@ -6016,13 +6018,27 @@ stream-chat-react-native-core@8.1.0:
     use-sync-external-store "^1.5.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "8.1.0"
+  dependencies:
+    "@gorhom/bottom-sheet" "^5.1.8"
+    "@ungap/structured-clone" "^1.3.0"
+    dayjs "1.11.13"
+    emoji-regex "^10.4.0"
+    i18next "^25.2.1"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.3.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.35"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^2.0.0"
+    stream-chat "^9.26.0"
+    use-sync-external-store "^1.5.0"
 
-stream-chat@^9.23.0:
-  version "9.23.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.23.0.tgz#e7e5cf729861597e7198907c1cab22a57d68a2fc"
-  integrity sha512-UW112HYsLnYb4RMIXBtAouNQCCe0weVzNivjezsw+JKK1b/TX0JLBi+wK25mBUEO+coOGKfXiye6IB3gao8ipw==
+stream-chat@^9.26.0:
+  version "9.26.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.26.0.tgz#92cd0dd5c59bfed05fb4fd74e9a19e8cce726175"
+  integrity sha512-hTeKWDyWjiM3R7GcvgqNCO6zTPZ1oyJbwbpJR2MyEReDVYSKeZge009m/queMxUGJHNuyiRKY0sjQocw4ceWUQ==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
