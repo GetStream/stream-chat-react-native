@@ -432,6 +432,20 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       messageData: StreamMessage,
       options?: SendMessageOptions,
     ) => Promise<SendMessageAPIResponse>;
+
+    /**
+     * A method invoked just after the first optimistic update of a new message,
+     * but before any other HTTP requests happen. Can be used to do extra work
+     * (such as creating a channel, or editing a message) before the local message
+     * is sent.
+     * @param channelId
+     * @param messageData Message object
+     */
+    preSendMessageRequest?: (options: {
+      localMessage: LocalMessage;
+      message: StreamMessage;
+      options?: SendMessageOptions;
+    }) => Promise<SendMessageAPIResponse>;
     /**
      * Overrides the Stream default update message request (Advanced usage only)
      * @param channelId
@@ -569,6 +583,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doFileUploadRequest,
     doMarkReadRequest,
     doSendMessageRequest,
+    preSendMessageRequest,
     doUpdateMessageRequest,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
@@ -1454,6 +1469,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         { method: 'upsertMessages' },
       );
 
+      if (preSendMessageRequest) {
+        await preSendMessageRequest({ localMessage, message, options });
+      }
       await sendMessageRequest({ localMessage, message, options });
     },
   );
