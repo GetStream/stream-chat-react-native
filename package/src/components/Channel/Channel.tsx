@@ -948,7 +948,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (!channel.initialized || !channel.state.isUpToDate || !initializeOnMount) {
         try {
           await channel?.watch();
-          console.log('WATCHCALLED2');
         } catch (err) {
           console.warn('Channel watch request failed with error:', err);
           setError(true);
@@ -1126,7 +1125,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     try {
       if (channelMessagesState?.messages) {
-        console.log('WATCHCALLED1');
         await channel?.watch({
           messages: {
             limit: channelMessagesState.messages.length + 30,
