@@ -505,6 +505,17 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
+    /**
+     * A boolean signifying whether the Channel component should run channel.watch()
+     * whenever it mounts up a new channel. If set to `false`, it is the integrator's
+     * responsibility to run channel.watch() if they wish to receive WebSocket events
+     * for that channel.
+     *
+     * Can be particularly useful whenever we are viewing channels in a read-only mode
+     * or perhaps want them in an ephemeral state (i.e not created until the first message
+     * is sent).
+     */
+    initializeOnMount?: boolean;
   } & Partial<
     Pick<
       InputMessageInputContextValue,
@@ -733,6 +744,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
     maximumMessageLimit,
+    initializeOnMount = true,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -899,7 +911,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
-      if (channel && channel.initialized) {
+      if (channel) {
         // we skip the new message events if we've already done an optimistic update for the new message
         if (event.type === 'message.new' || event.type === 'notification.message_new') {
           const messageId = event.message?.id ?? '';
@@ -933,13 +945,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       let errored = false;
 
-      if (!channel.initialized || !channel.state.isUpToDate) {
+      if (!channel.initialized || !channel.state.isUpToDate || !initializeOnMount) {
         try {
           await channel?.watch();
+          console.log('WATCHCALLED2');
         } catch (err) {
           console.warn('Channel watch request failed with error:', err);
           setError(true);
           errored = true;
+          channel.offlineMode = true;
         }
       }
 
@@ -1096,7 +1110,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const resyncChannel = useStableCallback(async () => {
-    if (!channel || syncingChannelRef.current) {
+    if (!channel || syncingChannelRef.current || (!channel.initialized && !channel.offlineMode)) {
       return;
     }
     syncingChannelRef.current = true;
@@ -1112,11 +1126,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     try {
       if (channelMessagesState?.messages) {
+        console.log('WATCHCALLED1');
         await channel?.watch({
           messages: {
             limit: channelMessagesState.messages.length + 30,
           },
         });
+        channel.offlineMode = false;
       }
 
       if (!thread) {

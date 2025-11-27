@@ -781,7 +781,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const renderItem = useCallback(
     ({ index, item: message }: { index: number; item: LocalMessage }) => {
-      if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
+      if (!channel || channel.disconnected) {
         return null;
       }
 
