@@ -106,7 +106,6 @@ import {
   ChannelUnreadStateStore,
   ChannelUnreadStateStoreType,
 } from '../../state-store/channel-unread-state';
-import * as dbApi from '../../store/apis';
 import { FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
@@ -437,6 +436,20 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       messageData: StreamMessage,
       options?: SendMessageOptions,
     ) => Promise<SendMessageAPIResponse>;
+
+    /**
+     * A method invoked just after the first optimistic update of a new message,
+     * but before any other HTTP requests happen. Can be used to do extra work
+     * (such as creating a channel, or editing a message) before the local message
+     * is sent.
+     * @param channelId
+     * @param messageData Message object
+     */
+    preSendMessageRequest?: (options: {
+      localMessage: LocalMessage;
+      message: StreamMessage;
+      options?: SendMessageOptions;
+    }) => Promise<SendMessageAPIResponse>;
     /**
      * Overrides the Stream default update message request (Advanced usage only)
      * @param channelId
@@ -496,10 +509,24 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
+    /**
+     * A boolean signifying whether the Channel component should run channel.watch()
+     * whenever it mounts up a new channel. If set to `false`, it is the integrator's
+     * responsibility to run channel.watch() if they wish to receive WebSocket events
+     * for that channel.
+     *
+     * Can be particularly useful whenever we are viewing channels in a read-only mode
+     * or perhaps want them in an ephemeral state (i.e not created until the first message
+     * is sent).
+     */
+    initializeOnMount?: boolean;
   } & Partial<
     Pick<
       InputMessageInputContextValue,
-      'openPollCreationDialog' | 'CreatePollContent' | 'StopMessageStreamingButton'
+      | 'openPollCreationDialog'
+      | 'CreatePollContent'
+      | 'StopMessageStreamingButton'
+      | 'allowSendBeforeAttachmentsUpload'
     >
   >;
 
@@ -571,10 +598,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doFileUploadRequest,
     doMarkReadRequest,
     doSendMessageRequest,
+    preSendMessageRequest,
     doUpdateMessageRequest,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
+    allowSendBeforeAttachmentsUpload = enableOfflineSupport,
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
@@ -719,6 +748,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
     maximumMessageLimit,
+    initializeOnMount = true,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -886,7 +916,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
-      if (channel && channel.initialized) {
+      if (channel) {
         // we skip the new message events if we've already done an optimistic update for the new message
         if (event.type === 'message.new' || event.type === 'notification.message_new') {
           const messageId = event.message?.id ?? '';
@@ -920,13 +950,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       let errored = false;
 
-      if (!channel.initialized || !channel.state.isUpToDate) {
+      if ((!channel.initialized || !channel.state.isUpToDate) && initializeOnMount) {
         try {
           await channel?.watch();
         } catch (err) {
           console.warn('Channel watch request failed with error:', err);
           setError(true);
           errored = true;
+          channel.offlineMode = true;
         }
       }
 
@@ -1083,7 +1114,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const resyncChannel = useStableCallback(async () => {
-    if (!channel || syncingChannelRef.current) {
+    if (!channel || syncingChannelRef.current || (!channel.initialized && !channel.offlineMode)) {
       return;
     }
     syncingChannelRef.current = true;
@@ -1104,6 +1135,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             limit: channelMessagesState.messages.length + 30,
           },
         });
+        channel.offlineMode = false;
       }
 
       if (!thread) {
@@ -1305,9 +1337,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           attachment.image_url = uploadResponse.file;
           delete attachment.originalFile;
 
-          await dbApi.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          });
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...updatedMessage, cid: channel.cid },
+              }),
+            { method: 'updateMessage' },
+          );
         }
 
         if (attachment.type !== FileTypes.Image && file?.uri) {
@@ -1326,9 +1362,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           }
 
           delete attachment.originalFile;
-          await dbApi.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          });
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...updatedMessage, cid: channel.cid },
+              }),
+            { method: 'updateMessage' },
+          );
         }
       }
     }
@@ -1349,7 +1389,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       retrying?: boolean;
     }) => {
       let failedMessageUpdated = false;
-      const handleFailedMessage = async () => {
+      const handleFailedMessage = () => {
         if (!failedMessageUpdated) {
           const updatedMessage = {
             ...localMessage,
@@ -1360,11 +1400,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
           optimisticallyUpdatedNewMessages.delete(localMessage.id);
 
-          if (enableOfflineSupport) {
-            await dbApi.updateMessage({
-              message: updatedMessage,
-            });
-          }
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: updatedMessage,
+              }),
+            { method: 'updateMessage' },
+          );
 
           failedMessageUpdated = true;
         }
@@ -1402,11 +1444,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             status: MessageStatusTypes.RECEIVED,
           };
 
-          if (enableOfflineSupport) {
-            await dbApi.updateMessage({
-              message: { ...newMessageResponse, cid: channel.cid },
-            });
-          }
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...newMessageResponse, cid: channel.cid },
+              }),
+            { method: 'updateMessage' },
+          );
+
           if (retrying) {
             replaceMessage(localMessage, newMessageResponse);
           } else {
@@ -1430,16 +1475,22 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       threadInstance?.upsertReplyLocally?.({ message: localMessage });
       optimisticallyUpdatedNewMessages.add(localMessage.id);
 
-      if (enableOfflineSupport) {
-        // While sending a message, we add the message to local db with failed status, so that
-        // if app gets closed before message gets sent and next time user opens the app
-        // then user can see that message in failed state and can retry.
-        // If succesfull, it will be updated with received status.
-        await dbApi.upsertMessages({
-          messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
-        });
-      }
+      // While sending a message, we add the message to local db with failed status, so that
+      // if app gets closed before message gets sent and next time user opens the app
+      // then user can see that message in failed state and can retry.
+      // If succesfull, it will be updated with received status.
+      client.offlineDb?.executeQuerySafely(
+        (db) =>
+          db.upsertMessages({
+            // @ts-ignore
+            messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
+          }),
+        { method: 'upsertMessages' },
+      );
 
+      if (preSendMessageRequest) {
+        await preSendMessageRequest({ localMessage, message, options });
+      }
       await sendMessageRequest({ localMessage, message, options });
     },
   );
@@ -1762,6 +1813,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
+    allowSendBeforeAttachmentsUpload,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
