@@ -1,15 +1,14 @@
 import React, { useMemo } from 'react';
-import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
-import { BottomSheetView } from '@gorhom/bottom-sheet';
 import {
   Avatar,
+  BottomSheetModal,
   useChatContext,
   useMessageDeliveredData,
   useMessageReadData,
   useTheme,
 } from 'stream-chat-react-native';
 import { LocalMessage, UserResponse } from 'stream-chat';
-import { StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 const renderUserItem = ({ item }: { item: UserResponse }) => (
   <View style={styles.userItem}>
@@ -24,10 +23,12 @@ const renderEmptyText = ({ text }: { text: string }) => (
 
 export const MessageInfoBottomSheet = ({
   message,
-  ref,
+  visible,
+  onClose,
 }: {
   message?: LocalMessage;
-  ref: React.RefObject<BottomSheet | null>;
+  visible: boolean;
+  onClose: () => void;
 }) => {
   const {
     theme: { colors },
@@ -45,10 +46,10 @@ export const MessageInfoBottomSheet = ({
   }, [readStatus, client?.user?.id]);
 
   return (
-    <BottomSheet enablePanDownToClose ref={ref} index={-1} snapPoints={['50%']}>
-      <BottomSheetView style={[styles.container, { backgroundColor: colors.white_smoke }]}>
+    <BottomSheetModal visible={visible} onClose={onClose}>
+      <View style={[styles.container, { backgroundColor: colors.white_smoke }]}>
         <Text style={styles.title}>Read</Text>
-        <BottomSheetFlatList
+        <FlatList
           data={otherReadUsers}
           renderItem={renderUserItem}
           keyExtractor={(item) => item.id}
@@ -56,15 +57,15 @@ export const MessageInfoBottomSheet = ({
           ListEmptyComponent={renderEmptyText({ text: 'No one has read this message.' })}
         />
         <Text style={styles.title}>Delivered</Text>
-        <BottomSheetFlatList
+        <FlatList
           data={otherDeliveredToUsers}
           renderItem={renderUserItem}
           keyExtractor={(item) => item.id}
           style={styles.flatList}
           ListEmptyComponent={renderEmptyText({ text: 'The message was not delivered to anyone.' })}
         />
-      </BottomSheetView>
-    </BottomSheet>
+      </View>
+    </BottomSheetModal>
   );
 };
 
