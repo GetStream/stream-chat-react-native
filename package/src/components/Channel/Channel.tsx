@@ -945,7 +945,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       let errored = false;
 
-      if (!channel.initialized || !channel.state.isUpToDate || !initializeOnMount) {
+      if ((!channel.initialized || !channel.state.isUpToDate) && initializeOnMount) {
         try {
           await channel?.watch();
         } catch (err) {
