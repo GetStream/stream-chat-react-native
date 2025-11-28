@@ -33,7 +33,6 @@ import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
-import BottomSheet from '@gorhom/bottom-sheet';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
