@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
@@ -130,6 +130,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   } = useTheme();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
+  const [modalVisible, setModalVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<LocalMessage | undefined>(undefined);
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
@@ -186,15 +187,14 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     [channel, navigation, setThread],
   );
 
-  const messageInfoBottomSheetRef = useRef<BottomSheet>(null);
+  const handleMessageInfo = useCallback((message: LocalMessage) => {
+    setSelectedMessage(message);
+    setModalVisible(true);
+  }, []);
 
-  const handleMessageInfo = useCallback(
-    (message: LocalMessage) => {
-      setSelectedMessage(message);
-      messageInfoBottomSheetRef.current?.snapToIndex(1);
-    },
-    [messageInfoBottomSheetRef],
-  );
+  const handleMessageInfoClose = useCallback(() => {
+    setModalVisible(false);
+  }, []);
 
   const messageActions = useCallback(
     (params: MessageActionsParams) => {
@@ -249,7 +249,13 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         )}
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
-        <MessageInfoBottomSheet message={selectedMessage} ref={messageInfoBottomSheetRef} />
+        {modalVisible && (
+          <MessageInfoBottomSheet
+            visible={modalVisible}
+            message={selectedMessage}
+            onClose={handleMessageInfoClose}
+          />
+        )}
       </Channel>
     </View>
   );
