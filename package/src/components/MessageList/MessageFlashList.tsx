@@ -17,8 +17,6 @@ import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
 
-import { getLastReceivedMessageFlashList } from './utils/getLastReceivedMessageFlashList';
-
 import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
@@ -44,11 +42,13 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { useStableCallback } from '../../hooks';
+import { useStableCallback, useStateStore } from '../../hooks';
+import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
 import { FileTypes } from '../../types/types';
+import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 let FlashList;
 
@@ -102,6 +102,7 @@ type MessageFlashListPropsWithContext = Pick<
     ChannelContextValue,
     | 'channel'
     | 'channelUnreadState'
+    | 'channelUnreadStateStore'
     | 'disabled'
     | 'EmptyStateIndicator'
     | 'hideStickyDateHeader'
@@ -250,6 +251,13 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'generic-message';
 };
 
+const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
+  first_unread_message_id: state.channelUnreadState?.first_unread_message_id,
+  last_read: state.channelUnreadState?.last_read,
+  last_read_message_id: state.channelUnreadState?.last_read_message_id,
+  unread_messages: state.channelUnreadState?.unread_messages,
+});
+
 const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
@@ -257,7 +265,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const {
     additionalFlashListProps,
     channel,
-    channelUnreadState,
+    channelUnreadStateStore,
     client,
     closePicker,
     DateHeader,
@@ -268,9 +276,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     FooterComponent = LoadingMoreRecentIndicator,
     HeaderComponent = InlineLoadingMoreIndicator,
     hideStickyDateHeader,
-    highlightedMessageId,
-    InlineDateSeparator,
-    InlineUnreadIndicator,
     isListActive = false,
     isLiveStreaming = false,
     legacyImageViewerSwipeBehaviour,
@@ -283,8 +288,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     loadMoreThread,
     markRead,
     maximumMessageLimit,
-    Message,
-    MessageSystem,
     myMessageTheme,
     readEvents,
     NetworkDownIndicator,
@@ -299,7 +302,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     setMessages,
     setSelectedPicker,
     setTargetedMessage,
-    shouldShowUnreadUnderlay,
     StickyHeader,
     targetedMessage,
     thread,
@@ -310,6 +312,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     UnreadMessagesNotification,
   } = props;
   const flashListRef = useRef<FlashListRef<LocalMessage> | null>(null);
+  const channelUnreadState = useStateStore(
+    channelUnreadStateStore.state,
+    channelUnreadStateSelector,
+  );
 
   const [hasMoved, setHasMoved] = useState(false);
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
@@ -376,11 +382,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,
     client.userID,
-  );
-
-  const lastReceivedId = useMemo(
-    () => getLastReceivedMessageFlashList(processedMessageList)?.id,
-    [processedMessageList],
   );
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(true);
@@ -574,18 +575,16 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
         !isMyOwnMessage
       ) {
-        setChannelUnreadState((prev) => {
-          const previousUnreadCount = prev?.unread_messages ?? 0;
-          const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
-          return {
-            ...(prev || {}),
-            last_read:
-              prev?.last_read ??
-              (previousUnreadCount === 0 && previousLastMessage?.created_at
-                ? new Date(previousLastMessage.created_at)
-                : new Date(0)), // not having information about the last read message means the whole channel is unread,
-            unread_messages: previousUnreadCount + 1,
-          };
+        const previousUnreadCount = channelUnreadState?.unread_messages ?? 0;
+        const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
+        setChannelUnreadState({
+          ...channelUnreadState,
+          last_read:
+            channelUnreadState.last_read ??
+            (previousUnreadCount === 0 && previousLastMessage?.created_at
+              ? new Date(previousLastMessage.created_at)
+              : new Date(0)), // not having information about the last read message means the whole channel is unread,
+          unread_messages: previousUnreadCount + 1,
         });
       } else if (mainChannelUpdated && shouldMarkRead()) {
         await markRead();
@@ -599,7 +598,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     };
   }, [
     channel,
-    channelUnreadState?.first_unread_message_id,
+    channelUnreadState,
     client.user?.id,
     markRead,
     scrollToBottomButtonVisible,
@@ -657,7 +656,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const lastItemMessage = lastItem.item;
     const lastItemCreatedAt = lastItemMessage.created_at;
 
-    const unreadIndicatorDate = channelUnreadState?.last_read.getTime();
+    const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
     const lastItemDate = lastItemCreatedAt.getTime();
 
     if (
@@ -718,88 +717,23 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const renderItem = useCallback(
     ({ index, item: message }: { index: number; item: LocalMessage }) => {
-      if (!channel || channel.disconnected || (!channel.initialized && !channel.offlineMode)) {
-        return null;
-      }
-
-      const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
-      const lastReadTimestamp = channelUnreadState?.last_read.getTime();
+      const dateSeparatorDate = dateSeparatorsRef.current[message.id];
+      const messageGroupStyles = messageGroupStylesRef.current[message.id] ?? [];
       const isNewestMessage = index === 0;
-      const isLastReadMessage =
-        channelUnreadState?.last_read_message_id === message.id ||
-        (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
-
-      const showUnreadSeparator =
-        isLastReadMessage &&
-        !isNewestMessage &&
-        // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
-        (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
-
-      const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
-
-      const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
-      const renderDateSeperator = dateSeparatorsRef.current[message.id] && (
-        <InlineDateSeparator date={dateSeparatorsRef.current[message.id]} />
-      );
-
-      const renderMessage = (
-        <Message
-          goToMessage={goToMessage}
-          groupStyles={messageGroupStylesRef.current[message.id] ?? []}
-          isTargetedMessage={highlightedMessageId === message.id}
-          lastReceivedId={
-            lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
-          }
-          message={message}
-          onThreadSelect={onThreadSelect}
-          showUnreadUnderlay={showUnreadUnderlay}
-          threadList={threadList}
-        />
-      );
 
       return (
-        <View testID={`message-list-item-${index}`}>
-          {message.type === 'system' ? (
-            <MessageSystem message={message} />
-          ) : wrapMessageInTheme ? (
-            <ThemeProvider mergedStyle={modifiedTheme}>
-              <View testID={`message-list-item-${index}`}>
-                {renderDateSeperator}
-                {renderMessage}
-              </View>
-            </ThemeProvider>
-          ) : (
-            <View testID={`message-list-item-${index}`}>
-              {renderDateSeperator}
-              {renderMessage}
-            </View>
-          )}
-          {showUnreadUnderlay && <InlineUnreadIndicator />}
-        </View>
+        <MessageWrapper
+          dateSeparatorDate={dateSeparatorDate}
+          goToMessage={goToMessage}
+          isNewestMessage={isNewestMessage}
+          message={message}
+          messageGroupStyles={messageGroupStyles}
+          modifiedTheme={modifiedTheme}
+          onThreadSelect={onThreadSelect}
+        />
       );
     },
-    [
-      InlineDateSeparator,
-      InlineUnreadIndicator,
-      Message,
-      MessageSystem,
-      channel,
-      channelUnreadState?.first_unread_message_id,
-      channelUnreadState?.last_read,
-      channelUnreadState?.last_read_message_id,
-      channelUnreadState?.unread_messages,
-      client.userID,
-      dateSeparatorsRef,
-      goToMessage,
-      highlightedMessageId,
-      lastReceivedId,
-      messageGroupStylesRef,
-      modifiedTheme,
-      myMessageTheme,
-      onThreadSelect,
-      shouldShowUnreadUnderlay,
-      threadList,
-    ],
+    [dateSeparatorsRef, goToMessage, messageGroupStylesRef, modifiedTheme, onThreadSelect],
   );
 
   const messagesWithImages =
@@ -1194,6 +1128,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const {
     channel,
     channelUnreadState,
+    channelUnreadStateStore,
     disabled,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
@@ -1242,6 +1177,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
       {...{
         channel,
         channelUnreadState,
+        channelUnreadStateStore,
         client,
         closePicker,
         DateHeader,

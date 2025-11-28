@@ -23,6 +23,9 @@ export type UseMessageListParams = {
   isFlashList?: boolean;
 };
 
+/**
+ * FIXME: To change it to a more specific type.
+ */
 export type GroupType = string;
 
 export type MessageGroupStyles = {
