@@ -12,10 +12,42 @@
 
 namespace facebook::react {
 
+static facebook::jsi::Value __hostFunction_NativeAIDictationSpecJSI_start(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "start", "(Lcom/facebook/react/bridge/ReadableMap;)V", args, count, cachedMethodId);
+}
 
+static facebook::jsi::Value __hostFunction_NativeAIDictationSpecJSI_stop(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "stop", "()V", args, count, cachedMethodId);
+}
+
+static facebook::jsi::Value __hostFunction_NativeAIDictationSpecJSI_cancel(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "cancel", "()V", args, count, cachedMethodId);
+}
+
+static facebook::jsi::Value __hostFunction_NativeAIDictationSpecJSI_isRecording(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, BooleanKind, "isRecording", "()Z", args, count, cachedMethodId);
+}
+
+NativeAIDictationSpecJSI::NativeAIDictationSpecJSI(const JavaTurboModule::InitParams &params)
+  : JavaTurboModule(params) {
+  methodMap_["start"] = MethodMetadata {1, __hostFunction_NativeAIDictationSpecJSI_start};
+  methodMap_["stop"] = MethodMetadata {0, __hostFunction_NativeAIDictationSpecJSI_stop};
+  methodMap_["cancel"] = MethodMetadata {0, __hostFunction_NativeAIDictationSpecJSI_cancel};
+  methodMap_["isRecording"] = MethodMetadata {0, __hostFunction_NativeAIDictationSpecJSI_isRecording};
+  eventEmitterMap_["onState"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();
+  eventEmitterMap_["onResult"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();
+  eventEmitterMap_["onError"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();
+  configureEventEmitterCallback();
+}
 
 std::shared_ptr<TurboModule> AiComponentsReactNative_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {
-
+  if (moduleName == "AIDictation") {
+    return std::make_shared<NativeAIDictationSpecJSI>(params);
+  }
   return nullptr;
 }
 

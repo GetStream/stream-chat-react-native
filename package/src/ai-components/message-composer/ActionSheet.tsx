@@ -1,35 +1,36 @@
-// BottomSheetContent.tsx
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type {
   AIMessageComposerProps,
   BottomSheetOption,
-} from './MessageComposer.tsx';
-import { setHeight } from '../store/bottom-sheet-state-store.ts';
-import { Camera } from '../internal/icons/Camera.tsx';
-import { Picture } from '../internal/icons/Picture.tsx';
-import { Folder } from '../internal/icons/Folder.tsx';
-import type { AbstractMediaPickerService } from '../services/media-picker-service/AbstractMediaPickerService';
-import { withCloseSheet } from './utils/withCloseSheet.ts';
+} from './MessageComposer';
+import { sheetStoreApi } from '../store';
+import { Camera } from '../internal/icons/Camera';
+import { Picture } from '../internal/icons/Picture';
+import { Folder } from '../internal/icons/Folder';
+import { withCloseSheet } from './utils/withCloseSheet';
+import { useMessageComposerContext } from '../contexts/message-composer-context';
 
 type BottomSheetContentProps = Pick<
   AIMessageComposerProps,
-  'bottomSheetInsets' | 'bottomSheetOptions'
-> & { mediaPickerService?: AbstractMediaPickerService };
+  'bottomSheetOptions'
+>;
 
 export const BottomSheetContent = ({
-  bottomSheetInsets,
   bottomSheetOptions,
-  mediaPickerService,
 }: BottomSheetContentProps) => {
+  const { mediaPickerService } = useMessageComposerContext();
+
+  const onContentSizeChange = useCallback(
+    (_: unknown, height: number) => sheetStoreApi.setHeight(height),
+    [],
+  );
+
   return (
     <ScrollView
-      contentContainerStyle={[
-        styles.contentContainer,
-        { paddingBottom: 16 + (bottomSheetInsets?.bottom ?? 0) },
-      ]}
+      contentContainerStyle={[styles.contentContainer]}
       showsVerticalScrollIndicator={false}
-      onContentSizeChange={(_, height) => setHeight(height)}
+      onContentSizeChange={onContentSizeChange}
     >
       <View style={styles.quickActionsCard}>
         <QuickActionButton
@@ -117,6 +118,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 16,
     paddingTop: 12,
+    paddingBottom: 16,
   },
   quickActionsCard: {
     flexDirection: 'row',

@@ -80,17 +80,6 @@ export const generateMarkdownText = (text?: string) => {
     resultText = resultText.replace(mentionsRegex, `@${displayLink}`);
   }
 
-  // Escape the " and ' characters, except in code blocks where we deem this allowed.
-  resultText = resultText.replace(
-    /(```[\s\S]*?```|`.*?`)|[<"']/g,
-    (match, code) => {
-      if (code) {
-        return code;
-      }
-      return `\\${match}`;
-    },
-  );
-
   // Remove whitespaces that come directly after newlines except in code blocks where we deem this allowed.
   // A line starts a (possibly quoted) list item if, after indentation, it has
   //   - unordered bullet: -, *, +
@@ -120,6 +109,11 @@ export const generateMarkdownText = (text?: string) => {
   // Always replace \n``` with \n\n``` to force the markdown state machine to treat it as a separate block. Otherwise, code blocks inside of list
   // items for example were broken. We clean up the code block closing state within the rendering itself.
   resultText = resultText.replace(/\n```/g, '\n\n```\n');
+
+  const codeBlockCounts = (resultText.match(/```/g) || []).length;
+  if (codeBlockCounts % 2 > 0) {
+    resultText += '```';
+  }
 
   return resultText;
 };

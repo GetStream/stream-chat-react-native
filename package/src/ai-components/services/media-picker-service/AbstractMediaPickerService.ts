@@ -2,8 +2,8 @@ import { StateStore } from '@stream-io/state-store';
 
 export type MediaAsset = {
   uri: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   name?: string;
   size?: number;
   type?: string;

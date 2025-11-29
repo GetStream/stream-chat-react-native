@@ -138,7 +138,7 @@ class PerfTextViewManager : SimpleViewManager<PerfTextView>() {
     val measuredWidthDp = ceil(PixelUtil.toDIPFromPixel(view.measuredWidth.toFloat()))
     val measuredHeightDp = ceil(PixelUtil.toDIPFromPixel(view.measuredHeight.toFloat()))
 
-    return YogaMeasureOutput.make(measuredWidthDp * 1.5f, measuredHeightDp * 1.0f)
+    return YogaMeasureOutput.make(measuredWidthDp * 1.6f, measuredHeightDp * 1.0f)
   }
 }
 

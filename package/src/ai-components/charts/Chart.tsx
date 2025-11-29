@@ -9,7 +9,7 @@ export type ChartFromBlockProps = {
   width?: number;
 };
 
-const Chart = ({ spec, height = 260, width = 225 }: ChartFromBlockProps) => {
+const Chart = ({ spec, height = 260, width }: ChartFromBlockProps) => {
   if (!spec) {
     return null;
   }

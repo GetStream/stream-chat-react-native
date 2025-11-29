@@ -25,8 +25,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useBottomSheetState } from './hooks/useBottomSheetState';
-import { closeSheet as closeSheetInternal } from '../store/bottom-sheet-state-store';
+import { sheetStoreApi, useBottomSheetState } from '../store';
 
 type Props = PropsWithChildren;
 
@@ -97,7 +96,7 @@ export function BottomSheet({ children }: Props) {
         projected >= bottomSheetHeight * 0.5 ? maxTranslateY : bottomSheetY;
       translateY.value = withTiming(nearest, SPRING, (finished) => {
         if (finished && nearest === maxTranslateY)
-          runOnJS(closeSheetInternal)();
+          runOnJS(sheetStoreApi.closeSheet)();
       });
     });
 
@@ -133,7 +132,7 @@ export function BottomSheet({ children }: Props) {
           >
             <Pressable
               style={StyleSheet.absoluteFill}
-              onPress={closeSheetInternal}
+              onPress={sheetStoreApi.closeSheet}
             />
           </Animated.View>
 

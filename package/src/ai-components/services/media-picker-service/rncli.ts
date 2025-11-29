@@ -1,7 +1,8 @@
 import {
   AbstractMediaPickerService,
+  type MediaAsset,
   type PickMediaOpts,
-} from './AbstractMediaPickerService.ts';
+} from './AbstractMediaPickerService';
 import { AppState, Image, PermissionsAndroid, Platform } from 'react-native';
 import type { Asset } from 'react-native-image-picker';
 
@@ -88,61 +89,48 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
           cancelled: true,
         };
       }
-      if (asset.type.includes('video')) {
+      if (asset.height && asset.width && asset.uri) {
+        let size: { height?: number; width?: number } = {};
+        if (Platform.OS === 'android') {
+          // Height and width returned by ImagePicker are incorrect on Android.
+          const getSize = (): Promise<{ height: number; width: number }> =>
+            new Promise((resolve) => {
+              Image.getSize(asset.uri, (width, height) => {
+                resolve({ height, width });
+              });
+            });
+
+          try {
+            const { height, width } = await getSize();
+            size.height = height;
+            size.width = width;
+          } catch (e) {
+            // do nothing
+            console.warn(
+              'Error while getting image size of picture captured from camera ',
+              e,
+            );
+          }
+        } else {
+          size = {
+            height: asset.height,
+            width: asset.width,
+          };
+        }
         const clearFilter = new RegExp('[.:]', 'g');
         const date = new Date().toISOString().replace(clearFilter, '_');
-        return {
-          ...asset,
-          cancelled: false,
-          duration: asset.duration * 1000,
-          name:
-            'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
+        const localAsset: MediaAsset = {
+          name: 'image_' + date + '.' + asset.uri.split('.').pop(),
           size: asset.fileSize,
           type: asset.type,
           uri: asset.uri,
+          ...size,
         };
-      } else {
-        if (asset.height && asset.width && asset.uri) {
-          let size: { height?: number; width?: number } = {};
-          if (Platform.OS === 'android') {
-            // Height and width returned by ImagePicker are incorrect on Android.
-            const getSize = (): Promise<{ height: number; width: number }> =>
-              new Promise((resolve) => {
-                Image.getSize(asset.uri, (width, height) => {
-                  resolve({ height, width });
-                });
-              });
-
-            try {
-              const { height, width } = await getSize();
-              size.height = height;
-              size.width = width;
-            } catch (e) {
-              // do nothing
-              console.warn(
-                'Error while getting image size of picture captured from camera ',
-                e,
-              );
-            }
-          } else {
-            size = {
-              height: asset.height,
-              width: asset.width,
-            };
-          }
-          const clearFilter = new RegExp('[.:]', 'g');
-          const date = new Date().toISOString().replace(clearFilter, '_');
-          return {
-            cancelled: false,
-            asset: {
-              name: 'image_' + date + '.' + asset.uri.split('.').pop(),
-              size: asset.fileSize,
-              type: asset.type,
-              uri: asset.uri,
-              ...size,
-            },
-          };
-        }
+        this.appendAssets([localAsset]);
+        return {
+          cancelled: false,
+          asset: localAsset,
+        };
       }
     } catch (e: unknown) {
       if (e instanceof Error) {

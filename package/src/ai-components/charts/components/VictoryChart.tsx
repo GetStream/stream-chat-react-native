@@ -27,8 +27,8 @@ const font = matchFont({
 
 export type VictoryChartProps = {
   spec: ChartSpec;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 };
 
 const DEFAULT_HEIGHT = 260;
@@ -46,7 +46,7 @@ export const VictoryChart = (props: VictoryChartProps) => {
     if (!spec?.data.length) return null;
     return (
       <>
-        <View style={{ height, width: 200 }}>
+        <View style={{ height, width: '100%' }}>
           <PolarChart
             labelKey={'dimension'}
             valueKey={'value'}
@@ -67,6 +67,8 @@ export const VictoryChart = (props: VictoryChartProps) => {
   );
   const yKeys = seriesNames.map((_name, idx) => `y${idx}` as const);
 
+  let minY = 0;
+
   // Normalize data into one row per x, with columns y0,y1,... for each series
   const rowsMap = new Map<string | number, Record<string, any>>();
   for (const s of seriesNames) {
@@ -79,6 +81,7 @@ export const VictoryChart = (props: VictoryChartProps) => {
           : pt.dimension;
         const row = rowsMap.get(xKey) ?? { x: pt.dimension };
         row[yKey] = pt.value;
+        minY = Math.min(minY, pt.value);
         rowsMap.set(xKey, row);
       }
     }
@@ -102,12 +105,15 @@ export const VictoryChart = (props: VictoryChartProps) => {
     (visibleBars > 4 ? maxTickCharCount > 1 : maxTickCharCount > 5) &&
     !spec.isNumericDim;
 
+  const lowestValue = minY < 0 ? minY - 20 : 0;
+
   return (
-    <View style={{ height, width, marginTop: 12 }}>
+    <View style={{ height, width: '100%', marginTop: 12 }}>
       <CartesianChart
         data={table}
         xKey={'x'}
         yKeys={yKeys}
+        domain={{ y: [lowestValue] }}
         domainPadding={{
           left: estimatedBarWidth * 0.8,
           right: estimatedBarWidth * 0.8,

@@ -1,4 +1,4 @@
-import { closeSheet } from '../../store/bottom-sheet-state-store.ts';
+import { closeSheet } from '../../store/bottom-sheet/store';
 
 export const withCloseSheet = <T extends any[]>(
   callback: (

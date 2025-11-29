@@ -1,2 +1,2 @@
 export * from './MarkdownReactiveScrollView';
-export * from './PerfText';
+export * from '../native/PerfText';

@@ -37,15 +37,19 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_AiComponentsReactNative
-  PRIVATE
-  -DLOG_TAG=\"ReactNative\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 80)
+  target_compile_reactnative_options(${LIB_TARGET_NAME} PRIVATE)
+else()
+  target_compile_options(
+    ${LIB_TARGET_NAME}
+    PRIVATE
+    -DLOG_TAG=\"ReactNative\"
+    -fexceptions
+    -frtti
+    -std=c++20
+    -Wall
+  )
+endif()
 
 target_include_directories(
  ${CMAKE_PROJECT_NAME}

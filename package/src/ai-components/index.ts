@@ -10,3 +10,6 @@ export * from './components';
 
 // services
 export * from './services';
+export * from './transcription/useDictation';
+
+// state-stores
