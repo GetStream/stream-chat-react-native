@@ -10,7 +10,13 @@ import type React from 'react';
 import { type PropsWithChildren } from 'react';
 import type SimpleMarkdown from '@khanacademy/simple-markdown';
 import type { Output } from '@khanacademy/simple-markdown';
-import { type SingleASTNode, type State } from '@khanacademy/simple-markdown';
+import type {
+  ParserRule,
+  ReactOutputRule,
+  SingleASTNode,
+  State,
+} from '@khanacademy/simple-markdown';
+import type { DeepPartial } from '../contexts';
 
 export type LinkInfo = {
   raw: string;
@@ -19,9 +25,11 @@ export type LinkInfo = {
 
 export type ReactOutput = Output<React.ReactNode>;
 
-export type DefaultRules = typeof SimpleMarkdown.defaultRules;
+export type DefaultRules = typeof SimpleMarkdown.defaultRules & {
+  [key: string]: ParserRule & ReactOutputRule;
+};
 
-export type MarkdownRules = Partial<DefaultRules>;
+export type MarkdownRules = DeepPartial<DefaultRules>;
 
 export type MarkdownProps = {
   onLink?: (url: string) => void | Promise<void>;

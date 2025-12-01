@@ -6,7 +6,7 @@ import React, { type PropsWithChildren, useCallback, useMemo } from 'react';
 import Chart from '../../charts/Chart';
 import { parseJsonChart } from '../../charts';
 import { parseMermaid } from '../../charts';
-import { useStableCallback } from '../../internal/hooks/useStableCallback.ts';
+import { useStableCallback } from '../../internal/hooks/useStableCallback';
 import { setClipboardString } from '../../services';
 
 export const CodeBlockCopyButton = ({

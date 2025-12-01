@@ -1,16 +1,13 @@
 import { useCallback, useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { AIDictation } from '../native/AIDictation';
-import type { DictationResult } from '../native-specs/NativeAIDictation';
+import type {
+  DictationResult,
+  DictationStartOptions,
+} from '../native-specs/NativeAIDictation';
 import { useStableCallback } from '../internal/hooks/useStableCallback';
 import { dictationStore, type DictationStoreState } from '../store';
 import { useStateStore } from '@stream-io/state-store/react-bindings';
-
-type StartOptions = {
-  language?: string;
-  interimResults?: boolean;
-  silenceTimeoutMs?: number;
-};
 
 const DEFAULT_OPTIONS = {
   language: 'en-US',
@@ -34,7 +31,7 @@ const selector = ({ isRecording }: DictationStoreState) => ({
 
 // TODO: add proper jsdocs
 export const useDictation = (
-  defaultOptions: StartOptions = DEFAULT_OPTIONS,
+  defaultOptions: DictationStartOptions = DEFAULT_OPTIONS,
 ) => {
   const { isRecording } = useStateStore(dictationStore, selector);
 
@@ -67,7 +64,7 @@ export const useDictation = (
   }, []);
 
   const start = useCallback(
-    async (override?: StartOptions) => {
+    async (override?: DictationStartOptions) => {
       const hasPermission = await ensureAndroidRecordingPermissions();
       if (!hasPermission) {
         dictationStore.partialNext({
@@ -81,8 +78,7 @@ export const useDictation = (
 
       dictationStore.partialNext({ error: null, transcript: '' });
 
-      // TODO: this should be configurable from the outside
-      const opts: StartOptions = {
+      const opts: DictationStartOptions = {
         ...defaultOptions,
         ...override,
       };

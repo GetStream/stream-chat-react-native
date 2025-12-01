@@ -122,9 +122,8 @@ export const flattenNodesToTextAndColorRanges = ({
 export const flattenRowsToTextAndColorRanges = (
   rows: rendererNode[],
   opts: Omit<FlattenOptions, 'nodes'>,
-): { text: string; ranges: ColorRange[]; longestLine: number } => {
+): { text: string; ranges: ColorRange[] } => {
   let fullText = '';
-  let longestLine = 0;
   const fullRanges: ColorRange[] = [];
 
   for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
@@ -137,7 +136,6 @@ export const flattenRowsToTextAndColorRanges = (
 
     const offset = fullText.length;
     fullText += text;
-    longestLine = Math.max(text.length, longestLine);
 
     // Add newline between rows (no color)
     if (rowIndex < rows.length - 1) {
@@ -154,5 +152,5 @@ export const flattenRowsToTextAndColorRanges = (
     }
   }
 
-  return { text: fullText, ranges: fullRanges, longestLine };
+  return { text: fullText, ranges: fullRanges };
 };

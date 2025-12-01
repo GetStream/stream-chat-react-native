@@ -220,5 +220,6 @@ export const getLocalRules = (
     },
     // no support for reflinks
     reflink: { match: () => null },
+    refimage: { match: () => null },
   } as unknown as OutputRules<ReactOutputRule>;
 };

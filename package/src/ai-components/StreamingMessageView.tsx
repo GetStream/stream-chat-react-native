@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { generateMarkdownText } from './markdown';
 import { Markdown } from './markdown';
-import type { MarkdownRules, MarkdownStyle } from './markdown';
+import type { MarkdownRules } from './markdown';
 import { Linking } from 'react-native';
 
 import { useStableCallback } from './internal/hooks/useStableCallback';
@@ -45,23 +45,27 @@ export const useStreamingMessage = ({
   return { streamedMessageText };
 };
 
-export const MarkdownRichText = ({
+export const StreamingMessageView = ({
   text,
   paragraphNumberOfLines,
   rules,
-  styles: markdownStyles,
   onLink: onLinkParam,
+  letterInterval,
+  renderingLetterCount,
 }: {
   text: string;
   paragraphNumberOfLines?: number;
   rules?: MarkdownRules;
-  styles?: MarkdownStyle;
   onLink?: (url: string) => void;
+  letterInterval?: number;
+  renderingLetterCount?: number;
 }) => {
   const markdownText = useMemo(() => generateMarkdownText(text), [text]);
 
   const { streamedMessageText } = useStreamingMessage({
     text: markdownText ?? '',
+    letterInterval,
+    renderingLetterCount,
   });
 
   const onLink = useStableCallback((url: string) =>
@@ -75,7 +79,6 @@ export const MarkdownRichText = ({
   return (
     <Markdown
       rules={rules}
-      styles={markdownStyles}
       onLink={onLink}
       paragraphNumberOfLines={paragraphNumberOfLines}
     >

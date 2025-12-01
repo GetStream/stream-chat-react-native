@@ -1,4 +1,4 @@
-import { closeSheet } from '../../store/bottom-sheet/store';
+import { sheetStoreApi } from '../../store';
 
 export const withCloseSheet = <T extends any[]>(
   callback: (
@@ -7,7 +7,7 @@ export const withCloseSheet = <T extends any[]>(
 ) => {
   return async (...args: T) => {
     const result = await callback(...args);
-    closeSheet();
+    sheetStoreApi.closeSheet();
     return result;
   };
 };

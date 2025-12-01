@@ -7,6 +7,8 @@ import { Text, type TextProps, View, type ViewProps } from 'react-native';
 import type { SingleASTNode } from '@khanacademy/simple-markdown';
 import type { PropsWithChildren } from 'react';
 
+const parentTypes = ['text', 'paragraph', 'strong'];
+
 export const List = ({
   node,
   output,
@@ -14,7 +16,6 @@ export const List = ({
   styles,
 }: MarkdownComponentProps) => {
   let isSublist = state.withinList;
-  const parentTypes = ['text', 'paragraph', 'strong'];
 
   return (
     <View key={state.key} style={isSublist ? styles?.sublist : styles?.list}>

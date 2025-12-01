@@ -1,29 +1,51 @@
 import { sheetStoreApi } from '../store';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import React from 'react';
-import { PILL_HEIGHT } from './MessageComposer';
+import React, { useMemo } from 'react';
+import { useTheme } from '../contexts';
 
-export const AttachmentButton = () => (
-  <Pressable style={styles.roundButton} onPress={sheetStoreApi.openSheet}>
-    <Text style={styles.attachIcon}>+</Text>
-  </Pressable>
-);
+export const AttachmentButton = () => {
+  const {
+    theme: {
+      composer: { roundButton, attachIcon },
+    },
+  } = useTheme();
+  const styles = useStyles();
 
-const styles = StyleSheet.create({
-  attachIcon: {
-    fontSize: 32,
-    textAlign: 'center',
-    alignSelf: 'center',
-    lineHeight: 32,
-    color: '#7A7A7A',
-  },
-  roundButton: {
-    width: PILL_HEIGHT,
-    height: PILL_HEIGHT,
-    borderRadius: PILL_HEIGHT / 2,
-    backgroundColor: '#F0F0F0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-});
+  return (
+    <Pressable
+      style={[styles.roundButton, roundButton]}
+      onPress={sheetStoreApi.openSheet}
+    >
+      <Text style={[styles.attachIcon, attachIcon]}>+</Text>
+    </Pressable>
+  );
+};
+
+const useStyles = () => {
+  const { theme } = useTheme();
+
+  return useMemo(() => {
+    const { colors, composer } = theme;
+
+    const pillHeight = composer.inputPillHeight;
+
+    return StyleSheet.create({
+      attachIcon: {
+        fontSize: 32,
+        textAlign: 'center',
+        alignSelf: 'center',
+        lineHeight: 32,
+        color: colors.grey,
+      },
+      roundButton: {
+        width: pillHeight,
+        height: pillHeight,
+        borderRadius: pillHeight / 2,
+        backgroundColor: colors.white_smoke,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 8,
+      },
+    });
+  }, [theme]);
+};

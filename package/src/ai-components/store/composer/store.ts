@@ -1,13 +1,13 @@
 import { StateStore } from '@stream-io/state-store';
 
-export type MessageComposerState = {
+export type ComposerState = {
   text: string;
   custom?: Record<string, unknown>;
 };
 
-const DEFAULT_STATE: MessageComposerState = {
+const DEFAULT_STATE: ComposerState = {
   text: '',
 };
 
 export const createNewComposerStore = () =>
-  new StateStore<MessageComposerState>(DEFAULT_STATE);
+  new StateStore<ComposerState>(DEFAULT_STATE);

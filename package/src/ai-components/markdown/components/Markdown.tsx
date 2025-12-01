@@ -1,7 +1,6 @@
 import React, { type PropsWithChildren, useMemo } from 'react';
 import type { MarkdownProps } from '../types';
 import { isArray, isEqual, merge } from 'lodash';
-import styles from '../styles';
 import SimpleMarkdown, {
   type OutputRules,
   type ParserRules,
@@ -9,20 +8,19 @@ import SimpleMarkdown, {
 } from '@khanacademy/simple-markdown';
 import { getLocalRules } from '../rules';
 import { View } from 'react-native';
+import { useTheme } from '../../contexts';
+import { getLocalStyles } from '../styles';
 
 const UnmemoizedMarkdown = (props: PropsWithChildren<MarkdownProps>) => {
-  const {
-    onLink,
-    rules: rulesProp,
-    styles: stylesProp,
-    paragraphNumberOfLines,
-    children,
-  } = props;
+  const { theme } = useTheme();
+
+  const { onLink, rules: rulesProp, paragraphNumberOfLines, children } = props;
 
   const mergedStyles = useMemo(
-    () => merge({}, styles, stylesProp),
-    [stylesProp],
+    () => merge({}, getLocalStyles({ theme }), theme.markdown),
+    [theme],
   );
+
   const localRules = useMemo(
     () =>
       merge(
@@ -59,7 +57,7 @@ const UnmemoizedMarkdown = (props: PropsWithChildren<MarkdownProps>) => {
 
   const tree = useMemo(() => renderer(toRender), [renderer, toRender]);
 
-  return <View style={[styles.view, stylesProp?.view]}>{tree}</View>;
+  return <View style={mergedStyles.view}>{tree}</View>;
 };
 
 const areEqual = (prevProps: PropsWithChildren, nextProps: PropsWithChildren) =>

@@ -1,37 +1,38 @@
 import React, { type PropsWithChildren, useMemo, useState } from 'react';
 import type { AbstractMediaPickerService } from '../services/media-picker-service/AbstractMediaPickerService';
-import {
-  createNewComposerStore,
-  type MessageComposerState,
-} from '../store/composer/store';
+import { type ComposerState, createNewComposerStore } from '../store';
 import { MediaPickerService } from '../services';
 import type { StateStore } from '@stream-io/state-store';
 import { useStableCallback } from '../internal/hooks/useStableCallback';
-import type { AIMessageComposerProps } from '../message-composer';
+import type { ComposerViewProps } from '../message-composer';
 
-export type MessageComposerContext = {
-  state: StateStore<MessageComposerState>;
+export type ComposerContext = {
+  state: StateStore<ComposerState>;
   setText: (text: string) => void | Promise<void>;
   sendMessage: () => void | Promise<void>;
   mediaPickerService?: AbstractMediaPickerService;
 };
 
-export type MessageComposerContextProps = PropsWithChildren<
-  Pick<AIMessageComposerProps, 'onSendMessage'>
+export type ComposerContextProps = PropsWithChildren<
+  Pick<ComposerViewProps, 'onSendMessage' | 'mediaPickerService' | 'state'>
 >;
 
-export const MessageComposerContext = React.createContext<
-  MessageComposerContext | undefined
->(undefined);
+export const ComposerContext = React.createContext<ComposerContext | undefined>(
+  undefined,
+);
 
-export const MessageComposerProvider = ({
+export const ComposerProvider = ({
   onSendMessage,
+  mediaPickerService: mediaPickerServiceOverride,
+  state: stateOverride,
   children,
-}: MessageComposerContextProps) => {
-  const [mediaPickerService] = useState(() =>
-    MediaPickerService ? new MediaPickerService() : undefined,
+}: ComposerContextProps) => {
+  const [mediaPickerService] = useState(
+    () =>
+      mediaPickerServiceOverride ??
+      (MediaPickerService ? new MediaPickerService() : undefined),
   );
-  const [state] = useState(() => createNewComposerStore());
+  const [state] = useState(() => stateOverride ?? createNewComposerStore());
 
   const setText = useStableCallback((text: string) =>
     state.partialNext({ text }),
@@ -62,17 +63,17 @@ export const MessageComposerProvider = ({
   );
 
   return (
-    <MessageComposerContext.Provider value={contextValue}>
+    <ComposerContext.Provider value={contextValue}>
       {children}
-    </MessageComposerContext.Provider>
+    </ComposerContext.Provider>
   );
 };
 
 export const useMessageComposerContext = () => {
-  const value = React.useContext(MessageComposerContext);
+  const value = React.useContext(ComposerContext);
   if (value === undefined) {
     throw new Error(
-      'The useMessageComposerContext hook was called outside of the MessageComposerContext provider.',
+      'The useMessageComposerContext hook was called outside of the ComposerContext provider.',
     );
   }
 

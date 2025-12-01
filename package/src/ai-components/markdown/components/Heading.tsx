@@ -16,10 +16,12 @@ export const Heading = ({ children, node, styles }: MarkdownComponentProps) => {
   const headingLevel = isValidHeadingLevel(node.level)
     ? node.level
     : DEFAULT_HEADING_LEVEL;
+
   const headingStyle = useMemo(
     () => styles[`heading${headingLevel ?? ''}`],
     [headingLevel, styles],
   );
+
   return <Text style={headingStyle}>{children}</Text>;
 };
 
