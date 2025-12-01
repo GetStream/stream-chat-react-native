@@ -43,7 +43,9 @@ export const useCreateChannelContext = ({
 
   const readUsers = Object.values(read);
   const readUsersLength = readUsers.length;
-  const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
+  const readUsersLastReads = readUsers
+    .map(({ last_read }) => last_read?.toISOString() ?? '')
+    .join();
   const stringifiedChannelUnreadState = JSON.stringify(channelUnreadState);
 
   const channelContext: ChannelContextValue = useMemo(

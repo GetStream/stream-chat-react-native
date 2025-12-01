@@ -4,6 +4,7 @@ import type { InputMessageInputContextValue } from '../../../contexts/messageInp
 
 export const useCreateInputMessageInputContext = ({
   additionalTextInputProps,
+  allowSendBeforeAttachmentsUpload,
   asyncMessagesLockDistance,
   asyncMessagesMinimumPressDuration,
   asyncMessagesMultiSendEnabled,
@@ -70,6 +71,7 @@ export const useCreateInputMessageInputContext = ({
   const inputMessageInputContext: InputMessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
+      allowSendBeforeAttachmentsUpload,
       asyncMessagesLockDistance,
       asyncMessagesMinimumPressDuration,
       asyncMessagesMultiSendEnabled,
@@ -128,7 +130,13 @@ export const useCreateInputMessageInputContext = ({
       VideoRecorderSelectorIcon,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [compressImageQuality, channelId, CreatePollContent, showPollCreationDialog],
+    [
+      compressImageQuality,
+      channelId,
+      CreatePollContent,
+      showPollCreationDialog,
+      allowSendBeforeAttachmentsUpload,
+    ],
   );
 
   return inputMessageInputContext;
