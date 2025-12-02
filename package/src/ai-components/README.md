@@ -3,6 +3,7 @@
 This official repository for Stream Chat's UI components is designed specifically for AI-first applications written in Swift UI. When paired with our real-time [Chat API](https://getstream.io/chat/), it makes integrating with and rendering responses from LLM providers such as ChatGPT, Gemini, Anthropic or any custom backend easier by providing rich with out-of-the-box components able to render Markdown, Code blocks, tables, thinking indicators, images, etc.
 
 To start, this library includes the following components which assist with this task:
+
 - `StreamingMessageView` - a component that is able to render text, markdown and code in real-time, using a typewriter, character-by-character animation, similar to ChatGPT
 - `ComposerView` - a fully featured prompt composer with attachments and speech input
 - `SpeechToTextButton` - a reusable button that records voice input and streams the recognized transcript back into your UI
@@ -12,12 +13,12 @@ Our team plans to keep iterating and adding more components over time. If there'
 
 ## 🛠️ Installation
 
-The `@stream-io/ai-components-react-native` SDK is available on NPM.
+The `@stream-io/chat-react-native-ai` SDK is available on NPM.
 
 To install it and its peer dependencies, you may run the following command:
 
 ```bash
-yarn add @stream-io/ai-components-react-native react-native-reanimated react-native-worklets react-native-gesture-handler react-native-svg victory-native @shopify/react-native-skia @babel/plugin-proposal-export-namespace-from
+yarn add @stream-io/chat-react-native-ai react-native-reanimated react-native-worklets react-native-gesture-handler react-native-svg victory-native @shopify/react-native-skia @babel/plugin-proposal-export-namespace-from
 ```
 
 After this finishes, you'll need to add the respective `babel` plugins to your `babel.config.js` file, like so:
@@ -69,9 +70,9 @@ The SDK has built-in support for 2 libraries that allow you to achieve this:
 
 #### `react-native-image-picker`
 
-This RN CLI library is meant to be used in vanilla React Native projects. 
+This RN CLI library is meant to be used in vanilla React Native projects.
 
-To install it, you can run: 
+To install it, you can run:
 
 ```bash
 yarn add react-native-image-picker
@@ -128,7 +129,7 @@ The `StreamingMessageView` is a component that can render markdown content effic
 Under the hood, it implements a letter-by-letter typewriter animation with a character queue, similar to ChatGPT.
 
 | Name                         | Type                                                                                                                                                               | Required | Description                                                                                                                                                                                                                                                                                                                                                                   |
-|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `text`                       | `string`                                                                                                                                                           | yes      | The text we want to pass as markdown.                                                                                                                                                                                                                                                                                                                                         |
 | `paragraphTextNumberOfLines` | `boolean`                                                                                                                                                          | no       | A boolean signifying if `numberOfLines` should be applied as a property to markdown `Paragraph` and `Text` components. Particularly useful if we want to display the same message, but in a "cut" fashion (for example when replying to someone).                                                                                                                             |
 | `rules`                      | [`MarkdownRules`](https://github.com/GetStream/ai-components-js/blob/11314d5b7e888ed4585e6c4790eb173e928be6b3/packages/react-native-sdk/src/markdown/types.ts#L24) | no       | An object of `MarkdownRules` that is then going to be deeply merged with our default rules, based on the [`SimpleMarkdown` parsing engine](https://github.com/Khan/perseus/tree/main/packages/simple-markdown#adding-a-simple-extension). Can be used to add custom rules or change existing rules. You can disable a rule by passing `{ [ruleName]: { match: () => null }}`. |
@@ -140,7 +141,7 @@ Under the hood, it implements a letter-by-letter typewriter animation with a cha
 
 Provided below is an example of how to use the component.
 
-```tsx
+````tsx
 const markdownText = ```
 # Heading
 
@@ -149,20 +150,20 @@ some text
 ## Another heading
 ```;
 
-<StreamingMessageView 
+<StreamingMessageView
   text={markdownText}
   letterInterval={5} // every 5ms
   renderingLetterCount={3} // render 3 letters at a time
-/>
-```
+/>;
+````
+
 ### `AITypingIndicatorView`
 
 The `AITypingIndicatorView` is used to represent different states of the LLM, such as `Thinking`, `Checking External Sources` and so on, depending on the states you've defined on your backend. The only thing that needs to be passed to the component is the `text` property, which will then be displayed with a shimmering animation.
 
-
-| Name    | Type     | Required | Description                                          |
-|---------|----------|----------|------------------------------------------------------|
-| `text`  | `string` | yes      | The text we want to be displayed inside of the view. |
+| Name   | Type     | Required | Description                                          |
+| ------ | -------- | -------- | ---------------------------------------------------- |
+| `text` | `string` | yes      | The text we want to be displayed inside of the view. |
 
 #### Example
 
@@ -174,9 +175,8 @@ The `AITypingIndicatorView` is used to represent different states of the LLM, su
 
 The `ComposerView` gives users a modern text entry surface with attachment previews, actionable bottom sheet, speech-to-text button and an integrated send button.
 
-
 | Name                 | Type                                                                                                                                                                                        | Required | Description                                                                                                                                                                                                                                                                    |
-|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `onSendMessage`      | `(opts: { text: string; attachments?: MediaPickerState['assets']; custom?: Record<string, unknown>; }) => Promise<void>`                                                                    | yes      | A callback that will be invoked whenever the send button is pressed. The `text`, `attachments` and any `custom` data we've added to the state will be passed to it.                                                                                                            |
 | `bottomSheetOptions` | [`BottomSheetOption[]`](https://github.com/GetStream/ai-components-js/blob/11314d5b7e888ed4585e6c4790eb173e928be6b3/packages/react-native-sdk/src/message-composer/MessageComposer.tsx#L19) | no       | An array of [`BottomSheetOption`](https://github.com/GetStream/ai-components-js/blob/11314d5b7e888ed4585e6c4790eb173e928be6b3/packages/react-native-sdk/src/message-composer/MessageComposer.tsx#L19) objects that will render the extra options in the bottom sheet.          |
 | `bottomSheetInsets`  | `{ top: number; bottom: number; left: number; right: number }`                                                                                                                              | no       | An object containing extra insets we can pass to the `ComposerView` in order to make sure the bottom sheet can extend properly beyond them.                                                                                                                                    |
@@ -202,8 +202,8 @@ const options = [
     subtitle: 'Think longer for better answers',
     action: () => Alert.alert('Pressed on Thinking !'),
     Icon: Flag,
-  }
-]
+  },
+];
 
 const insets = useSafeAreaInsets();
 
@@ -211,7 +211,7 @@ const insets = useSafeAreaInsets();
   onSendMessage={sendMessage}
   bottomSheetOptions={bottomSheetOptions}
   bottomSheetInsets={insets}
-/>
+/>;
 ```
 
 ### `SpeechToTextButton`
@@ -222,12 +222,11 @@ It uses the `useDictation` hook under the hood, which can also be used without t
 
 It takes a single property named `options` that has the following keys:
 
-| Name                  | Type       | Required | Description                                                                                                                                                                        |
-|-----------------------|------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `language`            | `string`   | no       | The language we want to transcribe from. It will default to `en-US`.                                                                                                               |
-| `intermediateResults` | `boolean`  | no       | A boolean signifying whether we want to receive the intermediate results from the transcription or just the final result when the transcription is deemed done. Defaults to `true` |
-| `silenceTimeoutMs`    | `number`   | no       | A number signifying the number of milliseconds of silence until transcription is deemed finished. Defaults to `2500`.                                                              |
-
+| Name                  | Type      | Required | Description                                                                                                                                                                        |
+| --------------------- | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `language`            | `string`  | no       | The language we want to transcribe from. It will default to `en-US`.                                                                                                               |
+| `intermediateResults` | `boolean` | no       | A boolean signifying whether we want to receive the intermediate results from the transcription or just the final result when the transcription is deemed done. Defaults to `true` |
+| `silenceTimeoutMs`    | `number`  | no       | A number signifying the number of milliseconds of silence until transcription is deemed finished. Defaults to `2500`.                                                              |
 
 ```tsx
 const options = {
@@ -251,8 +250,8 @@ In order to modify the theme, you may refer to our full fledged theme object [as
 In the example below, we introduce a dark color scheme through the theming system.
 
 ```tsx
-const customTheme = { 
-  colors: colorScheme === 'dark' 
+const customTheme = {
+  colors: colorScheme === 'dark'
     ? {
       accent_blue: '#4C9DFF',
       accent_red: '#FF636E',
@@ -289,14 +288,14 @@ Stream provides UI components and state handling that make it easy to build real
 ## 📕 Tutorials
 
 To learn more about integrating AI and chatbots into your application, we recommend checking out the full list of tutorials across all of our supported frontend SDKs and providers. Stream's Chat SDK is natively supported across:
-* [React](https://getstream.io/chat/react-chat/tutorial/)
-* [React Native](https://getstream.io/chat/react-native-chat/tutorial/)
-* [Angular](https://getstream.io/chat/angular/tutorial/)
-* [Jetpack Compose](https://getstream.io/tutorials/android-chat/)
-* [SwiftUI](https://getstream.io/tutorials/ios-chat/)
-* [Flutter](https://getstream.io/chat/flutter/tutorial/)
-* [Javascript/Bring your own](https://getstream.io/chat/docs/javascript/)
 
+- [React](https://getstream.io/chat/react-chat/tutorial/)
+- [React Native](https://getstream.io/chat/react-native-chat/tutorial/)
+- [Angular](https://getstream.io/chat/angular/tutorial/)
+- [Jetpack Compose](https://getstream.io/tutorials/android-chat/)
+- [SwiftUI](https://getstream.io/tutorials/ios-chat/)
+- [Flutter](https://getstream.io/chat/flutter/tutorial/)
+- [Javascript/Bring your own](https://getstream.io/chat/docs/javascript/)
 
 ## 👩‍💻 Free for Makers 👨‍💻
 
@@ -308,7 +307,6 @@ For more details, check out the [Maker Account](https://getstream.io/maker-accou
 We've closed a [\$38 million Series B funding round](https://techcrunch.com/2021/03/04/stream-raises-38m-as-its-chat-and-activity-feed-apis-power-communications-for-1b-users/) in 2021 and we keep actively growing.
 Our APIs are used by more than a billion end-users, and you'll have a chance to make a huge impact on the product within a team of the strongest engineers all over the world.
 Check out our current openings and apply via [Stream's website](https://getstream.io/team/#jobs).
-
 
 ## License
 
