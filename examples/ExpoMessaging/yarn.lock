@@ -4272,7 +4272,7 @@ jsonwebtoken@^9.0.2:
     ms "^2.1.1"
     semver "^7.5.4"
 
-jwa@^1.4.1:
+jwa@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/jwa/-/jwa-1.4.2.tgz#16011ac6db48de7b102777e57897901520eec7b9"
   integrity sha512-eeH5JO+21J78qMvTIDdBXidBd6nG2kZjg5Ohz/1fpa28Z4CcsWUzJ1ZZyFq/3z3N17aZy+ZuBoHljASbL1WfOw==
@@ -4282,11 +4282,11 @@ jwa@^1.4.1:
     safe-buffer "^5.0.1"
 
 jws@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/jws/-/jws-3.2.2.tgz#001099f3639468c9414000e99995fa52fb478304"
-  integrity sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/jws/-/jws-3.2.3.tgz#5ac0690b460900a27265de24520526853c0b8ca1"
+  integrity sha512-byiJ0FLRdLdSVSReO/U4E7RoEyOCKnEnEPMjq3HxWtvzLsV08/i5RQKsFVNkCldrCaPr2vDNAOMsfs8T/Hze7g==
   dependencies:
-    jwa "^1.4.1"
+    jwa "^1.4.2"
     safe-buffer "^5.0.1"
 
 kleur@^3.0.3:
@@ -5992,8 +5992,10 @@ stream-buffers@2.2.x:
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
 "stream-chat-expo@link:../../package/expo-package":
-  version "0.0.0"
-  uid ""
+  version "8.1.0"
+  dependencies:
+    mime "^4.0.7"
+    stream-chat-react-native-core "8.1.0"
 
 stream-chat-react-native-core@8.1.0:
   version "8.1.0"
@@ -6016,13 +6018,27 @@ stream-chat-react-native-core@8.1.0:
     use-sync-external-store "^1.5.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "8.1.0"
+  dependencies:
+    "@gorhom/bottom-sheet" "^5.1.8"
+    "@ungap/structured-clone" "^1.3.0"
+    dayjs "1.11.13"
+    emoji-regex "^10.4.0"
+    i18next "^25.2.1"
+    intl-pluralrules "^2.0.1"
+    linkifyjs "^4.3.1"
+    lodash-es "4.17.21"
+    mime-types "^2.1.35"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^2.0.0"
+    stream-chat "^9.26.0"
+    use-sync-external-store "^1.5.0"
 
-stream-chat@^9.23.0:
-  version "9.23.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.23.0.tgz#e7e5cf729861597e7198907c1cab22a57d68a2fc"
-  integrity sha512-UW112HYsLnYb4RMIXBtAouNQCCe0weVzNivjezsw+JKK1b/TX0JLBi+wK25mBUEO+coOGKfXiye6IB3gao8ipw==
+stream-chat@^9.26.0:
+  version "9.26.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.26.0.tgz#92cd0dd5c59bfed05fb4fd74e9a19e8cce726175"
+  integrity sha512-hTeKWDyWjiM3R7GcvgqNCO6zTPZ1oyJbwbpJR2MyEReDVYSKeZge009m/queMxUGJHNuyiRKY0sjQocw4ceWUQ==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
