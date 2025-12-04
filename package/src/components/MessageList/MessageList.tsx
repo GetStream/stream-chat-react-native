@@ -33,6 +33,10 @@ import {
   useImageGalleryContext,
 } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
+  MessageListItemContextValue,
+  MessageListItemProvider,
+} from '../../contexts/messageListItemContext/MessageListItemContext';
+import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -237,6 +241,12 @@ type MessageListPropsWithContext = Pick<
     isLiveStreaming?: boolean;
   };
 
+const renderItem = ({ index, item: message }: { index: number; item: LocalMessage }) => {
+  const isNewestMessage = index === 0;
+
+  return <MessageWrapper isNewestMessage={isNewestMessage} message={message} />;
+};
+
 /**
  * The message list component renders a list of messages. It consumes the following contexts:
  *
@@ -325,8 +335,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * processedMessageList changes on any state change
    */
   const {
-    dateSeparatorsRef,
-    messageGroupStylesRef,
+    messageListPreviousAndNextMessageStore,
     processedMessageList,
     rawMessageList,
     viewabilityChangedCallback,
@@ -770,25 +779,21 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage]);
 
-  const renderItem = useCallback(
-    ({ index, item: message }: { index: number; item: LocalMessage }) => {
-      const dateSeparatorDate = dateSeparatorsRef.current[message.id];
-      const messageGroupStyles = messageGroupStylesRef.current[message.id] ?? [];
-      const isNewestMessage = index === 0;
-
-      return (
-        <MessageWrapper
-          dateSeparatorDate={dateSeparatorDate}
-          goToMessage={goToMessage}
-          isNewestMessage={isNewestMessage}
-          message={message}
-          messageGroupStyles={messageGroupStyles}
-          modifiedTheme={modifiedTheme}
-          onThreadSelect={onThreadSelect}
-        />
-      );
-    },
-    [dateSeparatorsRef, goToMessage, messageGroupStylesRef, modifiedTheme, onThreadSelect],
+  const messageListItemContextValue: MessageListItemContextValue = useMemo(
+    () => ({
+      goToMessage,
+      messageListPreviousAndNextMessageStore,
+      modifiedTheme,
+      noGroupByUser,
+      onThreadSelect,
+    }),
+    [
+      goToMessage,
+      messageListPreviousAndNextMessageStore,
+      modifiedTheme,
+      noGroupByUser,
+      onThreadSelect,
+    ],
   );
 
   /**
@@ -1152,42 +1157,44 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
       ) : (
-        <FlatList
-          contentContainerStyle={flatListContentContainerStyle}
-          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-          data={processedMessageList}
-          extraData={disabled}
-          inverted={inverted}
-          keyboardShouldPersistTaps='handled'
-          keyExtractor={keyExtractor}
-          ListFooterComponent={FooterComponent}
-          ListHeaderComponent={HeaderComponent}
-          /**
+        <MessageListItemProvider value={messageListItemContextValue}>
+          <FlatList
+            contentContainerStyle={flatListContentContainerStyle}
+            /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+            data={processedMessageList}
+            extraData={disabled}
+            inverted={inverted}
+            keyboardShouldPersistTaps='handled'
+            keyExtractor={keyExtractor}
+            ListFooterComponent={FooterComponent}
+            ListHeaderComponent={HeaderComponent}
+            /**
             If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
             bottom (10 offset or below).
             minIndexForVisible = 1 means that beyond the item at index 1 we will not change the position on list updates,
             however it is not used when autoscrollToTopThreshold = 10.
           */
-          maintainVisibleContentPosition={maintainVisibleContentPosition}
-          maxToRenderPerBatch={30}
-          onMomentumScrollEnd={onUserScrollEvent}
-          onScroll={handleScroll}
-          onScrollBeginDrag={onScrollBeginDrag}
-          onScrollEndDrag={onScrollEndDrag}
-          onScrollToIndexFailed={onScrollToIndexFailedRef.current}
-          onTouchEnd={dismissImagePicker}
-          onViewableItemsChanged={stableOnViewableItemsChanged}
-          ref={refCallback}
-          renderItem={renderItem}
-          scrollEventThrottle={isLiveStreaming ? 16 : undefined}
-          showsVerticalScrollIndicator={false}
-          // @ts-expect-error react-native internal
-          strictMode={isLiveStreaming}
-          style={flatListStyle}
-          testID='message-flat-list'
-          viewabilityConfig={flatListViewabilityConfig}
-          {...additionalFlatListPropsExcludingStyle}
-        />
+            maintainVisibleContentPosition={maintainVisibleContentPosition}
+            maxToRenderPerBatch={30}
+            onMomentumScrollEnd={onUserScrollEvent}
+            onScroll={handleScroll}
+            onScrollBeginDrag={onScrollBeginDrag}
+            onScrollEndDrag={onScrollEndDrag}
+            onScrollToIndexFailed={onScrollToIndexFailedRef.current}
+            onTouchEnd={dismissImagePicker}
+            onViewableItemsChanged={stableOnViewableItemsChanged}
+            ref={refCallback}
+            renderItem={renderItem}
+            scrollEventThrottle={isLiveStreaming ? 16 : undefined}
+            showsVerticalScrollIndicator={false}
+            // @ts-expect-error react-native internal
+            strictMode={isLiveStreaming}
+            style={flatListStyle}
+            testID='message-flat-list'
+            viewabilityConfig={flatListViewabilityConfig}
+            {...additionalFlatListPropsExcludingStyle}
+          />
+        </MessageListItemProvider>
       )}
       <View style={styles.stickyHeader}>
         {messageListLengthAfterUpdate && StickyHeader ? (

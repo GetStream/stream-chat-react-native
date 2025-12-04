@@ -4,14 +4,14 @@ import { View } from 'react-native';
 
 import { LocalMessage } from 'stream-chat';
 
-import { MessageListProps } from '../../../components/MessageList/MessageList';
+import { useMessageDateSeparator } from '../../../components/MessageList/hooks/useMessageDateSeparator';
+import { useMessageGroupStyles } from '../../../components/MessageList/hooks/useMessageGroupStyles';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import { useMessageListItemContext } from '../../../contexts/messageListItemContext/MessageListItemContext';
 import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { ThemeProvider, useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import { Theme } from '../../../contexts/themeContext/utils/theme';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { ChannelUnreadStateStoreType } from '../../../state-store/channel-unread-state';
 
@@ -22,29 +22,24 @@ const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
   unread_messages: state.channelUnreadState?.unread_messages,
 });
 
-export type MessageWrapperProps = Pick<MessageContextValue, 'goToMessage'> &
-  Pick<MessageListProps, 'onThreadSelect'> & {
-    isNewestMessage?: boolean;
-    message: LocalMessage;
-    modifiedTheme?: Theme;
-    dateSeparatorDate?: Date;
-    messageGroupStyles?: string[];
-  };
+export type MessageWrapperProps = {
+  isNewestMessage?: boolean;
+  message: LocalMessage;
+};
 
 export const MessageWrapper = (props: MessageWrapperProps) => {
-  const {
-    dateSeparatorDate,
-    isNewestMessage,
-    message,
-    messageGroupStyles,
-    goToMessage,
-    onThreadSelect,
-    modifiedTheme,
-  } = props;
+  const { isNewestMessage, message } = props;
   const { client } = useChatContext();
-  const { channelUnreadStateStore, channel, highlightedMessageId, threadList } =
-    useChannelContext();
   const {
+    channelUnreadStateStore,
+    channel,
+    hideDateSeparators,
+    highlightedMessageId,
+    maxTimeBetweenGroupedMessages,
+    threadList,
+  } = useChannelContext();
+  const {
+    getMessageGroupStyle,
     InlineDateSeparator,
     InlineUnreadIndicator,
     Message,
@@ -52,6 +47,28 @@ export const MessageWrapper = (props: MessageWrapperProps) => {
     myMessageTheme,
     shouldShowUnreadUnderlay,
   } = useMessagesContext();
+  const {
+    goToMessage,
+    onThreadSelect,
+    noGroupByUser,
+    modifiedTheme,
+    messageListPreviousAndNextMessageStore,
+  } = useMessageListItemContext();
+
+  const dateSeparatorDate = useMessageDateSeparator({
+    hideDateSeparators,
+    message,
+    messageListPreviousAndNextMessageStore,
+  });
+
+  const groupStyles = useMessageGroupStyles({
+    dateSeparatorDate,
+    getMessageGroupStyle,
+    maxTimeBetweenGroupedMessages,
+    message,
+    messageListPreviousAndNextMessageStore,
+    noGroupByUser,
+  });
 
   const { first_unread_message_id, last_read, last_read_message_id, unread_messages } =
     useStateStore(channelUnreadStateStore.state, channelUnreadStateSelector);
@@ -87,7 +104,7 @@ export const MessageWrapper = (props: MessageWrapperProps) => {
   const renderMessage = (
     <Message
       goToMessage={goToMessage}
-      groupStyles={messageGroupStyles ?? []}
+      groupStyles={groupStyles}
       isTargetedMessage={highlightedMessageId === message.id}
       message={message}
       onThreadSelect={onThreadSelect}

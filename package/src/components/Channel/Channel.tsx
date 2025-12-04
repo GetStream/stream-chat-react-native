@@ -325,6 +325,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'forceAlignMessages'
       | 'Gallery'
       | 'getMessagesGroupStyles'
+      | 'getMessageGroupStyle'
       | 'Giphy'
       | 'giphyVersion'
       | 'handleBan'
@@ -614,6 +615,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     forceAlignMessages,
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
+    getMessageGroupStyle,
     Giphy = GiphyDefault,
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
@@ -1912,6 +1914,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FlatList,
     forceAlignMessages,
     Gallery,
+    getMessageGroupStyle,
     getMessagesGroupStyles,
     Giphy,
     giphyVersion,

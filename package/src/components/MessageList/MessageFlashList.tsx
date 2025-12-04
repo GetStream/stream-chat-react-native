@@ -31,6 +31,10 @@ import {
   useImageGalleryContext,
 } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
+  MessageListItemContextValue,
+  MessageListItemProvider,
+} from '../../contexts/messageListItemContext/MessageListItemContext';
+import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -251,6 +255,11 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'generic-message';
 };
 
+const renderItem = ({ index, item: message }: { index: number; item: LocalMessage }) => {
+  const isNewestMessage = index === 0;
+  return <MessageWrapper isNewestMessage={isNewestMessage} message={message} />;
+};
+
 const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
   first_unread_message_id: state.channelUnreadState?.first_unread_message_id,
   last_read: state.channelUnreadState?.last_read,
@@ -355,8 +364,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   );
 
   const {
-    dateSeparatorsRef,
-    messageGroupStylesRef,
+    messageListPreviousAndNextMessageStore,
     processedMessageList,
     rawMessageList,
     viewabilityChangedCallback,
@@ -715,25 +723,21 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [],
   );
 
-  const renderItem = useCallback(
-    ({ index, item: message }: { index: number; item: LocalMessage }) => {
-      const dateSeparatorDate = dateSeparatorsRef.current[message.id];
-      const messageGroupStyles = messageGroupStylesRef.current[message.id] ?? [];
-      const isNewestMessage = index === 0;
-
-      return (
-        <MessageWrapper
-          dateSeparatorDate={dateSeparatorDate}
-          goToMessage={goToMessage}
-          isNewestMessage={isNewestMessage}
-          message={message}
-          messageGroupStyles={messageGroupStyles}
-          modifiedTheme={modifiedTheme}
-          onThreadSelect={onThreadSelect}
-        />
-      );
-    },
-    [dateSeparatorsRef, goToMessage, messageGroupStylesRef, modifiedTheme, onThreadSelect],
+  const messageListItemContextValue: MessageListItemContextValue = useMemo(
+    () => ({
+      goToMessage,
+      messageListPreviousAndNextMessageStore,
+      modifiedTheme,
+      noGroupByUser,
+      onThreadSelect,
+    }),
+    [
+      goToMessage,
+      messageListPreviousAndNextMessageStore,
+      modifiedTheme,
+      noGroupByUser,
+      onThreadSelect,
+    ],
   );
 
   const messagesWithImages =
@@ -1063,34 +1067,36 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
       ) : (
-        <FlashList
-          contentContainerStyle={flatListContentContainerStyle}
-          data={processedMessageList}
-          drawDistance={800}
-          getItemType={getItemTypeInternal}
-          initialScrollIndex={
-            indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
-          }
-          keyboardShouldPersistTaps='handled'
-          keyExtractor={keyExtractor}
-          ListFooterComponent={FooterComponent}
-          ListHeaderComponent={HeaderComponent}
-          maintainVisibleContentPosition={maintainVisibleContentPosition}
-          onMomentumScrollEnd={onUserScrollEvent}
-          onScroll={handleScroll}
-          onScrollBeginDrag={onScrollBeginDrag}
-          onScrollEndDrag={onScrollEndDrag}
-          onTouchEnd={dismissImagePicker}
-          onViewableItemsChanged={stableOnViewableItemsChanged}
-          ref={refCallback}
-          renderItem={renderItem}
-          scrollEventThrottle={isLiveStreaming ? 16 : undefined}
-          showsVerticalScrollIndicator={false}
-          style={flatListStyle}
-          testID='message-flash-list'
-          viewabilityConfig={flatListViewabilityConfig}
-          {...additionalFlashListPropsExcludingStyle}
-        />
+        <MessageListItemProvider value={messageListItemContextValue}>
+          <FlashList
+            contentContainerStyle={flatListContentContainerStyle}
+            data={processedMessageList}
+            drawDistance={800}
+            getItemType={getItemTypeInternal}
+            initialScrollIndex={
+              indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
+            }
+            keyboardShouldPersistTaps='handled'
+            keyExtractor={keyExtractor}
+            ListFooterComponent={FooterComponent}
+            ListHeaderComponent={HeaderComponent}
+            maintainVisibleContentPosition={maintainVisibleContentPosition}
+            onMomentumScrollEnd={onUserScrollEvent}
+            onScroll={handleScroll}
+            onScrollBeginDrag={onScrollBeginDrag}
+            onScrollEndDrag={onScrollEndDrag}
+            onTouchEnd={dismissImagePicker}
+            onViewableItemsChanged={stableOnViewableItemsChanged}
+            ref={refCallback}
+            renderItem={renderItem}
+            scrollEventThrottle={isLiveStreaming ? 16 : undefined}
+            showsVerticalScrollIndicator={false}
+            style={flatListStyle}
+            testID='message-flash-list'
+            viewabilityConfig={flatListViewabilityConfig}
+            {...additionalFlashListPropsExcludingStyle}
+          />
+        </MessageListItemProvider>
       )}
       <View style={styles.stickyHeader}>
         {messageListLengthAfterUpdate && StickyHeader ? (
