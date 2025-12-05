@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { View } from 'react-native';
 
@@ -14,6 +14,7 @@ import { ThemeProvider, useTheme } from '../../../contexts/themeContext/ThemeCon
 
 import { useStateStore } from '../../../hooks/useStateStore';
 import { ChannelUnreadStateStoreType } from '../../../state-store/channel-unread-state';
+import { MessagePreviousAndNextMessageStoreType } from '../../../state-store/message-list-prev-next-state';
 
 const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
   first_unread_message_id: state.channelUnreadState?.first_unread_message_id,
@@ -23,12 +24,11 @@ const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
 });
 
 export type MessageWrapperProps = {
-  isNewestMessage?: boolean;
   message: LocalMessage;
 };
 
 export const MessageWrapper = (props: MessageWrapperProps) => {
-  const { isNewestMessage, message } = props;
+  const { message } = props;
   const { client } = useChatContext();
   const {
     channelUnreadStateStore,
@@ -61,6 +61,14 @@ export const MessageWrapper = (props: MessageWrapperProps) => {
     messageListPreviousAndNextMessageStore,
   });
 
+  const selector = useCallback(
+    (state: MessagePreviousAndNextMessageStoreType) => ({
+      nextMessage: state.messageList[message.id]?.nextMessage,
+    }),
+    [message.id],
+  );
+  const { nextMessage } = useStateStore(messageListPreviousAndNextMessageStore.state, selector);
+  const isNewestMessage = nextMessage === undefined;
   const groupStyles = useMessageGroupStyles({
     dateSeparatorDate,
     getMessageGroupStyle,

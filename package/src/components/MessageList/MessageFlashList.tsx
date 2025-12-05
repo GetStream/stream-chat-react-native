@@ -255,9 +255,8 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'generic-message';
 };
 
-const renderItem = ({ index, item: message }: { index: number; item: LocalMessage }) => {
-  const isNewestMessage = index === 0;
-  return <MessageWrapper isNewestMessage={isNewestMessage} message={message} />;
+const renderItem = ({ item: message }: { item: LocalMessage }) => {
+  return <MessageWrapper message={message} />;
 };
 
 const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({

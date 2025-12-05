@@ -241,10 +241,8 @@ type MessageListPropsWithContext = Pick<
     isLiveStreaming?: boolean;
   };
 
-const renderItem = ({ index, item: message }: { index: number; item: LocalMessage }) => {
-  const isNewestMessage = index === 0;
-
-  return <MessageWrapper isNewestMessage={isNewestMessage} message={message} />;
+const renderItem = ({ item: message }: { item: LocalMessage }) => {
+  return <MessageWrapper message={message} />;
 };
 
 /**
