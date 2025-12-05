@@ -1,0 +1,11 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "sourceMap": false,
+    "declaration": false
+  },
+  "include": ["."],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}

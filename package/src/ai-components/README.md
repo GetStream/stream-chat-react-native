@@ -58,6 +58,27 @@ Within `android/app/AndroidManifest.xml`:
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
+#### `Expo`
+
+If you're using `Expo` without a bare workflow, we've built a config plugin that you can include to add these permissions for you.
+
+You can do this by adding it to your `app.json`/`app.config.[js|ts]` file like so:
+
+```json
+"plugins": [
+      // ... rest of your plugins
+      [
+        "@stream-io/chat-react-native-ai",
+        {
+          "dictationMicrophoneUsageDescription": "$(PRODUCT_NAME) would like to access your microphone to capture your voice.",
+          "dictationSpeechRecognitionUsageDescription": "$(PRODUCT_NAME) would like to access speech recognition to transcribe your voice."
+        }
+      ]
+    ],
+```
+
+If you're using a bare `Expo` workflow, you may do the manual steps for `iOS` and `Android` mentioned before.
+
 ## Optional features
 
 Additionally, you may also include the optional dependencies that enable pluggable features.

@@ -153,9 +153,9 @@ public class AIDictationModule: NSObject {
                         message: "Microphone or speech recognition permission not granted."
                     )
                     self.emitState(self.STATE_IDLE)
+                    return
                 }
             }
-            return
         }
 
         // Availability
