@@ -26,7 +26,6 @@ export const useMessageGroupStyles = ({
   noGroupByUser?: boolean;
   getMessageGroupStyle: MessagesContextValue['getMessageGroupStyle'];
   dateSeparatorDate?: Date;
-  nextMessageDateSeparatorDate?: Date;
   maxTimeBetweenGroupedMessages?: number;
   message: LocalMessage;
   messageListPreviousAndNextMessageStore: MessagePreviousAndNextMessageStore;
