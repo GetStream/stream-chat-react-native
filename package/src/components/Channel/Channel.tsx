@@ -445,7 +445,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       localMessage: LocalMessage;
       message: StreamMessage;
       options?: SendMessageOptions;
-    }) => Promise<SendMessageAPIResponse>;
+    }) => Promise<void>;
     /**
      * Overrides the Stream default update message request (Advanced usage only)
      * @param channelId
