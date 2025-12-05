@@ -137,18 +137,11 @@ exports[`MessageStatus should render message status with read by container 1`] =
   >
     <RCTScrollView
       contentContainerStyle={
-        [
-          {
-            "flexGrow": 1,
-          },
-          {
-            "backgroundColor": "#FFFFFF",
-          },
-          {},
-          {
-            "opacity": 1,
-          },
-        ]
+        {
+          "backgroundColor": "#FFFFFF",
+          "flexGrow": 1,
+          "opacity": 1,
+        }
       }
       data={[]}
       getItem={[Function]}

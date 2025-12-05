@@ -278,12 +278,11 @@ export const AttachmentPicker = React.forwardRef(
         >
           {iOSLimited && <AttachmentPickerIOSSelectMorePhotos />}
           <BottomSheetFlatList
-            contentContainerStyle={[
+            contentContainerStyle={StyleSheet.flatten([
               styles.container,
-              { backgroundColor: white },
+              { backgroundColor: white, opacity: photoError ? 0 : 1 },
               bottomSheetContentContainer,
-              { opacity: photoError ? 0 : 1 },
-            ]}
+            ])}
             data={selectedPhotos}
             keyExtractor={(item) => item.asset.uri}
             numColumns={numberOfAttachmentPickerImageColumns ?? 3}
