@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`AttachButton should call handleAttachButtonPress when the button is clicked if passed 1`] = `
 <View
@@ -172,18 +172,11 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
   >
     <RCTScrollView
       contentContainerStyle={
-        [
-          {
-            "flexGrow": 1,
-          },
-          {
-            "backgroundColor": "#FFFFFF",
-          },
-          {},
-          {
-            "opacity": 1,
-          },
-        ]
+        {
+          "backgroundColor": "#FFFFFF",
+          "flexGrow": 1,
+          "opacity": 1,
+        }
       }
       data={[]}
       getItem={[Function]}
@@ -382,18 +375,11 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
   >
     <RCTScrollView
       contentContainerStyle={
-        [
-          {
-            "flexGrow": 1,
-          },
-          {
-            "backgroundColor": "#FFFFFF",
-          },
-          {},
-          {
-            "opacity": 1,
-          },
-        ]
+        {
+          "backgroundColor": "#FFFFFF",
+          "flexGrow": 1,
+          "opacity": 1,
+        }
       }
       data={[]}
       getItem={[Function]}
@@ -592,18 +578,11 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
   >
     <RCTScrollView
       contentContainerStyle={
-        [
-          {
-            "flexGrow": 1,
-          },
-          {
-            "backgroundColor": "#FFFFFF",
-          },
-          {},
-          {
-            "opacity": 1,
-          },
-        ]
+        {
+          "backgroundColor": "#FFFFFF",
+          "flexGrow": 1,
+          "opacity": 1,
+        }
       }
       data={[]}
       getItem={[Function]}
