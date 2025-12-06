@@ -99,6 +99,8 @@ class ExpoAudioSoundAdapter {
 
   // eslint-disable-next-line require-await
   loadAsync = async (initialStatus) => {
+    // We have to subscribe as early as possible so that we know the initial status(durarion, etc.) of the audio.
+    this.subscribeStatusEventListener();
     this.initialShouldCorrectPitch = initialStatus.shouldCorrectPitch;
     this.initialPitchCorrectionQuality = initialStatus.pitchCorrectionQuality;
   };
@@ -136,8 +138,7 @@ class ExpoAudioSoundAdapter {
   };
 
   // eslint-disable-next-line require-await
-  setPositionAsync: SoundReturnType['setPositionAsync'] = async (milliseconds) => {
-    const seconds = milliseconds / 1000;
+  setPositionAsync: SoundReturnType['setPositionAsync'] = async (seconds) => {
     this.player.seekTo(seconds);
   };
 

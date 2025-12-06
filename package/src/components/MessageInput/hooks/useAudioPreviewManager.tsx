@@ -8,6 +8,8 @@ import { AudioConfig } from '../../../types/types';
  * Manages the state of audio attachments for preview and playback.
  * @param files The audio files to manage.
  * @returns An object containing the state and handlers for audio attachments.
+ *
+ * @deprecated This is deprecated and will be removed in the future.
  */
 export const useAudioPreviewManager = (files: LocalAttachment[]) => {
   const [audioAttachmentsStateMap, setAudioAttachmentsStateMap] = useState<
@@ -34,8 +36,15 @@ export const useAudioPreviewManager = (files: LocalAttachment[]) => {
     });
   }, [files]);
 
-  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here
-  // and the duration is set.
+  /**
+   * Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here
+   * and the duration is set.
+   * @param index - The index of the audio
+   * @param duration - The duration of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
   const onLoad = useCallback((index: string, duration: number) => {
     setAudioAttachmentsStateMap((prevState) => ({
       ...prevState,
@@ -46,8 +55,15 @@ export const useAudioPreviewManager = (files: LocalAttachment[]) => {
     }));
   }, []);
 
-  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The
-  // progressed duration is set here.
+  /**
+   * Handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The
+   * progressed duration is set here.
+   * @param index - The index of the audio
+   * @param progress - The progress of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
   const onProgress = useCallback((index: string, progress: number) => {
     setAudioAttachmentsStateMap((prevState) => ({
       ...prevState,
@@ -58,7 +74,14 @@ export const useAudioPreviewManager = (files: LocalAttachment[]) => {
     }));
   }, []);
 
-  // The handler which controls or sets the paused/played state of the audio.
+  /**
+   * Handler which controls or sets the paused/played state of the audio.
+   * @param index - The index of the audio
+   * @param pausedStatus - The paused status of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
   const onPlayPause = useCallback((index: string, pausedStatus?: boolean) => {
     if (pausedStatus === false) {
       // In this case, all others except the index are set to paused.

@@ -28,3 +28,4 @@ export * from './typingContext/TypingContext';
 export * from './utils/getDisplayName';
 export * from './pollContext';
 export * from './liveLocationManagerContext';
+export * from './audioPlayerContext/AudioPlayerContext';
