@@ -232,10 +232,10 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
-              testID="message-list-item-0"
+              testID="message-list-item-38ef6f7c-3090-5759-a37f-ab0053aadb96"
             >
               <View
-                testID="message-list-item-0"
+                testID="message-list-item-38ef6f7c-3090-5759-a37f-ab0053aadb96"
               >
                 <View
                   style={
@@ -602,10 +602,10 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
-              testID="message-list-item-1"
+              testID="message-list-item-516efa25-5d29-5c9a-ad2d-4cc183e785bd"
             >
               <View
-                testID="message-list-item-1"
+                testID="message-list-item-516efa25-5d29-5c9a-ad2d-4cc183e785bd"
               >
                 <View
                   style={
@@ -972,10 +972,10 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
-              testID="message-list-item-2"
+              testID="message-list-item-82a83b16-b611-527c-b3ac-765ef6220490"
             >
               <View
-                testID="message-list-item-2"
+                testID="message-list-item-82a83b16-b611-527c-b3ac-765ef6220490"
               >
                 <View
                   style={

@@ -21,7 +21,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
   const { onCloseHandler, onPressHandler } = props;
   const { t } = useTranslationContext();
   const {
-    channelUnreadState,
+    channelUnreadStateStore,
     loadChannelAtFirstUnreadMessage,
     markRead,
     setChannelUnreadState,
@@ -33,7 +33,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
       await onPressHandler();
     } else {
       await loadChannelAtFirstUnreadMessage({
-        channelUnreadState,
+        channelUnreadState: channelUnreadStateStore.channelUnreadState,
         setChannelUnreadState,
         setTargetedMessage,
       });

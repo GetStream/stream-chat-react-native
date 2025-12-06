@@ -382,12 +382,19 @@ describe('MessageList', () => {
     });
   });
 
-  it("should render the UnreadMessagesIndicator when there's unread messages", async () => {
+  it("should render the InlineUnreadIndicator when there's unread messages", async () => {
     const user1 = generateUser();
     const user2 = generateUser();
     const messages = Array.from({ length: 10 }, (_, i) =>
       generateMessage({ id: `${i}`, text: `message-${i}` }),
     );
+    const read_data = {
+      [user1.id]: {
+        last_read: new Date(),
+        last_read_message_id: '5',
+        unread_messages: 5,
+      },
+    };
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
     });
@@ -397,23 +404,18 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const channelUnreadState = {
-      last_read: new Date(),
-      last_read_message_id: '5',
-      unread_messages: 5,
-    };
-
     channel.state = {
       ...channelInitialState,
       latestMessages: [],
       messages,
+      read: read_data,
     };
 
     const { queryByLabelText } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <MessageList channelUnreadState={channelUnreadState} />
+            <MessageList />
           </Channel>
         </Chat>
       </OverlayProvider>,

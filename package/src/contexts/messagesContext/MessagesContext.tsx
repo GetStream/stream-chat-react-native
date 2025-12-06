@@ -55,7 +55,11 @@ import type { MessageSystemProps } from '../../components/MessageList/MessageSys
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
 import { UnreadMessagesNotificationProps } from '../../components/MessageList/UnreadMessagesNotification';
-import type { getGroupStyles } from '../../components/MessageList/utils/getGroupStyles';
+import type {
+  getGroupStyles,
+  GroupStyle,
+  MessageGroupStylesParams,
+} from '../../components/MessageList/utils/getGroupStyles';
 import { MessageActionListProps } from '../../components/MessageMenu/MessageActionList';
 import type {
   MessageActionListItemProps,
@@ -401,7 +405,12 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   forceAlignMessages?: Alignment | boolean;
 
+  /**
+   * @deprecated in favor of `getMessageGroupStyle`
+   */
   getMessagesGroupStyles?: typeof getGroupStyles;
+
+  getMessageGroupStyle?: (params: MessageGroupStylesParams) => GroupStyle[];
   /**
    * Handler to access when a ban user action is invoked.
    * @param message
