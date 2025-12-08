@@ -105,7 +105,6 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<
     ChannelContextValue,
     | 'channel'
-    | 'channelUnreadState'
     | 'channelUnreadStateStore'
     | 'disabled'
     | 'EmptyStateIndicator'
@@ -370,7 +369,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   } = useMessageList({
     isFlashList: true,
     isLiveStreaming,
-    noGroupByUser,
     threadList,
   });
 
@@ -1132,7 +1130,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
     channel,
-    channelUnreadState,
     channelUnreadStateStore,
     disabled,
     EmptyStateIndicator,
@@ -1181,7 +1178,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     <MessageFlashListWithContext
       {...{
         channel,
-        channelUnreadState,
         channelUnreadStateStore,
         client,
         closePicker,

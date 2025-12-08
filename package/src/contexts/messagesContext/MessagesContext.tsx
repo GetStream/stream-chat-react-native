@@ -56,7 +56,6 @@ import type { ScrollToBottomButtonProps } from '../../components/MessageList/Scr
 import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
 import { UnreadMessagesNotificationProps } from '../../components/MessageList/UnreadMessagesNotification';
 import type {
-  getGroupStyles,
   GroupStyle,
   MessageGroupStylesParams,
 } from '../../components/MessageList/utils/getGroupStyles';
@@ -404,11 +403,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * sent messages will be aligned to right.
    */
   forceAlignMessages?: Alignment | boolean;
-
-  /**
-   * @deprecated in favor of `getMessageGroupStyle`
-   */
-  getMessagesGroupStyles?: typeof getGroupStyles;
 
   getMessageGroupStyle?: (params: MessageGroupStylesParams) => GroupStyle[];
   /**
