@@ -18,7 +18,7 @@ import Animated, {
 
 import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
 
-import { useAudioController } from './hooks/useAudioController';
+import { useAudioRecorder } from './hooks/useAudioRecorder';
 import { useCountdown } from './hooks/useCountdown';
 
 import { ChatContextValue, useChatContext, useOwnCapabilitiesContext } from '../../contexts';
@@ -311,11 +311,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
     deleteVoiceRecording,
     micLocked,
-    onVoicePlayerPlayPause,
-    paused,
     permissionsGranted,
-    position,
-    progress,
     recording,
     recordingDuration,
     recordingStatus,
@@ -324,7 +320,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     stopVoiceRecording,
     uploadVoiceRecording,
     waveformData,
-  } = useAudioController();
+  } = useAudioRecorder();
 
   const asyncAudioEnabled = audioRecordingEnabled && isAudioRecorderAvailable();
   const showSendingButton = hasText || attachments.length || command;
@@ -449,10 +445,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             />
             {recordingStatus === 'stopped' ? (
               <AudioRecordingPreview
-                onVoicePlayerPlayPause={onVoicePlayerPlayPause}
-                paused={paused}
-                position={position}
-                progress={progress}
                 recordingDuration={recordingDuration}
                 uri={
                   typeof recording !== 'string'
