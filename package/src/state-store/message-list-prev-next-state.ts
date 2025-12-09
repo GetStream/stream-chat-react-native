@@ -23,17 +23,29 @@ export class MessagePreviousAndNextMessageStore {
 
   public setMessageListPreviousAndNextMessage(messages: LocalMessage[]) {
     const currentValue = this.state.getLatestValue();
-    const messageList: MessagePreviousAndNextMessageStoreType['messageList'] =
+    const prevMessageList: MessagePreviousAndNextMessageStoreType['messageList'] =
       currentValue.messageList;
+    const newMessageList: MessagePreviousAndNextMessageStoreType['messageList'] = {};
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       const previousMessage = messages[i - 1];
       const nextMessage = messages[i + 1];
-      messageList[message.id] = {
-        nextMessage,
-        previousMessage,
-      };
+
+      const existing = prevMessageList[message.id];
+
+      if (
+        existing &&
+        existing.previousMessage === previousMessage &&
+        existing.nextMessage === nextMessage
+      ) {
+        newMessageList[message.id] = existing;
+      } else {
+        newMessageList[message.id] = {
+          nextMessage,
+          previousMessage,
+        };
+      }
     }
-    this.state.partialNext({ messageList });
+    this.state.partialNext({ messageList: newMessageList });
   }
 }
