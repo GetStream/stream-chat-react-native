@@ -771,7 +771,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const channelUnreadStateStore = useMemo(() => new ChannelUnreadStateStore(), []);
+  const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
       channelUnreadStateStore.channelUnreadState = data;

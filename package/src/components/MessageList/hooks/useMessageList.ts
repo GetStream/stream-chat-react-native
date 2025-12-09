@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
@@ -70,6 +70,9 @@ export const useMessageList = (params: UseMessageListParams) => {
   const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
   const messageList = threadList ? threadMessages : messages;
+  const [messageListPreviousAndNextMessageStore] = useState(
+    () => new MessagePreviousAndNextMessageStore(),
+  );
 
   const filteredMessageList = useMemo(() => {
     const filteredMessages = [];
@@ -85,11 +88,6 @@ export const useMessageList = (params: UseMessageListParams) => {
     }
     return filteredMessages;
   }, [messageList, deletedMessagesVisibilityType, client.userID]);
-
-  const messageListPreviousAndNextMessageStore = useMemo(
-    () => new MessagePreviousAndNextMessageStore(),
-    [],
-  );
 
   useEffect(() => {
     messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage(
