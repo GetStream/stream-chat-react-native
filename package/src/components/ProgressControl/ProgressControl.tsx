@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -92,28 +92,32 @@ export const ProgressControl = (props: ProgressControlProps) => {
         state.value = newProgress;
       }
     },
-    [progress, isSliding.current],
+    [progress, isSliding],
   );
 
-  const pan = Gesture.Pan()
-    .maxPointers(1)
-    .onStart(() => {
-      isSliding.current = true;
-      if (onStartDrag) {
-        runOnJS(onStartDrag)(state.value);
-      }
-    })
-    .onUpdate((event) => {
-      const newProgress = Math.max(0, Math.min(event.x / widthInNumbers, 1));
-      state.value = newProgress;
-    })
-    .onEnd(() => {
-      isSliding.current = false;
-      if (onEndDrag) {
-        runOnJS(onEndDrag)(state.value);
-      }
-    })
-    .withTestId(testID);
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .maxPointers(1)
+        .onStart(() => {
+          isSliding.current = true;
+          if (onStartDrag) {
+            runOnJS(onStartDrag)(state.value);
+          }
+        })
+        .onUpdate((event) => {
+          const newProgress = Math.max(0, Math.min(event.x / widthInNumbers, 1));
+          state.value = newProgress;
+        })
+        .onEnd(() => {
+          isSliding.current = false;
+          if (onEndDrag) {
+            runOnJS(onEndDrag)(state.value);
+          }
+        })
+        .withTestId(testID),
+    [onEndDrag, onStartDrag, state, testID, widthInNumbers],
+  );
 
   const filledColor = filledColorFromProp || filledColorFromTheme;
 
