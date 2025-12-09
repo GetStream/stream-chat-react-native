@@ -4,6 +4,7 @@ import { Alert, Platform } from 'react-native';
 
 import { LocalVoiceRecordingAttachment } from 'stream-chat';
 
+import { useActiveAudioPlayer } from '../../../contexts/audioPlayerContext/AudioPlayerContext';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
@@ -54,6 +55,7 @@ export const useAudioController = () => {
   const [recordingDuration, setRecordingDuration] = useState<number>(0);
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatusStates>('idle');
   const { attachmentManager } = useMessageComposer();
+  const activeAudioPlayer = useActiveAudioPlayer();
 
   const { sendMessage } = useMessageInputContext();
 
@@ -256,6 +258,9 @@ export const useAudioController = () => {
       }
       setRecording(recording);
       setRecordingStatus('recording');
+      if (activeAudioPlayer?.isPlaying) {
+        await activeAudioPlayer?.pause();
+      }
       await stopVoicePlayer();
     } else {
       setPermissionsGranted(false);
