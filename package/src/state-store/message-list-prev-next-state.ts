@@ -23,9 +23,8 @@ export class MessagePreviousAndNextMessageStore {
 
   public setMessageListPreviousAndNextMessage(messages: LocalMessage[]) {
     const currentValue = this.state.getLatestValue();
-    const messageList: MessagePreviousAndNextMessageStoreType['messageList'] = {
-      ...currentValue.messageList,
-    };
+    const messageList: MessagePreviousAndNextMessageStoreType['messageList'] =
+      currentValue.messageList;
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       const previousMessage = messages[i - 1];
