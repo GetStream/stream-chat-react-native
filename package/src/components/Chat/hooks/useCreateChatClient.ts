@@ -17,22 +17,27 @@ export const useCreateChatClient = ({
   options,
   tokenOrProvider,
   userData,
+  enabled = true,
 }: {
   apiKey: string;
   tokenOrProvider: TokenOrProvider;
   userData: OwnUserResponse | UserResponse;
   options?: StreamChatOptions;
+  enabled?: boolean;
 }) => {
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
   const [cachedUserData, setCachedUserData] = useState(userData);
 
-  if (userData.id !== cachedUserData.id) {
+  if (userData.id !== cachedUserData.id && enabled) {
     setCachedUserData(userData);
   }
 
   const [cachedOptions] = useState(options);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     const client = new StreamChat(apiKey, undefined, cachedOptions);
     let didUserConnectInterrupt = false;
 
@@ -51,7 +56,7 @@ export const useCreateChatClient = ({
           console.log(`Connection for user "${cachedUserData.id}" has been closed`);
         });
     };
-  }, [apiKey, cachedUserData, cachedOptions, tokenOrProvider]);
+  }, [apiKey, cachedUserData, cachedOptions, tokenOrProvider, enabled]);
 
   return chatClient;
 };
