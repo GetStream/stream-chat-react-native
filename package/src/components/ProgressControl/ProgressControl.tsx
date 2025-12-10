@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -77,7 +77,6 @@ export const ProgressControl = (props: ProgressControlProps) => {
   const { filledColor: filledColorFromProp, onEndDrag, onStartDrag, progress, testID } = props;
 
   const state = useSharedValue(progress);
-  const isSliding = useRef(false);
   const {
     theme: {
       colors: { grey_dark },
@@ -88,11 +87,9 @@ export const ProgressControl = (props: ProgressControlProps) => {
   useAnimatedReaction(
     () => progress,
     (newProgress) => {
-      if (!isSliding.current) {
-        state.value = newProgress;
-      }
+      state.value = newProgress;
     },
-    [progress, isSliding],
+    [progress],
   );
 
   const pan = useMemo(
@@ -100,7 +97,6 @@ export const ProgressControl = (props: ProgressControlProps) => {
       Gesture.Pan()
         .maxPointers(1)
         .onStart(() => {
-          isSliding.current = true;
           if (onStartDrag) {
             runOnJS(onStartDrag)(state.value);
           }
@@ -110,7 +106,6 @@ export const ProgressControl = (props: ProgressControlProps) => {
           state.value = newProgress;
         })
         .onEnd(() => {
-          isSliding.current = false;
           if (onEndDrag) {
             runOnJS(onEndDrag)(state.value);
           }
