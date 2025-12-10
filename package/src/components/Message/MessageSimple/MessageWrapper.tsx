@@ -18,8 +18,8 @@ import { MessagePreviousAndNextMessageStoreType } from '../../../state-store/mes
 
 const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
   first_unread_message_id: state.channelUnreadState?.first_unread_message_id,
-  last_read: state.channelUnreadState?.last_read,
   last_read_message_id: state.channelUnreadState?.last_read_message_id,
+  last_read_timestamp: state.channelUnreadState?.last_read?.getTime(),
   unread_messages: state.channelUnreadState?.unread_messages,
 });
 
@@ -27,7 +27,7 @@ export type MessageWrapperProps = {
   message: LocalMessage;
 };
 
-export const MessageWrapper = (props: MessageWrapperProps) => {
+export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
   const { message } = props;
   const { client } = useChatContext();
   const {
@@ -78,7 +78,7 @@ export const MessageWrapper = (props: MessageWrapperProps) => {
     noGroupByUser,
   });
 
-  const { first_unread_message_id, last_read, last_read_message_id, unread_messages } =
+  const { first_unread_message_id, last_read_timestamp, last_read_message_id, unread_messages } =
     useStateStore(channelUnreadStateStore.state, channelUnreadStateSelector);
   const {
     theme: {
@@ -91,10 +91,9 @@ export const MessageWrapper = (props: MessageWrapperProps) => {
   }
 
   const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
-  const lastReadTimestamp = last_read?.getTime();
   const isLastReadMessage =
     last_read_message_id === message.id ||
-    (!unread_messages && createdAtTimestamp === lastReadTimestamp);
+    (!unread_messages && createdAtTimestamp === last_read_timestamp);
 
   const showUnreadSeparator =
     isLastReadMessage &&
@@ -145,4 +144,4 @@ export const MessageWrapper = (props: MessageWrapperProps) => {
       {showUnreadUnderlay && <InlineUnreadIndicator />}
     </View>
   );
-};
+});
