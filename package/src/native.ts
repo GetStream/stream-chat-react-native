@@ -227,6 +227,7 @@ export type AudioType = {
   stopRecording: () => Promise<void>;
   pausePlayer?: () => Promise<void>;
   resumePlayer?: () => Promise<void>;
+  seekToPlayer?: (positionInMillis: number) => Promise<void>;
   startPlayer?: (
     uri?: AudioRecordingReturnType,
     initialStatus?: Partial<AVPlaybackStatusToSet>,

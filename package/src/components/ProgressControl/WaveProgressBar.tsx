@@ -1,7 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { resampleWaveformData } from '../MessageInput/utils/audioSampling';
@@ -76,7 +81,6 @@ export const WaveProgressBar = React.memo(
       amplitudesCount = 70,
       filledColor,
       onEndDrag,
-      onPlayPause,
       onProgressDrag,
       onStartDrag,
       progress,
@@ -98,9 +102,14 @@ export const WaveProgressBar = React.memo(
       [fullWidth],
     );
 
-    useEffect(() => {
-      waveFormNumberFromProgress(progress);
-    }, [progress, waveFormNumberFromProgress]);
+    useAnimatedReaction(
+      () => progress,
+      (newProgress) => {
+        state.value = newProgress;
+        waveFormNumberFromProgress(newProgress);
+      },
+      [progress],
+    );
 
     const {
       theme: {
@@ -109,36 +118,28 @@ export const WaveProgressBar = React.memo(
       },
     } = useTheme();
 
-    const pan = Gesture.Pan()
-      .enabled(showProgressDrag)
-      .maxPointers(1)
-      .onStart((event) => {
-        const currentProgress = (state.value + event.x) / fullWidth;
-        state.value = Math.max(0, Math.min(currentProgress, 1));
-        if (onStartDrag) {
-          runOnJS(onStartDrag)(state.value);
-        }
-        if (onPlayPause) {
-          runOnJS(onPlayPause)(true);
-        }
-      })
-      .onUpdate((event) => {
-        const currentProgress = (state.value + event.x) / fullWidth;
-        state.value = Math.max(0, Math.min(currentProgress, 1));
-        if (onProgressDrag) {
-          runOnJS(onProgressDrag)(state.value);
-        }
-      })
-      .onEnd((event) => {
-        const currentProgress = (state.value + event.x) / fullWidth;
-        state.value = Math.max(0, Math.min(currentProgress, 1));
-        if (onEndDrag) {
-          runOnJS(onEndDrag)(state.value);
-        }
-        if (onPlayPause) {
-          runOnJS(onPlayPause)(false);
-        }
-      });
+    const pan = useMemo(
+      () =>
+        Gesture.Pan()
+          .enabled(showProgressDrag)
+          .maxPointers(1)
+          .onStart(() => {
+            if (onStartDrag) {
+              runOnJS(onStartDrag)(state.value);
+            }
+          })
+          .onUpdate((event) => {
+            const newProgress = Math.max(0, Math.min(event.x / fullWidth, 1));
+            state.value = newProgress;
+            waveFormNumberFromProgress(newProgress);
+          })
+          .onEnd(() => {
+            if (onEndDrag) {
+              runOnJS(onEndDrag)(state.value);
+            }
+          }),
+      [fullWidth, onEndDrag, onStartDrag, showProgressDrag, state, waveFormNumberFromProgress],
+    );
 
     const stringifiedWaveformData = waveformData.toString();
 

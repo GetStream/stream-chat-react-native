@@ -52,6 +52,10 @@ import {
   AttachmentPickerProvider,
   MessageContextValue,
 } from '../../contexts';
+import {
+  AudioPlayerContextProps,
+  AudioPlayerProvider,
+} from '../../contexts/audioPlayerContext/AudioPlayerContext';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
@@ -500,6 +504,11 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     newMessageStateUpdateThrottleInterval?: number;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
+    /**
+     * If true, multiple audio players will be allowed to play simultaneously
+     * @default true
+     */
+    allowConcurrentAudioPlayback?: boolean;
     stateUpdateThrottleInterval?: number;
     /**
      * Tells if channel is rendering a thread list
@@ -533,6 +542,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
     additionalTextInputProps,
+    allowConcurrentAudioPlayback = false,
     allowThreadMessagesInChannel = true,
     asyncMessagesLockDistance = 50,
     asyncMessagesMinimumPressDuration = 500,
@@ -2009,6 +2019,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     typing: channelState.typing ?? {},
   });
 
+  const audioPlayerContext = useMemo<AudioPlayerContextProps>(
+    () => ({ allowConcurrentAudioPlayback }),
+    [allowConcurrentAudioPlayback],
+  );
+
   const messageComposerContext = useMemo(
     () => ({ channel, thread, threadInstance }),
     [channel, thread, threadInstance],
@@ -2047,10 +2062,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                   <AttachmentPickerProvider value={attachmentPickerContext}>
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
-                        <View style={{ height: '100%' }}>{children}</View>
-                        {!disableAttachmentPicker && (
-                          <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
-                        )}
+                        <AudioPlayerProvider value={audioPlayerContext}>
+                          <View style={{ height: '100%' }}>{children}</View>
+                          {!disableAttachmentPicker && (
+                            <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                          )}
+                        </AudioPlayerProvider>
                       </MessageInputProvider>
                     </MessageComposerProvider>
                   </AttachmentPickerProvider>
