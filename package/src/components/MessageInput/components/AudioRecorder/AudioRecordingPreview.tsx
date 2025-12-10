@@ -1,41 +1,91 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useAudioPlayerControl } from '../../../../hooks/useAudioPlayerControl';
+import { useStateStore } from '../../../../hooks/useStateStore';
 import { Pause, Play } from '../../../../icons';
 
+import { NativeHandlers } from '../../../../native';
+import { AudioPlayerState } from '../../../../state-store/audio-player';
 import { WaveProgressBar } from '../../../ProgressControl/WaveProgressBar';
 
+const ONE_SECOND_IN_MILLISECONDS = 1000;
+const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
+
 export type AudioRecordingPreviewProps = {
-  /**
-   * Boolean used to show the paused state of the player.
-   */
-  paused: boolean;
-  /**
-   * Number used to show the current position of the audio being played.
-   */
-  position: number;
-  /**
-   * Number used to show the percentage of progress of the audio being played. It should be in 0-1 range.
-   */
-  progress: number;
+  recordingDuration: number;
+  uri: string;
   /**
    * The waveform data to be presented to show the audio levels.
    */
   waveformData: number[];
   /**
+   * Boolean used to show the paused state of the player.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
+  paused: boolean;
+  /**
+   * Number used to show the current position of the audio being played.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
+  position: number;
+  /**
+   * Number used to show the percentage of progress of the audio being played. It should be in 0-1 range.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
+   */
+  progress: number;
+  /**
    * Function to play or pause the audio player.
+   *
+   * @deprecated This is deprecated and will be removed in the future in favour of the global audio manager.
+   * FIXME: Remove this in the next major version.
    */
   onVoicePlayerPlayPause?: () => Promise<void>;
 };
+
+const audioPlayerSelector = (state: AudioPlayerState) => ({
+  duration: state.duration,
+  isPlaying: state.isPlaying,
+  position: state.position,
+  progress: state.progress,
+});
 
 /**
  * Component displayed when the audio is recorded and can be previewed.
  */
 export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
-  const { onVoicePlayerPlayPause, paused, position, progress, waveformData } = props;
+  const { recordingDuration, uri, waveformData } = props;
+
+  const audioPlayer = useAudioPlayerControl({
+    duration: recordingDuration / ONE_SECOND_IN_MILLISECONDS,
+    mimeType: 'audio/aac',
+    // This is a temporary flag to manage audio player for voice recording in preview as the one in message list uses react-native-video.
+    previewVoiceRecording: !(NativeHandlers.SDK === 'stream-chat-expo'),
+    type: 'voiceRecording',
+    uri,
+  });
+
+  const { duration, isPlaying, position, progress } = useStateStore(
+    audioPlayer.state,
+    audioPlayerSelector,
+  );
+
+  // When a audio attachment in preview is removed, we need to remove the player from the pool
+  useEffect(
+    () => () => {
+      audioPlayer.onRemove();
+    },
+    [audioPlayer],
+  );
 
   const {
     theme: {
@@ -53,11 +103,25 @@ export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
     },
   } = useTheme();
 
+  const handlePlayPause = () => {
+    audioPlayer.toggle();
+  };
+
+  const progressDuration = useMemo(
+    () =>
+      position
+        ? position / ONE_HOUR_IN_MILLISECONDS >= 1
+          ? dayjs.duration(position, 'milliseconds').format('HH:mm:ss')
+          : dayjs.duration(position, 'milliseconds').format('mm:ss')
+        : dayjs.duration(duration, 'milliseconds').format('mm:ss'),
+    [duration, position],
+  );
+
   return (
     <View style={[styles.container, container]}>
       <View style={[styles.infoContainer, infoContainer]}>
-        <Pressable onPress={onVoicePlayerPlayPause}>
-          {paused ? (
+        <Pressable onPress={handlePlayPause}>
+          {!isPlaying ? (
             <Play fill={accent_blue} height={32} width={32} {...playIcon} />
           ) : (
             <Pause fill={accent_blue} height={32} width={32} {...pauseIcon} />
@@ -65,7 +129,7 @@ export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
         </Pressable>
         {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
         <Text style={[styles.currentTime, { color: grey_dark }, currentTime]}>
-          {dayjs.duration(position).format('mm:ss')}
+          {progressDuration}
         </Text>
       </View>
       <View style={[styles.progressBar, progressBar]}>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import { Attachment, isAudioAttachment, isVoiceRecordingAttachment } from 'stream-chat';
 
 import { Attachment as AttachmentDefault } from './Attachment';
 
@@ -17,11 +17,10 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { isSoundPackageAvailable } from '../../native';
 
-import { FileTypes } from '../../types/types';
-
-export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'files'> &
+export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'files' | 'message'> &
   Pick<MessagesContextValue, 'Attachment' | 'AudioAttachment'> & {
     /**
+     * @deprecated Use message instead
      * The unique id for the message with file attachments
      */
     messageId: string;
@@ -38,7 +37,8 @@ type FilesToDisplayType = Attachment & {
 };
 
 const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithContext) => {
-  const { Attachment, AudioAttachment, files, messageId, styles: stylesProp = {} } = props;
+  const { Attachment, AudioAttachment, files, message, styles: stylesProp = {} } = props;
+
   const [filesToDisplay, setFilesToDisplay] = useState<FilesToDisplayType[]>(() =>
     files.map((file) => ({ ...file, duration: file.duration || 0, paused: true, progress: 0 })),
   );
@@ -49,7 +49,14 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     );
   }, [files]);
 
-  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
+  /**
+   * Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
+   * @param index - The index of the audio
+   * @param duration - The duration of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
   const onLoad = (index: string, duration: number) => {
     setFilesToDisplay((prevFilesToDisplay) =>
       prevFilesToDisplay.map((fileToDisplay, id) => ({
@@ -59,7 +66,14 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     );
   };
 
-  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
+  /**
+   * Handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
+   * @param index - The index of the audio
+   * @param progress - The progress of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
   const onProgress = (index: string, progress: number) => {
     setFilesToDisplay((prevFilesToDisplay) =>
       prevFilesToDisplay.map((filesToDisplay, id) => ({
@@ -69,7 +83,14 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     );
   };
 
-  // The handler which controls or sets the paused/played state of the audio.
+  /**
+   * Handler which controls or sets the paused/played state of the audio.
+   * @param index - The index of the audio
+   * @param pausedStatus - The paused status of the audio
+   *
+   * @deprecated This is deprecated and will be removed in the future.
+   * FIXME: Remove this in the next major version.
+   */
   const onPlayPause = (index: string, pausedStatus?: boolean) => {
     if (pausedStatus === false) {
       // If the status is false we set the audio with the index as playing and the others as paused.
@@ -102,21 +123,18 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     <View style={[styles.container, container, stylesProp.container]}>
       {filesToDisplay.map((file, index) => (
         <View
-          key={`file-by-attachment-group-${messageId}-${index}`}
+          key={`file-by-attachment-group-${message.id}-${index}`}
           style={[
             { paddingBottom: index !== files.length - 1 ? 4 : 0 },
             stylesProp.attachmentContainer,
             attachmentContainer,
           ]}
         >
-          {(file.type === FileTypes.Audio || file.type === FileTypes.VoiceRecording) &&
+          {(isAudioAttachment(file) || isVoiceRecordingAttachment(file)) &&
           isSoundPackageAvailable() ? (
             <AudioAttachment
-              item={{
-                ...file,
-                id: index.toString(),
-                type: file.type,
-              }}
+              item={{ ...file, id: index.toString(), type: file.type }}
+              message={message}
               onLoad={onLoad}
               onPlayPause={onPlayPause}
               onProgress={onProgress}
@@ -154,7 +172,7 @@ export type FileAttachmentGroupProps = Partial<
 export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
   const { files: propFiles, messageId } = props;
 
-  const { files: contextFiles } = useMessageContext();
+  const { files: contextFiles, message } = useMessageContext();
 
   const { Attachment = AttachmentDefault, AudioAttachment } = useMessagesContext();
 
@@ -170,6 +188,7 @@ export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
         Attachment,
         AudioAttachment,
         files,
+        message,
         messageId,
       }}
     />

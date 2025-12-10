@@ -1,254 +1,179 @@
-import React, { RefObject, useEffect, useMemo, useState } from 'react';
+import React, { RefObject, useEffect, useMemo } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
-import { AudioAttachment as StreamAudioAttachment } from 'stream-chat';
+import {
+  isVoiceRecordingAttachment,
+  LocalMessage,
+  AudioAttachment as StreamAudioAttachment,
+  VoiceRecordingAttachment as StreamVoiceRecordingAttachment,
+} from 'stream-chat';
 
 import { useTheme } from '../../contexts';
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useStateStore } from '../../hooks';
+import { useAudioPlayerControl } from '../../hooks/useAudioPlayerControl';
 import { Audio, Pause, Play } from '../../icons';
 import {
   NativeHandlers,
-  PlaybackStatus,
   SoundReturnType,
   VideoPayloadData,
   VideoProgressData,
   VideoSeekResponse,
 } from '../../native';
-import { AudioConfig, FileTypes } from '../../types/types';
+import { AudioPlayerState } from '../../state-store/audio-player';
+import { AudioConfig } from '../../types/types';
 import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
 
+const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
+const ONE_SECOND_IN_MILLISECONDS = 1000;
+
 dayjs.extend(duration);
 
 export type AudioAttachmentType = AudioConfig &
-  Pick<StreamAudioAttachment, 'waveform_data' | 'asset_url' | 'title'> & {
+  Pick<
+    StreamAudioAttachment | StreamVoiceRecordingAttachment,
+    'waveform_data' | 'asset_url' | 'title' | 'mime_type'
+  > & {
     id: string;
     type: 'audio' | 'voiceRecording';
   };
 
 export type AudioAttachmentProps = {
   item: AudioAttachmentType;
-  onLoad: (index: string, duration: number) => void;
-  onPlayPause: (index: string, pausedStatus?: boolean) => void;
-  onProgress: (index: string, progress: number) => void;
+  message?: LocalMessage;
   titleMaxLength?: number;
   hideProgressBar?: boolean;
+  /**
+   * If true, the speed settings button will be shown.
+   */
   showSpeedSettings?: boolean;
   testID?: string;
+  /**
+   * If true, the audio attachment is in preview mode in the message input.
+   */
+  isPreview?: boolean;
+  /**
+   * Callback to be called when the audio is loaded
+   * @deprecated This is deprecated and will be removed in the future.
+   */
+  onLoad?: (index: string, duration: number) => void;
+  /**
+   * Callback to be called when the audio is played or paused
+   * @deprecated This is deprecated and will be removed in the future.
+   */
+  onPlayPause?: (index: string, pausedStatus?: boolean) => void;
+  /**
+   * Callback to be called when the audio progresses
+   * @deprecated This is deprecated and will be removed in the future.
+   */
+  onProgress?: (index: string, progress: number) => void;
 };
+
+const audioPlayerSelector = (state: AudioPlayerState) => ({
+  currentPlaybackRate: state.currentPlaybackRate,
+  duration: state.duration,
+  isPlaying: state.isPlaying,
+  position: state.position,
+  progress: state.progress,
+});
 
 /**
  * AudioAttachment
  * UI Component to preview the audio files
  */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
-  const [currentSpeed, setCurrentSpeed] = useState<number>(1.0);
-  const [audioFinished, setAudioFinished] = useState(false);
   const soundRef = React.useRef<SoundReturnType | null>(null);
+
   const {
     hideProgressBar = false,
     item,
-    onLoad,
-    onPlayPause,
-    onProgress,
+    message,
     showSpeedSettings = false,
     testID,
     titleMaxLength,
+    isPreview = false,
   } = props;
-  const { changeAudioSpeed, pauseAudio, playAudio, seekAudio } = useAudioPlayer({ soundRef });
-  const isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
-  const isVoiceRecording = item.type === FileTypes.VoiceRecording;
+  const isVoiceRecording = isVoiceRecordingAttachment(item);
+
+  const audioPlayer = useAudioPlayerControl({
+    duration: item.duration ?? 0,
+    mimeType: item.mime_type ?? '',
+    requester: isPreview
+      ? 'preview'
+      : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,
+    type: isVoiceRecording ? 'voiceRecording' : 'audio',
+    uri: item.asset_url ?? '',
+  });
+  const { duration, isPlaying, position, progress, currentPlaybackRate } = useStateStore(
+    audioPlayer.state,
+    audioPlayerSelector,
+  );
+
+  // Initialize the player for native cli apps
+  useEffect(() => {
+    if (soundRef.current) {
+      audioPlayer.initPlayer({ playerRef: soundRef.current });
+    }
+  }, [audioPlayer]);
+
+  // When a audio attachment in preview is removed, we need to remove the player from the pool
+  useEffect(
+    () => () => {
+      if (isPreview) {
+        audioPlayer.onRemove();
+      }
+    },
+    [audioPlayer, isPreview],
+  );
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
-    // The duration given by the rn-video is not same as the one of the voice recording, so we take the actual duration for voice recording.
-    if (isVoiceRecording && item.duration) {
-      onLoad(item.id, item.duration);
-    } else {
-      onLoad(item.id, item.duration || payload.duration);
+    // If the attachment is a voice recording, we rely on the duration from the attachment as the one from the react-native-video is incorrect.
+    if (isVoiceRecording) {
+      return;
     }
+    audioPlayer.duration = payload.duration * ONE_SECOND_IN_MILLISECONDS;
   };
 
   /** This is for Native CLI Apps */
   const handleProgress = (data: VideoProgressData) => {
-    const { currentTime, seekableDuration } = data;
-    // The duration given by the rn-video is not same as the one of the voice recording, so we take the actual duration for voice recording.
-    if (isVoiceRecording && item.duration) {
-      if (currentTime < item.duration && !audioFinished) {
-        onProgress(item.id, currentTime / item.duration);
-      } else {
-        setAudioFinished(true);
-      }
-    } else {
-      if (currentTime < seekableDuration && !audioFinished) {
-        onProgress(item.id, currentTime / seekableDuration);
-      } else {
-        setAudioFinished(true);
-      }
-    }
+    const { currentTime } = data;
+    audioPlayer.position = currentTime * ONE_SECOND_IN_MILLISECONDS;
   };
 
   /** This is for Native CLI Apps */
   const onSeek = (seekResponse: VideoSeekResponse) => {
-    setAudioFinished(false);
-    onProgress(item.id, seekResponse.currentTime / (item.duration as number));
+    audioPlayer.position = seekResponse.currentTime * ONE_SECOND_IN_MILLISECONDS;
   };
 
-  const handlePlayPause = async () => {
-    if (item.paused) {
-      if (isExpoCLI) {
-        await playAudio();
-      }
-      onPlayPause(item.id, false);
-    } else {
-      if (isExpoCLI) {
-        await pauseAudio();
-      }
-      onPlayPause(item.id, true);
-    }
+  const handlePlayPause = () => {
+    audioPlayer.toggle();
   };
 
   const handleEnd = async () => {
-    setAudioFinished(false);
-    await pauseAudio();
-    onPlayPause(item.id, true);
-    await seekAudio(0);
+    await audioPlayer.stop();
   };
 
-  const dragStart = async () => {
-    if (isExpoCLI) {
-      await pauseAudio();
-    }
-    onPlayPause(item.id, true);
+  const dragStart = () => {
+    audioPlayer.pause();
   };
 
-  const dragProgress = (progress: number) => {
-    onProgress(item.id, progress);
+  const dragProgress = (currentProgress: number) => {
+    audioPlayer.progress = currentProgress;
   };
 
-  const dragEnd = async (progress: number) => {
-    await seekAudio(progress * (item.duration as number));
-    if (isExpoCLI) {
-      await playAudio();
-    }
-    onPlayPause(item.id, false);
+  const dragEnd = async (currentProgress: number) => {
+    const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
+    await audioPlayer.seek(positionInSeconds);
+    audioPlayer.play();
   };
-
-  /** For Expo CLI */
-  const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
-    if (!playbackStatus.isLoaded) {
-      // Update your UI for the unloaded state
-      if (playbackStatus.error) {
-        console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
-      }
-    } else {
-      const { durationMillis, positionMillis } = playbackStatus;
-      // This is done for Expo CLI where we don't get file duration from file picker
-      if (item.duration === 0) {
-        onLoad(item.id, durationMillis / 1000);
-      } else {
-        // The duration given by the expo-av is not same as the one of the voice recording, so we take the actual duration for voice recording.
-        if (isVoiceRecording && item.duration) {
-          onLoad(item.id, item.duration);
-        } else {
-          onLoad(item.id, durationMillis / 1000);
-        }
-      }
-      // Update your UI for the loaded state
-      if (playbackStatus.isPlaying) {
-        if (isVoiceRecording && item.duration) {
-          if (positionMillis <= item.duration * 1000) {
-            onProgress(item.id, positionMillis / (item.duration * 1000));
-          }
-        } else {
-          if (positionMillis <= durationMillis) {
-            onProgress(item.id, positionMillis / durationMillis);
-          }
-        }
-      } else {
-        // Update your UI for the paused state
-      }
-
-      if (playbackStatus.isBuffering) {
-        // Update your UI for the buffering state
-      }
-
-      if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
-        onProgress(item.id, 1);
-        // The player has just finished playing and will stop. Maybe you want to play something else?
-        // status: opposite of pause,says i am playing
-        handleEnd();
-      }
-    }
-  };
-
-  // This is for Expo CLI, sound initialization is done here.
-  useEffect(() => {
-    if (isExpoCLI) {
-      const initiateSound = async () => {
-        if (item && item.asset_url && NativeHandlers.Sound?.initializeSound) {
-          soundRef.current = await NativeHandlers.Sound.initializeSound(
-            { uri: item.asset_url },
-            {
-              pitchCorrectionQuality: 'high',
-              progressUpdateIntervalMillis: 100,
-              shouldCorrectPitch: true,
-            },
-            onPlaybackStatusUpdate,
-          );
-        }
-      };
-      initiateSound();
-    }
-
-    return () => {
-      if (soundRef.current?.stopAsync && soundRef.current.unloadAsync) {
-        soundRef.current.stopAsync();
-        soundRef.current.unloadAsync();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // This is needed for expo applications where the rerender doesn't occur on time thefore you need to update the state of the sound.
-  useEffect(() => {
-    const initalPlayPause = async () => {
-      if (!isExpoCLI) {
-        return;
-      }
-      try {
-        if (item.paused) {
-          await pauseAudio();
-        } else {
-          await playAudio();
-        }
-      } catch (e) {
-        console.log('An error has occurred while trying to interact with the audio. ', e);
-      }
-    };
-    // For expo CLI
-    if (!NativeHandlers.Sound?.Player) {
-      initalPlayPause();
-    }
-  }, [item.paused, isExpoCLI, pauseAudio, playAudio]);
 
   const onSpeedChangeHandler = async () => {
-    if (currentSpeed === 2.0) {
-      setCurrentSpeed(1.0);
-      await changeAudioSpeed(1.0);
-    } else {
-      if (currentSpeed === 1.0) {
-        setCurrentSpeed(1.5);
-        await changeAudioSpeed(1.5);
-      } else if (currentSpeed === 1.5) {
-        setCurrentSpeed(2.0);
-        await changeAudioSpeed(2.0);
-      }
-    }
+    await audioPlayer.changePlaybackRate();
   };
 
   const {
@@ -270,19 +195,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     },
   } = useTheme();
 
-  const progressValueInSeconds = useMemo(
-    () => (item.duration as number) * (item.progress as number),
-    [item.duration, item.progress],
-  );
-
   const progressDuration = useMemo(
     () =>
-      progressValueInSeconds
-        ? progressValueInSeconds / 3600 >= 1
-          ? dayjs.duration(progressValueInSeconds, 'second').format('HH:mm:ss')
-          : dayjs.duration(progressValueInSeconds, 'second').format('mm:ss')
-        : dayjs.duration(item.duration ?? 0, 'second').format('mm:ss'),
-    [progressValueInSeconds, item.duration],
+      position
+        ? position / ONE_HOUR_IN_MILLISECONDS >= 1
+          ? dayjs.duration(position, 'milliseconds').format('HH:mm:ss')
+          : dayjs.duration(position, 'milliseconds').format('mm:ss')
+        : dayjs.duration(duration, 'milliseconds').format('mm:ss'),
+    [duration, position],
   );
 
   return (
@@ -308,7 +228,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             playPauseButton,
           ]}
         >
-          {item.paused ? (
+          {!isPlaying ? (
             <Play fill={static_black} height={32} width={32} />
           ) : (
             <Pause fill={static_black} height={32} width={32} />
@@ -328,7 +248,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             filenameText,
           ]}
         >
-          {item.type === FileTypes.VoiceRecording
+          {isVoiceRecordingAttachment(item)
             ? 'Recording'
             : getTrimmedAttachmentTitle(item.title, titleMaxLength)}
         </Text>
@@ -344,17 +264,17 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                   onEndDrag={dragEnd}
                   onProgressDrag={dragProgress}
                   onStartDrag={dragStart}
-                  progress={item.progress as number}
+                  progress={progress}
                   waveformData={item.waveform_data}
                 />
               ) : (
                 <ProgressControl
-                  duration={item.duration as number}
+                  duration={duration}
                   filledColor={accent_blue}
                   onEndDrag={dragEnd}
                   onProgressDrag={dragProgress}
                   onStartDrag={dragStart}
-                  progress={item.progress as number}
+                  progress={progress}
                   testID='progress-control'
                 />
               )}
@@ -367,8 +287,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             onLoad={handleLoad}
             onProgress={handleProgress}
             onSeek={onSeek}
-            paused={item.paused}
-            rate={currentSpeed}
+            paused={!isPlaying}
+            rate={currentPlaybackRate}
             soundRef={soundRef as RefObject<SoundReturnType>}
             testID='sound-player'
             uri={item.asset_url}
@@ -377,7 +297,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       </View>
       {showSpeedSettings ? (
         <View style={[styles.rightContainer, rightContainer]}>
-          {item.paused ? (
+          {!isPlaying ? (
             <Audio fill={'#ffffff'} />
           ) : (
             <Pressable
@@ -390,7 +310,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             >
               <Text
                 style={[styles.speedChangeButtonText, speedChangeButtonText]}
-              >{`x${currentSpeed.toFixed(1)}`}</Text>
+              >{`x${currentPlaybackRate.toFixed(1)}`}</Text>
             </Pressable>
           )}
         </View>
