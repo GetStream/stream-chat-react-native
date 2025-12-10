@@ -153,13 +153,8 @@ const areEqual = (
   prevProps: FileAttachmentGroupPropsWithContext,
   nextProps: FileAttachmentGroupPropsWithContext,
 ) => {
-  const { files: prevFiles, message: prevMessage } = prevProps;
-  const { files: nextFiles, message: nextMessage } = nextProps;
-
-  const messageEqual = prevMessage?.id === nextMessage?.id;
-  if (!messageEqual) {
-    return false;
-  }
+  const { files: prevFiles } = prevProps;
+  const { files: nextFiles } = nextProps;
 
   return prevFiles.length === nextFiles.length;
 };
