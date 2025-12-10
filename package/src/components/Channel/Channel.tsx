@@ -54,7 +54,7 @@ import {
 } from '../../contexts';
 import {
   AudioPlayerContextProps,
-  WithAudioPlayback,
+  AudioPlayerProvider,
 } from '../../contexts/audioPlayerContext/AudioPlayerContext';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
@@ -1667,13 +1667,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
   });
 
-  const audioPlayerProviderProps = useMemo<AudioPlayerContextProps>(
-    () => ({
-      allowConcurrentAudioPlayback,
-    }),
-    [allowConcurrentAudioPlayback],
-  );
-
   const attachmentPickerProps = useMemo(
     () => ({
       AttachmentPickerBottomSheetHandle,
@@ -1974,6 +1967,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     typing: channelState.typing ?? {},
   });
 
+  const audioPlayerContext = useMemo<AudioPlayerContextProps>(
+    () => ({ allowConcurrentAudioPlayback }),
+    [allowConcurrentAudioPlayback],
+  );
+
   const messageComposerContext = useMemo(
     () => ({ channel, thread, threadInstance }),
     [channel, thread, threadInstance],
@@ -2012,12 +2010,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                   <AttachmentPickerProvider value={attachmentPickerContext}>
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
-                        <WithAudioPlayback props={audioPlayerProviderProps}>
+                        <AudioPlayerProvider value={audioPlayerContext}>
                           <View style={{ height: '100%' }}>{children}</View>
                           {!disableAttachmentPicker && (
                             <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
                           )}
-                        </WithAudioPlayback>
+                        </AudioPlayerProvider>
                       </MessageInputProvider>
                     </MessageComposerProvider>
                   </AttachmentPickerProvider>
