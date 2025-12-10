@@ -118,24 +118,28 @@ export const WaveProgressBar = React.memo(
       },
     } = useTheme();
 
-    const pan = Gesture.Pan()
-      .enabled(showProgressDrag)
-      .maxPointers(1)
-      .onStart(() => {
-        if (onStartDrag) {
-          runOnJS(onStartDrag)(state.value);
-        }
-      })
-      .onUpdate((event) => {
-        const newProgress = Math.max(0, Math.min(event.x / fullWidth, 1));
-        state.value = newProgress;
-        waveFormNumberFromProgress(newProgress);
-      })
-      .onEnd(() => {
-        if (onEndDrag) {
-          runOnJS(onEndDrag)(state.value);
-        }
-      });
+    const pan = useMemo(
+      () =>
+        Gesture.Pan()
+          .enabled(showProgressDrag)
+          .maxPointers(1)
+          .onStart(() => {
+            if (onStartDrag) {
+              runOnJS(onStartDrag)(state.value);
+            }
+          })
+          .onUpdate((event) => {
+            const newProgress = Math.max(0, Math.min(event.x / fullWidth, 1));
+            state.value = newProgress;
+            waveFormNumberFromProgress(newProgress);
+          })
+          .onEnd(() => {
+            if (onEndDrag) {
+              runOnJS(onEndDrag)(state.value);
+            }
+          }),
+      [fullWidth, onEndDrag, onStartDrag, showProgressDrag, state, waveFormNumberFromProgress],
+    );
 
     const stringifiedWaveformData = waveformData.toString();
 
