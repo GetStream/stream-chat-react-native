@@ -351,6 +351,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     if (error) {
       setIsErrorInMessage(true);
       /**
+       * If its a Blocked message, we don't do anything as per specs.
+       */
+      if (isBlockedMessage(message)) {
+        return;
+      }
+      /**
        * If its a Bounced message, we open the message bounced options modal.
        */
       if (isBouncedMessage(message)) {
@@ -616,7 +622,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   };
 
   const onLongPress = () => {
-    if (hasAttachmentActions || !enableLongPress) {
+    if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
       return;
     }
     // If a message is bounced, on long press the message bounce options modal should open.
