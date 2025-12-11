@@ -87,9 +87,9 @@ export const isBlockedMessage = (message: LocalMessage) => {
  * @returns boolean
  */
 export const isBouncedMessage = (message: LocalMessage) =>
-  (message.type === 'error' &&
-    message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE') ||
-  message?.moderation?.action === 'bounce';
+  message.type === 'error' &&
+  (message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE' ||
+    message?.moderation?.action === 'bounce');
 
 /**
  * Utility to check if the message is a edited message.
