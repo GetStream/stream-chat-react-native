@@ -180,6 +180,7 @@ export type MessagePropsWithContext = Pick<
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageBounce'
+    | 'MessageBlocked'
     | 'MessageSimple'
     | 'onLongPressMessage'
     | 'onPressInMessage'
@@ -256,6 +257,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     members,
     message,
     messageActions: messageActionsProp = defaultMessageActions,
+    MessageBlocked,
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
     MessageMenu,
@@ -348,12 +350,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     const quotedMessage = message.quoted_message;
     if (error) {
       setIsErrorInMessage(true);
-      /**
-       * If its a Blocked message, we don't do anything as per specs.
-       */
-      if (isBlockedMessage(message)) {
-        return;
-      }
       /**
        * If its a Bounced message, we open the message bounced options modal.
        */
@@ -620,7 +616,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   };
 
   const onLongPress = () => {
-    if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
+    if (hasAttachmentActions || !enableLongPress) {
       return;
     }
     // If a message is bounced, on long press the message bounce options modal should open.
@@ -730,6 +726,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
+  }
+
+  if (isBlockedMessage(message)) {
+    return <MessageBlocked message={message} />;
   }
 
   return (
