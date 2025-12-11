@@ -1433,6 +1433,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           ...message,
           attachments,
           text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
+          // We cannot send an error message, so we convert it to a regular message.
+          type: message.type === 'error' ? 'regular' : message.type,
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
