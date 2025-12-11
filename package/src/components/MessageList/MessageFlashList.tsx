@@ -49,8 +49,7 @@ import {
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { useStableCallback, useStateStore } from '../../hooks';
-import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
+import { useStableCallback } from '../../hooks';
 import { FileTypes } from '../../types/types';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
@@ -259,13 +258,6 @@ const renderItem = ({ item: message }: { item: LocalMessage }) => {
   return <MessageWrapper message={message} />;
 };
 
-const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
-  first_unread_message_id: state.channelUnreadState?.first_unread_message_id,
-  last_read: state.channelUnreadState?.last_read,
-  last_read_message_id: state.channelUnreadState?.last_read_message_id,
-  unread_messages: state.channelUnreadState?.unread_messages,
-});
-
 const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
@@ -320,10 +312,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     UnreadMessagesNotification,
   } = props;
   const flashListRef = useRef<FlashListRef<LocalMessage> | null>(null);
-  const channelUnreadState = useStateStore(
-    channelUnreadStateStore.state,
-    channelUnreadStateSelector,
-  );
 
   const [hasMoved, setHasMoved] = useState(false);
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
@@ -566,6 +554,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
    */
   useEffect(() => {
     const shouldMarkRead = () => {
+      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
       return (
         !channelUnreadState?.first_unread_message_id &&
         !scrollToBottomButtonVisible &&
@@ -577,6 +566,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const handleEvent = async (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       const isMyOwnMessage = event.message?.user?.id === client.user?.id;
+      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
       // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState when its a received message.
       if (
         (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
@@ -587,7 +577,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         setChannelUnreadState({
           ...channelUnreadState,
           last_read:
-            channelUnreadState.last_read ??
+            channelUnreadState?.last_read ??
             (previousUnreadCount === 0 && previousLastMessage?.created_at
               ? new Date(previousLastMessage.created_at)
               : new Date(0)), // not having information about the last read message means the whole channel is unread,
@@ -605,7 +595,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     };
   }, [
     channel,
-    channelUnreadState,
+    channelUnreadStateStore,
     client.user?.id,
     markRead,
     scrollToBottomButtonVisible,
@@ -646,12 +636,19 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
-    if (!viewableItems.length || !readEvents) {
-      setIsUnreadNotificationOpen(false);
-      return;
-    }
+    const channelUnreadState = channelUnreadStateStore.channelUnreadState;
+    // we need this check to make sure that regular list change do not trigger
+    // the unread notification to appear (for example if the old last read messages
+    // go out of the viewport).
+    const lastReadMessageId = channelUnreadState?.last_read_message_id;
+    const lastReadMessageVisible = viewableItems.some((item) => item.item.id === lastReadMessageId);
 
-    if (selectedPicker === 'images') {
+    if (
+      !viewableItems.length ||
+      !readEvents ||
+      lastReadMessageVisible ||
+      selectedPicker === 'images'
+    ) {
       setIsUnreadNotificationOpen(false);
       return;
     }
