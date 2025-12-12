@@ -5,12 +5,17 @@ on:
     branches:
       - develop
 
+permissions:
+  id-token: write # Required for OIDC
+  actions: write # Required for dispatching other workflows
+  contents: write # required for committing the version bump
+
 jobs:
   publish-next:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [24.x]
     steps:
       - uses: actions/checkout@v2
         with:
