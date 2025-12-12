@@ -1,22 +1,13 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import { LocalMessage } from 'stream-chat';
-
+import { ImageGalleryStateStore } from '../../state-store/image-gallery-state-store';
 import type { UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-type SelectedMessage = {
-  messageId?: string;
-  url?: string;
-};
-
 export type ImageGalleryContextValue = {
-  messages: LocalMessage[];
-  setMessages: React.Dispatch<React.SetStateAction<LocalMessage[]>>;
-  setSelectedMessage: React.Dispatch<React.SetStateAction<SelectedMessage | undefined>>;
-  selectedMessage?: SelectedMessage;
+  imageGalleryStateStore: ImageGalleryStateStore;
 };
 
 export const ImageGalleryContext = React.createContext(
@@ -24,17 +15,22 @@ export const ImageGalleryContext = React.createContext(
 );
 
 export const ImageGalleryProvider = ({ children }: PropsWithChildren<UnknownType>) => {
-  const [messages, setMessages] = useState<LocalMessage[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState<SelectedMessage>();
+  const [imageGalleryStateStore] = useState(
+    () => new ImageGalleryStateStore({ autoPlayVideo: false, giphyVersion: 'fixed_height' }),
+  );
+
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
 
   return (
     <ImageGalleryContext.Provider
       value={
         {
-          messages,
-          selectedMessage,
-          setMessages,
-          setSelectedMessage,
+          imageGalleryStateStore,
         } as unknown as ImageGalleryContextValue
       }
     >

@@ -9,7 +9,6 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
@@ -38,6 +37,7 @@ export type ImageGalleryHeaderCustomComponentProps = {
 };
 
 type Props = ImageGalleryHeaderCustomComponentProps & {
+  handleImageGalleryClose: () => void;
   opacity: SharedValue<number>;
   visible: SharedValue<number>;
   photo?: Photo;
@@ -45,7 +45,16 @@ type Props = ImageGalleryHeaderCustomComponentProps & {
 };
 
 export const ImageGalleryHeader = (props: Props) => {
-  const { centerElement, CloseIcon, leftElement, opacity, photo, rightElement, visible } = props;
+  const {
+    centerElement,
+    CloseIcon,
+    handleImageGalleryClose,
+    leftElement,
+    opacity,
+    photo,
+    rightElement,
+    visible,
+  } = props;
   const [height, setHeight] = useState(200);
   const {
     theme: {
@@ -64,7 +73,6 @@ export const ImageGalleryHeader = (props: Props) => {
     },
   } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
-  const { setOverlay } = useOverlayContext();
 
   const date = useMemo(
     () =>
@@ -87,7 +95,7 @@ export const ImageGalleryHeader = (props: Props) => {
   }));
 
   const hideOverlay = () => {
-    setOverlay('none');
+    handleImageGalleryClose();
   };
 
   return (

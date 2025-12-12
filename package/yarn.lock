@@ -1470,10 +1470,10 @@
     "@eslint/core" "^0.14.0"
     levn "^0.4.1"
 
-"@gorhom/bottom-sheet@^5.1.8":
-  version "5.1.8"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.1.8.tgz#65547917f5b1dae5a1291dabd4ea8bfee09feba4"
-  integrity sha512-QuYIVjn3K9bW20n5bgOSjvxBYoWG4YQXiLGOheEAMgISuoT6sMcA270ViSkkb0fenPxcIOwzCnFNuxmr739T9A==
+"@gorhom/bottom-sheet@^5.2.8":
+  version "5.2.8"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.2.8.tgz#25e49122c30ffe83d3813b3bcf3dec39f3359aeb"
+  integrity sha512-+N27SMpbBxXZQ/IA2nlEV6RGxL/qSFHKfdFKcygvW+HqPG5jVNb1OqehLQsGfBP+Up42i0gW5ppI+DhpB7UCzA==
   dependencies:
     "@gorhom/portal" "1.0.14"
     invariant "^2.2.4"

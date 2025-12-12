@@ -132,10 +132,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type GiphyPropsWithContext = Pick<
-  ImageGalleryContextValue,
-  'setSelectedMessage' | 'setMessages'
-> &
+export type GiphyPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<
     MessageContextValue,
     | 'handleAction'
@@ -164,6 +161,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
     giphyVersion,
     handleAction,
     ImageComponent = Image,
+    imageGalleryStateStore,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     isMyMessage,
@@ -172,9 +170,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
     onPress,
     onPressIn,
     preventPress,
-    setMessages,
     setOverlay,
-    setSelectedMessage,
   } = props;
 
   const { actions, giphy: giphyData, image_url, thumb_url, title, type } = attachment;
@@ -209,8 +205,8 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
   const giphyDimensions: { height?: number; width?: number } = {};
 
   const defaultOnPress = () => {
-    setMessages([message]);
-    setSelectedMessage({ messageId: message.id, url: uri });
+    imageGalleryStateStore.message = message;
+    imageGalleryStateStore.selectedAttachmentUrl = uri;
     setOverlay('gallery');
   };
 
@@ -452,7 +448,7 @@ export const Giphy = (props: GiphyProps) => {
     useMessageContext();
   const { ImageComponent } = useChatContext();
   const { additionalPressableProps, giphyVersion } = useMessagesContext();
-  const { setMessages, setSelectedMessage } = useImageGalleryContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
   const { setOverlay } = useOverlayContext();
 
   const {
@@ -470,6 +466,7 @@ export const Giphy = (props: GiphyProps) => {
         giphyVersion,
         handleAction,
         ImageComponent,
+        imageGalleryStateStore,
         ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
         isMyMessage,
@@ -478,9 +475,7 @@ export const Giphy = (props: GiphyProps) => {
         onPress,
         onPressIn,
         preventPress,
-        setMessages,
         setOverlay,
-        setSelectedMessage,
       }}
       {...props}
     />

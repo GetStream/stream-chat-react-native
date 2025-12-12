@@ -36,10 +36,7 @@ import { isVideoPlayerAvailable } from '../../native';
 import { FileTypes } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
-export type GalleryPropsWithContext = Pick<
-  ImageGalleryContextValue,
-  'setSelectedMessage' | 'setMessages'
-> &
+export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<
     MessageContextValue,
     | 'alignment'
@@ -73,6 +70,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     alignment,
     groupStyles,
     hasThreadReplies,
+    imageGalleryStateStore,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     ImageReloadIndicator,
@@ -82,9 +80,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     onPress,
     onPressIn,
     preventPress,
-    setMessages,
     setOverlay,
-    setSelectedMessage,
     threadList,
     videos,
     VideoThumbnail,
@@ -190,6 +186,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   additionalPressableProps={additionalPressableProps}
                   borderRadius={borderRadius}
                   colIndex={colIndex}
+                  imageGalleryStateStore={imageGalleryStateStore}
                   ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
                   ImageLoadingIndicator={ImageLoadingIndicator}
                   ImageReloadIndicator={ImageReloadIndicator}
@@ -204,9 +201,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   onPressIn={onPressIn}
                   preventPress={preventPress}
                   rowIndex={rowIndex}
-                  setMessages={setMessages}
                   setOverlay={setOverlay}
-                  setSelectedMessage={setSelectedMessage}
                   thumbnail={thumbnail}
                   VideoThumbnail={VideoThumbnail}
                 />
@@ -242,7 +237,7 @@ type GalleryThumbnailProps = {
   | 'ImageLoadingFailedIndicator'
   | 'ImageReloadIndicator'
 > &
-  Pick<ImageGalleryContextValue, 'setSelectedMessage' | 'setMessages'> &
+  Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<OverlayContextValue, 'setOverlay'>;
 
@@ -250,6 +245,7 @@ const GalleryThumbnail = ({
   additionalPressableProps,
   borderRadius,
   colIndex,
+  imageGalleryStateStore,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
   ImageReloadIndicator,
@@ -263,9 +259,7 @@ const GalleryThumbnail = ({
   onPressIn,
   preventPress,
   rowIndex,
-  setMessages,
   setOverlay,
-  setSelectedMessage,
   thumbnail,
   VideoThumbnail,
 }: GalleryThumbnailProps) => {
@@ -288,8 +282,8 @@ const GalleryThumbnail = ({
 
   const openImageViewer = () => {
     if (message) {
-      setMessages([message]);
-      setSelectedMessage({ messageId: message.id, url: thumbnail.url });
+      imageGalleryStateStore.message = message;
+      imageGalleryStateStore.selectedAttachmentUrl = thumbnail.url;
       setOverlay('gallery');
     }
   };
@@ -562,13 +556,12 @@ export const Gallery = (props: GalleryProps) => {
     onPressIn: propOnPressIn,
     preventPress: propPreventPress,
     setOverlay: propSetOverlay,
-    setSelectedMessage: propSetSelectedMessage,
     threadList: propThreadList,
     videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
   } = props;
 
-  const { setMessages, setSelectedMessage: contextSetSelectedMessage } = useImageGalleryContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -607,7 +600,6 @@ export const Gallery = (props: GalleryProps) => {
   const onPress = propOnPress || contextOnPress;
   const preventPress =
     typeof propPreventPress === 'boolean' ? propPreventPress : contextPreventPress;
-  const setSelectedMessage = propSetSelectedMessage || contextSetSelectedMessage;
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
   const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
@@ -625,6 +617,7 @@ export const Gallery = (props: GalleryProps) => {
         channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
+        imageGalleryStateStore,
         ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
         ImageReloadIndicator,
@@ -635,9 +628,7 @@ export const Gallery = (props: GalleryProps) => {
         onPress,
         onPressIn,
         preventPress,
-        setMessages,
         setOverlay,
-        setSelectedMessage,
         threadList,
         videos,
         VideoThumbnail,

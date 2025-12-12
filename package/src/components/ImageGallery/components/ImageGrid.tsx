@@ -4,6 +4,7 @@ import { Image, StyleSheet, View } from 'react-native';
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../../hooks/useViewport';
+import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
 import { FileTypes } from '../../../types/types';
 import { BottomSheetFlatList } from '../../BottomSheetCompatibility/BottomSheetFlatList';
 import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
@@ -87,16 +88,7 @@ const renderItem = ({ item }: { item: GridImageItem }) => <GridImage item={item}
 
 export type ImageGridType = ImageGalleryGridImageComponents & {
   closeGridView: () => void;
-  photos: Photo[];
-  setSelectedMessage: React.Dispatch<
-    React.SetStateAction<
-      | {
-          messageId?: string | undefined;
-          url?: string | undefined;
-        }
-      | undefined
-    >
-  >;
+  imageGalleryStateStore: ImageGalleryStateStore;
   numberOfImageGalleryGridColumns?: number;
 };
 
@@ -105,9 +97,8 @@ export const ImageGrid = (props: ImageGridType) => {
     avatarComponent,
     closeGridView,
     imageComponent,
+    imageGalleryStateStore,
     numberOfImageGalleryGridColumns,
-    photos,
-    setSelectedMessage,
   } = props;
 
   const {
@@ -119,13 +110,13 @@ export const ImageGrid = (props: ImageGridType) => {
     },
   } = useTheme();
 
-  const imageGridItems = photos.map((photo) => ({
+  const imageGridItems = imageGalleryStateStore.assets.map((photo) => ({
     ...photo,
     avatarComponent,
     imageComponent,
     numberOfImageGalleryGridColumns,
     selectAndClose: () => {
-      setSelectedMessage({ messageId: photo.messageId, url: photo.uri });
+      imageGalleryStateStore.selectedAttachmentUrl = photo.uri;
       closeGridView();
     },
   }));
