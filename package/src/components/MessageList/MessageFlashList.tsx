@@ -29,10 +29,6 @@ import {
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
-  ImageGalleryContextValue,
-  useImageGalleryContext,
-} from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -48,7 +44,6 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../hooks';
-import { FileTypes } from '../../types/types';
 
 let FlashList;
 
@@ -121,7 +116,6 @@ type MessageFlashListPropsWithContext = Pick<
     | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
-  Pick<ImageGalleryContextValue, 'setMessages'> &
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<
     MessagesContextValue,
@@ -130,7 +124,6 @@ type MessageFlashListPropsWithContext = Pick<
     | 'FlatList'
     | 'InlineDateSeparator'
     | 'InlineUnreadIndicator'
-    | 'legacyImageViewerSwipeBehaviour'
     | 'Message'
     | 'ScrollToBottomButton'
     | 'MessageSystem'
@@ -179,7 +172,6 @@ type MessageFlashListPropsWithContext = Pick<
     HeaderComponent?: React.ComponentType;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
-    isListActive?: boolean;
     /** Turn off grouping of messages by user */
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];
@@ -271,9 +263,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     highlightedMessageId,
     InlineDateSeparator,
     InlineUnreadIndicator,
-    isListActive = false,
     isLiveStreaming = false,
-    legacyImageViewerSwipeBehaviour,
     loadChannelAroundMessage,
     loading,
     LoadingIndicator,
@@ -296,7 +286,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     selectedPicker,
     setChannelUnreadState,
     setFlatListRef,
-    setMessages,
     setSelectedPicker,
     setTargetedMessage,
     shouldShowUnreadUnderlay,
@@ -802,59 +791,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     ],
   );
 
-  const messagesWithImages =
-    legacyImageViewerSwipeBehaviour &&
-    processedMessageList.filter((message) => {
-      const isMessageTypeDeleted = message.type === 'deleted';
-      if (!isMessageTypeDeleted && message.attachments) {
-        return message.attachments.some(
-          (attachment) =>
-            attachment.type === FileTypes.Image &&
-            !attachment.title_link &&
-            !attachment.og_scrape_url &&
-            (attachment.image_url || attachment.thumb_url),
-        );
-      }
-      return false;
-    });
-
-  /**
-   * This is for the useEffect to run again in the case that a message
-   * gets edited with more or the same number of images
-   */
-  const imageString =
-    legacyImageViewerSwipeBehaviour &&
-    messagesWithImages &&
-    messagesWithImages
-      .map((message) =>
-        message.attachments
-          ?.map((attachment) => attachment.image_url || attachment.thumb_url || '')
-          .join(),
-      )
-      .join();
-
-  const numberOfMessagesWithImages =
-    legacyImageViewerSwipeBehaviour && messagesWithImages && messagesWithImages.length;
-  const threadExists = !!thread;
-
-  useEffect(() => {
-    if (
-      legacyImageViewerSwipeBehaviour &&
-      isListActive &&
-      ((threadList && thread) || (!threadList && !thread))
-    ) {
-      setMessages(messagesWithImages as LocalMessage[]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    imageString,
-    isListActive,
-    legacyImageViewerSwipeBehaviour,
-    numberOfMessagesWithImages,
-    threadExists,
-    threadList,
-  ]);
-
   /**
    * We are keeping full control on message pagination, and not relying on react-native for it.
    * The reasons being,
@@ -1216,14 +1152,12 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     threadList,
   } = useChannelContext();
   const { client } = useChatContext();
-  const { setMessages } = useImageGalleryContext();
   const {
     DateHeader,
     disableTypingIndicator,
     FlatList,
     InlineDateSeparator,
     InlineUnreadIndicator,
-    legacyImageViewerSwipeBehaviour,
     Message,
     MessageSystem,
     myMessageTheme,
@@ -1256,7 +1190,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         InlineDateSeparator,
         InlineUnreadIndicator,
         isListActive: isChannelActive,
-        legacyImageViewerSwipeBehaviour,
         loadChannelAroundMessage,
         loading,
         LoadingIndicator,
@@ -1276,7 +1209,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         scrollToFirstUnreadThreshold,
         selectedPicker,
         setChannelUnreadState,
-        setMessages,
         setSelectedPicker,
         setTargetedMessage,
         shouldShowUnreadUnderlay,

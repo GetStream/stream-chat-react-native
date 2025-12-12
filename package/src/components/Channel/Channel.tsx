@@ -343,7 +343,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
       | 'isAttachmentEqual'
-      | 'legacyImageViewerSwipeBehaviour'
       | 'ImageLoadingFailedIndicator'
       | 'ImageLoadingIndicator'
       | 'ImageReloadIndicator'
@@ -661,7 +660,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
-    legacyImageViewerSwipeBehaviour = false,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
@@ -1942,7 +1940,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineUnreadIndicator,
     isAttachmentEqual,
     isMessageAIGenerated,
-    legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
     MessageActionList,

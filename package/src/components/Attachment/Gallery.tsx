@@ -51,11 +51,11 @@ export type GalleryPropsWithContext = Pick<
     | 'onPressIn'
     | 'preventPress'
     | 'threadList'
+    | 'message'
   > &
   Pick<
     MessagesContextValue,
     | 'additionalPressableProps'
-    | 'legacyImageViewerSwipeBehaviour'
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
@@ -65,19 +65,6 @@ export type GalleryPropsWithContext = Pick<
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
     hasThreadReplies?: boolean;
-    /**
-     * `message` prop has been introduced here as part of `legacyImageViewerSwipeBehaviour` prop.
-     * https://github.com/GetStream/stream-chat-react-native/commit/d5eac6193047916f140efe8e396a671675c9a63f
-     * messageId and messageText may seem redundant now, but to avoid breaking change as part
-     * of minor release, we are keeping those props.
-     *
-     * Also `message` type should ideally be imported from MessageContextValue and not be explicitely mentioned
-     * here, but due to some circular dependencies within the SDK, it causes "excessive deep nesting" issue with
-     * typescript within Channel component. We should take it as a mini-project and resolve all these circular imports.
-     *
-     * TODO: Fix circular dependencies of imports
-     */
-    message?: LocalMessage;
   };
 
 const GalleryWithContext = (props: GalleryPropsWithContext) => {
@@ -90,7 +77,6 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     ImageLoadingIndicator,
     ImageReloadIndicator,
     images,
-    legacyImageViewerSwipeBehaviour,
     message,
     onLongPress,
     onPress,
@@ -210,7 +196,6 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   imagesAndVideos={imagesAndVideos}
                   invertedDirections={invertedDirections || false}
                   key={rowIndex}
-                  legacyImageViewerSwipeBehaviour={legacyImageViewerSwipeBehaviour}
                   message={message}
                   numOfColumns={numOfColumns}
                   numOfRows={numOfRows}
@@ -252,7 +237,6 @@ type GalleryThumbnailProps = {
 } & Pick<
   MessagesContextValue,
   | 'additionalPressableProps'
-  | 'legacyImageViewerSwipeBehaviour'
   | 'VideoThumbnail'
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
@@ -271,7 +255,6 @@ const GalleryThumbnail = ({
   ImageReloadIndicator,
   imagesAndVideos,
   invertedDirections,
-  legacyImageViewerSwipeBehaviour,
   message,
   numOfColumns,
   numOfRows,
@@ -304,15 +287,9 @@ const GalleryThumbnail = ({
   const { t } = useTranslationContext();
 
   const openImageViewer = () => {
-    if (!legacyImageViewerSwipeBehaviour && message) {
-      // Added if-else to keep the logic readable, instead of DRY.
-      // if - legacyImageViewerSwipeBehaviour is disabled
-      // else - legacyImageViewerSwipeBehaviour is enabled
+    if (message) {
       setMessages([message]);
       setSelectedMessage({ messageId: message.id, url: thumbnail.url });
-      setOverlay('gallery');
-    } else if (legacyImageViewerSwipeBehaviour) {
-      setSelectedMessage({ messageId: message?.id, url: thumbnail.url });
       setOverlay('gallery');
     }
   };
@@ -609,7 +586,6 @@ export const Gallery = (props: GalleryProps) => {
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
     ImageReloadIndicator: ContextImageReloadIndicator,
-    legacyImageViewerSwipeBehaviour,
     myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext();
@@ -653,7 +629,6 @@ export const Gallery = (props: GalleryProps) => {
         ImageLoadingIndicator,
         ImageReloadIndicator,
         images,
-        legacyImageViewerSwipeBehaviour,
         message,
         myMessageTheme,
         onLongPress,
