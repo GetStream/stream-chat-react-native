@@ -129,7 +129,7 @@
   "Vote ended": "Votación finalizada",
   "You": "Tú",
   "You can't send messages in this channel": "No puedes enviar mensajes en este canal",
-  "duration/Location end at": "",
+  "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
   "duration/Message reminder": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "respondió a",
