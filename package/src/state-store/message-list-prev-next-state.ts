@@ -21,7 +21,14 @@ export class MessagePreviousAndNextMessageStore {
     this.state = new StateStore<MessagePreviousAndNextMessageStoreType>(INITIAL_STATE);
   }
 
-  public setMessageListPreviousAndNextMessage(messages: LocalMessage[], isFlashList?: boolean) {
+  // The default value of isFlashList is true as the logic in the function makes more sense when the list is not reversed.
+  public setMessageListPreviousAndNextMessage({
+    messages,
+    isFlashList = true,
+  }: {
+    messages: LocalMessage[];
+    isFlashList?: boolean;
+  }) {
     const currentValue = this.state.getLatestValue();
     const prevMessageList: MessagePreviousAndNextMessageStoreType['messageList'] =
       currentValue.messageList;

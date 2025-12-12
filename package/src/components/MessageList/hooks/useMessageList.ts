@@ -62,7 +62,7 @@ export const shouldIncludeMessageInList = (
 };
 
 export const useMessageList = (params: UseMessageListParams) => {
-  const { noGroupByUser, threadList, isLiveStreaming, isFlashList } = params;
+  const { noGroupByUser, threadList, isLiveStreaming, isFlashList = false } = params;
   const { client } = useChatContext();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
   const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
@@ -95,10 +95,10 @@ export const useMessageList = (params: UseMessageListParams) => {
   }, [messageList, deletedMessagesVisibilityType, client.userID, isFlashList]);
 
   useEffect(() => {
-    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage(
-      processedMessageList,
+    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({
       isFlashList,
-    );
+      messages: processedMessageList,
+    });
   }, [processedMessageList, messageListPreviousAndNextMessageStore, isFlashList]);
 
   /**
