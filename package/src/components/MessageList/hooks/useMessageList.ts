@@ -74,26 +74,32 @@ export const useMessageList = (params: UseMessageListParams) => {
     () => new MessagePreviousAndNextMessageStore(),
   );
 
-  const filteredMessageList = useMemo(() => {
-    const filteredMessages = [];
+  const processedMessageList = useMemo<LocalMessage[]>(() => {
+    const newMessageList = [];
     for (const message of messageList) {
       if (
-        shouldIncludeMessageInList(message, {
+        !shouldIncludeMessageInList(message, {
           deletedMessagesVisibilityType,
           userId: client.userID,
         })
       ) {
-        filteredMessages.push(message);
+        continue;
+      }
+      if (isFlashList) {
+        newMessageList.push(message);
+      } else {
+        newMessageList.unshift(message);
       }
     }
-    return filteredMessages;
-  }, [messageList, deletedMessagesVisibilityType, client.userID]);
+    return newMessageList;
+  }, [messageList, deletedMessagesVisibilityType, client.userID, isFlashList]);
 
   useEffect(() => {
     messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage(
-      filteredMessageList,
+      processedMessageList,
+      isFlashList,
     );
-  }, [filteredMessageList, messageListPreviousAndNextMessageStore]);
+  }, [processedMessageList, messageListPreviousAndNextMessageStore, isFlashList]);
 
   /**
    * @deprecated use `useDateSeparator` hook instead directly in the Message.
@@ -102,9 +108,9 @@ export const useMessageList = (params: UseMessageListParams) => {
     () =>
       getDateSeparators({
         hideDateSeparators,
-        messages: filteredMessageList,
+        messages: processedMessageList,
       }),
-    [hideDateSeparators, filteredMessageList],
+    [hideDateSeparators, processedMessageList],
   );
 
   /**
@@ -122,7 +128,7 @@ export const useMessageList = (params: UseMessageListParams) => {
         dateSeparators: dateSeparatorsRef.current,
         hideDateSeparators,
         maxTimeBetweenGroupedMessages,
-        messages: filteredMessageList,
+        messages: processedMessageList,
         noGroupByUser,
         userId: client.userID,
       }),
@@ -130,7 +136,7 @@ export const useMessageList = (params: UseMessageListParams) => {
       getMessagesGroupStyles,
       hideDateSeparators,
       maxTimeBetweenGroupedMessages,
-      filteredMessageList,
+      processedMessageList,
       noGroupByUser,
       client.userID,
     ],
@@ -141,18 +147,6 @@ export const useMessageList = (params: UseMessageListParams) => {
    */
   const messageGroupStylesRef = useRef<MessageGroupStyles>(messageGroupStyles);
   messageGroupStylesRef.current = messageGroupStyles;
-
-  const processedMessageList = useMemo<LocalMessage[]>(() => {
-    const newMessageList = [];
-    for (const message of filteredMessageList) {
-      if (isFlashList) {
-        newMessageList.push(message);
-      } else {
-        newMessageList.unshift(message);
-      }
-    }
-    return newMessageList;
-  }, [filteredMessageList, isFlashList]);
 
   const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 

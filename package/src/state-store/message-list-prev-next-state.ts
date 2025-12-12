@@ -21,15 +21,15 @@ export class MessagePreviousAndNextMessageStore {
     this.state = new StateStore<MessagePreviousAndNextMessageStoreType>(INITIAL_STATE);
   }
 
-  public setMessageListPreviousAndNextMessage(messages: LocalMessage[]) {
+  public setMessageListPreviousAndNextMessage(messages: LocalMessage[], isFlashList?: boolean) {
     const currentValue = this.state.getLatestValue();
     const prevMessageList: MessagePreviousAndNextMessageStoreType['messageList'] =
       currentValue.messageList;
     const newMessageList: MessagePreviousAndNextMessageStoreType['messageList'] = {};
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
-      const previousMessage = messages[i - 1];
-      const nextMessage = messages[i + 1];
+      const previousMessage = isFlashList ? messages[i - 1] : messages[i + 1];
+      const nextMessage = isFlashList ? messages[i + 1] : messages[i - 1];
 
       const existing = prevMessageList[message.id];
 
