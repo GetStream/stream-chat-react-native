@@ -40,5 +40,3 @@ jobs:
         run: yarn test:coverage
       - name: Publish Next Release
         run: GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
