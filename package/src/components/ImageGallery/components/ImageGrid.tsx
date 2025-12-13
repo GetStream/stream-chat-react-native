@@ -2,9 +2,9 @@ import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../../hooks/useViewport';
-import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
 import { FileTypes } from '../../../types/types';
 import { BottomSheetFlatList } from '../../BottomSheetCompatibility/BottomSheetFlatList';
 import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
@@ -88,18 +88,12 @@ const renderItem = ({ item }: { item: GridImageItem }) => <GridImage item={item}
 
 export type ImageGridType = ImageGalleryGridImageComponents & {
   closeGridView: () => void;
-  imageGalleryStateStore: ImageGalleryStateStore;
   numberOfImageGalleryGridColumns?: number;
 };
 
 export const ImageGrid = (props: ImageGridType) => {
-  const {
-    avatarComponent,
-    closeGridView,
-    imageComponent,
-    imageGalleryStateStore,
-    numberOfImageGalleryGridColumns,
-  } = props;
+  const { avatarComponent, closeGridView, imageComponent, numberOfImageGalleryGridColumns } = props;
+  const { imageGalleryStateStore } = useImageGalleryContext();
 
   const {
     theme: {
@@ -110,13 +104,13 @@ export const ImageGrid = (props: ImageGridType) => {
     },
   } = useTheme();
 
-  const imageGridItems = imageGalleryStateStore.assets.map((photo) => ({
+  const imageGridItems = imageGalleryStateStore.assets.map((photo, index) => ({
     ...photo,
     avatarComponent,
     imageComponent,
     numberOfImageGalleryGridColumns,
     selectAndClose: () => {
-      imageGalleryStateStore.selectedAttachmentUrl = photo.uri;
+      imageGalleryStateStore.currentIndex = index;
       closeGridView();
     },
   }));

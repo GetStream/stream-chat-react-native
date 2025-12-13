@@ -281,11 +281,11 @@ const GalleryThumbnail = ({
   const { t } = useTranslationContext();
 
   const openImageViewer = () => {
-    if (message) {
-      imageGalleryStateStore.message = message;
-      imageGalleryStateStore.selectedAttachmentUrl = thumbnail.url;
-      setOverlay('gallery');
+    if (!message) {
+      return;
     }
+    imageGalleryStateStore.openImageGallery(message, thumbnail.url);
+    setOverlay('gallery');
   };
 
   const defaultOnPress = () => {

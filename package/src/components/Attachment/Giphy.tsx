@@ -205,8 +205,10 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
   const giphyDimensions: { height?: number; width?: number } = {};
 
   const defaultOnPress = () => {
-    imageGalleryStateStore.message = message;
-    imageGalleryStateStore.selectedAttachmentUrl = uri;
+    if (!uri) {
+      return;
+    }
+    imageGalleryStateStore.openImageGallery(message, uri);
     setOverlay('gallery');
   };
 

@@ -11,17 +11,9 @@ export function getUrlOfImageAttachment(
   image: Attachment,
   giphyVersion: keyof NonNullable<Attachment['giphy']> = 'fixed_height',
 ) {
-  if (image.type === FileTypes.Image) {
-    return image.image_url;
-  }
-
-  if (image.type === FileTypes.Video) {
-    return image.asset_url;
-  }
-
   if (image.type === FileTypes.Giphy) {
     return image.giphy?.[giphyVersion]?.url || image.thumb_url;
   }
 
-  return;
+  return image.image_url || image.asset_url;
 }

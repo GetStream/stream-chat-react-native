@@ -1,5 +1,7 @@
 import { Attachment, LocalMessage, StateStore, Unsubscribe } from 'stream-chat';
 
+import { VideoPlayerPool } from './video-player.pool';
+
 import { getGiphyMimeType } from '../components/Attachment/utils/getGiphyMimeType';
 import { isVideoPlayerAvailable } from '../native';
 import { FileTypes } from '../types/types';
@@ -43,11 +45,13 @@ const INITIAL_IMAGE_GALLERY_OPTIONS: ImageGalleryOptions = {
 
 export class ImageGalleryStateStore {
   state: StateStore<ImageGalleryState>;
-  private options: ImageGalleryOptions;
+  options: ImageGalleryOptions;
+  videoPlayerPool: VideoPlayerPool;
 
   constructor(options: Partial<ImageGalleryOptions>) {
     this.options = { ...INITIAL_IMAGE_GALLERY_OPTIONS, ...options };
     this.state = new StateStore<ImageGalleryState>(INITIAL_STATE);
+    this.videoPlayerPool = new VideoPlayerPool();
   }
 
   // Getters
@@ -75,32 +79,33 @@ export class ImageGalleryStateStore {
     return filteredAttachments;
   }
 
+  getAssetId(messageId: string, assetUrl: string) {
+    return `photoId-${messageId}-${assetUrl}`;
+  }
+
   get assets() {
     const message = this.message;
     const attachments = this.attachments;
-    const { giphyVersion = 'fixed_height', autoPlayVideo } = this.options;
+    const { giphyVersion = 'fixed_height' } = this.options;
 
     return attachments.map((attachment) => {
-      const imageUrl = getUrlOfImageAttachment(attachment, giphyVersion) as string;
+      const assetUrl = getUrlOfImageAttachment(attachment, giphyVersion) as string;
+      const assetId = this.getAssetId(message?.id ?? '', assetUrl);
       const giphyURL =
         attachment.giphy?.[giphyVersion]?.url || attachment.thumb_url || attachment.image_url;
       const giphyMimeType = getGiphyMimeType(giphyURL ?? '');
-      const initiallyPaused = !autoPlayVideo;
 
       return {
         channelId: message?.cid,
         created_at: message?.created_at,
-        duration: 0,
-        id: `photoId-${message?.id}-${imageUrl}`,
+        id: assetId,
         messageId: message?.id,
         mime_type: attachment.type === 'giphy' ? giphyMimeType : attachment.mime_type,
         original_height: attachment.original_height,
         original_width: attachment.original_width,
-        paused: initiallyPaused,
-        progress: 0,
         thumb_url: attachment.thumb_url,
         type: attachment.type,
-        uri: imageUrl,
+        uri: assetUrl,
         user: message?.user,
         user_id: message?.user_id,
       };
@@ -119,6 +124,10 @@ export class ImageGalleryStateStore {
   set currentIndex(currentIndex: number) {
     this.state.partialNext({ currentIndex });
   }
+
+  openImageGallery = (message: LocalMessage, selectedAttachmentUrl: string) => {
+    this.state.partialNext({ message, selectedAttachmentUrl });
+  };
 
   subscribeToSelectedAttachmentUrl = () => {
     const unsubscribe = this.state.subscribeWithSelector(
@@ -144,15 +153,34 @@ export class ImageGalleryStateStore {
     return unsubscribe;
   };
 
+  addVideosToPool = () => {
+    const message = this.message;
+    const attachments = this.attachments;
+    const videoAttachments = attachments.filter(
+      (attachment) => attachment.type === FileTypes.Video,
+    );
+    videoAttachments.forEach((attachment) => {
+      const assetId = this.getAssetId(message?.id ?? '', attachment.asset_url ?? '');
+      this.videoPlayerPool.getOrAddPlayer({
+        autoPlay: this.options.autoPlayVideo,
+        id: assetId,
+      });
+    });
+  };
+
   registerSubscriptions = () => {
     const subscriptions: Unsubscribe[] = [];
     subscriptions.push(this.subscribeToSelectedAttachmentUrl());
+    this.addVideosToPool();
+
     return () => {
       subscriptions.forEach((subscription) => subscription());
+      this.videoPlayerPool.clear();
     };
   };
 
   clear = () => {
     this.state.partialNext(INITIAL_STATE);
+    this.videoPlayerPool.clear();
   };
 }

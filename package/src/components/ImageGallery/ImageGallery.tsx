@@ -1,4 +1,4 @@
-import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -6,6 +6,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   SharedValue,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -35,14 +36,10 @@ import {
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import {
-  OverlayProviderProps,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
+import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks';
 import { useViewport } from '../../hooks/useViewport';
-import { VideoType } from '../../native';
 import { ImageGalleryState } from '../../state-store/image-gallery-state-store';
 import { FileTypes } from '../../types/types';
 
@@ -107,11 +104,9 @@ type Props = ImageGalleryCustomComponents & {
   overlayOpacity: SharedValue<number>;
 } & Pick<
     OverlayProviderProps,
-    | 'giphyVersion'
     | 'imageGalleryGridSnapPoints'
     | 'imageGalleryGridHandleHeight'
     | 'numberOfImageGalleryGridColumns'
-    | 'autoPlayVideo'
   >;
 
 export const ImageGallery = (props: Props) => {
@@ -128,7 +123,6 @@ export const ImageGallery = (props: Props) => {
       imageGallery: { backgroundColor, pager, slide },
     },
   } = useTheme();
-  const { setOverlay } = useOverlayContext();
   const { imageGalleryStateStore } = useImageGalleryContext();
   const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const assets = imageGalleryStateStore.assets;
@@ -198,6 +192,14 @@ export const ImageGallery = (props: Props) => {
   const scale = useSharedValue(1);
   const translationX = useSharedValue(-(fullWindowWidth + MARGIN) * currentIndex);
 
+  useAnimatedReaction(
+    () => currentIndex,
+    (index) => {
+      translationX.value = -(fullWindowWidth + MARGIN) * index;
+    },
+    [currentIndex, fullWindowWidth],
+  );
+
   /**
    * Image heights are not provided and therefore need to be calculated.
    * We start by allowing the image to be the full height then reduce it
@@ -225,6 +227,14 @@ export const ImageGallery = (props: Props) => {
     setCurrentImageHeight(currentImageHeight);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex]);
+
+  // If you change the current index, pause the active video player.
+  useEffect(() => {
+    const actvivePlayer = imageGalleryStateStore.videoPlayerPool.getActivePlayer();
+    if (actvivePlayer) {
+      actvivePlayer.pause();
+    }
+  }, [currentIndex, imageGalleryStateStore.videoPlayerPool]);
 
   const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({
     currentImageHeight,
@@ -317,79 +327,6 @@ export const ImageGallery = (props: Props) => {
     }
   };
 
-  const handleEnd = () => {
-    handlePlayPause(assets[currentIndex].id, true);
-    handleProgress(assets[currentIndex].id, 1, true);
-  };
-
-  const handleImageGalleryClose = () => {
-    imageGalleryStateStore.clear();
-    setOverlay('none');
-  };
-
-  const videoRef = useRef<VideoType>(null);
-
-  const handleLoad = (index: string, duration: number) => {
-    // setImageGalleryAttachments((prevImageGalleryAttachment) =>
-    //   prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
-    //     ...imageGalleryAttachment,
-    //     duration: imageGalleryAttachment.id === index ? duration : imageGalleryAttachment.duration,
-    //   })),
-    // );
-  };
-
-  const handleProgress = (index: string, progress: number, hasEnd?: boolean) => {
-    // setImageGalleryAttachments((prevImageGalleryAttachments) =>
-    //   prevImageGalleryAttachments.map((imageGalleryAttachment) => ({
-    //     ...imageGalleryAttachment,
-    //     progress:
-    //       imageGalleryAttachment.id === index
-    //         ? hasEnd
-    //           ? 1
-    //           : progress
-    //         : imageGalleryAttachment.progress,
-    //   })),
-    // );
-  };
-
-  const handlePlayPause = (index: string, pausedStatus?: boolean) => {
-    // if (pausedStatus === false) {
-    //   // If the status is false we set the audio with the index as playing and the others as paused.
-    //   setImageGalleryAttachments((prevImageGalleryAttachment) =>
-    //     prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
-    //       ...imageGalleryAttachment,
-    //       paused: imageGalleryAttachment.id === index ? false : true,
-    //     })),
-    //   );
-    //   if (videoRef.current?.play) {
-    //     videoRef.current.play();
-    //   }
-    // } else {
-    //   // If the status is true we simply set all the audio's paused state as true.
-    //   setImageGalleryAttachments((prevImageGalleryAttachment) =>
-    //     prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
-    //       ...imageGalleryAttachment,
-    //       paused: true,
-    //     })),
-    //   );
-    //   if (videoRef.current?.pause) {
-    //     videoRef.current.pause();
-    //   }
-    // }
-  };
-
-  const onPlayPause = (status?: boolean) => {
-    if (status === undefined) {
-      if (assets[currentIndex].paused) {
-        handlePlayPause(assets[currentIndex].id, false);
-      } else {
-        handlePlayPause(assets[currentIndex].id, true);
-      }
-    } else {
-      handlePlayPause(assets[currentIndex].id, status);
-    }
-  };
-
   const MemoizedImageGridHandle = useCallback(
     () => (
       <ImageGridHandle
@@ -414,20 +351,16 @@ export const ImageGallery = (props: Props) => {
               photo.type === FileTypes.Video ? (
                 <AnimatedGalleryVideo
                   attachmentId={photo.id}
-                  handleEnd={handleEnd}
-                  handleLoad={handleLoad}
-                  handleProgress={handleProgress}
                   index={i}
-                  key={`${photo.uri}-${i}`}
+                  key={photo.id}
                   offsetScale={offsetScale}
-                  paused={photo.paused || false}
+                  photo={photo}
                   previous={currentIndex > i}
                   repeat={true}
                   scale={scale}
                   screenHeight={fullWindowHeight}
                   selected={currentIndex === i}
                   shouldRender={Math.abs(currentIndex - i) < 4}
-                  source={{ uri: photo.uri }}
                   style={[
                     {
                       height: fullWindowHeight * 8,
@@ -438,13 +371,12 @@ export const ImageGallery = (props: Props) => {
                   ]}
                   translateX={translateX}
                   translateY={translateY}
-                  videoRef={videoRef as RefObject<VideoType>}
                 />
               ) : (
                 <AnimatedGalleryImage
                   accessibilityLabel={'Image Item'}
                   index={i}
-                  key={`${photo.uri}-${i}`}
+                  key={photo.id}
                   offsetScale={offsetScale}
                   photo={photo}
                   previous={currentIndex > i}
@@ -469,30 +401,18 @@ export const ImageGallery = (props: Props) => {
         </Animated.View>
       </GestureDetector>
       <ImageGalleryHeader
-        handleImageGalleryClose={handleImageGalleryClose}
         opacity={headerFooterOpacity}
-        photo={assets[currentIndex]}
         visible={headerFooterVisible}
         {...imageGalleryCustomComponents?.header}
       />
 
-      {assets[currentIndex] && (
-        <ImageGalleryFooter
-          accessibilityLabel={'Image Gallery Footer'}
-          duration={assets[currentIndex].duration || 0}
-          onPlayPause={onPlayPause}
-          opacity={headerFooterOpacity}
-          openGridView={openGridView}
-          paused={assets[currentIndex].paused || false}
-          photo={assets[currentIndex]}
-          photoLength={assets.length}
-          progress={assets[currentIndex].progress || 0}
-          selectedIndex={currentIndex}
-          videoRef={videoRef as RefObject<VideoType>}
-          visible={headerFooterVisible}
-          {...imageGalleryCustomComponents?.footer}
-        />
-      )}
+      <ImageGalleryFooter
+        accessibilityLabel={'Image Gallery Footer'}
+        opacity={headerFooterOpacity}
+        openGridView={openGridView}
+        visible={headerFooterVisible}
+        {...imageGalleryCustomComponents?.footer}
+      />
 
       <ImageGalleryOverlay
         animatedBottomSheetIndex={animatedBottomSheetIndex}
@@ -512,7 +432,6 @@ export const ImageGallery = (props: Props) => {
       >
         <ImageGrid
           closeGridView={closeGridView}
-          imageGalleryStateStore={imageGalleryStateStore}
           numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
           {...imageGalleryCustomComponents?.grid}
         />
@@ -541,13 +460,10 @@ export type Photo = {
   uri: string;
   channelId?: string;
   created_at?: string | Date;
-  duration?: number;
   messageId?: string;
   mime_type?: string;
   original_height?: number;
   original_width?: number;
-  paused?: boolean;
-  progress?: number;
   thumb_url?: string;
   type?: string;
   user?: UserResponse | null;
