@@ -10,3 +10,4 @@ export * from './useQueryReminders';
 export * from './useClientNotifications';
 export * from './useInAppNotificationsState';
 export * from './useRAFCoalescedValue';
+export * from './useAudioPlayerControl';

@@ -105,6 +105,10 @@ export type Theme = {
     imageOverlaySelectedComponent: {
       check: ViewStyle;
     };
+    handle: {
+      container: ViewStyle;
+      indicator: ViewStyle;
+    };
   };
   attachmentSelectionBar: {
     container: ViewStyle;
@@ -896,6 +900,10 @@ export const defaultTheme: Theme = {
     errorButtonText: {},
     errorContainer: {},
     errorText: {},
+    handle: {
+      container: {},
+      indicator: {},
+    },
     image: {},
     imageOverlay: {},
     imageOverlaySelectedComponent: {

@@ -453,6 +453,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 paused={paused}
                 position={position}
                 progress={progress}
+                recordingDuration={recordingDuration}
+                uri={
+                  typeof recording !== 'string'
+                    ? (recording?.getURI() as string)
+                    : (recording as string)
+                }
                 waveformData={waveformData}
               />
             ) : micLocked ? (

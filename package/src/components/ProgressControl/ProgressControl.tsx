@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 export type ProgressControlProps = {
   /**
+   * @deprecated unused prop.
    * The duration of the audio in seconds
    */
   duration: number;
@@ -33,6 +39,7 @@ export type ProgressControlProps = {
   onPlayPause?: (status?: boolean) => void;
   /**
    * The function to be called when the user is dragging the progress bar
+   * @deprecated This is not used anymore and is handled locally
    */
   onProgressDrag?: (progress: number) => void;
   /**
@@ -67,17 +74,9 @@ const ProgressControlThumb = () => {
 
 export const ProgressControl = (props: ProgressControlProps) => {
   const [widthInNumbers, setWidthInNumbers] = useState(0);
-  const {
-    filledColor: filledColorFromProp,
-    onEndDrag,
-    onPlayPause,
-    onProgressDrag,
-    onStartDrag,
-    progress,
-    testID,
-  } = props;
+  const { filledColor: filledColorFromProp, onEndDrag, onStartDrag, progress, testID } = props;
 
-  const progressValue = useSharedValue(progress);
+  const state = useSharedValue(progress);
   const {
     theme: {
       colors: { grey_dark },
@@ -85,51 +84,50 @@ export const ProgressControl = (props: ProgressControlProps) => {
     },
   } = useTheme();
 
-  const pan = Gesture.Pan()
-    .maxPointers(1)
-    .onStart((event) => {
-      const currentProgress = (progressValue.value + event.x) / widthInNumbers;
-      progressValue.value = Math.max(0, Math.min(currentProgress, 1));
-      if (onStartDrag) {
-        runOnJS(onStartDrag)(progressValue.value);
-      }
-      if (onPlayPause) {
-        runOnJS(onPlayPause)(true);
-      }
-    })
-    .onUpdate((event) => {
-      const currentProgress = (progressValue.value + event.x) / widthInNumbers;
-      progressValue.value = Math.max(0, Math.min(currentProgress, 1));
-      if (onProgressDrag) {
-        runOnJS(onProgressDrag)(progressValue.value);
-      }
-    })
-    .onEnd((event) => {
-      const currentProgress = (progressValue.value + event.x) / widthInNumbers;
-      progressValue.value = Math.max(0, Math.min(currentProgress, 1));
-      if (onEndDrag) {
-        runOnJS(onEndDrag)(progressValue.value);
-      }
-      if (onPlayPause) {
-        runOnJS(onPlayPause)(false);
-      }
-    })
-    .withTestId(testID);
+  useAnimatedReaction(
+    () => progress,
+    (newProgress) => {
+      state.value = newProgress;
+    },
+    [progress],
+  );
+
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .maxPointers(1)
+        .onStart(() => {
+          if (onStartDrag) {
+            runOnJS(onStartDrag)(state.value);
+          }
+        })
+        .onUpdate((event) => {
+          const newProgress = Math.max(0, Math.min(event.x / widthInNumbers, 1));
+          state.value = newProgress;
+        })
+        .onEnd(() => {
+          if (onEndDrag) {
+            runOnJS(onEndDrag)(state.value);
+          }
+        })
+        .withTestId(testID),
+    [onEndDrag, onStartDrag, state, testID, widthInNumbers],
+  );
 
   const filledColor = filledColorFromProp || filledColorFromTheme;
 
   const thumbStyles = useAnimatedStyle(
     () => ({
-      transform: [{ translateX: progress * widthInNumbers - THUMB_WIDTH / 2 }],
+      transform: [{ translateX: state.value * widthInNumbers - THUMB_WIDTH / 2 }],
     }),
-    [progress],
+    [widthInNumbers],
   );
 
   const animatedFilledStyles = useAnimatedStyle(
     () => ({
-      width: progress * widthInNumbers,
+      width: state.value * widthInNumbers,
     }),
-    [progress],
+    [widthInNumbers],
   );
 
   return (
@@ -151,7 +149,7 @@ export const ProgressControl = (props: ProgressControlProps) => {
           ]}
         />
         <Animated.View style={[thumbStyles, thumb]}>
-          {onEndDrag || onProgressDrag ? <ProgressControlThumb /> : null}
+          {onEndDrag ? <ProgressControlThumb /> : null}
         </Animated.View>
       </View>
     </GestureDetector>
