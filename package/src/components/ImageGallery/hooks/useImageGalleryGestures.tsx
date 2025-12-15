@@ -106,20 +106,6 @@ export const useImageGalleryGestures = ({
   const focalY = useSharedValue(0);
 
   /**
-   * if a specific image index > 0 has been passed in
-   * while creating the hook, set the value of the index
-   * reference to its value.
-   *
-   * This makes it possible to seelct an image in the list,
-   * and scroll/pan as normal. Prior to this,
-   * it was always assumed that one started at index 0 in the
-   * gallery.
-   * */
-  // useEffect(() => {
-  //   setIndex(selectedIndex);
-  // }, [selectedIndex]);
-
-  /**
    * Shared values for movement
    */
   const offsetX = useSharedValue(0);
