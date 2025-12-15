@@ -2,19 +2,25 @@ import React, { PropsWithChildren, useContext, useEffect, useMemo, useState } fr
 
 import { Attachment } from 'stream-chat';
 
+import { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
 import { ImageGalleryStateStore } from '../../state-store/image-gallery-state-store';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type ImageGalleryContextValue = {
+export type ImageGalleryProviderProps = ImageGalleryCustomComponents & {
   autoPlayVideo?: boolean;
-  imageGalleryStateStore: ImageGalleryStateStore;
+  /**
+   * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
+   * */
+  giphyVersion?: keyof NonNullable<Attachment['giphy']>;
+  imageGalleryGridHandleHeight?: number;
+  imageGalleryGridSnapPoints?: [string | number, string | number];
+  numberOfImageGalleryGridColumns?: number;
 };
 
-export type ImageGalleryProviderProps = {
-  autoPlayVideo?: boolean;
-  giphyVersion?: keyof NonNullable<Attachment['giphy']>;
+export type ImageGalleryContextValue = ImageGalleryProviderProps & {
+  imageGalleryStateStore: ImageGalleryStateStore;
 };
 
 export const ImageGalleryContext = React.createContext(
@@ -38,8 +44,9 @@ export const ImageGalleryProvider = ({
     () => ({
       autoPlayVideo: value?.autoPlayVideo,
       imageGalleryStateStore,
+      ...value,
     }),
-    [value?.autoPlayVideo, imageGalleryStateStore],
+    [imageGalleryStateStore, value],
   );
 
   return (

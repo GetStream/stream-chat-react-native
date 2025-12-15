@@ -36,7 +36,6 @@ import {
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks';
 import { useViewport } from '../../hooks/useViewport';
@@ -100,30 +99,25 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
   currentIndex: state.currentIndex,
 });
 
-type Props = ImageGalleryCustomComponents & {
+type Props = {
   overlayOpacity: SharedValue<number>;
-} & Pick<
-    OverlayProviderProps,
-    | 'imageGalleryGridSnapPoints'
-    | 'imageGalleryGridHandleHeight'
-    | 'numberOfImageGalleryGridColumns'
-  >;
+};
 
 export const ImageGallery = (props: Props) => {
-  const {
-    imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight = 40,
-    imageGalleryGridSnapPoints,
-    numberOfImageGalleryGridColumns,
-    overlayOpacity,
-  } = props;
+  const { overlayOpacity } = props;
   const {
     theme: {
       colors: { white_snow },
       imageGallery: { backgroundColor, pager, slide },
     },
   } = useTheme();
-  const { imageGalleryStateStore } = useImageGalleryContext();
+  const {
+    imageGalleryStateStore,
+    imageGalleryCustomComponents,
+    imageGalleryGridHandleHeight,
+    imageGalleryGridSnapPoints,
+    numberOfImageGalleryGridColumns,
+  } = useImageGalleryContext();
   const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const { assets, videoPlayerPool } = imageGalleryStateStore;
 
@@ -136,7 +130,7 @@ export const ImageGallery = (props: Props) => {
   const halfScreenHeight = fullWindowHeight / 2;
   const quarterScreenHeight = fullWindowHeight / 4;
   const snapPoints = React.useMemo(
-    () => [(fullWindowHeight * 3) / 4, fullWindowHeight - imageGalleryGridHandleHeight],
+    () => [(fullWindowHeight * 3) / 4, fullWindowHeight - (imageGalleryGridHandleHeight ?? 0)],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 
 import { BackHandler } from 'react-native';
 
@@ -6,14 +6,8 @@ import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanim
 
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
-import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
-
 import { useStreami18n } from '../../hooks/useStreami18n';
 
-import {
-  ImageGalleryProvider,
-  ImageGalleryProviderProps,
-} from '../imageGalleryContext/ImageGalleryContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
 import {
   DEFAULT_USER_LANGUAGE,
@@ -41,17 +35,7 @@ import {
  * @example ./OverlayProvider.md
  */
 export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) => {
-  const {
-    autoPlayVideo,
-    children,
-    giphyVersion,
-    i18nInstance,
-    imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight = 40,
-    imageGalleryGridSnapPoints,
-    numberOfImageGalleryGridColumns,
-    value,
-  } = props;
+  const { children, i18nInstance, value } = props;
 
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
@@ -85,16 +69,9 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overlay]);
 
-  const imageGalleryProviderProps: ImageGalleryProviderProps = useMemo(
-    () => ({
-      autoPlayVideo,
-      giphyVersion,
-    }),
-    [autoPlayVideo, giphyVersion],
-  );
-
   const overlayContext = {
     overlay,
+    overlayOpacity,
     setOverlay,
     style: value?.style,
   };
@@ -102,20 +79,7 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
   return (
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
       <OverlayContext.Provider value={overlayContext}>
-        <ImageGalleryProvider value={imageGalleryProviderProps}>
-          <ThemeProvider style={overlayContext.style}>
-            {children}
-            {overlay === 'gallery' && (
-              <ImageGallery
-                imageGalleryCustomComponents={imageGalleryCustomComponents}
-                imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                overlayOpacity={overlayOpacity}
-              />
-            )}
-          </ThemeProvider>
-        </ImageGalleryProvider>
+        <ThemeProvider style={overlayContext.style}>{children}</ThemeProvider>
       </OverlayContext.Provider>
     </TranslationProvider>
   );
