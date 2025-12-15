@@ -8,7 +8,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/GetStream/stream-chat-react-native.git"
+    "url": "https://github.com/GetStream/stream-chat-react-native.git",
+    "directory": "package"
   },
   "license": "SEE LICENSE IN LICENSE",
   "main": "lib/commonjs/index.js",
