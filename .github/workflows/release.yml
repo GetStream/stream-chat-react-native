@@ -51,8 +51,6 @@ jobs:
         if: github.ref == 'refs/heads/develop'
         run: |
           GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: Publish Release (main)
         if: github.ref == 'refs/heads/main'
