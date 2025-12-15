@@ -125,7 +125,7 @@ export const ImageGallery = (props: Props) => {
   } = useTheme();
   const { imageGalleryStateStore } = useImageGalleryContext();
   const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
-  const assets = imageGalleryStateStore.assets;
+  const { assets, videoPlayerPool } = imageGalleryStateStore;
 
   const { vh, vw } = useViewport();
 
@@ -230,11 +230,12 @@ export const ImageGallery = (props: Props) => {
 
   // If you change the current index, pause the active video player.
   useEffect(() => {
-    const actvivePlayer = imageGalleryStateStore.videoPlayerPool.getActivePlayer();
-    if (actvivePlayer) {
-      actvivePlayer.pause();
+    const activePlayer = videoPlayerPool.getActivePlayer();
+
+    if (activePlayer) {
+      activePlayer.pause();
     }
-  }, [currentIndex, imageGalleryStateStore.videoPlayerPool]);
+  }, [currentIndex, videoPlayerPool]);
 
   const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({
     currentImageHeight,

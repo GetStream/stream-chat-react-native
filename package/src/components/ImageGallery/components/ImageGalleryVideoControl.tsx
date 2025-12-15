@@ -10,7 +10,7 @@ import { Pause, Play } from '../../../icons';
 import { VideoPlayerState } from '../../../state-store/video-player';
 import { getDurationLabelFromDuration } from '../../../utils/utils';
 import { ProgressControl } from '../../ProgressControl/ProgressControl';
-import { useVideoPlayer } from '../hooks/useVideoPlayer';
+import { useImageGalleryVideoPlayer } from '../hooks/useImageGalleryVideoPlayer';
 
 const styles = StyleSheet.create({
   durationTextStyle: {
@@ -52,7 +52,7 @@ const videoPlayerSelector = (state: VideoPlayerState) => ({
 export const ImageGalleryVideoControl = React.memo((props: ImageGalleryFooterVideoControlProps) => {
   const { attachmentId } = props;
 
-  const videoPlayer = useVideoPlayer({
+  const videoPlayer = useImageGalleryVideoPlayer({
     id: attachmentId,
   });
 

@@ -17,7 +17,7 @@ import { VideoPlayerState } from '../../../state-store/video-player';
 import { ONE_SECOND_IN_MILLISECONDS } from '../../../utils/constants';
 import { Spinner } from '../../UIComponents/Spinner';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
-import { useVideoPlayer } from '../hooks/useVideoPlayer';
+import { useImageGalleryVideoPlayer } from '../hooks/useImageGalleryVideoPlayer';
 import { Photo } from '../ImageGallery';
 
 const oneEighth = 1 / 8;
@@ -49,10 +49,7 @@ const styles = StyleSheet.create({
 });
 
 const videoPlayerSelector = (state: VideoPlayerState) => ({
-  duration: state.duration,
   isPlaying: state.isPlaying,
-  position: state.position,
-  progress: state.progress,
 });
 
 export const AnimatedGalleryVideo = React.memo(
@@ -77,7 +74,7 @@ export const AnimatedGalleryVideo = React.memo(
 
     const videoRef = useRef<VideoType>(null);
 
-    const videoPlayer = useVideoPlayer({
+    const videoPlayer = useImageGalleryVideoPlayer({
       id: attachmentId,
     });
 

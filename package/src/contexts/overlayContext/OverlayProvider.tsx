@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
 import { BackHandler } from 'react-native';
 
@@ -10,7 +10,10 @@ import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 
 import { useStreami18n } from '../../hooks/useStreami18n';
 
-import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
+import {
+  ImageGalleryProvider,
+  ImageGalleryProviderProps,
+} from '../imageGalleryContext/ImageGalleryContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
 import {
   DEFAULT_USER_LANGUAGE,
@@ -82,6 +85,14 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overlay]);
 
+  const imageGalleryProviderProps: ImageGalleryProviderProps = useMemo(
+    () => ({
+      autoPlayVideo,
+      giphyVersion,
+    }),
+    [autoPlayVideo, giphyVersion],
+  );
+
   const overlayContext = {
     overlay,
     setOverlay,
@@ -91,13 +102,11 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
   return (
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
       <OverlayContext.Provider value={overlayContext}>
-        <ImageGalleryProvider>
+        <ImageGalleryProvider value={imageGalleryProviderProps}>
           <ThemeProvider style={overlayContext.style}>
             {children}
             {overlay === 'gallery' && (
               <ImageGallery
-                autoPlayVideo={autoPlayVideo}
-                giphyVersion={giphyVersion}
                 imageGalleryCustomComponents={imageGalleryCustomComponents}
                 imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
                 imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}

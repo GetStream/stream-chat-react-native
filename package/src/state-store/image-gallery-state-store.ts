@@ -48,7 +48,7 @@ export class ImageGalleryStateStore {
   options: ImageGalleryOptions;
   videoPlayerPool: VideoPlayerPool;
 
-  constructor(options: Partial<ImageGalleryOptions>) {
+  constructor(options: Partial<ImageGalleryOptions> = {}) {
     this.options = { ...INITIAL_IMAGE_GALLERY_OPTIONS, ...options };
     this.state = new StateStore<ImageGalleryState>(INITIAL_STATE);
     this.videoPlayerPool = new VideoPlayerPool();
@@ -145,7 +145,6 @@ export class ImageGalleryStateStore {
             asset.messageId === message?.id &&
             stripQueryFromUrl(asset.uri) === stripQueryFromUrl(selectedAttachmentUrl ?? ''),
         );
-        console.log('index', index);
         this.state.partialNext({ currentIndex: index === -1 ? 0 : index });
       },
     );
@@ -153,25 +152,9 @@ export class ImageGalleryStateStore {
     return unsubscribe;
   };
 
-  addVideosToPool = () => {
-    const message = this.message;
-    const attachments = this.attachments;
-    const videoAttachments = attachments.filter(
-      (attachment) => attachment.type === FileTypes.Video,
-    );
-    videoAttachments.forEach((attachment) => {
-      const assetId = this.getAssetId(message?.id ?? '', attachment.asset_url ?? '');
-      this.videoPlayerPool.getOrAddPlayer({
-        autoPlay: this.options.autoPlayVideo,
-        id: assetId,
-      });
-    });
-  };
-
   registerSubscriptions = () => {
     const subscriptions: Unsubscribe[] = [];
     subscriptions.push(this.subscribeToSelectedAttachmentUrl());
-    this.addVideosToPool();
 
     return () => {
       subscriptions.forEach((subscription) => subscription());

@@ -1,23 +1,31 @@
-import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+
+import { Attachment } from 'stream-chat';
 
 import { ImageGalleryStateStore } from '../../state-store/image-gallery-state-store';
-import type { UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ImageGalleryContextValue = {
+  autoPlayVideo?: boolean;
   imageGalleryStateStore: ImageGalleryStateStore;
+};
+
+export type ImageGalleryProviderProps = {
+  autoPlayVideo?: boolean;
+  giphyVersion?: keyof NonNullable<Attachment['giphy']>;
 };
 
 export const ImageGalleryContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ImageGalleryContextValue,
 );
 
-export const ImageGalleryProvider = ({ children }: PropsWithChildren<UnknownType>) => {
-  const [imageGalleryStateStore] = useState(
-    () => new ImageGalleryStateStore({ autoPlayVideo: false, giphyVersion: 'fixed_height' }),
-  );
+export const ImageGalleryProvider = ({
+  children,
+  value,
+}: PropsWithChildren<{ value: ImageGalleryProviderProps }>) => {
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore(value));
 
   useEffect(() => {
     const unsubscribe = imageGalleryStateStore.registerSubscriptions();
@@ -26,13 +34,17 @@ export const ImageGalleryProvider = ({ children }: PropsWithChildren<UnknownType
     };
   }, [imageGalleryStateStore]);
 
+  const imageGalleryContextValue = useMemo(
+    () => ({
+      autoPlayVideo: value?.autoPlayVideo,
+      imageGalleryStateStore,
+    }),
+    [value?.autoPlayVideo, imageGalleryStateStore],
+  );
+
   return (
     <ImageGalleryContext.Provider
-      value={
-        {
-          imageGalleryStateStore,
-        } as unknown as ImageGalleryContextValue
-      }
+      value={imageGalleryContextValue as unknown as ImageGalleryContextValue}
     >
       {children}
     </ImageGalleryContext.Provider>
