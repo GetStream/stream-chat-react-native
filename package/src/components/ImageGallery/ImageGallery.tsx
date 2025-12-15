@@ -383,6 +383,7 @@ export const ImageGallery = (props: Props) => {
                   previous={currentIndex > i}
                   scale={scale}
                   screenHeight={fullWindowHeight}
+                  screenWidth={fullWindowWidth}
                   selected={currentIndex === i}
                   shouldRender={Math.abs(currentIndex - i) < 4}
                   style={[

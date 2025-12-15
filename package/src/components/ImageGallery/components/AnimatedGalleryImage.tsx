@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import type { ImageStyle, StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
+import { useChatConfigContext } from '../../../contexts/chatConfigContext/ChatConfigContext';
+import { getResizedImageUrl } from '../../../utils/getResizedImageUrl';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
 
 const oneEighth = 1 / 8;
@@ -15,6 +17,7 @@ type Props = {
   previous: boolean;
   scale: SharedValue<number>;
   screenHeight: number;
+  screenWidth: number;
   selected: boolean;
   shouldRender: boolean;
   translateX: SharedValue<number>;
@@ -32,12 +35,23 @@ export const AnimatedGalleryImage = React.memo(
       previous,
       scale,
       screenHeight,
+      screenWidth,
       selected,
       shouldRender,
       style,
       translateX,
       translateY,
     } = props;
+    const { resizableCDNHosts } = useChatConfigContext();
+
+    const uri = useMemo(() => {
+      return getResizedImageUrl({
+        height: screenHeight,
+        resizableCDNHosts,
+        url: photo.uri,
+        width: screenWidth,
+      });
+    }, [photo.uri, resizableCDNHosts, screenHeight, screenWidth]);
 
     const animatedStyles = useAnimatedGalleryStyle({
       index,
@@ -63,7 +77,7 @@ export const AnimatedGalleryImage = React.memo(
       <Animated.Image
         accessibilityLabel={accessibilityLabel}
         resizeMode={'contain'}
-        source={{ uri: photo.uri }}
+        source={{ uri }}
         style={[...animatedStyles, style]}
       />
     );
@@ -75,7 +89,8 @@ export const AnimatedGalleryImage = React.memo(
       prevProps.photo.uri === nextProps.photo.uri &&
       prevProps.previous === nextProps.previous &&
       prevProps.index === nextProps.index &&
-      prevProps.screenHeight === nextProps.screenHeight
+      prevProps.screenHeight === nextProps.screenHeight &&
+      prevProps.screenWidth === nextProps.screenWidth
     ) {
       return true;
     }
