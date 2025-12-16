@@ -15,7 +15,7 @@ import { generateMessage } from '../../../../mock-builders/generator/message';
 import { ImageGalleryStateStore } from '../../../../state-store/image-gallery-state-store';
 import { ImageGalleryHeader } from '../ImageGalleryHeader';
 
-const ImageGalleryComponentWrapper = ({ children }: PropsWithChildren<{}>) => {
+const ImageGalleryComponentWrapper = ({ children }: PropsWithChildren) => {
   const initialImageGalleryStateStore = new ImageGalleryStateStore();
   const attachment = generateImageAttachment();
   initialImageGalleryStateStore.openImageGallery({
