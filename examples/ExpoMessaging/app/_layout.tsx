@@ -9,9 +9,7 @@ import { LiveLocationManagerProvider } from 'stream-chat-expo';
 import { watchLocation } from '../utils/watchLocation';
 import { UserProvider, useUserContext } from '@/context/UserContext';
 import UserLogin from '@/components/UserLogin';
-import { LogoutButton } from '@/components/LogoutButton';
 import { useStreamChatTheme } from '@/hooks/useStreamChatTheme';
-import { ChatHeader } from '@/components/ChatHeader';
 
 function Layout() {
   const { user } = useUserContext();
