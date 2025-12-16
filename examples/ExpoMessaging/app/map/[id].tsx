@@ -1,3 +1,4 @@
+import React from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import {
   Platform,
@@ -38,19 +39,24 @@ const MapScreenFooter = ({
       colors: { accent_blue, accent_red, grey },
     },
   } = useTheme();
-  const liveLocationActive = isLiveLocationStopped ? false : new Date(end_at) > new Date();
+  const liveLocationActive = isLiveLocationStopped
+    ? false
+    : end_at && new Date(end_at) > new Date();
   const endedAtDate = end_at ? new Date(end_at) : null;
   const formattedEndedAt = endedAtDate ? endedAtDate.toLocaleString() : '';
 
   const stopSharingLiveLocation = useCallback(async () => {
-    await channel.stopLiveLocationSharing(locationResponse);
+    if (!locationResponse) {
+      return;
+    }
+    await channel?.stopLiveLocationSharing(locationResponse);
   }, [channel, locationResponse]);
 
   if (!end_at) {
     return null;
   }
 
-  const isCurrentUser = user_id === client.user.id;
+  const isCurrentUser = user_id === client.user?.id;
   if (!isCurrentUser) {
     return (
       <View style={styles.footer}>
@@ -176,7 +182,7 @@ export default function MapScreen() {
             <View style={styles.markerWrapper}>
               <Image
                 style={[styles.markerImage, { borderColor: accent_blue }]}
-                source={{ uri: client.user.image }}
+                source={{ uri: client.user?.image }}
               />
             </View>
           </Marker>

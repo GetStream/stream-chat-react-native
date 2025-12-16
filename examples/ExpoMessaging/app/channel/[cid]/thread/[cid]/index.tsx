@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Channel, Thread } from 'stream-chat-expo';
 import { Stack } from 'expo-router';
 import { AppContext } from '../../../../../context/AppContext';
@@ -15,23 +15,23 @@ export default function ThreadScreen() {
   }
 
   return (
-    <Channel
-      audioRecordingEnabled={true}
-      channel={channel}
-      keyboardVerticalOffset={headerHeight}
-      thread={thread}
-      threadList
-    >
-      <Stack.Screen options={{ title: 'Thread Screen' }} />
+    <SafeAreaView edges={['bottom']} style={styles.container}>
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+        threadList
+      >
+        <Stack.Screen options={{ title: 'Thread Screen', headerBackTitle: 'Back' }} />
 
-      <SafeAreaView edges={['bottom']} style={styles.container}>
         <Thread
           onThreadDismount={() => {
             setThread(undefined);
           }}
         />
-      </SafeAreaView>
-    </Channel>
+      </Channel>
+    </SafeAreaView>
   );
 }
 

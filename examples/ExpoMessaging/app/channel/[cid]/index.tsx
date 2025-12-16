@@ -4,8 +4,8 @@ import {
   Channel,
   MessageInput,
   useChatContext,
-  MessageFlashList,
   ThreadContextValue,
+  MessageList,
 } from 'stream-chat-expo';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
@@ -76,9 +76,9 @@ export default function ChannelScreen() {
         MessageLocation={MessageLocation}
         thread={thread}
       >
-        <Stack.Screen options={{ title: 'Channel Screen' }} />
+        <Stack.Screen options={{ title: 'Channel Screen', headerBackTitle: 'Back' }} />
 
-        <MessageFlashList
+        <MessageList
           onThreadSelect={(thread: ThreadContextValue['thread']) => {
             setThread(thread);
             router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);

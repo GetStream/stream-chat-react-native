@@ -1,10 +1,11 @@
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ChannelList } from 'stream-chat-expo';
 import { useContext, useMemo } from 'react';
 import { useRouter } from 'expo-router';
 import { ChannelSort } from 'stream-chat';
+import { useUserContext } from '@/context/UserContext';
 import { AppContext } from '@/context/AppContext';
-import { STREAM_USER_DATA } from '@/constants';
 
 const sort: ChannelSort = { last_updated: -1 };
 const options = {
@@ -13,12 +14,13 @@ const options = {
 };
 
 export default function ChannelListScreen() {
+  const { user } = useUserContext();
   const filters = useMemo(
     () => ({
-      members: { $in: [STREAM_USER_DATA.id] },
+      members: { $in: [user?.id as string] },
       type: 'messaging',
     }),
-    [],
+    [user?.id],
   );
   const router = useRouter();
   const { setChannel } = useContext(AppContext);

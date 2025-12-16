@@ -7,7 +7,6 @@ import {
   Streami18n,
   useCreateChatClient,
 } from 'stream-chat-expo';
-import { UserResponse } from 'stream-chat';
 import { AuthProgressLoader } from './AuthProgressLoader';
 import { useStreamChatTheme } from '../hooks/useStreamChatTheme';
 import { useUserContext } from '@/context/UserContext';
@@ -27,7 +26,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   const { user } = useUserContext();
   const chatClient = useCreateChatClient({
     apiKey: STREAM_API_KEY,
-    userData: user as UserResponse,
+    userData: user,
     tokenOrProvider: USER_TOKENS[user?.id as string],
   });
 

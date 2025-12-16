@@ -9,10 +9,13 @@ import { LiveLocationManagerProvider } from 'stream-chat-expo';
 import { watchLocation } from '../utils/watchLocation';
 import { UserProvider, useUserContext } from '@/context/UserContext';
 import UserLogin from '@/components/UserLogin';
+import { LogoutButton } from '@/components/LogoutButton';
+import { useStreamChatTheme } from '@/hooks/useStreamChatTheme';
+import { ChatHeader } from '@/components/ChatHeader';
 
 function Layout() {
   const { user } = useUserContext();
-
+  const theme = useStreamChatTheme();
   if (!user) {
     return <UserLogin />;
   }
@@ -20,13 +23,15 @@ function Layout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={styles.container}>
-        <ChatWrapper>
-          <LiveLocationManagerProvider watchLocation={watchLocation}>
-            <AppProvider>
-              <Stack />
-            </AppProvider>
-          </LiveLocationManagerProvider>
-        </ChatWrapper>
+        <AppProvider>
+          <ChatWrapper>
+            <LiveLocationManagerProvider watchLocation={watchLocation}>
+              <Stack>
+                <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+              </Stack>
+            </LiveLocationManagerProvider>
+          </ChatWrapper>
+        </AppProvider>
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );

@@ -1,11 +1,10 @@
 import React, { useContext } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTheme, ThreadList } from 'stream-chat-expo';
 
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { AppContext } from '@/context/AppContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ThreadsScreen() {
   const {
@@ -18,7 +17,7 @@ export default function ThreadsScreen() {
   const { setThread, setChannel } = useContext(AppContext);
 
   return (
-    <SafeAreaView
+    <View
       style={[
         styles.container,
         {
@@ -34,7 +33,7 @@ export default function ThreadsScreen() {
           router.push(`/channel/${channel.cid}/thread/${thread.thread.id}`);
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
