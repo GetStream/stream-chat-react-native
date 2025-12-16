@@ -284,7 +284,7 @@ const GalleryThumbnail = ({
     if (!message) {
       return;
     }
-    imageGalleryStateStore.openImageGallery(message, thumbnail.url);
+    imageGalleryStateStore.openImageGallery({ message, selectedAttachmentUrl: thumbnail.url });
     setOverlay('gallery');
   };
 

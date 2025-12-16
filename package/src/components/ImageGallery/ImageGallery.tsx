@@ -5,7 +5,6 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
   Easing,
-  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -35,7 +34,14 @@ import {
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
-import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import {
+  ImageGalleryProviderProps,
+  useImageGalleryContext,
+} from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks';
 import { useViewport } from '../../hooks/useViewport';
@@ -99,25 +105,30 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
   currentIndex: state.currentIndex,
 });
 
-type Props = {
-  overlayOpacity: SharedValue<number>;
-};
+type ImageGalleryWithContextProps = Pick<
+  ImageGalleryProviderProps,
+  | 'imageGalleryCustomComponents'
+  | 'imageGalleryGridSnapPoints'
+  | 'imageGalleryGridHandleHeight'
+  | 'numberOfImageGalleryGridColumns'
+> &
+  Pick<OverlayContextValue, 'overlayOpacity'>;
 
-export const ImageGallery = (props: Props) => {
-  const { overlayOpacity } = props;
+export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
+  const {
+    imageGalleryGridHandleHeight,
+    imageGalleryGridSnapPoints,
+    imageGalleryCustomComponents,
+    numberOfImageGalleryGridColumns,
+    overlayOpacity,
+  } = props;
   const {
     theme: {
       colors: { white_snow },
       imageGallery: { backgroundColor, pager, slide },
     },
   } = useTheme();
-  const {
-    imageGalleryStateStore,
-    imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight,
-    imageGalleryGridSnapPoints,
-    numberOfImageGalleryGridColumns,
-  } = useImageGalleryContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
   const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const { assets, videoPlayerPool } = imageGalleryStateStore;
 
@@ -433,6 +444,28 @@ export const ImageGallery = (props: Props) => {
         />
       </BottomSheet>
     </Animated.View>
+  );
+};
+
+export type ImageGalleryProps = Partial<ImageGalleryWithContextProps>;
+
+export const ImageGallery = (props: ImageGalleryProps) => {
+  const {
+    imageGalleryCustomComponents,
+    imageGalleryGridHandleHeight,
+    imageGalleryGridSnapPoints,
+    numberOfImageGalleryGridColumns,
+  } = useImageGalleryContext();
+  const { overlayOpacity } = useOverlayContext();
+  return (
+    <ImageGalleryWithContext
+      imageGalleryCustomComponents={imageGalleryCustomComponents}
+      imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+      imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+      numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+      overlayOpacity={overlayOpacity}
+      {...props}
+    />
   );
 };
 

@@ -1,6 +1,6 @@
 import { Attachment, LocalMessage, StateStore, Unsubscribe } from 'stream-chat';
 
-import { VideoPlayerPool } from './video-player.pool';
+import { VideoPlayerPool } from './video-player-pool';
 
 import { getGiphyMimeType } from '../components/Attachment/utils/getGiphyMimeType';
 import { isVideoPlayerAvailable } from '../native';
@@ -125,7 +125,13 @@ export class ImageGalleryStateStore {
     this.state.partialNext({ currentIndex });
   }
 
-  openImageGallery = (message: LocalMessage, selectedAttachmentUrl: string) => {
+  openImageGallery = ({
+    message,
+    selectedAttachmentUrl,
+  }: {
+    message: LocalMessage;
+    selectedAttachmentUrl: string;
+  }) => {
     this.state.partialNext({ message, selectedAttachmentUrl });
   };
 

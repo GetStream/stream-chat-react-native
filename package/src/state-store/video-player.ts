@@ -1,6 +1,6 @@
 import { StateStore } from 'stream-chat';
 
-import { VideoPlayerPool } from './video-player.pool';
+import { VideoPlayerPool } from './video-player-pool';
 
 import { NativeHandlers, VideoType } from '../native';
 import { ONE_SECOND_IN_MILLISECONDS } from '../utils/constants';
