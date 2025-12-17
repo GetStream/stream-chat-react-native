@@ -4,6 +4,12 @@ import type { ImageStyle, StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
 import { useChatConfigContext } from '../../../contexts/chatConfigContext/ChatConfigContext';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useStateStore } from '../../../hooks/useStateStore';
+import {
+  ImageGalleryAsset,
+  ImageGalleryState,
+} from '../../../state-store/image-gallery-state-store';
 import { getResizedImageUrl } from '../../../utils/getResizedImageUrl';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
 
@@ -11,38 +17,36 @@ const oneEighth = 1 / 8;
 
 type Props = {
   accessibilityLabel: string;
-  index: number;
   offsetScale: SharedValue<number>;
-  photo: { uri: string };
-  previous: boolean;
+  photo: ImageGalleryAsset;
   scale: SharedValue<number>;
   screenHeight: number;
   screenWidth: number;
-  selected: boolean;
-  shouldRender: boolean;
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
   style?: StyleProp<ImageStyle>;
 };
 
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  currentIndex: state.currentIndex,
+});
+
 export const AnimatedGalleryImage = React.memo(
   (props: Props) => {
     const {
       accessibilityLabel,
-      index,
       offsetScale,
       photo,
-      previous,
       scale,
       screenHeight,
       screenWidth,
-      selected,
-      shouldRender,
       style,
       translateX,
       translateY,
     } = props;
     const { resizableCDNHosts } = useChatConfigContext();
+    const { imageGalleryStateStore } = useImageGalleryContext();
+    const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
     const uri = useMemo(() => {
       return getResizedImageUrl({
@@ -53,16 +57,20 @@ export const AnimatedGalleryImage = React.memo(
       });
     }, [photo.uri, resizableCDNHosts, screenHeight, screenWidth]);
 
+    const index = photo.index;
+
     const animatedStyles = useAnimatedGalleryStyle({
       index,
       offsetScale,
-      previous,
+      previous: currentIndex > index,
       scale,
       screenHeight,
-      selected,
+      selected: currentIndex === index,
       translateX,
       translateY,
     });
+
+    const shouldRender = Math.abs(currentIndex - index) < 4;
 
     /**
      * An empty view is rendered for images not close to the currently
@@ -84,11 +92,7 @@ export const AnimatedGalleryImage = React.memo(
   },
   (prevProps, nextProps) => {
     if (
-      prevProps.selected === nextProps.selected &&
-      prevProps.shouldRender === nextProps.shouldRender &&
       prevProps.photo.uri === nextProps.photo.uri &&
-      prevProps.previous === nextProps.previous &&
-      prevProps.index === nextProps.index &&
       prevProps.screenHeight === nextProps.screenHeight &&
       prevProps.screenWidth === nextProps.screenWidth
     ) {
