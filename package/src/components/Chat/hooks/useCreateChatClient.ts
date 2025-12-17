@@ -24,11 +24,9 @@ export const useCreateChatClient = ({
   options?: StreamChatOptions;
 }) => {
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
-  const [cachedUserData, setCachedUserData] = useState(userData);
 
-  if (userData.id !== cachedUserData.id) {
-    setCachedUserData(userData);
-  }
+  const userDataRef = useRef(userData);
+  userDataRef.current = userData;
 
   const optionsRef = useRef(options);
   optionsRef.current = options;
@@ -37,7 +35,7 @@ export const useCreateChatClient = ({
     const client = new StreamChat(apiKey, undefined, optionsRef.current);
     let didUserConnectInterrupt = false;
 
-    const connectionPromise = client.connectUser(cachedUserData, tokenOrProvider).then(() => {
+    const connectionPromise = client.connectUser(userDataRef.current, tokenOrProvider).then(() => {
       if (!didUserConnectInterrupt) {
         setChatClient(client);
       }
@@ -49,10 +47,11 @@ export const useCreateChatClient = ({
       connectionPromise
         .then(() => client.disconnectUser())
         .then(() => {
-          console.log(`Connection for user "${cachedUserData.id}" has been closed`);
+          console.log(`Connection for user "${userDataRef.current.id}" has been closed`);
         });
     };
-  }, [apiKey, cachedUserData, tokenOrProvider]);
+    // we should recompute the client on user id change
+  }, [apiKey, userData.id, tokenOrProvider]);
 
   return chatClient;
 };
