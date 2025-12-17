@@ -7,6 +7,7 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import { NativeHandlers } from '../../../native';
 
 export const useMessageActionHandlers = ({
@@ -29,6 +30,7 @@ export const useMessageActionHandlers = ({
   Pick<MessageComposerAPIContextValue, 'setEditingState' | 'setQuotedMessage'>) => {
   const { t } = useTranslationContext();
   const handleResendMessage = () => retrySendMessage(message);
+  const translatedMessage = useTranslatedMessage(message);
 
   const handleQuotedReplyMessage = () => {
     setQuotedMessage(message);
@@ -42,7 +44,7 @@ export const useMessageActionHandlers = ({
     if (!message.text) {
       return;
     }
-    NativeHandlers.setClipboardString(message.text);
+    NativeHandlers.setClipboardString(translatedMessage?.text ?? message.text);
   };
 
   const handleDeleteMessage = () => {
