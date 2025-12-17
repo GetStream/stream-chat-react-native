@@ -32,10 +32,12 @@ export const useCreateChatClient = ({
   optionsRef.current = options;
 
   useEffect(() => {
+    const userData = userDataRef.current;
+
     const client = new StreamChat(apiKey, undefined, optionsRef.current);
     let didUserConnectInterrupt = false;
 
-    const connectionPromise = client.connectUser(userDataRef.current, tokenOrProvider).then(() => {
+    const connectionPromise = client.connectUser(userData, tokenOrProvider).then(() => {
       if (!didUserConnectInterrupt) {
         setChatClient(client);
       }
@@ -47,7 +49,7 @@ export const useCreateChatClient = ({
       connectionPromise
         .then(() => client.disconnectUser())
         .then(() => {
-          console.log(`Connection for user "${userDataRef.current.id}" has been closed`);
+          console.log(`Connection for user "${userData.id}" has been closed`);
         });
     };
     // we should recompute the client on user id change
