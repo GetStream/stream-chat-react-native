@@ -74,3 +74,5 @@ dist/
 ios/
 android/
 # @end expo-cli
+
+credentials/
