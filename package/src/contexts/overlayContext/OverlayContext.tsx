@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { SharedValue } from 'react-native-reanimated';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
+import { ImageGalleryProviderProps } from '../imageGalleryContext/ImageGalleryContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -22,7 +23,7 @@ export const OverlayContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as OverlayContextValue,
 );
 
-export type OverlayProviderProps = {
+export type OverlayProviderProps = ImageGalleryProviderProps & {
   /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
   i18nInstance?: Streami18n;
   value?: Partial<OverlayContextValue>;

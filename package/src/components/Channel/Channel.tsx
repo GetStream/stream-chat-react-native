@@ -50,12 +50,7 @@ import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/Poll/c
 import {
   AttachmentPickerContextValue,
   AttachmentPickerProvider,
-  ImageGalleryProvider,
-  ImageGalleryProviderProps,
-  MessageContextValue,
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../contexts';
+} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   AudioPlayerContextProps,
   AudioPlayerProvider,
@@ -65,6 +60,7 @@ import type { UseChannelStateValue } from '../../contexts/channelsStateContext/u
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { MessageComposerProvider } from '../../contexts/messageComposerContext/MessageComposerContext';
+import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   InputMessageInputContextValue,
   MessageInputProvider,
@@ -73,6 +69,10 @@ import {
   MessagesContextValue,
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import {
   OwnCapabilitiesContextValue,
   OwnCapabilitiesProvider,
@@ -144,7 +144,6 @@ import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent }
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
-import { ImageGallery } from '../ImageGallery/ImageGallery';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import {
   LoadingErrorIndicator as LoadingErrorIndicatorDefault,
@@ -268,7 +267,6 @@ const debounceOptions = {
 };
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
-  Partial<ImageGalleryProviderProps> &
   Pick<OverlayContextValue, 'overlay' | 'overlayOpacity'> &
   Partial<
     Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset' | 'disableAttachmentPicker'>
@@ -582,14 +580,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     attachmentPickerErrorText,
     numberOfAttachmentImagesToLoadPerCall = 60,
     numberOfAttachmentPickerImageColumns = 3,
-    autoPlayVideo = false,
     giphyVersion = 'fixed_height',
-    imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight = 40,
-    imageGalleryGridSnapPoints,
-    numberOfImageGalleryGridColumns = 3,
-    overlay,
-    overlayOpacity,
     bottomInset = 0,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     FileSelectorIcon = DefaultFileSelectorIcon,
@@ -1760,25 +1751,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ],
   );
 
-  const imageGalleryProviderProps = useMemo(
-    () => ({
-      autoPlayVideo,
-      giphyVersion,
-      imageGalleryCustomComponents,
-      imageGalleryGridHandleHeight,
-      imageGalleryGridSnapPoints,
-      numberOfImageGalleryGridColumns,
-    }),
-    [
-      autoPlayVideo,
-      giphyVersion,
-      imageGalleryCustomComponents,
-      imageGalleryGridHandleHeight,
-      imageGalleryGridSnapPoints,
-      numberOfImageGalleryGridColumns,
-    ],
-  );
-
   const attachmentPickerContext = useMemo(
     () => ({
       bottomInset,
@@ -2076,40 +2048,37 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   }
 
   return (
-    <ImageGalleryProvider value={imageGalleryProviderProps}>
-      <KeyboardCompatibleView
-        behavior={keyboardBehavior}
-        enabled={!disableKeyboardCompatibleView}
-        keyboardVerticalOffset={keyboardVerticalOffset}
-        {...additionalKeyboardAvoidingViewProps}
-      >
-        <ChannelProvider value={channelContext}>
-          <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
-            <TypingProvider value={typingContext}>
-              <PaginatedMessageListProvider value={messageListContext}>
-                <MessagesProvider value={messagesContext}>
-                  <ThreadProvider value={threadContext}>
-                    <AttachmentPickerProvider value={attachmentPickerContext}>
-                      <MessageComposerProvider value={messageComposerContext}>
-                        <MessageInputProvider value={inputMessageInputContext}>
-                          <AudioPlayerProvider value={audioPlayerContext}>
-                            <View style={{ height: '100%' }}>{children}</View>
-                            {!disableAttachmentPicker && (
-                              <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
-                            )}
-                          </AudioPlayerProvider>
-                        </MessageInputProvider>
-                      </MessageComposerProvider>
-                    </AttachmentPickerProvider>
-                  </ThreadProvider>
-                </MessagesProvider>
-              </PaginatedMessageListProvider>
-            </TypingProvider>
-          </OwnCapabilitiesProvider>
-        </ChannelProvider>
-      </KeyboardCompatibleView>
-      {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
-    </ImageGalleryProvider>
+    <KeyboardCompatibleView
+      behavior={keyboardBehavior}
+      enabled={!disableKeyboardCompatibleView}
+      keyboardVerticalOffset={keyboardVerticalOffset}
+      {...additionalKeyboardAvoidingViewProps}
+    >
+      <ChannelProvider value={channelContext}>
+        <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
+          <TypingProvider value={typingContext}>
+            <PaginatedMessageListProvider value={messageListContext}>
+              <MessagesProvider value={messagesContext}>
+                <ThreadProvider value={threadContext}>
+                  <AttachmentPickerProvider value={attachmentPickerContext}>
+                    <MessageComposerProvider value={messageComposerContext}>
+                      <MessageInputProvider value={inputMessageInputContext}>
+                        <AudioPlayerProvider value={audioPlayerContext}>
+                          <View style={{ height: '100%' }}>{children}</View>
+                          {!disableAttachmentPicker && (
+                            <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                          )}
+                        </AudioPlayerProvider>
+                      </MessageInputProvider>
+                    </MessageComposerProvider>
+                  </AttachmentPickerProvider>
+                </ThreadProvider>
+              </MessagesProvider>
+            </PaginatedMessageListProvider>
+          </TypingProvider>
+        </OwnCapabilitiesProvider>
+      </ChannelProvider>
+    </KeyboardCompatibleView>
   );
 };
 
