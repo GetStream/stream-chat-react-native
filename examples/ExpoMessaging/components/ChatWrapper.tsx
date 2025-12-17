@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import {
   Chat,
   enTranslations,
@@ -38,6 +38,19 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   });
 
   const theme = useStreamChatTheme();
+
+  useEffect(() => {
+    if (!chatClient) {
+      return;
+    }
+    chatClient.setMessageComposerSetupFunction(({ composer }) => {
+      composer.updateConfig({
+        drafts: {
+          enabled: true,
+        },
+      });
+    });
+  }, [chatClient]);
 
   if (!chatClient) {
     return <AuthProgressLoader />;

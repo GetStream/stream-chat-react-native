@@ -41,7 +41,5 @@ const styles = StyleSheet.create({
     height: 36,
     width: 36,
   },
-  container: {
-    paddingHorizontal: 16,
-  },
+  container: {},
 });

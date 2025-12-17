@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ChannelList } from 'stream-chat-expo';
 import { useContext, useMemo } from 'react';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { ChannelSort } from 'stream-chat';
 import { useUserContext } from '@/context/UserContext';
 import { AppContext } from '@/context/AppContext';
@@ -15,6 +15,7 @@ const options = {
 
 export default function ChannelListScreen() {
   const { user } = useUserContext();
+  const navigation = useNavigation();
   const filters = useMemo(
     () => ({
       members: { $in: [user?.id as string] },
@@ -24,6 +25,12 @@ export default function ChannelListScreen() {
   );
   const router = useRouter();
   const { setChannel } = useContext(AppContext);
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      headerTitle: 'Chats',
+    });
+  }, []);
 
   return (
     <View style={styles.container}>

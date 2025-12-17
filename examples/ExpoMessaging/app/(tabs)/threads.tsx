@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme, ThreadList } from 'stream-chat-expo';
 
 import { useIsFocused } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { AppContext } from '@/context/AppContext';
 
 export default function ThreadsScreen() {
@@ -12,9 +12,16 @@ export default function ThreadsScreen() {
       colors: { white_snow },
     },
   } = useTheme();
+  const navigation = useNavigation();
   const isFocused = useIsFocused();
   const router = useRouter();
   const { setThread, setChannel } = useContext(AppContext);
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      headerTitle: 'Threads',
+    });
+  }, []);
 
   return (
     <View

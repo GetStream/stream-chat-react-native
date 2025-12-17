@@ -9,11 +9,10 @@ import { LiveLocationManagerProvider } from 'stream-chat-expo';
 import { watchLocation } from '../utils/watchLocation';
 import { UserProvider, useUserContext } from '@/context/UserContext';
 import UserLogin from '@/components/UserLogin';
-import { useStreamChatTheme } from '@/hooks/useStreamChatTheme';
+import { LogoutButton } from '@/components/LogoutButton';
 
 function Layout() {
   const { user } = useUserContext();
-  const theme = useStreamChatTheme();
   if (!user) {
     return <UserLogin />;
   }
@@ -25,7 +24,7 @@ function Layout() {
           <ChatWrapper>
             <LiveLocationManagerProvider watchLocation={watchLocation}>
               <Stack>
-                <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+                <Stack.Screen name='(tabs)' options={{ headerLeft: () => <LogoutButton /> }} />
               </Stack>
             </LiveLocationManagerProvider>
           </ChatWrapper>

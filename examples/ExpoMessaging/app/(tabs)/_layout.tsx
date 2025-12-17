@@ -1,4 +1,3 @@
-import { LogoutButton } from '@/components/LogoutButton';
 import { useStreamChatTheme } from '@/hooks/useStreamChatTheme';
 import { Tabs } from 'expo-router';
 import React from 'react';
@@ -9,9 +8,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerLeft: () => <LogoutButton />,
-        headerStyle: { backgroundColor: theme.colors?.white_snow },
-        headerTintColor: theme.colors?.black,
+        headerShown: false,
         tabBarStyle: {
           backgroundColor: theme.colors?.white_snow,
         },

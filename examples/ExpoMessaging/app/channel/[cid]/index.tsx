@@ -15,6 +15,29 @@ import InputButtons from '../../../components/InputButtons';
 import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
+import { useCreateDraftFocusEffect } from '@/hooks/useCreateDraftFocusEffect';
+
+const ChannelUI = () => {
+  const router = useRouter();
+  const { setThread, channel } = useContext(AppContext);
+
+  useCreateDraftFocusEffect();
+
+  if (!channel) {
+    return null;
+  }
+  return (
+    <>
+      <MessageList
+        onThreadSelect={(thread: ThreadContextValue['thread']) => {
+          setThread(thread);
+          router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
+        }}
+      />
+      <MessageInput InputButtons={InputButtons} />
+    </>
+  );
+};
 
 export default function ChannelScreen() {
   const { client } = useChatContext();
@@ -38,7 +61,7 @@ export default function ChannelScreen() {
     initChannel();
   }, [navigateThroughPushNotification, channelId, client]);
 
-  const { setThread, channel: channelContext, thread } = useContext(AppContext);
+  const { channel: channelContext, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   const channel = channelFromParams || channelContext;
@@ -77,14 +100,7 @@ export default function ChannelScreen() {
         thread={thread}
       >
         <Stack.Screen options={{ title: 'Channel Screen', headerBackTitle: 'Back' }} />
-
-        <MessageList
-          onThreadSelect={(thread: ThreadContextValue['thread']) => {
-            setThread(thread);
-            router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
-          }}
-        />
-        <MessageInput InputButtons={InputButtons} />
+        <ChannelUI />
       </Channel>
     </SafeAreaView>
   );
