@@ -284,7 +284,10 @@ const GalleryThumbnail = ({
     if (!message) {
       return;
     }
-    imageGalleryStateStore.openImageGallery({ message, selectedAttachmentUrl: thumbnail.url });
+    imageGalleryStateStore.openImageGallery({
+      messages: [message],
+      selectedAttachmentUrl: thumbnail.url,
+    });
     setOverlay('gallery');
   };
 

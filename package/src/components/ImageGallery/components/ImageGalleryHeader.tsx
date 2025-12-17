@@ -43,7 +43,7 @@ type Props = ImageGalleryHeaderCustomComponentProps & {
 };
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
-  currentIndex: state.currentIndex,
+  asset: state.assets[state.currentIndex],
 });
 
 export const ImageGalleryHeader = (props: Props) => {
@@ -67,9 +67,8 @@ export const ImageGalleryHeader = (props: Props) => {
   } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
+  const { asset } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const { setOverlay } = useOverlayContext();
-  const asset = imageGalleryStateStore.assets[currentIndex];
 
   const date = useMemo(
     () =>

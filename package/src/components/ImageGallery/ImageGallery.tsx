@@ -13,7 +13,6 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import BottomSheet from '@gorhom/bottom-sheet';
-import type { UserResponse } from 'stream-chat';
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
@@ -102,6 +101,7 @@ export type ImageGalleryCustomComponents = {
 };
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
+  assets: state.assets,
   currentIndex: state.currentIndex,
 });
 
@@ -129,8 +129,11 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     },
   } = useTheme();
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
-  const { assets, videoPlayerPool } = imageGalleryStateStore;
+  const { assets, currentIndex } = useStateStore(
+    imageGalleryStateStore.state,
+    imageGallerySelector,
+  );
+  const { videoPlayerPool } = imageGalleryStateStore;
 
   const { vh, vw } = useViewport();
 
@@ -483,20 +486,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
-
-export type Photo = {
-  id: string;
-  uri: string;
-  channelId?: string;
-  created_at?: string | Date;
-  messageId?: string;
-  mime_type?: string;
-  original_height?: number;
-  original_width?: number;
-  thumb_url?: string;
-  type?: string;
-  user?: UserResponse | null;
-  user_id?: string;
-};
 
 ImageGallery.displayName = 'ImageGallery{imageGallery}';

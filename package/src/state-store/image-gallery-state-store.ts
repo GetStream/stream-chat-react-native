@@ -1,4 +1,4 @@
-import { Attachment, LocalMessage, StateStore, Unsubscribe } from 'stream-chat';
+import { Attachment, LocalMessage, StateStore, Unsubscribe, UserResponse } from 'stream-chat';
 
 import { VideoPlayerPool } from './video-player-pool';
 
@@ -6,6 +6,21 @@ import { getGiphyMimeType } from '../components/Attachment/utils/getGiphyMimeTyp
 import { isVideoPlayerAvailable } from '../native';
 import { FileTypes } from '../types/types';
 import { getUrlOfImageAttachment } from '../utils/getUrlOfImageAttachment';
+
+export type ImageGalleryAsset = {
+  id: string;
+  uri: string;
+  channelId?: string;
+  created_at?: string | Date;
+  messageId?: string;
+  mime_type?: string;
+  original_height?: number;
+  original_width?: number;
+  thumb_url?: string;
+  type?: string;
+  user?: UserResponse | null;
+  user_id?: string;
+};
 
 const isViewableImageAttachment = (attachment: Attachment) => {
   return attachment.type === FileTypes.Image && !attachment.title_link && !attachment.og_scrape_url;
@@ -22,14 +37,16 @@ const isViewableGiphyAttachment = (attachment: Attachment) => {
 const stripQueryFromUrl = (url: string) => url.split('?')[0];
 
 export type ImageGalleryState = {
-  message?: LocalMessage;
+  assets: ImageGalleryAsset[];
+  messages: LocalMessage[];
   selectedAttachmentUrl?: string;
   currentIndex: number;
 };
 
 const INITIAL_STATE: ImageGalleryState = {
+  assets: [],
   currentIndex: 0,
-  message: undefined,
+  messages: [],
   selectedAttachmentUrl: undefined,
 };
 
@@ -55,28 +72,36 @@ export class ImageGalleryStateStore {
   }
 
   // Getters
-  get message() {
-    return this.state.getLatestValue().message;
+  get messages() {
+    return this.state.getLatestValue().messages;
   }
 
   get selectedAttachmentUrl() {
     return this.state.getLatestValue().selectedAttachmentUrl;
   }
 
-  get attachments() {
-    const message = this.message;
+  get attachmentsWithMessage() {
+    const messages = this.messages;
 
-    const attachments = message?.attachments ?? [];
-
-    const filteredAttachments = attachments.filter((attachment) => {
-      return (
-        isViewableImageAttachment(attachment) ||
-        isViewableVideoAttachment(attachment) ||
-        isViewableGiphyAttachment(attachment)
+    const attachmentsWithMessage = messages
+      .map((message) => ({
+        attachments: message.attachments ?? [],
+        message,
+      }))
+      .filter(({ attachments }) =>
+        attachments.some((attachment) => {
+          if (!attachment) {
+            return false;
+          }
+          return (
+            isViewableImageAttachment(attachment) ||
+            isViewableVideoAttachment(attachment) ||
+            isViewableGiphyAttachment(attachment)
+          );
+        }),
       );
-    });
 
-    return filteredAttachments;
+    return attachmentsWithMessage;
   }
 
   getAssetId(messageId: string, assetUrl: string) {
@@ -84,37 +109,38 @@ export class ImageGalleryStateStore {
   }
 
   get assets() {
-    const message = this.message;
-    const attachments = this.attachments;
+    const attachmentsWithMessage = this.attachmentsWithMessage;
     const { giphyVersion = 'fixed_height' } = this.options;
 
-    return attachments.map((attachment) => {
-      const assetUrl = getUrlOfImageAttachment(attachment, giphyVersion) as string;
-      const assetId = this.getAssetId(message?.id ?? '', assetUrl);
-      const giphyURL =
-        attachment.giphy?.[giphyVersion]?.url || attachment.thumb_url || attachment.image_url;
-      const giphyMimeType = getGiphyMimeType(giphyURL ?? '');
+    return attachmentsWithMessage.flatMap(({ message, attachments }) => {
+      return attachments.map((attachment) => {
+        const assetUrl = getUrlOfImageAttachment(attachment, giphyVersion) as string;
+        const assetId = this.getAssetId(message?.id ?? '', assetUrl);
+        const giphyURL =
+          attachment.giphy?.[giphyVersion]?.url || attachment.thumb_url || attachment.image_url;
+        const giphyMimeType = getGiphyMimeType(giphyURL ?? '');
 
-      return {
-        channelId: message?.cid,
-        created_at: message?.created_at,
-        id: assetId,
-        messageId: message?.id,
-        mime_type: attachment.type === 'giphy' ? giphyMimeType : attachment.mime_type,
-        original_height: attachment.original_height,
-        original_width: attachment.original_width,
-        thumb_url: attachment.thumb_url,
-        type: attachment.type,
-        uri: assetUrl,
-        user: message?.user,
-        user_id: message?.user_id,
-      };
+        return {
+          channelId: message?.cid,
+          created_at: message?.created_at,
+          id: assetId,
+          messageId: message?.id,
+          mime_type: attachment.type === 'giphy' ? giphyMimeType : attachment.mime_type,
+          original_height: attachment.original_height,
+          original_width: attachment.original_width,
+          thumb_url: attachment.thumb_url,
+          type: attachment.type,
+          uri: assetUrl,
+          user: message?.user,
+          user_id: message?.user_id,
+        };
+      });
     });
   }
 
   // Setters
-  set message(message: LocalMessage | undefined) {
-    this.state.partialNext({ message });
+  set messages(messages: LocalMessage[]) {
+    this.state.partialNext({ messages });
   }
 
   set selectedAttachmentUrl(selectedAttachmentUrl: string | undefined) {
@@ -125,30 +151,53 @@ export class ImageGalleryStateStore {
     this.state.partialNext({ currentIndex });
   }
 
+  // APIs for managing messages
+  appendMessages = (messages: LocalMessage[]) => {
+    this.state.partialNext({ messages: [...this.messages, ...messages] });
+  };
+
+  removeMessages = (messages: LocalMessage[]) => {
+    this.state.partialNext({
+      messages: this.messages.filter((message) => !messages.includes(message)),
+    });
+  };
+
   openImageGallery = ({
-    message,
+    messages,
     selectedAttachmentUrl,
   }: {
-    message: LocalMessage;
-    selectedAttachmentUrl: string;
+    messages: LocalMessage[];
+    selectedAttachmentUrl?: string;
   }) => {
-    this.state.partialNext({ message, selectedAttachmentUrl });
+    this.state.partialNext({ messages, selectedAttachmentUrl });
+  };
+
+  subscribeToMessages = () => {
+    const unsubscribe = this.state.subscribeWithSelector(
+      (currentValue) => ({
+        messages: currentValue.messages,
+      }),
+      () => {
+        const assets = this.assets;
+        this.state.partialNext({ assets });
+      },
+    );
+
+    return unsubscribe;
   };
 
   subscribeToSelectedAttachmentUrl = () => {
     const unsubscribe = this.state.subscribeWithSelector(
       (currentValue) => ({
-        message: currentValue.message,
+        messages: currentValue.messages,
         selectedAttachmentUrl: currentValue.selectedAttachmentUrl,
       }),
-      ({ selectedAttachmentUrl, message }) => {
-        if (!selectedAttachmentUrl || !message) {
+      ({ selectedAttachmentUrl }) => {
+        if (!selectedAttachmentUrl) {
           return;
         }
-        const assets = this.assets;
-        const index = assets.findIndex(
+        const index = this.assets.findIndex(
           (asset) =>
-            asset.messageId === message?.id &&
             stripQueryFromUrl(asset.uri) === stripQueryFromUrl(selectedAttachmentUrl ?? ''),
         );
         this.state.partialNext({ currentIndex: index === -1 ? 0 : index });
@@ -160,6 +209,7 @@ export class ImageGalleryStateStore {
 
   registerSubscriptions = () => {
     const subscriptions: Unsubscribe[] = [];
+    subscriptions.push(this.subscribeToMessages());
     subscriptions.push(this.subscribeToSelectedAttachmentUrl());
 
     return () => {

@@ -66,6 +66,7 @@ type ImageGalleryFooterPropsWithContext = ImageGalleryFooterCustomComponentProps
 };
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
+  asset: state.assets[state.currentIndex],
   currentIndex: state.currentIndex,
 });
 
@@ -96,8 +97,7 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
   } = useTheme();
   const { t } = useTranslationContext();
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
-  const asset = imageGalleryStateStore.assets[currentIndex];
+  const { asset, currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
   const footerStyle = useAnimatedStyle<ViewStyle>(
     () => ({

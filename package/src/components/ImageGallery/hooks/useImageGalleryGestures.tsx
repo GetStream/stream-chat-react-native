@@ -33,8 +33,6 @@ const MARGIN = 32;
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   currentIndex: state.currentIndex,
-  message: state.message,
-  selectedAttachmentUrl: state.selectedAttachmentUrl,
 });
 
 export const useImageGalleryGestures = ({
@@ -158,7 +156,7 @@ export const useImageGalleryGestures = ({
     offsetScale.value = 1;
   };
 
-  const assetsLength = imageGalleryStateStore.attachments.length;
+  const assetsLength = imageGalleryStateStore.assets.length;
 
   const clearImageGallery = () => {
     runOnJS(imageGalleryStateStore.clear)();

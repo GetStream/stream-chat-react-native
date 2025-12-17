@@ -208,7 +208,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
     if (!uri) {
       return;
     }
-    imageGalleryStateStore.openImageGallery({ message, selectedAttachmentUrl: uri });
+    imageGalleryStateStore.openImageGallery({ messages: [message], selectedAttachmentUrl: uri });
     setOverlay('gallery');
   };
 
