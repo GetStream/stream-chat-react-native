@@ -7,7 +7,11 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "fastlane:ios-deploy": "bundle exec fastlane ios testflight_build_and_upload deploy:true",
+    "fastlane:ios-build": "bundle exec fastlane ios testflight_build_and_upload",
+    "fastlane:android-deploy": "bundle exec fastlane android firebase_build_and_upload deploy:true",
+    "fastlane:android-build": "bundle exec fastlane android firebase_build_and_upload"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

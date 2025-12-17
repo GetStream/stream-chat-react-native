@@ -1,0 +1,116 @@
+# Common Configuration
+build_output_directory = "./app-build"
+
+# Android Platform Configuration
+firebase_app_id = "1:860064972837:android:101025e38fd23297f17fcc"
+firebase_credentials_file = "./credentials/firebase-credentials.json"
+output_aab_name = "expomessaging.aab"
+aab_path = "#{build_output_directory}/#{output_aab_name}"
+package_name = "io.getstream.android.expomessagingapp"
+
+# iOS Platform Configuration
+app_identifier = "io.getstream.iOS.expomessagingapp"
+xcode_project = "./ios/ExpoMessaging.xcodeproj"
+xcode_workspace = "./ios/ExpoMessaging.xcworkspace"
+
+platform :ios do
+    lane :testflight_build_and_upload do |options|
+        match_me
+        deploy = options.fetch(:deploy, false)
+
+        UI.message("Deploying to Testflight: #{deploy}")
+
+        settings_to_override = {
+            BUNDLE_IDENTIFIER: app_identifier,
+            PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{app_identifier}"
+        }
+
+        # Increment version and build number
+        increment_version_number(
+            xcodeproj: xcode_project,
+            version_number: load_json(json_path: './package.json')['version']
+        )
+
+        current_build_number = app_store_build_number(
+            api_key: appstore_api_key,
+            live: false,
+            app_identifier: app_identifier
+        )
+        
+        increment_build_number(
+            build_number: current_build_number + 1,
+            xcodeproj: xcode_project
+        )
+
+        # Build the app
+        gym(
+            workspace: xcode_workspace,
+            scheme: "ExpoMessaging",
+            export_method: "app-store",
+            silent: true,
+            clean: true,
+            output_directory: build_output_directory,
+            xcargs: settings_to_override
+        )
+
+        if deploy
+            upload_to_testflight(
+                changelog: 'Lots of amazing new features to test out!',
+                distribute_external: true,
+                groups: ["Testers"],
+                ipa: "#{build_output_directory}/StreamChatExpoSampleApp.ipa",
+                notify_external_testers: true,
+                reject_build_waiting_for_review: true,
+            )
+        else
+            UI.message("Skipping Testflight upload! (deploy: #{deploy})")
+        end
+    end
+end
+
+platform :android do
+    lane :firebase_build_and_upload do |options|
+        deploy = options.fetch(:deploy, false)
+
+        UI.message("Deploying to Firebase: #{deploy}")
+
+        latest_app_distribution_release = firebase_app_distribution_get_latest_release(
+            app: firebase_app_id
+        )
+        latest_app_distribution_version_code = latest_app_distribution_release[:buildVersion].to_i
+        increment_version_code(
+            gradle_file_path: "./android/app/build.gradle",
+            version_code: latest_app_distribution_version_code + 1
+        )
+
+        # Clean 
+        gradle(
+            task: "clean",
+            project_dir: "./android"
+        )
+
+        # Build the AAB
+        gradle(
+            task: "bundle",
+            build_type: "Release",
+            project_dir: "./android"
+        )
+
+        Dir.chdir('..') do
+            sh("mkdir -p #{build_output_directory} && mv -f #{lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]} #{build_output_directory}/#{output_aab_name}")
+        end
+
+        if deploy
+            # Upload to Firebase App Distribution
+            firebase_app_distribution(
+                app: firebase_app_id,
+                service_credentials_file: firebase_credentials_file,
+                android_artifact_path: aab_path,
+                android_artifact_type: "AAB",
+                groups: "stream-testers"
+            )
+        else
+            UI.message("Skipping Firebase upload! (deploy: #{deploy})")
+        end
+    end
+end
