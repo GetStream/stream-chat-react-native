@@ -115,11 +115,11 @@ platform :android do
 
     UI.message("Deploying to Firebase: #{deploy}")
     
-    # Clean 
-    gradle(
-        task: "clean",
-        project_dir: "./android"
-    )
+    # # Clean 
+    # gradle(
+    #     task: "clean",
+    #     project_dir: "./android"
+    # )
   
     # Build the AAB
     gradle(
@@ -133,25 +133,6 @@ platform :android do
     end
 
     if deploy
-      latest_app_distribution_release = firebase_app_distribution_get_latest_release(
-        app: firebase_app_id,
-        service_credentials_file: firebase_credentials_file
-      )
-
-      # Handle case when no previous releases exist
-      if latest_app_distribution_release.nil? || latest_app_distribution_release.empty?
-        puts "No previous releases found. Starting with version code 1"
-        latest_app_distribution_version_code = 0  # Will be incremented to 1
-      else
-        latest_app_distribution_version_code = latest_app_distribution_release[:buildVersion].to_i
-        puts "Latest version code from App Distribution: #{latest_app_distribution_version_code}"
-      end
-
-      increment_version_code(
-        gradle_file_path: "./android/app/build.gradle",
-        version_code: latest_app_distribution_version_code + 1
-      )
-
       # Upload to Firebase App Distribution
       firebase_app_distribution(
           app: firebase_app_id,
