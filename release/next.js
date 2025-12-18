@@ -9,6 +9,10 @@ configPromise.then((config) => {
     branches: [
       'main',
       {
+        name:"V8-release",
+        range: "8.x",
+      },
+      {
         name: 'develop',
         channel: 'beta',
         prerelease: 'beta',

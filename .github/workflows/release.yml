@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - V8-release
 
 permissions:
   id-token: write     # for OIDC / npm provenance if you use it
@@ -44,11 +45,11 @@ jobs:
         run: yarn lerna-workspaces run lint
 
       - name: Test
-        if: github.ref == 'refs/heads/develop'
+        if: github.ref == 'refs/heads/V8-release'
         run: yarn test:coverage
 
       - name: Publish Next Release (develop)
-        if: github.ref == 'refs/heads/develop'
+        if: github.ref == 'refs/heads/V8-release'
         run: |
           GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
 
