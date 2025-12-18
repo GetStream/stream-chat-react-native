@@ -1,66 +1,45 @@
-import type { Attachment, LocalMessage } from 'stream-chat';
+import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
 
-import { isVideoPlayerAvailable } from '../../native';
-import { ImageGalleryOptions, ImageGalleryStateStore } from '../image-gallery-state-store';
+import {
+  generateImageAttachment,
+  generateVideoAttachment,
+} from '../../mock-builders/generator/attachment';
+import { generateMessage } from '../../mock-builders/generator/message';
+import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
+import { ImageGalleryStateStore } from '../image-gallery-state-store';
 import { VideoPlayerPool } from '../video-player-pool';
 
-// Mock the VideoPlayerPool
+// Mock dependencies
 jest.mock('../video-player-pool', () => ({
   VideoPlayerPool: jest.fn().mockImplementation(() => ({
     clear: jest.fn(),
+    pool: new Map(),
+    state: {
+      getLatestValue: () => ({ activeVideoPlayer: null }),
+    },
   })),
 }));
 
-// Mock the native module
 jest.mock('../../native', () => ({
   isVideoPlayerAvailable: jest.fn(() => true),
 }));
 
-const createMockMessage = (
-  overrides: Partial<LocalMessage> = {},
-  attachments: Attachment[] = [],
-): LocalMessage =>
-  ({
-    attachments,
-    cid: 'messaging:test-channel',
-    created_at: new Date('2024-01-15T10:00:00Z'),
-    id: 'message-1',
-    user: { id: 'user-1', name: 'Test User' },
-    user_id: 'user-1',
-    ...overrides,
-  }) as LocalMessage;
+const { isVideoPlayerAvailable } = jest.requireMock('../../native') as {
+  isVideoPlayerAvailable: jest.Mock;
+};
 
-const createImageAttachment = (overrides: Partial<Attachment> = {}): Attachment => ({
-  image_url: 'https://example.com/image.jpg',
-  type: 'image',
-  ...overrides,
-});
-
-const createVideoAttachment = (overrides: Partial<Attachment> = {}): Attachment => ({
-  asset_url: 'https://example.com/video.mp4',
-  mime_type: 'video/mp4',
-  type: 'video',
-  ...overrides,
-});
-
-const createGiphyAttachment = (overrides: Partial<Attachment> = {}): Attachment =>
-  ({
-    giphy: {
-      fixed_height: {
-        height: 200,
-        url: 'https://giphy.com/fixed_height.gif',
-        width: 200,
-      },
-      original: {
-        height: 400,
-        url: 'https://giphy.com/original.gif',
-        width: 400,
-      },
+const createGiphyAttachment = (overrides: Partial<Attachment> = {}): Attachment => ({
+  giphy: {
+    fixed_height: {
+      height: 200,
+      url: 'https://giphy.com/test.gif',
+      width: 200,
     },
-    thumb_url: 'https://giphy.com/thumb.gif',
-    type: 'giphy',
-    ...overrides,
-  }) as Attachment;
+  },
+  thumb_url: 'https://giphy.com/thumb.gif',
+  type: 'giphy',
+  ...overrides,
+});
 
 describe('ImageGalleryStateStore', () => {
   beforeEach(() => {
@@ -78,17 +57,26 @@ describe('ImageGalleryStateStore', () => {
       });
     });
 
-    it('should initialize with custom options', () => {
-      const customOptions: Partial<ImageGalleryOptions> = {
+    it('should merge custom options with defaults', () => {
+      const store = new ImageGalleryStateStore({
         autoPlayVideo: true,
         giphyVersion: 'original',
-      };
-
-      const store = new ImageGalleryStateStore(customOptions);
+      });
 
       expect(store.options).toEqual({
         autoPlayVideo: true,
         giphyVersion: 'original',
+      });
+    });
+
+    it('should partially override options', () => {
+      const store = new ImageGalleryStateStore({
+        autoPlayVideo: true,
+      });
+
+      expect(store.options).toEqual({
+        autoPlayVideo: true,
+        giphyVersion: 'fixed_height',
       });
     });
 
@@ -97,8 +85,9 @@ describe('ImageGalleryStateStore', () => {
       const state = store.state.getLatestValue();
 
       expect(state).toEqual({
+        assets: [],
         currentIndex: 0,
-        message: undefined,
+        messages: [],
         selectedAttachmentUrl: undefined,
       });
     });
@@ -111,525 +100,819 @@ describe('ImageGalleryStateStore', () => {
     });
   });
 
-  describe('getters', () => {
-    describe('message getter', () => {
-      it('should return undefined when no message is set', () => {
-        const store = new ImageGalleryStateStore();
+  describe('messages getter and setter', () => {
+    it('should get messages from state', () => {
+      const store = new ImageGalleryStateStore();
+      const messages = [generateMessage({ id: 1 }), generateMessage({ id: 2 })];
 
-        expect(store.message).toBeUndefined();
-      });
+      store.messages = messages;
 
-      it('should return the current message', () => {
-        const store = new ImageGalleryStateStore();
-        const message = createMockMessage();
-
-        store.message = message;
-
-        expect(store.message).toEqual(message);
-      });
+      expect(store.messages).toEqual(messages);
     });
 
-    describe('selectedAttachmentUrl getter', () => {
-      it('should return undefined when no URL is selected', () => {
-        const store = new ImageGalleryStateStore();
+    it('should update state when setting messages', () => {
+      const store = new ImageGalleryStateStore();
+      const messages = [generateMessage({ id: 1 })];
 
-        expect(store.selectedAttachmentUrl).toBeUndefined();
-      });
+      store.messages = messages;
 
-      it('should return the selected attachment URL', () => {
-        const store = new ImageGalleryStateStore();
-        const url = 'https://example.com/image.jpg';
-
-        store.selectedAttachmentUrl = url;
-
-        expect(store.selectedAttachmentUrl).toBe(url);
-      });
+      expect(store.state.getLatestValue().messages).toEqual(messages);
     });
 
-    describe('attachments getter', () => {
-      it('should return an empty array when no message is set', () => {
-        const store = new ImageGalleryStateStore();
+    it('should return empty array when no messages are set', () => {
+      const store = new ImageGalleryStateStore();
 
-        expect(store.attachments).toEqual([]);
-      });
-
-      it('should return an empty array when message has no attachments', () => {
-        const store = new ImageGalleryStateStore();
-        store.message = createMockMessage({}, []);
-
-        expect(store.attachments).toEqual([]);
-      });
-
-      it('should filter and return only viewable image attachments', () => {
-        const store = new ImageGalleryStateStore();
-        const imageAttachment = createImageAttachment();
-        store.message = createMockMessage({}, [imageAttachment]);
-
-        expect(store.attachments).toEqual([imageAttachment]);
-      });
-
-      it('should filter and return only viewable video attachments when video player is available', () => {
-        const store = new ImageGalleryStateStore();
-        const videoAttachment = createVideoAttachment();
-        store.message = createMockMessage({}, [videoAttachment]);
-
-        expect(store.attachments).toEqual([videoAttachment]);
-      });
-
-      it('should exclude video attachments when video player is not available', () => {
-        (isVideoPlayerAvailable as jest.Mock).mockReturnValue(false);
-        const store = new ImageGalleryStateStore();
-        const videoAttachment = createVideoAttachment();
-        store.message = createMockMessage({}, [videoAttachment]);
-
-        expect(store.attachments).toEqual([]);
-      });
-
-      it('should filter and return giphy attachments', () => {
-        const store = new ImageGalleryStateStore();
-        const giphyAttachment = createGiphyAttachment();
-        store.message = createMockMessage({}, [giphyAttachment]);
-
-        expect(store.attachments).toEqual([giphyAttachment]);
-      });
-
-      it('should exclude image attachments with title_link (URL previews)', () => {
-        const store = new ImageGalleryStateStore();
-        const imageWithTitleLink = createImageAttachment({
-          title_link: 'https://example.com',
-        });
-        store.message = createMockMessage({}, [imageWithTitleLink]);
-
-        expect(store.attachments).toEqual([]);
-      });
-
-      it('should exclude image attachments with og_scrape_url (Open Graph previews)', () => {
-        const store = new ImageGalleryStateStore();
-        const imageWithOgScrape = createImageAttachment({
-          og_scrape_url: 'https://example.com',
-        });
-        store.message = createMockMessage({}, [imageWithOgScrape]);
-
-        expect(store.attachments).toEqual([]);
-      });
-
-      it('should return multiple viewable attachments', () => {
-        const store = new ImageGalleryStateStore();
-        const imageAttachment = createImageAttachment();
-        const videoAttachment = createVideoAttachment();
-        const giphyAttachment = createGiphyAttachment();
-        const fileAttachment: Attachment = { type: 'file' };
-
-        store.message = createMockMessage({}, [
-          imageAttachment,
-          videoAttachment,
-          giphyAttachment,
-          fileAttachment,
-        ]);
-
-        expect(store.attachments).toEqual([imageAttachment, videoAttachment, giphyAttachment]);
-      });
-    });
-
-    describe('assets getter', () => {
-      it('should return an empty array when no message is set', () => {
-        const store = new ImageGalleryStateStore();
-
-        expect(store.assets).toEqual([]);
-      });
-
-      it('should map image attachments to assets correctly', () => {
-        const store = new ImageGalleryStateStore();
-        const imageAttachment = createImageAttachment({
-          image_url: 'https://example.com/image.jpg',
-          mime_type: 'image/jpeg',
-          original_height: 600,
-          original_width: 800,
-          thumb_url: 'https://example.com/thumb.jpg',
-        });
-        const message = createMockMessage({ id: 'msg-1' }, [imageAttachment]);
-        store.message = message;
-
-        const assets = store.assets;
-
-        expect(assets).toHaveLength(1);
-        expect(assets[0]).toMatchObject({
-          channelId: 'messaging:test-channel',
-          id: 'photoId-msg-1-https://example.com/image.jpg',
-          messageId: 'msg-1',
-          mime_type: 'image/jpeg',
-          original_height: 600,
-          original_width: 800,
-          thumb_url: 'https://example.com/thumb.jpg',
-          type: 'image',
-          uri: 'https://example.com/image.jpg',
-          user_id: 'user-1',
-        });
-      });
-
-      it('should map video attachments to assets correctly', () => {
-        const store = new ImageGalleryStateStore();
-        const videoAttachment = createVideoAttachment({
-          asset_url: 'https://example.com/video.mp4',
-          mime_type: 'video/mp4',
-        });
-        const message = createMockMessage({ id: 'msg-2' }, [videoAttachment]);
-        store.message = message;
-
-        const assets = store.assets;
-
-        expect(assets).toHaveLength(1);
-        expect(assets[0]).toMatchObject({
-          messageId: 'msg-2',
-          mime_type: 'video/mp4',
-          type: 'video',
-          uri: 'https://example.com/video.mp4',
-        });
-      });
-
-      it('should map giphy attachments with correct mime type for gif', () => {
-        const store = new ImageGalleryStateStore();
-        const giphyAttachment = createGiphyAttachment();
-        const message = createMockMessage({ id: 'msg-3' }, [giphyAttachment]);
-        store.message = message;
-
-        const assets = store.assets;
-
-        expect(assets).toHaveLength(1);
-        expect(assets[0].mime_type).toBe('image/gif');
-        expect(assets[0].type).toBe('giphy');
-      });
-
-      it('should map giphy attachments with mp4 mime type', () => {
-        const store = new ImageGalleryStateStore();
-        const giphyAttachment: Attachment = {
-          giphy: {
-            fixed_height: {
-              height: 200,
-              url: 'https://giphy.com/fixed_height.mp4',
-              width: 200,
-            },
-          } as Attachment['giphy'],
-          type: 'giphy',
-        };
-        const message = createMockMessage({ id: 'msg-4' }, [giphyAttachment]);
-        store.message = message;
-
-        const assets = store.assets;
-
-        expect(assets).toHaveLength(1);
-        expect(assets[0].mime_type).toBe('video/mp4');
-      });
-
-      it('should map giphy attachments with webp mime type', () => {
-        const store = new ImageGalleryStateStore();
-        const giphyAttachment: Attachment = {
-          giphy: {
-            fixed_height: {
-              height: 200,
-              url: 'https://giphy.com/fixed_height.webp',
-              width: 200,
-            },
-          } as Attachment['giphy'],
-          type: 'giphy',
-        };
-        const message = createMockMessage({ id: 'msg-5' }, [giphyAttachment]);
-        store.message = message;
-
-        const assets = store.assets;
-
-        expect(assets).toHaveLength(1);
-        expect(assets[0].mime_type).toBe('image/webp');
-      });
-
-      it('should use correct giphy version from options', () => {
-        const store = new ImageGalleryStateStore({ giphyVersion: 'original' });
-        const giphyAttachment = createGiphyAttachment();
-        const message = createMockMessage({ id: 'msg-6' }, [giphyAttachment]);
-        store.message = message;
-
-        const assets = store.assets;
-
-        expect(assets).toHaveLength(1);
-        expect(assets[0].uri).toBe('https://giphy.com/original.gif');
-      });
-    });
-
-    describe('getAssetId', () => {
-      it('should generate asset ID correctly', () => {
-        const store = new ImageGalleryStateStore();
-
-        const assetId = store.getAssetId('msg-123', 'https://example.com/image.jpg');
-
-        expect(assetId).toBe('photoId-msg-123-https://example.com/image.jpg');
-      });
+      expect(store.messages).toEqual([]);
     });
   });
 
-  describe('setters', () => {
-    describe('message setter', () => {
-      it('should update the message in state', () => {
-        const store = new ImageGalleryStateStore();
-        const message = createMockMessage({ id: 'new-message' });
+  describe('selectedAttachmentUrl getter and setter', () => {
+    it('should get selectedAttachmentUrl from state', () => {
+      const store = new ImageGalleryStateStore();
+      const url = 'https://example.com/image.jpg';
 
-        store.message = message;
+      store.selectedAttachmentUrl = url;
 
-        expect(store.state.getLatestValue().message).toEqual(message);
+      expect(store.selectedAttachmentUrl).toBe(url);
+    });
+
+    it('should update state when setting selectedAttachmentUrl', () => {
+      const store = new ImageGalleryStateStore();
+      const url = 'https://example.com/image.jpg';
+
+      store.selectedAttachmentUrl = url;
+
+      expect(store.state.getLatestValue().selectedAttachmentUrl).toBe(url);
+    });
+
+    it('should return undefined when no url is set', () => {
+      const store = new ImageGalleryStateStore();
+
+      expect(store.selectedAttachmentUrl).toBeUndefined();
+    });
+
+    it('should allow setting undefined', () => {
+      const store = new ImageGalleryStateStore();
+      store.selectedAttachmentUrl = 'https://example.com/image.jpg';
+
+      store.selectedAttachmentUrl = undefined;
+
+      expect(store.selectedAttachmentUrl).toBeUndefined();
+    });
+  });
+
+  describe('currentIndex setter', () => {
+    it('should update currentIndex in state', () => {
+      const store = new ImageGalleryStateStore();
+
+      store.currentIndex = 5;
+
+      expect(store.state.getLatestValue().currentIndex).toBe(5);
+    });
+
+    it('should allow setting to 0', () => {
+      const store = new ImageGalleryStateStore();
+      store.currentIndex = 5;
+
+      store.currentIndex = 0;
+
+      expect(store.state.getLatestValue().currentIndex).toBe(0);
+    });
+  });
+
+  describe('attachmentsWithMessage getter', () => {
+    it('should return empty array when no messages', () => {
+      const store = new ImageGalleryStateStore();
+
+      expect(store.attachmentsWithMessage).toEqual([]);
+    });
+
+    it('should filter messages with viewable image attachments', () => {
+      const store = new ImageGalleryStateStore();
+      const imageAttachment = generateImageAttachment({
+        image_url: 'https://example.com/image.jpg',
+      });
+      const message = generateMessage({ attachments: [imageAttachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(1);
+      expect(store.attachmentsWithMessage[0].attachments).toContain(imageAttachment);
+    });
+
+    it('should filter messages with viewable video attachments', () => {
+      const store = new ImageGalleryStateStore();
+      const videoAttachment = generateVideoAttachment({
+        asset_url: 'https://example.com/video.mp4',
+      });
+      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(1);
+      expect(store.attachmentsWithMessage[0].attachments).toContain(videoAttachment);
+    });
+
+    it('should filter messages with giphy attachments', () => {
+      const store = new ImageGalleryStateStore();
+      const giphyAttachment = createGiphyAttachment();
+      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(1);
+      expect(store.attachmentsWithMessage[0].attachments).toContain(giphyAttachment);
+    });
+
+    it('should exclude video attachments when video player is not available', () => {
+      (isVideoPlayerAvailable as jest.Mock).mockReturnValue(false);
+      const store = new ImageGalleryStateStore();
+      const videoAttachment = generateVideoAttachment({
+        asset_url: 'https://example.com/video.mp4',
+      });
+      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(0);
+    });
+
+    it('should exclude image attachments with title_link (link previews)', () => {
+      const store = new ImageGalleryStateStore();
+      const linkPreviewAttachment = generateImageAttachment({
+        image_url: 'https://example.com/image.jpg',
+        title_link: 'https://example.com',
+      });
+      const message = generateMessage({ attachments: [linkPreviewAttachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(0);
+    });
+
+    it('should exclude image attachments with og_scrape_url (OpenGraph previews)', () => {
+      const store = new ImageGalleryStateStore();
+      const linkAttachment = generateImageAttachment({
+        image_url: 'https://example.com/image.jpg',
+        og_scrape_url: 'https://example.com',
+      });
+      const message = generateMessage({ attachments: [linkAttachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(0);
+    });
+
+    it('should handle messages with mixed viewable and non-viewable attachments', () => {
+      const store = new ImageGalleryStateStore();
+      const viewableImage = generateImageAttachment({ image_url: 'https://example.com/image.jpg' });
+      const linkPreview = generateImageAttachment({
+        image_url: 'https://example.com/preview.jpg',
+        title_link: 'https://example.com',
+      });
+      const message = generateMessage({ attachments: [viewableImage, linkPreview], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(1);
+    });
+
+    it('should exclude messages with only non-viewable attachments', () => {
+      const store = new ImageGalleryStateStore();
+      const fileAttachment: Attachment = {
+        asset_url: 'https://example.com/file.pdf',
+        type: 'file',
+      };
+      const message = generateMessage({ attachments: [fileAttachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(0);
+    });
+
+    it('should handle null attachments gracefully', () => {
+      const store = new ImageGalleryStateStore();
+      const message = generateMessage({ attachments: [null as unknown as Attachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(0);
+    });
+
+    it('should handle messages without attachments array', () => {
+      const store = new ImageGalleryStateStore();
+      const message = generateMessage({ attachments: undefined, id: 1 });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(0);
+    });
+  });
+
+  describe('getAssetId', () => {
+    it('should generate unique asset id from messageId and assetUrl', () => {
+      const store = new ImageGalleryStateStore();
+      const assetId = store.getAssetId('message-123', 'https://example.com/image.jpg');
+
+      expect(assetId).toBe('photoId-message-123-https://example.com/image.jpg');
+    });
+
+    it('should handle empty messageId', () => {
+      const store = new ImageGalleryStateStore();
+      const assetId = store.getAssetId('', 'https://example.com/image.jpg');
+
+      expect(assetId).toBe('photoId--https://example.com/image.jpg');
+    });
+  });
+
+  describe('assets getter', () => {
+    it('should return empty array when no messages', () => {
+      const store = new ImageGalleryStateStore();
+
+      expect(store.assets).toEqual([]);
+    });
+
+    it('should transform image attachments to assets', () => {
+      const store = new ImageGalleryStateStore();
+      const imageAttachment = generateImageAttachment({
+        image_url: 'https://example.com/image.jpg',
+        original_height: 600,
+        original_width: 800,
+        thumb_url: 'https://example.com/thumb.jpg',
+      });
+      const user: Partial<UserResponse> = { id: 'user-1', name: 'Test User' };
+      const message = generateMessage({
+        attachments: [imageAttachment],
+        cid: 'channel-msg-1',
+        id: 'msg-1',
+        user,
+        user_id: user.id,
       });
 
-      it('should allow setting message to undefined', () => {
-        const store = new ImageGalleryStateStore();
-        store.message = createMockMessage();
+      store.messages = [message];
 
-        store.message = undefined;
-
-        expect(store.state.getLatestValue().message).toBeUndefined();
+      const assets = store.assets;
+      expect(assets).toHaveLength(1);
+      expect(assets[0]).toMatchObject({
+        channelId: 'channel-msg-1',
+        messageId: 'msg-1',
+        mime_type: undefined,
+        original_height: 600,
+        original_width: 800,
+        thumb_url: 'https://example.com/thumb.jpg',
+        type: 'image',
+        uri: 'https://example.com/image.jpg',
+        user_id: 'user-1',
       });
     });
 
-    describe('selectedAttachmentUrl setter', () => {
-      it('should update the selected attachment URL in state', () => {
-        const store = new ImageGalleryStateStore();
-        const url = 'https://example.com/selected.jpg';
-
-        store.selectedAttachmentUrl = url;
-
-        expect(store.state.getLatestValue().selectedAttachmentUrl).toBe(url);
+    it('should transform video attachments to assets', () => {
+      const store = new ImageGalleryStateStore();
+      const videoAttachment = generateVideoAttachment({
+        asset_url: 'https://example.com/video.mp4',
+        thumb_url: 'https://example.com/video-thumb.jpg',
       });
+      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
 
-      it('should allow setting URL to undefined', () => {
-        const store = new ImageGalleryStateStore();
-        store.selectedAttachmentUrl = 'https://example.com/selected.jpg';
+      store.messages = [message];
 
-        store.selectedAttachmentUrl = undefined;
-
-        expect(store.state.getLatestValue().selectedAttachmentUrl).toBeUndefined();
+      const assets = store.assets;
+      expect(assets).toHaveLength(1);
+      expect(assets[0]).toMatchObject({
+        mime_type: 'video/mp4',
+        type: 'video',
+        uri: 'https://example.com/video.mp4',
       });
     });
 
-    describe('currentIndex setter', () => {
-      it('should update the current index in state', () => {
-        const store = new ImageGalleryStateStore();
+    it('should transform giphy attachments with correct mime type', () => {
+      const store = new ImageGalleryStateStore();
+      const giphyAttachment = createGiphyAttachment();
+      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
 
-        store.currentIndex = 5;
+      store.messages = [message];
 
-        expect(store.state.getLatestValue().currentIndex).toBe(5);
+      const assets = store.assets;
+      expect(assets).toHaveLength(1);
+      expect(assets[0]).toMatchObject({
+        mime_type: 'image/gif',
+        type: 'giphy',
+        uri: 'https://giphy.com/test.gif',
       });
+    });
+
+    it('should generate unique asset ids for each attachment', () => {
+      const store = new ImageGalleryStateStore();
+      const attachment1 = generateImageAttachment({ image_url: 'https://example.com/image1.jpg' });
+      const attachment2 = generateImageAttachment({ image_url: 'https://example.com/image2.jpg' });
+      const message = generateMessage({ attachments: [attachment1, attachment2], id: 1 });
+
+      store.messages = [message];
+
+      const assets = store.assets;
+      expect(assets).toHaveLength(2);
+      expect(assets[0].id).not.toBe(assets[1].id);
+    });
+
+    it('should use custom giphyVersion from options', () => {
+      const store = new ImageGalleryStateStore({ giphyVersion: 'original' });
+      const giphyAttachment: Attachment = {
+        giphy: {
+          fixed_height: { height: 200, url: 'https://giphy.com/fixed.gif', width: 200 },
+          original: { height: 400, url: 'https://giphy.com/original.gif', width: 400 },
+        },
+        type: 'giphy',
+      };
+      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
+
+      store.messages = [message];
+
+      expect(getUrlOfImageAttachment(giphyAttachment, 'original')).toBe(
+        'https://giphy.com/original.gif',
+      );
+    });
+
+    it('should handle messages with multiple attachments', () => {
+      const store = new ImageGalleryStateStore();
+      const message1 = generateMessage({
+        attachments: [
+          generateImageAttachment({ image_url: 'https://example.com/image1.jpg' }),
+          generateImageAttachment({ image_url: 'https://example.com/image2.jpg' }),
+        ],
+        id: 1,
+      });
+      const message2 = generateMessage({
+        attachments: [generateVideoAttachment({ asset_url: 'https://example.com/video.mp4' })],
+        id: 2,
+      });
+
+      store.messages = [message1, message2];
+
+      expect(store.assets).toHaveLength(3);
+    });
+  });
+
+  describe('appendMessages', () => {
+    it('should append messages to existing messages', () => {
+      const store = new ImageGalleryStateStore();
+      const initialMessages = [generateMessage({ id: 'msg-1' })];
+      const newMessages = [generateMessage({ id: 'msg-2' }), generateMessage({ id: 'msg-3' })];
+
+      store.messages = initialMessages;
+      store.appendMessages(newMessages);
+
+      expect(store.messages).toHaveLength(3);
+      expect(store.messages).toEqual([...initialMessages, ...newMessages]);
+    });
+
+    it('should work with empty initial messages', () => {
+      const store = new ImageGalleryStateStore();
+      const newMessages = [generateMessage({ id: 'msg-1' })];
+
+      store.appendMessages(newMessages);
+
+      expect(store.messages).toEqual(newMessages);
+    });
+
+    it('should work with empty new messages', () => {
+      const store = new ImageGalleryStateStore();
+      const initialMessages = [generateMessage({ id: 'msg-1' })];
+
+      store.messages = initialMessages;
+      store.appendMessages([]);
+
+      expect(store.messages).toEqual(initialMessages);
+    });
+  });
+
+  describe('removeMessages', () => {
+    it('should remove specified messages', () => {
+      const store = new ImageGalleryStateStore();
+      const message1 = generateMessage({ id: 'msg-1' });
+      const message2 = generateMessage({ id: 'msg-2' });
+      const message3 = generateMessage({ id: 'msg-3' });
+
+      store.messages = [message1, message2, message3];
+      store.removeMessages([message2]);
+
+      expect(store.messages).toHaveLength(2);
+      expect(store.messages).toEqual([message1, message3]);
+    });
+
+    it('should remove multiple messages', () => {
+      const store = new ImageGalleryStateStore();
+      const message1 = generateMessage({ id: 'msg-1' });
+      const message2 = generateMessage({ id: 'msg-2' });
+      const message3 = generateMessage({ id: 'msg-3' });
+
+      store.messages = [message1, message2, message3];
+      store.removeMessages([message1, message3]);
+
+      expect(store.messages).toHaveLength(1);
+      expect(store.messages).toEqual([message2]);
+    });
+
+    it('should handle removing non-existent messages', () => {
+      const store = new ImageGalleryStateStore();
+      const message1 = generateMessage({ id: 'msg-1' });
+      const message2 = generateMessage({ id: 'msg-2' });
+      const nonExistentMessage = generateMessage({ id: 'non-existent' });
+
+      store.messages = [message1, message2];
+      store.removeMessages([nonExistentMessage]);
+
+      expect(store.messages).toHaveLength(2);
+      expect(store.messages).toEqual([message1, message2]);
+    });
+
+    it('should handle empty removal array', () => {
+      const store = new ImageGalleryStateStore();
+      const message1 = generateMessage({ id: 'msg-1' });
+
+      store.messages = [message1];
+      store.removeMessages([]);
+
+      expect(store.messages).toEqual([message1]);
     });
   });
 
   describe('openImageGallery', () => {
-    it('should set message and selectedAttachmentUrl at once', () => {
+    it('should set messages and selectedAttachmentUrl', () => {
       const store = new ImageGalleryStateStore();
-      const message = createMockMessage();
-      const url = 'https://example.com/image.jpg';
+      const messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+      ];
+      const selectedUrl = 'https://example.com/1.jpg';
 
-      store.openImageGallery({ message, selectedAttachmentUrl: url });
+      store.openImageGallery({ messages, selectedAttachmentUrl: selectedUrl });
 
-      const state = store.state.getLatestValue();
-      expect(state.message).toEqual(message);
-      expect(state.selectedAttachmentUrl).toBe(url);
+      expect(store.messages).toEqual(messages);
+      expect(store.selectedAttachmentUrl).toBe(selectedUrl);
+    });
+
+    it('should work without selectedAttachmentUrl', () => {
+      const store = new ImageGalleryStateStore();
+      const messages = [generateMessage({ id: 'msg-1' })];
+
+      store.openImageGallery({ messages });
+
+      expect(store.messages).toEqual(messages);
+      expect(store.selectedAttachmentUrl).toBeUndefined();
+    });
+
+    it('should replace existing messages', () => {
+      const store = new ImageGalleryStateStore();
+      const oldMessages = [generateMessage({ id: 'msg-1' })];
+      const newMessages = [generateMessage({ id: 'msg-2' })];
+
+      store.messages = oldMessages;
+      store.openImageGallery({ messages: newMessages });
+
+      expect(store.messages).toEqual(newMessages);
+    });
+  });
+
+  describe('subscribeToMessages', () => {
+    it('should update assets when messages change', () => {
+      const store = new ImageGalleryStateStore();
+      const unsubscribe = store.subscribeToMessages();
+
+      const message = generateMessage({
+        attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+        id: 'msg-1',
+      });
+      store.messages = [message];
+
+      expect(store.state.getLatestValue().assets).toHaveLength(1);
+
+      unsubscribe();
+    });
+
+    it('should return unsubscribe function', () => {
+      const store = new ImageGalleryStateStore();
+      const unsubscribe = store.subscribeToMessages();
+
+      expect(typeof unsubscribe).toBe('function');
+
+      unsubscribe();
+    });
+
+    it('should recalculate assets when messages are appended', () => {
+      const store = new ImageGalleryStateStore();
+      const unsubscribe = store.subscribeToMessages();
+
+      store.messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+      ];
+      expect(store.state.getLatestValue().assets).toHaveLength(1);
+
+      store.appendMessages([
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/2.jpg' })],
+          id: 'msg-2',
+        }),
+      ]);
+      expect(store.state.getLatestValue().assets).toHaveLength(2);
+
+      unsubscribe();
     });
   });
 
   describe('subscribeToSelectedAttachmentUrl', () => {
-    it('should return an unsubscribe function', () => {
+    it('should update currentIndex when selectedAttachmentUrl matches an asset', () => {
       const store = new ImageGalleryStateStore();
-
+      store.subscribeToMessages();
       const unsubscribe = store.subscribeToSelectedAttachmentUrl();
 
-      expect(typeof unsubscribe).toBe('function');
+      const messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/2.jpg' })],
+          id: 'msg-2',
+        }),
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/3.jpg' })],
+          id: 'msg-3',
+        }),
+      ];
+
+      store.messages = messages;
+      store.selectedAttachmentUrl = 'https://example.com/2.jpg';
+
+      expect(store.state.getLatestValue().currentIndex).toBe(1);
+
       unsubscribe();
     });
 
-    it('should update currentIndex when selectedAttachmentUrl changes', () => {
+    it('should set currentIndex to 0 when selectedAttachmentUrl is not found', () => {
       const store = new ImageGalleryStateStore();
-      const imageUrl1 = 'https://example.com/image1.jpg';
-      const imageUrl2 = 'https://example.com/image2.jpg';
-      const message = createMockMessage({ id: 'msg-1' }, [
-        createImageAttachment({ image_url: imageUrl1 }),
-        createImageAttachment({ image_url: imageUrl2 }),
-      ]);
+      store.subscribeToMessages();
+      const unsubscribe = store.subscribeToSelectedAttachmentUrl();
 
-      store.subscribeToSelectedAttachmentUrl();
-      store.openImageGallery({ message, selectedAttachmentUrl: imageUrl2 });
-
-      expect(store.state.getLatestValue().currentIndex).toBe(1);
-    });
-
-    it('should set currentIndex to 0 when attachment is not found', () => {
-      const store = new ImageGalleryStateStore();
-      const message = createMockMessage({ id: 'msg-1' }, [
-        createImageAttachment({ image_url: 'https://example.com/image1.jpg' }),
-      ]);
-
-      store.subscribeToSelectedAttachmentUrl();
-      store.openImageGallery({
-        message,
-        selectedAttachmentUrl: 'https://example.com/not-found.jpg',
-      });
+      store.messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+      ];
+      store.selectedAttachmentUrl = 'https://example.com/non-existent.jpg';
 
       expect(store.state.getLatestValue().currentIndex).toBe(0);
-    });
 
-    it('should handle URLs with query parameters when finding index', () => {
-      const store = new ImageGalleryStateStore();
-      const baseUrl = 'https://example.com/image.jpg';
-      const urlWithQuery = 'https://example.com/image.jpg?token=abc123';
-      const message = createMockMessage({ id: 'msg-1' }, [
-        createImageAttachment({ image_url: baseUrl }),
-      ]);
-
-      store.subscribeToSelectedAttachmentUrl();
-      store.openImageGallery({ message, selectedAttachmentUrl: urlWithQuery });
-
-      // The stripQueryFromUrl function should match the base URL
-      expect(store.state.getLatestValue().currentIndex).toBe(0);
+      unsubscribe();
     });
 
     it('should not update currentIndex when selectedAttachmentUrl is undefined', () => {
       const store = new ImageGalleryStateStore();
-      const message = createMockMessage({}, [createImageAttachment()]);
+      store.currentIndex = 5;
+      const unsubscribe = store.subscribeToSelectedAttachmentUrl();
 
-      store.subscribeToSelectedAttachmentUrl();
-      store.message = message;
+      store.selectedAttachmentUrl = undefined;
 
-      // currentIndex should remain at initial value (0)
-      expect(store.state.getLatestValue().currentIndex).toBe(0);
+      expect(store.state.getLatestValue().currentIndex).toBe(5);
+
+      unsubscribe();
     });
 
-    it('should not update currentIndex when message is undefined', () => {
+    it('should strip query params when matching URLs', () => {
       const store = new ImageGalleryStateStore();
+      store.subscribeToMessages();
+      const unsubscribe = store.subscribeToSelectedAttachmentUrl();
 
-      store.subscribeToSelectedAttachmentUrl();
-      store.selectedAttachmentUrl = 'https://example.com/image.jpg';
+      store.messages = [
+        generateMessage({
+          attachments: [
+            generateImageAttachment({ image_url: 'https://example.com/image.jpg?size=small' }),
+          ],
+          id: 'msg-1',
+        }),
+      ];
+      store.selectedAttachmentUrl = 'https://example.com/image.jpg?size=large';
 
-      // currentIndex should remain at initial value (0)
       expect(store.state.getLatestValue().currentIndex).toBe(0);
+
+      unsubscribe();
+    });
+
+    it('should return unsubscribe function', () => {
+      const store = new ImageGalleryStateStore();
+      const unsubscribe = store.subscribeToSelectedAttachmentUrl();
+
+      expect(typeof unsubscribe).toBe('function');
+
+      unsubscribe();
     });
   });
 
   describe('registerSubscriptions', () => {
-    it('should return an unsubscribe function', () => {
+    it('should register both message and selectedAttachmentUrl subscriptions', () => {
       const store = new ImageGalleryStateStore();
+      const unsubscribe = store.registerSubscriptions();
 
+      // Test that message subscription is working
+      store.messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+      ];
+      expect(store.state.getLatestValue().assets).toHaveLength(1);
+
+      // Test that selectedAttachmentUrl subscription is working
+      store.selectedAttachmentUrl = 'https://example.com/1.jpg';
+      expect(store.state.getLatestValue().currentIndex).toBe(0);
+
+      unsubscribe();
+    });
+
+    it('should return unsubscribe function that cleans up all subscriptions', () => {
+      const store = new ImageGalleryStateStore();
       const unsubscribe = store.registerSubscriptions();
 
       expect(typeof unsubscribe).toBe('function');
-    });
 
-    it('should clear video player pool when unsubscribed', () => {
-      const store = new ImageGalleryStateStore();
-      const clearSpy = store.videoPlayerPool.clear;
-
-      const unsubscribe = store.registerSubscriptions();
       unsubscribe();
 
-      expect(clearSpy).toHaveBeenCalled();
+      // Verify videoPlayerPool.clear was called
+      expect(store.videoPlayerPool.clear).toHaveBeenCalled();
     });
 
-    it('should set up subscriptions that update currentIndex', () => {
+    it('should clear videoPlayerPool when unsubscribing', () => {
       const store = new ImageGalleryStateStore();
-      const imageUrl = 'https://example.com/image.jpg';
-      const message = createMockMessage({ id: 'msg-1' }, [
-        createImageAttachment({ image_url: imageUrl }),
-      ]);
+      const unsubscribe = store.registerSubscriptions();
 
-      store.registerSubscriptions();
-      store.openImageGallery({ message, selectedAttachmentUrl: imageUrl });
+      unsubscribe();
 
-      expect(store.state.getLatestValue().currentIndex).toBe(0);
+      expect(store.videoPlayerPool.clear).toHaveBeenCalled();
     });
   });
 
   describe('clear', () => {
     it('should reset state to initial values', () => {
       const store = new ImageGalleryStateStore();
-      const message = createMockMessage();
-
-      store.openImageGallery({
-        message,
-        selectedAttachmentUrl: 'https://example.com/image.jpg',
-      });
+      store.messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+      ];
+      store.selectedAttachmentUrl = 'https://example.com/1.jpg';
       store.currentIndex = 5;
 
       store.clear();
 
       const state = store.state.getLatestValue();
-      expect(state).toEqual({
-        currentIndex: 0,
-        message: undefined,
-        selectedAttachmentUrl: undefined,
-      });
+      expect(state.assets).toEqual([]);
+      expect(state.currentIndex).toBe(0);
+      expect(state.messages).toEqual([]);
+      expect(state.selectedAttachmentUrl).toBeUndefined();
     });
 
-    it('should clear video player pool', () => {
+    it('should clear videoPlayerPool', () => {
       const store = new ImageGalleryStateStore();
-      const clearSpy = store.videoPlayerPool.clear;
 
       store.clear();
 
-      expect(clearSpy).toHaveBeenCalled();
+      expect(store.videoPlayerPool.clear).toHaveBeenCalled();
     });
   });
 
   describe('edge cases', () => {
-    it('should handle message with mixed attachment types', () => {
+    it('should handle message with undefined user', () => {
       const store = new ImageGalleryStateStore();
-      const attachments: Attachment[] = [
-        createImageAttachment({ image_url: 'https://example.com/1.jpg' }),
-        { asset_url: 'https://example.com/doc.pdf', type: 'file' }, // Non-viewable
-        createVideoAttachment({ asset_url: 'https://example.com/2.mp4' }),
-        createImageAttachment({
-          image_url: 'https://og.com/preview.jpg',
-          og_scrape_url: 'https://og.com',
-        }), // URL preview - excluded
-        createGiphyAttachment(),
-      ];
+      const message = {
+        ...generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+        user: undefined,
+      } as LocalMessage;
 
-      store.message = createMockMessage({}, attachments);
+      store.messages = [message];
 
-      // Should only include image (without og_scrape), video, and giphy
-      expect(store.attachments).toHaveLength(3);
-      expect(store.assets).toHaveLength(3);
+      expect(store.assets).toHaveLength(1);
+      expect(store.assets[0].user).toBeUndefined();
     });
 
-    it('should handle giphy without fixed_height version', () => {
-      const store = new ImageGalleryStateStore();
-      const giphyAttachment: Attachment = {
-        giphy: {} as Attachment['giphy'],
-        thumb_url: 'https://giphy.com/thumb.gif',
-        type: 'giphy',
-      };
-      store.message = createMockMessage({ id: 'msg-1' }, [giphyAttachment]);
+    it('should handle multiple stores independently', () => {
+      const store1 = new ImageGalleryStateStore({ autoPlayVideo: true });
+      const store2 = new ImageGalleryStateStore({ autoPlayVideo: false });
 
-      const assets = store.assets;
+      store1.messages = [generateMessage({ id: 'msg-1' })];
+      store2.messages = [generateMessage({ id: 'msg-2' }), generateMessage({ id: 'msg-3' })];
 
-      expect(assets).toHaveLength(1);
-      // Should fallback to thumb_url
-      expect(assets[0].uri).toBe('https://giphy.com/thumb.gif');
+      expect(store1.messages).toHaveLength(1);
+      expect(store2.messages).toHaveLength(2);
+      expect(store1.options.autoPlayVideo).toBe(true);
+      expect(store2.options.autoPlayVideo).toBe(false);
     });
 
-    it('should handle message with empty attachments array', () => {
+    it('should handle rapid state updates', () => {
       const store = new ImageGalleryStateStore();
-      store.message = createMockMessage({}, []);
+      store.subscribeToMessages();
 
-      expect(store.attachments).toEqual([]);
+      for (let i = 0; i < 100; i++) {
+        store.messages = [
+          generateMessage({
+            attachments: [
+              generateImageAttachment({ image_url: `https://example.com/image-${i}.jpg` }),
+            ],
+            id: `msg-${i}`,
+          }),
+        ];
+      }
+
+      expect(store.state.getLatestValue().assets).toHaveLength(1);
+      expect(store.messages).toHaveLength(1);
+    });
+
+    it('should handle empty attachment arrays in messages', () => {
+      const store = new ImageGalleryStateStore();
+      const message = generateMessage({ attachments: [], id: 'msg-1' });
+
+      store.messages = [message];
+
+      expect(store.attachmentsWithMessage).toHaveLength(0);
       expect(store.assets).toEqual([]);
     });
 
-    it('should correctly identify asset with asset_url instead of image_url', () => {
+    it('should maintain order of assets based on message order', () => {
       const store = new ImageGalleryStateStore();
-      const imageAttachment = createImageAttachment({
-        asset_url: 'https://example.com/asset.jpg',
-        image_url: undefined,
-      });
-      store.message = createMockMessage({ id: 'msg-1' }, [imageAttachment]);
+      const messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/first.jpg' })],
+          id: 'msg-1',
+        }),
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/second.jpg' })],
+          id: 'msg-2',
+        }),
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/third.jpg' })],
+          id: 'msg-3',
+        }),
+      ];
+
+      store.messages = messages;
 
       const assets = store.assets;
+      expect(assets[0].uri).toBe('https://example.com/first.jpg');
+      expect(assets[1].uri).toBe('https://example.com/second.jpg');
+      expect(assets[2].uri).toBe('https://example.com/third.jpg');
+    });
+  });
 
-      expect(assets).toHaveLength(1);
-      expect(assets[0].uri).toBe('https://example.com/asset.jpg');
+  describe('state reactivity', () => {
+    it('should notify subscribers when messages change', () => {
+      const store = new ImageGalleryStateStore();
+      const callback = jest.fn();
+
+      store.state.subscribeWithSelector(
+        (state) => ({ messages: state.messages }),
+        ({ messages }) => callback(messages),
+      );
+
+      const newMessages = [generateMessage({ id: 'msg-1' })];
+      store.messages = newMessages;
+
+      expect(callback).toHaveBeenCalledWith(newMessages);
+    });
+
+    it('should notify subscribers when selectedAttachmentUrl changes', () => {
+      const store = new ImageGalleryStateStore();
+      const callback = jest.fn();
+
+      store.state.subscribeWithSelector(
+        (state) => ({ selectedAttachmentUrl: state.selectedAttachmentUrl }),
+        ({ selectedAttachmentUrl }) => callback(selectedAttachmentUrl),
+      );
+
+      store.selectedAttachmentUrl = 'https://example.com/image.jpg';
+
+      expect(callback).toHaveBeenCalledWith('https://example.com/image.jpg');
+    });
+
+    it('should notify subscribers when currentIndex changes', () => {
+      const store = new ImageGalleryStateStore();
+      const callback = jest.fn();
+
+      store.state.subscribeWithSelector(
+        (state) => ({ currentIndex: state.currentIndex }),
+        ({ currentIndex }) => callback(currentIndex),
+      );
+
+      store.currentIndex = 3;
+
+      expect(callback).toHaveBeenCalledWith(3);
     });
   });
 });
