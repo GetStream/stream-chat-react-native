@@ -17,7 +17,7 @@ jobs:
     runs-on: [macos-15]
     strategy:
       matrix:
-        node-version: [ 24.x ]
+        node-version: [24.x]
     steps:
       - name: Connect Bot
         uses: webfactory/ssh-agent@v0.7.0
@@ -57,12 +57,12 @@ jobs:
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
 
-  build_and_deploy_android_s3:
+  build_and_deploy_android_firebase:
     name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 24.x ]
+        node-version: [24.x]
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -78,22 +78,7 @@ jobs:
         uses: ./.github/actions/install-and-build-sdk
       - name: Build
         working-directory: examples/SampleApp
-        run: |
-          mkdir android/app/src/main/assets
-          mkdir tmp
-          yarn react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest tmp
-          cd android
-          rm -rf $HOME/.gradle/caches/ && ./gradlew assembleRelease
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        if: ${{ github.ref == 'refs/heads/develop' }}
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Upload APK
-        if: ${{ github.ref == 'refs/heads/develop' }}
-        # https://getstream.io/downloads/rn-sample-app.apk
-        run: |
-          cp examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk rn-sample-app.apk
-          aws s3 cp rn-sample-app.apk s3://${{ secrets.AWS_S3_BUCKET }} --sse AES256
+        run: bundle exec fastlane android firebase_build_and_upload deploy:${{ github.ref == 'refs/heads/develop' }};
+        env:
+          ANDROID_FIREBASE_APP_ID: ${{ secrets.ANDROID_FIREBASE_APP_ID }}
+          FIREBASE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
