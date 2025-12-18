@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - develop
+#      - develop
 
 permissions:
   id-token: write     # for OIDC / npm provenance if you use it
