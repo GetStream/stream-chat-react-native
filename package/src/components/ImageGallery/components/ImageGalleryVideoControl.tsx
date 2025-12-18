@@ -73,19 +73,7 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryFooterVid
     },
   } = useTheme();
 
-  const handlePlayPause = async () => {
-    // Note: Not particularly sure why this was ever added, but
-    // will keep it for now for backwards compatibility.
-    if (progress === 1) {
-      // For expo CLI, expo-av
-      if (videoPlayer.playerRef?.setPositionAsync) {
-        await videoPlayer.playerRef.setPositionAsync(0);
-      }
-      // For expo CLI, expo-video
-      if (videoPlayer.playerRef?.replay) {
-        await videoPlayer.playerRef.replay();
-      }
-    }
+  const handlePlayPause = () => {
     videoPlayer.toggle();
   };
 
@@ -108,7 +96,6 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryFooterVid
       </Text>
       <View style={styles.progressContainer}>
         <ProgressControl
-          duration={duration}
           filledColor={accent_blue}
           progress={progress}
           testID={'progress-control'}

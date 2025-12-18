@@ -17,7 +17,6 @@ import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollT
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
-import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {
   AttachmentPickerContextValue,
@@ -29,6 +28,11 @@ import {
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
+
+import {
+  MessageListItemContextValue,
+  MessageListItemProvider,
+} from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -41,10 +45,11 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../hooks';
+import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
 // TODO: Think if we really need this and strive to remove it if we can.
@@ -118,11 +123,10 @@ type MessageListPropsWithContext = Pick<
   Pick<
     ChannelContextValue,
     | 'channel'
-    | 'channelUnreadState'
+    | 'channelUnreadStateStore'
     | 'disabled'
     | 'EmptyStateIndicator'
     | 'hideStickyDateHeader'
-    | 'highlightedMessageId'
     | 'loadChannelAroundMessage'
     | 'loading'
     | 'LoadingIndicator'
@@ -148,9 +152,7 @@ type MessageListPropsWithContext = Pick<
     | 'InlineUnreadIndicator'
     | 'Message'
     | 'ScrollToBottomButton'
-    | 'MessageSystem'
     | 'myMessageTheme'
-    | 'shouldShowUnreadUnderlay'
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
     | 'UnreadMessagesNotification'
@@ -226,6 +228,10 @@ type MessageListPropsWithContext = Pick<
     isLiveStreaming?: boolean;
   };
 
+const renderItem = ({ item: message }: { item: LocalMessage }) => {
+  return <MessageWrapper message={message} />;
+};
+
 /**
  * The message list component renders a list of messages. It consumes the following contexts:
  *
@@ -242,7 +248,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const {
     additionalFlatListProps,
     channel,
-    channelUnreadState,
+    channelUnreadStateStore,
     client,
     closePicker,
     DateHeader,
@@ -253,9 +259,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     FooterComponent = InlineLoadingMoreIndicator,
     HeaderComponent = LoadingMoreRecentIndicator,
     hideStickyDateHeader,
-    highlightedMessageId,
-    InlineDateSeparator,
-    InlineUnreadIndicator,
     inverted = true,
     isLiveStreaming = false,
     loadChannelAroundMessage,
@@ -267,8 +270,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     loadMoreThread,
     markRead,
     maximumMessageLimit,
-    Message,
-    MessageSystem,
     myMessageTheme,
     NetworkDownIndicator,
     noGroupByUser,
@@ -282,7 +283,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     setFlatListRef,
     setSelectedPicker,
     setTargetedMessage,
-    shouldShowUnreadUnderlay,
     StickyHeader,
     targetedMessage,
     thread,
@@ -297,8 +297,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const {
     colors: { white_snow },
-    messageList: { container, contentContainer, listContainer, messageContainer },
-    screenPadding,
+    messageList: { container, contentContainer, listContainer },
   } = theme;
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
@@ -314,14 +313,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * processedMessageList changes on any state change
    */
   const {
-    dateSeparatorsRef,
-    messageGroupStylesRef,
+    messageListPreviousAndNextMessageStore,
     processedMessageList,
     rawMessageList,
     viewabilityChangedCallback,
   } = useMessageList({
     isLiveStreaming,
-    noGroupByUser,
     threadList,
   });
   const messageListLengthBeforeUpdate = useRef(0);
@@ -384,10 +381,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    */
   const messageIdLastScrolledToRef = useRef<string>(undefined);
   const [hasMoved, setHasMoved] = useState(false);
-  const lastReceivedId = useMemo(
-    () => getLastReceivedMessage(processedMessageList)?.id,
-    [processedMessageList],
-  );
+
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
@@ -426,26 +420,23 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   });
 
-  const messagesLength = useRef<number>(processedMessageList.length);
-
   /**
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
+    const channelUnreadState = channelUnreadStateStore.channelUnreadState;
     // we need this check to make sure that regular list change do not trigger
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
-    if (processedMessageList.length !== messagesLength.current) {
-      return;
-    }
-    messagesLength.current = processedMessageList.length;
+    const lastReadMessageId = channelUnreadState?.last_read_message_id;
+    const lastReadMessageVisible = viewableItems.some((item) => item.item.id === lastReadMessageId);
 
-    if (!viewableItems.length || !readEvents) {
-      setIsUnreadNotificationOpen(false);
-      return;
-    }
-
-    if (selectedPicker === 'images') {
+    if (
+      !viewableItems.length ||
+      !readEvents ||
+      lastReadMessageVisible ||
+      selectedPicker === 'images'
+    ) {
       setIsUnreadNotificationOpen(false);
       return;
     }
@@ -456,7 +447,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const lastItemMessage = lastItem.item;
       const lastItemCreatedAt = lastItemMessage.created_at;
 
-      const unreadIndicatorDate = channelUnreadState?.last_read.getTime();
+      const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
       const lastItemDate = lastItemCreatedAt.getTime();
 
       if (
@@ -536,6 +527,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    */
   useEffect(() => {
     const shouldMarkRead = () => {
+      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
       return (
         !channelUnreadState?.first_unread_message_id &&
         !scrollToBottomButtonVisible &&
@@ -547,23 +539,22 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const handleEvent = async (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       const isMyOwnMessage = event.message?.user?.id === client.user?.id;
+      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
       // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState when its a received message.
       if (
         (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
         !isMyOwnMessage
       ) {
-        setChannelUnreadState((prev) => {
-          const previousUnreadCount = prev?.unread_messages ?? 0;
-          const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
-          return {
-            ...(prev || {}),
-            last_read:
-              prev?.last_read ??
-              (previousUnreadCount === 0 && previousLastMessage?.created_at
-                ? new Date(previousLastMessage.created_at)
-                : new Date(0)), // not having information about the last read message means the whole channel is unread,
-            unread_messages: previousUnreadCount + 1,
-          };
+        const previousUnreadCount = channelUnreadState?.unread_messages ?? 0;
+        const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
+        setChannelUnreadState({
+          ...channelUnreadState,
+          last_read:
+            channelUnreadState?.last_read ??
+            (previousUnreadCount === 0 && previousLastMessage?.created_at
+              ? new Date(previousLastMessage.created_at)
+              : new Date(0)), // not having information about the last read message means the whole channel is unread,
+          unread_messages: previousUnreadCount + 1,
         });
       } else if (mainChannelUpdated && shouldMarkRead()) {
         await markRead();
@@ -577,7 +568,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     };
   }, [
     channel,
-    channelUnreadState?.first_unread_message_id,
+    channelUnreadStateStore,
     client.user?.id,
     markRead,
     scrollToBottomButtonVisible,
@@ -768,95 +759,20 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage]);
 
-  const renderItem = useCallback(
-    ({ index, item: message }: { index: number; item: LocalMessage }) => {
-      if (!channel || channel.disconnected) {
-        return null;
-      }
-
-      const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
-      const lastReadTimestamp = channelUnreadState?.last_read.getTime();
-      const isNewestMessage = index === 0;
-      const isLastReadMessage =
-        channelUnreadState?.last_read_message_id === message.id ||
-        (!channelUnreadState?.unread_messages && createdAtTimestamp === lastReadTimestamp);
-
-      const showUnreadSeparator =
-        isLastReadMessage &&
-        !isNewestMessage &&
-        // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
-        (!!channelUnreadState?.first_unread_message_id || !!channelUnreadState?.unread_messages);
-
-      const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
-
-      const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
-      const renderDateSeperator = dateSeparatorsRef.current[message.id] && (
-        <InlineDateSeparator date={dateSeparatorsRef.current[message.id]} />
-      );
-
-      const renderMessage = (
-        <Message
-          goToMessage={goToMessage}
-          groupStyles={messageGroupStylesRef.current[message.id] ?? []}
-          isTargetedMessage={highlightedMessageId === message.id}
-          lastReceivedId={
-            lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
-          }
-          message={message}
-          onThreadSelect={onThreadSelect}
-          showUnreadUnderlay={showUnreadUnderlay}
-          style={[messageContainer]}
-          threadList={threadList}
-        />
-      );
-
-      return (
-        <View testID={`message-list-item-${index}`}>
-          {message.type === 'system' ? (
-            <MessageSystem
-              message={message}
-              style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-            />
-          ) : wrapMessageInTheme ? (
-            <ThemeProvider mergedStyle={modifiedTheme}>
-              <View testID={`message-list-item-${index}`}>
-                {renderDateSeperator}
-                {renderMessage}
-              </View>
-            </ThemeProvider>
-          ) : (
-            <View testID={`message-list-item-${index}`}>
-              {renderDateSeperator}
-              {renderMessage}
-            </View>
-          )}
-          {showUnreadUnderlay && <InlineUnreadIndicator />}
-        </View>
-      );
-    },
-    [
-      InlineDateSeparator,
-      InlineUnreadIndicator,
-      Message,
-      MessageSystem,
-      channel,
-      channelUnreadState?.first_unread_message_id,
-      channelUnreadState?.last_read,
-      channelUnreadState?.last_read_message_id,
-      channelUnreadState?.unread_messages,
-      client.userID,
-      dateSeparatorsRef,
+  const messageListItemContextValue: MessageListItemContextValue = useMemo(
+    () => ({
       goToMessage,
-      highlightedMessageId,
-      lastReceivedId,
-      messageContainer,
-      messageGroupStylesRef,
+      messageListPreviousAndNextMessageStore,
       modifiedTheme,
-      myMessageTheme,
+      noGroupByUser,
       onThreadSelect,
-      screenPadding,
-      shouldShowUnreadUnderlay,
-      threadList,
+    }),
+    [
+      goToMessage,
+      messageListPreviousAndNextMessageStore,
+      modifiedTheme,
+      noGroupByUser,
+      onThreadSelect,
     ],
   );
 
@@ -1168,42 +1084,44 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
       ) : (
-        <FlatList
-          contentContainerStyle={flatListContentContainerStyle}
-          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-          data={processedMessageList}
-          extraData={disabled}
-          inverted={inverted}
-          keyboardShouldPersistTaps='handled'
-          keyExtractor={keyExtractor}
-          ListFooterComponent={FooterComponent}
-          ListHeaderComponent={HeaderComponent}
-          /**
+        <MessageListItemProvider value={messageListItemContextValue}>
+          <FlatList
+            contentContainerStyle={flatListContentContainerStyle}
+            /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+            data={processedMessageList}
+            extraData={disabled}
+            inverted={inverted}
+            keyboardShouldPersistTaps='handled'
+            keyExtractor={keyExtractor}
+            ListFooterComponent={FooterComponent}
+            ListHeaderComponent={HeaderComponent}
+            /**
             If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
             bottom (10 offset or below).
             minIndexForVisible = 1 means that beyond the item at index 1 we will not change the position on list updates,
             however it is not used when autoscrollToTopThreshold = 10.
           */
-          maintainVisibleContentPosition={maintainVisibleContentPosition}
-          maxToRenderPerBatch={30}
-          onMomentumScrollEnd={onUserScrollEvent}
-          onScroll={handleScroll}
-          onScrollBeginDrag={onScrollBeginDrag}
-          onScrollEndDrag={onScrollEndDrag}
-          onScrollToIndexFailed={onScrollToIndexFailedRef.current}
-          onTouchEnd={dismissImagePicker}
-          onViewableItemsChanged={stableOnViewableItemsChanged}
-          ref={refCallback}
-          renderItem={renderItem}
-          scrollEventThrottle={isLiveStreaming ? 16 : undefined}
-          showsVerticalScrollIndicator={false}
-          // @ts-expect-error react-native internal
-          strictMode={isLiveStreaming}
-          style={flatListStyle}
-          testID='message-flat-list'
-          viewabilityConfig={flatListViewabilityConfig}
-          {...additionalFlatListPropsExcludingStyle}
-        />
+            maintainVisibleContentPosition={maintainVisibleContentPosition}
+            maxToRenderPerBatch={30}
+            onMomentumScrollEnd={onUserScrollEvent}
+            onScroll={handleScroll}
+            onScrollBeginDrag={onScrollBeginDrag}
+            onScrollEndDrag={onScrollEndDrag}
+            onScrollToIndexFailed={onScrollToIndexFailedRef.current}
+            onTouchEnd={dismissImagePicker}
+            onViewableItemsChanged={stableOnViewableItemsChanged}
+            ref={refCallback}
+            renderItem={renderItem}
+            scrollEventThrottle={isLiveStreaming ? 16 : undefined}
+            showsVerticalScrollIndicator={false}
+            // @ts-expect-error react-native internal
+            strictMode={isLiveStreaming}
+            style={flatListStyle}
+            testID='message-flat-list'
+            viewabilityConfig={flatListViewabilityConfig}
+            {...additionalFlatListPropsExcludingStyle}
+          />
+        </MessageListItemProvider>
       )}
       <View style={styles.stickyHeader}>
         {messageListLengthAfterUpdate && StickyHeader ? (
@@ -1234,7 +1152,7 @@ export const MessageList = (props: MessageListProps) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
     channel,
-    channelUnreadState,
+    channelUnreadStateStore,
     disabled,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
@@ -1279,7 +1197,7 @@ export const MessageList = (props: MessageListProps) => {
     <MessageListWithContext
       {...{
         channel,
-        channelUnreadState,
+        channelUnreadStateStore,
         client,
         closePicker,
         DateHeader,

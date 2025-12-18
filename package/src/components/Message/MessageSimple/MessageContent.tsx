@@ -322,10 +322,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                 ));
               case 'files':
                 return (
-                  <FileAttachmentGroup
-                    key={`file_attachment_group_${messageContentOrderIndex}`}
-                    messageId={message.id}
-                  />
+                  <FileAttachmentGroup key={`file_attachment_group_${messageContentOrderIndex}`} />
                 );
               case 'gallery':
                 return <Gallery key={`gallery_${messageContentOrderIndex}`} />;
@@ -535,7 +532,6 @@ export const MessageContent = (props: MessageContentProps) => {
     isEditedMessageOpen,
     isMessageAIGenerated,
     isMyMessage,
-    lastReceivedId,
     message,
     messageContentOrder,
     onLongPress,
@@ -575,7 +571,6 @@ export const MessageContent = (props: MessageContentProps) => {
         isEditedMessageOpen,
         isMessageAIGenerated,
         isMyMessage,
-        lastReceivedId,
         message,
         messageContentOrder,
         MessageError,

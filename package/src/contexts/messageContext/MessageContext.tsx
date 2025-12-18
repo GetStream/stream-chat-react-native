@@ -112,8 +112,6 @@ export type MessageContextValue = {
    * @returns
    */
   handleReaction?: (reactionType: string) => Promise<void>;
-  /** Latest message id on current channel */
-  lastReceivedId?: string;
   /**
    * Theme provided only to messages that are the current users
    */

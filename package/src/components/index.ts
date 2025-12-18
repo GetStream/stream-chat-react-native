@@ -101,6 +101,7 @@ export * from './Message/hooks/useMessageReadData';
 export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageBounce';
+export * from './Message/MessageSimple/MessageBlocked';
 export * from './Message/MessageSimple/MessageContent';
 export * from './Message/MessageSimple/MessageDeleted';
 export * from './Message/MessageSimple/MessageEditedTimestamp';
@@ -143,7 +144,7 @@ export * from './MessageInput/components/AttachmentPreview/AttachmentUploadProgr
 export * from './MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-export * from './MessageInput/hooks/useAudioController';
+export * from './MessageInput/hooks/useAudioRecorder';
 
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';
@@ -159,11 +160,12 @@ export * from './MessageList/NetworkDownIndicator';
 export * from './MessageList/ScrollToBottomButton';
 export * from './MessageList/TypingIndicator';
 export * from './MessageList/TypingIndicatorContainer';
-export * from './MessageList/utils/getDateSeparators';
 export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
 export * from './Message/hooks/useMessageDeliveryData';
 export * from './Message/hooks/useMessageReadData';
+export * from './MessageList/hooks/useMessageDateSeparator';
+export * from './MessageList/hooks/useMessageGroupStyles';
 
 export * from './MessageMenu/MessageActionList';
 export * from './MessageMenu/MessageActionListItem';

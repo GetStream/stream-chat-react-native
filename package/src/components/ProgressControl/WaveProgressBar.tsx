@@ -33,11 +33,6 @@ export type WaveProgressBarProps = {
    */
   onEndDrag?: (progress: number) => void;
   /**
-   * The function to be called when the user plays or pauses the audio
-   * @deprecated Use onStartDrag and onEndDrag instead
-   */
-  onPlayPause?: (status?: boolean) => void;
-  /**
    * The function to be called when the user is dragging the waveform
    */
   onProgressDrag?: (progress: number) => void;

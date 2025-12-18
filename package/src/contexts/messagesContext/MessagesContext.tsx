@@ -31,6 +31,7 @@ import type {
   MessageProps,
 } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
+import type { MessageBlockedProps } from '../../components/Message/MessageSimple/MessageBlocked';
 import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
@@ -55,7 +56,10 @@ import type { MessageSystemProps } from '../../components/MessageList/MessageSys
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
 import { UnreadMessagesNotificationProps } from '../../components/MessageList/UnreadMessagesNotification';
-import type { getGroupStyles } from '../../components/MessageList/utils/getGroupStyles';
+import type {
+  GroupStyle,
+  MessageGroupStylesParams,
+} from '../../components/MessageList/utils/getGroupStyles';
 import { MessageActionListProps } from '../../components/MessageMenu/MessageActionList';
 import type {
   MessageActionListItemProps,
@@ -206,6 +210,11 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
    **/
   MessageAvatar: React.ComponentType<MessageAvatarProps>;
+  /**
+   * UI component for MessageBlocked
+   * Defaults to: [MessageBlocked](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageBlocked.tsx)
+   */
+  MessageBlocked: React.ComponentType<MessageBlockedProps>;
   /**
    * UI Component for MessageBounce
    */
@@ -401,7 +410,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   forceAlignMessages?: Alignment | boolean;
 
-  getMessagesGroupStyles?: typeof getGroupStyles;
+  getMessageGroupStyle?: (params: MessageGroupStylesParams) => GroupStyle[];
   /**
    * Handler to access when a ban user action is invoked.
    * @param message

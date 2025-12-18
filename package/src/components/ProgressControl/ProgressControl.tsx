@@ -12,11 +12,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 export type ProgressControlProps = {
   /**
-   * @deprecated unused prop.
-   * The duration of the audio in seconds
-   */
-  duration: number;
-  /**
    * The color of the filled progress bar
    */
   filledColor: string;
@@ -32,16 +27,6 @@ export type ProgressControlProps = {
    * The function to be called when the user ends dragging the progress bar
    */
   onEndDrag?: (progress: number) => void;
-  /**
-   * The function to be called when the user plays or pauses the audio
-   * @deprecated Use onStartDrag and onEndDrag instead
-   */
-  onPlayPause?: (status?: boolean) => void;
-  /**
-   * The function to be called when the user is dragging the progress bar
-   * @deprecated This is not used anymore and is handled locally
-   */
-  onProgressDrag?: (progress: number) => void;
   /**
    * The function to be called when the user starts dragging the progress bar
    */

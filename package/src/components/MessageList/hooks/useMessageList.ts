@@ -1,8 +1,7 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
-import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   DeletedMessagesVisibilityType,
@@ -12,17 +11,17 @@ import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessa
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
 import { useRAFCoalescedValue } from '../../../hooks';
-import { DateSeparators, getDateSeparators } from '../utils/getDateSeparators';
-import { getGroupStyles } from '../utils/getGroupStyles';
+import { MessagePreviousAndNextMessageStore } from '../../../state-store/message-list-prev-next-state';
 
 export type UseMessageListParams = {
-  deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
-  noGroupByUser?: boolean;
   threadList?: boolean;
   isLiveStreaming?: boolean;
   isFlashList?: boolean;
 };
 
+/**
+ * FIXME: To change it to a more specific type.
+ */
 export type GroupType = string;
 
 export type MessageGroupStyles = {
@@ -35,102 +34,74 @@ export const shouldIncludeMessageInList = (
 ) => {
   const { deletedMessagesVisibilityType, userId } = options;
   const isMessageTypeDeleted = message.type === 'deleted';
+  const isSender = message.user?.id === userId;
+
+  if (!isMessageTypeDeleted) {
+    return true;
+  }
+
   switch (deletedMessagesVisibilityType) {
+    case 'always':
+      return true;
     case 'sender':
-      return !isMessageTypeDeleted || message.user?.id === userId;
-
+      return isSender;
     case 'receiver':
-      return !isMessageTypeDeleted || message.user?.id !== userId;
-
+      return !isSender;
     case 'never':
-      return !isMessageTypeDeleted;
-
     default:
-      return !!message;
+      return false;
   }
 };
 
 export const useMessageList = (params: UseMessageListParams) => {
-  const { noGroupByUser, threadList, isLiveStreaming, isFlashList } = params;
+  const { threadList, isLiveStreaming, isFlashList = false } = params;
   const { client } = useChatContext();
-  const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
-  const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
-    useMessagesContext();
+  const { deletedMessagesVisibilityType } = useMessagesContext();
   const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
   const messageList = threadList ? threadMessages : messages;
-
-  const dateSeparators = useMemo(
-    () =>
-      getDateSeparators({
-        deletedMessagesVisibilityType,
-        hideDateSeparators,
-        messages: messageList,
-        userId: client.userID,
-      }),
-    [deletedMessagesVisibilityType, hideDateSeparators, messageList, client.userID],
+  const [messageListPreviousAndNextMessageStore] = useState(
+    () => new MessagePreviousAndNextMessageStore(),
   );
-
-  const dateSeparatorsRef = useRef<DateSeparators>(dateSeparators);
-  dateSeparatorsRef.current = dateSeparators;
-
-  const messageGroupStyles = useMemo(
-    () =>
-      getMessagesGroupStyles({
-        dateSeparators: dateSeparatorsRef.current,
-        hideDateSeparators,
-        maxTimeBetweenGroupedMessages,
-        messages: messageList,
-        noGroupByUser,
-        userId: client.userID,
-      }),
-    [
-      dateSeparatorsRef,
-      getMessagesGroupStyles,
-      hideDateSeparators,
-      maxTimeBetweenGroupedMessages,
-      messageList,
-      noGroupByUser,
-      client.userID,
-    ],
-  );
-
-  const messageGroupStylesRef = useRef<MessageGroupStyles>(messageGroupStyles);
-  messageGroupStylesRef.current = messageGroupStyles;
 
   const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList = [];
     for (const message of messageList) {
       if (
-        shouldIncludeMessageInList(message, {
+        !shouldIncludeMessageInList(message, {
           deletedMessagesVisibilityType,
           userId: client.userID,
         })
       ) {
-        if (isFlashList) {
-          newMessageList.push(message);
-        } else {
-          newMessageList.unshift(message);
-        }
+        continue;
+      }
+      if (isFlashList) {
+        newMessageList.push(message);
+      } else {
+        newMessageList.unshift(message);
       }
     }
     return newMessageList;
-  }, [client.userID, deletedMessagesVisibilityType, isFlashList, messageList]);
+  }, [messageList, deletedMessagesVisibilityType, client.userID, isFlashList]);
+
+  useEffect(() => {
+    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({
+      isFlashList,
+      messages: processedMessageList,
+    });
+  }, [processedMessageList, messageListPreviousAndNextMessageStore, isFlashList]);
 
   const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 
   return useMemo(
     () => ({
-      /** Date separators */
-      dateSeparatorsRef,
-      /** Message group styles */
-      messageGroupStylesRef,
+      messageListPreviousAndNextMessageStore,
       /** Messages enriched with dates/readby/groups and also reversed in order */
       processedMessageList: data,
       /** Raw messages from the channel state */
       rawMessageList: messageList,
       viewabilityChangedCallback,
     }),
-    [data, messageList, viewabilityChangedCallback],
+    [data, messageList, messageListPreviousAndNextMessageStore, viewabilityChangedCallback],
   );
 };
