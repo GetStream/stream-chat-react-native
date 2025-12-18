@@ -15,8 +15,6 @@ output_ipa_name = "reactnativesampleapp.ipa"
 
 # Android Platform Configuration
 package_name = 'io.getstream.reactnative.sampleapp'
-firebase_app_id = "1:674907137625:android:cba499ae72f6ee4bd7f348"
-firebase_credentials_file = "./credentials/firebase-credentials.json"
 output_apk_name = "reactnativesampleapp.apk"
 apk_path = "#{build_output_directory}/#{output_apk_name}"
 
@@ -135,8 +133,8 @@ platform :android do
     if deploy
       # Upload to Firebase App Distribution
       firebase_app_distribution(
-          app: firebase_app_id,
-          service_credentials_file: firebase_credentials_file,
+          app: ENV.fetch('ANDROID_FIREBASE_APP_ID', nil),
+          service_credentials_json: ENV.fetch('FIREBASE_CREDENTIALS_JSON', nil),
           android_artifact_path: apk_path,
           android_artifact_type: "APK",
           groups: "stream-testers"
