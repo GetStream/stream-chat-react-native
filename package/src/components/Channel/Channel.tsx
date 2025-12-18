@@ -70,10 +70,6 @@ import {
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
-import {
   OwnCapabilitiesContextValue,
   OwnCapabilitiesProvider,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
@@ -272,7 +268,6 @@ const debounceOptions = {
 };
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
-  Pick<OverlayContextValue, 'overlay' | 'overlayOpacity'> &
   Partial<
     Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset' | 'disableAttachmentPicker'>
   > &
@@ -2110,7 +2105,6 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client, enableOfflineSupport, isOnline, isMessageAIGenerated } = useChatContext();
   const { t } = useTranslationContext();
-  const { overlay, overlayOpacity } = useOverlayContext();
 
   const threadFromProps = props?.thread;
   const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
@@ -2142,8 +2136,6 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       {...{
         isMessageAIGenerated,
         isOnline,
-        overlay,
-        overlayOpacity,
         setThreadMessages,
         thread,
         threadMessages,
