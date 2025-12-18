@@ -210,20 +210,18 @@ export const ImageGallery = (props: Props) => {
     () =>
       messages.reduce((acc: Photo[], cur) => {
         const attachmentImages =
-          cur.attachments
-            ?.filter(
-              (attachment) =>
-                (attachment.type === FileTypes.Giphy &&
-                  (attachment.giphy?.[giphyVersion]?.url ||
-                    attachment.thumb_url ||
-                    attachment.image_url)) ||
-                (attachment.type === FileTypes.Image &&
-                  !attachment.title_link &&
-                  !attachment.og_scrape_url &&
-                  getUrlOfImageAttachment(attachment)) ||
-                (isVideoPlayerAvailable() && attachment.type === FileTypes.Video),
-            )
-            .reverse() || [];
+          cur.attachments?.filter(
+            (attachment) =>
+              (attachment.type === FileTypes.Giphy &&
+                (attachment.giphy?.[giphyVersion]?.url ||
+                  attachment.thumb_url ||
+                  attachment.image_url)) ||
+              (attachment.type === FileTypes.Image &&
+                !attachment.title_link &&
+                !attachment.og_scrape_url &&
+                getUrlOfImageAttachment(attachment)) ||
+              (isVideoPlayerAvailable() && attachment.type === FileTypes.Video),
+          ) || [];
 
         const attachmentPhotos = attachmentImages.map((a) => {
           const imageUrl = getUrlOfImageAttachment(a) as string;

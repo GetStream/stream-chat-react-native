@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`SendButton should render a SendButton 1`] = `
 <View
@@ -147,18 +147,11 @@ exports[`SendButton should render a SendButton 1`] = `
   >
     <RCTScrollView
       contentContainerStyle={
-        [
-          {
-            "flexGrow": 1,
-          },
-          {
-            "backgroundColor": "#FFFFFF",
-          },
-          {},
-          {
-            "opacity": 1,
-          },
-        ]
+        {
+          "backgroundColor": "#FFFFFF",
+          "flexGrow": 1,
+          "opacity": 1,
+        }
       }
       data={[]}
       getItem={[Function]}
@@ -332,18 +325,11 @@ exports[`SendButton should render a disabled SendButton 1`] = `
   >
     <RCTScrollView
       contentContainerStyle={
-        [
-          {
-            "flexGrow": 1,
-          },
-          {
-            "backgroundColor": "#FFFFFF",
-          },
-          {},
-          {
-            "opacity": 1,
-          },
-        ]
+        {
+          "backgroundColor": "#FFFFFF",
+          "flexGrow": 1,
+          "opacity": 1,
+        }
       }
       data={[]}
       getItem={[Function]}

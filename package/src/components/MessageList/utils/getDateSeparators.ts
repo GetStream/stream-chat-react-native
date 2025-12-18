@@ -2,10 +2,19 @@ import type { DeletedMessagesVisibilityType } from '../../../contexts/messagesCo
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 
+/**
+ * @deprecated in favor of `useDateSeparator` hook instead directly in the Message.
+ */
 export type GetDateSeparatorsParams = {
   messages: PaginatedMessageListContextValue['messages'] | ThreadContextValue['threadMessages'];
+  /**
+   * @deprecated The computations are done ahead of time in the useMessageList hook so this parameter is no longer needed.
+   */
   deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
   hideDateSeparators?: boolean;
+  /**
+   * @deprecated The computations are done ahead of time in the useMessageList hook so this parameter is no longer needed.
+   */
   userId?: string;
 };
 
@@ -13,33 +22,20 @@ export type DateSeparators = {
   [key: string]: Date;
 };
 
+/**
+ * @deprecated in favor of `useDateSeparator` hook instead directly in the Message.
+ */
 export const getDateSeparators = (params: GetDateSeparatorsParams) => {
-  const { deletedMessagesVisibilityType, hideDateSeparators, messages, userId } = params;
+  const { hideDateSeparators, messages } = params;
   const dateSeparators: DateSeparators = {};
 
   if (hideDateSeparators) {
     return dateSeparators;
   }
 
-  const messagesWithoutDeleted = messages.filter((message) => {
-    const isMessageTypeDeleted = message.type === 'deleted';
-
-    const isDeletedMessageVisibleToSender =
-      deletedMessagesVisibilityType === 'sender' || deletedMessagesVisibilityType === 'always';
-
-    const isDeletedMessageVisibleToReceiver =
-      deletedMessagesVisibilityType === 'receiver' || deletedMessagesVisibilityType === 'always';
-
-    return (
-      !isMessageTypeDeleted ||
-      (userId === message.user?.id && isDeletedMessageVisibleToSender) ||
-      (userId !== message.user?.id && isDeletedMessageVisibleToReceiver)
-    );
-  });
-
-  for (let i = 0; i < messagesWithoutDeleted.length; i++) {
-    const previousMessage = messagesWithoutDeleted[i - 1];
-    const message = messagesWithoutDeleted[i];
+  for (let i = 0; i < messages.length; i++) {
+    const previousMessage = messages[i - 1];
+    const message = messages[i];
 
     const messageDate = message.created_at.toDateString();
 

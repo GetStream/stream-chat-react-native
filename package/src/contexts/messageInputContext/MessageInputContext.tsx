@@ -328,6 +328,7 @@ export type InputMessageInputContextValue = {
    * @see See https://reactnative.dev/docs/textinput#reference
    */
   additionalTextInputProps?: TextInputProps;
+  allowSendBeforeAttachmentsUpload?: boolean;
   closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
@@ -411,7 +412,7 @@ export const MessageInputProvider = ({
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
-  const { client, enableOfflineSupport } = useChatContext();
+  const { client } = useChatContext();
   const channelCapabilities = useOwnCapabilitiesContext();
 
   const { uploadAbortControllerRef } = useChannelContext();
@@ -425,7 +426,10 @@ export const MessageInputProvider = ({
   const defaultOpenPollCreationDialog = useCallback(() => setShowPollCreationDialog(true), []);
   const closePollCreationDialog = useCallback(() => setShowPollCreationDialog(false), []);
 
-  const { openPollCreationDialog: openPollCreationDialogFromContext } = value;
+  const {
+    openPollCreationDialog: openPollCreationDialogFromContext,
+    allowSendBeforeAttachmentsUpload,
+  } = value;
 
   const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
 
@@ -443,7 +447,7 @@ export const MessageInputProvider = ({
       attachmentManager.setCustomUploadFn(value.doFileUploadRequest);
     }
 
-    if (enableOfflineSupport) {
+    if (allowSendBeforeAttachmentsUpload) {
       messageComposer.compositionMiddlewareExecutor.replace([
         createAttachmentsCompositionMiddleware(messageComposer),
       ]);
@@ -452,7 +456,12 @@ export const MessageInputProvider = ({
         createDraftAttachmentsCompositionMiddleware(messageComposer),
       ]);
     }
-  }, [value.doFileUploadRequest, enableOfflineSupport, messageComposer, attachmentManager]);
+  }, [
+    value.doFileUploadRequest,
+    allowSendBeforeAttachmentsUpload,
+    messageComposer,
+    attachmentManager,
+  ]);
 
   /**
    * Function for capturing a photo and uploading it
@@ -594,6 +603,7 @@ export const MessageInputProvider = ({
         return;
       }
 
+      // MODERATION: This is for the case where the message is of type 'error' and if you try to edit it, it will throw an error.
       if (editedMessage && editedMessage.type !== 'error') {
         try {
           clearEditingState();
@@ -614,6 +624,10 @@ export const MessageInputProvider = ({
             });
           } else {
             messageComposer.clear();
+          }
+          // Even though we edit, but we eventually send the message as a regular message, so we need to clear the editing state.
+          if (editedMessage) {
+            clearEditingState();
           }
           await value.sendMessage({
             localMessage,
