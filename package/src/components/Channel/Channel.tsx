@@ -783,6 +783,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
+  // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
       channelUnreadStateStore.channelUnreadState = data;
