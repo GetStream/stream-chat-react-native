@@ -625,15 +625,15 @@ export const MessageInputProvider = ({
           } else {
             messageComposer.clear();
           }
+          // Even though we edit, but we eventually send the message as a regular message, so we need to clear the editing state.
+          if (editedMessage) {
+            clearEditingState();
+          }
           await value.sendMessage({
             localMessage,
             message,
             options: sendOptions,
           });
-          // Even though we edit, but we eventually send the message as a regular message, so we need to clear the editing state.
-          if (editedMessage) {
-            clearEditingState();
-          }
         } catch (error) {
           throw new Error('Error while sending message');
         }
