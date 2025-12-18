@@ -4,7 +4,6 @@ import type { ChannelContextValue } from '../../../contexts/channelContext/Chann
 
 export const useCreateChannelContext = ({
   channel,
-  channelUnreadState,
   channelUnreadStateStore,
   disabled,
   EmptyStateIndicator,
@@ -51,7 +50,6 @@ export const useCreateChannelContext = ({
   const channelContext: ChannelContextValue = useMemo(
     () => ({
       channel,
-      channelUnreadState,
       channelUnreadStateStore,
       disabled,
       EmptyStateIndicator,

@@ -158,7 +158,6 @@ export * from './MessageList/NetworkDownIndicator';
 export * from './MessageList/ScrollToBottomButton';
 export * from './MessageList/TypingIndicator';
 export * from './MessageList/TypingIndicatorContainer';
-export * from './MessageList/utils/getDateSeparators';
 export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
 export * from './Message/hooks/useMessageDeliveryData';

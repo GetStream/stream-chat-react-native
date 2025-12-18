@@ -113,11 +113,6 @@ export type MessageContextValue = {
    */
   handleReaction?: (reactionType: string) => Promise<void>;
   /**
-   * Latest message id on current channel
-   * @deprecated and will be removed in the future. This is pretty much accessible through the message-list itself.
-   */
-  lastReceivedId?: string;
-  /**
    * Theme provided only to messages that are the current users
    */
   myMessageTheme?: DeepPartial<Theme>;

@@ -1,12 +1,6 @@
 import { LocalMessage } from 'stream-chat';
 
-import type { DateSeparators } from './getDateSeparators';
-
-import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-
 import { isEditedMessage } from '../../../utils/utils';
-import type { GroupType } from '../hooks/useMessageList';
 
 export type MessageGroupStylesParams = {
   message: LocalMessage;
@@ -15,24 +9,6 @@ export type MessageGroupStylesParams = {
   maxTimeBetweenGroupedMessages?: number;
   dateSeparatorDate?: Date;
   nextMessageDateSeparatorDate?: Date;
-};
-
-/**
- * @deprecated in favor of `useMessageGroupStyles` hook instead directly in the Message.
- */
-export type GetGroupStylesParams = {
-  dateSeparators: DateSeparators;
-  messages: PaginatedMessageListContextValue['messages'] | ThreadContextValue['threadMessages'];
-  /**
-   * @deprecated in favor of `useDateSeparator` hook instead directly in the Message.
-   */
-  hideDateSeparators?: boolean;
-  maxTimeBetweenGroupedMessages?: number;
-  noGroupByUser?: boolean;
-  /**
-   * @deprecated
-   */
-  userId?: string;
 };
 
 export type GroupStyle = '' | 'middle' | 'top' | 'bottom' | 'single';
@@ -117,35 +93,4 @@ export const getGroupStyle = ({
   }
 
   return groupStyles;
-};
-
-/**
- * @deprecated in favor of `useMessageGroupStyles` hook instead directly in the Message.
- */
-export const getGroupStyles = (params: GetGroupStylesParams) => {
-  const { dateSeparators, maxTimeBetweenGroupedMessages, messages, noGroupByUser } = params;
-
-  if (noGroupByUser) {
-    return {};
-  }
-
-  const messageGroupStyles: { [key: string]: GroupType[] } = {};
-
-  for (let i = 0; i < messages.length; i++) {
-    const previousMessage = messages[i - 1];
-    const message = messages[i];
-    const nextMessage = messages[i + 1];
-
-    if (message.id) {
-      messageGroupStyles[message.id] = getGroupStyle({
-        dateSeparatorDate: dateSeparators[message.id],
-        maxTimeBetweenGroupedMessages,
-        message,
-        nextMessage,
-        previousMessage,
-      });
-    }
-  }
-
-  return messageGroupStyles;
 };

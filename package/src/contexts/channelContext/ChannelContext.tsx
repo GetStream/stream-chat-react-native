@@ -10,7 +10,6 @@ import {
   ChannelUnreadStateStore,
   ChannelUnreadStateStoreType,
 } from '../../state-store/channel-unread-state';
-import { ChannelUnreadState } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -135,11 +134,6 @@ export type ChannelContextValue = {
    * Its a map of filename and AbortController
    */
   uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
-  /**
-   * Channel unread data
-   * @deprecated Use channelUnreadStateStore instead
-   */
-  channelUnreadState?: ChannelUnreadState;
   channelUnreadStateStore: ChannelUnreadStateStore;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;

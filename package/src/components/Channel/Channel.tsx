@@ -329,7 +329,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'FlatList'
       | 'forceAlignMessages'
       | 'Gallery'
-      | 'getMessagesGroupStyles'
       | 'getMessageGroupStyle'
       | 'Giphy'
       | 'giphyVersion'
@@ -626,7 +625,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
-    getMessagesGroupStyles,
     getMessageGroupStyle,
     Giphy = GiphyDefault,
     giphyVersion = 'fixed_height',
@@ -785,6 +783,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
+  // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
       channelUnreadStateStore.channelUnreadState = data;
@@ -1780,7 +1779,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    channelUnreadState: channelUnreadStateStore.channelUnreadState,
     channelUnreadStateStore,
     disabled: !!channel?.data?.frozen,
     EmptyStateIndicator,
@@ -1930,7 +1928,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     forceAlignMessages,
     Gallery,
     getMessageGroupStyle,
-    getMessagesGroupStyles,
     Giphy,
     giphyVersion,
     handleBan,
