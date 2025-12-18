@@ -10,7 +10,6 @@ import type {
 } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
-import type { TableRowJoinedUser } from '../store/types';
 import { ValueOf } from '../types/types';
 
 export type ReactionData = {
@@ -74,10 +73,12 @@ export const getIndicatorTypeForFileState = (
  * @param message
  * @returns boolean
  */
-export const isBlockedMessage = (message: LocalMessage | TableRowJoinedUser<'messages'>) => {
-  // The only indicator for the blocked message is its message type is error and that the message text contains "Message was blocked by moderation policies".
-  const pattern = /\bMessage was blocked by moderation policies\b/;
-  return message.type === 'error' && message.text && pattern.test(message.text);
+export const isBlockedMessage = (message: LocalMessage) => {
+  return (
+    message.type === 'error' &&
+    (message.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_REMOVE' ||
+      message.moderation?.action === 'remove')
+  );
 };
 
 /**
@@ -86,9 +87,9 @@ export const isBlockedMessage = (message: LocalMessage | TableRowJoinedUser<'mes
  * @returns boolean
  */
 export const isBouncedMessage = (message: LocalMessage) =>
-  (message.type === 'error' &&
-    message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE') ||
-  message?.moderation?.action === 'bounce';
+  message.type === 'error' &&
+  (message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE' ||
+    message?.moderation?.action === 'bounce');
 
 /**
  * Utility to check if the message is a edited message.

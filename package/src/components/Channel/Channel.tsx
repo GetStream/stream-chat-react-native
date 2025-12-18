@@ -149,6 +149,7 @@ import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/Loadi
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
+import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
@@ -354,6 +355,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'messageActions'
       | 'MessageAvatar'
       | 'MessageBounce'
+      | 'MessageBlocked'
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
@@ -674,6 +676,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionListItem = MessageActionListItemDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
+    MessageBlocked = MessageBlockedDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = [
@@ -1433,6 +1436,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           ...message,
           attachments,
           text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
+          // We cannot send an error message, so we convert it to a regular message.
+          type: message.type === 'error' ? 'regular' : message.type,
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
@@ -1949,6 +1954,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionListItem,
     messageActions,
     MessageAvatar,
+    MessageBlocked,
     MessageBounce,
     MessageContent,
     messageContentOrder,
