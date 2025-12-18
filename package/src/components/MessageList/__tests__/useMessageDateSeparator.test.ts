@@ -28,7 +28,7 @@ describe('useMessageDateSeparator', () => {
         text: 'Hello World',
       },
     ] as LocalMessage[];
-    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage(messages);
+    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({ messages });
   });
 
   it('should return undefined if no message is passed', () => {
@@ -70,7 +70,7 @@ describe('useMessageDateSeparator', () => {
       },
     ] as LocalMessage[];
     const messageListPreviousAndNextMessageStore = new MessagePreviousAndNextMessageStore();
-    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage(messages);
+    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({ messages });
     const { result: resultOfFirstMessage } = renderHook(() =>
       useMessageDateSeparator({ message: messages[0], messageListPreviousAndNextMessageStore }),
     );

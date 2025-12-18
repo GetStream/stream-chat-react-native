@@ -31,6 +31,7 @@ import type {
   MessageProps,
 } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
+import type { MessageBlockedProps } from '../../components/Message/MessageSimple/MessageBlocked';
 import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
@@ -209,6 +210,11 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
    **/
   MessageAvatar: React.ComponentType<MessageAvatarProps>;
+  /**
+   * UI component for MessageBlocked
+   * Defaults to: [MessageBlocked](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageBlocked.tsx)
+   */
+  MessageBlocked: React.ComponentType<MessageBlockedProps>;
   /**
    * UI Component for MessageBounce
    */

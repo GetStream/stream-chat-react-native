@@ -51,8 +51,7 @@ import {
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { useStableCallback, useStateStore } from '../../hooks';
-import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
+import { useStableCallback } from '../../hooks';
 import { FileTypes } from '../../types/types';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
@@ -119,13 +118,6 @@ const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageRe
   }
   return previousLastMessage;
 };
-
-const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
-  first_unread_message_id: state.channelUnreadState?.first_unread_message_id,
-  last_read: state.channelUnreadState?.last_read,
-  last_read_message_id: state.channelUnreadState?.last_read_message_id,
-  unread_messages: state.channelUnreadState?.unread_messages,
-});
 
 type MessageListPropsWithContext = Pick<
   AttachmentPickerContextValue,
@@ -309,10 +301,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   } = props;
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
-  const channelUnreadState = useStateStore(
-    channelUnreadStateStore.state,
-    channelUnreadStateSelector,
-  );
 
   const {
     colors: { white_snow },
@@ -443,6 +431,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
+    const channelUnreadState = channelUnreadStateStore.channelUnreadState;
     // we need this check to make sure that regular list change do not trigger
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
@@ -545,6 +534,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    */
   useEffect(() => {
     const shouldMarkRead = () => {
+      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
       return (
         !channelUnreadState?.first_unread_message_id &&
         !scrollToBottomButtonVisible &&
@@ -556,17 +546,18 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const handleEvent = async (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       const isMyOwnMessage = event.message?.user?.id === client.user?.id;
+      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
       // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState when its a received message.
       if (
         (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
         !isMyOwnMessage
       ) {
-        const previousUnreadCount = channelUnreadState.unread_messages ?? 0;
+        const previousUnreadCount = channelUnreadState?.unread_messages ?? 0;
         const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
         setChannelUnreadState({
           ...channelUnreadState,
           last_read:
-            channelUnreadState.last_read ??
+            channelUnreadState?.last_read ??
             (previousUnreadCount === 0 && previousLastMessage?.created_at
               ? new Date(previousLastMessage.created_at)
               : new Date(0)), // not having information about the last read message means the whole channel is unread,
@@ -584,7 +575,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     };
   }, [
     channel,
-    channelUnreadState,
+    channelUnreadStateStore,
     client.user?.id,
     markRead,
     scrollToBottomButtonVisible,

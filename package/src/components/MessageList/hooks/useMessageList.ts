@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
@@ -54,42 +54,27 @@ export const shouldIncludeMessageInList = (
 };
 
 export const useMessageList = (params: UseMessageListParams) => {
-  const { threadList, isLiveStreaming, isFlashList } = params;
+  const { threadList, isLiveStreaming, isFlashList = false } = params;
   const { client } = useChatContext();
   const { deletedMessagesVisibilityType } = useMessagesContext();
   const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
   const messageList = threadList ? threadMessages : messages;
+  const [messageListPreviousAndNextMessageStore] = useState(
+    () => new MessagePreviousAndNextMessageStore(),
+  );
 
-  const filteredMessageList = useMemo(() => {
-    const filteredMessages = [];
+  const processedMessageList = useMemo<LocalMessage[]>(() => {
+    const newMessageList = [];
     for (const message of messageList) {
       if (
-        shouldIncludeMessageInList(message, {
+        !shouldIncludeMessageInList(message, {
           deletedMessagesVisibilityType,
           userId: client.userID,
         })
       ) {
-        filteredMessages.push(message);
+        continue;
       }
-    }
-    return filteredMessages;
-  }, [messageList, deletedMessagesVisibilityType, client.userID]);
-
-  const messageListPreviousAndNextMessageStore = useMemo(
-    () => new MessagePreviousAndNextMessageStore(),
-    [],
-  );
-
-  useEffect(() => {
-    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage(
-      filteredMessageList,
-    );
-  }, [filteredMessageList, messageListPreviousAndNextMessageStore]);
-
-  const processedMessageList = useMemo<LocalMessage[]>(() => {
-    const newMessageList = [];
-    for (const message of filteredMessageList) {
       if (isFlashList) {
         newMessageList.push(message);
       } else {
@@ -97,7 +82,14 @@ export const useMessageList = (params: UseMessageListParams) => {
       }
     }
     return newMessageList;
-  }, [filteredMessageList, isFlashList]);
+  }, [messageList, deletedMessagesVisibilityType, client.userID, isFlashList]);
+
+  useEffect(() => {
+    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({
+      isFlashList,
+      messages: processedMessageList,
+    });
+  }, [processedMessageList, messageListPreviousAndNextMessageStore, isFlashList]);
 
   const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 

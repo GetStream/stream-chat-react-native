@@ -180,6 +180,7 @@ export type MessagePropsWithContext = Pick<
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageBounce'
+    | 'MessageBlocked'
     | 'MessageSimple'
     | 'onLongPressMessage'
     | 'onPressInMessage'
@@ -255,6 +256,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     members,
     message,
     messageActions: messageActionsProp = defaultMessageActions,
+    MessageBlocked,
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
     MessageMenu,
@@ -728,6 +730,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
+  }
+
+  if (isBlockedMessage(message)) {
+    return <MessageBlocked message={message} />;
   }
 
   return (

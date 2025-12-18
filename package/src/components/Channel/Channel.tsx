@@ -52,6 +52,10 @@ import {
   AttachmentPickerProvider,
   MessageContextValue,
 } from '../../contexts';
+import {
+  AudioPlayerContextProps,
+  AudioPlayerProvider,
+} from '../../contexts/audioPlayerContext/AudioPlayerContext';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
@@ -149,6 +153,7 @@ import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/Loadi
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
+import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
@@ -354,6 +359,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'messageActions'
       | 'MessageAvatar'
       | 'MessageBounce'
+      | 'MessageBlocked'
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
@@ -449,7 +455,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       localMessage: LocalMessage;
       message: StreamMessage;
       options?: SendMessageOptions;
-    }) => Promise<SendMessageAPIResponse>;
+    }) => Promise<void>;
     /**
      * Overrides the Stream default update message request (Advanced usage only)
      * @param channelId
@@ -504,6 +510,11 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     newMessageStateUpdateThrottleInterval?: number;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
+    /**
+     * If true, multiple audio players will be allowed to play simultaneously
+     * @default true
+     */
+    allowConcurrentAudioPlayback?: boolean;
     stateUpdateThrottleInterval?: number;
     /**
      * Tells if channel is rendering a thread list
@@ -537,6 +548,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
     additionalTextInputProps,
+    allowConcurrentAudioPlayback = false,
     allowThreadMessagesInChannel = true,
     asyncMessagesLockDistance = 50,
     asyncMessagesMinimumPressDuration = 500,
@@ -668,6 +680,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionListItem = MessageActionListItemDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
+    MessageBlocked = MessageBlockedDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = [
@@ -769,7 +782,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const channelUnreadStateStore = useMemo(() => new ChannelUnreadStateStore(), []);
+  const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
       channelUnreadStateStore.channelUnreadState = data;
@@ -1428,6 +1441,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           ...message,
           attachments,
           text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
+          // We cannot send an error message, so we convert it to a regular message.
+          type: message.type === 'error' ? 'regular' : message.type,
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
@@ -1944,6 +1959,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionListItem,
     messageActions,
     MessageAvatar,
+    MessageBlocked,
     MessageBounce,
     MessageContent,
     messageContentOrder,
@@ -2014,6 +2030,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     typing: channelState.typing ?? {},
   });
 
+  const audioPlayerContext = useMemo<AudioPlayerContextProps>(
+    () => ({ allowConcurrentAudioPlayback }),
+    [allowConcurrentAudioPlayback],
+  );
+
   const messageComposerContext = useMemo(
     () => ({ channel, thread, threadInstance }),
     [channel, thread, threadInstance],
@@ -2052,10 +2073,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                   <AttachmentPickerProvider value={attachmentPickerContext}>
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
-                        <View style={{ height: '100%' }}>{children}</View>
-                        {!disableAttachmentPicker && (
-                          <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
-                        )}
+                        <AudioPlayerProvider value={audioPlayerContext}>
+                          <View style={{ height: '100%' }}>{children}</View>
+                          {!disableAttachmentPicker && (
+                            <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                          )}
+                        </AudioPlayerProvider>
                       </MessageInputProvider>
                     </MessageComposerProvider>
                   </AttachmentPickerProvider>

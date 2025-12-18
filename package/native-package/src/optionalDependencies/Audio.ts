@@ -131,6 +131,9 @@ class _Audio {
   resumePlayer = async () => {
     await audioRecorderPlayer.resumePlayer();
   };
+  seekToPlayer = async (positionInMillis: number) => {
+    await audioRecorderPlayer.seekToPlayer(positionInMillis);
+  };
   startPlayer = async (uri, _, onPlaybackStatusUpdate) => {
     try {
       const playback = await audioRecorderPlayer.startPlayer(uri);

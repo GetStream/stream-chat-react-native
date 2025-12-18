@@ -105,6 +105,10 @@ export type Theme = {
     imageOverlaySelectedComponent: {
       check: ViewStyle;
     };
+    handle: {
+      container: ViewStyle;
+      indicator: ViewStyle;
+    };
   };
   attachmentSelectionBar: {
     container: ViewStyle;
@@ -651,6 +655,12 @@ export type Theme = {
     };
     messageGroupedSingleOrBottomContainer: ViewStyle;
     messageGroupedTopContainer: ViewStyle;
+    messageBlocked: {
+      container: ViewStyle;
+      line: ViewStyle;
+      text: TextStyle;
+      textContainer: ViewStyle;
+    };
     pinnedHeader: {
       container: ViewStyle;
       label: TextStyle;
@@ -896,6 +906,10 @@ export const defaultTheme: Theme = {
     errorButtonText: {},
     errorContainer: {},
     errorText: {},
+    handle: {
+      container: {},
+      indicator: {},
+    },
     image: {},
     imageOverlay: {},
     imageOverlaySelectedComponent: {
@@ -1460,6 +1474,12 @@ export const defaultTheme: Theme = {
     loadingIndicator: {
       container: {},
       roundedView: {},
+    },
+    messageBlocked: {
+      container: {},
+      line: {},
+      text: {},
+      textContainer: {},
     },
     messageGroupedSingleOrBottomContainer: {},
     messageGroupedTopContainer: {},

@@ -181,6 +181,8 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
     toggleVote();
   }, [message, onPress, poll, toggleVote]);
 
+  const hasVote = !!ownVotesByOptionId[option.id];
+
   return ownCapabilities.castPollVote && !isClosed ? (
     <Pressable
       onPress={onPressHandler}
@@ -188,17 +190,15 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
         { opacity: pressed ? 0.5 : 1 },
         styles.voteContainer,
         {
-          backgroundColor: ownVotesByOptionId[option.id]
-            ? voteButtonActive || accent_dark_blue
-            : 'transparent',
-          borderColor: ownVotesByOptionId[option.id]
+          backgroundColor: hasVote ? voteButtonActive || accent_dark_blue : 'transparent',
+          borderColor: hasVote
             ? voteButtonActive || accent_dark_blue
             : voteButtonInactive || disabled,
         },
         voteButtonContainer,
       ]}
     >
-      {ownVotesByOptionId[option.id] ? <Check height={15} pathFill='white' width={20} /> : null}
+      {hasVote ? <Check height={15} pathFill='white' width={20} /> : null}
     </Pressable>
   ) : null;
 };

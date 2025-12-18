@@ -31,7 +31,7 @@ export { default as ptBRTranslations } from './i18n/pt-br.json';
 export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
 
-export * from './store';
+export * from './state-store';
 export { SqliteClient } from './store/SqliteClient';
 export { OfflineDB } from './store/OfflineDB';
 export { version } from './version.json';
