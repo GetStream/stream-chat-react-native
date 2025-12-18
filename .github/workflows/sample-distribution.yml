@@ -74,9 +74,10 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
           check-latest: true
+      - uses: ./.github/actions/ruby-cache
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
-      - name: Build
+      - name: Build and deploy Android Firebase
         working-directory: examples/SampleApp
         run: bundle exec fastlane android firebase_build_and_upload deploy:${{ github.ref == 'refs/heads/develop' }};
         env:
