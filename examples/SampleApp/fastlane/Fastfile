@@ -15,7 +15,7 @@ output_ipa_name = "reactnativesampleapp.ipa"
 
 # Android Platform Configuration
 package_name = 'io.getstream.reactnative.sampleapp'
-firebase_app_id = "1:860064972837:android:45442c1123323ac9f17fcc"
+firebase_app_id = "1:674907137625:android:cba499ae72f6ee4bd7f348"
 firebase_credentials_file = "./credentials/firebase-credentials.json"
 output_apk_name = "reactnativesampleapp.apk"
 apk_path = "#{build_output_directory}/#{output_apk_name}"
@@ -115,11 +115,11 @@ platform :android do
 
     UI.message("Deploying to Firebase: #{deploy}")
     
-    # # Clean 
-    # gradle(
-    #     task: "clean",
-    #     project_dir: "./android"
-    # )
+    # Clean 
+    gradle(
+        task: "clean",
+        project_dir: "./android"
+    )
   
     # Build the AAB
     gradle(
