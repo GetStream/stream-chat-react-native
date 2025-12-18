@@ -51,7 +51,7 @@ jobs:
           bundle exec pod install
       - name: Build and release Testflight QA
         working-directory: examples/SampleApp
-        run: bundle exec fastlane deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
+        run: bundle exec fastlane ios deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
