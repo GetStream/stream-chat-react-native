@@ -106,7 +106,11 @@ import {
   isImagePickerAvailable,
   NativeHandlers,
 } from '../../native';
-import { ChannelUnreadState, FileTypes } from '../../types/types';
+import {
+  ChannelUnreadStateStore,
+  ChannelUnreadStateStoreType,
+} from '../../state-store/channel-unread-state';
+import { FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
@@ -326,6 +330,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'forceAlignMessages'
       | 'Gallery'
       | 'getMessagesGroupStyles'
+      | 'getMessageGroupStyle'
       | 'Giphy'
       | 'giphyVersion'
       | 'handleBan'
@@ -426,7 +431,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     doMarkReadRequest?: (
       channel: ChannelType,
-      setChannelUnreadUiState?: (state: ChannelUnreadState) => void,
+      setChannelUnreadUiState?: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void,
     ) => void;
     /**
      * Overrides the Stream default send message request (Advanced usage only)
@@ -622,6 +627,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     forceAlignMessages,
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
+    getMessageGroupStyle,
     Giphy = GiphyDefault,
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
@@ -778,10 +784,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const [channelUnreadState, setChannelUnreadState] = useState<ChannelUnreadState | undefined>(
-    undefined,
+  const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
+  const setChannelUnreadState = useCallback(
+    (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
+      channelUnreadStateStore.channelUnreadState = data;
+    },
+    [channelUnreadStateStore],
   );
-
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
   const syncingChannelRef = useRef(false);
@@ -906,16 +915,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (event.type === 'notification.mark_unread') {
-        setChannelUnreadState((prev) => {
-          if (!(event.last_read_at && event.user)) {
-            return prev;
-          }
-          return {
-            first_unread_message_id: event.first_unread_message_id,
-            last_read: new Date(event.last_read_at),
-            last_read_message_id: event.last_read_message_id,
-            unread_messages: event.unread_messages ?? 0,
-          };
+        if (!(event.last_read_at && event.user)) {
+          return;
+        }
+        setChannelUnreadState({
+          first_unread_message_id: event.first_unread_message_id,
+          last_read: new Date(event.last_read_at),
+          last_read_message_id: event.last_read_message_id,
+          unread_messages: event.unread_messages ?? 0,
         });
       }
 
@@ -1773,7 +1780,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    channelUnreadState,
+    channelUnreadState: channelUnreadStateStore.channelUnreadState,
+    channelUnreadStateStore,
     disabled: !!channel?.data?.frozen,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
@@ -1921,6 +1929,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FlatList,
     forceAlignMessages,
     Gallery,
+    getMessageGroupStyle,
     getMessagesGroupStyles,
     Giphy,
     giphyVersion,

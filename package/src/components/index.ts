@@ -163,6 +163,8 @@ export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
 export * from './Message/hooks/useMessageDeliveryData';
 export * from './Message/hooks/useMessageReadData';
+export * from './MessageList/hooks/useMessageDateSeparator';
+export * from './MessageList/hooks/useMessageGroupStyles';
 
 export * from './MessageMenu/MessageActionList';
 export * from './MessageMenu/MessageActionListItem';

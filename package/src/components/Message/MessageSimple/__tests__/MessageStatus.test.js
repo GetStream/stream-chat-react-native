@@ -81,11 +81,7 @@ describe('MessageStatus', () => {
       <ChannelsStateProvider>
         <Chat client={chatClient} i18nInstance={i18nInstance}>
           <Channel channel={channel}>
-            <MessageStatus
-              lastReceivedId={staticMessage.id}
-              message={staticMessage}
-              readBy={readBy}
-            />
+            <MessageStatus message={staticMessage} readBy={readBy} />
           </Channel>
         </Chat>
       </ChannelsStateProvider>,

@@ -8,25 +8,46 @@ import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadC
 import { isEditedMessage } from '../../../utils/utils';
 import type { GroupType } from '../hooks/useMessageList';
 
+export type MessageGroupStylesParams = {
+  message: LocalMessage;
+  previousMessage: LocalMessage;
+  nextMessage: LocalMessage;
+  maxTimeBetweenGroupedMessages?: number;
+  dateSeparatorDate?: Date;
+  nextMessageDateSeparatorDate?: Date;
+};
+
+/**
+ * @deprecated in favor of `useMessageGroupStyles` hook instead directly in the Message.
+ */
 export type GetGroupStylesParams = {
   dateSeparators: DateSeparators;
   messages: PaginatedMessageListContextValue['messages'] | ThreadContextValue['threadMessages'];
+  /**
+   * @deprecated in favor of `useDateSeparator` hook instead directly in the Message.
+   */
   hideDateSeparators?: boolean;
   maxTimeBetweenGroupedMessages?: number;
   noGroupByUser?: boolean;
+  /**
+   * @deprecated
+   */
   userId?: string;
 };
 
 export type GroupStyle = '' | 'middle' | 'top' | 'bottom' | 'single';
 
-const getGroupStyle = (
-  dateSeparators: DateSeparators,
-  message: LocalMessage,
-  previousMessage: LocalMessage,
-  nextMessage: LocalMessage,
-  hideDateSeparators?: boolean,
-  maxTimeBetweenGroupedMessages?: number,
-): GroupStyle[] => {
+/**
+ * Get the group styles for a message
+ */
+export const getGroupStyle = ({
+  message,
+  previousMessage,
+  nextMessage,
+  maxTimeBetweenGroupedMessages,
+  nextMessageDateSeparatorDate,
+  dateSeparatorDate,
+}: MessageGroupStylesParams): GroupStyle[] => {
   const groupStyles: GroupStyle[] = [];
 
   const isPrevMessageTypeDeleted = previousMessage?.type === 'deleted';
@@ -41,7 +62,7 @@ const getGroupStyle = (
     userId !== previousMessage?.user?.id ||
     !!isPrevMessageTypeDeleted ||
     // NOTE: This is needed for the group styles to work after the message separated by date.
-    (!hideDateSeparators && dateSeparators[message.id]) ||
+    dateSeparatorDate ||
     isEditedMessage(previousMessage);
 
   const isBottomMessage =
@@ -50,7 +71,7 @@ const getGroupStyle = (
     nextMessage.type === 'error' ||
     userId !== nextMessage?.user?.id ||
     !!isNextMessageTypeDeleted ||
-    (!hideDateSeparators && dateSeparators[nextMessage.id]) ||
+    nextMessageDateSeparatorDate ||
     (maxTimeBetweenGroupedMessages !== undefined &&
       (nextMessage.created_at as Date).getTime() - (message.created_at as Date).getTime() >
         maxTimeBetweenGroupedMessages) ||
@@ -98,15 +119,11 @@ const getGroupStyle = (
   return groupStyles;
 };
 
+/**
+ * @deprecated in favor of `useMessageGroupStyles` hook instead directly in the Message.
+ */
 export const getGroupStyles = (params: GetGroupStylesParams) => {
-  const {
-    dateSeparators,
-    hideDateSeparators,
-    maxTimeBetweenGroupedMessages,
-    messages,
-    noGroupByUser,
-    userId,
-  } = params;
+  const { dateSeparators, maxTimeBetweenGroupedMessages, messages, noGroupByUser } = params;
 
   if (noGroupByUser) {
     return {};
@@ -114,25 +131,19 @@ export const getGroupStyles = (params: GetGroupStylesParams) => {
 
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
-  const messagesFilteredForNonUser = messages.filter((message) => {
-    const isMessageTypeDeleted = message.type === 'deleted';
-    return !isMessageTypeDeleted || userId === message.user?.id;
-  });
-
-  for (let i = 0; i < messagesFilteredForNonUser.length; i++) {
-    const previousMessage = messagesFilteredForNonUser[i - 1];
-    const message = messagesFilteredForNonUser[i];
-    const nextMessage = messagesFilteredForNonUser[i + 1];
+  for (let i = 0; i < messages.length; i++) {
+    const previousMessage = messages[i - 1];
+    const message = messages[i];
+    const nextMessage = messages[i + 1];
 
     if (message.id) {
-      messageGroupStyles[message.id] = getGroupStyle(
-        dateSeparators,
-        message,
-        previousMessage,
-        nextMessage,
-        hideDateSeparators,
+      messageGroupStyles[message.id] = getGroupStyle({
+        dateSeparatorDate: dateSeparators[message.id],
         maxTimeBetweenGroupedMessages,
-      );
+        message,
+        nextMessage,
+        previousMessage,
+      });
     }
   }
 

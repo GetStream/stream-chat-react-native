@@ -253,7 +253,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleRetry,
     handleThreadReply,
     isTargetedMessage,
-    lastReceivedId,
     members,
     message,
     messageActions: messageActionsProp = defaultMessageActions,
@@ -652,7 +651,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     isMessageAIGenerated,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
-    lastReceivedId,
     members,
     message,
     messageContentOrder,
@@ -789,7 +787,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
-    lastReceivedId: prevLastReceivedId,
     members: prevMembers,
     message: prevMessage,
     messagesContext: prevMessagesContext,
@@ -803,7 +800,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
-    lastReceivedId: nextLastReceivedId,
     members: nextMembers,
     message: nextMessage,
     messagesContext: nextMessagesContext,
@@ -829,17 +825,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) {
-    return false;
-  }
-
-  const lastReceivedIdChangedAndMatters =
-    prevLastReceivedId !== nextLastReceivedId &&
-    (prevLastReceivedId === prevMessage.id ||
-      prevLastReceivedId === nextMessage.id ||
-      nextLastReceivedId === prevMessage.id ||
-      nextLastReceivedId === nextMessage.id);
-
-  if (lastReceivedIdChangedAndMatters) {
     return false;
   }
 
