@@ -33,6 +33,7 @@ import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
+import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
@@ -115,19 +116,21 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 
 // Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({
+  navigation,
   route: {
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
   const { chatClient, messageListImplementation, messageListMode, messageListPruning } =
     useAppContext();
-  const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
     theme: { colors },
   } = useTheme();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<LocalMessage | undefined>(undefined);
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
@@ -170,6 +173,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   const onThreadSelect = useCallback(
     (thread: LocalMessage | null) => {
+      if (!thread || !channel) {
+        return;
+      }
       setSelectedThread(thread);
       setThread(thread);
       navigation.navigate('ThreadScreen', {
@@ -179,6 +185,15 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
     [channel, navigation, setThread],
   );
+
+  const handleMessageInfo = useCallback((message: LocalMessage) => {
+    setSelectedMessage(message);
+    setModalVisible(true);
+  }, []);
+
+  const handleMessageInfoClose = useCallback(() => {
+    setModalVisible(false);
+  }, []);
 
   const messageActions = useCallback(
     (params: MessageActionsParams) => {
@@ -190,9 +205,10 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         chatClient,
         t,
         colors,
+        handleMessageInfo,
       });
     },
-    [chatClient, colors, t],
+    [chatClient, colors, t, handleMessageInfo],
   );
 
   if (!channel || !chatClient) {
@@ -232,6 +248,13 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         )}
         <AITypingIndicatorView channel={channel} />
         <MessageInput />
+        {modalVisible && (
+          <MessageInfoBottomSheet
+            visible={modalVisible}
+            message={selectedMessage}
+            onClose={handleMessageInfoClose}
+          />
+        )}
       </Channel>
     </View>
   );

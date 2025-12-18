@@ -355,6 +355,11 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.27.1.tgz#a7054dcc145a967dd4dc8fee845a57c1316c9df8"
   integrity sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==
 
+"@babel/helper-validator-identifier@^7.28.5":
+  version "7.28.5"
+  resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.28.5.tgz#010b6938fab7cb7df74aa2bbc06aa503b8fe5fb4"
+  integrity sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==
+
 "@babel/helper-validator-option@^7.25.9":
   version "7.25.9"
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-option/-/helper-validator-option-7.25.9.tgz#86e45bd8a49ab7e03f276577f96179653d41da72"
@@ -1032,6 +1037,14 @@
   dependencies:
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
+
+"@babel/types@^7.26.0":
+  version "7.28.5"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.28.5.tgz#10fc405f60897c35f07e85493c932c7b5ca0592b"
+  integrity sha512-qQ5m48eI/MFLQ5PxQj4PFaprjyCTLI37ElWMmNs0K8Lk3dVeOdNpB3ks8jc7yM5CDmVC73eMVk/trk3fgmrUpA==
+  dependencies:
+    "@babel/helper-string-parser" "^7.27.1"
+    "@babel/helper-validator-identifier" "^7.28.5"
 
 "@babel/types@^7.27.1", "@babel/types@^7.27.3", "@babel/types@^7.27.6":
   version "7.27.6"
@@ -3662,6 +3675,13 @@ babel-plugin-polyfill-regenerator@^0.6.1:
   dependencies:
     "@babel/helper-define-polyfill-provider" "^0.6.3"
 
+babel-plugin-react-compiler@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-compiler/-/babel-plugin-react-compiler-1.0.0.tgz#bdf7360a23a4d5ebfca090255da3893efd07425f"
+  integrity sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==
+  dependencies:
+    "@babel/types" "^7.26.0"
+
 babel-plugin-syntax-hermes-parser@0.28.1:
   version "0.28.1"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-hermes-parser/-/babel-plugin-syntax-hermes-parser-0.28.1.tgz#9e80a774ddb8038307a62316486669c668fb3568"
@@ -3799,7 +3819,7 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
-buffer-equal-constant-time@1.0.1:
+buffer-equal-constant-time@1.0.1, buffer-equal-constant-time@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz#f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819"
   integrity sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==
@@ -6456,6 +6476,22 @@ jsonwebtoken@^9.0.2:
     ms "^2.1.1"
     semver "^7.5.4"
 
+jsonwebtoken@^9.0.3:
+  version "9.0.3"
+  resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-9.0.3.tgz#6cd57ab01e9b0ac07cb847d53d3c9b6ee31f7ae2"
+  integrity sha512-MT/xP0CrubFRNLNKvxJ2BYfy53Zkm++5bX9dtuPbqAeQpTVe0MQTFhao8+Cp//EmJp244xt6Drw/GVEGCUj40g==
+  dependencies:
+    jws "^4.0.1"
+    lodash.includes "^4.3.0"
+    lodash.isboolean "^3.0.3"
+    lodash.isinteger "^4.0.4"
+    lodash.isnumber "^3.0.3"
+    lodash.isplainobject "^4.0.6"
+    lodash.isstring "^4.0.1"
+    lodash.once "^4.0.0"
+    ms "^2.1.1"
+    semver "^7.5.4"
+
 "jsx-ast-utils@^2.4.1 || ^3.0.0":
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-3.3.5.tgz#4766bd05a8e2a11af222becd19e15575e52a853a"
@@ -6475,12 +6511,29 @@ jwa@^1.4.1:
     ecdsa-sig-formatter "1.0.11"
     safe-buffer "^5.0.1"
 
+jwa@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/jwa/-/jwa-2.0.1.tgz#bf8176d1ad0cd72e0f3f58338595a13e110bc804"
+  integrity sha512-hRF04fqJIP8Abbkq5NKGN0Bbr3JxlQ+qhZufXVr0DvujKy93ZCbXZMHDL4EOtodSbCWxOqR8MS1tXA5hwqCXDg==
+  dependencies:
+    buffer-equal-constant-time "^1.0.1"
+    ecdsa-sig-formatter "1.0.11"
+    safe-buffer "^5.0.1"
+
 jws@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/jws/-/jws-3.2.2.tgz#001099f3639468c9414000e99995fa52fb478304"
   integrity sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==
   dependencies:
     jwa "^1.4.1"
+    safe-buffer "^5.0.1"
+
+jws@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/jws/-/jws-4.0.1.tgz#07edc1be8fac20e677b283ece261498bd38f0690"
+  integrity sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==
+  dependencies:
+    jwa "^2.0.1"
     safe-buffer "^5.0.1"
 
 keyv@^4.5.4:
@@ -8260,34 +8313,17 @@ stream-chat-react-native-core@8.1.0:
     use-sync-external-store "^1.5.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "8.1.0"
-  dependencies:
-    "@gorhom/bottom-sheet" "^5.1.8"
-    "@ungap/structured-clone" "^1.3.0"
-    dayjs "1.11.13"
-    emoji-regex "^10.4.0"
-    i18next "^25.2.1"
-    intl-pluralrules "^2.0.1"
-    linkifyjs "^4.3.1"
-    lodash-es "4.17.21"
-    mime-types "^2.1.35"
-    path "0.12.7"
-    react-native-markdown-package "1.8.2"
-    react-native-url-polyfill "^2.0.0"
-    stream-chat "^9.23.0"
-    use-sync-external-store "^1.5.0"
+  version "0.0.0"
+  uid ""
 
 "stream-chat-react-native@link:../../package/native-package":
-  version "8.1.0"
-  dependencies:
-    es6-symbol "^3.1.3"
-    mime "^4.0.7"
-    stream-chat-react-native-core "8.1.0"
+  version "0.0.0"
+  uid ""
 
-stream-chat@^9.23.0:
-  version "9.23.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.23.0.tgz#e7e5cf729861597e7198907c1cab22a57d68a2fc"
-  integrity sha512-UW112HYsLnYb4RMIXBtAouNQCCe0weVzNivjezsw+JKK1b/TX0JLBi+wK25mBUEO+coOGKfXiye6IB3gao8ipw==
+stream-chat@^9.27.2:
+  version "9.27.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.27.2.tgz#5b41173e513f3606c47c93f391693b589e663968"
+  integrity sha512-OdALDzg8lO8CAdl8deydJ1+O4wJ7mM9dPLeCwDppq/OQ4aFIS9X38P+IdXPcOCsgSS97UoVUuxD2/excC5PEeg==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
@@ -8295,7 +8331,7 @@ stream-chat@^9.23.0:
     base64-js "^1.5.1"
     form-data "^4.0.4"
     isomorphic-ws "^5.0.0"
-    jsonwebtoken "^9.0.2"
+    jsonwebtoken "^9.0.3"
     linkifyjs "^4.3.2"
     ws "^8.18.1"
 

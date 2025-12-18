@@ -7,6 +7,11 @@
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GetStream/stream-chat-react-native.git",
+    "directory": "package/native-package"
+  },
   "files": [
     "src",
     "types",

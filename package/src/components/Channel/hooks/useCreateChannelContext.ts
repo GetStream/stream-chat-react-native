@@ -5,6 +5,7 @@ import type { ChannelContextValue } from '../../../contexts/channelContext/Chann
 export const useCreateChannelContext = ({
   channel,
   channelUnreadState,
+  channelUnreadStateStore,
   disabled,
   EmptyStateIndicator,
   enableMessageGroupingByUser,
@@ -43,13 +44,15 @@ export const useCreateChannelContext = ({
 
   const readUsers = Object.values(read);
   const readUsersLength = readUsers.length;
-  const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
-  const stringifiedChannelUnreadState = JSON.stringify(channelUnreadState);
+  const readUsersLastReads = readUsers
+    .map(({ last_read }) => last_read?.toISOString() ?? '')
+    .join();
 
   const channelContext: ChannelContextValue = useMemo(
     () => ({
       channel,
       channelUnreadState,
+      channelUnreadStateStore,
       disabled,
       EmptyStateIndicator,
       enableMessageGroupingByUser,
@@ -94,7 +97,6 @@ export const useCreateChannelContext = ({
       membersLength,
       readUsersLength,
       readUsersLastReads,
-      stringifiedChannelUnreadState,
       targetedMessage,
       threadList,
       watcherCount,

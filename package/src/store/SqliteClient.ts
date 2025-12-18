@@ -96,7 +96,6 @@ export class SqliteClient {
       });
       await this.db.executeBatch(finalQueries);
     } catch (e) {
-      this.db?.execute('ROLLBACK');
       this.logger?.('error', 'SqlBatch queries failed', {
         error: e,
         queries,

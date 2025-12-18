@@ -16,10 +16,11 @@ export const AudioPlayerContext = createContext<AudioPlayerContextValue>(
   DEFAULT_BASE_CONTEXT_VALUE as AudioPlayerContextValue,
 );
 
-export const WithAudioPlayback = ({
-  props: { allowConcurrentAudioPlayback },
+export const AudioPlayerProvider = ({
+  value,
   children,
-}: PropsWithChildren<{ props: AudioPlayerContextProps }>) => {
+}: PropsWithChildren<{ value: AudioPlayerContextProps }>) => {
+  const { allowConcurrentAudioPlayback } = value;
   const audioPlayerPool = useMemo(
     () => new AudioPlayerPool({ allowConcurrentAudioPlayback }),
     [allowConcurrentAudioPlayback],

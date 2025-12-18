@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -62,7 +62,6 @@ export const ProgressControl = (props: ProgressControlProps) => {
   const { filledColor: filledColorFromProp, onEndDrag, onStartDrag, progress, testID } = props;
 
   const state = useSharedValue(progress);
-  const isSliding = useRef(false);
   const {
     theme: {
       colors: { grey_dark },
@@ -73,32 +72,32 @@ export const ProgressControl = (props: ProgressControlProps) => {
   useAnimatedReaction(
     () => progress,
     (newProgress) => {
-      if (!isSliding.current) {
-        state.value = newProgress;
-      }
+      state.value = newProgress;
     },
-    [progress, isSliding.current],
+    [progress],
   );
 
-  const pan = Gesture.Pan()
-    .maxPointers(1)
-    .onStart(() => {
-      isSliding.current = true;
-      if (onStartDrag) {
-        runOnJS(onStartDrag)(state.value);
-      }
-    })
-    .onUpdate((event) => {
-      const newProgress = Math.max(0, Math.min(event.x / widthInNumbers, 1));
-      state.value = newProgress;
-    })
-    .onEnd(() => {
-      isSliding.current = false;
-      if (onEndDrag) {
-        runOnJS(onEndDrag)(state.value);
-      }
-    })
-    .withTestId(testID);
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .maxPointers(1)
+        .onStart(() => {
+          if (onStartDrag) {
+            runOnJS(onStartDrag)(state.value);
+          }
+        })
+        .onUpdate((event) => {
+          const newProgress = Math.max(0, Math.min(event.x / widthInNumbers, 1));
+          state.value = newProgress;
+        })
+        .onEnd(() => {
+          if (onEndDrag) {
+            runOnJS(onEndDrag)(state.value);
+          }
+        })
+        .withTestId(testID),
+    [onEndDrag, onStartDrag, state, testID, widthInNumbers],
+  );
 
   const filledColor = filledColorFromProp || filledColorFromTheme;
 

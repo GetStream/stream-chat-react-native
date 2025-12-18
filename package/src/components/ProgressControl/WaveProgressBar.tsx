@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -84,7 +84,6 @@ export const WaveProgressBar = React.memo(
     const eachWaveformWidth = WAVEFORM_WIDTH * 2;
     const fullWidth = (amplitudesCount - 1) * eachWaveformWidth;
     const state = useSharedValue(progress);
-    const isSliding = useRef(false);
     const [currentWaveformProgress, setCurrentWaveformProgress] = useState<number>(0);
 
     const waveFormNumberFromProgress = useCallback(
@@ -101,9 +100,7 @@ export const WaveProgressBar = React.memo(
     useAnimatedReaction(
       () => progress,
       (newProgress) => {
-        if (!isSliding.current) {
-          state.value = newProgress;
-        }
+        state.value = newProgress;
         waveFormNumberFromProgress(newProgress);
       },
       [progress],
@@ -116,26 +113,28 @@ export const WaveProgressBar = React.memo(
       },
     } = useTheme();
 
-    const pan = Gesture.Pan()
-      .enabled(showProgressDrag)
-      .maxPointers(1)
-      .onStart(() => {
-        isSliding.current = true;
-        if (onStartDrag) {
-          runOnJS(onStartDrag)(state.value);
-        }
-      })
-      .onUpdate((event) => {
-        const newProgress = Math.max(0, Math.min(event.x / fullWidth, 1));
-        state.value = newProgress;
-        waveFormNumberFromProgress(newProgress);
-      })
-      .onEnd(() => {
-        isSliding.current = false;
-        if (onEndDrag) {
-          runOnJS(onEndDrag)(state.value);
-        }
-      });
+    const pan = useMemo(
+      () =>
+        Gesture.Pan()
+          .enabled(showProgressDrag)
+          .maxPointers(1)
+          .onStart(() => {
+            if (onStartDrag) {
+              runOnJS(onStartDrag)(state.value);
+            }
+          })
+          .onUpdate((event) => {
+            const newProgress = Math.max(0, Math.min(event.x / fullWidth, 1));
+            state.value = newProgress;
+            waveFormNumberFromProgress(newProgress);
+          })
+          .onEnd(() => {
+            if (onEndDrag) {
+              runOnJS(onEndDrag)(state.value);
+            }
+          }),
+      [fullWidth, onEndDrag, onStartDrag, showProgressDrag, state, waveFormNumberFromProgress],
+    );
 
     const stringifiedWaveformData = waveformData.toString();
 

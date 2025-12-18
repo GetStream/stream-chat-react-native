@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
@@ -12,17 +12,24 @@ import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessa
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
 import { useRAFCoalescedValue } from '../../../hooks';
+import { MessagePreviousAndNextMessageStore } from '../../../state-store/message-list-prev-next-state';
 import { DateSeparators, getDateSeparators } from '../utils/getDateSeparators';
 import { getGroupStyles } from '../utils/getGroupStyles';
 
 export type UseMessageListParams = {
   deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
+  /**
+   * @deprecated
+   */
   noGroupByUser?: boolean;
   threadList?: boolean;
   isLiveStreaming?: boolean;
   isFlashList?: boolean;
 };
 
+/**
+ * FIXME: To change it to a more specific type.
+ */
 export type GroupType = string;
 
 export type MessageGroupStyles = {
@@ -35,23 +42,27 @@ export const shouldIncludeMessageInList = (
 ) => {
   const { deletedMessagesVisibilityType, userId } = options;
   const isMessageTypeDeleted = message.type === 'deleted';
+  const isSender = message.user?.id === userId;
+
+  if (!isMessageTypeDeleted) {
+    return true;
+  }
+
   switch (deletedMessagesVisibilityType) {
+    case 'always':
+      return true;
     case 'sender':
-      return !isMessageTypeDeleted || message.user?.id === userId;
-
+      return isSender;
     case 'receiver':
-      return !isMessageTypeDeleted || message.user?.id !== userId;
-
+      return !isSender;
     case 'never':
-      return !isMessageTypeDeleted;
-
     default:
-      return !!message;
+      return false;
   }
 };
 
 export const useMessageList = (params: UseMessageListParams) => {
-  const { noGroupByUser, threadList, isLiveStreaming, isFlashList } = params;
+  const { noGroupByUser, threadList, isLiveStreaming, isFlashList = false } = params;
   const { client } = useChatContext();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages } = useChannelContext();
   const { deletedMessagesVisibilityType, getMessagesGroupStyles = getGroupStyles } =
@@ -59,63 +70,83 @@ export const useMessageList = (params: UseMessageListParams) => {
   const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
   const messageList = threadList ? threadMessages : messages;
+  const [messageListPreviousAndNextMessageStore] = useState(
+    () => new MessagePreviousAndNextMessageStore(),
+  );
 
+  const processedMessageList = useMemo<LocalMessage[]>(() => {
+    const newMessageList = [];
+    for (const message of messageList) {
+      if (
+        !shouldIncludeMessageInList(message, {
+          deletedMessagesVisibilityType,
+          userId: client.userID,
+        })
+      ) {
+        continue;
+      }
+      if (isFlashList) {
+        newMessageList.push(message);
+      } else {
+        newMessageList.unshift(message);
+      }
+    }
+    return newMessageList;
+  }, [messageList, deletedMessagesVisibilityType, client.userID, isFlashList]);
+
+  useEffect(() => {
+    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({
+      isFlashList,
+      messages: processedMessageList,
+    });
+  }, [processedMessageList, messageListPreviousAndNextMessageStore, isFlashList]);
+
+  /**
+   * @deprecated use `useDateSeparator` hook instead directly in the Message.
+   */
   const dateSeparators = useMemo(
     () =>
       getDateSeparators({
-        deletedMessagesVisibilityType,
         hideDateSeparators,
-        messages: messageList,
-        userId: client.userID,
+        messages: processedMessageList,
       }),
-    [deletedMessagesVisibilityType, hideDateSeparators, messageList, client.userID],
+    [hideDateSeparators, processedMessageList],
   );
 
+  /**
+   * @deprecated use `useDateSeparator` hook instead directly in the Message.
+   */
   const dateSeparatorsRef = useRef<DateSeparators>(dateSeparators);
   dateSeparatorsRef.current = dateSeparators;
 
+  /**
+   * @deprecated use `useMessageGroupStyles` hook instead directly in the Message.
+   */
   const messageGroupStyles = useMemo(
     () =>
       getMessagesGroupStyles({
         dateSeparators: dateSeparatorsRef.current,
         hideDateSeparators,
         maxTimeBetweenGroupedMessages,
-        messages: messageList,
+        messages: processedMessageList,
         noGroupByUser,
         userId: client.userID,
       }),
     [
-      dateSeparatorsRef,
       getMessagesGroupStyles,
       hideDateSeparators,
       maxTimeBetweenGroupedMessages,
-      messageList,
+      processedMessageList,
       noGroupByUser,
       client.userID,
     ],
   );
 
+  /**
+   * @deprecated use `useMessageGroupStyles` hook instead directly in the Message.
+   */
   const messageGroupStylesRef = useRef<MessageGroupStyles>(messageGroupStyles);
   messageGroupStylesRef.current = messageGroupStyles;
-
-  const processedMessageList = useMemo<LocalMessage[]>(() => {
-    const newMessageList = [];
-    for (const message of messageList) {
-      if (
-        shouldIncludeMessageInList(message, {
-          deletedMessagesVisibilityType,
-          userId: client.userID,
-        })
-      ) {
-        if (isFlashList) {
-          newMessageList.push(message);
-        } else {
-          newMessageList.unshift(message);
-        }
-      }
-    }
-    return newMessageList;
-  }, [client.userID, deletedMessagesVisibilityType, isFlashList, messageList]);
 
   const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 
@@ -125,12 +156,13 @@ export const useMessageList = (params: UseMessageListParams) => {
       dateSeparatorsRef,
       /** Message group styles */
       messageGroupStylesRef,
+      messageListPreviousAndNextMessageStore,
       /** Messages enriched with dates/readby/groups and also reversed in order */
       processedMessageList: data,
       /** Raw messages from the channel state */
       rawMessageList: messageList,
       viewabilityChangedCallback,
     }),
-    [data, messageList, viewabilityChangedCallback],
+    [data, messageList, messageListPreviousAndNextMessageStore, viewabilityChangedCallback],
   );
 };

@@ -24,6 +24,9 @@ type Props = {
 export const AttachmentPickerBottomSheetHandle = ({ animatedIndex }: Props) => {
   const {
     theme: {
+      attachmentPicker: {
+        handle: { container, indicator },
+      },
       colors: { black, white },
     },
   } = useTheme();
@@ -34,8 +37,8 @@ export const AttachmentPickerBottomSheetHandle = ({ animatedIndex }: Props) => {
   }));
 
   return (
-    <Animated.View style={[styles.container, { backgroundColor: white }, style]}>
-      <View style={[styles.handle, { backgroundColor: `${black}1A` }]} />
+    <Animated.View style={[styles.container, { backgroundColor: white }, style, container]}>
+      <View style={[styles.handle, { backgroundColor: `${black}1A` }, indicator]} />
       {/* ^ 1A = 10% opacity */}
     </Animated.View>
   );

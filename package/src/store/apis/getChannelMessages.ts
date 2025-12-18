@@ -4,7 +4,6 @@ import { selectMessagesForChannels } from './queries/selectMessagesForChannels';
 
 import { selectReactionsForMessages } from './queries/selectReactionsForMessages';
 
-import { isBlockedMessage } from '../../utils/utils';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../SqliteClient';
@@ -82,17 +81,15 @@ export const getChannelMessages = async ({
       cidVsMessages[m.cid] = [];
     }
 
-    if (!isBlockedMessage(m)) {
-      cidVsMessages[m.cid].push(
-        mapStorableToMessage({
-          currentUserId,
-          messageRow: m,
-          pollRow: messageIdsVsPolls[m.poll_id],
-          reactionRows: messageIdVsReactions[m.id],
-          reminderRow: messageIdsVsReminders[m.id],
-        }),
-      );
-    }
+    cidVsMessages[m.cid].push(
+      mapStorableToMessage({
+        currentUserId,
+        messageRow: m,
+        pollRow: messageIdsVsPolls[m.poll_id],
+        reactionRows: messageIdVsReactions[m.id],
+        reminderRow: messageIdsVsReminders[m.id],
+      }),
+    );
   });
 
   return cidVsMessages;

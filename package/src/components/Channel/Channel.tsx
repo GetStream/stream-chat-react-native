@@ -54,7 +54,7 @@ import {
 } from '../../contexts';
 import {
   AudioPlayerContextProps,
-  WithAudioPlayback,
+  AudioPlayerProvider,
 } from '../../contexts/audioPlayerContext/AudioPlayerContext';
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
@@ -106,8 +106,11 @@ import {
   isImagePickerAvailable,
   NativeHandlers,
 } from '../../native';
-import * as dbApi from '../../store/apis';
-import { ChannelUnreadState, FileTypes } from '../../types/types';
+import {
+  ChannelUnreadStateStore,
+  ChannelUnreadStateStoreType,
+} from '../../state-store/channel-unread-state';
+import { FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
@@ -150,6 +153,7 @@ import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/Loadi
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
+import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
@@ -326,6 +330,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'forceAlignMessages'
       | 'Gallery'
       | 'getMessagesGroupStyles'
+      | 'getMessageGroupStyle'
       | 'Giphy'
       | 'giphyVersion'
       | 'handleBan'
@@ -355,6 +360,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'messageActions'
       | 'MessageAvatar'
       | 'MessageBounce'
+      | 'MessageBlocked'
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
@@ -425,7 +431,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     doMarkReadRequest?: (
       channel: ChannelType,
-      setChannelUnreadUiState?: (state: ChannelUnreadState) => void,
+      setChannelUnreadUiState?: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void,
     ) => void;
     /**
      * Overrides the Stream default send message request (Advanced usage only)
@@ -437,6 +443,20 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       messageData: StreamMessage,
       options?: SendMessageOptions,
     ) => Promise<SendMessageAPIResponse>;
+
+    /**
+     * A method invoked just after the first optimistic update of a new message,
+     * but before any other HTTP requests happen. Can be used to do extra work
+     * (such as creating a channel, or editing a message) before the local message
+     * is sent.
+     * @param channelId
+     * @param messageData Message object
+     */
+    preSendMessageRequest?: (options: {
+      localMessage: LocalMessage;
+      message: StreamMessage;
+      options?: SendMessageOptions;
+    }) => Promise<void>;
     /**
      * Overrides the Stream default update message request (Advanced usage only)
      * @param channelId
@@ -501,10 +521,24 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
+    /**
+     * A boolean signifying whether the Channel component should run channel.watch()
+     * whenever it mounts up a new channel. If set to `false`, it is the integrator's
+     * responsibility to run channel.watch() if they wish to receive WebSocket events
+     * for that channel.
+     *
+     * Can be particularly useful whenever we are viewing channels in a read-only mode
+     * or perhaps want them in an ephemeral state (i.e not created until the first message
+     * is sent).
+     */
+    initializeOnMount?: boolean;
   } & Partial<
     Pick<
       InputMessageInputContextValue,
-      'openPollCreationDialog' | 'CreatePollContent' | 'StopMessageStreamingButton'
+      | 'openPollCreationDialog'
+      | 'CreatePollContent'
+      | 'StopMessageStreamingButton'
+      | 'allowSendBeforeAttachmentsUpload'
     >
   >;
 
@@ -577,10 +611,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doFileUploadRequest,
     doMarkReadRequest,
     doSendMessageRequest,
+    preSendMessageRequest,
     doUpdateMessageRequest,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
+    allowSendBeforeAttachmentsUpload = enableOfflineSupport,
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
@@ -591,6 +627,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     forceAlignMessages,
     Gallery = GalleryDefault,
     getMessagesGroupStyles,
+    getMessageGroupStyle,
     Giphy = GiphyDefault,
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
@@ -645,6 +682,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionListItem = MessageActionListItemDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
+    MessageBlocked = MessageBlockedDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = [
@@ -725,6 +763,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
     maximumMessageLimit,
+    initializeOnMount = true,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -745,10 +784,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const [channelUnreadState, setChannelUnreadState] = useState<ChannelUnreadState | undefined>(
-    undefined,
+  const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
+  const setChannelUnreadState = useCallback(
+    (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
+      channelUnreadStateStore.channelUnreadState = data;
+    },
+    [channelUnreadStateStore],
   );
-
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
   const syncingChannelRef = useRef(false);
@@ -873,16 +915,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (event.type === 'notification.mark_unread') {
-        setChannelUnreadState((prev) => {
-          if (!(event.last_read_at && event.user)) {
-            return prev;
-          }
-          return {
-            first_unread_message_id: event.first_unread_message_id,
-            last_read: new Date(event.last_read_at),
-            last_read_message_id: event.last_read_message_id,
-            unread_messages: event.unread_messages ?? 0,
-          };
+        if (!(event.last_read_at && event.user)) {
+          return;
+        }
+        setChannelUnreadState({
+          first_unread_message_id: event.first_unread_message_id,
+          last_read: new Date(event.last_read_at),
+          last_read_message_id: event.last_read_message_id,
+          unread_messages: event.unread_messages ?? 0,
         });
       }
 
@@ -891,7 +931,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       // only update channel state if the events are not the previously subscribed useEffect's subscription events
-      if (channel && channel.initialized) {
+      if (channel) {
         // we skip the new message events if we've already done an optimistic update for the new message
         if (event.type === 'message.new' || event.type === 'notification.message_new') {
           const messageId = event.message?.id ?? '';
@@ -925,13 +965,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       let errored = false;
 
-      if (!channel.initialized || !channel.state.isUpToDate) {
+      if ((!channel.initialized || !channel.state.isUpToDate) && initializeOnMount) {
         try {
           await channel?.watch();
         } catch (err) {
           console.warn('Channel watch request failed with error:', err);
           setError(true);
           errored = true;
+          channel.offlineMode = true;
         }
       }
 
@@ -1088,7 +1129,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const resyncChannel = useStableCallback(async () => {
-    if (!channel || syncingChannelRef.current) {
+    if (!channel || syncingChannelRef.current || (!channel.initialized && !channel.offlineMode)) {
       return;
     }
     syncingChannelRef.current = true;
@@ -1109,6 +1150,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             limit: channelMessagesState.messages.length + 30,
           },
         });
+        channel.offlineMode = false;
       }
 
       if (!thread) {
@@ -1310,9 +1352,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           attachment.image_url = uploadResponse.file;
           delete attachment.originalFile;
 
-          await dbApi.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          });
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...updatedMessage, cid: channel.cid },
+              }),
+            { method: 'updateMessage' },
+          );
         }
 
         if (attachment.type !== FileTypes.Image && file?.uri) {
@@ -1331,9 +1377,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           }
 
           delete attachment.originalFile;
-          await dbApi.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          });
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...updatedMessage, cid: channel.cid },
+              }),
+            { method: 'updateMessage' },
+          );
         }
       }
     }
@@ -1354,7 +1404,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       retrying?: boolean;
     }) => {
       let failedMessageUpdated = false;
-      const handleFailedMessage = async () => {
+      const handleFailedMessage = () => {
         if (!failedMessageUpdated) {
           const updatedMessage = {
             ...localMessage,
@@ -1365,11 +1415,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
           optimisticallyUpdatedNewMessages.delete(localMessage.id);
 
-          if (enableOfflineSupport) {
-            await dbApi.updateMessage({
-              message: updatedMessage,
-            });
-          }
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: updatedMessage,
+              }),
+            { method: 'updateMessage' },
+          );
 
           failedMessageUpdated = true;
         }
@@ -1391,6 +1443,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           ...message,
           attachments,
           text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
+          // We cannot send an error message, so we convert it to a regular message.
+          type: message.type === 'error' ? 'regular' : message.type,
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
@@ -1407,11 +1461,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             status: MessageStatusTypes.RECEIVED,
           };
 
-          if (enableOfflineSupport) {
-            await dbApi.updateMessage({
-              message: { ...newMessageResponse, cid: channel.cid },
-            });
-          }
+          client.offlineDb?.executeQuerySafely(
+            (db) =>
+              db.updateMessage({
+                message: { ...newMessageResponse, cid: channel.cid },
+              }),
+            { method: 'updateMessage' },
+          );
+
           if (retrying) {
             replaceMessage(localMessage, newMessageResponse);
           } else {
@@ -1435,16 +1492,22 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       threadInstance?.upsertReplyLocally?.({ message: localMessage });
       optimisticallyUpdatedNewMessages.add(localMessage.id);
 
-      if (enableOfflineSupport) {
-        // While sending a message, we add the message to local db with failed status, so that
-        // if app gets closed before message gets sent and next time user opens the app
-        // then user can see that message in failed state and can retry.
-        // If succesfull, it will be updated with received status.
-        await dbApi.upsertMessages({
-          messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
-        });
-      }
+      // While sending a message, we add the message to local db with failed status, so that
+      // if app gets closed before message gets sent and next time user opens the app
+      // then user can see that message in failed state and can retry.
+      // If succesfull, it will be updated with received status.
+      client.offlineDb?.executeQuerySafely(
+        (db) =>
+          db.upsertMessages({
+            // @ts-ignore
+            messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
+          }),
+        { method: 'upsertMessages' },
+      );
 
+      if (preSendMessageRequest) {
+        await preSendMessageRequest({ localMessage, message, options });
+      }
       await sendMessageRequest({ localMessage, message, options });
     },
   );
@@ -1667,13 +1730,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
   });
 
-  const audioPlayerProviderProps = useMemo<AudioPlayerContextProps>(
-    () => ({
-      allowConcurrentAudioPlayback,
-    }),
-    [allowConcurrentAudioPlayback],
-  );
-
   const attachmentPickerProps = useMemo(
     () => ({
       AttachmentPickerBottomSheetHandle,
@@ -1724,7 +1780,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    channelUnreadState,
+    channelUnreadState: channelUnreadStateStore.channelUnreadState,
+    channelUnreadStateStore,
     disabled: !!channel?.data?.frozen,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
@@ -1773,6 +1830,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
+    allowSendBeforeAttachmentsUpload,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
@@ -1871,6 +1929,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FlatList,
     forceAlignMessages,
     Gallery,
+    getMessageGroupStyle,
     getMessagesGroupStyles,
     Giphy,
     giphyVersion,
@@ -1904,6 +1963,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionListItem,
     messageActions,
     MessageAvatar,
+    MessageBlocked,
     MessageBounce,
     MessageContent,
     messageContentOrder,
@@ -1974,6 +2034,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     typing: channelState.typing ?? {},
   });
 
+  const audioPlayerContext = useMemo<AudioPlayerContextProps>(
+    () => ({ allowConcurrentAudioPlayback }),
+    [allowConcurrentAudioPlayback],
+  );
+
   const messageComposerContext = useMemo(
     () => ({ channel, thread, threadInstance }),
     [channel, thread, threadInstance],
@@ -2012,12 +2077,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                   <AttachmentPickerProvider value={attachmentPickerContext}>
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
-                        <WithAudioPlayback props={audioPlayerProviderProps}>
+                        <AudioPlayerProvider value={audioPlayerContext}>
                           <View style={{ height: '100%' }}>{children}</View>
                           {!disableAttachmentPicker && (
                             <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
                           )}
-                        </WithAudioPlayback>
+                        </AudioPlayerProvider>
                       </MessageInputProvider>
                     </MessageComposerProvider>
                   </AttachmentPickerProvider>
