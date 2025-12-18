@@ -3,7 +3,6 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
-import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 import {
   isVideoPlayerAvailable,
@@ -14,10 +13,7 @@ import {
   VideoType,
 } from '../../../native';
 
-import {
-  ImageGalleryAsset,
-  ImageGalleryState,
-} from '../../../state-store/image-gallery-state-store';
+import { ImageGalleryAsset } from '../../../state-store/image-gallery-state-store';
 import { VideoPlayerState } from '../../../state-store/video-player';
 import { ONE_SECOND_IN_MILLISECONDS } from '../../../utils/constants';
 import { Spinner } from '../../UIComponents/Spinner';
@@ -28,7 +24,11 @@ const oneEighth = 1 / 8;
 
 export type AnimatedGalleryVideoType = {
   attachmentId: string;
+  index: number;
   offsetScale: SharedValue<number>;
+  previous: boolean;
+  selected: boolean;
+  shouldRender: boolean;
   scale: SharedValue<number>;
   screenHeight: number;
   photo: ImageGalleryAsset;
@@ -51,18 +51,24 @@ const videoPlayerSelector = (state: VideoPlayerState) => ({
   isPlaying: state.isPlaying,
 });
 
-const imageGallerySelector = (state: ImageGalleryState) => ({
-  currentIndex: state.currentIndex,
-});
-
 export const AnimatedGalleryVideo = React.memo(
   (props: AnimatedGalleryVideoType) => {
-    const { imageGalleryStateStore } = useImageGalleryContext();
     const [opacity, setOpacity] = useState<number>(1);
-    const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
-    const { attachmentId, offsetScale, scale, screenHeight, style, photo, translateX, translateY } =
-      props;
+    const {
+      attachmentId,
+      index,
+      offsetScale,
+      previous,
+      scale,
+      screenHeight,
+      selected,
+      shouldRender,
+      style,
+      photo,
+      translateX,
+      translateY,
+    } = props;
 
     const videoRef = useRef<VideoType>(null);
 
@@ -132,20 +138,16 @@ export const AnimatedGalleryVideo = React.memo(
       }
     };
 
-    const index = photo.index;
-
     const animatedStyles = useAnimatedGalleryStyle({
       index,
       offsetScale,
-      previous: currentIndex > index,
+      previous,
       scale,
       screenHeight,
-      selected: currentIndex === index,
+      selected,
       translateX,
       translateY,
     });
-
-    const shouldRender = Math.abs(currentIndex - index) < 4;
 
     /**
      * An empty view is rendered for images not close to the currently
@@ -201,7 +203,14 @@ export const AnimatedGalleryVideo = React.memo(
   },
 
   (prevProps, nextProps) => {
-    if (prevProps.screenHeight === nextProps.screenHeight && prevProps.photo === nextProps.photo) {
+    if (
+      prevProps.shouldRender === nextProps.shouldRender &&
+      prevProps.screenHeight === nextProps.screenHeight &&
+      prevProps.selected === nextProps.selected &&
+      prevProps.previous === nextProps.previous &&
+      prevProps.index === nextProps.index &&
+      prevProps.photo === nextProps.photo
+    ) {
       return true;
     }
     return false;

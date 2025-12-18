@@ -365,7 +365,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
                   offsetScale={offsetScale}
                   photo={photo}
                   previous={currentIndex > i}
-                  repeat={true}
                   scale={scale}
                   screenHeight={fullWindowHeight}
                   selected={currentIndex === i}

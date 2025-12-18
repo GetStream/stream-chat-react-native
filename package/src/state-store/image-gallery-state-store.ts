@@ -9,7 +9,6 @@ import { getUrlOfImageAttachment } from '../utils/getUrlOfImageAttachment';
 
 export type ImageGalleryAsset = {
   id: string;
-  index: number;
   uri: string;
   channelId?: string;
   created_at?: string | Date;
@@ -113,7 +112,7 @@ export class ImageGalleryStateStore {
     const attachmentsWithMessage = this.attachmentsWithMessage;
     const { giphyVersion = 'fixed_height' } = this.options;
 
-    return attachmentsWithMessage.flatMap(({ message, attachments }, index) => {
+    return attachmentsWithMessage.flatMap(({ message, attachments }) => {
       return attachments.map((attachment) => {
         const assetUrl = getUrlOfImageAttachment(attachment, giphyVersion) as string;
         const assetId = this.getAssetId(message?.id ?? '', assetUrl);
@@ -125,7 +124,6 @@ export class ImageGalleryStateStore {
           channelId: message?.cid,
           created_at: message?.created_at,
           id: assetId,
-          index,
           messageId: message?.id,
           mime_type: attachment.type === 'giphy' ? giphyMimeType : attachment.mime_type,
           original_height: attachment.original_height,
