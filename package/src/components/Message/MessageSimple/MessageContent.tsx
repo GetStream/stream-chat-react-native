@@ -322,10 +322,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                 ));
               case 'files':
                 return (
-                  <FileAttachmentGroup
-                    key={`file_attachment_group_${messageContentOrderIndex}`}
-                    messageId={message.id}
-                  />
+                  <FileAttachmentGroup key={`file_attachment_group_${messageContentOrderIndex}`} />
                 );
               case 'gallery':
                 return <Gallery key={`gallery_${messageContentOrderIndex}`} />;

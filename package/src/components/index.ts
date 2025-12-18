@@ -142,7 +142,7 @@ export * from './MessageInput/components/AttachmentPreview/AttachmentUploadProgr
 export * from './MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-export * from './MessageInput/hooks/useAudioController';
+export * from './MessageInput/hooks/useAudioRecorder';
 
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';

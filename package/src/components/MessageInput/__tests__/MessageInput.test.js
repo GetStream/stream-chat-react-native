@@ -118,8 +118,6 @@ describe('MessageInput', () => {
 
     await waitFor(() => {
       expect(NativeHandlers.Audio.stopRecording).toHaveBeenCalledTimes(1);
-      // once when starting the recording, once on unmount
-      expect(NativeHandlers.Audio.stopPlayer).toHaveBeenCalledTimes(2);
     });
   });
 
