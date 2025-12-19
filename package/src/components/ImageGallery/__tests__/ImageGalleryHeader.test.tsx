@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
@@ -33,16 +33,20 @@ jest.mock('../../../native.ts', () => {
 });
 
 const ImageGalleryComponent = (props: ImageGalleryProps) => {
-  const initialImageGalleryStateStore = new ImageGalleryStateStore();
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
   const attachment = generateImageAttachment();
-  initialImageGalleryStateStore.openImageGallery({
-    message: generateMessage({
-      attachments: [attachment],
-    }) as unknown as LocalMessage,
+  imageGalleryStateStore.openImageGallery({
+    messages: [generateMessage({ attachments: [attachment] }) as unknown as LocalMessage],
     selectedAttachmentUrl: attachment.url,
   });
 
-  const [imageGalleryStateStore] = useState(initialImageGalleryStateStore);
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
+
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
 
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>

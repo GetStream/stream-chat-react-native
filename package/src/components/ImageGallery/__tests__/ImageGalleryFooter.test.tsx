@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
@@ -38,16 +38,25 @@ jest.mock('../../../native.ts', () => {
 });
 
 const ImageGalleryComponentVideo = (props: ImageGalleryProps) => {
-  const initialImageGalleryStateStore = new ImageGalleryStateStore();
-  const attachment = generateVideoAttachment({ type: 'video' });
-  initialImageGalleryStateStore.openImageGallery({
-    message: generateMessage({
-      attachments: [attachment],
-    }) as unknown as LocalMessage,
-    selectedAttachmentUrl: attachment.url,
-  });
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
 
-  const [imageGalleryStateStore] = useState(initialImageGalleryStateStore);
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
+
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
+
+  const attachment = generateVideoAttachment({ type: 'video' });
+  imageGalleryStateStore.openImageGallery({
+    messages: [
+      generateMessage({
+        attachments: [attachment],
+      }) as unknown as LocalMessage,
+    ],
+    selectedAttachmentUrl: attachment.asset_url,
+  });
 
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
@@ -65,15 +74,24 @@ const ImageGalleryComponentImage = (
     attachment: Attachment;
   },
 ) => {
-  const initialImageGalleryStateStore = new ImageGalleryStateStore();
-  initialImageGalleryStateStore.openImageGallery({
-    message: generateMessage({
-      attachments: [props.attachment],
-    }) as unknown as LocalMessage,
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
+
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
+
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
+
+  imageGalleryStateStore.openImageGallery({
+    messages: [
+      generateMessage({
+        attachments: [props.attachment],
+      }) as unknown as LocalMessage,
+    ],
     selectedAttachmentUrl: props.attachment.image_url as string,
   });
-
-  const [imageGalleryStateStore] = useState(initialImageGalleryStateStore);
 
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>

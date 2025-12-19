@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Text, View } from 'react-native';
 
@@ -7,7 +7,6 @@ import { SharedValue } from 'react-native-reanimated';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import { LocalMessage } from '../../../../../../stream-chat-js/dist/types/types';
-import * as imageGalleryContext from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -21,20 +20,23 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
 import { ImageGrid, ImageGridType } from '../components/ImageGrid';
 
-const imageGalleryStoreSetup = (message: LocalMessage) => {
-  const initialImageGalleryStateStore = new ImageGalleryStateStore();
-  initialImageGalleryStateStore.openImageGallery({
-    message,
+const ImageGalleryGridComponent = (props: Partial<ImageGridType> & { message: LocalMessage }) => {
+  const { message } = props;
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
+
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
+
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
+
+  imageGalleryStateStore.openImageGallery({
+    messages: [message],
     selectedAttachmentUrl:
       message.attachments?.[0]?.asset_url || message.attachments?.[0]?.image_url || '',
   });
-  return initialImageGalleryStateStore;
-};
-
-const ImageGalleryGridComponent = (props: Partial<ImageGridType> & { message: LocalMessage }) => {
-  const initialImageGalleryStateStore = imageGalleryStoreSetup(props.message);
-
-  const [imageGalleryStateStore] = useState(initialImageGalleryStateStore);
 
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
@@ -52,11 +54,6 @@ describe('ImageGalleryOverlay', () => {
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateImageAttachment()],
     }) as unknown as LocalMessage;
-    const stateStore = imageGalleryStoreSetup(message);
-
-    jest.spyOn(imageGalleryContext, 'useImageGalleryContext').mockReturnValue({
-      imageGalleryStateStore: stateStore,
-    } as unknown as ImageGalleryContextValue);
 
     render(<ImageGalleryGridComponent message={message} />);
 
@@ -67,11 +64,6 @@ describe('ImageGalleryOverlay', () => {
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
     }) as unknown as LocalMessage;
-    const stateStore = imageGalleryStoreSetup(message);
-
-    jest.spyOn(imageGalleryContext, 'useImageGalleryContext').mockReturnValue({
-      imageGalleryStateStore: stateStore,
-    } as unknown as ImageGalleryContextValue);
 
     render(<ImageGalleryGridComponent message={message} />);
 
@@ -89,12 +81,6 @@ describe('ImageGalleryOverlay', () => {
       attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
     }) as unknown as LocalMessage;
 
-    const stateStore = imageGalleryStoreSetup(message);
-
-    jest.spyOn(imageGalleryContext, 'useImageGalleryContext').mockReturnValue({
-      imageGalleryStateStore: stateStore,
-    } as unknown as ImageGalleryContextValue);
-
     render(<ImageGalleryGridComponent imageComponent={CustomImageComponent} message={message} />);
 
     expect(screen.queryAllByText('Image Attachment')).toHaveLength(2);
@@ -106,11 +92,6 @@ describe('ImageGalleryOverlay', () => {
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
     }) as unknown as LocalMessage;
-    const stateStore = imageGalleryStoreSetup(message);
-
-    jest.spyOn(imageGalleryContext, 'useImageGalleryContext').mockReturnValue({
-      imageGalleryStateStore: stateStore,
-    } as unknown as ImageGalleryContextValue);
 
     render(<ImageGalleryGridComponent closeGridView={closeGridViewMock} message={message} />);
 
