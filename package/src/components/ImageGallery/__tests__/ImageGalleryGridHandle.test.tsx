@@ -7,10 +7,6 @@ import { render, screen } from '@testing-library/react-native';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import {
-  TranslationContextValue,
-  TranslationProvider,
-} from '../../../contexts/translationContext/TranslationContext';
-import {
   ImageGalleryGridHandleCustomComponentProps,
   ImageGridHandle,
 } from '../components/ImageGridHandle';
@@ -20,14 +16,10 @@ type ImageGridHandleProps = ImageGalleryGridHandleCustomComponentProps & {
 };
 
 const getComponent = (props: Partial<ImageGridHandleProps> = {}) => {
-  const t = jest.fn((key) => key);
-
   return (
-    <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-      <ThemeProvider theme={defaultTheme}>
-        <ImageGridHandle {...(props as unknown as ImageGridHandleProps)} />
-      </ThemeProvider>
-    </TranslationProvider>
+    <ThemeProvider theme={defaultTheme}>
+      <ImageGridHandle {...(props as unknown as ImageGridHandleProps)} />
+    </ThemeProvider>
   );
 };
 

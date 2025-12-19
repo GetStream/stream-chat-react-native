@@ -2,13 +2,17 @@ import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { useViewport } from '../../../hooks/useViewport';
+import type {
+  ImageGalleryAsset,
+  ImageGalleryState,
+} from '../../../state-store/image-gallery-state-store';
 import { FileTypes } from '../../../types/types';
 import { BottomSheetFlatList } from '../../BottomSheetCompatibility/BottomSheetFlatList';
 import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
-
-import type { Photo } from '../ImageGallery';
 
 const styles = StyleSheet.create({
   avatarImage: {
@@ -34,7 +38,7 @@ const styles = StyleSheet.create({
 export type ImageGalleryGridImageComponent = ({
   item,
 }: {
-  item: Photo & {
+  item: ImageGalleryAsset & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
   };
@@ -45,7 +49,7 @@ export type ImageGalleryGridImageComponents = {
   imageComponent?: ImageGalleryGridImageComponent;
 };
 
-export type GridImageItem = Photo &
+export type GridImageItem = ImageGalleryAsset &
   ImageGalleryGridImageComponents & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
@@ -87,28 +91,17 @@ const renderItem = ({ item }: { item: GridImageItem }) => <GridImage item={item}
 
 export type ImageGridType = ImageGalleryGridImageComponents & {
   closeGridView: () => void;
-  photos: Photo[];
-  setSelectedMessage: React.Dispatch<
-    React.SetStateAction<
-      | {
-          messageId?: string | undefined;
-          url?: string | undefined;
-        }
-      | undefined
-    >
-  >;
   numberOfImageGalleryGridColumns?: number;
 };
 
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  assets: state.assets,
+});
+
 export const ImageGrid = (props: ImageGridType) => {
-  const {
-    avatarComponent,
-    closeGridView,
-    imageComponent,
-    numberOfImageGalleryGridColumns,
-    photos,
-    setSelectedMessage,
-  } = props;
+  const { avatarComponent, closeGridView, imageComponent, numberOfImageGalleryGridColumns } = props;
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { assets } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
   const {
     theme: {
@@ -119,13 +112,13 @@ export const ImageGrid = (props: ImageGridType) => {
     },
   } = useTheme();
 
-  const imageGridItems = photos.map((photo) => ({
+  const imageGridItems = assets.map((photo, index) => ({
     ...photo,
     avatarComponent,
     imageComponent,
     numberOfImageGalleryGridColumns,
     selectAndClose: () => {
-      setSelectedMessage({ messageId: photo.messageId, url: photo.uri });
+      imageGalleryStateStore.currentIndex = index;
       closeGridView();
     },
   }));

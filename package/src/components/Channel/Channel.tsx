@@ -50,8 +50,7 @@ import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/Poll/c
 import {
   AttachmentPickerContextValue,
   AttachmentPickerProvider,
-  MessageContextValue,
-} from '../../contexts';
+} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   AudioPlayerContextProps,
   AudioPlayerProvider,
@@ -61,6 +60,7 @@ import type { UseChannelStateValue } from '../../contexts/channelsStateContext/u
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { MessageComposerProvider } from '../../contexts/messageComposerContext/MessageComposerContext';
+import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   InputMessageInputContextValue,
   MessageInputProvider,
@@ -348,7 +348,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
       | 'isAttachmentEqual'
-      | 'legacyImageViewerSwipeBehaviour'
       | 'ImageLoadingFailedIndicator'
       | 'ImageLoadingIndicator'
       | 'ImageReloadIndicator'
@@ -582,7 +581,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     attachmentPickerErrorText,
     numberOfAttachmentImagesToLoadPerCall = 60,
     numberOfAttachmentPickerImageColumns = 3,
-
+    giphyVersion = 'fixed_height',
     bottomInset = 0,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     FileSelectorIcon = DefaultFileSelectorIcon,
@@ -627,7 +626,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     Gallery = GalleryDefault,
     getMessageGroupStyle,
     Giphy = GiphyDefault,
-    giphyVersion = 'fixed_height',
     handleAttachButtonPress,
     handleBan,
     handleCopy,
@@ -667,7 +665,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
-    legacyImageViewerSwipeBehaviour = false,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
@@ -1953,7 +1950,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineUnreadIndicator,
     isAttachmentEqual,
     isMessageAIGenerated,
-    legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
     MessageActionList,

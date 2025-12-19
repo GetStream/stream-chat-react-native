@@ -444,7 +444,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   hasCreatePoll?: boolean;
   /** Handler to deal with custom memoization logic of Attachment */
   isAttachmentEqual?: (prevAttachment: Attachment, nextAttachment: Attachment) => boolean;
-  legacyImageViewerSwipeBehaviour?: boolean;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
   /**

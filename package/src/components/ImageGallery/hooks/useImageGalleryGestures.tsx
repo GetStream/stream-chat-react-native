@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { Gesture, GestureType } from 'react-native-gesture-handler';
 import {
@@ -14,7 +14,9 @@ import {
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
+import { useStateStore } from '../../../hooks';
 import { NativeHandlers } from '../../../native';
+import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 
 export enum HasPinched {
   FALSE = 0,
@@ -29,6 +31,10 @@ export enum IsSwiping {
 
 const MARGIN = 32;
 
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  currentIndex: state.currentIndex,
+});
+
 export const useImageGalleryGestures = ({
   currentImageHeight,
   halfScreenHeight,
@@ -36,12 +42,9 @@ export const useImageGalleryGestures = ({
   headerFooterVisible,
   offsetScale,
   overlayOpacity,
-  photoLength,
   scale,
   screenHeight,
   screenWidth,
-  selectedIndex,
-  setSelectedIndex,
   translateX,
   translateY,
   translationX,
@@ -52,12 +55,9 @@ export const useImageGalleryGestures = ({
   headerFooterVisible: SharedValue<number>;
   offsetScale: SharedValue<number>;
   overlayOpacity: SharedValue<number>;
-  photoLength: number;
   scale: SharedValue<number>;
   screenHeight: number;
   screenWidth: number;
-  selectedIndex: number;
-  setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
   translationX: SharedValue<number>;
@@ -72,8 +72,11 @@ export const useImageGalleryGestures = ({
    * it was always assumed that one started at index 0 in the
    * gallery.
    * */
-  const [index, setIndex] = useState(selectedIndex);
-  const { setMessages, setSelectedMessage } = useImageGalleryContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
+
+  const [index, setIndex] = useState(currentIndex);
+
   /**
    * Gesture handler refs
    */
@@ -99,20 +102,6 @@ export const useImageGalleryGestures = ({
   const oldFocalY = useSharedValue(0);
   const focalX = useSharedValue(0);
   const focalY = useSharedValue(0);
-
-  /**
-   * if a specific image index > 0 has been passed in
-   * while creating the hook, set the value of the index
-   * reference to its value.
-   *
-   * This makes it possible to seelct an image in the list,
-   * and scroll/pan as normal. Prior to this,
-   * it was always assumed that one started at index 0 in the
-   * gallery.
-   * */
-  useEffect(() => {
-    setIndex(selectedIndex);
-  }, [selectedIndex]);
 
   /**
    * Shared values for movement
@@ -165,6 +154,23 @@ export const useImageGalleryGestures = ({
     translateY.value = 0;
     scale.value = 1;
     offsetScale.value = 1;
+  };
+
+  const assetsLength = imageGalleryStateStore.assets.length;
+
+  const clearImageGallery = () => {
+    runOnJS(imageGalleryStateStore.clear)();
+    runOnJS(setOverlay)('none');
+  };
+
+  const moveToNextImage = () => {
+    runOnJS(setIndex)(index + 1);
+    imageGalleryStateStore.currentIndex = index + 1;
+  };
+
+  const moveToPreviousImage = () => {
+    runOnJS(setIndex)(index - 1);
+    imageGalleryStateStore.currentIndex = index - 1;
   };
 
   /**
@@ -290,7 +296,7 @@ export const useImageGalleryGestures = ({
          * As we move towards the left to move to next image, the translationX value will be negative on X axis.
          */
         if (
-          index < photoLength - 1 &&
+          index < assetsLength - 1 &&
           Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value < 0 &&
           finalXPosition > halfScreenWidth &&
@@ -305,8 +311,7 @@ export const useImageGalleryGestures = ({
             },
             () => {
               resetMovementValues();
-              runOnJS(setIndex)(index + 1);
-              runOnJS(setSelectedIndex)(index + 1);
+              runOnJS(moveToNextImage)();
             },
           );
 
@@ -333,8 +338,7 @@ export const useImageGalleryGestures = ({
             },
             () => {
               resetMovementValues();
-              runOnJS(setIndex)(index - 1);
-              runOnJS(setSelectedIndex)(index - 1);
+              runOnJS(moveToPreviousImage)();
             },
           );
         }
@@ -433,9 +437,7 @@ export const useImageGalleryGestures = ({
               easing: Easing.out(Easing.ease),
             },
             () => {
-              runOnJS(setSelectedMessage)(undefined);
-              runOnJS(setMessages)([]);
-              runOnJS(setOverlay)('none');
+              runOnJS(clearImageGallery)();
             },
           );
           scale.value = withTiming(0.6, {

@@ -277,7 +277,8 @@ export type VideoType = {
   repeat?: boolean;
   replayAsync?: () => void;
   resizeMode?: string;
-  seek?: (progress: number) => void;
+  seek?: (seconds: number) => void;
+  seekBy?: (seconds: number) => void;
   setPositionAsync?: (position: number) => void;
   style?: StyleProp<ViewStyle>;
   play?: () => void;

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
 import { BackHandler } from 'react-native';
 
@@ -7,7 +7,6 @@ import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanim
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
-
 import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
@@ -39,15 +38,15 @@ import {
  */
 export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) => {
   const {
-    autoPlayVideo,
     children,
-    giphyVersion,
     i18nInstance,
+    value,
+    autoPlayVideo,
+    giphyVersion,
     imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight = 40,
+    imageGalleryGridHandleHeight,
     imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
-    value,
   } = props;
 
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
@@ -84,27 +83,37 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
 
   const overlayContext = {
     overlay,
+    overlayOpacity,
     setOverlay,
     style: value?.style,
   };
 
+  const imageGalleryProviderProps = useMemo(
+    () => ({
+      autoPlayVideo,
+      giphyVersion,
+      imageGalleryCustomComponents,
+      imageGalleryGridHandleHeight,
+      imageGalleryGridSnapPoints,
+      numberOfImageGalleryGridColumns,
+    }),
+    [
+      autoPlayVideo,
+      giphyVersion,
+      imageGalleryCustomComponents,
+      imageGalleryGridHandleHeight,
+      imageGalleryGridSnapPoints,
+      numberOfImageGalleryGridColumns,
+    ],
+  );
+
   return (
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
       <OverlayContext.Provider value={overlayContext}>
-        <ImageGalleryProvider>
+        <ImageGalleryProvider value={imageGalleryProviderProps}>
           <ThemeProvider style={overlayContext.style}>
             {children}
-            {overlay === 'gallery' && (
-              <ImageGallery
-                autoPlayVideo={autoPlayVideo}
-                giphyVersion={giphyVersion}
-                imageGalleryCustomComponents={imageGalleryCustomComponents}
-                imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                overlayOpacity={overlayOpacity}
-              />
-            )}
+            {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
           </ThemeProvider>
         </ImageGalleryProvider>
       </OverlayContext.Provider>

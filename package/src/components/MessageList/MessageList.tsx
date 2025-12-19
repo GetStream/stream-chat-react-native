@@ -28,10 +28,7 @@ import {
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
-import {
-  ImageGalleryContextValue,
-  useImageGalleryContext,
-} from '../../contexts/imageGalleryContext/ImageGalleryContext';
+
 import {
   MessageListItemContextValue,
   MessageListItemProvider,
@@ -52,7 +49,6 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../hooks';
-import { FileTypes } from '../../types/types';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -146,14 +142,15 @@ type MessageListPropsWithContext = Pick<
     | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
-  Pick<ImageGalleryContextValue, 'setMessages'> &
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<
     MessagesContextValue,
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
-    | 'legacyImageViewerSwipeBehaviour'
+    | 'InlineDateSeparator'
+    | 'InlineUnreadIndicator'
+    | 'Message'
     | 'ScrollToBottomButton'
     | 'myMessageTheme'
     | 'TypingIndicator'
@@ -199,7 +196,6 @@ type MessageListPropsWithContext = Pick<
     HeaderComponent?: React.ComponentType;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
-    isListActive?: boolean;
     /** Turn off grouping of messages by user */
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];
@@ -264,9 +260,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     HeaderComponent = LoadingMoreRecentIndicator,
     hideStickyDateHeader,
     inverted = true,
-    isListActive = false,
     isLiveStreaming = false,
-    legacyImageViewerSwipeBehaviour,
     loadChannelAroundMessage,
     loading,
     LoadingIndicator,
@@ -287,7 +281,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     selectedPicker,
     setChannelUnreadState,
     setFlatListRef,
-    setMessages,
     setSelectedPicker,
     setTargetedMessage,
     StickyHeader,
@@ -997,59 +990,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     },
   );
 
-  const messagesWithImages =
-    legacyImageViewerSwipeBehaviour &&
-    processedMessageList.filter((message) => {
-      const isMessageTypeDeleted = message.type === 'deleted';
-      if (!isMessageTypeDeleted && message.attachments) {
-        return message.attachments.some(
-          (attachment) =>
-            attachment.type === FileTypes.Image &&
-            !attachment.title_link &&
-            !attachment.og_scrape_url &&
-            (attachment.image_url || attachment.thumb_url),
-        );
-      }
-      return false;
-    });
-
-  /**
-   * This is for the useEffect to run again in the case that a message
-   * gets edited with more or the same number of images
-   */
-  const imageString =
-    legacyImageViewerSwipeBehaviour &&
-    messagesWithImages &&
-    messagesWithImages
-      .map((message) =>
-        message.attachments
-          ?.map((attachment) => attachment.image_url || attachment.thumb_url || '')
-          .join(),
-      )
-      .join();
-
-  const numberOfMessagesWithImages =
-    legacyImageViewerSwipeBehaviour && messagesWithImages && messagesWithImages.length;
-  const threadExists = !!thread;
-
-  useEffect(() => {
-    if (
-      legacyImageViewerSwipeBehaviour &&
-      isListActive &&
-      ((threadList && thread) || (!threadList && !thread))
-    ) {
-      setMessages(messagesWithImages as LocalMessage[]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    imageString,
-    isListActive,
-    legacyImageViewerSwipeBehaviour,
-    numberOfMessagesWithImages,
-    threadExists,
-    threadList,
-  ]);
-
   const dismissImagePicker = useStableCallback(() => {
     if (selectedPicker) {
       setSelectedPicker(undefined);
@@ -1219,7 +1159,6 @@ export const MessageList = (props: MessageListProps) => {
     error,
     hideStickyDateHeader,
     highlightedMessageId,
-    isChannelActive,
     loadChannelAroundMessage,
     loading,
     LoadingIndicator,
@@ -1235,7 +1174,6 @@ export const MessageList = (props: MessageListProps) => {
     threadList,
   } = useChannelContext();
   const { client } = useChatContext();
-  const { setMessages } = useImageGalleryContext();
   const { readEvents } = useOwnCapabilitiesContext();
   const {
     DateHeader,
@@ -1243,7 +1181,6 @@ export const MessageList = (props: MessageListProps) => {
     FlatList,
     InlineDateSeparator,
     InlineUnreadIndicator,
-    legacyImageViewerSwipeBehaviour,
     Message,
     MessageSystem,
     myMessageTheme,
@@ -1274,8 +1211,6 @@ export const MessageList = (props: MessageListProps) => {
         highlightedMessageId,
         InlineDateSeparator,
         InlineUnreadIndicator,
-        isListActive: isChannelActive,
-        legacyImageViewerSwipeBehaviour,
         loadChannelAroundMessage,
         loading,
         LoadingIndicator,
@@ -1295,7 +1230,6 @@ export const MessageList = (props: MessageListProps) => {
         scrollToFirstUnreadThreshold,
         selectedPicker,
         setChannelUnreadState,
-        setMessages,
         setSelectedPicker,
         setTargetedMessage,
         shouldShowUnreadUnderlay,
