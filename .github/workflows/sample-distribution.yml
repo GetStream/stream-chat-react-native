@@ -78,9 +78,6 @@ jobs:
     name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
     needs: prepare_sdk
     runs-on: ubuntu-latest
-    env:
-      GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.caching=false'
-      FASTLANE_SKIP_UPDATE_CHECK: 'true'
     strategy:
       matrix:
         node-version: [24.x]
