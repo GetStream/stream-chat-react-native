@@ -16,11 +16,6 @@ runs:
         cd package/native-package/
         yarn
       shell: bash
-    - name: Install & Build the Expo Package
-      run: |
-        cd package/expo-package/
-        yarn
-      shell: bash
     - name: Install & Build the Sample App
       working-directory: examples/SampleApp
       run: yarn

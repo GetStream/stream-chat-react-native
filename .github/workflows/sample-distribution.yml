@@ -12,28 +12,47 @@ on:
       - 'examples/SampleApp/**'
 
 jobs:
+  prepare_sdk:
+    name: Prepare SDK & JS Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - uses: ./.github/actions/ruby-cache
+      - name: Install & build SDK
+        uses: ./.github/actions/install-and-build-sdk
+      - name: Upload SDK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-build
+          path: |
+            - package/**
+            - examples/SampleApp/**
+
   build_and_deploy_ios_testflight_qa:
     name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
+    needs: prepare_sdk
     runs-on: [macos-15]
     strategy:
       matrix:
         node-version: [24.x]
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-build
       - name: Connect Bot
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      - uses: actions/checkout@v3
+
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '16.4.0' # Update as needed
       - uses: ./.github/actions/ruby-cache
-      - name: Install && Build - SDK and Sample App
-        uses: ./.github/actions/install-and-build-sdk
       - name: Cache iOS pods
         uses: actions/cache@v4
         with:
@@ -59,24 +78,25 @@ jobs:
 
   build_and_deploy_android_firebase:
     name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
+    needs: prepare_sdk
     runs-on: ubuntu-latest
+    env:
+      GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.caching=false'
+      FASTLANE_SKIP_UPDATE_CHECK: 'true'
     strategy:
       matrix:
         node-version: [24.x]
     steps:
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v4
         with:
-          node-version: ${{ matrix.node-version }}
-      - uses: actions/checkout@v2
+          name: sdk-build
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '17'
           check-latest: true
       - uses: ./.github/actions/ruby-cache
-      - name: Install && Build - SDK and Sample App
-        uses: ./.github/actions/install-and-build-sdk
       - name: Build and deploy Android Firebase
         working-directory: examples/SampleApp
         run: bundle exec fastlane android firebase_build_and_upload deploy:${{ github.ref == 'refs/heads/develop' }};
