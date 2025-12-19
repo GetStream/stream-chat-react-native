@@ -106,7 +106,11 @@ import {
   isImagePickerAvailable,
   NativeHandlers,
 } from '../../native';
-import { ChannelUnreadState, FileTypes } from '../../types/types';
+import {
+  ChannelUnreadStateStore,
+  ChannelUnreadStateStoreType,
+} from '../../state-store/channel-unread-state';
+import { FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
@@ -149,6 +153,7 @@ import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/Loadi
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
+import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
@@ -324,7 +329,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'FlatList'
       | 'forceAlignMessages'
       | 'Gallery'
-      | 'getMessagesGroupStyles'
+      | 'getMessageGroupStyle'
       | 'Giphy'
       | 'giphyVersion'
       | 'handleBan'
@@ -354,6 +359,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'messageActions'
       | 'MessageAvatar'
       | 'MessageBounce'
+      | 'MessageBlocked'
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
@@ -424,7 +430,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     doMarkReadRequest?: (
       channel: ChannelType,
-      setChannelUnreadUiState?: (state: ChannelUnreadState) => void,
+      setChannelUnreadUiState?: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void,
     ) => void;
     /**
      * Overrides the Stream default send message request (Advanced usage only)
@@ -619,7 +625,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
-    getMessagesGroupStyles,
+    getMessageGroupStyle,
     Giphy = GiphyDefault,
     giphyVersion = 'fixed_height',
     handleAttachButtonPress,
@@ -674,6 +680,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionListItem = MessageActionListItemDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
+    MessageBlocked = MessageBlockedDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = [
@@ -775,10 +782,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const [channelUnreadState, setChannelUnreadState] = useState<ChannelUnreadState | undefined>(
-    undefined,
+  const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
+  // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
+  const setChannelUnreadState = useCallback(
+    (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
+      channelUnreadStateStore.channelUnreadState = data;
+    },
+    [channelUnreadStateStore],
   );
-
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
   const syncingChannelRef = useRef(false);
@@ -903,16 +914,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (event.type === 'notification.mark_unread') {
-        setChannelUnreadState((prev) => {
-          if (!(event.last_read_at && event.user)) {
-            return prev;
-          }
-          return {
-            first_unread_message_id: event.first_unread_message_id,
-            last_read: new Date(event.last_read_at),
-            last_read_message_id: event.last_read_message_id,
-            unread_messages: event.unread_messages ?? 0,
-          };
+        if (!(event.last_read_at && event.user)) {
+          return;
+        }
+        setChannelUnreadState({
+          first_unread_message_id: event.first_unread_message_id,
+          last_read: new Date(event.last_read_at),
+          last_read_message_id: event.last_read_message_id,
+          unread_messages: event.unread_messages ?? 0,
         });
       }
 
@@ -1433,6 +1442,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           ...message,
           attachments,
           text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
+          // We cannot send an error message, so we convert it to a regular message.
+          type: message.type === 'error' ? 'regular' : message.type,
         } as StreamMessage;
 
         let messageResponse = {} as SendMessageAPIResponse;
@@ -1768,7 +1779,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    channelUnreadState,
+    channelUnreadStateStore,
     disabled: !!channel?.data?.frozen,
     EmptyStateIndicator,
     enableMessageGroupingByUser,
@@ -1916,7 +1927,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FlatList,
     forceAlignMessages,
     Gallery,
-    getMessagesGroupStyles,
+    getMessageGroupStyle,
     Giphy,
     giphyVersion,
     handleBan,
@@ -1949,6 +1960,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionListItem,
     messageActions,
     MessageAvatar,
+    MessageBlocked,
     MessageBounce,
     MessageContent,
     messageContentOrder,

@@ -6,7 +6,10 @@ import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import { StickyHeaderProps } from '../../components/MessageList/StickyHeader';
-import type { ChannelUnreadState } from '../../types/types';
+import {
+  ChannelUnreadStateStore,
+  ChannelUnreadStateStoreType,
+} from '../../state-store/channel-unread-state';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -81,9 +84,9 @@ export type ChannelContextValue = {
     limit,
     setTargetedMessage,
   }: {
-    channelUnreadState?: ChannelUnreadState;
+    channelUnreadState?: ChannelUnreadStateStoreType['channelUnreadState'];
     limit?: number;
-    setChannelUnreadState?: React.Dispatch<React.SetStateAction<ChannelUnreadState | undefined>>;
+    setChannelUnreadState?: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void;
     setTargetedMessage?: (messageId: string) => void;
   }) => Promise<void>;
 
@@ -123,7 +126,7 @@ export type ChannelContextValue = {
   read: ChannelState['read'];
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
-  setChannelUnreadState: React.Dispatch<React.SetStateAction<ChannelUnreadState | undefined>>;
+  setChannelUnreadState: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId?: string) => void;
   /**
@@ -131,7 +134,7 @@ export type ChannelContextValue = {
    * Its a map of filename and AbortController
    */
   uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
-  channelUnreadState?: ChannelUnreadState;
+  channelUnreadStateStore: ChannelUnreadStateStore;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
   /**

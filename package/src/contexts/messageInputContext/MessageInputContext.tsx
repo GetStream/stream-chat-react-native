@@ -603,6 +603,7 @@ export const MessageInputProvider = ({
         return;
       }
 
+      // MODERATION: This is for the case where the message is of type 'error' and if you try to edit it, it will throw an error.
       if (editedMessage && editedMessage.type !== 'error') {
         try {
           clearEditingState();
@@ -623,6 +624,10 @@ export const MessageInputProvider = ({
             });
           } else {
             messageComposer.clear();
+          }
+          // Even though we edit, but we eventually send the message as a regular message, so we need to clear the editing state.
+          if (editedMessage) {
+            clearEditingState();
           }
           await value.sendMessage({
             localMessage,

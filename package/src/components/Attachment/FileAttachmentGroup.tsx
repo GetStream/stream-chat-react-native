@@ -19,11 +19,6 @@ import { isSoundPackageAvailable } from '../../native';
 
 export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'files' | 'message'> &
   Pick<MessagesContextValue, 'Attachment' | 'AudioAttachment'> & {
-    /**
-     * @deprecated Use message instead
-     * The unique id for the message with file attachments
-     */
-    messageId: string;
     styles?: Partial<{
       attachmentContainer: StyleProp<ViewStyle>;
       container: StyleProp<ViewStyle>;
@@ -49,68 +44,6 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     );
   }, [files]);
 
-  /**
-   * Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
-   * @param index - The index of the audio
-   * @param duration - The duration of the audio
-   *
-   * @deprecated This is deprecated and will be removed in the future.
-   * FIXME: Remove this in the next major version.
-   */
-  const onLoad = (index: string, duration: number) => {
-    setFilesToDisplay((prevFilesToDisplay) =>
-      prevFilesToDisplay.map((fileToDisplay, id) => ({
-        ...fileToDisplay,
-        duration: id.toString() === index ? duration : fileToDisplay.duration,
-      })),
-    );
-  };
-
-  /**
-   * Handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
-   * @param index - The index of the audio
-   * @param progress - The progress of the audio
-   *
-   * @deprecated This is deprecated and will be removed in the future.
-   * FIXME: Remove this in the next major version.
-   */
-  const onProgress = (index: string, progress: number) => {
-    setFilesToDisplay((prevFilesToDisplay) =>
-      prevFilesToDisplay.map((filesToDisplay, id) => ({
-        ...filesToDisplay,
-        progress: id.toString() === index ? progress : filesToDisplay.progress,
-      })),
-    );
-  };
-
-  /**
-   * Handler which controls or sets the paused/played state of the audio.
-   * @param index - The index of the audio
-   * @param pausedStatus - The paused status of the audio
-   *
-   * @deprecated This is deprecated and will be removed in the future.
-   * FIXME: Remove this in the next major version.
-   */
-  const onPlayPause = (index: string, pausedStatus?: boolean) => {
-    if (pausedStatus === false) {
-      // If the status is false we set the audio with the index as playing and the others as paused.
-      setFilesToDisplay((prevFilesToDisplay) =>
-        prevFilesToDisplay.map((fileToDisplay, id) => ({
-          ...fileToDisplay,
-          paused: id.toString() !== index,
-        })),
-      );
-    } else {
-      // If the status is true we simply set all the audio's paused state as true.
-      setFilesToDisplay((prevFilesToDisplay) =>
-        prevFilesToDisplay.map((fileToDisplay) => ({
-          ...fileToDisplay,
-          paused: true,
-        })),
-      );
-    }
-  };
-
   const {
     theme: {
       messageSimple: {
@@ -135,9 +68,6 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
             <AudioAttachment
               item={{ ...file, id: index.toString(), type: file.type }}
               message={message}
-              onLoad={onLoad}
-              onPlayPause={onPlayPause}
-              onProgress={onProgress}
               showSpeedSettings={true}
             />
           ) : (
@@ -153,8 +83,13 @@ const areEqual = (
   prevProps: FileAttachmentGroupPropsWithContext,
   nextProps: FileAttachmentGroupPropsWithContext,
 ) => {
-  const { files: prevFiles } = prevProps;
-  const { files: nextFiles } = nextProps;
+  const { files: prevFiles, message: prevMessage } = prevProps;
+  const { files: nextFiles, message: nextMessage } = nextProps;
+
+  const messageEqual = prevMessage?.id === nextMessage?.id;
+  if (!messageEqual) {
+    return false;
+  }
 
   return prevFiles.length === nextFiles.length;
 };
@@ -164,13 +99,10 @@ const MemoizedFileAttachmentGroup = React.memo(
   areEqual,
 ) as typeof FileAttachmentGroupWithContext;
 
-export type FileAttachmentGroupProps = Partial<
-  Omit<FileAttachmentGroupPropsWithContext, 'messageId'>
-> &
-  Pick<FileAttachmentGroupPropsWithContext, 'messageId'>;
+export type FileAttachmentGroupProps = Partial<FileAttachmentGroupPropsWithContext>;
 
 export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
-  const { files: propFiles, messageId } = props;
+  const { files: propFiles } = props;
 
   const { files: contextFiles, message } = useMessageContext();
 
@@ -189,7 +121,6 @@ export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
         AudioAttachment,
         files,
         message,
-        messageId,
       }}
     />
   );

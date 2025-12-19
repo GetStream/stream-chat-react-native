@@ -1,3 +1,4 @@
+import React from 'react';
 import { Alert, Image, Pressable, StyleSheet, View } from 'react-native';
 import { ChannelList, SqliteClient } from 'stream-chat-expo';
 import { useCallback, useContext, useMemo } from 'react';

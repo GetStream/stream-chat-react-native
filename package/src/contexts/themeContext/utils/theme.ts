@@ -655,6 +655,12 @@ export type Theme = {
     };
     messageGroupedSingleOrBottomContainer: ViewStyle;
     messageGroupedTopContainer: ViewStyle;
+    messageBlocked: {
+      container: ViewStyle;
+      line: ViewStyle;
+      text: TextStyle;
+      textContainer: ViewStyle;
+    };
     pinnedHeader: {
       container: ViewStyle;
       label: TextStyle;
@@ -1468,6 +1474,12 @@ export const defaultTheme: Theme = {
     loadingIndicator: {
       container: {},
       roundedView: {},
+    },
+    messageBlocked: {
+      container: {},
+      line: {},
+      text: {},
+      textContainer: {},
     },
     messageGroupedSingleOrBottomContainer: {},
     messageGroupedTopContainer: {},

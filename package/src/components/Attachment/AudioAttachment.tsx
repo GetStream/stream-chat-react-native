@@ -13,7 +13,7 @@ import {
 
 import { useTheme } from '../../contexts';
 import { useStateStore } from '../../hooks';
-import { useAudioPlayerControl } from '../../hooks/useAudioPlayerControl';
+import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { Audio, Pause, Play } from '../../icons';
 import {
   NativeHandlers,
@@ -56,21 +56,6 @@ export type AudioAttachmentProps = {
    * If true, the audio attachment is in preview mode in the message input.
    */
   isPreview?: boolean;
-  /**
-   * Callback to be called when the audio is loaded
-   * @deprecated This is deprecated and will be removed in the future.
-   */
-  onLoad?: (index: string, duration: number) => void;
-  /**
-   * Callback to be called when the audio is played or paused
-   * @deprecated This is deprecated and will be removed in the future.
-   */
-  onPlayPause?: (index: string, pausedStatus?: boolean) => void;
-  /**
-   * Callback to be called when the audio progresses
-   * @deprecated This is deprecated and will be removed in the future.
-   */
-  onProgress?: (index: string, progress: number) => void;
 };
 
 const audioPlayerSelector = (state: AudioPlayerState) => ({
@@ -99,7 +84,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
 
-  const audioPlayer = useAudioPlayerControl({
+  const audioPlayer = useAudioPlayer({
     duration: item.duration ?? 0,
     mimeType: item.mime_type ?? '',
     requester: isPreview
@@ -269,10 +254,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                 />
               ) : (
                 <ProgressControl
-                  duration={duration}
                   filledColor={accent_blue}
                   onEndDrag={dragEnd}
-                  onProgressDrag={dragProgress}
                   onStartDrag={dragStart}
                   progress={progress}
                   testID='progress-control'
