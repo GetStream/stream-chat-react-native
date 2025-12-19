@@ -62,7 +62,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:674907137625:android:5effa1cd0fef9003d7f348",
         "android_client_info": {
-          "package_name": "com.sampleapp"
+          "package_name": "io.getstream.reactnative.sampleapp"
         }
       },
       "oauth_client": [
@@ -98,7 +98,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:674907137625:android:07c76802bbfd5654d7f348",
         "android_client_info": {
-          "package_name": "com.sampleapp.rnpushtest"
+          "package_name": "io.getstream.reactnative.sampleapp.rnpushtest"
         }
       },
       "oauth_client": [
