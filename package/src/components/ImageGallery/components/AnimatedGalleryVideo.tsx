@@ -3,7 +3,9 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
-import { useStateStore } from '../../../hooks/useStateStore';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useStateStore } from '../../../hooks';
+
 import {
   isVideoPlayerAvailable,
   NativeHandlers,
@@ -13,7 +15,10 @@ import {
   VideoType,
 } from '../../../native';
 
-import { ImageGalleryAsset } from '../../../state-store/image-gallery-state-store';
+import {
+  ImageGalleryAsset,
+  ImageGalleryState,
+} from '../../../state-store/image-gallery-state-store';
 import { VideoPlayerState } from '../../../state-store/video-player';
 import { ONE_SECOND_IN_MILLISECONDS } from '../../../utils/constants';
 import { Spinner } from '../../UIComponents/Spinner';
@@ -26,9 +31,6 @@ export type AnimatedGalleryVideoType = {
   attachmentId: string;
   index: number;
   offsetScale: SharedValue<number>;
-  previous: boolean;
-  selected: boolean;
-  shouldRender: boolean;
   scale: SharedValue<number>;
   screenHeight: number;
   photo: ImageGalleryAsset;
@@ -47,6 +49,10 @@ const styles = StyleSheet.create({
   },
 });
 
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  currentIndex: state.currentIndex,
+});
+
 const videoPlayerSelector = (state: VideoPlayerState) => ({
   isPlaying: state.isPlaying,
 });
@@ -54,16 +60,15 @@ const videoPlayerSelector = (state: VideoPlayerState) => ({
 export const AnimatedGalleryVideo = React.memo(
   (props: AnimatedGalleryVideoType) => {
     const [opacity, setOpacity] = useState<number>(1);
+    const { imageGalleryStateStore } = useImageGalleryContext();
+    const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
     const {
       attachmentId,
       index,
       offsetScale,
-      previous,
       scale,
       screenHeight,
-      selected,
-      shouldRender,
       style,
       photo,
       translateX,
@@ -138,6 +143,10 @@ export const AnimatedGalleryVideo = React.memo(
       }
     };
 
+    const selected = currentIndex === index;
+    const previous = currentIndex > index;
+    const shouldRender = Math.abs(currentIndex - index) < 4;
+
     const animatedStyles = useAnimatedGalleryStyle({
       index,
       offsetScale,
@@ -204,10 +213,7 @@ export const AnimatedGalleryVideo = React.memo(
 
   (prevProps, nextProps) => {
     if (
-      prevProps.shouldRender === nextProps.shouldRender &&
       prevProps.screenHeight === nextProps.screenHeight &&
-      prevProps.selected === nextProps.selected &&
-      prevProps.previous === nextProps.previous &&
       prevProps.index === nextProps.index &&
       prevProps.photo === nextProps.photo
     ) {

@@ -364,11 +364,8 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
                   key={photo.id}
                   offsetScale={offsetScale}
                   photo={photo}
-                  previous={currentIndex > i}
                   scale={scale}
                   screenHeight={fullWindowHeight}
-                  selected={currentIndex === i}
-                  shouldRender={Math.abs(currentIndex - i) < 4}
                   style={[
                     {
                       height: fullWindowHeight * 8,
@@ -387,12 +384,9 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
                   key={photo.id}
                   offsetScale={offsetScale}
                   photo={photo}
-                  previous={currentIndex > i}
                   scale={scale}
                   screenHeight={fullWindowHeight}
                   screenWidth={fullWindowWidth}
-                  selected={currentIndex === i}
-                  shouldRender={Math.abs(currentIndex - i) < 4}
                   style={[
                     {
                       height: fullWindowHeight * 8,
