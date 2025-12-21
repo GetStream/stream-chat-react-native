@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { PressableProps, ViewProps } from 'react-native';
+import { PressableProps, View, ViewProps } from 'react-native';
 
 import type {
   Attachment,
@@ -273,7 +273,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * UI component for MessageSimple
    * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageSimple.tsx)
    */
-  MessageSimple: React.ComponentType<MessageSimpleProps>;
+  MessageSimple: React.ComponentType<MessageSimpleProps & { ref?: React.RefObject<View | null> }>;
   /**
    * UI component for MessageStatus (delivered/read)
    * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageStatus.tsx)

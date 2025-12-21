@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useMemo } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import {
   Animated,
   Keyboard,
@@ -18,6 +18,8 @@ import {
 } from 'react-native-gesture-handler';
 
 import { runOnJS } from 'react-native-reanimated';
+
+import { PortalHost } from 'react-native-teleport';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
@@ -89,6 +91,14 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [realVisible, setRealVisible] = useState(visible);
+
+  useEffect(() => {
+    if (visible) {
+      setRealVisible(visible);
+    }
+  }, [visible]);
+
   const keyboardDidShow = (event: KeyboardEvent) => {
     Animated.timing(translateY, {
       duration: 250,
@@ -124,29 +134,14 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
   return (
     <View style={[styles.wrapper, wrapper]}>
-      <Modal onRequestClose={onClose} transparent visible={visible}>
+      <Modal animationType={'none'} onRequestClose={onClose} transparent visible={visible}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <GestureDetector gesture={gesture}>
             <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
               <TouchableWithoutFeedback onPress={onClose} style={{ flex: 1 }}>
                 <View style={{ flex: 1 }} />
               </TouchableWithoutFeedback>
-              <Animated.View
-                style={[
-                  styles.container,
-                  {
-                    backgroundColor: white_snow,
-                    height,
-                    transform: [{ translateY }],
-                  },
-                  container,
-                ]}
-              >
-                <View
-                  style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }, handle]}
-                />
-                <View style={[styles.contentContainer, contentContainer]}>{children}</View>
-              </Animated.View>
+              {/*<PortalHost name='overlay' style={StyleSheet.absoluteFillObject} />*/}
             </View>
           </GestureDetector>
         </GestureHandlerRootView>

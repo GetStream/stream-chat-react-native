@@ -768,6 +768,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage]);
 
+  const setNativeScrollability = useStableCallback((value: boolean) => {
+    if (flatListRef.current) {
+      flatListRef.current.setNativeProps({ scrollEnabled: value });
+    }
+  });
+
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
@@ -775,6 +781,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
+      setNativeScrollability,
     }),
     [
       goToMessage,
@@ -782,6 +789,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
+      setNativeScrollability,
     ],
   );
 

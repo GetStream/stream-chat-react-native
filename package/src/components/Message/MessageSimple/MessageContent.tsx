@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   AnimatableNumericValue,
   ColorValue,
@@ -121,6 +121,7 @@ export type MessageContentPropsWithContext = Pick<
  * Child of MessageSimple that displays a message's content
  */
 const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
+  const [longPressFired, setLongPressFired] = useState(false);
   const {
     additionalPressableProps,
     alignment,
@@ -243,6 +244,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     <Pressable
       disabled={preventPress}
       onLongPress={(event) => {
+        setLongPressFired(true);
         if (onLongPress) {
           onLongPress({
             emitter: 'messageContent',
@@ -266,7 +268,10 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           });
         }
       }}
-      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, container]}
+      onPressOut={() => {
+        setLongPressFired(false);
+      }}
+      style={({ pressed }) => [{ opacity: pressed && !longPressFired ? 0.5 : 1 }, container]}
       {...additionalPressableProps}
     >
       <View onLayout={onLayout} style={wrapper}>

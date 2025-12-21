@@ -1,5 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import {
+  findNodeHandle,
+  GestureResponderEvent,
+  Keyboard,
+  Pressable,
+  StyleProp,
+  TouchableWithoutFeedback,
+  UIManager,
+  View,
+  ViewStyle,
+} from 'react-native';
+
+import { Portal } from 'react-native-teleport';
 
 import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
 
@@ -25,6 +37,7 @@ import {
   useMessageComposerAPIContext,
 } from '../../contexts/messageComposerContext/MessageComposerAPIContext';
 import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
+import { useMessageListItemContext } from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -59,6 +72,15 @@ export type TouchableEmitter =
   | 'reactionList';
 
 export type TextMentionTouchableHandlerAdditionalInfo = { user?: UserResponse };
+
+function measureInWindow(node: any): Promise<{ x: number; y: number; w: number; h: number }> {
+  return new Promise((resolve, reject) => {
+    const handle = findNodeHandle(node);
+    if (!handle) return reject(new Error('No native handle'));
+
+    UIManager.measureInWindow(handle, (x, y, w, h) => resolve({ x, y, w, h }));
+  });
+}
 
 export type TextMentionTouchableHandlerPayload = {
   emitter: 'textMention';
@@ -219,7 +241,12 @@ export type MessagePropsWithContext = Pick<
  * each individual Message component.
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
-  const [messageOverlayVisible, setMessageOverlayVisible] = useState(false);
+  const [messageOverlayVisible, setMessageOverlayVisible] = useState<{
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  } | null>(null);
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
@@ -293,7 +320,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const { client } = chatContext;
   const {
     theme: {
-      colors: { targetedMessageBackground, bg_gradient_start },
+      colors: { targetedMessageBackground, bg_gradient_start, overlay },
       messageSimple: { targetedMessageContainer, unreadUnderlayColor = bg_gradient_start, wrapper },
       screenPadding,
     },
@@ -301,13 +328,17 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
     await dismissKeyboard();
+    const layout = await measureInWindow(messageWrapperRef.current);
     setShowMessageReactions(showMessageReactions);
-    setMessageOverlayVisible(true);
+    setMessageOverlayVisible(layout);
     setSelectedReaction(selectedReaction);
   };
 
+  const { setNativeScrollability } = useMessageListItemContext();
+
   const dismissOverlay = () => {
-    setMessageOverlayVisible(false);
+    setNativeScrollability(true);
+    setMessageOverlayVisible(null);
   };
 
   const actionsEnabled =
@@ -620,7 +651,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     unpinMessage: handleTogglePinMessage,
   };
 
+  const messageWrapperRef = useRef<View>(null);
+
   const onLongPress = () => {
+    setNativeScrollability(false);
     if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
       return;
     }
@@ -759,20 +793,64 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           ]}
           testID='message-wrapper'
         >
-          <MessageSimple />
+          {messageOverlayVisible ? (
+            <View
+              style={{
+                width: messageOverlayVisible.w,
+                height: messageOverlayVisible.h,
+              }}
+            />
+          ) : null}
+          <Portal hostName={messageOverlayVisible ? 'overlay' : undefined}>
+            <View
+              style={
+                messageOverlayVisible
+                  ? [
+                      {
+                        flex: 1,
+                        justifyContent: 'flex-end',
+                      },
+                      { backgroundColor: overlay },
+                    ]
+                  : null
+              }
+            >
+              {messageOverlayVisible ? (
+                <TouchableWithoutFeedback onPress={dismissOverlay} style={{ flex: 1 }}>
+                  <View style={{ flex: 1 }} />
+                </TouchableWithoutFeedback>
+              ) : null}
+              <View
+                style={
+                  messageOverlayVisible
+                    ? {
+                        position: 'absolute',
+                        top: messageOverlayVisible.y,
+                        ...(isMyMessage
+                          ? { right: messageOverlayVisible.x }
+                          : { left: messageOverlayVisible.x }),
+                      }
+                    : null
+                }
+              >
+                <MessageSimple ref={messageWrapperRef} />
+              </View>
+            </View>
+          </Portal>
           {isBounceDialogOpen ? (
             <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
           ) : null}
-          {messageOverlayVisible ? (
-            <MessageMenu
-              dismissOverlay={dismissOverlay}
-              handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-              messageActions={messageActions}
-              selectedReaction={selectedReaction}
-              showMessageReactions={showMessageReactions}
-              visible={messageOverlayVisible}
-            />
-          ) : null}
+          {/*{messageOverlayVisible ? (*/}
+          {/*<MessageMenu*/}
+          {/*  dismissOverlay={dismissOverlay}*/}
+          {/*  handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}*/}
+          {/*  layout={messageOverlayVisible}*/}
+          {/*  messageActions={messageActions}*/}
+          {/*  selectedReaction={selectedReaction}*/}
+          {/*  showMessageReactions={showMessageReactions}*/}
+          {/*  visible={!!messageOverlayVisible}*/}
+          {/*/>*/}
+          {/*) : null}*/}
         </View>
       </View>
     </MessageProvider>

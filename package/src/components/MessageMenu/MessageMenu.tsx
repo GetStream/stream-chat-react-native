@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import { useWindowDimensions } from 'react-native';
 
@@ -15,46 +15,55 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
-export type MessageMenuProps = Partial<
-  Pick<
-    MessagesContextValue,
-    | 'MessageActionList'
-    | 'MessageActionListItem'
-    | 'MessageReactionPicker'
-    | 'MessageUserReactions'
-    | 'MessageUserReactionsAvatar'
-    | 'MessageUserReactionsItem'
-  >
-> &
-  Partial<Pick<MessageContextValue, 'message'>> & {
-    /**
-     * Function to close the message actions bottom sheet
-     * @returns void
-     */
-    dismissOverlay: () => void;
-    /**
-     * An array of message actions to render
-     */
-    messageActions: MessageActionType[];
-    /**
-     * Boolean to determine if there are message actions
-     */
-    showMessageReactions: boolean;
-    /**
-     * Boolean to determine if the overlay is visible.
-     */
-    visible: boolean;
-    /**
-     * Function to handle reaction on press
-     * @param reactionType
-     * @returns
-     */
-    handleReaction?: (reactionType: string) => Promise<void>;
-    /**
-     * The selected reaction
-     */
-    selectedReaction?: string;
-  };
+export type MessageMenuProps = PropsWithChildren<
+  Partial<
+    Pick<
+      MessagesContextValue,
+      | 'MessageActionList'
+      | 'MessageActionListItem'
+      | 'MessageReactionPicker'
+      | 'MessageUserReactions'
+      | 'MessageUserReactionsAvatar'
+      | 'MessageUserReactionsItem'
+    >
+  > &
+    Partial<Pick<MessageContextValue, 'message'>> & {
+      /**
+       * Function to close the message actions bottom sheet
+       * @returns void
+       */
+      dismissOverlay: () => void;
+      /**
+       * An array of message actions to render
+       */
+      messageActions: MessageActionType[];
+      /**
+       * Boolean to determine if there are message actions
+       */
+      showMessageReactions: boolean;
+      /**
+       * Boolean to determine if the overlay is visible.
+       */
+      visible: boolean;
+      /**
+       * Function to handle reaction on press
+       * @param reactionType
+       * @returns
+       */
+      handleReaction?: (reactionType: string) => Promise<void>;
+      /**
+       * The selected reaction
+       */
+      selectedReaction?: string;
+
+      layout: {
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+      };
+    }
+>;
 
 export const MessageMenu = (props: MessageMenuProps) => {
   const {
@@ -71,25 +80,27 @@ export const MessageMenu = (props: MessageMenuProps) => {
     selectedReaction,
     showMessageReactions,
     visible,
+    layout,
+    children,
   } = props;
   const { height } = useWindowDimensions();
-  const {
-    MessageActionList: contextMessageActionList,
-    MessageActionListItem: contextMessageActionListItem,
-    MessageReactionPicker: contextMessageReactionPicker,
-    MessageUserReactions: contextMessageUserReactions,
-    MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
-    MessageUserReactionsItem: contextMessageUserReactionsItem,
-  } = useMessagesContext();
-  const { message: contextMessage } = useMessageContext();
-  const MessageActionList = propMessageActionList ?? contextMessageActionList;
-  const MessageActionListItem = propMessageActionListItem ?? contextMessageActionListItem;
-  const MessageReactionPicker = propMessageReactionPicker ?? contextMessageReactionPicker;
-  const MessageUserReactions = propMessageUserReactions ?? contextMessageUserReactions;
-  const MessageUserReactionsAvatar =
-    propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
-  const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
-  const message = propMessage ?? contextMessage;
+  // const {
+  //   MessageActionList: contextMessageActionList,
+  //   MessageActionListItem: contextMessageActionListItem,
+  //   MessageReactionPicker: contextMessageReactionPicker,
+  //   MessageUserReactions: contextMessageUserReactions,
+  //   MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
+  //   MessageUserReactionsItem: contextMessageUserReactionsItem,
+  // } = useMessagesContext();
+  // const { message: contextMessage } = useMessageContext();
+  // const MessageActionList = propMessageActionList ?? contextMessageActionList;
+  // const MessageActionListItem = propMessageActionListItem ?? contextMessageActionListItem;
+  // const MessageReactionPicker = propMessageReactionPicker ?? contextMessageReactionPicker;
+  // const MessageUserReactions = propMessageUserReactions ?? contextMessageUserReactions;
+  // const MessageUserReactionsAvatar =
+  //   propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
+  // const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
+  // const message = propMessage ?? contextMessage;
   const {
     theme: {
       messageMenu: {
@@ -110,27 +121,7 @@ export const MessageMenu = (props: MessageMenuProps) => {
       onClose={dismissOverlay}
       visible={visible}
     >
-      {showMessageReactions ? (
-        <MessageUserReactions
-          message={message}
-          MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-          MessageUserReactionsItem={MessageUserReactionsItem}
-          selectedReaction={selectedReaction}
-        />
-      ) : (
-        <>
-          <MessageReactionPicker
-            dismissOverlay={dismissOverlay}
-            handleReaction={handleReaction}
-            ownReactionTypes={message?.own_reactions?.map((reaction) => reaction.type) || []}
-          />
-          <MessageActionList
-            dismissOverlay={dismissOverlay}
-            MessageActionListItem={MessageActionListItem}
-            messageActions={messageActions}
-          />
-        </>
-      )}
+      {children}
     </BottomSheetModal>
   );
 };

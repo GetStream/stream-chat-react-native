@@ -1,8 +1,10 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 
-import { BackHandler } from 'react-native';
+import { BackHandler, StyleSheet } from 'react-native';
 
 import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import { PortalHost, PortalProvider } from 'react-native-teleport';
 
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
@@ -93,18 +95,21 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
       <OverlayContext.Provider value={overlayContext}>
         <ImageGalleryProvider>
           <ThemeProvider style={overlayContext.style}>
-            {children}
-            {overlay === 'gallery' && (
-              <ImageGallery
-                autoPlayVideo={autoPlayVideo}
-                giphyVersion={giphyVersion}
-                imageGalleryCustomComponents={imageGalleryCustomComponents}
-                imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                overlayOpacity={overlayOpacity}
-              />
-            )}
+            <PortalProvider>
+              {children}
+              {overlay === 'gallery' && (
+                <ImageGallery
+                  autoPlayVideo={autoPlayVideo}
+                  giphyVersion={giphyVersion}
+                  imageGalleryCustomComponents={imageGalleryCustomComponents}
+                  imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                  imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+                  overlayOpacity={overlayOpacity}
+                />
+              )}
+              <PortalHost name='overlay' style={StyleSheet.absoluteFillObject} />
+            </PortalProvider>
           </ThemeProvider>
         </ImageGalleryProvider>
       </OverlayContext.Provider>
