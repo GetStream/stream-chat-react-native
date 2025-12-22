@@ -1,15 +1,7 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 
-import {
-  BackHandler,
-  Pressable,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { BackHandler, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   clamp,
@@ -21,12 +13,11 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Portal, PortalHost, PortalProvider } from 'react-native-teleport';
+import { PortalHost, PortalProvider } from 'react-native-teleport';
 
 import { StateStore } from 'stream-chat';
 
@@ -156,18 +147,17 @@ type OverlayState = {
 };
 
 const DefaultState = {
+  bottomH: undefined,
+  closing: false,
+  id: undefined,
   state: undefined,
   topH: undefined,
-  bottomH: undefined,
-  id: undefined,
-  closing: false,
 };
 
-export const openOverlay = (id, { state, topH, bottomH }: Partial<OverlayState>) =>
-  overlayStore.partialNext({ state, topH, bottomH, id, closing: false });
+export const openOverlay = (id: string, { state, topH, bottomH }: Partial<OverlayState>) =>
+  overlayStore.partialNext({ bottomH, closing: false, id, state, topH });
 
 export const closeOverlay = () => {
-  console.log('CLOSING INVOKED?!r');
   requestAnimationFrame(() => overlayStore.partialNext({ closing: true }));
 };
 
@@ -176,18 +166,16 @@ const finalizeCloseOverlay = () => overlayStore.partialNext(DefaultState);
 export const overlayStore = new StateStore<OverlayState>(DefaultState);
 
 const selector = (nextState: OverlayState) => ({
+  bottomH: nextState.bottomH,
+  closing: nextState.closing,
+  id: nextState.id,
   state: nextState.state,
   topH: nextState.topH,
-  bottomH: nextState.bottomH,
-  id: nextState.id,
-  closing: nextState.closing,
 });
 
 export const useOverlayController = () => {
   return useStateStore(overlayStore, selector);
 };
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function OverlayHostLayer() {
   const { state, topH, bottomH, id, closing } = useOverlayController();
@@ -222,7 +210,7 @@ function OverlayHostLayer() {
   }));
 
   const shiftY = useDerivedValue(() => {
-    if (!rect || !topH?.value) return 0;
+    if (!rect || !topH?.value || !bottomH?.value) return 0;
 
     const anchorY = rect.y;
     const msgH = rect.h;
@@ -230,7 +218,6 @@ function OverlayHostLayer() {
     const minTop = minY + topH.value.h;
     const maxTop = maxY - (msgH + bottomH.value.h);
 
-    // you said: assume it can fit
     const solvedTop = clamp(anchorY, minTop, maxTop);
     return solvedTop - anchorY;
   });
@@ -250,24 +237,50 @@ function OverlayHostLayer() {
       ],
     };
   }, [isActive, closing]);
+
   const topItemStyle = useAnimatedStyle(() => {
     if (!topH?.value || !rect || closing) return { height: 0, opacity: 0 };
-    const target = isActive ? (closing ? 0 : shiftY.value) : 0;
-    console.log('TESTH: ', topH.value);
     return {
-      top: rect.y - topH.value.h + target,
-      width: topH.value.w,
       height: topH.value.h,
       opacity: 1,
-      // transform: [
-      //   {
-      //     translateY: withTiming(target, { duration: 150 }),
-      //   },
-      // ],
+      top: rect.y - topH.value.h,
+      width: topH.value.w,
     };
   }, [rect, closing, topH]);
 
-  console.log('SHIFTVAL: ', isActive, shiftY.value, rect, isMyMessage);
+  const topItemTranslateStyle = useAnimatedStyle(() => {
+    const target = isActive ? (closing ? 0 : shiftY.value) : 0;
+
+    return {
+      transform: [
+        {
+          translateY: withTiming(target, { duration: 150 }),
+        },
+      ],
+    };
+  });
+
+  const bottomItemStyle = useAnimatedStyle(() => {
+    if (!bottomH?.value || !rect || closing) return { height: 0, opacity: 0 };
+    return {
+      height: bottomH.value.h,
+      opacity: 1,
+      top: rect.y + rect.h,
+      width: bottomH.value.w,
+    };
+  }, [rect, closing, bottomH]);
+
+  const bottomItemTranslateStyle = useAnimatedStyle(() => {
+    const target = isActive ? (closing ? 0 : shiftY.value) : 0;
+
+    return {
+      transform: [
+        {
+          translateY: withTiming(target, { duration: 150 }),
+        },
+      ],
+    };
+  });
 
   return (
     <>
@@ -277,76 +290,21 @@ function OverlayHostLayer() {
           style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000CC' }, backdropStyle]}
         />
       ) : null}
-      {/*{isActive && !closing ? (*/}
-      {/*  <TouchableWithoutFeedback*/}
-      {/*    onPress={closeOverlay}*/}
-      {/*    // pointerEvents='box-none'*/}
-      {/*  >*/}
-      {/*    <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'green' }]} />*/}
-      {/*  </TouchableWithoutFeedback>*/}
-      {/*) : null}*/}
-      {/*<View pointerEvents='box-none' style={StyleSheet.absoluteFill}>*/}
-      {/*  /!* 1) BACKDROP: full-screen, captures outside taps, blocks underlying app *!/*/}
-      {/*  {isActive && !closing ? (*/}
-      {/*    <AnimatedPressable*/}
-      {/*      onPress={closeOverlay}*/}
-      {/*      pointerEvents='auto'*/}
-      {/*      style={[*/}
-      {/*        StyleSheet.absoluteFillObject,*/}
-      {/*        { backgroundColor: '#000000CC', zIndex: 0, elevation: 0 },*/}
-      {/*        backdropStyle,*/}
-      {/*      ]}*/}
-      {/*    />*/}
-      {/*  ) : null}*/}
-      {/*</View>*/}
       {isActive && !closing ? (
-        // <View style={{ flex: 1 }}>
-        //   <View style={{ flex: 1 }}>
-        <Pressable
-          onPress={closeOverlay}
-          // pointerEvents='box-none'
-          style={[StyleSheet.absoluteFillObject]}
-        />
-      ) : //   </View>
-      // </View>
-      null}
-      {/*<Portal hostName={isActive && !closing ? 'backdrop' : undefined} name='backdrop'>*/}
-      {/*  <TouchableWithoutFeedback*/}
-      {/*    onPress={closeOverlay}*/}
-      {/*    // pointerEvents='box-none'*/}
-      {/*    style={[StyleSheet.absoluteFillObject, { backgroundColor: 'green' }]}*/}
-      {/*  />*/}
-      {/*</Portal>*/}
-      {/*<View*/}
-      {/*  pointerEvents='box-none'*/}
-      {/*  style={[StyleSheet.absoluteFillObject, { zIndex: 0, elevation: 0 }]}*/}
-      {/*>*/}
-      {/*  <PortalHost name='backdrop' style={StyleSheet.absoluteFillObject} />*/}
-      {/*</View>*/}
-      {/*{isActive && !closing ? (*/}
-      {/*  <Portal name='backdrop'>*/}
-      {/*<Pressable*/}
-      {/*  onPress={closeOverlay}*/}
-      {/*  // pointerEvents='box-none'*/}
-      {/*  style={[StyleSheet.absoluteFillObject, { backgroundColor: 'green' }]}*/}
-      {/*/>*/}
-      {/*  </Portal>*/}
-      {/*) : null}*/}
-      {/*{isActive && !closing && rect ? (*/}
-      {/*  <OutsideTapCatcher bounds={{ left: rect.x, right: rect.x + rect.w, top: rect.y, bottom: rect.y + rect.h }} enabled={isActive && !closing} onOutsideTap={closeOverlay} />*/}
-      {/*) : null}*/}
+        <Pressable onPress={closeOverlay} style={[StyleSheet.absoluteFillObject]} />
+      ) : null}
       <Animated.View
         entering={FadeIn.duration(ANIMATED_DURATION).easing(Easing.in(Easing.cubic))}
         exiting={FadeOut.duration(ANIMATED_DURATION).easing(Easing.out(Easing.cubic))}
         style={[
-          isActive
+          isActive && rect
             ? {
                 position: 'absolute',
                 ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
               }
             : null,
           topItemStyle,
-          // hostStyle,
+          topItemTranslateStyle,
         ]}
       >
         <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
@@ -354,12 +312,12 @@ function OverlayHostLayer() {
       <Animated.View
         pointerEvents='box-none'
         style={[
-          isActive
+          isActive && rect
             ? {
+                height: rect.h,
                 position: 'absolute',
                 top: rect.y,
                 width: rect.w,
-                height: rect.h,
                 ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
               }
             : null,
@@ -368,35 +326,26 @@ function OverlayHostLayer() {
       >
         <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
       </Animated.View>
+      <Animated.View
+        entering={FadeIn.duration(ANIMATED_DURATION).easing(Easing.in(Easing.cubic))}
+        exiting={FadeOut.duration(ANIMATED_DURATION).easing(Easing.out(Easing.cubic))}
+        style={[
+          isActive && rect
+            ? {
+                position: 'absolute',
+                ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
+              }
+            : null,
+          bottomItemStyle,
+          bottomItemTranslateStyle,
+        ]}
+      >
+        <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
+      </Animated.View>
     </>
   );
 }
 
-type Rect = { x: number; y: number; w: number; h: number };
-
-export function OutsideTapRectDetector({
-  enabled,
-  rect,
-  onOutsideTap,
-  children,
-}: {
-  enabled: boolean;
-  rect: Rect;
-  onOutsideTap: () => void;
-  children: React.ReactNode;
-}) {
-  const nativeTap = Gesture.Native();
-  const gesture = React.useMemo(() => {
-    return Gesture.Tap()
-      .enabled(enabled)
-      .maxDistance(12)
-      .requireExternalGestureToFail(nativeTap)
-      .onEnd((_e, success) => {
-        if (success) runOnJS(onOutsideTap)();
-      });
-  }, [nativeTap, enabled, onOutsideTap]);
-
-  return <GestureDetector gesture={gesture}>{children}</GestureDetector>;
-}
+type Rect = { x: number; y: number; w: number; h: number } | undefined;
 
 const ANIMATED_DURATION = 150;
