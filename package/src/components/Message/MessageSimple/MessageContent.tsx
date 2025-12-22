@@ -16,6 +16,7 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
+import { useMessageListItemContext } from '../../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -240,6 +241,8 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     return bordersFromTheme;
   };
 
+  const { setNativeScrollability } = useMessageListItemContext();
+
   return (
     <Pressable
       disabled={preventPress}
@@ -268,11 +271,16 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           });
         }
       }}
-      onPressOut={() => {
-        setLongPressFired(false);
-      }}
       style={({ pressed }) => [{ opacity: pressed && !longPressFired ? 0.5 : 1 }, container]}
       {...additionalPressableProps}
+      onPressOut={(event) => {
+        setLongPressFired(false);
+        setNativeScrollability(true);
+
+        if (additionalPressableProps?.onPressOut) {
+          additionalPressableProps.onPressOut(event);
+        }
+      }}
     >
       <View onLayout={onLayout} style={wrapper}>
         {hasThreadReplies && !threadList && !noBorder && (

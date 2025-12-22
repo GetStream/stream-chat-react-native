@@ -1,16 +1,20 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Alert,
   findNodeHandle,
   GestureResponderEvent,
   Keyboard,
+  LayoutAnimation,
   Pressable,
   StyleProp,
+  StyleSheet,
   TouchableWithoutFeedback,
   UIManager,
   View,
   ViewStyle,
 } from 'react-native';
 
+import Animated, { Easing, FadeIn, FadeOut, useSharedValue } from 'react-native-reanimated';
 import { Portal } from 'react-native-teleport';
 
 import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
@@ -21,8 +25,10 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
 import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
+import { MessageOverlayBundle } from './MessageOverlayBundle';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
+import { closeOverlay, openOverlay, useOverlayController } from '../../contexts';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -241,12 +247,12 @@ export type MessagePropsWithContext = Pick<
  * each individual Message component.
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
-  const [messageOverlayVisible, setMessageOverlayVisible] = useState<{
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  } | null>(null);
+  // const [messageOverlayVisible, setMessageOverlayVisible] = useState<{
+  //   x: number;
+  //   y: number;
+  //   w: number;
+  //   h: number;
+  // } | null>(null);
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
@@ -326,19 +332,28 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     },
   } = useTheme();
 
+  const topH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
+    undefined,
+  );
+  const bottomH = useSharedValue({ w: 0, h: 0, x: 0, y: 0 });
+
   const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
     await dismissKeyboard();
-    const layout = await measureInWindow(messageWrapperRef.current);
-    setShowMessageReactions(showMessageReactions);
-    setMessageOverlayVisible(layout);
-    setSelectedReaction(selectedReaction);
+    try {
+      const layout = await measureInWindow(messageWrapperRef.current);
+      setShowMessageReactions(showMessageReactions);
+      // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+      openOverlay(message.id, { state: { isMyMessage, rect: layout }, topH, bottomH });
+      setSelectedReaction(selectedReaction);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const { setNativeScrollability } = useMessageListItemContext();
 
   const dismissOverlay = () => {
-    setNativeScrollability(true);
-    setMessageOverlayVisible(null);
+    closeOverlay();
   };
 
   const actionsEnabled =
@@ -762,6 +777,16 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     videos: attachments.videos,
   });
 
+  const { state, id, closing } = useOverlayController();
+
+  const active = id === message.id;
+
+  useEffect(() => {
+    if (!active && setNativeScrollability) {
+      setNativeScrollability(true);
+    }
+  }, [setNativeScrollability, active]);
+
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
   }
@@ -769,6 +794,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   if (isBlockedMessage(message)) {
     return <MessageBlocked message={message} />;
   }
+
+  console.log('ACTIVE: ', active);
 
   return (
     <MessageProvider value={messageContext}>
@@ -793,49 +820,56 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           ]}
           testID='message-wrapper'
         >
-          {messageOverlayVisible ? (
+          {active ? (
             <View
               style={{
-                width: messageOverlayVisible.w,
-                height: messageOverlayVisible.h,
+                width: state.rect.w,
+                height: state.rect.h,
               }}
             />
           ) : null}
-          <Portal hostName={messageOverlayVisible ? 'overlay' : undefined}>
-            <View
-              style={
-                messageOverlayVisible
-                  ? [
-                      {
-                        flex: 1,
-                        justifyContent: 'flex-end',
-                      },
-                      { backgroundColor: overlay },
-                    ]
-                  : null
-              }
-            >
-              {messageOverlayVisible ? (
-                <TouchableWithoutFeedback onPress={dismissOverlay} style={{ flex: 1 }}>
-                  <View style={{ flex: 1 }} />
-                </TouchableWithoutFeedback>
-              ) : null}
-              <View
-                style={
-                  messageOverlayVisible
-                    ? {
-                        position: 'absolute',
-                        top: messageOverlayVisible.y,
-                        ...(isMyMessage
-                          ? { right: messageOverlayVisible.x }
-                          : { left: messageOverlayVisible.x }),
-                      }
-                    : null
-                }
+          <Portal hostName={active && !closing ? 'top-item' : undefined}>
+            {active && !closing ? (
+              <Pressable
+                onLayout={(e) => {
+                  const { x, y, width: w, height: h } = e.nativeEvent.layout;
+                  console.log('BLA', x, y, w, h);
+                  topH.value = { x, y, w, h };
+                }}
+                onPress={() => Alert.alert('HIT TOP')}
               >
-                <MessageSimple ref={messageWrapperRef} />
-              </View>
-            </View>
+                <ReactionList />
+              </Pressable>
+            ) : null}
+          </Portal>
+          <Portal
+            hostName={active ? 'message-overlay' : undefined}
+            style={active ? { width: state.rect.w } : null}
+          >
+            {/* The message itself: NOT animated; it just rides along as a child */}
+            <MessageSimple ref={messageWrapperRef} />
+
+            {/* Actions below; height measured */}
+            {active && !closing ? (
+              <Animated.View
+                entering={FadeIn.duration(ANIMATED_DURATION).easing(Easing.in(Easing.cubic))}
+                exiting={FadeOut.duration(ANIMATED_DURATION).easing(Easing.out(Easing.cubic))}
+                onLayout={(e) => {
+                  const { x, y, width: w, height: h } = e.nativeEvent.layout;
+                  // eslint-disable-next-line sort-keys
+                  bottomH.value = { x, y, w, h };
+                }}
+                style={{
+                  position: 'absolute',
+                  top: state.rect.h,
+                  ...(isMyMessage ? { right: state.rect.x } : { left: state.rect.x }),
+                }}
+              >
+                <Pressable onPress={() => Alert.alert('HIT BOTTOM')}>
+                  <MessageActions />
+                </Pressable>
+              </Animated.View>
+            ) : null}
           </Portal>
           {isBounceDialogOpen ? (
             <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
@@ -1075,3 +1109,10 @@ export const Message = (props: MessageProps) => {
     />
   );
 };
+
+const ReactionList = () => <View style={{ backgroundColor: 'blue', width: 150, height: 30 }} />;
+const MessageActions = () => (
+  <View style={{ backgroundColor: 'purple', width: 150, height: 200 }} />
+);
+
+const ANIMATED_DURATION = 250;
