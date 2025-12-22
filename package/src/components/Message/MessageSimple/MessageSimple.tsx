@@ -3,6 +3,7 @@ import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import { MessageBubble, SwipableMessageBubble } from './MessageBubble';
 
+import { updateOverlayState } from '../../../contexts';
 import {
   MessageContextValue,
   useMessageContext,

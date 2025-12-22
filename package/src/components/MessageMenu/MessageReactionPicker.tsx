@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 
 import { ReactionButton } from './ReactionButton';
 
+import { scheduleActionOnClose } from '../../contexts';
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
@@ -62,10 +63,10 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
 
   const onSelectReaction = (type: string) => {
     NativeHandlers.triggerHaptic('impactLight');
-    if (handleReaction) {
-      handleReaction(type);
-    }
     dismissOverlay();
+    if (handleReaction) {
+      scheduleActionOnClose(() => handleReaction(type));
+    }
   };
 
   if (!own_capabilities.sendReaction) {

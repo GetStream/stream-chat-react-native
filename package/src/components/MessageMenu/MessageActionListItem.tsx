@@ -1,7 +1,9 @@
 import React from 'react';
 import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 
+import { closeOverlay, scheduleActionOnClose } from '../../contexts';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStableCallback } from '../../hooks';
 
 export type ActionType =
   | 'banUser'
@@ -62,8 +64,13 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
     },
   } = useTheme();
 
+  const onActionPress = useStableCallback(() => {
+    closeOverlay();
+    scheduleActionOnClose(() => action());
+  });
+
   return (
-    <Pressable onPress={action} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
+    <Pressable onPress={onActionPress} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
       <View
         accessibilityLabel={`${actionType} action list item`}
         style={[styles.container, container]}

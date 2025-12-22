@@ -136,8 +136,8 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
 type OverlayState = {
   state:
     | {
-        isMyMessage: boolean;
-        rect: { w: number; h: number; x: number; y: number };
+        isMyMessage?: boolean;
+        rect?: { w: number; h: number; x: number; y: number };
       }
     | undefined;
   topH: Animated.SharedValue<Rect> | undefined;
@@ -161,9 +161,33 @@ export const closeOverlay = () => {
   requestAnimationFrame(() => overlayStore.partialNext({ closing: true }));
 };
 
+let actionQueue: Array<() => void | Promise<void>> = [];
+
+export const scheduleActionOnClose = (action: () => void | Promise<void>) => {
+  const { id } = overlayStore.getLatestValue();
+  if (id) {
+    actionQueue.push(action);
+    return;
+  }
+  action();
+};
+
+const s = (nextState: OverlayState) => ({ active: !!nextState.id });
+
 const finalizeCloseOverlay = () => overlayStore.partialNext(DefaultState);
 
 export const overlayStore = new StateStore<OverlayState>(DefaultState);
+
+overlayStore.subscribeWithSelector(s, ({ active }) => {
+  if (!active) {
+    // flush the queue
+    for (const action of actionQueue) {
+      action();
+    }
+
+    actionQueue = [];
+  }
+});
 
 const selector = (nextState: OverlayState) => ({
   bottomH: nextState.bottomH,
@@ -177,7 +201,7 @@ export const useOverlayController = () => {
   return useStateStore(overlayStore, selector);
 };
 
-function OverlayHostLayer() {
+const OverlayHostLayer = () => {
   const { state, topH, bottomH, id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
@@ -262,6 +286,7 @@ function OverlayHostLayer() {
 
   const bottomItemStyle = useAnimatedStyle(() => {
     if (!bottomH?.value || !rect || closing) return { height: 0, opacity: 0 };
+    console.log('wtf is going on: ', bottomH.value, rect);
     return {
       height: bottomH.value.h,
       opacity: 1,
@@ -290,9 +315,11 @@ function OverlayHostLayer() {
           style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000CC' }, backdropStyle]}
         />
       ) : null}
+
       {isActive && !closing ? (
-        <Pressable onPress={closeOverlay} style={[StyleSheet.absoluteFillObject]} />
+        <Pressable onPress={closeOverlay} style={StyleSheet.absoluteFillObject} />
       ) : null}
+
       <Animated.View
         entering={FadeIn.duration(ANIMATED_DURATION).easing(Easing.in(Easing.cubic))}
         exiting={FadeOut.duration(ANIMATED_DURATION).easing(Easing.out(Easing.cubic))}
@@ -344,7 +371,7 @@ function OverlayHostLayer() {
       </Animated.View>
     </>
   );
-}
+};
 
 type Rect = { x: number; y: number; w: number; h: number } | undefined;
 

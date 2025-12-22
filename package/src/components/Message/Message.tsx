@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   findNodeHandle,
   GestureResponderEvent,
   Keyboard,
-  Pressable,
   StyleProp,
   UIManager,
   View,
@@ -75,14 +73,15 @@ export type TouchableEmitter =
 
 export type TextMentionTouchableHandlerAdditionalInfo = { user?: UserResponse };
 
-function measureInWindow(node: any): Promise<{ x: number; y: number; w: number; h: number }> {
+// TODO: Take care of forwards compatibility with new measuring API (0.81+)
+const measureInWindow = (node: any): Promise<{ x: number; y: number; w: number; h: number }> => {
   return new Promise((resolve, reject) => {
     const handle = findNodeHandle(node);
     if (!handle) return reject(new Error('No native handle'));
 
     UIManager.measureInWindow(handle, (x, y, w, h) => resolve({ h, w, x, y }));
   });
-}
+};
 
 export type TextMentionTouchableHandlerPayload = {
   emitter: 'textMention';
@@ -216,6 +215,13 @@ export type MessagePropsWithContext = Pick<
     | 'supportedReactions'
     | 'updateMessage'
     | 'PollContent'
+    // TODO: remove this comment later, using it as a pragma mark
+    | 'MessageUserReactions'
+    | 'MessageUserReactionsAvatar'
+    | 'MessageUserReactionsItem'
+    | 'MessageReactionPicker'
+    | 'MessageActionList'
+    | 'MessageActionListItem'
   > &
   Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -243,12 +249,6 @@ export type MessagePropsWithContext = Pick<
  * each individual Message component.
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
-  // const [messageOverlayVisible, setMessageOverlayVisible] = useState<{
-  //   x: number;
-  //   y: number;
-  //   w: number;
-  //   h: number;
-  // } | null>(null);
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
@@ -288,7 +288,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     MessageBlocked,
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
-    MessageMenu,
     messagesContext,
     MessageSimple,
     onLongPressMessage: onLongPressMessageProp,
@@ -312,6 +311,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     updateMessage,
     readBy,
     setQuotedMessage,
+    // MessageUserReactions,
+    // MessageUserReactionsAvatar,
+    // MessageUserReactionsItem,
+    MessageReactionPicker,
+    MessageActionList,
+    MessageActionListItem,
   } = props;
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
@@ -792,8 +797,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     return <MessageBlocked message={message} />;
   }
 
-  console.log('ACTIVE: ', active);
-
   return (
     <MessageProvider value={messageContext}>
       <View
@@ -817,7 +820,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           ]}
           testID='message-wrapper'
         >
-          {active && state ? (
+          {active && state?.rect ? (
             <View
               style={{
                 height: state.rect.h,
@@ -827,34 +830,40 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           ) : null}
           <Portal hostName={active && !closing ? 'top-item' : undefined}>
             {active && !closing ? (
-              <Pressable
+              <View
                 onLayout={(e) => {
                   const { x, y, width: w, height: h } = e.nativeEvent.layout;
                   topH.value = { h, w, x, y };
                 }}
-                onPress={() => Alert.alert('HIT TOP')}
               >
-                <ReactionList />
-              </Pressable>
+                <MessageReactionPicker
+                  dismissOverlay={dismissOverlay}
+                  handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+                  ownReactionTypes={message?.own_reactions?.map((reaction) => reaction.type) || []}
+                />
+              </View>
             ) : null}
           </Portal>
           <Portal
             hostName={active ? 'message-overlay' : undefined}
-            style={active && state ? { width: state.rect.w } : undefined}
+            style={active && state?.rect ? { width: state.rect.w } : undefined}
           >
             <MessageSimple ref={messageWrapperRef} />
           </Portal>
           <Portal hostName={active && !closing ? 'bottom-item' : undefined}>
             {active && !closing ? (
-              <Pressable
+              <View
                 onLayout={(e) => {
                   const { x, y, width: w, height: h } = e.nativeEvent.layout;
                   bottomH.value = { h, w, x, y };
                 }}
-                onPress={() => Alert.alert('HIT BOTTOM')}
               >
-                <MessageActions />
-              </Pressable>
+                <MessageActionList
+                  dismissOverlay={dismissOverlay}
+                  MessageActionListItem={MessageActionListItem}
+                  messageActions={messageActions}
+                />
+              </View>
             ) : null}
           </Portal>
           {isBounceDialogOpen ? (
@@ -1084,8 +1093,3 @@ export const Message = (props: MessageProps) => {
     />
   );
 };
-
-const ReactionList = () => <View style={{ backgroundColor: 'blue', height: 30, width: 150 }} />;
-const MessageActions = () => (
-  <View style={{ backgroundColor: 'purple', height: 200, width: 150 }} />
-);
