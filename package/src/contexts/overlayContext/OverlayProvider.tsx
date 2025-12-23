@@ -178,11 +178,11 @@ const finalizeCloseOverlay = () => overlayStore.partialNext(DefaultState);
 
 export const overlayStore = new StateStore<OverlayState>(DefaultState);
 
-overlayStore.subscribeWithSelector(s, ({ active }) => {
+overlayStore.subscribeWithSelector(s, async ({ active }) => {
   if (!active) {
     // flush the queue
     for (const action of actionQueue) {
-      action();
+      await action();
     }
 
     actionQueue = [];
