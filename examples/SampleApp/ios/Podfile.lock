@@ -3165,7 +3165,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Teleport (0.5.3):
+  - Teleport (0.5.4):
     - boost
     - DoubleConversion
     - fast_float
@@ -3193,9 +3193,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - SocketRocket
-    - Teleport/common (= 0.5.3)
+    - Teleport/common (= 0.5.4)
     - Yoga
-  - Teleport/common (0.5.3):
+  - Teleport/common (0.5.4):
     - boost
     - DoubleConversion
     - fast_float
@@ -3656,7 +3656,7 @@ SPEC CHECKSUMS:
   React-timing: 42e8212c479d1e956d3024be0a07f205a2e34d9d
   React-utils: 0ebf25dd4eb1b5497933f4d8923b862d0fe9566f
   ReactAppDependencyProvider: 6c9197c1f6643633012ab646d2bfedd1b0d25989
-  ReactCodegen: f8ae44cfcb65af88f409f4b094b879591232f12c
+  ReactCodegen: 07eaba6aed08b41813a9acf559012ecb4911b737
   ReactCommon: a237545f08f598b8b37dc3a9163c1c4b85817b0b
   RNCAsyncStorage: afe7c3711dc256e492aa3a50dcac43eecebd0ae5
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
@@ -3674,7 +3674,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   stream-chat-react-native: 7a042480d22a8a87aaee6186bf2f1013af017d3a
-  Teleport: 98d5a14f7f1a7b47b0c0541b00c697a59ac2682d
+  Teleport: 9ae328b3384204b23236e47bd0d8e994ce6bdb48
   Yoga: ce248fb32065c9b00451491b06607f1c25b2f1ed
 
 PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
