@@ -241,7 +241,7 @@ const OverlayHostLayer = () => {
 
     const solvedTop = clamp(anchorY, minTop, maxTop);
     return solvedTop - anchorY;
-  }, [rect]);
+  });
 
   const hostStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? 0 : shiftY.value) : 0;
@@ -260,10 +260,9 @@ const OverlayHostLayer = () => {
   }, [isActive, closing]);
 
   const topItemStyle = useAnimatedStyle(() => {
-    if (!topH?.value || !rect || closing) return { height: 0, opacity: 0 };
+    if (!topH?.value || !rect || closing) return { height: 0 };
     return {
       height: topH.value.h,
-      opacity: 1,
       top: rect.y - topH.value.h,
       width: topH.value.w,
     };
@@ -285,11 +284,9 @@ const OverlayHostLayer = () => {
   });
 
   const bottomItemStyle = useAnimatedStyle(() => {
-    if (!bottomH?.value || !rect || closing) return { height: 0, opacity: 0 };
-    console.log('wtf is going on: ', bottomH.value, rect);
+    if (!bottomH?.value || !rect || closing) return { height: 0 };
     return {
       height: bottomH.value.h,
-      opacity: 1,
       top: rect.y + rect.h,
       width: bottomH.value.w,
     };
