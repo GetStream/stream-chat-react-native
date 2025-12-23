@@ -5,9 +5,6 @@ import { BackHandler, Pressable, StyleSheet, useWindowDimensions } from 'react-n
 import Animated, {
   cancelAnimation,
   clamp,
-  Easing,
-  FadeIn,
-  FadeOut,
   runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -244,7 +241,7 @@ const OverlayHostLayer = () => {
 
     const solvedTop = clamp(anchorY, minTop, maxTop);
     return solvedTop - anchorY;
-  });
+  }, [rect]);
 
   const hostStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? 0 : shiftY.value) : 0;
@@ -280,6 +277,9 @@ const OverlayHostLayer = () => {
         {
           translateY: withTiming(target, { duration: 150 }),
         },
+        {
+          scale: backdrop.value,
+        },
       ],
     };
   });
@@ -303,6 +303,9 @@ const OverlayHostLayer = () => {
         {
           translateY: withTiming(target, { duration: 150 }),
         },
+        {
+          scale: backdrop.value,
+        },
       ],
     };
   });
@@ -321,8 +324,6 @@ const OverlayHostLayer = () => {
       ) : null}
 
       <Animated.View
-        entering={FadeIn.duration(ANIMATED_DURATION).easing(Easing.in(Easing.cubic))}
-        exiting={FadeOut.duration(ANIMATED_DURATION).easing(Easing.out(Easing.cubic))}
         style={[
           isActive && rect
             ? {
@@ -354,8 +355,6 @@ const OverlayHostLayer = () => {
         <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
       </Animated.View>
       <Animated.View
-        entering={FadeIn.duration(ANIMATED_DURATION).easing(Easing.in(Easing.cubic))}
-        exiting={FadeOut.duration(ANIMATED_DURATION).easing(Easing.out(Easing.cubic))}
         style={[
           isActive && rect
             ? {
@@ -374,5 +373,3 @@ const OverlayHostLayer = () => {
 };
 
 type Rect = { x: number; y: number; w: number; h: number } | undefined;
-
-const ANIMATED_DURATION = 150;

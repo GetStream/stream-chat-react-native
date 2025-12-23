@@ -3,7 +3,6 @@ import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import { MessageBubble, SwipableMessageBubble } from './MessageBubble';
 
-import { updateOverlayState } from '../../../contexts';
 import {
   MessageContextValue,
   useMessageContext,
@@ -203,6 +202,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
   return (
     <View ref={ref}>
       <View
+        pointerEvents='box-none'
         style={[
           styles.container,
           messageGroupedSingleOrBottom

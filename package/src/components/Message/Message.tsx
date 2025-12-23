@@ -684,6 +684,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showMessageOverlay();
   };
 
+  const frozenMessage = useRef(message);
+  const { state, id, closing } = useOverlayController();
+
+  const active = id === message.id;
+
   const messageContext = useCreateMessageContext({
     actionsEnabled,
     alignment,
@@ -703,7 +708,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     members,
-    message,
+    message: active ? frozenMessage.current : message,
     messageContentOrder,
     myMessageTheme: messagesContext.myMessageTheme,
     onLongPress: (payload) => {
@@ -779,15 +784,20 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     videos: attachments.videos,
   });
 
-  const { state, id, closing } = useOverlayController();
-
-  const active = id === message.id;
+  const prevActive = useRef<boolean>(active);
 
   useEffect(() => {
-    if (!active && setNativeScrollability) {
+    if (!active && prevActive.current && setNativeScrollability) {
       setNativeScrollability(true);
     }
+    prevActive.current = active;
   }, [setNativeScrollability, active]);
+
+  useEffect(() => {
+    if (!active) {
+      frozenMessage.current = message;
+    }
+  }, [active, message]);
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
