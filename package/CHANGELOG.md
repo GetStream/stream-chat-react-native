@@ -1,5 +1,6 @@
 # Change Log
 
+
 ### [5.44.2](https://github.com/GetStream/stream-chat-react-native/compare/v5.44.1...v5.44.2) (2024-12-10)
 
 
