@@ -344,8 +344,18 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     await dismissKeyboard();
     try {
       const layout = await measureInWindow(messageWrapperRef.current);
+      const rLayout =
+        layout.h > 300
+          ? {
+              ...layout,
+              h: 300,
+              y: layout.y + layout.h - 300,
+              originalH: layout.h,
+              originalY: layout.y,
+            }
+          : { ...layout, originalH: layout.h, originalY: layout.y };
       setShowMessageReactions(showMessageReactions);
-      openOverlay(message.id, { bottomH, state: { isMyMessage, rect: layout }, topH });
+      openOverlay(message.id, { bottomH, state: { isMyMessage, rect: rLayout }, topH });
       setSelectedReaction(selectedReaction);
     } catch (e) {
       console.error(e);
@@ -833,11 +843,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           {active && state?.rect ? (
             <View
               style={{
-                height: state.rect.h,
+                height: state.rect.originalH,
                 width: state.rect.w,
               }}
             />
-          ) : null}
+          ) : // <MessageSimple />
+          null}
           <Portal hostName={active && !closing ? 'top-item' : undefined}>
             {active && !closing ? (
               <View
@@ -858,7 +869,15 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             hostName={active ? 'message-overlay' : undefined}
             style={active && state?.rect ? { width: state.rect.w } : undefined}
           >
-            <MessageSimple ref={messageWrapperRef} />
+            <View
+              style={
+                active && state?.rect && !closing
+                  ? { maxHeight: state.rect.h, overflow: 'hidden' }
+                  : null
+              }
+            >
+              <MessageSimple ref={messageWrapperRef} />
+            </View>
           </Portal>
           <Portal hostName={active && !closing ? 'bottom-item' : undefined}>
             {active && !closing ? (

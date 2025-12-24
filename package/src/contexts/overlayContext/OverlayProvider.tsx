@@ -244,7 +244,7 @@ const OverlayHostLayer = () => {
   });
 
   const hostStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? 0 : shiftY.value) : 0;
+    const target = isActive ? (closing ? -rect.originalH + rect.h : shiftY.value) : 0;
 
     return {
       transform: [
@@ -257,7 +257,7 @@ const OverlayHostLayer = () => {
         },
       ],
     };
-  }, [isActive, closing]);
+  }, [isActive, closing, rect]);
 
   const topItemStyle = useAnimatedStyle(() => {
     if (!topH?.value || !rect || closing) return { height: 0 };
