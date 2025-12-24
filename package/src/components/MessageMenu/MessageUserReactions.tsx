@@ -32,6 +32,7 @@ export type MessageUserReactionsProps = Partial<
      * The selected reaction
      */
     selectedReaction?: string;
+    reactionFilterEnabled?: boolean;
   };
 
 const sort: ReactionSortBase = {
@@ -61,10 +62,11 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     reactions: propReactions,
     selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
+    reactionFilterEnabled = false,
   } = props;
   const reactionTypes = Object.keys(message?.reaction_groups ?? {});
   const [selectedReaction, setSelectedReaction] = React.useState<string | undefined>(
-    propSelectedReaction ?? reactionTypes[0],
+    propSelectedReaction ?? (reactionFilterEnabled ? reactionTypes[0] : undefined),
   );
   const {
     MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
@@ -112,6 +114,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   const {
     theme: {
+      colors: { white },
       messageMenu: {
         userReactions: {
           container,
@@ -165,21 +168,27 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
       accessibilityLabel='User Reactions on long press message'
       style={[styles.container, container]}
     >
-      <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
-        <FlatList
-          contentContainerStyle={[styles.contentContainer, contentContainer]}
-          data={selectorReactions}
-          horizontal
-          keyExtractor={(item) => item.type}
-          renderItem={renderSelectorItem}
-        />
-      </View>
+      {reactionFilterEnabled ? (
+        <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
+          <FlatList
+            contentContainerStyle={[styles.contentContainer, contentContainer]}
+            data={selectorReactions}
+            horizontal
+            keyExtractor={(item) => item.type}
+            renderItem={renderSelectorItem}
+          />
+        </View>
+      ) : null}
 
       {!loading ? (
         <FlatList
           accessibilityLabel='reaction-flat-list'
           columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
-          contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
+          contentContainerStyle={[
+            styles.flatListContainer,
+            { backgroundColor: white },
+            flatlistContainer,
+          ]}
           data={reactions}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={renderHeader}

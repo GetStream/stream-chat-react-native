@@ -312,9 +312,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     updateMessage,
     readBy,
     setQuotedMessage,
-    // MessageUserReactions,
-    // MessageUserReactionsAvatar,
-    // MessageUserReactionsItem,
+    MessageUserReactions,
+    MessageUserReactionsAvatar,
+    MessageUserReactionsItem,
     MessageReactionPicker,
     MessageActionList,
     MessageActionListItem,
@@ -889,11 +889,19 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   };
                 }}
               >
-                <MessageActionList
-                  dismissOverlay={dismissOverlay}
-                  MessageActionListItem={MessageActionListItem}
-                  messageActions={messageActions}
-                />
+                {showMessageReactions ? (
+                  <MessageUserReactions
+                    message={message}
+                    MessageUserReactionsAvatar={MessageUserReactionsAvatar}
+                    MessageUserReactionsItem={MessageUserReactionsItem}
+                  />
+                ) : (
+                  <MessageActionList
+                    dismissOverlay={dismissOverlay}
+                    MessageActionListItem={MessageActionListItem}
+                    messageActions={messageActions}
+                  />
+                )}
               </View>
             ) : null}
           </Portal>
