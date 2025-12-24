@@ -23,7 +23,7 @@ import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
-import { closeOverlay, openOverlay, useOverlayController } from '../../contexts';
+import { closeOverlay, openOverlay, useIsOverlayActive } from '../../contexts';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -694,10 +694,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   };
 
   const frozenMessage = useRef(message);
-  const { id, closing } = useOverlayController();
+  const { active, closing } = useIsOverlayActive(message.id);
 
-  // TODO: refactor
-  const active = id === message.id;
+  console.log('MSGID: ', message.id);
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,

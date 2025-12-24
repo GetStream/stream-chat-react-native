@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { BackHandler, Dimensions, StyleSheet, useWindowDimensions, View } from 'react-native';
 
@@ -194,6 +194,18 @@ const selector = (nextState: OverlayState) => ({
 
 export const useOverlayController = () => {
   return useStateStore(overlayStore, selector);
+};
+
+const noOpObject = { active: false, closing: false };
+
+export const useIsOverlayActive = (messageId: string) => {
+  const messageOverlaySelector = useCallback(
+    (nextState: OverlayState) =>
+      nextState.id === messageId ? { active: true, closing: nextState.closing } : noOpObject,
+    [messageId],
+  );
+
+  return useStateStore(overlayStore, messageOverlaySelector);
 };
 
 const OverlayHostLayer = () => {
