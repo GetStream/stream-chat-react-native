@@ -211,41 +211,43 @@ const App = () => {
         backgroundColor: streamChatTheme.colors?.white_snow || '#FCFCFC',
       }}
     >
-      <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
-        <ThemeProvider style={streamChatTheme}>
-          <NavigationContainer
-            ref={RootNavigationRef}
-            theme={{
-              colors: {
-                ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-                background: streamChatTheme.colors?.white_snow || '#FCFCFC',
-              },
-              fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
-              dark: colorScheme === 'dark',
-            }}
-          >
-            <AppContext.Provider
-              value={{
-                chatClient,
-                loginUser,
-                logout,
-                switchUser,
-                messageListImplementation,
-                messageListMode,
-                messageListPruning,
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
+          <ThemeProvider style={streamChatTheme}>
+            <NavigationContainer
+              ref={RootNavigationRef}
+              theme={{
+                colors: {
+                  ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+                  background: streamChatTheme.colors?.white_snow || '#FCFCFC',
+                },
+                fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
+                dark: colorScheme === 'dark',
               }}
             >
-              {isConnecting && !chatClient ? (
-                <LoadingScreen />
-              ) : chatClient ? (
-                <DrawerNavigatorWrapper chatClient={chatClient} i18nInstance={streami18n} />
-              ) : (
-                <UserSelector />
-              )}
-            </AppContext.Provider>
-          </NavigationContainer>
-        </ThemeProvider>
-      </OverlayProvider>
+              <AppContext.Provider
+                value={{
+                  chatClient,
+                  loginUser,
+                  logout,
+                  switchUser,
+                  messageListImplementation,
+                  messageListMode,
+                  messageListPruning,
+                }}
+              >
+                {isConnecting && !chatClient ? (
+                  <LoadingScreen />
+                ) : chatClient ? (
+                  <DrawerNavigatorWrapper chatClient={chatClient} i18nInstance={streami18n} />
+                ) : (
+                  <UserSelector />
+                )}
+              </AppContext.Provider>
+            </NavigationContainer>
+          </ThemeProvider>
+        </OverlayProvider>
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 };
@@ -272,25 +274,23 @@ const DrawerNavigatorWrapper: React.FC<{
   i18nInstance: Streami18n;
 }> = ({ chatClient, i18nInstance }) => {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Chat
-        client={chatClient}
-        enableOfflineSupport
-        // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
-        ImageComponent={FastImage}
-        isMessageAIGenerated={isMessageAIGenerated}
-        i18nInstance={i18nInstance}
-      >
-        <StreamChatProvider>
-          <AppOverlayProvider>
-            <UserSearchProvider>
-              <DrawerNavigator />
-              <Toast />
-            </UserSearchProvider>
-          </AppOverlayProvider>
-        </StreamChatProvider>
-      </Chat>
-    </GestureHandlerRootView>
+    <Chat
+      client={chatClient}
+      enableOfflineSupport
+      // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
+      ImageComponent={FastImage}
+      isMessageAIGenerated={isMessageAIGenerated}
+      i18nInstance={i18nInstance}
+    >
+      <StreamChatProvider>
+        <AppOverlayProvider>
+          <UserSearchProvider>
+            <DrawerNavigator />
+            <Toast />
+          </UserSearchProvider>
+        </AppOverlayProvider>
+      </StreamChatProvider>
+    </Chat>
   );
 };
 
