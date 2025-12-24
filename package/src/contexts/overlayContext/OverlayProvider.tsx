@@ -134,14 +134,9 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
 };
 
 type OverlayState = {
-  state:
-    | {
-        isMyMessage?: boolean;
-        rect?: { w: number; h: number; x: number; y: number };
-      }
-    | undefined;
   topH: Animated.SharedValue<Rect> | undefined;
   bottomH: Animated.SharedValue<Rect> | undefined;
+  messageH: Animated.SharedValue<Rect> | undefined;
   id: string | undefined;
   closing: boolean;
 };
@@ -150,12 +145,12 @@ const DefaultState = {
   bottomH: undefined,
   closing: false,
   id: undefined,
-  state: undefined,
   topH: undefined,
+  messageH: undefined,
 };
 
-export const openOverlay = (id: string, { state, topH, bottomH }: Partial<OverlayState>) =>
-  overlayStore.partialNext({ bottomH, closing: false, id, state, topH });
+export const openOverlay = (id: string, { messageH, topH, bottomH }: Partial<OverlayState>) =>
+  overlayStore.partialNext({ bottomH, closing: false, id, messageH, topH });
 
 export const closeOverlay = () => {
   requestAnimationFrame(() => overlayStore.partialNext({ closing: true }));
@@ -193,7 +188,7 @@ const selector = (nextState: OverlayState) => ({
   bottomH: nextState.bottomH,
   closing: nextState.closing,
   id: nextState.id,
-  state: nextState.state,
+  messageH: nextState.messageH,
   topH: nextState.topH,
 });
 
@@ -202,13 +197,11 @@ export const useOverlayController = () => {
 };
 
 const OverlayHostLayer = () => {
-  const { state, topH, bottomH, id, closing } = useOverlayController();
+  const { messageH, topH, bottomH, id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
-  const { height: screenH, width: screenW } = useWindowDimensions();
+  const { height: screenH } = useWindowDimensions();
 
   const isActive = !!id;
-
-  const { rect, isMyMessage } = state ?? {};
 
   const padding = 8;
   const minY = insets.top + padding;
@@ -218,7 +211,6 @@ const OverlayHostLayer = () => {
 
   useEffect(() => {
     const target = isActive && !closing ? 1 : 0;
-    cancelAnimation(backdrop);
     backdrop.value = withTiming(target, {
       duration: target === 1 ? 160 : 140,
     });
@@ -229,38 +221,28 @@ const OverlayHostLayer = () => {
   }));
 
   const shiftY = useDerivedValue(() => {
-    if (!rect || !topH?.value || !bottomH?.value) return 0;
+    if (!messageH?.value || !topH?.value || !bottomH?.value) return 0;
 
-    const anchorY = rect.y;
-    const msgH = rect.h;
+    const anchorY = messageH.value.y;
+    const msgH = messageH.value.h;
 
     const minTop = minY + topH.value.h;
     const maxTop = maxY - (msgH + bottomH.value.h);
 
     const solvedTop = clamp(anchorY, minTop, maxTop);
     return solvedTop - anchorY;
-  }, [rect]);
-
-  const topItemLayout = useDerivedValue(() => {
-    if (!topH?.value || !rect || closing) return undefined;
-
-    return {
-      h: topH.value.h,
-      w: topH.value.w,
-      x: isMyMessage ? screenW - rect.x - topH.value.w : rect.x,
-      y: rect.y - topH.value.h,
-    };
-  }, [rect, isMyMessage, closing]);
+  });
 
   const topItemStyle = useAnimatedStyle(() => {
-    if (!topItemLayout.value) return { height: 0 };
+    if (!topH?.value) return { height: 0 };
     return {
-      height: topItemLayout.value.h,
-      left: topItemLayout.value.x,
-      top: topItemLayout.value.y,
-      width: topItemLayout.value.w,
+      height: topH.value.h,
+      left: topH.value.x,
+      position: 'absolute',
+      top: topH.value.y,
+      width: topH.value.w,
     };
-  }, []);
+  });
 
   const topItemTranslateStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? 0 : shiftY.value) : 0;
@@ -277,26 +259,16 @@ const OverlayHostLayer = () => {
     };
   }, [isActive, closing]);
 
-  const bottomItemLayout = useDerivedValue(() => {
-    if (!bottomH?.value || !rect || closing) return undefined;
-
-    return {
-      h: bottomH.value.h,
-      w: bottomH.value.w,
-      x: isMyMessage ? screenW - rect.x - bottomH.value.w : rect.x,
-      y: rect.y + rect.h,
-    };
-  }, [rect, isMyMessage, closing]);
-
   const bottomItemStyle = useAnimatedStyle(() => {
-    if (!bottomItemLayout.value) return { height: 0 };
+    if (!bottomH?.value) return { height: 0 };
     return {
-      height: bottomItemLayout.value.h,
-      left: bottomItemLayout.value.x,
-      top: bottomItemLayout.value.y,
-      width: bottomItemLayout.value.w,
+      height: bottomH.value.h,
+      left: bottomH.value.x,
+      position: 'absolute',
+      top: bottomH.value.y,
+      width: bottomH.value.w,
     };
-  }, []);
+  });
 
   const bottomItemTranslateStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? 0 : shiftY.value) : 0;
@@ -324,6 +296,17 @@ const OverlayHostLayer = () => {
   }, [isActive, scrollY]);
 
   const hostStyle = useAnimatedStyle(() => {
+    if (!messageH?.value) return { height: 0 };
+    return {
+      height: messageH.value.h,
+      left: messageH.value.x,
+      position: 'absolute',
+      top: messageH.value.y,
+      width: messageH.value.w,
+    };
+  });
+
+  const hostTranslateStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? -scrollY.value : shiftY.value) : 0;
 
     return {
@@ -339,15 +322,13 @@ const OverlayHostLayer = () => {
     };
   }, [isActive, closing]);
 
-  const contentH = useDerivedValue(
-    () =>
-      topH?.value && bottomH?.value && rect
-        ? Math.max(
-            screenH,
-            topH.value.h + rect.h + bottomH.value.h + insets.top + insets.bottom + 20,
-          )
-        : 0,
-    [rect],
+  const contentH = useDerivedValue(() =>
+    topH?.value && bottomH?.value && messageH?.value
+      ? Math.max(
+          screenH,
+          topH.value.h + messageH.value.h + bottomH.value.h + insets.top + insets.bottom + 20,
+        )
+      : 0,
   );
   const maxScroll = useDerivedValue(() => Math.max(0, contentH.value - viewportH.value));
   const initialScrollOffset = useSharedValue(0);
@@ -368,14 +349,6 @@ const OverlayHostLayer = () => {
     [initialScrollOffset, maxScroll, scrollY],
   );
 
-  const blockedRect = useSharedValue<{ x: number; y: number; w: number; h: number } | undefined>(
-    undefined,
-  );
-
-  useEffect(() => {
-    blockedRect.value = rect;
-  }, [rect, blockedRect]);
-
   const tap = Gesture.Tap()
     .onTouchesDown((e, state) => {
       const t = e.allTouches[0];
@@ -384,9 +357,9 @@ const OverlayHostLayer = () => {
       const x = t.x;
       const y = t.y;
 
-      const rects = [bottomItemLayout, topItemLayout];
+      const rects = [bottomH, topH];
       for (let i = 0; i < rects.length; i++) {
-        const r = rects[i].value;
+        const r = rects[i]?.value;
         if (
           !r ||
           (x >= r.x && x <= r.x + r.w && y >= r.y + shiftY.value && y <= r.y + r.h + shiftY.value)
@@ -416,42 +389,17 @@ const OverlayHostLayer = () => {
         ) : null}
 
         <Animated.View style={[contentStyle]}>
-          <Animated.View
-            style={[
-              isActive && rect
-                ? {
-                    position: 'absolute',
-                  }
-                : null,
-              topItemStyle,
-              topItemTranslateStyle,
-            ]}
-          >
+          <Animated.View style={[topItemStyle, topItemTranslateStyle]}>
             <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
-          <Animated.View
-            pointerEvents='box-none'
-            style={[
-              isActive && rect
-                ? {
-                    height: rect.h,
-                    position: 'absolute',
-                    top: rect.y,
-                    width: rect.w,
-                    ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
-                  }
-                : null,
-              hostStyle,
-            ]}
-          >
+          <Animated.View pointerEvents='box-none' style={[hostStyle, hostTranslateStyle]}>
             <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
           <Animated.View
             style={[
-              isActive && rect
+              isActive
                 ? {
                     position: 'absolute',
-                    ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
                   }
                 : null,
               bottomItemStyle,

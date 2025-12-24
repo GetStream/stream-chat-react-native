@@ -5,6 +5,7 @@ import {
   Keyboard,
   StyleProp,
   UIManager,
+  useWindowDimensions,
   View,
   ViewStyle,
 } from 'react-native';
@@ -339,14 +340,22 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const bottomH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
     undefined,
   );
+  const messageH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
+    undefined,
+  );
+  const [rect, setRect] = useState<{ w: number; h: number; x: number; y: number } | undefined>(
+    undefined,
+  );
+  const { width: screenW } = useWindowDimensions();
 
-  const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
+  const showMessageOverlay = async (showMessageReactions = false) => {
     await dismissKeyboard();
     try {
       const layout = await measureInWindow(messageWrapperRef.current);
+      setRect(layout);
       setShowMessageReactions(showMessageReactions);
-      openOverlay(message.id, { bottomH, state: { isMyMessage, rect: layout }, topH });
-      // setSelectedReaction(selectedReaction);
+      messageH.value = layout;
+      openOverlay(message.id, { bottomH, messageH, topH });
     } catch (e) {
       console.error(e);
     }
@@ -685,8 +694,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   };
 
   const frozenMessage = useRef(message);
-  const { state, id, closing } = useOverlayController();
+  const { id, closing } = useOverlayController();
 
+  // TODO: refactor
   const active = id === message.id;
 
   const messageContext = useCreateMessageContext({
@@ -830,21 +840,27 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           ]}
           testID='message-wrapper'
         >
-          {active && state?.rect ? (
+          {active && rect ? (
             <View
               style={{
-                height: state.rect.h,
-                width: state.rect.w,
+                height: rect.h,
+                width: rect.w,
               }}
             />
           ) : // <MessageSimple />
           null}
           <Portal hostName={active && !closing ? 'top-item' : undefined}>
-            {active && !closing ? (
+            {active && !closing && rect ? (
               <View
                 onLayout={(e) => {
-                  const { x, y, width: w, height: h } = e.nativeEvent.layout;
-                  topH.value = { h, w, x, y };
+                  const { width: w, height: h } = e.nativeEvent.layout;
+
+                  topH.value = {
+                    h,
+                    w,
+                    x: isMyMessage ? screenW - rect.x - w : rect.x,
+                    y: rect.y - h,
+                  };
                 }}
               >
                 <MessageReactionPicker
@@ -857,24 +873,21 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           </Portal>
           <Portal
             hostName={active ? 'message-overlay' : undefined}
-            style={active && state?.rect ? { width: state.rect.w } : undefined}
+            style={active && rect ? { width: rect.w } : undefined}
           >
-            <View
-              style={
-                active && state?.rect && !closing
-                  ? { maxHeight: state.rect.h, overflow: 'hidden' }
-                  : null
-              }
-            >
-              <MessageSimple ref={messageWrapperRef} />
-            </View>
+            <MessageSimple ref={messageWrapperRef} />
           </Portal>
           <Portal hostName={active && !closing ? 'bottom-item' : undefined}>
-            {active && !closing ? (
+            {active && !closing && rect ? (
               <View
                 onLayout={(e) => {
-                  const { x, y, width: w, height: h } = e.nativeEvent.layout;
-                  bottomH.value = { h, w, x, y };
+                  const { width: w, height: h } = e.nativeEvent.layout;
+                  bottomH.value = {
+                    h,
+                    w,
+                    x: isMyMessage ? screenW - rect.x - w : rect.x,
+                    y: rect.y + rect.h,
+                  };
                 }}
               >
                 <MessageActionList
