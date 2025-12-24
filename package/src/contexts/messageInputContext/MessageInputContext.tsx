@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
+import { Alert, Linking, TextInput, TextInputProps } from 'react-native';
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
@@ -32,6 +32,7 @@ import {
   PollContentProps,
   StopMessageStreamingButtonProps,
 } from '../../components';
+import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/AttachmentUploadPreviewList';
@@ -555,7 +556,7 @@ export const MessageInputProvider = ({
    * Function to open the attachment picker if the MediaLibary is installed.
    */
   const openAttachmentPicker = useCallback(() => {
-    Keyboard.dismiss();
+    dismissKeyboard();
     setSelectedPicker('images');
     openPicker();
   }, [openPicker, setSelectedPicker]);

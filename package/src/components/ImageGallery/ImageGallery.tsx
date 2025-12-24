@@ -1,6 +1,5 @@
 import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
-
+import { Image, ImageStyle, StyleSheet, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
@@ -50,6 +49,7 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '../BottomSheetCompatibility/BottomSheetModal';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 const MARGIN = 32;
 
@@ -177,7 +177,7 @@ export const ImageGallery = (props: Props) => {
    * Run the fade animation on visible change
    */
   useEffect(() => {
-    Keyboard.dismiss();
+    dismissKeyboard();
     showScreen();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
