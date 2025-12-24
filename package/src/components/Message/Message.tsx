@@ -253,7 +253,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
-  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
+  // const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
 
   const {
     channel,
@@ -344,19 +344,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     await dismissKeyboard();
     try {
       const layout = await measureInWindow(messageWrapperRef.current);
-      const rLayout =
-        layout.h > 300
-          ? {
-              ...layout,
-              h: 300,
-              y: layout.y + layout.h - 300,
-              originalH: layout.h,
-              originalY: layout.y,
-            }
-          : { ...layout, originalH: layout.h, originalY: layout.y };
       setShowMessageReactions(showMessageReactions);
-      openOverlay(message.id, { bottomH, state: { isMyMessage, rect: rLayout }, topH });
-      setSelectedReaction(selectedReaction);
+      openOverlay(message.id, { bottomH, state: { isMyMessage, rect: layout }, topH });
+      // setSelectedReaction(selectedReaction);
     } catch (e) {
       console.error(e);
     }
@@ -782,7 +772,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
         }
       : null,
     otherAttachments: attachments.other,
-    preventPress,
+    preventPress: active ? true : preventPress,
     reactions,
     readBy,
     setIsEditedMessageOpen,
@@ -843,7 +833,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           {active && state?.rect ? (
             <View
               style={{
-                height: state.rect.originalH,
+                height: state.rect.h,
                 width: state.rect.w,
               }}
             />

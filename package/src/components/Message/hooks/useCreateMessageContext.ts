@@ -113,6 +113,7 @@ export const useCreateMessageContext = ({
       showAvatar,
       showMessageStatus,
       threadList,
+      preventPress,
     ],
   );
 

@@ -386,6 +386,7 @@ const areEqual = (
   nextProps: MessageContentPropsWithContext,
 ) => {
   const {
+    preventPress: prevPreventPress,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -397,6 +398,7 @@ const areEqual = (
     t: prevT,
   } = prevProps;
   const {
+    preventPress: nextPreventPress,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isEditedMessageOpen: nextIsEditedMessageOpen,
@@ -406,6 +408,10 @@ const areEqual = (
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
+
+  if (prevPreventPress !== nextPreventPress) {
+    return false;
+  }
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;

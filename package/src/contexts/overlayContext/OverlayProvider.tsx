@@ -1,15 +1,16 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
-import { BackHandler, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { BackHandler, Dimensions, StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   clamp,
   runOnJS,
-  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withDecay,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -31,6 +32,8 @@ import {
   DEFAULT_USER_LANGUAGE,
   TranslationProvider,
 } from '../translationContext/TranslationContext';
+
+const { height: SCREEN_H } = Dimensions.get('screen');
 
 /**
  * - The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
@@ -201,7 +204,7 @@ export const useOverlayController = () => {
 const OverlayHostLayer = () => {
   const { state, topH, bottomH, id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
-  const { height: screenH } = useWindowDimensions();
+  const { height: screenH, width: screenW } = useWindowDimensions();
 
   const isActive = !!id;
 
@@ -213,18 +216,13 @@ const OverlayHostLayer = () => {
 
   const backdrop = useSharedValue(0);
 
-  useAnimatedReaction(
-    () => (isActive && !closing ? 1 : 0),
-    (next, prev) => {
-      if (next === prev) return;
-
-      cancelAnimation(backdrop);
-      backdrop.value = withTiming(next, {
-        duration: next === 1 ? 160 : 140,
-      });
-    },
-    [isActive, closing],
-  );
+  useEffect(() => {
+    const target = isActive && !closing ? 1 : 0;
+    cancelAnimation(backdrop);
+    backdrop.value = withTiming(target, {
+      duration: target === 1 ? 160 : 140,
+    });
+  }, [isActive, closing, backdrop]);
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdrop.value,
@@ -241,32 +239,28 @@ const OverlayHostLayer = () => {
 
     const solvedTop = clamp(anchorY, minTop, maxTop);
     return solvedTop - anchorY;
-  });
+  }, [rect]);
 
-  const hostStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? -rect.originalH + rect.h : shiftY.value) : 0;
+  const topItemLayout = useDerivedValue(() => {
+    if (!topH?.value || !rect || closing) return undefined;
 
     return {
-      transform: [
-        {
-          translateY: withTiming(target, { duration: 150 }, (finished) => {
-            if (finished && closing) {
-              runOnJS(finalizeCloseOverlay)();
-            }
-          }),
-        },
-      ],
+      h: topH.value.h,
+      w: topH.value.w,
+      x: isMyMessage ? screenW - rect.x - topH.value.w : rect.x,
+      y: rect.y - topH.value.h,
     };
-  }, [isActive, closing, rect]);
+  }, [rect, isMyMessage, closing]);
 
   const topItemStyle = useAnimatedStyle(() => {
-    if (!topH?.value || !rect || closing) return { height: 0 };
+    if (!topItemLayout.value) return { height: 0 };
     return {
-      height: topH.value.h,
-      top: rect.y - topH.value.h,
-      width: topH.value.w,
+      height: topItemLayout.value.h,
+      left: topItemLayout.value.x,
+      top: topItemLayout.value.y,
+      width: topItemLayout.value.w,
     };
-  }, [rect, closing, topH]);
+  }, []);
 
   const topItemTranslateStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? 0 : shiftY.value) : 0;
@@ -281,16 +275,28 @@ const OverlayHostLayer = () => {
         },
       ],
     };
-  });
+  }, [isActive, closing]);
+
+  const bottomItemLayout = useDerivedValue(() => {
+    if (!bottomH?.value || !rect || closing) return undefined;
+
+    return {
+      h: bottomH.value.h,
+      w: bottomH.value.w,
+      x: isMyMessage ? screenW - rect.x - bottomH.value.w : rect.x,
+      y: rect.y + rect.h,
+    };
+  }, [rect, isMyMessage, closing]);
 
   const bottomItemStyle = useAnimatedStyle(() => {
-    if (!bottomH?.value || !rect || closing) return { height: 0 };
+    if (!bottomItemLayout.value) return { height: 0 };
     return {
-      height: bottomH.value.h,
-      top: rect.y + rect.h,
-      width: bottomH.value.w,
+      height: bottomItemLayout.value.h,
+      left: bottomItemLayout.value.x,
+      top: bottomItemLayout.value.y,
+      width: bottomItemLayout.value.w,
     };
-  }, [rect, closing, bottomH]);
+  }, []);
 
   const bottomItemTranslateStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? 0 : shiftY.value) : 0;
@@ -305,68 +311,158 @@ const OverlayHostLayer = () => {
         },
       ],
     };
-  });
+  }, [isActive, closing]);
+
+  const viewportH = useSharedValue(SCREEN_H);
+
+  const scrollY = useSharedValue(0);
+
+  useEffect(() => {
+    if (isActive) {
+      scrollY.value = 0;
+    }
+  }, [isActive, scrollY]);
+
+  const hostStyle = useAnimatedStyle(() => {
+    const target = isActive ? (closing ? -scrollY.value : shiftY.value) : 0;
+
+    return {
+      transform: [
+        {
+          translateY: withTiming(target, { duration: 150 }, (finished) => {
+            if (finished && closing) {
+              runOnJS(finalizeCloseOverlay)();
+            }
+          }),
+        },
+      ],
+    };
+  }, [isActive, closing]);
+
+  const contentH = useDerivedValue(
+    () =>
+      topH?.value && bottomH?.value && rect
+        ? Math.max(
+            screenH,
+            topH.value.h + rect.h + bottomH.value.h + insets.top + insets.bottom + 20,
+          )
+        : 0,
+    [rect],
+  );
+  const maxScroll = useDerivedValue(() => Math.max(0, contentH.value - viewportH.value));
+  const initialScrollOffset = useSharedValue(0);
+
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .onBegin(() => {
+          cancelAnimation(scrollY);
+          initialScrollOffset.value = scrollY.value;
+        })
+        .onUpdate((e) => {
+          scrollY.value = clamp(initialScrollOffset.value + e.translationY, 0, maxScroll.value);
+        })
+        .onEnd((e) => {
+          scrollY.value = withDecay({ clamp: [0, maxScroll.value], velocity: e.velocityY });
+        }),
+    [initialScrollOffset, maxScroll, scrollY],
+  );
+
+  const blockedRect = useSharedValue<{ x: number; y: number; w: number; h: number } | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    blockedRect.value = rect;
+  }, [rect, blockedRect]);
+
+  const tap = Gesture.Tap()
+    .onTouchesDown((e, state) => {
+      const t = e.allTouches[0];
+      if (!t) return;
+
+      const x = t.x;
+      const y = t.y;
+
+      const rects = [bottomItemLayout, topItemLayout];
+      for (let i = 0; i < rects.length; i++) {
+        const r = rects[i].value;
+        if (
+          !r ||
+          (x >= r.x && x <= r.x + r.w && y >= r.y + shiftY.value && y <= r.y + r.h + shiftY.value)
+        ) {
+          state.fail();
+          return;
+        }
+      }
+    })
+    .onEnd(() => {
+      runOnJS(closeOverlay)();
+    });
+
+  const contentStyle = useAnimatedStyle(() => ({
+    height: contentH.value,
+    transform: [{ translateY: scrollY.value }],
+  }));
 
   return (
-    <>
-      {isActive ? (
-        <Animated.View
-          pointerEvents='box-none'
-          style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000CC' }, backdropStyle]}
-        />
-      ) : null}
+    <GestureDetector gesture={Gesture.Exclusive(pan, tap)}>
+      <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
+        {isActive ? (
+          <Animated.View
+            pointerEvents='box-none'
+            style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000CC' }, backdropStyle]}
+          />
+        ) : null}
 
-      {isActive && !closing ? (
-        <Pressable onPress={closeOverlay} style={StyleSheet.absoluteFillObject} />
-      ) : null}
-
-      <Animated.View
-        style={[
-          isActive && rect
-            ? {
-                position: 'absolute',
-                ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
-              }
-            : null,
-          topItemStyle,
-          topItemTranslateStyle,
-        ]}
-      >
-        <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
-      </Animated.View>
-      <Animated.View
-        pointerEvents='box-none'
-        style={[
-          isActive && rect
-            ? {
-                height: rect.h,
-                position: 'absolute',
-                top: rect.y,
-                width: rect.w,
-                ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
-              }
-            : null,
-          hostStyle,
-        ]}
-      >
-        <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
-      </Animated.View>
-      <Animated.View
-        style={[
-          isActive && rect
-            ? {
-                position: 'absolute',
-                ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
-              }
-            : null,
-          bottomItemStyle,
-          bottomItemTranslateStyle,
-        ]}
-      >
-        <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
-      </Animated.View>
-    </>
+        <Animated.View style={[contentStyle]}>
+          <Animated.View
+            style={[
+              isActive && rect
+                ? {
+                    position: 'absolute',
+                  }
+                : null,
+              topItemStyle,
+              topItemTranslateStyle,
+            ]}
+          >
+            <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
+          </Animated.View>
+          <Animated.View
+            pointerEvents='box-none'
+            style={[
+              isActive && rect
+                ? {
+                    height: rect.h,
+                    position: 'absolute',
+                    top: rect.y,
+                    width: rect.w,
+                    ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
+                  }
+                : null,
+              hostStyle,
+            ]}
+          >
+            <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
+          </Animated.View>
+          <Animated.View
+            style={[
+              isActive && rect
+                ? {
+                    position: 'absolute',
+                    ...(isMyMessage ? { right: rect.x } : { left: rect.x }),
+                  }
+                : null,
+              bottomItemStyle,
+              bottomItemTranslateStyle,
+            ]}
+          >
+            <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
+          </Animated.View>
+        </Animated.View>
+      </View>
+    </GestureDetector>
   );
 };
-
 type Rect = { x: number; y: number; w: number; h: number } | undefined;
