@@ -54,6 +54,8 @@ const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSele
   />
 );
 
+const keyExtractor = (item: Reaction) => item.id;
+
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const {
     message,
@@ -152,11 +154,6 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
   );
 
-  const renderHeader = useCallback(
-    () => <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>,
-    [t, reactionsText],
-  );
-
   const selectorReactions: ReactionSelectorItemType[] = messageReactions.map((reaction) => ({
     ...reaction,
     onSelectReaction,
@@ -166,7 +163,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   return (
     <View
       accessibilityLabel='User Reactions on long press message'
-      style={[styles.container, container]}
+      style={[styles.container, { backgroundColor: white }, container]}
     >
       {reactionFilterEnabled ? (
         <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
@@ -181,21 +178,19 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
       ) : null}
 
       {!loading ? (
-        <FlatList
-          accessibilityLabel='reaction-flat-list'
-          columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
-          contentContainerStyle={[
-            styles.flatListContainer,
-            { backgroundColor: white },
-            flatlistContainer,
-          ]}
-          data={reactions}
-          keyExtractor={(item) => item.id}
-          ListHeaderComponent={renderHeader}
-          numColumns={4}
-          onEndReached={loadNextPage}
-          renderItem={renderItem}
-        />
+        <>
+          <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>
+          <FlatList
+            accessibilityLabel='reaction-flat-list'
+            columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
+            contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
+            data={reactions}
+            keyExtractor={keyExtractor}
+            numColumns={4}
+            onEndReached={loadNextPage}
+            renderItem={renderItem}
+          />
+        </>
       ) : null}
     </View>
   );
@@ -203,7 +198,9 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    borderRadius: 16,
+    marginTop: 16,
+    maxHeight: 256,
   },
   contentContainer: {
     flexGrow: 1,
@@ -215,6 +212,7 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     justifyContent: 'center',
+    paddingHorizontal: 8,
   },
   reactionSelectorContainer: {
     flexDirection: 'row',

@@ -56,7 +56,6 @@ export const MessageActionList = (props: MessageActionListProps) => {
 };
 
 const styles = StyleSheet.create({
-  // TODO: Preliminary height fix, think about this more thoroughly
   container: { marginTop: 16 },
   contentContainer: {
     flexGrow: 1,
