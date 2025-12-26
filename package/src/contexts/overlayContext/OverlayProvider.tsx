@@ -432,16 +432,16 @@ const styles = StyleSheet.create({
   shadow3: {
     overflow: 'visible',
     ...Platform.select({
-      ios: {
-        shadowColor: 'white',
-        shadowOpacity: 0.4,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 4 },
-      },
       android: {
         elevation: 3,
         // helps on newer Android (API 28+) to tint elevation shadow
         shadowColor: '#000000',
+      },
+      ios: {
+        shadowColor: 'white',
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.4,
+        shadowRadius: 10,
       },
     }),
   },

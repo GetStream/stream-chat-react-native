@@ -4,14 +4,8 @@ import { useWindowDimensions } from 'react-native';
 
 import { MessageActionType } from './MessageActionListItem';
 
-import {
-  MessageContextValue,
-  useMessageContext,
-} from '../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
+import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
+import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
@@ -65,22 +59,24 @@ export type MessageMenuProps = PropsWithChildren<
     }
 >;
 
+// TODO: V9: Either remove this or refactor it so that it's useful again, as its logic
+//  is offloaded to other components now.
 export const MessageMenu = (props: MessageMenuProps) => {
   const {
     dismissOverlay,
-    handleReaction,
-    message: propMessage,
-    MessageActionList: propMessageActionList,
-    MessageActionListItem: propMessageActionListItem,
-    messageActions,
-    MessageReactionPicker: propMessageReactionPicker,
-    MessageUserReactions: propMessageUserReactions,
-    MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
-    MessageUserReactionsItem: propMessageUserReactionsItem,
-    selectedReaction,
+    // handleReaction,
+    // message: propMessage,
+    // MessageActionList: propMessageActionList,
+    // MessageActionListItem: propMessageActionListItem,
+    // messageActions,
+    // MessageReactionPicker: propMessageReactionPicker,
+    // MessageUserReactions: propMessageUserReactions,
+    // MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
+    // MessageUserReactionsItem: propMessageUserReactionsItem,
+    // selectedReaction,
     showMessageReactions,
     visible,
-    layout,
+    // layout,
     children,
   } = props;
   const { height } = useWindowDimensions();
@@ -112,11 +108,7 @@ export const MessageMenu = (props: MessageMenuProps) => {
   return (
     <BottomSheetModal
       height={
-        bottomSheetHeight
-          ? bottomSheetHeight
-          : messageActions.length === 0 && !showMessageReactions
-            ? height / 5
-            : height / 2
+        bottomSheetHeight ? bottomSheetHeight : !showMessageReactions ? height / 5 : height / 2
       }
       onClose={dismissOverlay}
       visible={visible}
