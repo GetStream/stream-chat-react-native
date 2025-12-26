@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useEffect, useMemo } from 'react';
 import {
   Animated,
+  EventSubscription,
   Keyboard,
   KeyboardEvent,
   Modal,
@@ -17,9 +18,11 @@ import {
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 
+import type { KeyboardEventData } from 'react-native-keyboard-controller';
 import { runOnJS } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 export type BottomSheetModalProps = {
   /**
@@ -79,12 +82,28 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   }, [visible, openAnimation]);
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', keyboardDidShow);
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    const listeners: EventSubscription[] = [];
+
+    if (KeyboardControllerPackage?.KeyboardEvents) {
+      const keyboardDidShow = (e: KeyboardEventData) => {
+        Animated.timing(translateY, {
+          duration: 250,
+          toValue: -e.height,
+          useNativeDriver: true,
+        }).start();
+      };
+
+      listeners.push(
+        KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidShow', keyboardDidShow),
+        KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidHide', keyboardDidHide),
+      );
+    } else {
+      listeners.push(Keyboard.addListener('keyboardDidShow', keyboardDidShow));
+      listeners.push(Keyboard.addListener('keyboardDidHide', keyboardDidHide));
+    }
 
     return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
+      listeners.forEach((listener) => listener.remove());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
+import { GestureResponderEvent, StyleProp, View, ViewStyle } from 'react-native';
 
 import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
 
@@ -48,6 +48,7 @@ import {
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -232,7 +233,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
     deliveredToCount,
-    dismissKeyboard,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
     enforceUniqueReaction,
@@ -299,8 +299,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     },
   } = useTheme();
 
-  const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
-    await dismissKeyboard();
+  const showMessageOverlay = (showMessageReactions = false, selectedReaction?: string) => {
+    dismissKeyboard();
     setShowMessageReactions(showMessageReactions);
     setMessageOverlayVisible(true);
     setSelectedReaction(selectedReaction);
@@ -341,7 +341,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
-      Keyboard.dismiss();
+      dismissKeyboard();
     }
     if (isEditedMessage(message)) {
       setIsEditedMessageOpen((prevState) => !prevState);
