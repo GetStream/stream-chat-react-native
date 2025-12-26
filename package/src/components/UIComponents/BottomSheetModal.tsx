@@ -1,6 +1,5 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
-  Animated,
   Keyboard,
   KeyboardEvent,
   Modal,
@@ -9,42 +8,30 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-  GestureUpdateEvent,
-  PanGestureHandlerEventPayload,
-} from 'react-native-gesture-handler';
-
-import { runOnJS } from 'react-native-reanimated';
-
-import { PortalHost } from 'react-native-teleport';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  FadeIn,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStableCallback } from '../../hooks';
 
 export type BottomSheetModalProps = {
-  /**
-   * Function to call when the modal is closed.
-   * @returns void
-   */
   onClose: () => void;
-  /**
-   * Whether the modal is visible.
-   */
   visible: boolean;
-  /**
-   * The height of the modal.
-   */
   height?: number;
 };
 
-/**
- * A modal that slides up from the bottom of the screen.
- */
 export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
   const { height: windowHeight, width: windowWidth } = useWindowDimensions();
   const { children, height = windowHeight / 2, onClose, visible } = props;
+
   const {
     theme: {
       bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme, wrapper },
@@ -52,96 +39,163 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     },
   } = useTheme();
 
-  const translateY = useMemo(() => new Animated.Value(height), [height]);
+  const translateY = useSharedValue(height);
+  const keyboardOffset = useSharedValue(0);
+  const isOpen = useSharedValue(false);
 
-  const openAnimation = useMemo(
-    () =>
-      Animated.timing(translateY, {
-        duration: 200,
-        toValue: 0,
-        useNativeDriver: true,
-      }),
-    [translateY],
-  );
+  const panStartY = useSharedValue(0);
 
-  const closeAnimation = Animated.timing(translateY, {
-    duration: 50,
-    toValue: height,
-    useNativeDriver: true,
+  const [renderContent, setRenderContent] = useState(false);
+
+  const close = useStableCallback(() => {
+    // close always goes fully off-screen and only then notifies JS
+    setRenderContent(false);
+
+    isOpen.value = false;
+    cancelAnimation(translateY);
+    translateY.value = withTiming(height, { duration: 200 }, (finished) => {
+      if (finished) runOnJS(onClose)();
+    });
   });
 
-  const handleDismiss = () => {
-    closeAnimation.start(() => onClose());
-  };
+  // Open animation: keep it simple (setting shared values from JS still runs on UI)
+  useLayoutEffect(() => {
+    if (!visible) return;
 
+    isOpen.value = true;
+    keyboardOffset.value = 0;
+
+    // clean up any leftover animations
+    cancelAnimation(translateY);
+    // kick animation on UI thread so JS congestion can't delay the start; only render content
+    // once the animation finishes
+    translateY.value = height;
+
+    translateY.value = withTiming(
+      keyboardOffset.value,
+      { duration: 200, easing: Easing.inOut(Easing.ease) },
+      (finished) => {
+        if (finished) runOnJS(setRenderContent)(true);
+      },
+    );
+  }, [visible, height, isOpen, keyboardOffset, translateY]);
+
+  // if `visible` gets hard changed, we force a cleanup
   useEffect(() => {
-    if (visible) {
-      openAnimation.start();
+    if (visible) return;
+
+    setRenderContent(false);
+
+    isOpen.value = false;
+    keyboardOffset.value = 0;
+
+    cancelAnimation(translateY);
+    translateY.value = height;
+  }, [visible, height, isOpen, keyboardOffset, translateY]);
+
+  const keyboardDidShow = useStableCallback((event: KeyboardEvent) => {
+    const offset = -event.endCoordinates.height;
+    keyboardOffset.value = offset;
+
+    if (isOpen.value) {
+      cancelAnimation(translateY);
+      translateY.value = withTiming(offset, {
+        duration: 250,
+        easing: Easing.inOut(Easing.ease),
+      });
     }
-  }, [visible, openAnimation]);
+  });
+
+  const keyboardDidHide = useStableCallback(() => {
+    keyboardOffset.value = 0;
+
+    if (isOpen.value) {
+      cancelAnimation(translateY);
+      translateY.value = withTiming(0, {
+        duration: 250,
+        easing: Easing.inOut(Easing.ease),
+      });
+    }
+  });
 
   useEffect(() => {
+    if (!visible) return;
+
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', keyboardDidShow);
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', keyboardDidHide);
-
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [visible, keyboardDidHide, keyboardDidShow]);
 
-  const [realVisible, setRealVisible] = useState(visible);
+  const sheetAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
-  useEffect(() => {
-    if (visible) {
-      setRealVisible(visible);
-    }
-  }, [visible]);
+  const gesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onBegin(() => {
+          cancelAnimation(translateY);
+          panStartY.value = translateY.value;
+        })
+        .onUpdate((event) => {
+          const minY = keyboardOffset.value;
+          translateY.value = Math.max(panStartY.value + event.translationY, minY);
+        })
+        .onEnd((event) => {
+          const openY = keyboardOffset.value;
+          const draggedDown = Math.max(translateY.value - openY, 0);
+          const shouldClose = event.velocityY > 500 || draggedDown > height / 2;
 
-  const keyboardDidShow = (event: KeyboardEvent) => {
-    Animated.timing(translateY, {
-      duration: 250,
-      toValue: -event.endCoordinates.height,
-      useNativeDriver: true,
-    }).start();
-  };
+          cancelAnimation(translateY);
 
-  const keyboardDidHide = () => {
-    Animated.timing(translateY, {
-      duration: 250,
-      toValue: 0,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleUpdate = (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
-    const translationY = Math.max(event.translationY, 0);
-    translateY.setValue(translationY);
-  };
-
-  const gesture = Gesture.Pan()
-    .onUpdate((event) => {
-      runOnJS(handleUpdate)(event);
-    })
-    .onEnd((event) => {
-      if (event.velocityY > 500 || event.translationY > height / 2) {
-        runOnJS(handleDismiss)();
-      } else {
-        runOnJS(openAnimation.start)();
-      }
-    });
+          if (shouldClose) {
+            isOpen.value = false;
+            translateY.value = withTiming(height, { duration: 100 }, (finished) => {
+              if (finished) runOnJS(onClose)();
+            });
+          } else {
+            isOpen.value = true;
+            translateY.value = withTiming(openY, {
+              duration: 200,
+              easing: Easing.inOut(Easing.ease),
+            });
+          }
+        }),
+    [height, isOpen, keyboardOffset, onClose, panStartY, translateY],
+  );
 
   return (
     <View style={[styles.wrapper, wrapper]}>
-      <Modal animationType={'none'} onRequestClose={onClose} transparent visible={visible}>
+      <Modal onRequestClose={onClose} transparent visible={visible}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <GestureDetector gesture={gesture}>
             <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
-              <TouchableWithoutFeedback onPress={onClose} style={{ flex: 1 }}>
+              <TouchableWithoutFeedback onPress={close}>
                 <View style={{ flex: 1 }} />
               </TouchableWithoutFeedback>
-              {/*<PortalHost name='overlay' style={StyleSheet.absoluteFillObject} />*/}
+
+              <Animated.View
+                style={[
+                  styles.container,
+                  { backgroundColor: white_snow, height },
+                  sheetAnimatedStyle,
+                  container,
+                ]}
+              >
+                <View
+                  style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }, handle]}
+                />
+                <View style={[styles.contentContainer, contentContainer]}>
+                  {renderContent ? (
+                    <Animated.View entering={FadeIn.duration(300)} style={{ flex: 1 }}>
+                      {children}
+                    </Animated.View>
+                  ) : null}
+                </View>
+              </Animated.View>
             </View>
           </GestureDetector>
         </GestureHandlerRootView>
@@ -154,10 +208,6 @@ const styles = StyleSheet.create({
   container: {
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
   },
   contentContainer: {
     flex: 1,

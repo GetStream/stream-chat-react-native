@@ -204,10 +204,14 @@ import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { UnreadMessagesNotification as UnreadMessagesNotificationDefault } from '../MessageList/UnreadMessagesNotification';
+import { emojis } from '../MessageMenu/emojis';
 import { MessageActionList as MessageActionListDefault } from '../MessageMenu/MessageActionList';
 import { MessageActionListItem as MessageActionListItemDefault } from '../MessageMenu/MessageActionListItem';
 import { MessageMenu as MessageMenuDefault } from '../MessageMenu/MessageMenu';
-import { MessageReactionPicker as MessageReactionPickerDefault } from '../MessageMenu/MessageReactionPicker';
+import {
+  MessageReactionPicker as MessageReactionPickerDefault,
+  toUnicodeScalarString,
+} from '../MessageMenu/MessageReactionPicker';
 import { MessageUserReactions as MessageUserReactionsDefault } from '../MessageMenu/MessageUserReactions';
 import { MessageUserReactionsAvatar as MessageUserReactionsAvatarDefault } from '../MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItem as MessageUserReactionsItemDefault } from '../MessageMenu/MessageUserReactionsItem';
@@ -247,6 +251,11 @@ export const reactionData: ReactionData[] = [
     Icon: WutReaction,
     type: 'wow',
   },
+  ...emojis.map((emoji) => ({
+    Icon: () => <Text style={{ fontSize: 12, padding: 2 }}>{emoji}</Text>,
+    isUnicode: true,
+    type: toUnicodeScalarString(emoji),
+  })),
 ];
 
 /**
