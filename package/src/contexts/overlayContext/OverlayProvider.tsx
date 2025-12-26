@@ -350,7 +350,7 @@ const OverlayHostLayer = () => {
     topH?.value && bottomH?.value && messageH?.value
       ? Math.max(
           screenH,
-          topH.value.h + messageH.value.h + bottomH.value.h + topInset + bottomInset + 20,
+          topH.value.h + messageH.value.h + bottomH.value.h + topInset + bottomInset,
         )
       : 0,
   );
@@ -381,13 +381,26 @@ const OverlayHostLayer = () => {
       const x = t.x;
       const y = t.y;
 
-      const rects = [bottomH, topH];
-      for (let i = 0; i < rects.length; i++) {
-        const r = rects[i]?.value;
-        if (
-          !r ||
-          (x >= r.x && x <= r.x + r.w && y >= r.y + shiftY.value && y <= r.y + r.h + shiftY.value)
-        ) {
+      const yShift = shiftY.value; // overlay shift
+      const yParent = scrollY.value; // parent content translation
+
+      const top = topH?.value;
+      if (top) {
+        // top rectangle's final screen Y
+        // base layout Y + overlay shift (shiftY) + parent scroll transform (scrollY)
+        const topY = top.y + yShift + yParent;
+        if (x >= top.x && x <= top.x + top.w && y >= topY && y <= topY + top.h) {
+          state.fail();
+          return;
+        }
+      }
+
+      const bot = bottomH?.value;
+      if (bot) {
+        // bottom rectangle's final screen Y
+        // base layout Y + overlay shift (shiftY) + parent scroll transform (scrollY)
+        const botY = bot.y + yShift + yParent;
+        if (x >= bot.x && x <= bot.x + bot.w && y >= botY && y <= botY + bot.h) {
           state.fail();
           return;
         }
