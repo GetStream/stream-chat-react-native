@@ -1,6 +1,14 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { BackHandler, Dimensions, StyleSheet, useWindowDimensions, View } from 'react-native';
+import {
+  BackHandler,
+  Dimensions,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -145,8 +153,8 @@ const DefaultState = {
   bottomH: undefined,
   closing: false,
   id: undefined,
-  topH: undefined,
   messageH: undefined,
+  topH: undefined,
 };
 
 export const openOverlay = (id: string, { messageH, topH, bottomH }: Partial<OverlayState>) =>
@@ -213,18 +221,22 @@ const OverlayHostLayer = () => {
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
 
+  // TODO: Think about this more thoroughly, this is just a patch fix for now.
+  const topInset = Platform.OS === 'ios' ? insets.top : (StatusBar.currentHeight ?? 0) * 2;
+  const bottomInset = Platform.OS === 'ios' ? insets.bottom : (StatusBar.currentHeight ?? 0) * 2;
+
   const isActive = !!id;
 
   const padding = 8;
-  const minY = insets.top + padding;
-  const maxY = screenH - insets.bottom - padding;
+  const minY = topInset + padding;
+  const maxY = screenH - bottomInset - padding;
 
   const backdrop = useSharedValue(0);
 
   useEffect(() => {
     const target = isActive && !closing ? 1 : 0;
     backdrop.value = withTiming(target, {
-      duration: target === 1 ? 160 : 140,
+      duration: 150,
     });
   }, [isActive, closing, backdrop]);
 
@@ -338,7 +350,7 @@ const OverlayHostLayer = () => {
     topH?.value && bottomH?.value && messageH?.value
       ? Math.max(
           screenH,
-          topH.value.h + messageH.value.h + bottomH.value.h + insets.top + insets.bottom + 20,
+          topH.value.h + messageH.value.h + bottomH.value.h + topInset + bottomInset + 20,
         )
       : 0,
   );
@@ -407,17 +419,7 @@ const OverlayHostLayer = () => {
           <Animated.View pointerEvents='box-none' style={[hostStyle, hostTranslateStyle]}>
             <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
-          <Animated.View
-            style={[
-              isActive
-                ? {
-                    position: 'absolute',
-                  }
-                : null,
-              bottomItemStyle,
-              bottomItemTranslateStyle,
-            ]}
-          >
+          <Animated.View style={[bottomItemStyle, bottomItemTranslateStyle]}>
             <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
         </Animated.View>

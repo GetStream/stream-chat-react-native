@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  findNodeHandle,
   GestureResponderEvent,
   Keyboard,
   StyleProp,
-  UIManager,
   useWindowDimensions,
   View,
   ViewStyle,
@@ -74,13 +72,14 @@ export type TouchableEmitter =
 
 export type TextMentionTouchableHandlerAdditionalInfo = { user?: UserResponse };
 
-// TODO: Take care of forwards compatibility with new measuring API (0.81+)
-const measureInWindow = (node: any): Promise<{ x: number; y: number; w: number; h: number }> => {
+const measureInWindow = (
+  node: React.RefObject<View | null>,
+): Promise<{ x: number; y: number; w: number; h: number }> => {
   return new Promise((resolve, reject) => {
-    const handle = findNodeHandle(node);
+    const handle = node.current;
     if (!handle) return reject(new Error('No native handle'));
 
-    UIManager.measureInWindow(handle, (x, y, w, h) => resolve({ h, w, x, y }));
+    handle.measureInWindow((x, y, w, h) => resolve({ h, w, x, y }));
   });
 };
 
@@ -351,7 +350,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const showMessageOverlay = async (showMessageReactions = false) => {
     await dismissKeyboard();
     try {
-      const layout = await measureInWindow(messageWrapperRef.current);
+      const layout = await measureInWindow(messageWrapperRef);
       setRect(layout);
       setShowMessageReactions(showMessageReactions);
       messageH.value = layout;
@@ -694,9 +693,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   };
 
   const frozenMessage = useRef(message);
-  const { active, closing } = useIsOverlayActive(message.id);
-
-  console.log('MSGID: ', message.id);
+  const { active: overlayActive } = useIsOverlayActive(message.id);
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
@@ -717,7 +714,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     members,
-    message: active ? frozenMessage.current : message,
+    message: overlayActive ? frozenMessage.current : message,
     messageContentOrder,
     myMessageTheme: messagesContext.myMessageTheme,
     onLongPress: (payload) => {
@@ -781,7 +778,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
         }
       : null,
     otherAttachments: attachments.other,
-    preventPress: active ? true : preventPress,
+    preventPress: overlayActive ? true : preventPress,
     reactions,
     readBy,
     setIsEditedMessageOpen,
@@ -793,20 +790,20 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     videos: attachments.videos,
   });
 
-  const prevActive = useRef<boolean>(active);
+  const prevActive = useRef<boolean>(overlayActive);
 
   useEffect(() => {
-    if (!active && prevActive.current && setNativeScrollability) {
+    if (!overlayActive && prevActive.current && setNativeScrollability) {
       setNativeScrollability(true);
     }
-    prevActive.current = active;
-  }, [setNativeScrollability, active]);
+    prevActive.current = overlayActive;
+  }, [setNativeScrollability, overlayActive]);
 
   useEffect(() => {
-    if (!active) {
+    if (!overlayActive) {
       frozenMessage.current = message;
     }
-  }, [active, message]);
+  }, [overlayActive, message]);
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
@@ -839,17 +836,16 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           ]}
           testID='message-wrapper'
         >
-          {active && rect ? (
+          {overlayActive && rect ? (
             <View
               style={{
                 height: rect.h,
                 width: rect.w,
               }}
             />
-          ) : // <MessageSimple />
-          null}
-          <Portal hostName={active && !closing ? 'top-item' : undefined}>
-            {active && !closing && rect ? (
+          ) : null}
+          <Portal hostName={overlayActive ? 'top-item' : undefined}>
+            {overlayActive && rect ? (
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
@@ -871,13 +867,13 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             ) : null}
           </Portal>
           <Portal
-            hostName={active ? 'message-overlay' : undefined}
-            style={active && rect ? { width: rect.w } : undefined}
+            hostName={overlayActive ? 'message-overlay' : undefined}
+            style={overlayActive && rect ? { width: rect.w } : undefined}
           >
             <MessageSimple ref={messageWrapperRef} />
           </Portal>
-          <Portal hostName={active && !closing ? 'bottom-item' : undefined}>
-            {active && !closing && rect ? (
+          <Portal hostName={overlayActive ? 'bottom-item' : undefined}>
+            {overlayActive && rect ? (
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;

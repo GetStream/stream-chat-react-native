@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 import { ReactionSortBase } from 'stream-chat';
 
 import { useFetchReactions } from './hooks/useFetchReactions';
-import { ReactionButton } from './ReactionButton';
 
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
@@ -15,7 +14,6 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Reaction } from '../../types/types';
-import { ReactionData } from '../../utils/utils';
 
 export type MessageUserReactionsProps = Partial<
   Pick<
@@ -39,21 +37,6 @@ const sort: ReactionSortBase = {
   created_at: -1,
 };
 
-export type ReactionSelectorItemType = ReactionData & {
-  onSelectReaction: (type: string) => void;
-  selectedReaction?: string;
-};
-
-const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSelectorItemType }) => (
-  <ReactionButton
-    Icon={item.Icon}
-    key={`${item.type}_${index}`}
-    onPress={item.onSelectReaction}
-    selected={item.selectedReaction === item.type}
-    type={item.type}
-  />
-);
-
 const keyExtractor = (item: Reaction) => item.id;
 
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
@@ -62,14 +45,8 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
     MessageUserReactionsItem: propMessageUserReactionsItem,
     reactions: propReactions,
-    selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
-    reactionFilterEnabled = false,
   } = props;
-  const reactionTypes = Object.keys(message?.reaction_groups ?? {});
-  const [selectedReaction, setSelectedReaction] = React.useState<string | undefined>(
-    propSelectedReaction ?? (reactionFilterEnabled ? reactionTypes[0] : undefined),
-  );
   const {
     MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
     MessageUserReactionsItem: contextMessageUserReactionsItem,
@@ -80,37 +57,13 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
   const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
 
-  const onSelectReaction = (reactionType: string) => {
-    setSelectedReaction(reactionType);
-  };
-
-  useEffect(() => {
-    if (selectedReaction && reactionTypes.length > 0 && !reactionTypes.includes(selectedReaction)) {
-      setSelectedReaction(reactionTypes[0]);
-    }
-  }, [reactionTypes, selectedReaction]);
-
-  const messageReactions = useMemo(
-    () =>
-      reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
-        const reactionData = supportedReactions?.find(
-          (supportedReaction) => supportedReaction.type === reaction,
-        );
-        if (reactionData) {
-          acc.push(reactionData);
-        }
-        return acc;
-      }, []),
-    [reactionTypes, supportedReactions],
-  );
-
   const {
     loading,
     loadNextPage,
     reactions: fetchedReactions,
   } = useFetchReactions({
     message,
-    reactionType: selectedReaction,
+    reactionType: undefined,
     sort,
   });
 
@@ -118,14 +71,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     theme: {
       colors: { white },
       messageMenu: {
-        userReactions: {
-          container,
-          contentContainer,
-          flatlistColumnContainer,
-          flatlistContainer,
-          reactionSelectorContainer,
-          reactionsText,
-        },
+        userReactions: { container, flatlistColumnContainer, flatlistContainer, reactionsText },
       },
     },
   } = useTheme();
@@ -154,46 +100,26 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
   );
 
-  const selectorReactions: ReactionSelectorItemType[] = messageReactions.map((reaction) => ({
-    ...reaction,
-    onSelectReaction,
-    selectedReaction,
-  }));
-
-  return (
+  return !loading ? (
     <View
       accessibilityLabel='User Reactions on long press message'
       style={[styles.container, { backgroundColor: white }, container]}
     >
-      {reactionFilterEnabled ? (
-        <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
-          <FlatList
-            contentContainerStyle={[styles.contentContainer, contentContainer]}
-            data={selectorReactions}
-            horizontal
-            keyExtractor={(item) => item.type}
-            renderItem={renderSelectorItem}
-          />
-        </View>
-      ) : null}
-
-      {!loading ? (
-        <>
-          <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>
-          <FlatList
-            accessibilityLabel='reaction-flat-list'
-            columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
-            contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
-            data={reactions}
-            keyExtractor={keyExtractor}
-            numColumns={4}
-            onEndReached={loadNextPage}
-            renderItem={renderItem}
-          />
-        </>
-      ) : null}
+      <>
+        <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>
+        <FlatList
+          accessibilityLabel='reaction-flat-list'
+          columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
+          contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
+          data={reactions}
+          keyExtractor={keyExtractor}
+          numColumns={4}
+          onEndReached={loadNextPage}
+          renderItem={renderItem}
+        />
+      </>
     </View>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({
@@ -201,6 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginTop: 16,
     maxHeight: 256,
+    width: Dimensions.get('window').width * 0.9,
   },
   contentContainer: {
     flexGrow: 1,
@@ -222,6 +149,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginVertical: 16,
+    paddingHorizontal: 8,
     textAlign: 'center',
   },
 });
