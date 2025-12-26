@@ -29,14 +29,9 @@ export const ReactionButton = (props: ReactionButtonProps) => {
   const { Icon, onPress, selected, type } = props;
   const {
     theme: {
-      colors: { light_blue, accent_blue, white, grey },
+      colors: { accent_blue, grey },
       messageMenu: {
-        reactionButton: {
-          filledBackgroundColor = light_blue,
-          filledColor = accent_blue,
-          unfilledBackgroundColor = white,
-          unfilledColor = grey,
-        },
+        reactionButton: { filledColor = accent_blue, unfilledColor = grey },
         reactionPicker: { buttonContainer, reactionIconSize },
       },
     },
@@ -54,7 +49,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
       onPress={onPressHandler}
       style={({ pressed }) => [
         styles.reactionButton,
-        { backgroundColor: pressed || selected ? filledBackgroundColor : unfilledBackgroundColor },
+        { backgroundColor: 'transparent', opacity: pressed ? 0.5 : 1 },
         buttonContainer,
       ]}
     >
@@ -72,6 +67,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     justifyContent: 'center',
-    padding: 8,
+    overflow: 'hidden',
+    paddingVertical: 8,
+    paddingHorizontal: 3,
   },
 });

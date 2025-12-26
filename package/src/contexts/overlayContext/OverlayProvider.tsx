@@ -413,13 +413,13 @@ const OverlayHostLayer = () => {
         ) : null}
 
         <Animated.View style={[contentStyle]}>
-          <Animated.View style={[topItemStyle, topItemTranslateStyle]}>
+          <Animated.View style={[topItemStyle, topItemTranslateStyle, styles.shadow3]}>
             <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
           <Animated.View pointerEvents='box-none' style={[hostStyle, hostTranslateStyle]}>
             <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
-          <Animated.View style={[bottomItemStyle, bottomItemTranslateStyle]}>
+          <Animated.View style={[bottomItemStyle, bottomItemTranslateStyle, styles.shadow3]}>
             <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
         </Animated.View>
@@ -427,4 +427,23 @@ const OverlayHostLayer = () => {
     </GestureDetector>
   );
 };
+
+const styles = StyleSheet.create({
+  shadow3: {
+    overflow: 'visible',
+    ...Platform.select({
+      ios: {
+        shadowColor: 'white',
+        shadowOpacity: 0.4,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+      },
+      android: {
+        elevation: 3,
+        // helps on newer Android (API 28+) to tint elevation shadow
+        shadowColor: '#000000',
+      },
+    }),
+  },
+});
 type Rect = { x: number; y: number; w: number; h: number } | undefined;

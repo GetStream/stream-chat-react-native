@@ -56,9 +56,15 @@ export const MessageActionList = (props: MessageActionListProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: { marginTop: 16 },
+  container: {
+    borderRadius: 16,
+    marginTop: 6,
+  },
   contentContainer: {
+    borderRadius: 16,
     flexGrow: 1,
-    paddingHorizontal: 16,
+    minWidth: 250,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
   },
 });

@@ -52,6 +52,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
   const {
     theme: {
+      colors: { white },
       messageMenu: {
         reactionPicker: { container, contentContainer },
       },
@@ -86,7 +87,11 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
       style={[styles.container, container]}
     >
       <FlatList
-        contentContainerStyle={[styles.contentContainer, contentContainer]}
+        contentContainerStyle={[
+          styles.contentContainer,
+          { backgroundColor: white },
+          contentContainer,
+        ]}
         data={reactions}
         horizontal
         keyExtractor={(item) => item.type}
@@ -101,8 +106,10 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   contentContainer: {
+    borderRadius: 20,
     flexGrow: 1,
     justifyContent: 'space-around',
     marginVertical: 8,
+    paddingHorizontal: 5,
   },
 });
