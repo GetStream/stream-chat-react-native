@@ -4,6 +4,7 @@ import {
   BackHandler,
   Dimensions,
   Platform,
+  Pressable,
   StatusBar,
   StyleSheet,
   useWindowDimensions,
@@ -425,11 +426,14 @@ const OverlayHostLayer = () => {
           />
         ) : null}
 
-        <Animated.View style={[contentStyle]}>
+        <Animated.View style={contentStyle}>
+          {isActive ? (
+            <Pressable onPress={closeOverlay} style={StyleSheet.absoluteFillObject} />
+          ) : null}
           <Animated.View style={[topItemStyle, topItemTranslateStyle, styles.shadow3]}>
             <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
-          <Animated.View pointerEvents='box-none' style={[hostStyle, hostTranslateStyle]}>
+          <Animated.View style={[hostStyle, hostTranslateStyle]}>
             <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
           <Animated.View style={[bottomItemStyle, bottomItemTranslateStyle, styles.shadow3]}>

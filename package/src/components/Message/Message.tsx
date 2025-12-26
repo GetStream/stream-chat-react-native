@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   GestureResponderEvent,
   Keyboard,
+  StatusBar,
   StyleProp,
   useWindowDimensions,
   View,
@@ -79,7 +80,9 @@ const measureInWindow = (
     const handle = node.current;
     if (!handle) return reject(new Error('No native handle'));
 
-    handle.measureInWindow((x, y, w, h) => resolve({ h, w, x, y }));
+    handle.measureInWindow((x, y, w, h) =>
+      resolve({ h, w, x, y: y + (StatusBar.currentHeight ?? 0) }),
+    );
   });
 };
 
