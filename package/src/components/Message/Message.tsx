@@ -22,7 +22,6 @@ import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
-import { closeOverlay, openOverlay, useIsOverlayActive } from '../../contexts';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -51,6 +50,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
+import { closeOverlay, openOverlay, useIsOverlayActive } from '../../state-store';
 import { FileTypes } from '../../types/types';
 import {
   checkMessageEquality,
@@ -847,6 +847,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
               }}
             />
           ) : null}
+          {/*TODO: V9: Find a way to separate these in a dedicated file*/}
           <Portal hostName={overlayActive ? 'top-item' : undefined}>
             {overlayActive && rect ? (
               <View
