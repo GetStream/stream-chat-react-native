@@ -316,6 +316,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
+  const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
 
   const stickyHeaderDateRef = useRef<Date | undefined>(undefined);
   /**
@@ -717,6 +718,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [],
   );
 
+  const setNativeScrollability = useStableCallback((value: boolean) => {
+    // FlashList does not have setNativeProps exposed, hence we cannot use that.
+    // Instead, we resort to state.
+    setScrollEnabled(value);
+  });
+
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
@@ -724,6 +731,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
+      setNativeScrollability,
     }),
     [
       goToMessage,
@@ -731,6 +739,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
+      setNativeScrollability,
     ],
   );
 
@@ -1083,6 +1092,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             onViewableItemsChanged={stableOnViewableItemsChanged}
             ref={refCallback}
             renderItem={renderItem}
+            scrollEnabled={scrollEnabled}
             scrollEventThrottle={isLiveStreaming ? 16 : undefined}
             showsVerticalScrollIndicator={false}
             style={flatListStyle}

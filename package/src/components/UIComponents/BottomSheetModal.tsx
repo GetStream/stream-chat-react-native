@@ -9,13 +9,8 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-  GestureUpdateEvent,
-  PanGestureHandlerEventPayload,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import type { KeyboardEventData } from 'react-native-keyboard-controller';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -26,11 +21,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import type { KeyboardEventData } from 'react-native-keyboard-controller';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { useStableCallback } from '../../hooks';
+import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 export type BottomSheetModalProps = {
   onClose: () => void;
