@@ -15,6 +15,7 @@ import { ValueOf } from '../types/types';
 export type ReactionData = {
   Icon: React.ComponentType<IconProps>;
   type: string;
+  isUnicode?: boolean;
 };
 
 export const FileState = Object.freeze({

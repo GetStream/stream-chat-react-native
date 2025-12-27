@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   AnimatableNumericValue,
   ColorValue,
@@ -16,6 +16,7 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
+import { useMessageListItemContext } from '../../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -121,6 +122,7 @@ export type MessageContentPropsWithContext = Pick<
  * Child of MessageSimple that displays a message's content
  */
 const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
+  const [longPressFired, setLongPressFired] = useState(false);
   const {
     additionalPressableProps,
     alignment,
@@ -239,10 +241,13 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     return bordersFromTheme;
   };
 
+  const { setNativeScrollability } = useMessageListItemContext();
+
   return (
     <Pressable
       disabled={preventPress}
       onLongPress={(event) => {
+        setLongPressFired(true);
         if (onLongPress) {
           onLongPress({
             emitter: 'messageContent',
@@ -266,8 +271,16 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           });
         }
       }}
-      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, container]}
+      style={({ pressed }) => [{ opacity: pressed && !longPressFired ? 0.5 : 1 }, container]}
       {...additionalPressableProps}
+      onPressOut={(event) => {
+        setLongPressFired(false);
+        setNativeScrollability(true);
+
+        if (additionalPressableProps?.onPressOut) {
+          additionalPressableProps.onPressOut(event);
+        }
+      }}
     >
       <View onLayout={onLayout} style={wrapper}>
         {hasThreadReplies && !threadList && !noBorder && (
@@ -373,6 +386,7 @@ const areEqual = (
   nextProps: MessageContentPropsWithContext,
 ) => {
   const {
+    preventPress: prevPreventPress,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -384,6 +398,7 @@ const areEqual = (
     t: prevT,
   } = prevProps;
   const {
+    preventPress: nextPreventPress,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isEditedMessageOpen: nextIsEditedMessageOpen,
@@ -393,6 +408,10 @@ const areEqual = (
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
+
+  if (prevPreventPress !== nextPreventPress) {
+    return false;
+  }
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;

@@ -108,7 +108,8 @@ export const MessageUserReactionsItem = ({
 
 const styles = StyleSheet.create({
   avatarContainer: {
-    marginBottom: 8,
+    marginBottom: 24,
+    marginHorizontal: 8,
   },
   avatarInnerContainer: {
     alignSelf: 'center',

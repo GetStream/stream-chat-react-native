@@ -33,6 +33,7 @@ export type MessageListItemContextValue = {
    * @param message A message object to open the thread upon.
    */
   onThreadSelect: MessageListProps['onThreadSelect'];
+  setNativeScrollability: (value: boolean) => void;
 };
 
 export const MessageListItemContext = createContext(

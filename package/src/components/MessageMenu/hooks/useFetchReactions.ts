@@ -41,9 +41,19 @@ export const useFetchReactions = ({
         if (response) {
           setNext(response.next);
 
-          setReactions((prevReactions) =>
-            next ? [...prevReactions, ...response.reactions] : response.reactions,
-          );
+          setReactions((prevReactions) => {
+            if (
+              prevReactions.length !== response.reactions.length ||
+              !prevReactions.every(
+                (r, index) =>
+                  r.user_id === response.reactions[index].user_id &&
+                  r.type === response.reactions[index].type,
+              )
+            ) {
+              return next ? [...prevReactions, ...response.reactions] : response.reactions;
+            }
+            return prevReactions;
+          });
           setLoading(false);
         }
       } catch (error) {
@@ -82,7 +92,7 @@ export const useFetchReactions = ({
       client.on('reaction.new', (event) => {
         const { reaction } = event;
 
-        if (reaction && reaction.type === reactionType) {
+        if (reaction && (reactionType ? reactionType === reaction.type : true)) {
           setReactions((prevReactions) => [reaction, ...prevReactions]);
         }
       }),
@@ -92,14 +102,11 @@ export const useFetchReactions = ({
       client.on('reaction.updated', (event) => {
         const { reaction } = event;
 
-        if (reaction) {
-          if (reaction.type === reactionType) {
-            setReactions((prevReactions) => [reaction, ...prevReactions]);
-          } else {
-            setReactions((prevReactions) =>
-              prevReactions.filter((r) => r.user_id !== reaction.user_id),
-            );
-          }
+        if (reaction && (reactionType ? reactionType === reaction.type : true)) {
+          setReactions((prevReactions) => [
+            reaction,
+            ...prevReactions.filter((r) => r.user_id !== reaction.user_id),
+          ]);
         }
       }),
     );
@@ -108,10 +115,12 @@ export const useFetchReactions = ({
       client.on('reaction.deleted', (event) => {
         const { reaction } = event;
 
-        if (reaction && reaction.type === reactionType) {
-          setReactions((prevReactions) =>
-            prevReactions.filter((r) => r.user_id !== reaction.user_id),
-          );
+        if (reaction && (reactionType ? reactionType === reaction.type : true)) {
+          setReactions((prevReactions) => {
+            return prevReactions.filter(
+              (r) => r.user_id !== reaction.user_id && r.type !== reaction.type,
+            );
+          });
         }
       }),
     );

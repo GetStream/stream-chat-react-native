@@ -4,6 +4,9 @@ import { BackHandler } from 'react-native';
 
 import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanimated';
 
+import { PortalProvider } from 'react-native-teleport';
+
+import { MessageOverlayHostLayer } from './MessageOverlayHostLayer';
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
@@ -93,18 +96,21 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
       <OverlayContext.Provider value={overlayContext}>
         <ImageGalleryProvider>
           <ThemeProvider style={overlayContext.style}>
-            {children}
-            {overlay === 'gallery' && (
-              <ImageGallery
-                autoPlayVideo={autoPlayVideo}
-                giphyVersion={giphyVersion}
-                imageGalleryCustomComponents={imageGalleryCustomComponents}
-                imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                overlayOpacity={overlayOpacity}
-              />
-            )}
+            <PortalProvider>
+              {children}
+              {overlay === 'gallery' && (
+                <ImageGallery
+                  autoPlayVideo={autoPlayVideo}
+                  giphyVersion={giphyVersion}
+                  imageGalleryCustomComponents={imageGalleryCustomComponents}
+                  imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                  imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+                  overlayOpacity={overlayOpacity}
+                />
+              )}
+              <MessageOverlayHostLayer />
+            </PortalProvider>
           </ThemeProvider>
         </ImageGalleryProvider>
       </OverlayContext.Provider>
