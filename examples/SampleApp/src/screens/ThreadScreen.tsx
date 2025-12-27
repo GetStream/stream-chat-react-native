@@ -64,7 +64,6 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 
   return (
     <ScreenHeader
-      inSafeArea
       subtitleText={typing ? typing : `with ${subtitleText}`}
       titleText='Thread Reply'
     />
@@ -116,7 +115,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   }, [setThread]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
+    <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: white }]}>
       <Channel
         audioRecordingEnabled={true}
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
@@ -130,10 +129,8 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         thread={thread}
         threadList
       >
-        <View style={styles.container}>
-          <ThreadHeader thread={thread} />
-          <Thread onThreadDismount={onThreadDismount} />
-        </View>
+        <ThreadHeader thread={thread} />
+        <Thread onThreadDismount={onThreadDismount} />
       </Channel>
     </SafeAreaView>
   );
