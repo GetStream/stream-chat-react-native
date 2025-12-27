@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   GestureResponderEvent,
-  Platform,
   StyleProp,
   useWindowDimensions,
   View,
@@ -9,7 +8,7 @@ import {
 } from 'react-native';
 
 import { useSharedValue } from 'react-native-reanimated';
-import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
 import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
@@ -20,6 +19,7 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
 import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
+import { measureInWindow } from './utils/measureInWindow';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
 import {
@@ -73,20 +73,6 @@ export type TouchableEmitter =
   | 'reactionList';
 
 export type TextMentionTouchableHandlerAdditionalInfo = { user?: UserResponse };
-
-const measureInWindow = (
-  node: React.RefObject<View | null>,
-  insets: EdgeInsets,
-): Promise<{ x: number; y: number; w: number; h: number }> => {
-  return new Promise((resolve, reject) => {
-    const handle = node.current;
-    if (!handle) return reject(new Error('No native handle'));
-
-    handle.measureInWindow((x, y, w, h) =>
-      resolve({ h, w, x, y: y + (Platform.OS === 'android' ? insets.top : 0) }),
-    );
-  });
-};
 
 export type TextMentionTouchableHandlerPayload = {
   emitter: 'textMention';

@@ -23,7 +23,11 @@ export const MessageOverlayHostLayer = () => {
   const { height: screenH } = useWindowDimensions();
 
   const topInset = insets.top;
-  const bottomInset = insets.bottom;
+  // Due to edge-to-edge in combination with various libraries, Android sometimes reports
+  // the insets to be 0. If that's the case, we use this as an escape hatch to offset the bottom
+  // of the overlay so that it doesn't collide with the navigation bar. Worst case scenario,
+  // if the navigation bar is actually 0 - we end up animating a little bit further.
+  const bottomInset = insets.bottom === 0 && Platform.OS === 'android' ? 60 : insets.bottom;
 
   const isActive = !!id;
 
