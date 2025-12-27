@@ -20,7 +20,6 @@ class MainActivity : ReactActivity() {
     if (Build.VERSION.SDK_INT >= 35) {
       val rootView = findViewById<View>(android.R.id.content)
 
-      // Keep the original padding so we can restore it when IME closes
       val initial = Insets.of(
         rootView.paddingLeft,
         rootView.paddingTop,
@@ -29,7 +28,6 @@ class MainActivity : ReactActivity() {
       )
 
       ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
-        // Only apply IME (keyboard) to avoid breaking safe-area libs or double-padding system bars.
         val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
 
         v.updatePadding(
@@ -39,11 +37,8 @@ class MainActivity : ReactActivity() {
           bottom = initial.bottom + ime.bottom
         )
 
-        // IMPORTANT: don't consume — allow insets to propagate to RN & safe-area-context
         insets
       }
-
-      // Make sure we get an initial insets dispatch
     }
   }
 
