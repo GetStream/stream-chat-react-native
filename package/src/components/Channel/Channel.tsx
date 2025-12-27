@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
@@ -150,7 +150,10 @@ import {
   LoadingErrorProps,
 } from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
-import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import {
+  KeyboardCompatibleView as KeyboardCompatibleViewDefault,
+  KeyboardCompatibleViewProps,
+} from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
@@ -338,7 +341,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'FlatList'
       | 'forceAlignMessages'
       | 'Gallery'
-      | 'getMessagesGroupStyles'
       | 'getMessageGroupStyle'
       | 'Giphy'
       | 'giphyVersion'
@@ -424,7 +426,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     /**
      * Additional props passed to keyboard avoiding view
      */
-    additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
+    additionalKeyboardAvoidingViewProps?: Partial<KeyboardCompatibleViewProps>;
     /**
      * When true, disables the KeyboardCompatibleView wrapper
      *
@@ -480,7 +482,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * When true, messageList will be scrolled at first unread message, when opened.
      */
     initialScrollToFirstUnreadMessage?: boolean;
-    keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
+    keyboardBehavior?: KeyboardCompatibleViewProps['behavior'];
     /**
      * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
      * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
@@ -500,7 +502,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * />
      * ```
      */
-    KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
+    KeyboardCompatibleView?: React.ComponentType<KeyboardCompatibleViewProps>;
     keyboardVerticalOffset?: number;
     /**
      * Custom loading error indicator to override the Stream default
@@ -635,7 +637,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
-    getMessagesGroupStyles,
     getMessageGroupStyle,
     Giphy = GiphyDefault,
     giphyVersion = 'fixed_height',
@@ -794,6 +795,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
+  // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
       channelUnreadStateStore.channelUnreadState = data;
@@ -1789,7 +1791,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    channelUnreadState: channelUnreadStateStore.channelUnreadState,
     channelUnreadStateStore,
     disabled: !!channel?.data?.frozen,
     EmptyStateIndicator,
@@ -1939,7 +1940,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     forceAlignMessages,
     Gallery,
     getMessageGroupStyle,
-    getMessagesGroupStyles,
     Giphy,
     giphyVersion,
     handleBan,

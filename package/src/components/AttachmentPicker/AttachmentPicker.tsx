@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, Keyboard, Platform, StyleSheet } from 'react-native';
+import { BackHandler, EmitterSubscription, Keyboard, Platform, StyleSheet } from 'react-native';
 
 import BottomSheetOriginal from '@gorhom/bottom-sheet';
 import type { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
@@ -19,6 +19,7 @@ import { NativeHandlers } from '../../native';
 import type { File } from '../../types/types';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
 import { BottomSheetFlatList } from '../BottomSheetCompatibility/BottomSheetFlatList';
+import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 dayjs.extend(duration);
 
@@ -185,20 +186,18 @@ export const AttachmentPicker = React.forwardRef(
         }
         closePicker();
       };
-      const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-      const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
-
+      let keyboardSubscription: EmitterSubscription | null = null;
+      if (KeyboardControllerPackage?.KeyboardEvents) {
+        keyboardSubscription = KeyboardControllerPackage.KeyboardEvents.addListener(
+          'keyboardWillShow',
+          onKeyboardOpenHandler,
+        );
+      } else {
+        const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+        keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
+      }
       return () => {
-        // Following if-else condition to avoid deprecated warning coming RN 0.65
-        if (keyboardSubscription?.remove) {
-          keyboardSubscription.remove();
-          return;
-        }
-        // @ts-ignore
-        else if (Keyboard.removeListener) {
-          // @ts-ignore
-          Keyboard.removeListener(keyboardShowEvent, onKeyboardOpenHandler);
-        }
+        keyboardSubscription?.remove();
       };
     }, [closePicker, selectedPicker, setSelectedPicker]);
 

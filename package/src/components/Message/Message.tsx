@@ -61,6 +61,7 @@ import {
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -264,7 +265,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
     deliveredToCount,
-    dismissKeyboard,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
     enforceUniqueReaction,
@@ -351,7 +351,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const { width: screenW } = useWindowDimensions();
 
   const showMessageOverlay = async (showMessageReactions = false) => {
-    await dismissKeyboard();
+    dismissKeyboard();
     try {
       const layout = await measureInWindow(messageWrapperRef);
       setRect(layout);
@@ -400,7 +400,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
-      Keyboard.dismiss();
+      dismissKeyboard();
     }
     if (isEditedMessage(message)) {
       setIsEditedMessageOpen((prevState) => !prevState);

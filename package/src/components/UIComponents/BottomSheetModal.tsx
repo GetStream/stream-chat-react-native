@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
+  EventSubscription,
   Keyboard,
   KeyboardEvent,
   Modal,
@@ -8,7 +9,13 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+  GestureUpdateEvent,
+  PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -19,7 +26,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import type { KeyboardEventData } from 'react-native-keyboard-controller';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { useStableCallback } from '../../hooks';
 
 export type BottomSheetModalProps = {
@@ -121,11 +131,32 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   useEffect(() => {
     if (!visible) return;
 
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', keyboardDidShow);
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    const listeners: EventSubscription[] = [];
+
+    if (KeyboardControllerPackage?.KeyboardEvents) {
+      const keyboardDidShow = (event: KeyboardEventData) => {
+        const offset = -event.height;
+        keyboardOffset.value = offset;
+
+        if (isOpen.value) {
+          cancelAnimation(translateY);
+          translateY.value = withTiming(offset, {
+            duration: 250,
+            easing: Easing.inOut(Easing.ease),
+          });
+        }
+      };
+
+      listeners.push(
+        KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidShow', keyboardDidShow),
+        KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidHide', keyboardDidHide),
+      );
+    } else {
+      listeners.push(Keyboard.addListener('keyboardDidShow', keyboardDidShow));
+      listeners.push(Keyboard.addListener('keyboardDidHide', keyboardDidHide));
+    }
     return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
+      listeners.forEach((listener) => listener.remove());
     };
   }, [visible, keyboardDidHide, keyboardDidShow]);
 

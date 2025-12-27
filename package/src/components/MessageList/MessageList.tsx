@@ -127,7 +127,6 @@ type MessageListPropsWithContext = Pick<
   Pick<
     ChannelContextValue,
     | 'channel'
-    | 'channelUnreadState'
     | 'channelUnreadStateStore'
     | 'disabled'
     | 'EmptyStateIndicator'
@@ -327,7 +326,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     viewabilityChangedCallback,
   } = useMessageList({
     isLiveStreaming,
-    noGroupByUser,
     threadList,
   });
   const messageListLengthBeforeUpdate = useRef(0);
@@ -1222,7 +1220,6 @@ export const MessageList = (props: MessageListProps) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
     channel,
-    channelUnreadState,
     channelUnreadStateStore,
     disabled,
     EmptyStateIndicator,
@@ -1271,7 +1268,6 @@ export const MessageList = (props: MessageListProps) => {
     <MessageListWithContext
       {...{
         channel,
-        channelUnreadState,
         channelUnreadStateStore,
         client,
         closePicker,
