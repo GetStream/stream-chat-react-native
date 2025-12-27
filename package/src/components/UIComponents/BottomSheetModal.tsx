@@ -47,6 +47,7 @@ export type BottomSheetModalProps = {
   lazy?: boolean;
 };
 
+// TODO: V9: Animate the backdrop as well.
 export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
   const { height: windowHeight, width: windowWidth } = useWindowDimensions();
   const { children, height = windowHeight / 2, onClose, visible, lazy = false } = props;
