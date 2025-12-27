@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
@@ -37,15 +39,16 @@ describe('Message', () => {
 
     renderMessage = (options) =>
       render(
-        <OverlayProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} {...options} />
-              <MessageInput />
-            </Channel>
-          </Chat>
-          ,
-        </OverlayProvider>,
+        <SafeAreaProvider>
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <Channel channel={channel}>
+                <Message groupStyles={['bottom']} {...options} />
+                <MessageInput />
+              </Channel>
+            </Chat>
+          </OverlayProvider>
+        </SafeAreaProvider>,
       );
   });
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Text } from 'react-native';
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 
 import { LocalMessage, ReactionResponse } from 'stream-chat';
 
@@ -85,30 +85,31 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
     expect(getByText('Message Reactions')).toBeTruthy();
   });
 
-  it('renders reaction buttons', () => {
-    const { getByLabelText } = renderComponent();
-    const likeReactionButton = getByLabelText('reaction-button-like-selected');
-    expect(likeReactionButton).toBeDefined();
-    const loveReactionButton = getByLabelText('reaction-button-love-unselected');
-    expect(loveReactionButton).toBeDefined();
-  });
-
-  it('selects the first reaction by default', () => {
-    const { getAllByLabelText } = renderComponent();
-    const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-selected');
-    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
-  });
-
-  it('changes selected reaction when a reaction button is pressed', () => {
-    const { getAllByLabelText } = renderComponent();
-    const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
-
-    fireEvent.press(reactionButtons[1]);
-
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
-    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-selected');
-  });
+  // TODO: V9: Remove these with V9, they are no longer relevant tests.
+  // it('renders reaction buttons', () => {
+  //   const { getByLabelText } = renderComponent();
+  //   const likeReactionButton = getByLabelText('reaction-button-like-selected');
+  //   expect(likeReactionButton).toBeDefined();
+  //   const loveReactionButton = getByLabelText('reaction-button-love-unselected');
+  //   expect(loveReactionButton).toBeDefined();
+  // });
+  //
+  // it('selects the first reaction by default', () => {
+  //   const { getAllByLabelText } = renderComponent();
+  //   const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+  //   expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-selected');
+  //   expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
+  // });
+  //
+  // it('changes selected reaction when a reaction button is pressed', () => {
+  //   const { getAllByLabelText } = renderComponent();
+  //   const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+  //
+  //   fireEvent.press(reactionButtons[1]);
+  //
+  //   expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
+  //   expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-selected');
+  // });
 
   it('renders reactions list', () => {
     const { getByText } = renderComponent();

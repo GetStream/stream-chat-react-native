@@ -1,103 +1,89 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`SendButton should render a SendButton 1`] = `
-<View
-  keyboardVerticalOffset={86.5}
-  onLayout={[Function]}
-  style={
-    {
-      "paddingBottom": 0,
-    }
-  }
->
+<View>
   <View
+    keyboardVerticalOffset={86.5}
+    onLayout={[Function]}
     style={
       {
-        "height": "100%",
+        "paddingBottom": 0,
       }
     }
   >
     <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": false,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
-      collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
       style={
-        [
-          {},
-        ]
+        {
+          "height": "100%",
+        }
       }
-      testID="send-button"
     >
-      <RNSVGSvgView
-        align="xMidYMid"
-        bbHeight={32}
-        bbWidth={32}
-        fill="#005FFF"
-        focusable={false}
-        height={32}
-        meetOrSlice={0}
-        minX={0}
-        minY={0}
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
           [
-            {
-              "backgroundColor": "transparent",
-              "borderWidth": 0,
-            },
-            {
-              "flex": 0,
-              "height": 32,
-              "width": 32,
-            },
+            {},
           ]
         }
-        testID="send-up"
-        vbHeight={32}
-        vbWidth={32}
-        width={32}
+        testID="send-button"
       >
-        <RNSVGGroup
-          fill={
-            {
-              "payload": 4278214655,
-              "type": 0,
-            }
-          }
-          propList={
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={32}
+          bbWidth={32}
+          fill="#005FFF"
+          focusable={false}
+          height={32}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          style={
             [
-              "fill",
+              {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              {
+                "flex": 0,
+                "height": 32,
+                "width": 32,
+              },
             ]
           }
+          testID="send-up"
+          vbHeight={32}
+          vbWidth={32}
+          width={32}
         >
-          <RNSVGCircle
-            cx={16}
-            cy={16}
+          <RNSVGGroup
             fill={
               {
                 "payload": 4278214655,
@@ -109,173 +95,320 @@ exports[`SendButton should render a SendButton 1`] = `
                 "fill",
               ]
             }
-            r={16}
-          />
-          <RNSVGPath
-            clipRule={0}
-            d="M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z"
-            fill={
-              {
-                "payload": 4294967295,
-                "type": 0,
+          >
+            <RNSVGCircle
+              cx={16}
+              cy={16}
+              fill={
+                {
+                  "payload": 4278214655,
+                  "type": 0,
+                }
               }
-            }
-            fillRule={0}
-            propList={
-              [
-                "fill",
-                "fillRule",
-              ]
-            }
-          />
-        </RNSVGGroup>
-      </RNSVGSvgView>
+              propList={
+                [
+                  "fill",
+                ]
+              }
+              r={16}
+            />
+            <RNSVGPath
+              clipRule={0}
+              d="M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z"
+              fill={
+                {
+                  "payload": 4294967295,
+                  "type": 0,
+                }
+              }
+              fillRule={0}
+              propList={
+                [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+    <View
+      enablePanDownToClose={true}
+      handleComponent={[Function]}
+      handleHeight={20}
+      index={-1}
+      onChange={[Function]}
+      snapPoints={
+        [
+          600.3000000000001,
+          1334,
+        ]
+      }
+    >
+      <RCTScrollView
+        contentContainerStyle={
+          {
+            "backgroundColor": "#FFFFFF",
+            "flexGrow": 1,
+            "opacity": 1,
+          }
+        }
+        data={[]}
+        getItem={[Function]}
+        getItemCount={[Function]}
+        keyExtractor={[Function]}
+        onContentSizeChange={[Function]}
+        onEndReached={[Function]}
+        onLayout={[Function]}
+        onMomentumScrollBegin={[Function]}
+        onMomentumScrollEnd={[Function]}
+        onScroll={[Function]}
+        onScrollBeginDrag={[Function]}
+        onScrollEndDrag={[Function]}
+        removeClippedSubviews={false}
+        renderItem={[Function]}
+        scrollEventThrottle={0.0001}
+        stickyHeaderIndices={[]}
+        testID="attachment-picker-list"
+        viewabilityConfigCallbackPairs={[]}
+      >
+        <View />
+      </RCTScrollView>
     </View>
   </View>
   <View
-    enablePanDownToClose={true}
-    handleComponent={[Function]}
-    handleHeight={20}
-    index={-1}
-    onChange={[Function]}
-    snapPoints={
-      [
-        600.3000000000001,
-        1334,
-      ]
+    collapsable={false}
+    pointerEvents="box-none"
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
     }
   >
-    <RCTScrollView
-      contentContainerStyle={
-        {
-          "backgroundColor": "#FFFFFF",
-          "flexGrow": 1,
-          "opacity": 1,
-        }
+    <View
+      style={
+        [
+          {
+            "height": 0,
+          },
+          {
+            "transform": [
+              {
+                "translateY": 0,
+              },
+            ],
+          },
+        ]
       }
-      data={[]}
-      getItem={[Function]}
-      getItemCount={[Function]}
-      keyExtractor={[Function]}
-      onContentSizeChange={[Function]}
-      onEndReached={[Function]}
-      onLayout={[Function]}
-      onMomentumScrollBegin={[Function]}
-      onMomentumScrollEnd={[Function]}
-      onScroll={[Function]}
-      onScrollBeginDrag={[Function]}
-      onScrollEndDrag={[Function]}
-      removeClippedSubviews={false}
-      renderItem={[Function]}
-      scrollEventThrottle={0.0001}
-      stickyHeaderIndices={[]}
-      testID="attachment-picker-list"
-      viewabilityConfigCallbackPairs={[]}
     >
-      <View />
-    </RCTScrollView>
+      <View
+        style={
+          [
+            {
+              "height": 0,
+            },
+            {
+              "transform": [
+                {
+                  "scale": 0,
+                },
+                {
+                  "translateY": 0,
+                },
+              ],
+            },
+            {
+              "overflow": "visible",
+              "shadowColor": "white",
+              "shadowOffset": {
+                "height": 4,
+                "width": 0,
+              },
+              "shadowOpacity": 0.4,
+              "shadowRadius": 10,
+            },
+          ]
+        }
+      >
+        <View
+          name="top-item"
+          style={
+            {
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            }
+          }
+        />
+      </View>
+      <View
+        pointerEvents="box-none"
+        style={
+          [
+            {
+              "height": 0,
+            },
+            {
+              "transform": [
+                {
+                  "translateY": 0,
+                },
+              ],
+            },
+          ]
+        }
+      >
+        <View
+          name="message-overlay"
+          style={
+            {
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            }
+          }
+        />
+      </View>
+      <View
+        style={
+          [
+            {
+              "height": 0,
+            },
+            {
+              "transform": [
+                {
+                  "scale": 0,
+                },
+                {
+                  "translateY": 0,
+                },
+              ],
+            },
+            {
+              "overflow": "visible",
+              "shadowColor": "white",
+              "shadowOffset": {
+                "height": 4,
+                "width": 0,
+              },
+              "shadowOpacity": 0.4,
+              "shadowRadius": 10,
+            },
+          ]
+        }
+      >
+        <View
+          name="bottom-item"
+          style={
+            {
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            }
+          }
+        />
+      </View>
+    </View>
   </View>
 </View>
 `;
 
 exports[`SendButton should render a disabled SendButton 1`] = `
-<View
-  keyboardVerticalOffset={86.5}
-  onLayout={[Function]}
-  style={
-    {
-      "paddingBottom": 0,
-    }
-  }
->
+<View>
   <View
+    keyboardVerticalOffset={86.5}
+    onLayout={[Function]}
     style={
       {
-        "height": "100%",
+        "paddingBottom": 0,
       }
     }
   >
     <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": true,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
-      collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
       style={
-        [
-          {},
-        ]
+        {
+          "height": "100%",
+        }
       }
-      testID="send-button"
     >
-      <RNSVGSvgView
-        align="xMidYMid"
-        bbHeight={32}
-        bbWidth={32}
-        fill="#DBDBDB"
-        focusable={false}
-        height={32}
-        meetOrSlice={0}
-        minX={0}
-        minY={0}
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": true,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
           [
-            {
-              "backgroundColor": "transparent",
-              "borderWidth": 0,
-            },
-            {
-              "flex": 0,
-              "height": 32,
-              "width": 32,
-            },
+            {},
           ]
         }
-        testID="send-right"
-        vbHeight={32}
-        vbWidth={32}
-        width={32}
+        testID="send-button"
       >
-        <RNSVGGroup
-          fill={
-            {
-              "payload": 4292598747,
-              "type": 0,
-            }
-          }
-          propList={
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={32}
+          bbWidth={32}
+          fill="#DBDBDB"
+          focusable={false}
+          height={32}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          style={
             [
-              "fill",
+              {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              {
+                "flex": 0,
+                "height": 32,
+                "width": 32,
+              },
             ]
           }
+          testID="send-right"
+          vbHeight={32}
+          vbWidth={32}
+          width={32}
         >
-          <RNSVGCircle
-            cx={16}
-            cy={16}
+          <RNSVGGroup
             fill={
               {
                 "payload": 4292598747,
@@ -287,71 +420,232 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                 "fill",
               ]
             }
-            r={16}
-          />
-          <RNSVGPath
-            clipRule={0}
-            d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
-            fill={
-              {
-                "payload": 4294967295,
-                "type": 0,
+          >
+            <RNSVGCircle
+              cx={16}
+              cy={16}
+              fill={
+                {
+                  "payload": 4292598747,
+                  "type": 0,
+                }
               }
-            }
-            fillRule={0}
-            propList={
-              [
-                "fill",
-                "fillRule",
-              ]
-            }
-          />
-        </RNSVGGroup>
-      </RNSVGSvgView>
+              propList={
+                [
+                  "fill",
+                ]
+              }
+              r={16}
+            />
+            <RNSVGPath
+              clipRule={0}
+              d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
+              fill={
+                {
+                  "payload": 4294967295,
+                  "type": 0,
+                }
+              }
+              fillRule={0}
+              propList={
+                [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+    <View
+      enablePanDownToClose={true}
+      handleComponent={[Function]}
+      handleHeight={20}
+      index={-1}
+      onChange={[Function]}
+      snapPoints={
+        [
+          600.3000000000001,
+          1334,
+        ]
+      }
+    >
+      <RCTScrollView
+        contentContainerStyle={
+          {
+            "backgroundColor": "#FFFFFF",
+            "flexGrow": 1,
+            "opacity": 1,
+          }
+        }
+        data={[]}
+        getItem={[Function]}
+        getItemCount={[Function]}
+        keyExtractor={[Function]}
+        onContentSizeChange={[Function]}
+        onEndReached={[Function]}
+        onLayout={[Function]}
+        onMomentumScrollBegin={[Function]}
+        onMomentumScrollEnd={[Function]}
+        onScroll={[Function]}
+        onScrollBeginDrag={[Function]}
+        onScrollEndDrag={[Function]}
+        removeClippedSubviews={false}
+        renderItem={[Function]}
+        scrollEventThrottle={0.0001}
+        stickyHeaderIndices={[]}
+        testID="attachment-picker-list"
+        viewabilityConfigCallbackPairs={[]}
+      >
+        <View />
+      </RCTScrollView>
     </View>
   </View>
   <View
-    enablePanDownToClose={true}
-    handleComponent={[Function]}
-    handleHeight={20}
-    index={-1}
-    onChange={[Function]}
-    snapPoints={
-      [
-        600.3000000000001,
-        1334,
-      ]
+    collapsable={false}
+    pointerEvents="box-none"
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
     }
   >
-    <RCTScrollView
-      contentContainerStyle={
-        {
-          "backgroundColor": "#FFFFFF",
-          "flexGrow": 1,
-          "opacity": 1,
-        }
+    <View
+      style={
+        [
+          {
+            "height": 0,
+          },
+          {
+            "transform": [
+              {
+                "translateY": 0,
+              },
+            ],
+          },
+        ]
       }
-      data={[]}
-      getItem={[Function]}
-      getItemCount={[Function]}
-      keyExtractor={[Function]}
-      onContentSizeChange={[Function]}
-      onEndReached={[Function]}
-      onLayout={[Function]}
-      onMomentumScrollBegin={[Function]}
-      onMomentumScrollEnd={[Function]}
-      onScroll={[Function]}
-      onScrollBeginDrag={[Function]}
-      onScrollEndDrag={[Function]}
-      removeClippedSubviews={false}
-      renderItem={[Function]}
-      scrollEventThrottle={0.0001}
-      stickyHeaderIndices={[]}
-      testID="attachment-picker-list"
-      viewabilityConfigCallbackPairs={[]}
     >
-      <View />
-    </RCTScrollView>
+      <View
+        style={
+          [
+            {
+              "height": 0,
+            },
+            {
+              "transform": [
+                {
+                  "scale": 0,
+                },
+                {
+                  "translateY": 0,
+                },
+              ],
+            },
+            {
+              "overflow": "visible",
+              "shadowColor": "white",
+              "shadowOffset": {
+                "height": 4,
+                "width": 0,
+              },
+              "shadowOpacity": 0.4,
+              "shadowRadius": 10,
+            },
+          ]
+        }
+      >
+        <View
+          name="top-item"
+          style={
+            {
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            }
+          }
+        />
+      </View>
+      <View
+        pointerEvents="box-none"
+        style={
+          [
+            {
+              "height": 0,
+            },
+            {
+              "transform": [
+                {
+                  "translateY": 0,
+                },
+              ],
+            },
+          ]
+        }
+      >
+        <View
+          name="message-overlay"
+          style={
+            {
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            }
+          }
+        />
+      </View>
+      <View
+        style={
+          [
+            {
+              "height": 0,
+            },
+            {
+              "transform": [
+                {
+                  "scale": 0,
+                },
+                {
+                  "translateY": 0,
+                },
+              ],
+            },
+            {
+              "overflow": "visible",
+              "shadowColor": "white",
+              "shadowOffset": {
+                "height": 4,
+                "width": 0,
+              },
+              "shadowOpacity": 0.4,
+              "shadowRadius": 10,
+            },
+          ]
+        }
+      >
+        <View
+          name="bottom-item"
+          style={
+            {
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            }
+          }
+        />
+      </View>
+    </View>
   </View>
 </View>
 `;
