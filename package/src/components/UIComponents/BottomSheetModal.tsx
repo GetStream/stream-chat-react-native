@@ -151,7 +151,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     return () => {
       listeners.forEach((listener) => listener.remove());
     };
-  }, [visible, keyboardDidHide, keyboardDidShow]);
+  }, [visible, keyboardDidHide, keyboardDidShow, keyboardOffset, isOpen, translateY]);
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   GestureResponderEvent,
-  StatusBar,
+  Platform,
   StyleProp,
   useWindowDimensions,
   View,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import { useSharedValue } from 'react-native-reanimated';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
 import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
@@ -75,13 +76,14 @@ export type TextMentionTouchableHandlerAdditionalInfo = { user?: UserResponse };
 
 const measureInWindow = (
   node: React.RefObject<View | null>,
+  insets: EdgeInsets,
 ): Promise<{ x: number; y: number; w: number; h: number }> => {
   return new Promise((resolve, reject) => {
     const handle = node.current;
     if (!handle) return reject(new Error('No native handle'));
 
     handle.measureInWindow((x, y, w, h) =>
-      resolve({ h, w, x, y: y + (StatusBar.currentHeight ?? 0) }),
+      resolve({ h, w, x, y: y + (Platform.OS === 'android' ? insets.top : 0) }),
     );
   });
 };
@@ -320,6 +322,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     MessageActionList,
     MessageActionListItem,
   } = props;
+  // TODO: V9: Reconsider using safe area insets in every message.
+  const insets = useSafeAreaInsets();
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
@@ -352,7 +356,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const showMessageOverlay = async (showMessageReactions = false) => {
     dismissKeyboard();
     try {
-      const layout = await measureInWindow(messageWrapperRef);
+      const layout = await measureInWindow(messageWrapperRef, insets);
       setRect(layout);
       setShowMessageReactions(showMessageReactions);
       messageH.value = layout;
