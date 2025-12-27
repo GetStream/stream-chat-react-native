@@ -155,7 +155,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
         renderItem={renderItem}
       />
       {emojiViewerOpened ? (
-        <BottomSheetModal height={300} onClose={closeModal} visible={true}>
+        <BottomSheetModal height={300} lazy={true} onClose={closeModal} visible={true}>
           <FlatList
             columnWrapperStyle={styles.bottomSheetColumnWrapper}
             contentContainerStyle={styles.bottomSheetContentContainer}
