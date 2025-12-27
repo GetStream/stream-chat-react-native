@@ -5,7 +5,6 @@ import { FlatList } from 'react-native-gesture-handler';
 import { emojis } from './emojis';
 import { ReactionButton } from './ReactionButton';
 
-import { scheduleActionOnClose } from '../../contexts';
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
@@ -17,6 +16,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { Attach } from '../../icons';
 import { NativeHandlers } from '../../native';
+import { scheduleActionOnClose } from '../../state-store';
 
 import { ReactionData } from '../../utils/utils';
 import { BottomSheetModal } from '../UIComponents';

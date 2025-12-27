@@ -1,9 +1,9 @@
 import React from 'react';
 import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 
-import { closeOverlay, scheduleActionOnClose } from '../../contexts';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
+import { closeOverlay, scheduleActionOnClose } from '../../state-store';
 
 export type ActionType =
   | 'banUser'
