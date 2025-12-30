@@ -7,13 +7,13 @@ on:
 #      - develop
 
 permissions:
-  id-token: write     # for OIDC / npm provenance if you use it
-  actions: write      # if you dispatch other workflows
-  contents: write     # commits / tags / merge-back
+  id-token: write # for OIDC / npm provenance if you use it
+  actions: write # if you dispatch other workflows
+  contents: write # commits / tags / merge-back
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: public
     strategy:
       matrix:
         node-version: [24.x]
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: "0"
+          fetch-depth: '0'
 
       - name: Fetch tags
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          registry-url: "https://registry.npmjs.org"
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Prepare git
         run: |

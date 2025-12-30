@@ -1,13 +1,23 @@
-default_platform(:ios)
 skip_docs
 
+# Common Configuration
 github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-chat-react-native'
-bundle_id = 'io.getstream.reactnative.SampleApp'
-xcode_project = 'ios/SampleApp.xcodeproj'
-xcode_workspace = 'ios/SampleApp.xcworkspace'
 root_path = File.absolute_path('../../../')
 sdk_size_ext = 'KB'
 @force_check = false
+build_output_directory = "./app-build"
+
+# iOS Platform Configuration
+bundle_id = 'io.getstream.reactnative.SampleApp'
+xcode_project = 'ios/SampleApp.xcodeproj'
+xcode_workspace = 'ios/SampleApp.xcworkspace'
+output_ipa_name = "reactnativesampleapp.ipa"
+
+# Android Platform Configuration
+package_name = 'io.getstream.reactnative.sampleapp'
+output_apk_name = "reactnativesampleapp.apk"
+apk_path = "#{build_output_directory}/#{output_apk_name}"
+
 
 before_all do
   if is_ci
@@ -20,81 +30,120 @@ end
 ###### iOS lanes ######
 #######################
 
-lane :deploy_to_testflight_qa do |options|
-  match_me
+platform :ios do
+  lane :deploy_to_testflight_qa do |options|
+    match_me
 
-  settings_to_override = {
-    BUNDLE_IDENTIFIER: bundle_id,
-    PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
-  }
+    deploy = options.fetch(:deploy, false)
 
-  increment_version_number(
-    version_number: load_json(json_path: './package.json')['version'],
-    xcodeproj: xcode_project
-  )
+    UI.message("Deploying to Testflight: #{deploy}")
 
-  current_build_number = app_store_build_number(
-      api_key: appstore_api_key,
-      live: false,
-      app_identifier: bundle_id
+    settings_to_override = {
+      BUNDLE_IDENTIFIER: bundle_id,
+      PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
+    }
+
+    gym(
+      workspace: xcode_workspace,
+      scheme: 'SampleApp',
+      export_method: 'app-store',
+      export_options: './fastlane/testflight_gym_export_options.plist',
+      silent: true,
+      clean: true,
+      xcargs: settings_to_override,
+      include_symbols: true,
+      output_directory: build_output_directory
     )
 
-  increment_build_number(
-    build_number: current_build_number + 1,
-    xcodeproj: xcode_project
-  )
+    if deploy
+      increment_version_number(
+        version_number: load_json(json_path: './package.json')['version'],
+        xcodeproj: xcode_project
+      )
 
-  gym(
-    workspace: xcode_workspace,
-    scheme: 'SampleApp',
-    export_method: 'app-store',
-    export_options: './fastlane/testflight_gym_export_options.plist',
-    silent: true,
-    clean: true,
-    xcargs: settings_to_override,
-    include_symbols: true,
-    output_directory: './dist'
-  )
+      current_build_number = app_store_build_number(
+        api_key: appstore_api_key,
+        live: false,
+        app_identifier: bundle_id
+      )
 
-  if options[:deploy]
-    begin
+      increment_build_number(
+        build_number: current_build_number + 1,
+        xcodeproj: xcode_project
+      )
+
       upload_to_testflight(
         groups: ['Testers'],
         changelog: 'Lots of amazing new features to test out!',
-        reject_build_waiting_for_review: false
+        reject_build_waiting_for_review: false,
+        ipa: "#{build_output_directory}/#{output_ipa_name}"
       )
-    rescue StandardError => e
-      if e.message.include?('Another build is in review')
-        UI.important('Another build is already in beta review. Skipping beta review submission')
-      else
-        UI.user_error!(e)
-      end
+    else
+        UI.message("Skipping Testflight upload! (deploy: #{deploy})")
     end
   end
-end
 
-private_lane :appstore_api_key do
-  @appstore_api_key ||= app_store_connect_api_key(
-    key_id: 'MT3PRT8TB7',
-    issuer_id: '69a6de96-0738-47e3-e053-5b8c7c11a4d1',
-    key_content: ENV.fetch('APPSTORE_API_KEY', nil),
-    in_house: false
-  )
-end
-
-desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
-lane :match_me do |options|
-  custom_match(
-    api_key: appstore_api_key,
-    app_identifier: [bundle_id],
-    readonly: options[:readonly],
-    register_device: options[:register_device]
-  )
+  private_lane :appstore_api_key do
+    @appstore_api_key ||= app_store_connect_api_key(
+      key_id: 'MT3PRT8TB7',
+      issuer_id: '69a6de96-0738-47e3-e053-5b8c7c11a4d1',
+      key_content: ENV.fetch('APPSTORE_API_KEY', nil),
+      in_house: false
+    )
+  end
+  
+  desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
+  lane :match_me do |options|
+    custom_match(
+      api_key: appstore_api_key,
+      app_identifier: [bundle_id],
+      readonly: options[:readonly],
+      register_device: options[:register_device]
+    )
+  end
 end
 
 ###########################
 ###### Android lanes ######
 ###########################
+
+platform :android do
+  lane :firebase_build_and_upload do |options|
+    deploy = options.fetch(:deploy, false)
+
+    UI.message("Deploying to Firebase: #{deploy}")
+    
+    # Clean 
+    gradle(
+        task: "clean",
+        project_dir: "./android"
+    )
+  
+    # Build the AAB
+    gradle(
+        task: "assemble",
+        build_type: "Release",
+        project_dir: "./android"
+    )
+
+    Dir.chdir('..') do
+        sh("mkdir -p #{build_output_directory} && mv -f #{lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]} #{apk_path}")
+    end
+
+    if deploy
+      # Upload to Firebase App Distribution
+      firebase_app_distribution(
+          app: ENV.fetch('ANDROID_FIREBASE_APP_ID', nil),
+          service_credentials_json: ENV.fetch('FIREBASE_CREDENTIALS_JSON', nil),
+          android_artifact_path: apk_path,
+          android_artifact_type: "APK",
+          groups: "stream-testers"
+      )
+    else
+      UI.message("Skipping Firebase upload! (deploy: #{deploy})")
+    end
+  end
+end
 
 ##########################
 ###### Common lanes ######

@@ -1,4 +1,4 @@
-package com.sampleapp
+package io.getstream.reactnative.sampleapp
 
 import android.os.Build
 import android.os.Bundle
