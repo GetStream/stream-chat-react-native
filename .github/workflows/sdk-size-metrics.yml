@@ -16,7 +16,7 @@ env:
 jobs:
   sdk_size:
     name: Metrics
-    runs-on: public
+    runs-on: ubuntu-latest
     steps:
       - name: Connect Bot
         uses: webfactory/ssh-agent@v0.7.0
