@@ -74,6 +74,9 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
           check-latest: true
+      - name: Setup Android SDK
+        uses: amyu/setup-android@v5
+
       - uses: ./.github/actions/ruby-cache
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
