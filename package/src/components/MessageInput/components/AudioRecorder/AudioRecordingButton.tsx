@@ -95,6 +95,7 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
 
   return (
     <IconButton
+      accessibilityLabel='Start recording'
       category='ghost'
       delayLongPress={asyncMessagesMinimumPressDuration}
       Icon={NewMic}

@@ -54,7 +54,7 @@ export const ImageAttachmentUploadPreview = ({
   }, []);
 
   return (
-    <>
+    <View testID={'image-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
         style={[styles.container, container]}
@@ -76,7 +76,7 @@ export const ImageAttachmentUploadPreview = ({
       <View style={styles.dismissWrapper}>
         <DismissAttachmentUpload onPress={onDismissHandler} />
       </View>
-    </>
+    </View>
   );
 };
 

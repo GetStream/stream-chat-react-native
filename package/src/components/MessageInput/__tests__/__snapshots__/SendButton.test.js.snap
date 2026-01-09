@@ -50,6 +50,20 @@ exports[`SendButton should render a SendButton 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           [
+            {
+              "alignItems": "center",
+              "justifyContent": "center",
+            },
+            {
+              "borderRadius": 16,
+              "height": 32,
+              "width": 32,
+            },
+            {
+              "backgroundColor": "#005FFF",
+              "borderColor": "#E2E6EA",
+              "borderWidth": 1,
+            },
             {},
           ]
         }
@@ -57,14 +71,18 @@ exports[`SendButton should render a SendButton 1`] = `
       >
         <RNSVGSvgView
           align="xMidYMid"
-          bbHeight={32}
-          bbWidth={32}
-          fill="#005FFF"
+          bbHeight={20}
+          bbWidth={20}
+          fill="none"
           focusable={false}
-          height={32}
+          height={20}
           meetOrSlice={0}
           minX={0}
           minY={0}
+          stroke="white"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
           style={
             [
               {
@@ -73,61 +91,62 @@ exports[`SendButton should render a SendButton 1`] = `
               },
               {
                 "flex": 0,
-                "height": 32,
-                "width": 32,
+                "height": 20,
+                "width": 20,
               },
             ]
           }
-          testID="send-up"
-          vbHeight={32}
-          vbWidth={32}
-          width={32}
+          testID="send-right"
+          vbHeight={20}
+          vbWidth={20}
+          width={20}
         >
           <RNSVGGroup
-            fill={
-              {
-                "payload": 4278214655,
-                "type": 0,
-              }
-            }
+            fill={null}
             propList={
               [
                 "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
               ]
             }
+            stroke={
+              {
+                "payload": 4294967295,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={1.5}
           >
-            <RNSVGCircle
-              cx={16}
-              cy={16}
+            <RNSVGPath
+              d="M4.99998 9.99996H7.70832M4.99998 9.99996L2.81076 4.05778C2.54973 3.34929 3.29006 2.68668 3.96538 3.02433L16.4259 9.25463C17.0402 9.56171 17.0402 10.4382 16.4259 10.7453L3.96538 16.9756C3.29006 17.3133 2.54973 16.6506 2.81076 15.9421L4.99998 9.99996Z"
               fill={
                 {
-                  "payload": 4278214655,
+                  "payload": 4278190080,
                   "type": 0,
                 }
               }
               propList={
                 [
-                  "fill",
+                  "stroke",
+                  "strokeWidth",
+                  "strokeLinecap",
+                  "strokeLinejoin",
                 ]
               }
-              r={16}
-            />
-            <RNSVGPath
-              clipRule={0}
-              d="M14.6673 16V22.6667H17.334V16H22.6673L16.0007 9.33337L9.33398 16H14.6673Z"
-              fill={
+              stroke={
                 {
                   "payload": 4294967295,
                   "type": 0,
                 }
               }
-              fillRule={0}
-              propList={
-                [
-                  "fill",
-                  "fillRule",
-                ]
-              }
+              strokeLinecap={1}
+              strokeLinejoin={1}
+              strokeWidth={1.5}
             />
           </RNSVGGroup>
         </RNSVGSvgView>
@@ -375,6 +394,20 @@ exports[`SendButton should render a disabled SendButton 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           [
+            {
+              "alignItems": "center",
+              "justifyContent": "center",
+            },
+            {
+              "borderRadius": 16,
+              "height": 32,
+              "width": 32,
+            },
+            {
+              "backgroundColor": "#005FFF",
+              "borderColor": "#E2E6EA",
+              "borderWidth": 1,
+            },
             {},
           ]
         }
@@ -382,14 +415,18 @@ exports[`SendButton should render a disabled SendButton 1`] = `
       >
         <RNSVGSvgView
           align="xMidYMid"
-          bbHeight={32}
-          bbWidth={32}
-          fill="#DBDBDB"
+          bbHeight={20}
+          bbWidth={20}
+          fill="none"
           focusable={false}
-          height={32}
+          height={20}
           meetOrSlice={0}
           minX={0}
           minY={0}
+          stroke="white"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
           style={
             [
               {
@@ -398,61 +435,62 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               },
               {
                 "flex": 0,
-                "height": 32,
-                "width": 32,
+                "height": 20,
+                "width": 20,
               },
             ]
           }
           testID="send-right"
-          vbHeight={32}
-          vbWidth={32}
-          width={32}
+          vbHeight={20}
+          vbWidth={20}
+          width={20}
         >
           <RNSVGGroup
-            fill={
-              {
-                "payload": 4292598747,
-                "type": 0,
-              }
-            }
+            fill={null}
             propList={
               [
                 "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
               ]
             }
+            stroke={
+              {
+                "payload": 4294967295,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={1.5}
           >
-            <RNSVGCircle
-              cx={16}
-              cy={16}
+            <RNSVGPath
+              d="M4.99998 9.99996H7.70832M4.99998 9.99996L2.81076 4.05778C2.54973 3.34929 3.29006 2.68668 3.96538 3.02433L16.4259 9.25463C17.0402 9.56171 17.0402 10.4382 16.4259 10.7453L3.96538 16.9756C3.29006 17.3133 2.54973 16.6506 2.81076 15.9421L4.99998 9.99996Z"
               fill={
                 {
-                  "payload": 4292598747,
+                  "payload": 4278190080,
                   "type": 0,
                 }
               }
               propList={
                 [
-                  "fill",
+                  "stroke",
+                  "strokeWidth",
+                  "strokeLinecap",
+                  "strokeLinejoin",
                 ]
               }
-              r={16}
-            />
-            <RNSVGPath
-              clipRule={0}
-              d="M9.33398 14.6666H16.0007V9.33325L22.6673 15.9999L16.0007 22.6666V17.3333H9.33398V14.6666Z"
-              fill={
+              stroke={
                 {
                   "payload": 4294967295,
                   "type": 0,
                 }
               }
-              fillRule={0}
-              propList={
-                [
-                  "fill",
-                  "fillRule",
-                ]
-              }
+              strokeLinecap={1}
+              strokeLinejoin={1}
+              strokeWidth={1.5}
             />
           </RNSVGGroup>
         </RNSVGSvgView>

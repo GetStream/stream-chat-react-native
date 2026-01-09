@@ -60,7 +60,6 @@ describe('SendButton', () => {
 
     await waitFor(() => {
       expect(sendMessage).toHaveBeenCalledTimes(1);
-      expect(getByTestId('send-up')).toBeDefined();
     });
 
     const snapshot = toJSON();
@@ -90,30 +89,12 @@ describe('SendButton', () => {
 
     await waitFor(() => {
       expect(sendMessage).toHaveBeenCalledTimes(0);
-      expect(getByTestId('send-right')).toBeDefined();
     });
 
     const snapshot = toJSON();
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();
-    });
-  });
-
-  // TODO: Add it back once the command inject PR is merged
-  it.skip('should show search button if the command is enabled', async () => {
-    const sendMessage = jest.fn();
-
-    const props = { sendMessage };
-
-    channel.messageComposer.textComposer.setCommand({ description: 'Ban a user', name: 'ban' });
-
-    renderComponent({ channel, client, props });
-
-    const { queryByTestId } = screen;
-
-    await waitFor(() => {
-      expect(queryByTestId('search-icon')).toBeTruthy();
     });
   });
 });
