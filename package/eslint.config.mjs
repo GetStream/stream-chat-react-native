@@ -141,17 +141,6 @@ export default tsEslint.config(
       'react/prop-types': 0,
       'require-await': 2,
       semi: [1, 'always'],
-      'sort-imports': [
-        'error',
-        {
-          allowSeparatedGroups: true,
-          ignoreCase: true,
-          ignoreDeclarationSort: true,
-          ignoreMemberSort: false,
-          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-        },
-      ],
-      'sort-keys': ['error', 'asc', { caseSensitive: false, minKeys: 2, natural: false }],
       'valid-typeof': 2,
       '@typescript-eslint/explicit-module-boundary-types': 0,
       '@typescript-eslint/no-empty-interface': 0,
