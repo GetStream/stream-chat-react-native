@@ -26,6 +26,7 @@ export type NotificationConfigItem = { label: string; name: string; id: string }
 export type MessageListImplementationConfigItem = { label: string; id: 'flatlist' | 'flashlist' };
 export type MessageListModeConfigItem = { label: string; mode: 'default' | 'livestream' };
 export type MessageListPruningConfigItem = { label: string; value: 100 | 500 | 1000 | undefined };
+export type MessageInputFloatingConfigItem = { label: string; value: boolean };
 
 const messageListImplementationConfigItems: MessageListImplementationConfigItem[] = [
   { label: 'FlatList', id: 'flatlist' },
@@ -42,6 +43,11 @@ const messageListPruningConfigItems: MessageListPruningConfigItem[] = [
   { label: '100 Messages', value: 100 },
   { label: '500 Messages', value: 500 },
   { label: '1000 Messages', value: 1000 },
+];
+
+const messageInputFloatingConfigItems: MessageInputFloatingConfigItem[] = [
+  { label: 'Normal', value: false },
+  { label: 'Floating', value: true },
 ];
 
 export const SlideInView = ({
@@ -161,6 +167,23 @@ const SecretMenuMessageListImplementationConfigItem = ({
   </TouchableOpacity>
 );
 
+const SecretMenuMessageInputFloatingConfigItem = ({
+  messageInputFloatingConfigItem,
+  storeMessageInputFloating,
+  isSelected,
+}: {
+  messageInputFloatingConfigItem: MessageInputFloatingConfigItem;
+  storeMessageInputFloating: (item: MessageInputFloatingConfigItem) => void;
+  isSelected: boolean;
+}) => (
+  <TouchableOpacity
+    style={[styles.notificationItemContainer, { borderColor: isSelected ? 'green' : 'gray' }]}
+    onPress={() => storeMessageInputFloating(messageInputFloatingConfigItem)}
+  >
+    <Text style={styles.notificationItem}>{messageInputFloatingConfigItem.label}</Text>
+  </TouchableOpacity>
+);
+
 const SecretMenuMessageListModeConfigItem = ({
   messageListModeConfigItem,
   storeMessageListMode,
@@ -218,6 +241,8 @@ export const SecretMenu = ({
   const [selectedMessageListPruning, setSelectedMessageListPruning] = useState<
     MessageListPruningConfigItem['value'] | null
   >(null);
+  const [selectedMessageInputFloating, setSelectedMessageInputFloating] =
+    useState<MessageInputFloatingConfigItem['value']>(false);
   const {
     theme: {
       colors: { black, grey },
@@ -250,12 +275,19 @@ export const SecretMenu = ({
         '@stream-rn-sampleapp-messagelist-pruning',
         messageListPruningConfigItems[0],
       );
+      const messageInputFloating = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messageinput-floating',
+        messageInputFloatingConfigItems[0],
+      );
       setSelectedProvider(notificationProvider?.id ?? notificationConfigItems[0].id);
       setSelectedMessageListImplementation(
         messageListImplementation?.id ?? messageListImplementationConfigItems[0].id,
       );
       setSelectedMessageListMode(messageListMode?.mode ?? messageListModeConfigItems[0].mode);
       setSelectedMessageListPruning(messageListPruning?.value);
+      setSelectedMessageInputFloating(
+        messageInputFloating?.value ?? messageInputFloatingConfigItems[0].value,
+      );
     };
     getSelectedConfig();
   }, [notificationConfigItems]);
@@ -281,6 +313,11 @@ export const SecretMenu = ({
   const storeMessageListPruning = useCallback(async (item: MessageListPruningConfigItem) => {
     await AsyncStore.setItem('@stream-rn-sampleapp-messagelist-pruning', item);
     setSelectedMessageListPruning(item.value);
+  }, []);
+
+  const storeMessageInputFloating = useCallback(async (item: MessageInputFloatingConfigItem) => {
+    await AsyncStore.setItem('@stream-rn-sampleapp-messageinput-floating', item);
+    setSelectedMessageInputFloating(item.value);
   }, []);
 
   const removeAllDevices = useCallback(async () => {
@@ -330,6 +367,22 @@ export const SecretMenu = ({
                   messageListImplementationConfigItem={item}
                   storeMessageListImplementation={storeMessageListImplementation}
                   isSelected={item.id === selectedMessageListImplementation}
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+        <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+          <Folder height={20} pathFill={grey} width={20} />
+          <View>
+            <Text style={[menuDrawerStyles.menuTitle]}>Message Input Floating</Text>
+            <View style={{ marginLeft: 16 }}>
+              {messageInputFloatingConfigItems.map((item) => (
+                <SecretMenuMessageInputFloatingConfigItem
+                  key={item.value.toString()}
+                  messageInputFloatingConfigItem={item}
+                  storeMessageInputFloating={storeMessageInputFloating}
+                  isSelected={item.value === selectedMessageInputFloating}
                 />
               ))}
             </View>

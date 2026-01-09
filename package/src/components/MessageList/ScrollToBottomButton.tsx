@@ -1,29 +1,13 @@
 import React from 'react';
-import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+
+import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Down } from '../../icons';
+import { NewDown } from '../../icons/NewDown';
+import { IconButton } from '../ui/IconButton';
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderRadius: 20,
-    elevation: 5,
-    height: 40,
-    justifyContent: 'center',
-    shadowOffset: {
-      height: 2,
-      width: 0,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    width: 40,
-  },
-  touchable: {
-    bottom: 20,
-    position: 'absolute',
-    right: 20,
-  },
   unreadCountNotificationContainer: {
     alignItems: 'center',
     borderRadius: 10,
@@ -40,16 +24,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
   },
-  wrapper: {
-    alignItems: 'center',
-    height: 50,
-    justifyContent: 'flex-end',
-  },
 });
 
 export type ScrollToBottomButtonProps = {
   /** onPress handler */
-  onPress: (event: GestureResponderEvent) => void;
+  onPress: () => void;
   /** If we should show the notification or not */
   showNotification?: boolean;
   unreadCount?: number;
@@ -60,15 +39,12 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
 
   const {
     theme: {
-      colors: { accent_blue, black, white },
+      colors: { accent_blue, white },
       messageList: {
         scrollToBottomButton: {
-          chevronColor,
           container,
-          touchable,
           unreadCountNotificationContainer,
           unreadCountNotificationText,
-          wrapper,
         },
       },
     },
@@ -79,37 +55,42 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   }
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.touchable, touchable]}
-      testID='scroll-to-bottom-button'
-    >
-      <View style={[styles.wrapper, wrapper]}>
-        <View style={[styles.container, { backgroundColor: white, shadowColor: black }, container]}>
-          <Down pathFill={chevronColor ? chevronColor : black} />
-        </View>
-        {!!unreadCount && (
-          <View
+    <>
+      <Animated.View
+        entering={ZoomIn.duration(200)}
+        exiting={ZoomOut.duration(200)}
+        key='scroll-to-bottom-button'
+      >
+        <IconButton
+          Icon={NewDown}
+          onPress={onPress}
+          size='md'
+          style={container}
+          testID='scroll-to-bottom-button'
+          type='secondary'
+        />
+      </Animated.View>
+      {!!unreadCount && (
+        <View
+          style={[
+            styles.unreadCountNotificationContainer,
+            { backgroundColor: accent_blue },
+            unreadCountNotificationContainer,
+          ]}
+        >
+          <Text
             style={[
-              styles.unreadCountNotificationContainer,
-              { backgroundColor: accent_blue },
-              unreadCountNotificationContainer,
+              styles.unreadCountNotificationText,
+              { color: white },
+              unreadCountNotificationText,
             ]}
+            testID='unread-count'
           >
-            <Text
-              style={[
-                styles.unreadCountNotificationText,
-                { color: white },
-                unreadCountNotificationText,
-              ]}
-              testID='unread-count'
-            >
-              {unreadCount}
-            </Text>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
+            {unreadCount}
+          </Text>
+        </View>
+      )}
+    </>
   );
 };
 

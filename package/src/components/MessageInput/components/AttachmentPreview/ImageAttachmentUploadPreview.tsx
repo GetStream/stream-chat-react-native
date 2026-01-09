@@ -13,7 +13,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
-const IMAGE_PREVIEW_SIZE = 100;
+const IMAGE_PREVIEW_SIZE = 72;
 
 export type ImageAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<LocalImageAttachment<CustomLocalMetadata>>;
@@ -32,7 +32,7 @@ export const ImageAttachmentUploadPreview = ({
   const {
     theme: {
       messageInput: {
-        imageAttachmentUploadPreview: { itemContainer, upload },
+        imageAttachmentUploadPreview: { container, upload },
       },
     },
   } = useTheme();
@@ -54,10 +54,10 @@ export const ImageAttachmentUploadPreview = ({
   }, []);
 
   return (
-    <View style={[styles.itemContainer, itemContainer]} testID={'image-attachment-upload-preview'}>
+    <>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
-        style={styles.upload}
+        style={[styles.container, container]}
         type={indicatorType}
       >
         <Image
@@ -68,30 +68,34 @@ export const ImageAttachmentUploadPreview = ({
           style={[styles.upload, upload]}
           testID={'image-attachment-upload-preview-image'}
         />
+        {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+          <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
+        ) : null}
       </AttachmentUploadProgressIndicator>
 
-      <DismissAttachmentUpload onPress={onDismissHandler} />
-      {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-        <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
-      ) : null}
-    </View>
+      <View style={styles.dismissWrapper}>
+        <DismissAttachmentUpload onPress={onDismissHandler} />
+      </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    borderColor: '#E2E6EA',
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
+  dismissWrapper: { position: 'absolute', right: -4, top: -4 },
   fileSizeText: {
     fontSize: 12,
     paddingHorizontal: 10,
   },
-  flatList: { paddingBottom: 12 },
-  itemContainer: {
-    flexDirection: 'row',
-    height: IMAGE_PREVIEW_SIZE,
-    marginLeft: 8,
-  },
   upload: {
-    borderRadius: 10,
     height: IMAGE_PREVIEW_SIZE,
     width: IMAGE_PREVIEW_SIZE,
   },
+  wrapper: {},
 });

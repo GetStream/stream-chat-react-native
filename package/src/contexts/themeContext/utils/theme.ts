@@ -9,7 +9,7 @@ export const BASE_AVATAR_SIZE = 32;
 export const Colors = {
   accent_blue: '#005FFF',
   accent_dark_blue: '#005DFF',
-  accent_error: '#FF3842',
+  accent_error: '#D92F26',
   accent_green: '#20E070',
   accent_info: '#1FE06F',
   accent_red: '#FF3742',
@@ -31,6 +31,7 @@ export const Colors = {
   light_gray: '#E9EAED',
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
+  selected: 'hsla(0, 0%, 0%, 0.15)',
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
   static_black: '#000000',
   static_white: '#ffffff',
@@ -272,17 +273,16 @@ export type Theme = {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
-    attachmentSeparator: ViewStyle;
     attachmentUnsupportedIndicator: {
       container: ViewStyle;
       warningIcon: IconProps;
       text: TextStyle;
     };
     attachmentUploadPreviewList: {
-      filesFlatList: ViewStyle;
-      imagesFlatList: ViewStyle;
-      wrapper: ViewStyle;
+      flatList: ViewStyle;
+      itemSeparator: ViewStyle;
     };
+    audioRecordingButtonContainer: ViewStyle;
     audioRecorder: {
       arrowLeftIcon: IconProps;
       checkContainer: ViewStyle;
@@ -294,10 +294,6 @@ export type Theme = {
       pausedContainer: ViewStyle;
       sendCheckIcon: IconProps;
       slideToCancelContainer: ViewStyle;
-    };
-    audioRecordingButton: {
-      container: ViewStyle;
-      micIcon: IconProps;
     };
     audioRecordingInProgress: {
       container: ViewStyle;
@@ -320,17 +316,15 @@ export type Theme = {
       container: ViewStyle;
       waveform: ViewStyle;
     };
-    autoCompleteInputContainer: ViewStyle;
     commandInput: {
       closeButton: ViewStyle;
       container: ViewStyle;
       text: TextStyle;
     };
-    commandsButton: ViewStyle;
-    composerContainer: ViewStyle;
     container: ViewStyle;
+    contentContainer: ViewStyle;
+    cooldownButtonContainer: ViewStyle;
     cooldownTimer: {
-      container: ViewStyle;
       text: TextStyle;
     };
     dismissAttachmentUpload: {
@@ -338,52 +332,43 @@ export type Theme = {
       dismissIcon: IconProps;
       dismissIconColor: ColorValue;
     };
-    editingBoxContainer: ViewStyle;
-    editingBoxHeader: ViewStyle;
-    editingBoxHeaderTitle: TextStyle;
-    editingStateHeader: {
-      editingBoxHeader: ViewStyle;
-      editingBoxHeaderTitle: TextStyle;
-    };
+    editButton: ViewStyle;
+    editButtonContainer: ViewStyle;
     fileAttachmentUploadPreview: {
       fileContainer: ViewStyle;
       filenameText: TextStyle;
       fileSizeText: TextStyle;
       fileTextContainer: ViewStyle;
       uploadProgressOverlay: ViewStyle;
-      wrapper: ViewStyle;
     };
     fileUploadPreview: {
       flatList: ViewStyle;
     };
+    floatingWrapper: ViewStyle;
     focusedInputBoxContainer: ViewStyle;
     imageAttachmentUploadPreview: {
-      itemContainer: ViewStyle;
+      container: ViewStyle;
       upload: ImageStyle;
     };
-    imageUploadPreview: {
-      flatList: ViewStyle;
-    };
+    inputContainer: ViewStyle;
     inputBox: TextStyle;
     inputBoxContainer: ViewStyle;
+    inputBoxWrapper: ViewStyle;
+    inputButtonsContainer: ViewStyle;
+    inputFloatingContainer: ViewStyle;
     micButtonContainer: ViewStyle;
-    moreOptionsButton: ViewStyle;
     nativeAttachmentPicker: {
       buttonContainer: ViewStyle;
       buttonDimmerStyle: ViewStyle;
       container: ViewStyle;
     };
-    optionsContainer: ViewStyle;
-    replyContainer: ViewStyle;
-    searchIcon: IconProps;
+    outputButtonsContainer: ViewStyle;
     sendButton: ViewStyle;
     sendButtonContainer: ViewStyle;
     sendMessageDisallowedIndicator: {
       container: ViewStyle;
       text: TextStyle;
     };
-    sendRightIcon: IconProps;
-    sendUpIcon: IconProps;
     showThreadMessageInChannelButton: {
       check: IconProps;
       checkBoxActive: ViewStyle;
@@ -433,6 +418,7 @@ export type Theme = {
       itemContainer: ViewStyle;
       upload: ImageStyle;
     };
+    wrapper: ViewStyle;
   };
   messageList: {
     container: ViewStyle;
@@ -452,15 +438,15 @@ export type Theme = {
       text: TextStyle;
       textContainer: ViewStyle;
     };
+    scrollToBottomButtonContainer: ViewStyle;
     scrollToBottomButton: {
       container: ViewStyle;
-      touchable: ViewStyle;
       unreadCountNotificationContainer: ViewStyle;
       unreadCountNotificationText: TextStyle;
-      wrapper: ViewStyle;
-      chevronColor?: ColorValue;
     };
+    stickyHeaderContainer: ViewStyle;
     typingIndicatorContainer: ViewStyle;
+    unreadMessagesNotificationContainer: ViewStyle;
     unreadMessagesNotification: {
       closeButtonContainer: ViewStyle;
       closeIcon: IconProps;
@@ -842,17 +828,22 @@ export type Theme = {
     thumb: ViewStyle;
   };
   reply: {
+    audioIcon: IconProps;
     container: ViewStyle;
-    fileAttachmentContainer: ViewStyle;
-    imageAttachment: ImageStyle;
-    markdownStyles: MarkdownStyle;
-    messageContainer: ViewStyle;
-    secondaryText: ViewStyle;
-    textContainer: ViewStyle;
-    videoThumbnail: {
-      container: ViewStyle;
-      image: ImageStyle;
-    };
+    dismissWrapper: ViewStyle;
+    fileIcon: IconProps;
+    leftContainer: ViewStyle;
+    locationIcon: IconProps;
+    linkIcon: IconProps;
+    photoIcon: IconProps;
+    pollIcon: IconProps;
+    rightContainer: ViewStyle;
+    title: TextStyle;
+    subtitle: TextStyle;
+    subtitleContainer: ViewStyle;
+    subtitleIconContainer: ViewStyle;
+    videoIcon: IconProps;
+    wrapper: ViewStyle;
   };
   screenPadding: number;
   spinner: ViewStyle;
@@ -1096,16 +1087,14 @@ export const defaultTheme: Theme = {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},
-    attachmentSeparator: {},
     attachmentUnsupportedIndicator: {
       container: {},
       text: {},
       warningIcon: {},
     },
     attachmentUploadPreviewList: {
-      filesFlatList: {},
-      imagesFlatList: {},
-      wrapper: {},
+      flatList: {},
+      itemSeparator: {},
     },
     audioRecorder: {
       arrowLeftIcon: {},
@@ -1119,7 +1108,7 @@ export const defaultTheme: Theme = {
       sendCheckIcon: {},
       slideToCancelContainer: {},
     },
-    audioRecordingButton: { container: {}, micIcon: {} },
+    audioRecordingButtonContainer: {},
     audioRecordingInProgress: { container: {}, durationText: {} },
     audioRecordingLockIndicator: { arrowUpIcon: {}, container: {}, lockIcon: {} },
     audioRecordingPreview: {
@@ -1131,17 +1120,15 @@ export const defaultTheme: Theme = {
       progressBar: {},
     },
     audioRecordingWaveform: { container: {}, waveform: {} },
-    autoCompleteInputContainer: {},
     commandInput: {
       closeButton: {},
       container: {},
       text: {},
     },
-    commandsButton: {},
-    composerContainer: {},
     container: {},
+    contentContainer: {},
+    cooldownButtonContainer: {},
     cooldownTimer: {
-      container: {},
       text: {},
     },
     dismissAttachmentUpload: {
@@ -1149,52 +1136,43 @@ export const defaultTheme: Theme = {
       dismissIcon: {},
       dismissIconColor: '',
     },
-    editingBoxContainer: {},
-    editingBoxHeader: {},
-    editingBoxHeaderTitle: {},
-    editingStateHeader: {
-      editingBoxHeader: {},
-      editingBoxHeaderTitle: {},
-    },
+    editButton: {},
+    editButtonContainer: {},
     fileAttachmentUploadPreview: {
       fileContainer: {},
       filenameText: {},
       fileSizeText: {},
       fileTextContainer: {},
       uploadProgressOverlay: {},
-      wrapper: {},
     },
     fileUploadPreview: {
       flatList: {},
     },
+    floatingWrapper: {},
     focusedInputBoxContainer: {},
     imageAttachmentUploadPreview: {
-      itemContainer: {},
+      container: {},
       upload: {},
-    },
-    imageUploadPreview: {
-      flatList: {},
     },
     inputBox: {},
     inputBoxContainer: {},
+    inputBoxWrapper: {},
+    inputButtonsContainer: {},
+    inputContainer: {},
+    inputFloatingContainer: {},
     micButtonContainer: {},
-    moreOptionsButton: {},
     nativeAttachmentPicker: {
       buttonContainer: {},
       buttonDimmerStyle: {},
       container: {},
     },
-    optionsContainer: {},
-    replyContainer: {},
-    searchIcon: {},
+    outputButtonsContainer: {},
     sendButton: {},
     sendButtonContainer: {},
     sendMessageDisallowedIndicator: {
       container: {},
       text: {},
     },
-    sendRightIcon: {},
-    sendUpIcon: {},
     showThreadMessageInChannelButton: {
       check: {},
       checkBoxActive: {},
@@ -1244,6 +1222,7 @@ export const defaultTheme: Theme = {
       recorderIconContainer: {},
       upload: {},
     },
+    wrapper: {},
   },
   messageList: {
     container: {},
@@ -1265,11 +1244,11 @@ export const defaultTheme: Theme = {
     },
     scrollToBottomButton: {
       container: {},
-      touchable: {},
       unreadCountNotificationContainer: {},
       unreadCountNotificationText: {},
-      wrapper: {},
     },
+    scrollToBottomButtonContainer: {},
+    stickyHeaderContainer: {},
     typingIndicatorContainer: {},
     unreadMessagesNotification: {
       closeButtonContainer: {},
@@ -1277,6 +1256,7 @@ export const defaultTheme: Theme = {
       container: {},
       text: {},
     },
+    unreadMessagesNotificationContainer: {},
   },
   messageMenu: {
     actionList: {
@@ -1667,17 +1647,22 @@ export const defaultTheme: Theme = {
     thumb: {},
   },
   reply: {
+    audioIcon: {},
     container: {},
-    fileAttachmentContainer: {},
-    imageAttachment: {},
-    markdownStyles: {},
-    messageContainer: {},
-    secondaryText: {},
-    textContainer: {},
-    videoThumbnail: {
-      container: {},
-      image: {},
-    },
+    dismissWrapper: {},
+    fileIcon: {},
+    leftContainer: {},
+    linkIcon: {},
+    locationIcon: {},
+    photoIcon: {},
+    pollIcon: {},
+    rightContainer: {},
+    subtitle: {},
+    subtitleContainer: {},
+    subtitleIconContainer: {},
+    title: {},
+    videoIcon: {},
+    wrapper: {},
   },
   screenPadding: 8,
   spinner: {},

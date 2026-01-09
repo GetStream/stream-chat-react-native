@@ -14,7 +14,6 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessagesContext } from '../../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
-import { getTrimmedAttachmentTitle } from '../../../../utils/getTrimmedAttachmentTitle';
 import {
   getDurationLabelFromDuration,
   getIndicatorTypeForFileState,
@@ -26,13 +25,10 @@ export type FileAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string
     | LocalFileAttachment<CustomLocalMetadata>
     | LocalVideoAttachment<CustomLocalMetadata>
     | LocalAudioAttachment<CustomLocalMetadata>
-  > & {
-    flatListWidth: number;
-  };
+  >;
 
 export const FileAttachmentUploadPreview = ({
   attachment,
-  flatListWidth,
   handleRetry,
   removeAttachments,
 }: FileAttachmentUploadPreviewProps) => {
@@ -53,7 +49,6 @@ export const FileAttachmentUploadPreview = ({
           fileSizeText,
           fileTextContainer,
           uploadProgressOverlay,
-          wrapper,
         },
       },
     },
@@ -68,10 +63,10 @@ export const FileAttachmentUploadPreview = ({
   }, [attachment, removeAttachments]);
 
   return (
-    <View style={[styles.wrapper, wrapper]} testID={'file-attachment-upload-preview'}>
+    <>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
-        style={[styles.overlay, { width: flatListWidth - 16 }, uploadProgressOverlay]}
+        style={[styles.overlay, uploadProgressOverlay]}
         type={indicatorType}
       >
         <View
@@ -82,29 +77,24 @@ export const FileAttachmentUploadPreview = ({
             },
             fileContainer,
           ]}
+          testID={'file-attachment-upload-preview'}
         >
           <View style={styles.fileIcon}>
-            <FileAttachmentIcon mimeType={attachment.mime_type} />
+            <FileAttachmentIcon mimeType={attachment.mime_type} size={40} />
           </View>
-          <View style={[styles.fileTextContainer, fileTextContainer]}>
+          <View style={[styles.fileContent, fileTextContainer]}>
             <Text
               numberOfLines={1}
               style={[
                 styles.filenameText,
                 {
                   color: black,
-                  width:
-                    flatListWidth -
-                    16 - // 16 = horizontal padding
-                    40 - // 40 = file icon size
-                    24 - // 24 = close icon size
-                    24, // 24 = internal padding
                 },
                 I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
                 filenameText,
               ]}
             >
-              {getTrimmedAttachmentTitle(attachment.title)}
+              {attachment.title}
             </Text>
             {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
               <AttachmentUnsupportedIndicator indicatorType={indicatorType} />
@@ -120,17 +110,26 @@ export const FileAttachmentUploadPreview = ({
           </View>
         </View>
       </AttachmentUploadProgressIndicator>
-      <DismissAttachmentUpload onPress={onDismissHandler} />
-    </View>
+      <View style={styles.dismissWrapper}>
+        <DismissAttachmentUpload onPress={onDismissHandler} />
+      </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  dismissWrapper: { position: 'absolute', right: -4, top: -4 },
   fileContainer: {
     borderRadius: 12,
     borderWidth: 1,
     flexDirection: 'row',
-    paddingHorizontal: 8,
+    gap: 12,
+    maxWidth: 224, // TODO: Not sure how to omit this
+    padding: 16,
+  },
+  fileContent: {
+    flexShrink: 1,
+    justifyContent: 'space-between',
   },
   fileIcon: {
     alignItems: 'center',
@@ -138,24 +137,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   filenameText: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  fileNameTextContainer: {
+    flexShrink: 1,
   },
   fileSizeText: {
     fontSize: 12,
-    marginTop: 10,
-  },
-  fileTextContainer: {
-    justifyContent: 'space-around',
-    marginVertical: 10,
-    paddingHorizontal: 10,
   },
   overlay: {
     borderRadius: 12,
-    marginTop: 2,
-  },
-  wrapper: {
-    flexDirection: 'row',
-    marginHorizontal: 8,
   },
 });

@@ -60,6 +60,7 @@ import { Toast } from './src/components/ToastComponent/Toast';
 import { useClientNotificationsToastHandler } from './src/hooks/useClientNotificationsToastHandler';
 import AsyncStore from './src/utils/AsyncStore.ts';
 import {
+  MessageInputFloatingConfigItem,
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
@@ -105,6 +106,9 @@ const App = () => {
   >(undefined);
   const [messageListPruning, setMessageListPruning] = useState<
     MessageListPruningConfigItem['value'] | undefined
+  >(undefined);
+  const [messageInputFloating, setMessageInputFloating] = useState<
+    MessageInputFloatingConfigItem['value'] | undefined
   >(undefined);
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
@@ -161,12 +165,19 @@ const App = () => {
         '@stream-rn-sampleapp-messagelist-pruning',
         { value: undefined },
       );
+      const messageInputFloatingStoredValue = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messageinput-floating',
+        { value: false },
+      );
       setMessageListImplementation(
         messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
       );
       setMessageListMode(messageListModeStoredValue?.mode as MessageListModeConfigItem['mode']);
       setMessageListPruning(
         messageListPruningStoredValue?.value as MessageListPruningConfigItem['value'],
+      );
+      setMessageInputFloating(
+        messageInputFloatingStoredValue?.value as MessageInputFloatingConfigItem['value'],
       );
     };
     getMessageListConfig();
@@ -232,6 +243,7 @@ const App = () => {
                   logout,
                   switchUser,
                   messageListImplementation,
+                  messageInputFloating: messageInputFloating ?? false,
                   messageListMode,
                   messageListPruning,
                 }}
