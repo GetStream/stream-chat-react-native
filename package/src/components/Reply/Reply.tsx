@@ -280,7 +280,6 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         rightContainer,
         title: titleStyle,
         subtitleContainer,
-        subtitleIconContainer,
         dismissWrapper,
       },
     },
@@ -320,9 +319,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
             {title}
           </Text>
           <View style={[styles.subtitleContainer, subtitleContainer]}>
-            <View style={[styles.subtitleIconContainer, subtitleIconContainer]}>
-              <SubtitleIcon message={quotedMessage} />
-            </View>
+            <SubtitleIcon message={quotedMessage} />
             <SubtitleText message={quotedMessage} />
           </View>
         </View>
@@ -429,8 +426,8 @@ const styles = StyleSheet.create({
   },
   dismissWrapper: {
     position: 'absolute',
-    right: -4,
-    top: -4,
+    right: 0,
+    top: 0,
   },
   iconStyle: {},
   imageAttachment: {},
@@ -463,10 +460,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 4,
     paddingTop: 4,
-  },
-  subtitleIconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   title: {
     color: '#384047',

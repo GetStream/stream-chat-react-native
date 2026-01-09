@@ -32,7 +32,7 @@ export const ImageAttachmentUploadPreview = ({
   const {
     theme: {
       messageInput: {
-        imageAttachmentUploadPreview: { container, upload },
+        imageAttachmentUploadPreview: { container, upload, wrapper },
       },
     },
   } = useTheme();
@@ -54,7 +54,7 @@ export const ImageAttachmentUploadPreview = ({
   }, []);
 
   return (
-    <View testID={'image-attachment-upload-preview'}>
+    <View style={[styles.wrapper, wrapper]} testID={'image-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
         style={[styles.container, container]}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     overflow: 'hidden',
   },
-  dismissWrapper: { position: 'absolute', right: -4, top: -4 },
+  dismissWrapper: { position: 'absolute', right: 0, top: 0 },
   fileSizeText: {
     fontSize: 12,
     paddingHorizontal: 10,
@@ -97,5 +97,7 @@ const styles = StyleSheet.create({
     height: IMAGE_PREVIEW_SIZE,
     width: IMAGE_PREVIEW_SIZE,
   },
-  wrapper: {},
+  wrapper: {
+    padding: 4,
+  },
 });

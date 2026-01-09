@@ -340,6 +340,7 @@ export type Theme = {
       fileSizeText: TextStyle;
       fileTextContainer: ViewStyle;
       uploadProgressOverlay: ViewStyle;
+      wrapper: ViewStyle;
     };
     fileUploadPreview: {
       flatList: ViewStyle;
@@ -349,6 +350,7 @@ export type Theme = {
     imageAttachmentUploadPreview: {
       container: ViewStyle;
       upload: ImageStyle;
+      wrapper: ViewStyle;
     };
     inputContainer: ViewStyle;
     inputBox: TextStyle;
@@ -841,7 +843,6 @@ export type Theme = {
     title: TextStyle;
     subtitle: TextStyle;
     subtitleContainer: ViewStyle;
-    subtitleIconContainer: ViewStyle;
     videoIcon: IconProps;
     wrapper: ViewStyle;
   };
@@ -1144,6 +1145,7 @@ export const defaultTheme: Theme = {
       fileSizeText: {},
       fileTextContainer: {},
       uploadProgressOverlay: {},
+      wrapper: {},
     },
     fileUploadPreview: {
       flatList: {},
@@ -1153,6 +1155,7 @@ export const defaultTheme: Theme = {
     imageAttachmentUploadPreview: {
       container: {},
       upload: {},
+      wrapper: {},
     },
     inputBox: {},
     inputBoxContainer: {},
@@ -1659,7 +1662,6 @@ export const defaultTheme: Theme = {
     rightContainer: {},
     subtitle: {},
     subtitleContainer: {},
-    subtitleIconContainer: {},
     title: {},
     videoIcon: {},
     wrapper: {},

@@ -234,10 +234,9 @@ export const AttachmentUploadPreviewList = (props: AttachmentUploadPreviewListPr
 const styles = StyleSheet.create({
   flatList: {
     overflow: 'visible',
-    padding: 4,
   },
   itemSeparator: {
-    width: 16,
+    width: 8,
   },
   wrapper: {},
 });

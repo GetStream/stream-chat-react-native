@@ -49,6 +49,7 @@ export const FileAttachmentUploadPreview = ({
           fileSizeText,
           fileTextContainer,
           uploadProgressOverlay,
+          wrapper,
         },
       },
     },
@@ -63,7 +64,7 @@ export const FileAttachmentUploadPreview = ({
   }, [attachment, removeAttachments]);
 
   return (
-    <>
+    <View style={[styles.wrapper, wrapper]} testID={'file-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
         style={[styles.overlay, uploadProgressOverlay]}
@@ -77,7 +78,6 @@ export const FileAttachmentUploadPreview = ({
             },
             fileContainer,
           ]}
-          testID={'file-attachment-upload-preview'}
         >
           <View style={styles.fileIcon}>
             <FileAttachmentIcon mimeType={attachment.mime_type} size={40} />
@@ -113,12 +113,12 @@ export const FileAttachmentUploadPreview = ({
       <View style={styles.dismissWrapper}>
         <DismissAttachmentUpload onPress={onDismissHandler} />
       </View>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  dismissWrapper: { position: 'absolute', right: -4, top: -4 },
+  dismissWrapper: { position: 'absolute', right: 0, top: 0 },
   fileContainer: {
     borderRadius: 12,
     borderWidth: 1,
@@ -148,5 +148,8 @@ const styles = StyleSheet.create({
   },
   overlay: {
     borderRadius: 12,
+  },
+  wrapper: {
+    padding: 4,
   },
 });
