@@ -49,9 +49,9 @@ import type { CommandInputProps } from '../../components/MessageInput/components
 import type { AttachButtonProps } from '../../components/MessageInput/components/InputButtons/AttachButton';
 import type { InputButtonsProps } from '../../components/MessageInput/components/InputButtons/index';
 import type { CooldownTimerProps } from '../../components/MessageInput/components/OutputButtons/CooldownTimer';
+import type { SendButtonProps } from '../../components/MessageInput/components/OutputButtons/SendButton';
 import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
-import type { SendButtonProps } from '../../components/MessageInput/components/OutputButtons/SendButton';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import {
   createAttachmentsCompositionMiddleware,

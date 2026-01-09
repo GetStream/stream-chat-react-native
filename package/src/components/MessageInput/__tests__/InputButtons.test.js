@@ -9,7 +9,7 @@ import { generateImageAttachment } from '../../../mock-builders/attachments';
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { InputButtons } from '../InputButtons';
+import { InputButtons } from '../components/InputButtons/index';
 
 const renderComponent = ({ channelProps, client, props }) => {
   return render(

@@ -14,7 +14,7 @@ import {
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { AttachmentUploadPreviewList } from '../AttachmentUploadPreviewList';
+import { AttachmentUploadPreviewList } from '../components/AttachmentPreview/AttachmentUploadPreviewList';
 
 jest.mock('../../../native.ts', () => {
   const { View } = require('react-native');

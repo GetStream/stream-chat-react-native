@@ -7,7 +7,7 @@ import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { SendButton } from '../SendButton';
+import { SendButton } from '../components/OutputButtons/SendButton';
 
 const renderComponent = ({ client, channel, props }) => {
   return render(
