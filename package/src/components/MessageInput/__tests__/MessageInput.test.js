@@ -9,7 +9,6 @@ import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvide
 
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 
-import { NativeHandlers } from '../../../native';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
