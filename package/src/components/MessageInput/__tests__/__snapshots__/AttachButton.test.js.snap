@@ -51,6 +51,20 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
         onStartShouldSetResponder={[Function]}
         style={
           [
+            {
+              "alignItems": "center",
+              "justifyContent": "center",
+            },
+            {
+              "borderRadius": 24,
+              "height": 48,
+              "width": 48,
+            },
+            {
+              "backgroundColor": "#FFFFFF",
+              "borderColor": "#E2E6EA",
+              "borderWidth": 1,
+            },
             {},
           ]
         }
@@ -58,14 +72,17 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
       >
         <RNSVGSvgView
           align="xMidYMid"
-          bbHeight={32}
-          bbWidth={32}
-          fill="#7A7A7A"
+          bbHeight={20}
+          bbWidth={20}
           focusable={false}
-          height={32}
+          height={20}
           meetOrSlice={0}
           minX={0}
           minY={0}
+          stroke="#384047"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
           style={
             [
               {
@@ -74,86 +91,66 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
               },
               {
                 "flex": 0,
-                "height": 32,
-                "width": 32,
+                "height": 20,
+                "width": 20,
               },
             ]
           }
-          vbHeight={32}
-          vbWidth={32}
-          width={32}
+          vbHeight={20}
+          vbWidth={20}
+          width={20}
         >
           <RNSVGGroup
             fill={
               {
-                "payload": 4286216826,
+                "payload": 4278190080,
                 "type": 0,
               }
             }
             propList={
               [
-                "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
               ]
             }
+            stroke={
+              {
+                "payload": 4281876551,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={1.5}
           >
-            <RNSVGGroup
-              clipPath="id"
+            <RNSVGPath
+              d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
               fill={
                 {
                   "payload": 4278190080,
                   "type": 0,
                 }
               }
-            >
-              <RNSVGPath
-                d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
-                fill={
-                  {
-                    "payload": 4286216826,
-                    "type": 0,
-                  }
+              propList={
+                [
+                  "stroke",
+                  "strokeWidth",
+                  "strokeLinecap",
+                  "strokeLinejoin",
+                ]
+              }
+              stroke={
+                {
+                  "payload": 4281876551,
+                  "type": 0,
                 }
-                propList={
-                  [
-                    "fill",
-                  ]
-                }
-              />
-            </RNSVGGroup>
-            <RNSVGDefs>
-              <RNSVGClipPath
-                fill={
-                  {
-                    "payload": 4278190080,
-                    "type": 0,
-                  }
-                }
-                name="id"
-              >
-                <RNSVGRect
-                  fill={
-                    {
-                      "payload": 4278190080,
-                      "type": 0,
-                    }
-                  }
-                  height={32}
-                  matrix={
-                    [
-                      1,
-                      0,
-                      0,
-                      1,
-                      0.191406,
-                      0,
-                    ]
-                  }
-                  width={32}
-                  x={0}
-                  y={0}
-                />
-              </RNSVGClipPath>
-            </RNSVGDefs>
+              }
+              strokeLinecap={1}
+              strokeLinejoin={1}
+              strokeWidth={1.5}
+            />
           </RNSVGGroup>
         </RNSVGSvgView>
       </View>
@@ -401,6 +398,20 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           [
+            {
+              "alignItems": "center",
+              "justifyContent": "center",
+            },
+            {
+              "borderRadius": 24,
+              "height": 48,
+              "width": 48,
+            },
+            {
+              "backgroundColor": "#FFFFFF",
+              "borderColor": "#E2E6EA",
+              "borderWidth": 1,
+            },
             {},
           ]
         }
@@ -408,14 +419,17 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
       >
         <RNSVGSvgView
           align="xMidYMid"
-          bbHeight={32}
-          bbWidth={32}
-          fill="#7A7A7A"
+          bbHeight={20}
+          bbWidth={20}
           focusable={false}
-          height={32}
+          height={20}
           meetOrSlice={0}
           minX={0}
           minY={0}
+          stroke="#384047"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
           style={
             [
               {
@@ -424,86 +438,66 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
               },
               {
                 "flex": 0,
-                "height": 32,
-                "width": 32,
+                "height": 20,
+                "width": 20,
               },
             ]
           }
-          vbHeight={32}
-          vbWidth={32}
-          width={32}
+          vbHeight={20}
+          vbWidth={20}
+          width={20}
         >
           <RNSVGGroup
             fill={
               {
-                "payload": 4286216826,
+                "payload": 4278190080,
                 "type": 0,
               }
             }
             propList={
               [
-                "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
               ]
             }
+            stroke={
+              {
+                "payload": 4281876551,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={1.5}
           >
-            <RNSVGGroup
-              clipPath="id"
+            <RNSVGPath
+              d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
               fill={
                 {
                   "payload": 4278190080,
                   "type": 0,
                 }
               }
-            >
-              <RNSVGPath
-                d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
-                fill={
-                  {
-                    "payload": 4286216826,
-                    "type": 0,
-                  }
+              propList={
+                [
+                  "stroke",
+                  "strokeWidth",
+                  "strokeLinecap",
+                  "strokeLinejoin",
+                ]
+              }
+              stroke={
+                {
+                  "payload": 4281876551,
+                  "type": 0,
                 }
-                propList={
-                  [
-                    "fill",
-                  ]
-                }
-              />
-            </RNSVGGroup>
-            <RNSVGDefs>
-              <RNSVGClipPath
-                fill={
-                  {
-                    "payload": 4278190080,
-                    "type": 0,
-                  }
-                }
-                name="id"
-              >
-                <RNSVGRect
-                  fill={
-                    {
-                      "payload": 4278190080,
-                      "type": 0,
-                    }
-                  }
-                  height={32}
-                  matrix={
-                    [
-                      1,
-                      0,
-                      0,
-                      1,
-                      0.191406,
-                      0,
-                    ]
-                  }
-                  width={32}
-                  x={0}
-                  y={0}
-                />
-              </RNSVGClipPath>
-            </RNSVGDefs>
+              }
+              strokeLinecap={1}
+              strokeLinejoin={1}
+              strokeWidth={1.5}
+            />
           </RNSVGGroup>
         </RNSVGSvgView>
       </View>
@@ -751,6 +745,20 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           [
+            {
+              "alignItems": "center",
+              "justifyContent": "center",
+            },
+            {
+              "borderRadius": 24,
+              "height": 48,
+              "width": 48,
+            },
+            {
+              "backgroundColor": "#FFFFFF",
+              "borderColor": "#E2E6EA",
+              "borderWidth": 1,
+            },
             {},
           ]
         }
@@ -758,14 +766,17 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
       >
         <RNSVGSvgView
           align="xMidYMid"
-          bbHeight={32}
-          bbWidth={32}
-          fill="#7A7A7A"
+          bbHeight={20}
+          bbWidth={20}
           focusable={false}
-          height={32}
+          height={20}
           meetOrSlice={0}
           minX={0}
           minY={0}
+          stroke="#B8BEC4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
           style={
             [
               {
@@ -774,86 +785,66 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
               },
               {
                 "flex": 0,
-                "height": 32,
-                "width": 32,
+                "height": 20,
+                "width": 20,
               },
             ]
           }
-          vbHeight={32}
-          vbWidth={32}
-          width={32}
+          vbHeight={20}
+          vbWidth={20}
+          width={20}
         >
           <RNSVGGroup
             fill={
               {
-                "payload": 4286216826,
+                "payload": 4278190080,
                 "type": 0,
               }
             }
             propList={
               [
-                "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
               ]
             }
+            stroke={
+              {
+                "payload": 4290297540,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={1.5}
           >
-            <RNSVGGroup
-              clipPath="id"
+            <RNSVGPath
+              d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
               fill={
                 {
                   "payload": 4278190080,
                   "type": 0,
                 }
               }
-            >
-              <RNSVGPath
-                d="M17.5245 9.33332L14.8579 9.33332L14.8579 14.6666L9.52453 14.6666L9.52453 17.3333L14.8579 17.3333L14.8579 22.6667L17.5245 22.6667L17.5245 17.3333L22.8579 17.3333L22.8579 14.6666L17.5245 14.6666L17.5245 9.33332ZM16.1912 2.66665C8.83119 2.66665 2.85786 8.63998 2.85786 16C2.85786 23.36 8.83119 29.3333 16.1912 29.3333C23.5512 29.3333 29.5245 23.36 29.5245 16C29.5245 8.63998 23.5512 2.66665 16.1912 2.66665ZM16.1912 26.6667C10.3112 26.6666 5.52453 21.88 5.52453 16C5.52453 10.12 10.3112 5.33332 16.1912 5.33332C22.0712 5.33332 26.8579 10.12 26.8579 16C26.8579 21.88 22.0712 26.6666 16.1912 26.6667Z"
-                fill={
-                  {
-                    "payload": 4286216826,
-                    "type": 0,
-                  }
+              propList={
+                [
+                  "stroke",
+                  "strokeWidth",
+                  "strokeLinecap",
+                  "strokeLinejoin",
+                ]
+              }
+              stroke={
+                {
+                  "payload": 4290297540,
+                  "type": 0,
                 }
-                propList={
-                  [
-                    "fill",
-                  ]
-                }
-              />
-            </RNSVGGroup>
-            <RNSVGDefs>
-              <RNSVGClipPath
-                fill={
-                  {
-                    "payload": 4278190080,
-                    "type": 0,
-                  }
-                }
-                name="id"
-              >
-                <RNSVGRect
-                  fill={
-                    {
-                      "payload": 4278190080,
-                      "type": 0,
-                    }
-                  }
-                  height={32}
-                  matrix={
-                    [
-                      1,
-                      0,
-                      0,
-                      1,
-                      0.191406,
-                      0,
-                    ]
-                  }
-                  width={32}
-                  x={0}
-                  y={0}
-                />
-              </RNSVGClipPath>
-            </RNSVGDefs>
+              }
+              strokeLinecap={1}
+              strokeLinejoin={1}
+              strokeWidth={1.5}
+            />
           </RNSVGGroup>
         </RNSVGSvgView>
       </View>

@@ -1,11 +1,11 @@
 import React from 'react';
-import { I18nManager, StyleSheet, Text, ViewProps } from 'react-native';
+import { I18nManager, StyleSheet, Text, TextProps } from 'react-native';
 
 const styles = StyleSheet.create({
   defaultStyle: { writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' },
 });
 
-export type WritingDirectionAwareTextProps = ViewProps;
+export type WritingDirectionAwareTextProps = TextProps;
 
 export const WritingDirectionAwareText = (props: WritingDirectionAwareTextProps) => {
   const { children, style, ...rest } = props;

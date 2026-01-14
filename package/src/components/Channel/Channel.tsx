@@ -173,9 +173,7 @@ import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageS
 import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
-import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
-import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/AttachmentUploadPreviewList';
-import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
 import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
@@ -187,12 +185,10 @@ import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } fro
 import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import { CommandInput as CommandInputDefault } from '../MessageInput/components/CommandInput';
-import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
-import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
-import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
-import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
-import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
-import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
+import { InputButtons as InputButtonsDefault } from '../MessageInput/components/InputButtons';
+import { AttachButton as AttachButtonDefault } from '../MessageInput/components/InputButtons/AttachButton';
+import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/components/OutputButtons/CooldownTimer';
+import { SendButton as SendButtonDefault } from '../MessageInput/components/OutputButtons/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
@@ -608,7 +604,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
     children,
     client,
-    CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
     CreatePollContent,
@@ -671,9 +666,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
-    InputEditingStateHeader = InputEditingStateHeaderDefault,
     CommandInput = CommandInputDefault,
-    InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
     keyboardBehavior,
@@ -708,6 +701,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageDeleted = MessageDeletedDefault,
     MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
+    messageInputFloating = false,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     messageId,
@@ -729,7 +723,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageUserReactions = MessageUserReactionsDefault,
     MessageUserReactionsAvatar = MessageUserReactionsAvatarDefault,
     MessageUserReactionsItem = MessageUserReactionsItemDefault,
-    MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     // TODO: Think about this one
@@ -1866,7 +1859,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     CameraSelectorIcon,
     channelId,
     CommandInput,
-    CommandsButton,
     compressImageQuality,
     CooldownTimer,
     CreatePollContent,
@@ -1884,9 +1876,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageSelectorIcon,
     Input,
     InputButtons,
-    InputEditingStateHeader,
-    InputReplyStateHeader,
-    MoreOptionsButton,
+    messageInputFloating,
     openPollCreationDialog,
     SendButton,
     sendMessage,

@@ -4,6 +4,7 @@ import type { StreamChat } from 'stream-chat';
 
 import type { LoginConfig } from '../types';
 import {
+  MessageInputFloatingConfigItem,
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
@@ -15,6 +16,7 @@ type AppContextType = {
   logout: () => void;
   switchUser: (userId?: string) => void;
   messageListImplementation: MessageListImplementationConfigItem['id'];
+  messageInputFloating: MessageInputFloatingConfigItem['value'];
   messageListMode: MessageListModeConfigItem['mode'];
   messageListPruning: MessageListPruningConfigItem['value'];
 };

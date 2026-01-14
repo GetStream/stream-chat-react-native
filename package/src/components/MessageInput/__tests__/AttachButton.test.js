@@ -8,7 +8,7 @@ import { initiateClientWithChannels } from '../../../mock-builders/api/initiateC
 import * as NativeHandler from '../../../native';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { AttachButton } from '../AttachButton';
+import { AttachButton } from '../components/InputButtons/AttachButton';
 
 const renderComponent = ({ channelProps, client, props }) => {
   return render(

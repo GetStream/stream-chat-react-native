@@ -34,9 +34,7 @@ import {
 } from '../../components';
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
-import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
-import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/AttachmentUploadPreviewList';
-import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
+import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
 import type { AttachmentUploadProgressIndicatorProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
@@ -48,13 +46,12 @@ import type { AudioRecordingLockIndicatorProps } from '../../components/MessageI
 import type { AudioRecordingPreviewProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import type { CommandInputProps } from '../../components/MessageInput/components/CommandInput';
-import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
-import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
+import type { AttachButtonProps } from '../../components/MessageInput/components/InputButtons/AttachButton';
+import type { InputButtonsProps } from '../../components/MessageInput/components/InputButtons/index';
+import type { CooldownTimerProps } from '../../components/MessageInput/components/OutputButtons/CooldownTimer';
+import type { SendButtonProps } from '../../components/MessageInput/components/OutputButtons/SendButton';
 import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
-import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
-import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
-import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import {
   createAttachmentsCompositionMiddleware,
@@ -249,13 +246,7 @@ export type InputMessageInputContextValue = {
   ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
   FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
   VideoAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
-  /**
-   * Custom UI component for commands button.
-   *
-   * Defaults to and accepts same props as:
-   * [CommandsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/commands-button/)
-   */
-  CommandsButton: React.ComponentType<CommandsButtonProps>;
+
   /**
    * Custom UI component to display the remaining cooldown a user will have to wait before
    * being allowed to send another message. This component is displayed in place of the
@@ -280,17 +271,7 @@ export type InputMessageInputContextValue = {
   /** When false, ImageSelectorIcon will be hidden */
   hasImagePicker: boolean;
 
-  InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps>;
   CommandInput: React.ComponentType<CommandInputProps>;
-  InputReplyStateHeader: React.ComponentType;
-  /**
-   * Custom UI component for more options button.
-   *
-   * Defaults to and accepts same props as:
-   * [MoreOptionsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/more-options-button/)
-   */
-  MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
-
   /**
    * Custom UI component for send button.
    *
@@ -357,6 +338,13 @@ export type InputMessageInputContextValue = {
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
+
+  /**
+   * Whether the message input is floating or not.
+   * @type boolean
+   * @default false
+   */
+  messageInputFloating: boolean;
 
   /**
    * Custom UI component for AutoCompleteInput.

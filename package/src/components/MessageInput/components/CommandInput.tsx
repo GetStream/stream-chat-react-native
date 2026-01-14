@@ -43,8 +43,8 @@ export const CommandInput = ({
     theme: {
       colors: { accent_blue, grey, white },
       messageInput: {
-        autoCompleteInputContainer,
         commandInput: { closeButton, container, text },
+        inputContainer,
       },
     },
   } = useTheme();
@@ -61,13 +61,13 @@ export const CommandInput = ({
   const commandName = (command.name ?? '').toUpperCase();
 
   return (
-    <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
+    <View style={[styles.inputContainer, inputContainer]}>
       <View style={[styles.giphyContainer, { backgroundColor: accent_blue }, container]}>
         <GiphyLightning fill={white} size={16} />
         <Text style={[styles.giphyText, { color: white }, text]}>{commandName}</Text>
       </View>
 
-      <AutoCompleteInput cooldownActive={!!cooldownRemainingSeconds} />
+      <AutoCompleteInput cooldownRemainingSeconds={cooldownRemainingSeconds} />
       <Pressable
         disabled={disabled}
         onPress={onCloseHandler}
@@ -90,12 +90,6 @@ export const CommandInput = ({
 CommandInput.displayName = 'CommandInput{messageInput}';
 
 const styles = StyleSheet.create({
-  autoCompleteInputContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingLeft: 8,
-    paddingRight: 10,
-  },
   giphyContainer: {
     alignItems: 'center',
     borderRadius: 12,
@@ -107,5 +101,11 @@ const styles = StyleSheet.create({
   giphyText: {
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  inputContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingLeft: 8,
+    paddingRight: 10,
   },
 });

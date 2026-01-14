@@ -3,14 +3,14 @@ import React from 'react';
 import { Pressable, PressableProps, StyleSheet } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { Close } from '../../../../icons';
+import { NewClose } from '../../../../icons/NewClose';
 
 type DismissAttachmentUploadProps = PressableProps;
 
 export const DismissAttachmentUpload = ({ onPress }: DismissAttachmentUploadProps) => {
   const {
     theme: {
-      colors: { overlay, white },
+      colors: { white },
       messageInput: {
         dismissAttachmentUpload: { dismiss, dismissIcon, dismissIconColor },
       },
@@ -22,21 +22,24 @@ export const DismissAttachmentUpload = ({ onPress }: DismissAttachmentUploadProp
       onPress={onPress}
       style={({ pressed }) => [
         styles.dismiss,
-        { backgroundColor: overlay, opacity: pressed ? 0.8 : 1 },
+        {
+          borderColor: white,
+          opacity: pressed ? 0.8 : 1,
+        },
         dismiss,
       ]}
       testID='remove-upload-preview'
     >
-      <Close pathFill={dismissIconColor || white} {...dismissIcon} />
+      <NewClose height={16} stroke={dismissIconColor || white} {...dismissIcon} width={16} />
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   dismiss: {
-    borderRadius: 24,
-    position: 'absolute',
-    right: 8,
-    top: 8,
+    backgroundColor: '#384047',
+    borderRadius: 16,
+    borderWidth: 2,
+    overflow: 'hidden',
   },
 });

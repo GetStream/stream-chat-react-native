@@ -1,13 +1,13 @@
 import React from 'react';
-import { Alert, Linking, Pressable, StyleSheet } from 'react-native';
+import { Alert, Linking } from 'react-native';
 
+import { IconButton } from '../../../../components/ui/IconButton';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { Mic } from '../../../../icons/Mic';
+import { NewMic } from '../../../../icons/NewMic';
 import { AudioRecordingReturnType, NativeHandlers } from '../../../../native';
 
 export type AudioRecordingButtonProps = Partial<
@@ -45,7 +45,6 @@ export type AudioRecordingButtonProps = Partial<
 export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
   const {
     asyncMessagesMinimumPressDuration: propAsyncMessagesMinimumPressDuration,
-    buttonSize,
     handleLongPress,
     handlePress,
     permissionsGranted,
@@ -58,14 +57,6 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
   const asyncMessagesMinimumPressDuration =
     propAsyncMessagesMinimumPressDuration || contextAsyncMessagesMinimumPressDuration;
 
-  const {
-    theme: {
-      colors: { grey, light_gray, white },
-      messageInput: {
-        audioRecordingButton: { container, micIcon },
-      },
-    },
-  } = useTheme();
   const { t } = useTranslationContext();
 
   const onPressHandler = () => {
@@ -103,33 +94,17 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
   };
 
   return (
-    <Pressable
+    <IconButton
+      accessibilityLabel='Start recording'
+      category='ghost'
       delayLongPress={asyncMessagesMinimumPressDuration}
+      Icon={NewMic}
       onLongPress={onLongPressHandler}
       onPress={onPressHandler}
-      style={({ pressed }) => [
-        styles.container,
-        {
-          backgroundColor: pressed ? light_gray : white,
-          height: buttonSize || 40,
-          width: buttonSize || 40,
-        },
-        container,
-      ]}
-      testID='audio-button'
-    >
-      <Mic fill={grey} size={32} {...micIcon} />
-    </Pressable>
+      size='sm'
+      type='secondary'
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderRadius: 50,
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
-});
 
 AudioRecordingButton.displayName = 'AudioRecordingButton{messageInput}';

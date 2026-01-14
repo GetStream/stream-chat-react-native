@@ -27,8 +27,6 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import { useViewport } from '../../../hooks/useViewport';
-
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
 import { useMessageData } from '../hooks/useMessageData';
@@ -180,7 +178,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       },
     },
   } = useTheme();
-  const { vw } = useViewport();
 
   const onLayout: (event: LayoutChangeEvent) => void = ({
     nativeEvent: {
@@ -325,7 +322,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                       key={`quoted_reply_${messageContentOrderIndex}`}
                       style={[styles.replyContainer, replyContainer]}
                     >
-                      <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
+                      <Reply />
                     </View>
                   )
                 );

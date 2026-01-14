@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
+
 import {
   Channel,
   MessageActionsParams,
@@ -26,6 +27,7 @@ import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
+import { useAppContext } from '../context/AppContext.ts';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -84,6 +86,8 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   const { client: chatClient } = useChatContext();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
+  const { messageInputFloating } = useAppContext();
+  const headerHeight = useHeaderHeight();
 
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,
@@ -115,14 +119,15 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   }, [setThread]);
 
   return (
-    <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: white }]}>
+    <View style={[styles.container, { backgroundColor: white }]}>
       <Channel
-        audioRecordingEnabled={true}
+        audioRecordingEnabled={false}
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
         enforceUniqueReaction
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={headerHeight}
         messageActions={messageActions}
+        messageInputFloating={messageInputFloating}
         MessageHeader={MessageReminderHeader}
         MessageLocation={MessageLocation}
         onPressMessage={onPressMessage}
@@ -132,6 +137,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         <ThreadHeader thread={thread} />
         <Thread onThreadDismount={onThreadDismount} />
       </Channel>
-    </SafeAreaView>
+    </View>
   );
 };
