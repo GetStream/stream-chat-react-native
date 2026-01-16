@@ -373,9 +373,7 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
 
 export const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof ReplyWithContext;
 
-export type ReplyProps = Partial<ReplyPropsWithContext> & {
-  style: ViewStyle;
-};
+export type ReplyProps = Partial<ReplyPropsWithContext>;
 
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();
