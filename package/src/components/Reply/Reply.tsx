@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import dayjs from 'dayjs';
 import { LocalMessage, MessageComposerState, PollState } from 'stream-chat';
@@ -18,13 +18,13 @@ import { NewLink } from '../../icons/NewLink';
 import { NewMapPin } from '../../icons/NewMapPin';
 import { NewMic } from '../../icons/NewMic';
 import { NewPhoto } from '../../icons/NewPhoto';
-import { NewPlayIcon } from '../../icons/NewPlayIcon';
 import { NewPoll } from '../../icons/NewPoll';
 import { NewVideo } from '../../icons/NewVideo';
 import { FileTypes } from '../../types/types';
 import { checkQuotedMessageEquality } from '../../utils/utils';
 import { FileIcon } from '../Attachment/FileIcon';
-import { DismissAttachmentUpload } from '../MessageInput/components/AttachmentPreview/DismissAttachmentUpload';
+import { AttachmentRemoveControl } from '../MessageInput/components/AttachmentPreview/AttachmentRemoveControl';
+import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
   quotedMessage: state.quotedMessage,
@@ -56,9 +56,7 @@ const RightContent = React.memo((props: { message: LocalMessage }) => {
       <View style={styles.contentWrapper}>
         <View style={styles.attachmentContainer}>
           <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFillObject} />
-          <View style={styles.playIconContainer}>
-            <NewPlayIcon fill={'white'} height={10} width={10} />
-          </View>
+          <VideoPlayIndicator size='sm' />
         </View>
       </View>
     );
@@ -266,10 +264,12 @@ export type ReplyPropsWithContext = Pick<MessageContextValue, 'message'> &
     isMyMessage: boolean;
     onDismiss: () => void;
     mode: 'reply' | 'edit';
+    // This is temporary for the MessageContent Component to style the Reply component
+    style?: ViewStyle;
   };
 
 export const ReplyWithContext = (props: ReplyPropsWithContext) => {
-  const { isMyMessage, message: messageFromContext, mode, onDismiss, quotedMessage } = props;
+  const { isMyMessage, message: messageFromContext, mode, onDismiss, quotedMessage, style } = props;
   const {
     theme: {
       colors: { grey_whisper },
@@ -306,6 +306,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
           styles.container,
           { backgroundColor: isMyMessage ? '#F2F4F6' : '#D2E3FF', borderColor: grey_whisper },
           container,
+          style,
         ]}
       >
         <View
@@ -329,7 +330,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       </View>
       {!messageFromContext?.quoted_message ? (
         <View style={[styles.dismissWrapper, dismissWrapper]}>
-          <DismissAttachmentUpload onPress={onDismiss} />
+          <AttachmentRemoveControl onPress={onDismiss} />
         </View>
       ) : null}
     </View>
@@ -372,7 +373,9 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
 
 export const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof ReplyWithContext;
 
-export type ReplyProps = Partial<ReplyPropsWithContext>;
+export type ReplyProps = Partial<ReplyPropsWithContext> & {
+  style: ViewStyle;
+};
 
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();

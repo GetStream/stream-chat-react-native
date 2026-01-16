@@ -4,9 +4,9 @@ import { StyleSheet, View } from 'react-native';
 
 import { FileReference, LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
 
+import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
 import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
-import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 
 import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
@@ -71,7 +71,7 @@ export const AudioAttachmentUploadPreview = ({
         />
       </AttachmentUploadProgressIndicator>
       <View style={styles.dismissWrapper}>
-        <DismissAttachmentUpload onPress={onDismissHandler} />
+        <AttachmentRemoveControl onPress={onDismissHandler} />
       </View>
       {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
         <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
@@ -83,7 +83,7 @@ export const AudioAttachmentUploadPreview = ({
 const styles = StyleSheet.create({
   dismissWrapper: {
     position: 'absolute',
-    right: 8,
+    right: 0,
     top: 0,
   },
   overlay: {

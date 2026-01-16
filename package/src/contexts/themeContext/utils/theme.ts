@@ -1,7 +1,11 @@
-import type { ColorValue, ImageStyle, TextStyle, ViewStyle } from 'react-native';
+import { type ColorValue, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
 import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
+import { lightColors, type NewColors } from '../../../theme/primitives/colors';
+import { Radius } from '../../../theme/primitives/radius';
+import { Spacing } from '../../../theme/primitives/spacing';
+import { Typography } from '../../../theme/primitives/typography';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 export const BASE_AVATAR_SIZE = 32;
@@ -187,7 +191,7 @@ export type Theme = {
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
   };
-  colors: typeof Colors & { [key: string]: string };
+  colors: typeof Colors & NewColors & { [key: string]: string | { [key: string]: string } };
   dateHeader: {
     container: ViewStyle;
     text: TextStyle;
@@ -885,9 +889,15 @@ export type Theme = {
     thumb: ViewStyle;
     waveform: ViewStyle;
   };
+  spacing: typeof Spacing;
+  radius: typeof Radius;
+  typography: typeof Typography;
 };
 
 export const defaultTheme: Theme = {
+  spacing: Spacing,
+  radius: Radius,
+  typography: Typography,
   aiTypingIndicatorView: {
     container: {},
     text: {},
@@ -1004,6 +1014,7 @@ export const defaultTheme: Theme = {
   },
   colors: {
     ...Colors,
+    ...lightColors,
   },
   dateHeader: {
     container: {},

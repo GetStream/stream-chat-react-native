@@ -1,12 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { Image, StyleSheet, View } from 'react-native';
 
 import { LocalImageAttachment } from 'stream-chat';
 
+import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
 import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
-import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
@@ -36,6 +36,7 @@ export const ImageAttachmentUploadPreview = ({
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onRetryHandler = useCallback(() => {
     handleRetry(attachment);
@@ -74,30 +75,35 @@ export const ImageAttachmentUploadPreview = ({
       </AttachmentUploadProgressIndicator>
 
       <View style={styles.dismissWrapper}>
-        <DismissAttachmentUpload onPress={onDismissHandler} />
+        <AttachmentRemoveControl onPress={onDismissHandler} />
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderColor: '#E2E6EA',
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    overflow: 'hidden',
-  },
-  dismissWrapper: { position: 'absolute', right: 0, top: 0 },
-  fileSizeText: {
-    fontSize: 12,
-    paddingHorizontal: 10,
-  },
-  upload: {
-    height: IMAGE_PREVIEW_SIZE,
-    width: IMAGE_PREVIEW_SIZE,
-  },
-  wrapper: {
-    padding: 4,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { spacing, radius, colors },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          borderColor: colors.borderImage,
+          borderRadius: radius.lg,
+          borderWidth: 1,
+          flexDirection: 'row',
+          overflow: 'hidden',
+        },
+        dismissWrapper: { position: 'absolute', right: 0, top: 0 },
+        upload: {
+          height: IMAGE_PREVIEW_SIZE,
+          width: IMAGE_PREVIEW_SIZE,
+        },
+        wrapper: {
+          padding: spacing.xxs,
+        },
+      }),
+    [colors, radius, spacing],
+  );
+};

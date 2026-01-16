@@ -27,6 +27,7 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
+import { useViewport } from '../../../hooks';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
 import { useMessageData } from '../hooks/useMessageData';
@@ -151,6 +152,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   } = props;
   const { client } = useChatContext();
   const { PollContent: PollContentOverride } = useMessagesContext();
+  const { vw } = useViewport();
 
   const {
     theme: {
@@ -322,7 +324,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                       key={`quoted_reply_${messageContentOrderIndex}`}
                       style={[styles.replyContainer, replyContainer]}
                     >
-                      <Reply />
+                      <Reply style={{ width: vw(60) }} />
                     </View>
                   )
                 );
