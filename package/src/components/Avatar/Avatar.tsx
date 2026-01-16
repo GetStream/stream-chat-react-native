@@ -8,12 +8,13 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import Svg, { Circle, CircleProps } from 'react-native-svg';
+import { CircleProps } from 'react-native-svg';
 
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
+import { OnlineIndicator } from '../ui/OnlineIndicator';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
 const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
@@ -53,7 +54,6 @@ export type AvatarProps = {
   name?: string;
   online?: boolean;
   presenceIndicator?: CircleProps;
-  presenceIndicatorContainerStyle?: StyleProp<ViewStyle>;
   testID?: string;
 };
 
@@ -67,17 +67,14 @@ export const Avatar = (props: AvatarProps) => {
     ImageComponent = Image,
     imageStyle,
     name,
-    online,
-    presenceIndicator: presenceIndicatorProp,
-    presenceIndicatorContainerStyle,
+    online = false,
     size,
     testID,
   } = props;
   const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
-      avatar: { container, image, presenceIndicator, presenceIndicatorContainer },
-      colors: { accent_green, white },
+      avatar: { container, image, presenceIndicatorContainer },
     },
   } = useTheme();
 
@@ -157,26 +154,13 @@ export const Avatar = (props: AvatarProps) => {
           />
         )}
       </View>
-      {online && (
-        <View
-          style={[
-            styles.presenceIndicatorContainer,
-            presenceIndicatorContainer,
-            presenceIndicatorContainerStyle,
-          ]}
-        >
-          <Svg>
-            <Circle
-              fill={accent_green}
-              stroke={white}
-              {...presenceIndicator}
-              {...presenceIndicatorProp}
-            />
-          </Svg>
+      {online ? (
+        <View style={[styles.presenceIndicatorContainer, presenceIndicatorContainer]}>
+          <OnlineIndicator online={online} size='md' />
         </View>
-      )}
+      ) : null}
     </View>
   );
 };
 
-Avatar.displayName = 'Avatar{avatar}';
+Avatar.displayName = 'Avatar';

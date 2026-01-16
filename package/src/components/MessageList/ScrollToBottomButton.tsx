@@ -1,28 +1,21 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { NewDown } from '../../icons/NewDown';
+import { BadgeNotification } from '../ui';
 import { IconButton } from '../ui/IconButton';
 
 const styles = StyleSheet.create({
   unreadCountNotificationContainer: {
-    alignItems: 'center',
-    borderRadius: 10,
-    elevation: 6,
-    height: 20,
-    justifyContent: 'center',
-    minWidth: 20,
-    paddingHorizontal: 4,
     position: 'absolute',
+    right: 0,
     top: 0,
   },
-  unreadCountNotificationText: {
-    fontSize: 11,
-    textAlign: 'center',
-    textAlignVertical: 'center',
+  container: {
+    padding: 4,
   },
 });
 
@@ -39,13 +32,8 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
 
   const {
     theme: {
-      colors: { accent_blue, white },
       messageList: {
-        scrollToBottomButton: {
-          container,
-          unreadCountNotificationContainer,
-          unreadCountNotificationText,
-        },
+        scrollToBottomButton: { container },
       },
     },
   } = useTheme();
@@ -55,7 +43,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   }
 
   return (
-    <>
+    <View style={styles.container}>
       <Animated.View
         entering={ZoomIn.duration(200)}
         exiting={ZoomOut.duration(200)}
@@ -70,27 +58,12 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
           type='secondary'
         />
       </Animated.View>
-      {!!unreadCount && (
-        <View
-          style={[
-            styles.unreadCountNotificationContainer,
-            { backgroundColor: accent_blue },
-            unreadCountNotificationContainer,
-          ]}
-        >
-          <Text
-            style={[
-              styles.unreadCountNotificationText,
-              { color: white },
-              unreadCountNotificationText,
-            ]}
-            testID='unread-count'
-          >
-            {unreadCount}
-          </Text>
-        </View>
-      )}
-    </>
+      <View style={styles.unreadCountNotificationContainer}>
+        {unreadCount ? (
+          <BadgeNotification count={unreadCount} size='md' type='primary' testID='unread-count' />
+        ) : null}
+      </View>
+    </View>
   );
 };
 

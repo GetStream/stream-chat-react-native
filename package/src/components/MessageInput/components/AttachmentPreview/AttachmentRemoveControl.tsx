@@ -46,7 +46,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         dismiss: {
-          backgroundColor: control.remove,
+          backgroundColor: control.bg,
           borderColor: control.border,
           borderRadius: radius.xl,
           borderWidth: 2,

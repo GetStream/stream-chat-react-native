@@ -107,7 +107,7 @@ export const FileAttachmentUploadPreview = ({
 const useStyles = () => {
   const {
     theme: {
-      colors: { borderSurfaceSubtle, text },
+      colors: { border, text },
       radius,
       spacing,
       typography: { fontSize, fontWeight },
@@ -119,11 +119,11 @@ const useStyles = () => {
         dismissWrapper: { position: 'absolute', right: 0, top: 0 },
         fileContainer: {
           borderRadius: radius.lg,
-          borderColor: borderSurfaceSubtle,
+          borderColor: border.surfaceSubtle,
           borderWidth: 1,
           flexDirection: 'row',
           gap: spacing.sm,
-          maxWidth: 224, // TODO: Not sure how to omit this
+          width: 224, // TODO: Not sure how to omit this
           padding: spacing.md,
         },
         fileContent: {
@@ -151,6 +151,6 @@ const useStyles = () => {
           padding: spacing.xxs,
         },
       }),
-    [radius, borderSurfaceSubtle, spacing, text, fontSize, fontWeight],
+    [radius, border, spacing, text, fontSize, fontWeight],
   );
 };

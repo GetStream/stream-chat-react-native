@@ -1889,7 +1889,7 @@ exports[`Thread should match thread snapshot 1`] = `
           },
           {
             "backgroundColor": "#FFFFFF",
-            "borderColor": "#00000014",
+            "borderColor": "#E2E6EA",
             "paddingBottom": 32,
           },
           {},

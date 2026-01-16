@@ -128,7 +128,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
                   messageId: item.id,
                 });
               }}
-              style={[styles.itemContainer, { borderBottomColor: border }]}
+              style={[styles.itemContainer, { borderBottomColor: border.surfaceSubtle }]}
               testID='channel-preview-button'
             >
               <Avatar

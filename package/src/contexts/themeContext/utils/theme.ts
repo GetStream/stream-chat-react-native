@@ -22,7 +22,7 @@ export const Colors = {
   bg_user: '#F7F7F8',
   black: '#000000',
   blue_alice: '#E9F2FF',
-  border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
+  // border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
   code_block: '#DDDDDD',
   disabled: '#B4BBBA',
   grey: '#7A7A7A',

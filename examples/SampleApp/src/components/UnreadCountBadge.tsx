@@ -1,33 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useStateStore, useTheme } from 'stream-chat-react-native';
+import { BadgeNotification, useStateStore } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { ThreadManagerState } from 'stream-chat';
 
-const styles = StyleSheet.create({
-  unreadContainer: {
-    alignItems: 'center',
-    borderRadius: 8,
-    justifyContent: 'center',
-  },
-  unreadText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-  },
-});
-
 const selector = (nextValue: ThreadManagerState) =>
-  ({ unreadCount: nextValue.unreadThreadCount } as const);
+  ({ unreadCount: nextValue.unreadThreadCount }) as const;
 
 export const ThreadsUnreadCountBadge: React.FC = () => {
   const { chatClient } = useAppContext();
   const { unreadCount } = useStateStore(chatClient?.threads?.state, selector) ?? { unreadCount: 0 };
 
-  return <UnreadCountBadge unreadCount={unreadCount} />;
+  if (unreadCount === 0) {
+    return null;
+  }
+
+  return <BadgeNotification count={unreadCount} size='md' type='primary' />;
 };
 
 export const ChannelsUnreadCountBadge: React.FC = () => {
@@ -59,26 +47,9 @@ export const ChannelsUnreadCountBadge: React.FC = () => {
     };
   }, [chatClient]);
 
-  return <UnreadCountBadge unreadCount={unreadCount} />;
-};
+  if (unreadCount === 0) {
+    return null;
+  }
 
-type UnreadCountBadgeProps = {
-  unreadCount: number | undefined;
-};
-
-const UnreadCountBadge: React.FC<UnreadCountBadgeProps> = (props) => {
-  const { unreadCount } = props;
-  const {
-    theme: {
-      colors: { accent_red },
-    },
-  } = useTheme();
-
-  return (
-    <View style={[styles.unreadContainer, { backgroundColor: accent_red }]}>
-      {!!unreadCount && (
-        <Text style={styles.unreadText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
-      )}
-    </View>
-  );
+  return <BadgeNotification count={unreadCount} size='md' type='primary' />;
 };

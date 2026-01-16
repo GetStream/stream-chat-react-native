@@ -473,7 +473,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 styles.wrapper,
                 {
                   backgroundColor: white,
-                  borderColor: border,
+                  borderColor: border.surfaceSubtle,
                   paddingBottom: BOTTOM_OFFSET,
                 },
                 wrapper,

@@ -127,17 +127,6 @@ export default tsEslint.config(
       'no-var': 2,
       'object-shorthand': 1,
       'prefer-const': 1,
-      'react/jsx-sort-props': [
-        'error',
-        {
-          callbacksLast: false,
-          ignoreCase: true,
-          noSortAlphabetically: false,
-          reservedFirst: false,
-          shorthandFirst: false,
-          shorthandLast: false,
-        },
-      ],
       'react/prop-types': 0,
       'require-await': 2,
       semi: [1, 'always'],

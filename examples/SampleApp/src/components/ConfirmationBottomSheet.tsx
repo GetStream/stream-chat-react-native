@@ -86,7 +86,7 @@ export const ConfirmationBottomSheet: React.FC = () => {
         style={[
           styles.actionButtonsContainer,
           {
-            borderTopColor: border,
+            borderTopColor: border.surfaceSubtle,
           },
         ]}
       >

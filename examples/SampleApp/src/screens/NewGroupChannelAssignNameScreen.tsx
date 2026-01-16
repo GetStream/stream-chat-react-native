@@ -128,7 +128,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
             styles.inputBoxContainer,
             {
               backgroundColor: white_snow,
-              borderColor: border,
+              borderColor: border.surfaceSubtle,
             },
           ]}
         >

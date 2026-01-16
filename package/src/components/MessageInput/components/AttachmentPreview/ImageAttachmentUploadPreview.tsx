@@ -89,7 +89,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          borderColor: colors.borderImage,
+          borderColor: colors.border.image,
           borderRadius: radius.lg,
           borderWidth: 1,
           flexDirection: 'row',

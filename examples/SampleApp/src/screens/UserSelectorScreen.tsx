@@ -125,7 +125,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
             onPress={() => {
               switchUser(u.id);
             }}
-            style={[styles.userContainer, { borderBottomColor: border }]}
+            style={[styles.userContainer, { borderBottomColor: border.surfaceSubtle }]}
             testID={`user-selector-button-${u.id}`}
           >
             <Image
@@ -156,7 +156,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
           onPress={() => {
             navigation.navigate('AdvancedUserSelectorScreen');
           }}
-          style={[styles.userContainer, { borderBottomColor: border }]}
+          style={[styles.userContainer, { borderBottomColor: border.surfaceSubtle }]}
         >
           <View
             style={{

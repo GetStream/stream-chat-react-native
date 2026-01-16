@@ -111,7 +111,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
             styles.inputBoxContainer,
             {
               backgroundColor: white,
-              borderColor: border,
+              borderColor: border.surfaceSubtle,
               marginBottom: selectedUsers.length === 0 ? 8 : 16,
             },
           ]}

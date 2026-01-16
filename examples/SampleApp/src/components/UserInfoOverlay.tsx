@@ -283,7 +283,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border,
+                              borderTopColor: border.surfaceSubtle,
                             },
                           ]}
                         >
@@ -298,7 +298,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border,
+                              borderTopColor: border.surfaceSubtle,
                             },
                           ]}
                         >
@@ -314,7 +314,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                             style={[
                               styles.row,
                               {
-                                borderTopColor: border,
+                                borderTopColor: border.surfaceSubtle,
                               },
                             ]}
                           >
@@ -332,8 +332,8 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           style={[
                             styles.lastRow,
                             {
-                              borderBottomColor: border,
-                              borderTopColor: border,
+                              borderBottomColor: border.surfaceSubtle,
+                              borderTopColor: border.surfaceSubtle,
                             },
                           ]}
                         >
