@@ -134,7 +134,7 @@ platform :android do
       # Upload to Firebase App Distribution
       firebase_app_distribution(
           app: ENV.fetch('ANDROID_FIREBASE_APP_ID', nil),
-          service_credentials_json: ENV.fetch('FIREBASE_CREDENTIALS_JSON', nil),
+          service_credentials_json_data: ENV.fetch('FIREBASE_CREDENTIALS_JSON', nil),
           android_artifact_path: apk_path,
           android_artifact_type: "APK",
           groups: "stream-testers"
