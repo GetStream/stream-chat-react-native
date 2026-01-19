@@ -34,7 +34,7 @@ export const SendMessageDisallowedIndicator = () => {
         styles.container,
         {
           backgroundColor: white,
-          borderTopColor: border,
+          borderTopColor: border.surfaceSubtle,
           height: 50,
         },
         container,

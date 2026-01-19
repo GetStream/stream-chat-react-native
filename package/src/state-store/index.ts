@@ -4,3 +4,4 @@ export * from './audio-player-pool';
 export * from './video-player';
 export * from './video-player-pool';
 export * from './image-gallery-state-store';
+export * from './message-overlay-store';

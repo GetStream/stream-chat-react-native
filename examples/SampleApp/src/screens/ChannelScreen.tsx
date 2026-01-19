@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Channel,
@@ -17,9 +18,8 @@ import {
   useTranslationContext,
   MessageActionsParams,
 } from 'stream-chat-react-native';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppContext } from '../context/AppContext';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -121,9 +121,13 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
-  const { chatClient, messageListImplementation, messageListMode, messageListPruning } =
-    useAppContext();
-  const { bottom } = useSafeAreaInsets();
+  const {
+    chatClient,
+    messageListImplementation,
+    messageListMode,
+    messageListPruning,
+    messageInputFloating,
+  } = useAppContext();
   const {
     theme: { colors },
   } = useTheme();
@@ -210,22 +214,24 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
     [chatClient, colors, t, handleMessageInfo],
   );
+  const headerHeight = useHeaderHeight();
 
   if (!channel || !chatClient) {
     return null;
   }
 
   return (
-    <View style={[styles.flex, { backgroundColor: colors.white_snow, paddingBottom: bottom }]}>
+    <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
       <Channel
-        audioRecordingEnabled={true}
+        audioRecordingEnabled={false}
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
+        messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         disableTypingIndicator
         enforceUniqueReaction
         initialScrollToFirstUnreadMessage
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={headerHeight}
         messageActions={messageActions}
         MessageHeader={MessageReminderHeader}
         MessageLocation={MessageLocation}

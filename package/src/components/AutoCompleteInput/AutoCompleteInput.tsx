@@ -3,7 +3,6 @@ import {
   I18nManager,
   TextInput as RNTextInput,
   StyleSheet,
-  TextInputContentSizeChangeEvent,
   TextInputProps,
   TextInputSelectionChangeEvent,
 } from 'react-native';
@@ -35,7 +34,7 @@ type AutoCompleteInputPropsWithContext = TextInputProps &
      * This is currently passed in from MessageInput to avoid rerenders
      * that would happen if we put this in the MessageInputContext
      */
-    cooldownActive?: boolean;
+    cooldownRemainingSeconds?: number;
     TextInputComponent?: React.ComponentType<
       TextInputProps & {
         ref: React.Ref<RNTextInput> | undefined;
@@ -55,18 +54,19 @@ const configStateSelector = (state: MessageComposerConfig) => ({
 });
 
 const MAX_NUMBER_OF_LINES = 5;
+const LINE_HEIGHT = 20;
+const PADDING_VERTICAL = 12;
 
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const {
     channel,
-    cooldownActive = false,
+    cooldownRemainingSeconds,
     setInputBoxRef,
     t,
     TextInputComponent = RNTextInput,
     ...rest
   } = props;
   const [localText, setLocalText] = useState('');
-  const [textHeight, setTextHeight] = useState(0);
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
   const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
@@ -115,15 +115,12 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   } = useTheme();
 
   const placeholderText = useMemo(() => {
-    return command ? t('Search') : cooldownActive ? t('Slow mode ON') : t('Send a message');
-  }, [command, cooldownActive, t]);
-
-  const handleContentSizeChange = useCallback(
-    ({ nativeEvent: { contentSize } }: TextInputContentSizeChangeEvent) => {
-      setTextHeight(contentSize.height);
-    },
-    [],
-  );
+    return command
+      ? t('Search')
+      : cooldownRemainingSeconds
+        ? `Slow mode, wait ${cooldownRemainingSeconds}s...`
+        : t('Send a message');
+  }, [command, cooldownRemainingSeconds, t]);
 
   return (
     <TextInputComponent
@@ -132,7 +129,6 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       maxLength={maxMessageLength}
       multiline
       onChangeText={onChangeTextHandler}
-      onContentSizeChange={handleContentSizeChange}
       onSelectionChange={handleSelectionChange}
       placeholder={placeholderText}
       placeholderTextColor={grey}
@@ -141,8 +137,8 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
         styles.inputBox,
         {
           color: black,
-          maxHeight: (textHeight || 17) * numberOfLines,
-          paddingHorizontal: command ? 4 : 16,
+          maxHeight: LINE_HEIGHT * numberOfLines + PADDING_VERTICAL * 2,
+          paddingRight: command ? 4 : 8,
           textAlign: I18nManager.isRTL ? 'right' : 'left',
         },
         inputBox,
@@ -158,16 +154,25 @@ const areEqual = (
   prevProps: AutoCompleteInputPropsWithContext,
   nextProps: AutoCompleteInputPropsWithContext,
 ) => {
-  const { channel: prevChannel, cooldownActive: prevCooldownActive, t: prevT } = prevProps;
-  const { channel: nextChannel, cooldownActive: nextCooldownActive, t: nextT } = nextProps;
+  const {
+    channel: prevChannel,
+    cooldownRemainingSeconds: prevCooldownRemainingSeconds,
+    t: prevT,
+  } = prevProps;
+  const {
+    channel: nextChannel,
+    cooldownRemainingSeconds: nextCooldownRemainingSeconds,
+    t: nextT,
+  } = nextProps;
 
   const tEqual = prevT === nextT;
   if (!tEqual) {
     return false;
   }
 
-  const cooldownActiveEqual = prevCooldownActive === nextCooldownActive;
-  if (!cooldownActiveEqual) {
+  const cooldownRemainingSecondsEqual =
+    prevCooldownRemainingSeconds === nextCooldownRemainingSeconds;
+  if (!cooldownRemainingSecondsEqual) {
     return false;
   }
 
@@ -206,6 +211,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     includeFontPadding: false, // for android vertical text centering
+    lineHeight: 20,
+    paddingLeft: 16,
     paddingVertical: 12,
     textAlignVertical: 'center', // for android vertical text centering
   },

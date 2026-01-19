@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
@@ -150,7 +150,10 @@ import {
   LoadingErrorProps,
 } from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
-import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import {
+  KeyboardCompatibleView as KeyboardCompatibleViewDefault,
+  KeyboardCompatibleViewProps,
+} from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
@@ -170,9 +173,7 @@ import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageS
 import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
-import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
-import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/AttachmentUploadPreviewList';
-import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
 import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
@@ -184,12 +185,10 @@ import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } fro
 import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import { CommandInput as CommandInputDefault } from '../MessageInput/components/CommandInput';
-import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
-import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
-import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
-import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
-import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
-import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
+import { InputButtons as InputButtonsDefault } from '../MessageInput/components/InputButtons';
+import { AttachButton as AttachButtonDefault } from '../MessageInput/components/InputButtons/AttachButton';
+import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/components/OutputButtons/CooldownTimer';
+import { SendButton as SendButtonDefault } from '../MessageInput/components/OutputButtons/SendButton';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
@@ -204,10 +203,14 @@ import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { UnreadMessagesNotification as UnreadMessagesNotificationDefault } from '../MessageList/UnreadMessagesNotification';
+import { emojis } from '../MessageMenu/emojis';
 import { MessageActionList as MessageActionListDefault } from '../MessageMenu/MessageActionList';
 import { MessageActionListItem as MessageActionListItemDefault } from '../MessageMenu/MessageActionListItem';
 import { MessageMenu as MessageMenuDefault } from '../MessageMenu/MessageMenu';
-import { MessageReactionPicker as MessageReactionPickerDefault } from '../MessageMenu/MessageReactionPicker';
+import {
+  MessageReactionPicker as MessageReactionPickerDefault,
+  toUnicodeScalarString,
+} from '../MessageMenu/MessageReactionPicker';
 import { MessageUserReactions as MessageUserReactionsDefault } from '../MessageMenu/MessageUserReactions';
 import { MessageUserReactionsAvatar as MessageUserReactionsAvatarDefault } from '../MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItem as MessageUserReactionsItemDefault } from '../MessageMenu/MessageUserReactionsItem';
@@ -247,6 +250,11 @@ export const reactionData: ReactionData[] = [
     Icon: WutReaction,
     type: 'wow',
   },
+  ...emojis.map((emoji) => ({
+    Icon: () => <Text style={{ fontSize: 12, padding: 2 }}>{emoji}</Text>,
+    isUnicode: true,
+    type: toUnicodeScalarString(emoji),
+  })),
 ];
 
 /**
@@ -413,7 +421,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     /**
      * Additional props passed to keyboard avoiding view
      */
-    additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
+    additionalKeyboardAvoidingViewProps?: Partial<KeyboardCompatibleViewProps>;
     /**
      * When true, disables the KeyboardCompatibleView wrapper
      *
@@ -469,7 +477,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * When true, messageList will be scrolled at first unread message, when opened.
      */
     initialScrollToFirstUnreadMessage?: boolean;
-    keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
+    keyboardBehavior?: KeyboardCompatibleViewProps['behavior'];
     /**
      * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
      * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
@@ -489,7 +497,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * />
      * ```
      */
-    KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
+    KeyboardCompatibleView?: React.ComponentType<KeyboardCompatibleViewProps>;
     keyboardVerticalOffset?: number;
     /**
      * Custom loading error indicator to override the Stream default
@@ -595,7 +603,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
     children,
     client,
-    CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
     CreatePollContent,
@@ -657,9 +664,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
-    InputEditingStateHeader = InputEditingStateHeaderDefault,
     CommandInput = CommandInputDefault,
-    InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
     keyboardBehavior,
@@ -693,6 +698,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageDeleted = MessageDeletedDefault,
     MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
+    messageInputFloating = false,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     messageId,
@@ -714,7 +720,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageUserReactions = MessageUserReactionsDefault,
     MessageUserReactionsAvatar = MessageUserReactionsAvatarDefault,
     MessageUserReactionsItem = MessageUserReactionsItemDefault,
-    MoreOptionsButton = MoreOptionsButtonDefault,
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     // TODO: Think about this one
@@ -1851,7 +1856,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     CameraSelectorIcon,
     channelId,
     CommandInput,
-    CommandsButton,
     compressImageQuality,
     CooldownTimer,
     CreatePollContent,
@@ -1869,9 +1873,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageSelectorIcon,
     Input,
     InputButtons,
-    InputEditingStateHeader,
-    InputReplyStateHeader,
-    MoreOptionsButton,
+    messageInputFloating,
     openPollCreationDialog,
     SendButton,
     sendMessage,

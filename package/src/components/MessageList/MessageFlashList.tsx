@@ -8,6 +8,8 @@ import {
   ViewToken,
 } from 'react-native';
 
+import Animated, { LinearTransition } from 'react-native-reanimated';
+
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
@@ -27,6 +29,10 @@ import {
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
   MessageListItemContextValue,
   MessageListItemProvider,
 } from '../../contexts/messageListItemContext/MessageListItemContext';
@@ -45,7 +51,11 @@ import {
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { useStableCallback } from '../../hooks';
+import { useStableCallback, useStateStore } from '../../hooks';
+import {
+  MessageInputHeightState,
+  messageInputHeightStore,
+} from '../../state-store/message-input-height-store';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 let FlashList;
@@ -91,6 +101,10 @@ const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageRe
   return previousLastMessage;
 };
 
+const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
+  height: state.height,
+});
+
 type MessageFlashListPropsWithContext = Pick<
   AttachmentPickerContextValue,
   'closePicker' | 'selectedPicker' | 'setSelectedPicker'
@@ -119,6 +133,7 @@ type MessageFlashListPropsWithContext = Pick<
     | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
+  Pick<MessageInputContextValue, 'messageInputFloating'> &
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<
     MessagesContextValue,
@@ -277,6 +292,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     loadMoreThread,
     markRead,
     maximumMessageLimit,
+    messageInputFloating,
     myMessageTheme,
     readEvents,
     NetworkDownIndicator,
@@ -301,10 +317,16 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   } = props;
   const flashListRef = useRef<FlashListRef<LocalMessage> | null>(null);
 
+  const { height: messageInputHeight } = useStateStore(
+    messageInputHeightStore,
+    messageInputHeightStoreSelector,
+  );
+
   const [hasMoved, setHasMoved] = useState(false);
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
+  const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
 
   const stickyHeaderDateRef = useRef<Date | undefined>(undefined);
   /**
@@ -327,7 +349,14 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const {
     colors: { white_snow },
-    messageList: { container, contentContainer, listContainer },
+    messageList: {
+      container,
+      contentContainer,
+      listContainer,
+      scrollToBottomButtonContainer,
+      stickyHeaderContainer,
+      unreadMessagesNotificationContainer,
+    },
   } = theme;
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
@@ -706,6 +735,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [],
   );
 
+  const setNativeScrollability = useStableCallback((value: boolean) => {
+    // FlashList does not have setNativeProps exposed, hence we cannot use that.
+    // Instead, we resort to state.
+    setScrollEnabled(value);
+  });
+
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
@@ -713,6 +748,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
+      setNativeScrollability,
     }),
     [
       goToMessage,
@@ -720,6 +756,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
+      setNativeScrollability,
     ],
   );
 
@@ -862,8 +899,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const visibleLength = nativeEvent.layoutMeasurement.height;
     const contentLength = nativeEvent.contentSize.height;
 
-    // Show scrollToBottom button once scroll position goes beyond 150.
-    const isScrollAtStart = contentLength - visibleLength - offset < 150;
+    const isScrollAtStart = contentLength - visibleLength - offset < messageInputHeight;
 
     const notLatestSet = channel.state.messages !== channel.state.latestMessages;
 
@@ -952,8 +988,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   );
 
   const flatListContentContainerStyle = useMemo(
-    () => [styles.contentContainer, contentContainer],
-    [contentContainer],
+    () => [
+      styles.contentContainer,
+      { paddingBottom: messageInputFloating ? messageInputHeight : 0 },
+      contentContainer,
+    ],
+    [contentContainer, messageInputFloating, messageInputHeight],
   );
 
   const currentListHeightRef = useRef<number | undefined>(undefined);
@@ -1019,6 +1059,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             onViewableItemsChanged={stableOnViewableItemsChanged}
             ref={refCallback}
             renderItem={renderItem}
+            scrollEnabled={scrollEnabled}
             scrollEventThrottle={isLiveStreaming ? 16 : undefined}
             showsVerticalScrollIndicator={false}
             style={flatListStyle}
@@ -1028,7 +1069,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           />
         </MessageListItemProvider>
       )}
-      <View style={styles.stickyHeader}>
+      <View style={[styles.stickyHeaderContainer, stickyHeaderContainer]}>
         {messageListLengthAfterUpdate && StickyHeader ? (
           <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
         ) : null}
@@ -1038,14 +1079,27 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           <TypingIndicator />
         </TypingIndicatorContainer>
       )}
-      <ScrollToBottomButton
-        onPress={goToNewMessages}
-        showNotification={scrollToBottomButtonVisible}
-        unreadCount={threadList ? 0 : channel?.countUnread()}
-      />
+      <Animated.View
+        layout={LinearTransition.duration(200)}
+        style={[
+          styles.scrollToBottomButtonContainer,
+          { bottom: messageInputFloating ? messageInputHeight + 8 : 8 },
+          scrollToBottomButtonContainer,
+        ]}
+      >
+        <ScrollToBottomButton
+          onPress={goToNewMessages}
+          showNotification={scrollToBottomButtonVisible}
+          unreadCount={threadList ? 0 : channel?.countUnread()}
+        />
+      </Animated.View>
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
-        <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
+        <View
+          style={[styles.unreadMessagesNotificationContainer, unreadMessagesNotificationContainer]}
+        >
+          <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
+        </View>
       ) : null}
     </View>
   );
@@ -1104,6 +1158,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
+  const { messageInputFloating } = useMessageInputContext();
 
   return (
     <MessageFlashListWithContext
@@ -1134,6 +1189,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         markRead,
         maximumMessageLimit,
         Message,
+        messageInputFloating,
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,
@@ -1163,7 +1219,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     flex: 1,
     width: '100%',
   },
@@ -1181,8 +1236,20 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-  stickyHeader: {
+  scrollToBottomButtonContainer: {
+    bottom: 8,
     position: 'absolute',
+    right: 24,
+  },
+  stickyHeaderContainer: {
+    left: 0,
+    position: 'absolute',
+    right: 0,
     top: 0,
+  },
+  unreadMessagesNotificationContainer: {
+    alignSelf: 'center',
+    position: 'absolute',
+    top: 8,
   },
 });

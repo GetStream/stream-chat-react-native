@@ -1,7 +1,8 @@
 /* global require */
-import { FlatList, View } from 'react-native';
+import rn, { FlatList, View } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
+import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { registerNativeHandlers } from './src/native';
 
@@ -64,4 +65,35 @@ jest.mock('react-native/Libraries/Components/RefreshControl/RefreshControl', () 
 
 jest.mock('@shopify/flash-list', () => ({
   FlashList: undefined,
+}));
+
+jest.mock('react-native-teleport', () => {
+  const rn = require('react-native');
+  return {
+    Portal: rn.View,
+    PortalHost: rn.View,
+    PortalProvider: rn.View,
+    usePortal: jest.fn().mockReturnValue({ removePortal: jest.fn() }),
+  };
+});
+
+jest.mock('react-native-teleport', () => {
+  const rn = require('react-native');
+  return {
+    Portal: rn.View,
+    PortalHost: rn.View,
+    PortalProvider: rn.View,
+    usePortal: jest.fn().mockReturnValue({ removePortal: jest.fn() }),
+  };
+});
+
+jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
+
+jest.mock('./src/components/Message/utils/measureInWindow', () => ({
+  measureInWindow: jest.fn(async () => ({
+    x: 10,
+    y: 100,
+    w: 250,
+    h: 60,
+  })),
 }));

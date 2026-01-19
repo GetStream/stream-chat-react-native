@@ -1,12 +1,12 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { LocalAudioAttachment, LocalFileAttachment, LocalVideoAttachment } from 'stream-chat';
 
+import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
 import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
-import { DismissAttachmentUpload } from './DismissAttachmentUpload';
 
 import { getFileSizeDisplayText } from '../../../../components/Attachment/FileAttachment';
 import { WritingDirectionAwareText } from '../../../../components/RTLComponents/WritingDirectionAwareText';
@@ -14,7 +14,6 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessagesContext } from '../../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
-import { getTrimmedAttachmentTitle } from '../../../../utils/getTrimmedAttachmentTitle';
 import {
   getDurationLabelFromDuration,
   getIndicatorTypeForFileState,
@@ -26,13 +25,10 @@ export type FileAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string
     | LocalFileAttachment<CustomLocalMetadata>
     | LocalVideoAttachment<CustomLocalMetadata>
     | LocalAudioAttachment<CustomLocalMetadata>
-  > & {
-    flatListWidth: number;
-  };
+  >;
 
 export const FileAttachmentUploadPreview = ({
   attachment,
-  flatListWidth,
   handleRetry,
   removeAttachments,
 }: FileAttachmentUploadPreviewProps) => {
@@ -45,7 +41,6 @@ export const FileAttachmentUploadPreview = ({
 
   const {
     theme: {
-      colors: { black, grey, grey_whisper },
       messageInput: {
         fileAttachmentUploadPreview: {
           fileContainer,
@@ -58,6 +53,7 @@ export const FileAttachmentUploadPreview = ({
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onRetryHandler = useCallback(() => {
     handleRetry(attachment);
@@ -71,47 +67,28 @@ export const FileAttachmentUploadPreview = ({
     <View style={[styles.wrapper, wrapper]} testID={'file-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
-        style={[styles.overlay, { width: flatListWidth - 16 }, uploadProgressOverlay]}
+        style={[styles.overlay, uploadProgressOverlay]}
         type={indicatorType}
       >
-        <View
-          style={[
-            styles.fileContainer,
-            {
-              borderColor: grey_whisper,
-            },
-            fileContainer,
-          ]}
-        >
+        <View style={[styles.fileContainer, fileContainer]}>
           <View style={styles.fileIcon}>
-            <FileAttachmentIcon mimeType={attachment.mime_type} />
+            <FileAttachmentIcon mimeType={attachment.mime_type} size={40} />
           </View>
-          <View style={[styles.fileTextContainer, fileTextContainer]}>
+          <View style={[styles.fileContent, fileTextContainer]}>
             <Text
               numberOfLines={1}
               style={[
                 styles.filenameText,
-                {
-                  color: black,
-                  width:
-                    flatListWidth -
-                    16 - // 16 = horizontal padding
-                    40 - // 40 = file icon size
-                    24 - // 24 = close icon size
-                    24, // 24 = internal padding
-                },
                 I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
                 filenameText,
               ]}
             >
-              {getTrimmedAttachmentTitle(attachment.title)}
+              {attachment.title}
             </Text>
             {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
               <AttachmentUnsupportedIndicator indicatorType={indicatorType} />
             ) : (
-              <WritingDirectionAwareText
-                style={[styles.fileSizeText, { color: grey }, fileSizeText]}
-              >
+              <WritingDirectionAwareText style={[styles.fileSizeText, fileSizeText]}>
                 {attachment.duration
                   ? getDurationLabelFromDuration(attachment.duration)
                   : getFileSizeDisplayText(attachment.file_size)}
@@ -120,42 +97,60 @@ export const FileAttachmentUploadPreview = ({
           </View>
         </View>
       </AttachmentUploadProgressIndicator>
-      <DismissAttachmentUpload onPress={onDismissHandler} />
+      <View style={styles.dismissWrapper}>
+        <AttachmentRemoveControl onPress={onDismissHandler} />
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  fileContainer: {
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    paddingHorizontal: 8,
-  },
-  fileIcon: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  filenameText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  fileSizeText: {
-    fontSize: 12,
-    marginTop: 10,
-  },
-  fileTextContainer: {
-    justifyContent: 'space-around',
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  overlay: {
-    borderRadius: 12,
-    marginTop: 2,
-  },
-  wrapper: {
-    flexDirection: 'row',
-    marginHorizontal: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      colors: { border, text },
+      radius,
+      spacing,
+      typography: { fontSize, fontWeight },
+    },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        dismissWrapper: { position: 'absolute', right: 0, top: 0 },
+        fileContainer: {
+          borderRadius: radius.lg,
+          borderColor: border.surfaceSubtle,
+          borderWidth: 1,
+          flexDirection: 'row',
+          gap: spacing.sm,
+          width: 224, // TODO: Not sure how to omit this
+          padding: spacing.md,
+        },
+        fileContent: {
+          flexShrink: 1,
+          justifyContent: 'space-between',
+        },
+        fileIcon: {
+          alignItems: 'center',
+          alignSelf: 'center',
+          justifyContent: 'center',
+        },
+        filenameText: {
+          color: text.primary,
+          fontSize: fontSize.xs,
+          fontWeight: fontWeight.semibold,
+        },
+        fileSizeText: {
+          color: text.secondary,
+          fontSize: fontSize.xs,
+        },
+        overlay: {
+          borderRadius: radius.lg,
+        },
+        wrapper: {
+          padding: spacing.xxs,
+        },
+      }),
+    [radius, border, spacing, text, fontSize, fontWeight],
+  );
+};

@@ -9,6 +9,8 @@ import {
   ViewToken,
 } from 'react-native';
 
+import Animated, { LinearTransition } from 'react-native-reanimated';
+
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
@@ -30,6 +32,10 @@ import { ChatContextValue, useChatContext } from '../../contexts/chatContext/Cha
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 
 import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
   MessageListItemContextValue,
   MessageListItemProvider,
 } from '../../contexts/messageListItemContext/MessageListItemContext';
@@ -49,6 +55,11 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../hooks';
+import { useStateStore } from '../../hooks/useStateStore';
+import {
+  MessageInputHeightState,
+  messageInputHeightStore,
+} from '../../state-store/message-input-height-store';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -57,7 +68,6 @@ const WAIT_FOR_SCROLL_TIMEOUT = 0;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     flex: 1,
     width: '100%',
   },
@@ -75,9 +85,21 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-  stickyHeader: {
+  scrollToBottomButtonContainer: {
+    bottom: 8,
     position: 'absolute',
+    right: 24,
+  },
+  stickyHeaderContainer: {
+    left: 0,
+    position: 'absolute',
+    right: 0,
     top: 0,
+  },
+  unreadMessagesNotificationContainer: {
+    alignSelf: 'center',
+    position: 'absolute',
+    top: 8,
   },
 });
 
@@ -157,6 +179,7 @@ type MessageListPropsWithContext = Pick<
     | 'TypingIndicatorContainer'
     | 'UnreadMessagesNotification'
   > &
+  Pick<MessageInputContextValue, 'messageInputFloating'> &
   Pick<
     ThreadContextValue,
     'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadInstance'
@@ -232,6 +255,10 @@ const renderItem = ({ item: message }: { item: LocalMessage }) => {
   return <MessageWrapper message={message} />;
 };
 
+const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
+  height: state.height,
+});
+
 /**
  * The message list component renders a list of messages. It consumes the following contexts:
  *
@@ -270,6 +297,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     loadMoreThread,
     markRead,
     maximumMessageLimit,
+    messageInputFloating,
     myMessageTheme,
     NetworkDownIndicator,
     noGroupByUser,
@@ -294,10 +322,21 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   } = props;
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
+  const { height: messageInputHeight } = useStateStore(
+    messageInputHeightStore,
+    messageInputHeightStoreSelector,
+  );
 
   const {
     colors: { white_snow },
-    messageList: { container, contentContainer, listContainer },
+    messageList: {
+      container,
+      contentContainer,
+      listContainer,
+      stickyHeaderContainer,
+      scrollToBottomButtonContainer,
+      unreadMessagesNotificationContainer,
+    },
   } = theme;
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
@@ -759,6 +798,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetedMessage]);
 
+  const setNativeScrollability = useStableCallback((value: boolean) => {
+    if (flatListRef.current) {
+      flatListRef.current.setNativeProps({ scrollEnabled: value });
+    }
+  });
+
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
@@ -766,6 +811,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
+      setNativeScrollability,
     }),
     [
       goToMessage,
@@ -773,6 +819,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
+      setNativeScrollability,
     ],
   );
 
@@ -900,8 +947,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const handleScroll: ScrollViewProps['onScroll'] = useStableCallback((event) => {
     const messageListHasMessages = processedMessageList.length > 0;
     const offset = event.nativeEvent.contentOffset.y;
-    // Show scrollToBottom button once scroll position goes beyond 150.
-    const isScrollAtBottom = offset <= 150;
+    const isScrollAtBottom = offset <= messageInputHeight;
 
     const notLatestSet = channel.state.messages !== channel.state.latestMessages;
 
@@ -1054,11 +1100,16 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const flatListContentContainerStyle = useMemo(
     () => [
-      styles.contentContainer,
+      { paddingTop: messageInputFloating ? messageInputHeight : 0 },
       additionalFlatListProps?.contentContainerStyle,
       contentContainer,
     ],
-    [additionalFlatListProps?.contentContainerStyle, contentContainer],
+    [
+      additionalFlatListProps?.contentContainerStyle,
+      contentContainer,
+      messageInputHeight,
+      messageInputFloating,
+    ],
   );
 
   if (!FlatList) {
@@ -1123,7 +1174,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </MessageListItemProvider>
       )}
-      <View style={styles.stickyHeader}>
+      <View style={[styles.stickyHeaderContainer, stickyHeaderContainer]}>
         {messageListLengthAfterUpdate && StickyHeader ? (
           <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
         ) : null}
@@ -1133,14 +1184,30 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           <TypingIndicator />
         </TypingIndicatorContainer>
       )}
-      <ScrollToBottomButton
-        onPress={goToNewMessages}
-        showNotification={scrollToBottomButtonVisible}
-        unreadCount={threadList ? 0 : channel?.countUnread()}
-      />
+      {scrollToBottomButtonVisible ? (
+        <Animated.View
+          layout={LinearTransition.duration(200)}
+          style={[
+            styles.scrollToBottomButtonContainer,
+            { bottom: messageInputFloating ? messageInputHeight + 8 : 8 },
+            scrollToBottomButtonContainer,
+          ]}
+        >
+          <ScrollToBottomButton
+            onPress={goToNewMessages}
+            showNotification={scrollToBottomButtonVisible}
+            unreadCount={threadList ? 0 : channel?.countUnread()}
+          />
+        </Animated.View>
+      ) : null}
+
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
-        <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
+        <View
+          style={[styles.unreadMessagesNotificationContainer, unreadMessagesNotificationContainer]}
+        >
+          <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
+        </View>
       ) : null}
     </View>
   );
@@ -1190,6 +1257,7 @@ export const MessageList = (props: MessageListProps) => {
     TypingIndicatorContainer,
     UnreadMessagesNotification,
   } = useMessagesContext();
+  const { messageInputFloating } = useMessageInputContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
 
@@ -1221,6 +1289,7 @@ export const MessageList = (props: MessageListProps) => {
         markRead,
         maximumMessageLimit,
         Message,
+        messageInputFloating,
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,

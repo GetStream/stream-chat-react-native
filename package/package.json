@@ -91,9 +91,11 @@
     "emoji-mart": ">=5.4.0",
     "react-native": ">=0.73.0",
     "react-native-gesture-handler": ">=2.18.0",
+    "react-native-keyboard-controller": ">=1.20.2",
     "react-native-reanimated": ">=3.16.0",
     "react-native-safe-area-context": ">=5.4.1",
-    "react-native-svg": ">=15.8.0"
+    "react-native-svg": ">=15.8.0",
+    "react-native-teleport": ">=0.5.4"
   },
   "peerDependenciesMeta": {
     "@op-engineering/op-sqlite": {
@@ -106,6 +108,9 @@
       "optional": true
     },
     "@emoji-mart/data": {
+      "optional": true
+    },
+    "react-native-keyboard-controller": {
       "optional": true
     }
   },
@@ -154,9 +159,11 @@
     "react-native": "0.80.2",
     "react-native-builder-bob": "0.40.11",
     "react-native-gesture-handler": "^2.26.0",
+    "react-native-keyboard-controller": "^1.20.2",
     "react-native-reanimated": "3.18.0",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-svg": "15.12.0",
+    "react-native-teleport": "^0.5.4",
     "react-test-renderer": "19.1.0",
     "rimraf": "^6.0.1",
     "typescript": "5.8.3",

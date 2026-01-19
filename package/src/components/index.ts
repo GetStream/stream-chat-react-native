@@ -120,14 +120,12 @@ export * from './Message/MessageSimple/utils/renderText';
 export * from './Message/utils/messageActions';
 export * from '../utils/removeReservedFields';
 
-export * from './MessageInput/AttachButton';
-export * from './MessageInput/AttachmentUploadPreviewList';
-export * from './MessageInput/CommandsButton';
-export * from './MessageInput/CooldownTimer';
-export * from './MessageInput/InputButtons';
+export * from './MessageInput/components/InputButtons/AttachButton';
+export * from './MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
+export * from './MessageInput/components/OutputButtons/CooldownTimer';
+export * from './MessageInput/components/InputButtons';
 export * from './MessageInput/MessageInput';
-export * from './MessageInput/MoreOptionsButton';
-export * from './MessageInput/SendButton';
+export * from './MessageInput/components/OutputButtons/SendButton';
 export * from './MessageInput/SendMessageDisallowedIndicator';
 export * from './MessageInput/ShowThreadMessageInChannelButton';
 export * from './MessageInput/StopMessageStreamingButton';
@@ -182,6 +180,8 @@ export * from './ProgressControl/WaveProgressBar';
 export * from './Poll';
 
 export * from './Reply/Reply';
+
+export * from './ui';
 
 export * from './UIComponents/BottomSheetModal';
 export * from './UIComponents/ImageBackground';

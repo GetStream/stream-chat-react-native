@@ -199,7 +199,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 styles.searchResultContainer,
                 {
                   backgroundColor: white_snow,
-                  borderBottomColor: border,
+                  borderBottomColor: border.surfaceSubtle,
                 },
               ]}
             >

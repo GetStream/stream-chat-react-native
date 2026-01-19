@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Close } from '../../icons';
+import { NewClose } from '../../icons/NewClose';
 
 export type UnreadMessagesNotificationProps = {
   /**
@@ -76,7 +76,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           closeButtonContainer,
         ]}
       >
-        <Close pathFill={white_snow} {...closeIcon} />
+        <NewClose pathFill={white_snow} {...closeIcon} />
       </Pressable>
     </Pressable>
   );
@@ -84,13 +84,11 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     borderRadius: 20,
     elevation: 4,
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 8,
-    position: 'absolute',
     shadowColor: '#000',
     shadowOffset: {
       height: 2,
@@ -98,7 +96,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-    top: 8,
   },
   text: {
     fontWeight: '500',

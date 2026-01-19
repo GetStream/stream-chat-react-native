@@ -3,10 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { Warning } from '../../../../icons/Warning';
+import { ErrorCircle } from '../../../../icons/ErrorCircle';
 import { Progress, ProgressIndicatorTypes } from '../../../../utils/utils';
-
-const WARNING_ICON_SIZE = 16;
 
 export type AttachmentUnsupportedIndicatorProps = {
   /** Type of active indicator */
@@ -21,7 +19,7 @@ export const AttachmentUnsupportedIndicator = ({
 }: AttachmentUnsupportedIndicatorProps) => {
   const {
     theme: {
-      colors: { accent_red, grey_dark, overlay, white },
+      colors: { accent_error, overlay },
       messageInput: {
         attachmentUnsupportedIndicator: { container, text, warningIcon },
       },
@@ -42,16 +40,14 @@ export const AttachmentUnsupportedIndicator = ({
         container,
       ]}
     >
-      <Warning
-        height={WARNING_ICON_SIZE}
-        pathFill={accent_red}
+      <ErrorCircle
+        fill={accent_error}
+        height={20}
         style={styles.warningIconStyle}
-        width={WARNING_ICON_SIZE}
+        width={20}
         {...warningIcon}
       />
-      <Text style={[styles.warningText, { color: isImage ? white : grey_dark }, text]}>
-        {t('Not supported')}
-      </Text>
+      <Text style={[styles.warningText, { color: accent_error }, text]}>{t('Not supported')}</Text>
     </View>
   );
 };
@@ -61,7 +57,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: 4,
-    paddingHorizontal: 2,
   },
   imageStyle: {
     borderRadius: 16,
@@ -70,13 +65,11 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
-    marginTop: 6,
   },
   warningText: {
     alignItems: 'center',
     color: 'black',
-    fontSize: 10,
-    justifyContent: 'center',
+    fontSize: 12,
     marginHorizontal: 4,
   },
 });

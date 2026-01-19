@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Delete, useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
@@ -235,7 +227,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
             style={[
               styles.userNameContainer,
               {
-                borderTopColor: border,
+                borderTopColor: border.surfaceSubtle,
               },
             ]}
           >
@@ -274,7 +266,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border,
+              borderBottomColor: border.surfaceSubtle,
             },
           ]}
         >
@@ -313,7 +305,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border,
+              borderBottomColor: border.surfaceSubtle,
             },
           ]}
         >
@@ -359,7 +351,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border,
+              borderBottomColor: border.surfaceSubtle,
             },
           ]}
         >
@@ -389,7 +381,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border,
+              borderBottomColor: border.surfaceSubtle,
             },
           ]}
         >
@@ -419,7 +411,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border,
+              borderBottomColor: border.surfaceSubtle,
             },
           ]}
         >
@@ -449,7 +441,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border,
+              borderBottomColor: border.surfaceSubtle,
             },
           ]}
         >
@@ -476,7 +468,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border,
+              borderBottomColor: border.surfaceSubtle,
             },
           ]}
         >

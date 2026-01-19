@@ -1,5 +1,15 @@
-import React, { useMemo, useState } from 'react';
-import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  GestureResponderEvent,
+  StyleProp,
+  useWindowDimensions,
+  View,
+  ViewStyle,
+} from 'react-native';
+
+import { useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Portal } from 'react-native-teleport';
 
 import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
 
@@ -9,6 +19,7 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
 import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
+import { measureInWindow } from './utils/measureInWindow';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
 import {
@@ -25,6 +36,7 @@ import {
   useMessageComposerAPIContext,
 } from '../../contexts/messageComposerContext/MessageComposerAPIContext';
 import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
+import { useMessageListItemContext } from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -38,6 +50,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
+import { closeOverlay, openOverlay, useIsOverlayActive } from '../../state-store';
 import { FileTypes } from '../../types/types';
 import {
   checkMessageEquality,
@@ -48,6 +61,7 @@ import {
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -192,6 +206,13 @@ export type MessagePropsWithContext = Pick<
     | 'supportedReactions'
     | 'updateMessage'
     | 'PollContent'
+    // TODO: remove this comment later, using it as a pragma mark
+    | 'MessageUserReactions'
+    | 'MessageUserReactionsAvatar'
+    | 'MessageUserReactionsItem'
+    | 'MessageReactionPicker'
+    | 'MessageActionList'
+    | 'MessageActionListItem'
   > &
   Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -219,12 +240,11 @@ export type MessagePropsWithContext = Pick<
  * each individual Message component.
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
-  const [messageOverlayVisible, setMessageOverlayVisible] = useState(false);
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
-  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
+  // const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
 
   const {
     channel,
@@ -232,7 +252,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
     deliveredToCount,
-    dismissKeyboard,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
     enforceUniqueReaction,
@@ -259,7 +278,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     MessageBlocked,
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
-    MessageMenu,
     messagesContext,
     MessageSimple,
     onLongPressMessage: onLongPressMessageProp,
@@ -283,7 +301,15 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     updateMessage,
     readBy,
     setQuotedMessage,
+    MessageUserReactions,
+    MessageUserReactionsAvatar,
+    MessageUserReactionsItem,
+    MessageReactionPicker,
+    MessageActionList,
+    MessageActionListItem,
   } = props;
+  // TODO: V9: Reconsider using safe area insets in every message.
+  const insets = useSafeAreaInsets();
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
@@ -299,15 +325,37 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     },
   } = useTheme();
 
-  const showMessageOverlay = async (showMessageReactions = false, selectedReaction?: string) => {
-    await dismissKeyboard();
-    setShowMessageReactions(showMessageReactions);
-    setMessageOverlayVisible(true);
-    setSelectedReaction(selectedReaction);
+  const topH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
+    undefined,
+  );
+  const bottomH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
+    undefined,
+  );
+  const messageH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
+    undefined,
+  );
+  const [rect, setRect] = useState<{ w: number; h: number; x: number; y: number } | undefined>(
+    undefined,
+  );
+  const { width: screenW } = useWindowDimensions();
+
+  const showMessageOverlay = async (showMessageReactions = false) => {
+    dismissKeyboard();
+    try {
+      const layout = await measureInWindow(messageWrapperRef, insets);
+      setRect(layout);
+      setShowMessageReactions(showMessageReactions);
+      messageH.value = layout;
+      openOverlay(message.id, { bottomH, messageH, topH });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
+  const { setNativeScrollability } = useMessageListItemContext();
+
   const dismissOverlay = () => {
-    setMessageOverlayVisible(false);
+    closeOverlay();
   };
 
   const actionsEnabled =
@@ -341,7 +389,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
-      Keyboard.dismiss();
+      dismissKeyboard();
     }
     if (isEditedMessage(message)) {
       setIsEditedMessageOpen((prevState) => !prevState);
@@ -620,7 +668,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     unpinMessage: handleTogglePinMessage,
   };
 
+  const messageWrapperRef = useRef<View>(null);
+
   const onLongPress = () => {
+    setNativeScrollability(false);
     if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
       return;
     }
@@ -632,6 +683,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     NativeHandlers.triggerHaptic('impactMedium');
     showMessageOverlay();
   };
+
+  const frozenMessage = useRef(message);
+  const { active: overlayActive } = useIsOverlayActive(message.id);
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
@@ -652,7 +706,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     members,
-    message,
+    message: overlayActive ? frozenMessage.current : message,
     messageContentOrder,
     myMessageTheme: messagesContext.myMessageTheme,
     onLongPress: (payload) => {
@@ -716,7 +770,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
         }
       : null,
     otherAttachments: attachments.other,
-    preventPress,
+    preventPress: overlayActive ? true : preventPress,
     reactions,
     readBy,
     setIsEditedMessageOpen,
@@ -727,6 +781,21 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     threadList,
     videos: attachments.videos,
   });
+
+  const prevActive = useRef<boolean>(overlayActive);
+
+  useEffect(() => {
+    if (!overlayActive && prevActive.current && setNativeScrollability) {
+      setNativeScrollability(true);
+    }
+    prevActive.current = overlayActive;
+  }, [setNativeScrollability, overlayActive]);
+
+  useEffect(() => {
+    if (!overlayActive) {
+      frozenMessage.current = message;
+    }
+  }, [overlayActive, message]);
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
@@ -759,19 +828,74 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           ]}
           testID='message-wrapper'
         >
-          <MessageSimple />
+          {overlayActive && rect ? (
+            <View
+              style={{
+                height: rect.h,
+                width: rect.w,
+              }}
+            />
+          ) : null}
+          {/*TODO: V9: Find a way to separate these in a dedicated file*/}
+          <Portal hostName={overlayActive ? 'top-item' : undefined}>
+            {overlayActive && rect ? (
+              <View
+                onLayout={(e) => {
+                  const { width: w, height: h } = e.nativeEvent.layout;
+
+                  topH.value = {
+                    h,
+                    w,
+                    x: isMyMessage ? screenW - rect.x - w : rect.x,
+                    y: rect.y - h,
+                  };
+                }}
+              >
+                <MessageReactionPicker
+                  dismissOverlay={dismissOverlay}
+                  handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+                  ownReactionTypes={message?.own_reactions?.map((reaction) => reaction.type) || []}
+                />
+              </View>
+            ) : null}
+          </Portal>
+          <Portal
+            hostName={overlayActive ? 'message-overlay' : undefined}
+            style={overlayActive && rect ? { width: rect.w } : undefined}
+          >
+            <MessageSimple ref={messageWrapperRef} />
+          </Portal>
+          <Portal hostName={overlayActive ? 'bottom-item' : undefined}>
+            {overlayActive && rect ? (
+              <View
+                onLayout={(e) => {
+                  const { width: w, height: h } = e.nativeEvent.layout;
+                  bottomH.value = {
+                    h,
+                    w,
+                    x: isMyMessage ? screenW - rect.x - w : rect.x,
+                    y: rect.y + rect.h,
+                  };
+                }}
+              >
+                {showMessageReactions ? (
+                  <MessageUserReactions
+                    message={message}
+                    MessageUserReactionsAvatar={MessageUserReactionsAvatar}
+                    MessageUserReactionsItem={MessageUserReactionsItem}
+                  />
+                ) : (
+                  <MessageActionList
+                    dismissOverlay={dismissOverlay}
+                    MessageActionListItem={MessageActionListItem}
+                    messageActions={messageActions}
+                  />
+                )}
+              </View>
+            ) : null}
+          </Portal>
           {isBounceDialogOpen ? (
             <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
-          ) : null}
-          {messageOverlayVisible ? (
-            <MessageMenu
-              dismissOverlay={dismissOverlay}
-              handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-              messageActions={messageActions}
-              selectedReaction={selectedReaction}
-              showMessageReactions={showMessageReactions}
-              visible={messageOverlayVisible}
-            />
           ) : null}
         </View>
       </View>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { FlatList } from 'react-native';
 
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -47,14 +49,16 @@ describe('Own capabilities', () => {
   });
 
   const getComponent = (props = {}) => (
-    <OverlayProvider>
-      <Chat client={chatClient}>
-        <Channel channel={channel} {...props}>
-          <MessageList FlatList={FlatList} />
-          <MessageInput />
-        </Channel>
-      </Chat>
-    </OverlayProvider>
+    <SafeAreaProvider>
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} {...props}>
+            <MessageList FlatList={FlatList} />
+            <MessageInput />
+          </Channel>
+        </Chat>
+      </OverlayProvider>
+    </SafeAreaProvider>
   );
 
   const generateChannelWithCapabilities = async (capabilities = []) => {

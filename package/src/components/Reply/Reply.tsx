@@ -1,405 +1,475 @@
-import React, { useMemo, useState } from 'react';
-
-import { Image, ImageStyle, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import dayjs from 'dayjs';
+import { LocalMessage, MessageComposerState, PollState } from 'stream-chat';
 
-import merge from 'lodash/merge';
-
-import type { Attachment, MessageComposerState, PollState } from 'stream-chat';
-
-import { useChatContext, useMessageComposer } from '../../contexts';
-import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
-import { useMessageContext } from '../../contexts/messageContext/MessageContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
+import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
+import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks';
+import { NewFile } from '../../icons/NewFile';
+import { NewLink } from '../../icons/NewLink';
+import { NewMapPin } from '../../icons/NewMapPin';
+import { NewMic } from '../../icons/NewMic';
+import { NewPhoto } from '../../icons/NewPhoto';
+import { NewPoll } from '../../icons/NewPoll';
+import { NewVideo } from '../../icons/NewVideo';
 import { FileTypes } from '../../types/types';
-import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
-import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
-import { checkQuotedMessageEquality, hasOnlyEmojis } from '../../utils/utils';
-
-import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
-import { VideoThumbnail } from '../Attachment/VideoThumbnail';
-import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
-import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-  },
-  fileAttachmentContainer: { paddingLeft: 8, paddingVertical: 8 },
-  imageAttachment: {
-    borderRadius: 8,
-    height: 32,
-    marginLeft: 8,
-    marginVertical: 8,
-    width: 32,
-  },
-  messageContainer: {
-    alignItems: 'flex-start',
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 12,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    flexDirection: 'row',
-    flexGrow: 1,
-    flexShrink: 1,
-  },
-  secondaryText: {
-    paddingHorizontal: 8,
-  },
-  text: { fontSize: 12, fontWeight: 'bold', overflow: 'hidden' },
-  textContainer: { maxWidth: undefined, paddingHorizontal: 8 },
-  videoThumbnailContainerStyle: {
-    borderRadius: 8,
-    height: 50,
-    marginLeft: 8,
-    marginVertical: 8,
-    width: 50,
-  },
-  videoThumbnailImageStyle: {
-    borderRadius: 10,
-  },
-});
-
-export type ReplySelectorReturnType = {
-  name?: string;
-};
-
-const selector = (nextValue: PollState): ReplySelectorReturnType => ({
-  name: nextValue.name,
-});
+import { checkQuotedMessageEquality } from '../../utils/utils';
+import { FileIcon } from '../Attachment/FileIcon';
+import { AttachmentRemoveControl } from '../MessageInput/components/AttachmentPreview/AttachmentRemoveControl';
+import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
   quotedMessage: state.quotedMessage,
 });
 
-type ReplyPropsWithContext = Pick<
-  MessagesContextValue,
-  'FileAttachmentIcon' | 'MessageAvatar' | 'quotedMessage'
-> &
-  Pick<TranslationContextValue, 't'> & {
-    attachmentSize?: number;
-    styles?: Partial<{
-      container: ViewStyle;
-      fileAttachmentContainer: ViewStyle;
-      imageAttachment: ImageStyle;
-      messageContainer: ViewStyle;
-      textContainer: ViewStyle;
-    }>;
-  };
+const selector = (nextValue: PollState) => ({
+  name: nextValue.name,
+});
 
-const getMessageType = (lastAttachment: Attachment) => {
-  let messageType;
+const RightContent = React.memo((props: { message: LocalMessage }) => {
+  const { message } = props;
+  const attachments = message?.attachments;
 
-  const isLastAttachmentFile = lastAttachment.type === FileTypes.File;
-
-  const isLastAttachmentAudio = lastAttachment.type === FileTypes.Audio;
-
-  const isLastAttachmentVoiceRecording = lastAttachment.type === FileTypes.VoiceRecording;
-
-  const isLastAttachmentVideo = lastAttachment.type === FileTypes.Video;
-
-  const isLastAttachmentGiphy =
-    lastAttachment?.type === FileTypes.Giphy || lastAttachment?.type === FileTypes.Imgur;
-
-  const isLastAttachmentImageOrGiphy =
-    lastAttachment?.type === FileTypes.Image &&
-    !lastAttachment?.title_link &&
-    !lastAttachment?.og_scrape_url;
-
-  const isLastAttachmentImage = lastAttachment?.image_url || lastAttachment?.thumb_url;
-
-  if (isLastAttachmentFile) {
-    messageType = FileTypes.File;
-  } else if (isLastAttachmentVideo) {
-    messageType = FileTypes.Video;
-  } else if (isLastAttachmentAudio) {
-    messageType = FileTypes.Audio;
-  } else if (isLastAttachmentVoiceRecording) {
-    messageType = FileTypes.VoiceRecording;
-  } else if (isLastAttachmentImageOrGiphy) {
-    if (isLastAttachmentImage) {
-      messageType = FileTypes.Image;
-    } else {
-      messageType = undefined;
-    }
-  } else if (isLastAttachmentGiphy) {
-    messageType = FileTypes.Giphy;
-  } else {
-    messageType = 'other';
+  if (!attachments || attachments.length > 1) {
+    return null;
   }
 
-  return messageType;
-};
+  const attachment = attachments?.[0];
 
-const ReplyWithContext = (props: ReplyPropsWithContext) => {
+  if (attachment?.type === FileTypes.Image) {
+    return (
+      <View style={styles.contentWrapper}>
+        <Image source={{ uri: attachment.image_url }} style={StyleSheet.absoluteFillObject} />
+      </View>
+    );
+  }
+  if (attachment?.type === FileTypes.Video) {
+    return (
+      <View style={styles.contentWrapper}>
+        <View style={styles.attachmentContainer}>
+          <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFillObject} />
+          <VideoPlayIndicator size='sm' />
+        </View>
+      </View>
+    );
+  }
+
+  if (attachment?.type === FileTypes.File) {
+    return <FileIcon mimeType={attachment.mime_type} size={40} />;
+  }
+
+  return null;
+});
+
+const SubtitleText = React.memo(({ message }: { message?: LocalMessage | null }) => {
   const { client } = useChatContext();
-  const {
-    attachmentSize = 40,
-    FileAttachmentIcon,
-    MessageAvatar,
-    quotedMessage,
-    styles: stylesProp = {},
-    t,
-  } = props;
-
-  const { resizableCDNHosts } = useChatConfigContext();
-
-  const [error, setError] = useState(false);
-
+  const poll = client.polls.fromState(message?.poll_id ?? '');
+  const { name: pollName } = useStateStore(poll?.state, selector) ?? {};
   const {
     theme: {
-      colors: { blue_alice, border, grey, transparent, white },
-      messageSimple: {
-        content: { deletedText },
-      },
+      reply: { subtitle: subtitleStyle },
+    },
+  } = useTheme();
+
+  const subtitle = useMemo(() => {
+    const attachments = message?.attachments;
+    const audioAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.Audio,
+    );
+    const imageAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.Image,
+    );
+    const videoAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.Video,
+    );
+    const fileAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.File);
+    const voiceRecordingAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.VoiceRecording,
+    );
+    const onlyImages = imageAttachments?.length && imageAttachments?.length === attachments?.length;
+    const onlyVideos = videoAttachments?.length && videoAttachments?.length === attachments?.length;
+    const onlyFiles = fileAttachments?.length && fileAttachments?.length === attachments?.length;
+    const onlyAudio = audioAttachments?.length === attachments?.length;
+    const onlyVoiceRecordings =
+      voiceRecordingAttachments?.length &&
+      voiceRecordingAttachments?.length === attachments?.length;
+
+    if (pollName) {
+      return pollName;
+    }
+
+    if (message?.shared_location) {
+      if (
+        message?.shared_location?.end_at &&
+        new Date(message?.shared_location?.end_at) > new Date()
+      ) {
+        return 'Live Location';
+      }
+      return 'Location';
+    }
+
+    if (message?.text) {
+      return message?.text;
+    }
+
+    if (imageAttachments?.length && videoAttachments?.length) {
+      return `${imageAttachments?.length + videoAttachments.length} Media`;
+    }
+
+    if (onlyImages) {
+      if (imageAttachments?.length === 1) {
+        return 'Photo';
+      } else {
+        return `${imageAttachments?.length} Photos`;
+      }
+    }
+
+    if (onlyVideos) {
+      if (videoAttachments?.length === 1) {
+        return 'Video';
+      } else {
+        return `${videoAttachments?.length} Videos`;
+      }
+    }
+
+    if (onlyAudio) {
+      if (audioAttachments?.length === 1) {
+        return 'Audio';
+      } else {
+        return `${audioAttachments?.length} Audios`;
+      }
+    }
+
+    if (onlyVoiceRecordings) {
+      if (voiceRecordingAttachments?.length === 1) {
+        return `Voice message (${dayjs.duration(voiceRecordingAttachments?.[0]?.duration ?? 0, 'seconds').format('m:ss')})`;
+      } else {
+        return `${voiceRecordingAttachments?.length} Voice messages`;
+      }
+    }
+
+    if (onlyFiles && fileAttachments?.length === 1) {
+      return fileAttachments?.[0]?.title;
+    }
+
+    return `${attachments?.length} Files`;
+  }, [message?.attachments, message?.shared_location, message?.text, pollName]);
+
+  if (!subtitle) {
+    return null;
+  }
+
+  return (
+    <Text numberOfLines={1} style={[styles.subtitle, subtitleStyle]}>
+      {subtitle}
+    </Text>
+  );
+});
+
+const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
+  const { message } = props;
+  const {
+    theme: {
+      reply: { pollIcon, locationIcon, linkIcon, audioIcon, fileIcon, videoIcon, photoIcon },
+    },
+  } = useTheme();
+  if (!message) {
+    return null;
+  }
+
+  const attachments = message?.attachments;
+  const audioAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.Audio);
+  const imageAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.Image);
+  const videoAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.Video);
+  const voiceRecordingAttachments = attachments?.filter(
+    (attachment) => attachment.type === FileTypes.VoiceRecording,
+  );
+  const fileAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.File);
+  const onlyAudio = audioAttachments?.length && audioAttachments?.length === attachments?.length;
+  const onlyVideos = videoAttachments?.length && videoAttachments?.length === attachments?.length;
+  const onlyVoiceRecordings =
+    voiceRecordingAttachments?.length && voiceRecordingAttachments?.length === attachments?.length;
+  const hasLink = attachments?.some(
+    (attachment) => attachment.type === FileTypes.Image && attachment.og_scrape_url,
+  );
+
+  if (message.poll_id) {
+    return (
+      <NewPoll height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...pollIcon} />
+    );
+  }
+
+  if (message.shared_location) {
+    return (
+      <NewMapPin
+        height={12}
+        stroke={'#384047'}
+        style={styles.iconStyle}
+        width={12}
+        {...locationIcon}
+      />
+    );
+  }
+
+  if (hasLink) {
+    return (
+      <NewLink height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...linkIcon} />
+    );
+  }
+
+  if (onlyAudio || onlyVoiceRecordings) {
+    return (
+      <NewMic
+        height={12}
+        stroke={'#384047'}
+        strokeWidth={1.2}
+        style={styles.iconStyle}
+        width={12}
+        {...audioIcon}
+      />
+    );
+  }
+
+  if (fileAttachments?.length) {
+    return (
+      <NewFile height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...fileIcon} />
+    );
+  }
+
+  if (onlyVideos) {
+    return (
+      <NewVideo height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...videoIcon} />
+    );
+  }
+
+  if (imageAttachments?.length) {
+    return (
+      <NewPhoto height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...photoIcon} />
+    );
+  }
+
+  return null;
+});
+
+export type ReplyPropsWithContext = Pick<MessageContextValue, 'message'> &
+  Pick<MessagesContextValue, 'quotedMessage'> & {
+    isMyMessage: boolean;
+    onDismiss: () => void;
+    mode: 'reply' | 'edit';
+    // This is temporary for the MessageContent Component to style the Reply component
+    style?: ViewStyle;
+  };
+
+export const ReplyWithContext = (props: ReplyPropsWithContext) => {
+  const { isMyMessage, message: messageFromContext, mode, onDismiss, quotedMessage, style } = props;
+  const {
+    theme: {
+      colors: { grey_whisper },
       reply: {
+        wrapper,
         container,
-        fileAttachmentContainer,
-        imageAttachment,
-        markdownStyles,
-        messageContainer,
-        secondaryText,
-        textContainer,
-        videoThumbnail: {
-          container: videoThumbnailContainerStyle,
-          image: videoThumbnailImageStyle,
-        },
+        leftContainer,
+        rightContainer,
+        title: titleStyle,
+        subtitleContainer,
+        dismissWrapper,
       },
     },
   } = useTheme();
 
-  const poll = client.polls.fromState(quotedMessage?.poll_id ?? '');
-  const { name: pollName }: ReplySelectorReturnType = useStateStore(poll?.state, selector) ?? {};
-
-  const messageText = quotedMessage ? quotedMessage.text : '';
-
-  const emojiOnlyText = useMemo(() => {
-    if (!messageText) {
-      return false;
-    }
-    return hasOnlyEmojis(messageText);
-  }, [messageText]);
+  const title = useMemo(
+    () =>
+      mode === 'edit'
+        ? 'Edit Message'
+        : isMyMessage
+          ? 'You'
+          : `Reply to ${quotedMessage?.user?.name}`,
+    [mode, isMyMessage, quotedMessage?.user?.name],
+  );
 
   if (!quotedMessage) {
     return null;
   }
 
-  const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment;
-  const messageType = lastAttachment && getMessageType(lastAttachment);
-
-  const trimmedLastAttachmentTitle = getTrimmedAttachmentTitle(lastAttachment?.title);
-
-  const hasImage =
-    !error &&
-    lastAttachment &&
-    messageType !== FileTypes.File &&
-    messageType !== FileTypes.Video &&
-    messageType !== FileTypes.Audio &&
-    messageType !== FileTypes.VoiceRecording &&
-    (lastAttachment.image_url || lastAttachment.thumb_url || lastAttachment.og_scrape_url);
-
-  const onlyEmojis = !lastAttachment && emojiOnlyText;
-
   return (
-    <View style={[styles.container, container, stylesProp.container]}>
-      <MessageAvatar alignment={'left'} lastGroupMessage message={quotedMessage} size={24} />
+    <View style={[styles.wrapper, wrapper]}>
       <View
         style={[
-          styles.messageContainer,
-          {
-            backgroundColor:
-              messageType === 'other' ? blue_alice : messageType === 'giphy' ? transparent : white,
-            borderColor: border,
-            borderWidth: messageType === 'other' ? 0 : 1,
-          },
-          messageContainer,
-          stylesProp.messageContainer,
+          styles.container,
+          { backgroundColor: isMyMessage ? '#F2F4F6' : '#D2E3FF', borderColor: grey_whisper },
+          container,
+          style,
         ]}
       >
-        {!error && lastAttachment ? (
-          messageType === FileTypes.File ||
-          messageType === FileTypes.Audio ||
-          messageType === FileTypes.VoiceRecording ? (
-            <View
-              style={[
-                styles.fileAttachmentContainer,
-                fileAttachmentContainer,
-                stylesProp.fileAttachmentContainer,
-              ]}
-            >
-              <FileAttachmentIcon mimeType={lastAttachment.mime_type} size={attachmentSize} />
-            </View>
-          ) : hasImage ? (
-            <Image
-              onError={() => setError(true)}
-              source={{
-                uri: getResizedImageUrl({
-                  height:
-                    (stylesProp.imageAttachment?.height as number) ||
-                    (imageAttachment?.height as number) ||
-                    styles.imageAttachment.height,
-                  resizableCDNHosts,
-                  url: (lastAttachment.image_url ||
-                    lastAttachment.thumb_url ||
-                    lastAttachment.og_scrape_url) as string,
-                  width:
-                    (stylesProp.imageAttachment?.width as number) ||
-                    (imageAttachment?.width as number) ||
-                    styles.imageAttachment.width,
-                }),
-              }}
-              style={[styles.imageAttachment, imageAttachment, stylesProp.imageAttachment]}
-            />
-          ) : null
-        ) : null}
-        {messageType === FileTypes.Video && !lastAttachment.og_scrape_url ? (
-          <VideoThumbnail
-            imageStyle={[styles.videoThumbnailImageStyle, videoThumbnailImageStyle]}
-            style={[styles.videoThumbnailContainerStyle, videoThumbnailContainerStyle]}
-            thumb_url={lastAttachment.thumb_url}
-          />
-        ) : null}
-        <View style={{ flexDirection: 'column' }}>
-          <MessageTextContainer
-            markdownStyles={
-              quotedMessage.type === 'deleted'
-                ? merge({ em: { color: grey } }, deletedText)
-                : { text: styles.text, ...markdownStyles }
-            }
-            message={{
-              ...quotedMessage,
-              text:
-                quotedMessage.type === 'deleted'
-                  ? `_${t('Message deleted')}_`
-                  : quotedMessage.shared_location
-                    ? '📍' + t('Location')
-                    : pollName
-                      ? `📊 ${pollName}`
-                      : quotedMessage.text
-                        ? quotedMessage.text.length > 170
-                          ? `${quotedMessage.text.slice(0, 170)}...`
-                          : quotedMessage.text
-                        : messageType === FileTypes.Image
-                          ? t('Photo')
-                          : messageType === FileTypes.Video
-                            ? t('Video')
-                            : messageType === FileTypes.File ||
-                                messageType === FileTypes.Audio ||
-                                messageType === FileTypes.VoiceRecording
-                              ? trimmedLastAttachmentTitle || ''
-                              : '',
-            }}
-            onlyEmojis={onlyEmojis}
-            styles={{
-              textContainer: [
-                {
-                  marginRight:
-                    hasImage || messageType === FileTypes.Video
-                      ? Number(
-                          stylesProp.imageAttachment?.height ||
-                            imageAttachment.height ||
-                            styles.imageAttachment.height,
-                        ) +
-                        Number(
-                          stylesProp.imageAttachment?.marginLeft ||
-                            imageAttachment.marginLeft ||
-                            styles.imageAttachment.marginLeft,
-                        )
-                      : messageType === FileTypes.File ||
-                          messageType === FileTypes.Audio ||
-                          messageType === FileTypes.VoiceRecording
-                        ? attachmentSize +
-                          Number(
-                            stylesProp.fileAttachmentContainer?.paddingLeft ||
-                              fileAttachmentContainer.paddingLeft ||
-                              styles.fileAttachmentContainer.paddingLeft,
-                          )
-                        : undefined,
-                },
-                styles.textContainer,
-                textContainer,
-                stylesProp.textContainer,
-              ],
-            }}
-          />
-          {messageType === FileTypes.Audio || messageType === FileTypes.VoiceRecording ? (
-            <Text style={[styles.secondaryText, { color: grey }, secondaryText]}>
-              {lastAttachment.duration
-                ? dayjs.duration(lastAttachment.duration, 'second').format('mm:ss')
-                : ''}
-            </Text>
-          ) : null}
+        <View
+          style={[
+            styles.leftContainer,
+            { borderLeftColor: isMyMessage ? '#B8BEC4' : '#4E8BFF' },
+            leftContainer,
+          ]}
+        >
+          <Text numberOfLines={1} style={[styles.title, titleStyle]}>
+            {title}
+          </Text>
+          <View style={[styles.subtitleContainer, subtitleContainer]}>
+            <SubtitleIcon message={quotedMessage} />
+            <SubtitleText message={quotedMessage} />
+          </View>
+        </View>
+        <View style={[styles.rightContainer, rightContainer]}>
+          <RightContent message={quotedMessage} />
         </View>
       </View>
+      {!messageFromContext?.quoted_message ? (
+        <View style={[styles.dismissWrapper, dismissWrapper]}>
+          <AttachmentRemoveControl onPress={onDismiss} />
+        </View>
+      ) : null}
     </View>
   );
 };
 
 const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithContext) => {
-  const { quotedMessage: prevQuotedMessage } = prevProps;
-  const { quotedMessage: nextQuotedMessage } = nextProps;
+  const {
+    isMyMessage: prevIsMyMessage,
+    mode: prevMode,
+    quotedMessage: prevQuotedMessage,
+  } = prevProps;
+  const {
+    isMyMessage: nextIsMyMessage,
+    mode: nextMode,
+    quotedMessage: nextQuotedMessage,
+  } = nextProps;
 
-  const quotedMessageEqual =
-    !!prevQuotedMessage &&
-    !!nextQuotedMessage &&
-    checkQuotedMessageEquality(prevQuotedMessage, nextQuotedMessage);
+  const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
 
-  const quotedMessageAttachmentsEqual =
-    prevQuotedMessage?.attachments?.length === nextQuotedMessage?.attachments?.length;
-
-  if (!quotedMessageAttachmentsEqual) {
+  if (!isMyMessageEqual) {
     return false;
   }
 
-  if (!quotedMessageEqual) {
+  const modeEqual = prevMode === nextMode;
+  if (!modeEqual) {
+    return false;
+  }
+
+  const messageEqual =
+    prevQuotedMessage &&
+    nextQuotedMessage &&
+    checkQuotedMessageEquality(prevQuotedMessage, nextQuotedMessage);
+  if (!messageEqual) {
     return false;
   }
 
   return true;
 };
 
-const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof ReplyWithContext;
+export const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof ReplyWithContext;
 
 export type ReplyProps = Partial<ReplyPropsWithContext>;
 
-/**
- * UI Component for reply
- */
 export const Reply = (props: ReplyProps) => {
-  const { message } = useMessageContext();
-
-  const { FileAttachmentIcon = FileIconDefault, MessageAvatar = MessageAvatarDefault } =
-    useMessagesContext();
+  const { message: messageFromContext } = useMessageContext();
+  const { client } = useChatContext();
 
   const messageComposer = useMessageComposer();
-  const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
+  const { quotedMessage: quotedMessageFromComposer } = useStateStore(
+    messageComposer.state,
+    messageComposerStateStoreSelector,
+  );
 
-  const { t } = useTranslationContext();
+  const onDismiss = useCallback(() => {
+    messageComposer.setQuotedMessage(null);
+  }, [messageComposer]);
+
+  const quotedMessage = messageFromContext
+    ? (messageFromContext.quoted_message as MessagesContextValue['quotedMessage'])
+    : quotedMessageFromComposer;
+
+  const isMyMessage = client.user?.id === quotedMessage?.user?.id;
+
+  const mode = messageComposer.editedMessage ? 'edit' : 'reply';
 
   return (
     <MemoizedReply
-      {...{
-        FileAttachmentIcon,
-        MessageAvatar,
-        quotedMessage: message
-          ? (message.quoted_message as MessagesContextValue['quotedMessage'])
-          : quotedMessage,
-        t,
-      }}
+      {...{ isMyMessage, message: messageFromContext, mode, onDismiss, quotedMessage }}
       {...props}
     />
   );
 };
 
-Reply.displayName = 'Reply{reply}';
+const styles = StyleSheet.create({
+  attachmentContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  container: {
+    borderRadius: 12,
+    flexDirection: 'row',
+    padding: 8,
+  },
+  contentWrapper: {
+    backgroundColor: 'white',
+    borderColor: '#E2E6EA',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 40,
+    overflow: 'hidden',
+    width: 40,
+  },
+  dismissWrapper: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  iconStyle: {},
+  imageAttachment: {},
+  leftContainer: {
+    borderLeftColor: '#B8BEC4',
+    borderLeftWidth: 2,
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  playIconContainer: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 10,
+    height: 20,
+    justifyContent: 'center',
+    width: 20,
+  },
+  rightContainer: {},
+  subtitle: {
+    color: '#384047',
+    flexShrink: 1,
+    fontSize: 12,
+    includeFontPadding: false,
+    lineHeight: 16,
+  },
+  subtitleContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+    paddingTop: 4,
+  },
+  title: {
+    color: '#384047',
+    fontSize: 12,
+    fontWeight: 'bold',
+    includeFontPadding: false,
+    lineHeight: 16,
+  },
+  wrapper: {
+    padding: 4,
+  },
+});

@@ -60,6 +60,7 @@ import { Toast } from './src/components/ToastComponent/Toast';
 import { useClientNotificationsToastHandler } from './src/hooks/useClientNotificationsToastHandler';
 import AsyncStore from './src/utils/AsyncStore.ts';
 import {
+  MessageInputFloatingConfigItem,
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
@@ -94,6 +95,7 @@ notifee.onBackgroundEvent(async ({ detail, type }) => {
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createNativeStackNavigator<UserSelectorParamList>();
+
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const [messageListImplementation, setMessageListImplementation] = useState<
@@ -105,8 +107,12 @@ const App = () => {
   const [messageListPruning, setMessageListPruning] = useState<
     MessageListPruningConfigItem['value'] | undefined
   >(undefined);
+  const [messageInputFloating, setMessageInputFloating] = useState<
+    MessageInputFloatingConfigItem['value'] | undefined
+  >(undefined);
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
+  const streami18n = new Streami18n();
 
   useEffect(() => {
     const messaging = getMessaging();
@@ -159,12 +165,19 @@ const App = () => {
         '@stream-rn-sampleapp-messagelist-pruning',
         { value: undefined },
       );
+      const messageInputFloatingStoredValue = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-messageinput-floating',
+        { value: false },
+      );
       setMessageListImplementation(
         messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
       );
       setMessageListMode(messageListModeStoredValue?.mode as MessageListModeConfigItem['mode']);
       setMessageListPruning(
         messageListPruningStoredValue?.value as MessageListPruningConfigItem['value'],
+      );
+      setMessageInputFloating(
+        messageInputFloatingStoredValue?.value as MessageInputFloatingConfigItem['value'],
       );
     };
     getMessageListConfig();
@@ -209,39 +222,44 @@ const App = () => {
         backgroundColor: streamChatTheme.colors?.white_snow || '#FCFCFC',
       }}
     >
-      <ThemeProvider style={streamChatTheme}>
-        <NavigationContainer
-          ref={RootNavigationRef}
-          theme={{
-            colors: {
-              ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-              background: streamChatTheme.colors?.white_snow || '#FCFCFC',
-            },
-            fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
-            dark: colorScheme === 'dark',
-          }}
-        >
-          <AppContext.Provider
-            value={{
-              chatClient,
-              loginUser,
-              logout,
-              switchUser,
-              messageListImplementation,
-              messageListMode,
-              messageListPruning,
-            }}
-          >
-            {isConnecting && !chatClient ? (
-              <LoadingScreen />
-            ) : chatClient ? (
-              <DrawerNavigatorWrapper chatClient={chatClient} />
-            ) : (
-              <UserSelector />
-            )}
-          </AppContext.Provider>
-        </NavigationContainer>
-      </ThemeProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
+          <ThemeProvider style={streamChatTheme}>
+            <NavigationContainer
+              ref={RootNavigationRef}
+              theme={{
+                colors: {
+                  ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+                  background: streamChatTheme.colors?.white_snow || '#FCFCFC',
+                },
+                fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
+                dark: colorScheme === 'dark',
+              }}
+            >
+              <AppContext.Provider
+                value={{
+                  chatClient,
+                  loginUser,
+                  logout,
+                  switchUser,
+                  messageListImplementation,
+                  messageInputFloating: messageInputFloating ?? false,
+                  messageListMode,
+                  messageListPruning,
+                }}
+              >
+                {isConnecting && !chatClient ? (
+                  <LoadingScreen />
+                ) : chatClient ? (
+                  <DrawerNavigatorWrapper chatClient={chatClient} i18nInstance={streami18n} />
+                ) : (
+                  <UserSelector />
+                )}
+              </AppContext.Provider>
+            </NavigationContainer>
+          </ThemeProvider>
+        </OverlayProvider>
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 };
@@ -265,32 +283,26 @@ const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;
-}> = ({ chatClient }) => {
-  const streamChatTheme = useStreamChatTheme();
-  const streami18n = new Streami18n();
-
+  i18nInstance: Streami18n;
+}> = ({ chatClient, i18nInstance }) => {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
-        <Chat
-          client={chatClient}
-          enableOfflineSupport
-          // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
-          ImageComponent={FastImage}
-          isMessageAIGenerated={isMessageAIGenerated}
-          i18nInstance={streami18n}
-        >
-          <StreamChatProvider>
-            <AppOverlayProvider>
-              <UserSearchProvider>
-                <DrawerNavigator />
-                <Toast />
-              </UserSearchProvider>
-            </AppOverlayProvider>
-          </StreamChatProvider>
-        </Chat>
-      </OverlayProvider>
-    </GestureHandlerRootView>
+    <Chat
+      client={chatClient}
+      enableOfflineSupport
+      // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
+      ImageComponent={FastImage}
+      isMessageAIGenerated={isMessageAIGenerated}
+      i18nInstance={i18nInstance}
+    >
+      <StreamChatProvider>
+        <AppOverlayProvider>
+          <UserSearchProvider>
+            <DrawerNavigator />
+            <Toast />
+          </UserSearchProvider>
+        </AppOverlayProvider>
+      </StreamChatProvider>
+    </Chat>
   );
 };
 

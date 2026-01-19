@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import { render, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -24,13 +26,15 @@ describe('<Reply/>', () => {
     await channel.watch();
 
     const TestComponent = () => (
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} client={chatClient}>
-            <Reply />
-          </Channel>
-        </Chat>
-      </OverlayProvider>
+      <GestureHandlerRootView>
+        <OverlayProvider>
+          <Chat client={chatClient}>
+            <Channel channel={channel} client={chatClient}>
+              <Reply />
+            </Channel>
+          </Chat>
+        </OverlayProvider>
+      </GestureHandlerRootView>
     );
 
     try {

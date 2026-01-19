@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import type { GestureResponderEvent, LayoutChangeEvent, LayoutRectangle } from 'react-native';
-import { Pressable } from 'react-native';
-
-import { NativeAttachmentPicker } from './components/NativeAttachmentPicker';
 
 import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
-} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+} from '../../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
-} from '../../contexts/messageInputContext/MessageInputContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Attach } from '../../icons/Attach';
+} from '../../../../contexts/messageInputContext/MessageInputContext';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { NewPlus } from '../../../../icons/NewPlus';
+import { IconButton } from '../../../ui/IconButton';
+import { NativeAttachmentPicker } from '../NativeAttachmentPicker';
 
 type AttachButtonPropsWithContext = Pick<
   MessageInputContextValue,
@@ -38,7 +37,6 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   } = props;
   const {
     theme: {
-      colors: { accent_blue, grey },
       messageInput: { attachButton },
     },
   } = useTheme();
@@ -84,15 +82,16 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
 
   return (
     <>
-      <Pressable
-        disabled={disabled}
+      <IconButton
+        Icon={NewPlus}
         onLayout={onAttachButtonLayout}
         onPress={onPressHandler}
-        style={[attachButton]}
+        size='lg'
+        status={selectedPicker === 'images' ? 'selected' : disabled ? 'disabled' : 'enabled'}
+        style={attachButton}
         testID='attach-button'
-      >
-        <Attach fill={selectedPicker === 'images' ? accent_blue : grey} size={32} />
-      </Pressable>
+        type='secondary'
+      />
       {showAttachButtonPicker ? (
         <NativeAttachmentPicker
           attachButtonLayoutRectangle={attachButtonLayoutRectangle}

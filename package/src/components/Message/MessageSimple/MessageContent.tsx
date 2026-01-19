@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   AnimatableNumericValue,
   ColorValue,
@@ -16,6 +16,7 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
+import { useMessageListItemContext } from '../../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -26,8 +27,7 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import { useViewport } from '../../../hooks/useViewport';
-
+import { useViewport } from '../../../hooks';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
 import { useMessageData } from '../hooks/useMessageData';
@@ -121,6 +121,7 @@ export type MessageContentPropsWithContext = Pick<
  * Child of MessageSimple that displays a message's content
  */
 const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
+  const [longPressFired, setLongPressFired] = useState(false);
   const {
     additionalPressableProps,
     alignment,
@@ -151,6 +152,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   } = props;
   const { client } = useChatContext();
   const { PollContent: PollContentOverride } = useMessagesContext();
+  const { vw } = useViewport();
 
   const {
     theme: {
@@ -178,7 +180,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       },
     },
   } = useTheme();
-  const { vw } = useViewport();
 
   const onLayout: (event: LayoutChangeEvent) => void = ({
     nativeEvent: {
@@ -239,10 +240,13 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     return bordersFromTheme;
   };
 
+  const { setNativeScrollability } = useMessageListItemContext();
+
   return (
     <Pressable
       disabled={preventPress}
       onLongPress={(event) => {
+        setLongPressFired(true);
         if (onLongPress) {
           onLongPress({
             emitter: 'messageContent',
@@ -266,8 +270,16 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           });
         }
       }}
-      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, container]}
+      style={({ pressed }) => [{ opacity: pressed && !longPressFired ? 0.5 : 1 }, container]}
       {...additionalPressableProps}
+      onPressOut={(event) => {
+        setLongPressFired(false);
+        setNativeScrollability(true);
+
+        if (additionalPressableProps?.onPressOut) {
+          additionalPressableProps.onPressOut(event);
+        }
+      }}
     >
       <View onLayout={onLayout} style={wrapper}>
         {hasThreadReplies && !threadList && !noBorder && (
@@ -312,7 +324,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                       key={`quoted_reply_${messageContentOrderIndex}`}
                       style={[styles.replyContainer, replyContainer]}
                     >
-                      <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
+                      <Reply style={{ width: vw(60) }} />
                     </View>
                   )
                 );
@@ -373,6 +385,7 @@ const areEqual = (
   nextProps: MessageContentPropsWithContext,
 ) => {
   const {
+    preventPress: prevPreventPress,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -384,6 +397,7 @@ const areEqual = (
     t: prevT,
   } = prevProps;
   const {
+    preventPress: nextPreventPress,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isEditedMessageOpen: nextIsEditedMessageOpen,
@@ -393,6 +407,10 @@ const areEqual = (
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
+
+  if (prevPreventPress !== nextPreventPress) {
+    return false;
+  }
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;

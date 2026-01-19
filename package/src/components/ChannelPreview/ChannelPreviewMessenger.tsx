@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { ChannelAvatar } from './ChannelAvatar';
 import type { ChannelPreviewProps } from './ChannelPreview';
 import { ChannelPreviewMessage } from './ChannelPreviewMessage';
 import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
@@ -10,14 +9,18 @@ import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 
+import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDisplayPresence';
 import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
+import { NewChannelAvatar } from '../Avatar/ChannelAvatar';
+import { NewUserAvatar } from '../Avatar/UserAvatar';
 
 const styles = StyleSheet.create({
   container: {
@@ -104,7 +107,7 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
     maxUnreadCount,
     muted,
     onSelect,
-    PreviewAvatar = ChannelAvatar,
+    // PreviewAvatar = ChannelAvatar,
     PreviewMessage = ChannelPreviewMessage,
     PreviewMutedStatus = ChannelPreviewMutedStatus,
     PreviewStatus = ChannelPreviewStatus,
@@ -113,6 +116,7 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
     unread,
   } = props;
   const { vw } = useViewport();
+  const { client } = useChatContext();
 
   const maxWidth = vw(80) - 16 - 40;
 
@@ -128,6 +132,12 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
 
+  const members = channel.state.members;
+  const membersValues = Object.values(members);
+  const otherMembers = membersValues.filter((member) => member.user?.id !== client?.user?.id);
+
+  const online = useChannelPreviewDisplayPresence(channel);
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -138,12 +148,21 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
       style={[
         // { opacity: pressed ? 0.5 : 1 },
         styles.container,
-        { backgroundColor: white_snow, borderBottomColor: border },
+        { backgroundColor: white_snow, borderBottomColor: border.surfaceSubtle },
         container,
       ]}
       testID='channel-preview-button'
     >
-      <PreviewAvatar channel={channel} />
+      {otherMembers.length === 1 ? (
+        <NewUserAvatar
+          size='lg'
+          user={otherMembers[0].user}
+          showBorder={otherMembers[0].user?.image ? true : false}
+          showOnlineIndicator={online}
+        />
+      ) : (
+        <NewChannelAvatar channel={channel} size='lg' />
+      )}
       <View
         style={[styles.contentContainer, contentContainer]}
         testID={`channel-preview-content-${channel.id}`}
