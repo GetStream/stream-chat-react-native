@@ -7,7 +7,6 @@ import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
-import type { ChannelAvatarProps } from '../../components/ChannelPreview/ChannelAvatar';
 import type { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
 import type { ChannelPreviewStatusProps } from '../../components/ChannelPreview/ChannelPreviewStatus';
@@ -176,7 +175,7 @@ export type ChannelsContextValue = {
    *
    * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelAvatar.tsx)
    */
-  PreviewAvatar?: React.ComponentType<ChannelAvatarProps>;
+  PreviewAvatar?: React.ComponentType;
   /**
    * Custom UI component to render preview of latest message on channel.
    *

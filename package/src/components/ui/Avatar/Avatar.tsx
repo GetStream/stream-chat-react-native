@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-export type NewAvatarProps = {
+export type AvatarProps = {
   size: 'xs' | 'sm' | 'md' | 'lg';
   imageUrl?: string;
   placeholder?: React.ReactNode;
@@ -29,7 +29,7 @@ const sizes = {
   },
 };
 
-export const NewAvatar = (props: NewAvatarProps) => {
+export const Avatar = (props: AvatarProps) => {
   const { size, imageUrl, placeholder, showBorder } = props;
   const styles = useStyles();
 

@@ -11,10 +11,10 @@ import {
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  Avatar,
   useChannelPreviewDisplayName,
   useOverlayContext,
   useTheme,
+  UserAvatar,
 } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
@@ -281,11 +281,11 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.memberRow}>
-                <Avatar
-                  image={member.user?.image}
-                  name={member.user?.name}
-                  online={member.user?.online}
-                  size={40}
+                <UserAvatar
+                  user={member.user}
+                  size={'lg'}
+                  showOnlineIndicator={member.user?.online}
+                  showBorder
                 />
                 <View style={styles.memberDetails}>
                   <Text style={[{ color: black }, styles.memberName]}>{member.user?.name}</Text>

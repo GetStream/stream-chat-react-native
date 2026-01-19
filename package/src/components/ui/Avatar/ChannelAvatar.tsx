@@ -4,21 +4,21 @@ import { StyleSheet, View } from 'react-native';
 
 import { Channel } from 'stream-chat';
 
+import { Avatar } from './Avatar';
+
 import { iconSizes, indicatorSizes } from './constants';
 
-import { GroupIcon } from '../../icons/GroupIcon';
-import { NewAvatar } from '../ui/Avatar';
+import { GroupIcon } from '../../../icons/GroupIcon';
+import { OnlineIndicator } from '../OnlineIndicator';
 
-import { OnlineIndicator } from '../ui/OnlineIndicator';
-
-export type NewChannelAvatarProps = {
+export type ChannelAvatarProps = {
   channel: Channel;
   showOnlineIndicator?: boolean;
   size: 'xs' | 'sm' | 'md' | 'lg';
   showBorder?: boolean;
 };
 
-export const NewChannelAvatar = (props: NewChannelAvatarProps) => {
+export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const { channel, size, showBorder = false, showOnlineIndicator = false } = props;
 
   const placeholder = useMemo(() => {
@@ -27,7 +27,7 @@ export const NewChannelAvatar = (props: NewChannelAvatarProps) => {
 
   return (
     <View>
-      <NewAvatar
+      <Avatar
         imageUrl={channel.data?.image}
         placeholder={placeholder}
         showBorder={showBorder}

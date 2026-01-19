@@ -15,13 +15,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import {
-  Avatar,
   CircleClose,
   Delete,
   User,
   UserMinus,
   useTheme,
   useViewport,
+  UserAvatar,
 } from 'stream-chat-react-native';
 import { ChannelMemberResponse } from 'stream-chat';
 
@@ -33,8 +33,6 @@ import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActi
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 dayjs.extend(relativeTime);
-
-const avatarSize = 64;
 
 const styles = StyleSheet.create({
   avatarPresenceIndicator: {
@@ -83,7 +81,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
-  userItemContainer: { marginHorizontal: 8, width: 64 },
+  userItemContainer: { marginHorizontal: 8, alignItems: 'center' },
   userName: {
     fontSize: 12,
     fontWeight: '600',
@@ -311,13 +309,12 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           renderItem={({ item }) =>
                             item ? (
                               <View style={styles.userItemContainer}>
-                                <Avatar
-                                  image={item.image}
-                                  name={item.name || item.id}
-                                  online={item.online}
-                                  presenceIndicatorContainerStyle={styles.avatarPresenceIndicator}
-                                  size={avatarSize}
+                                <UserAvatar
+                                  user={item}
+                                  size='md'
+                                  showOnlineIndicator={item.online}
                                 />
+
                                 <Text style={[styles.userName, { color: black }]}>
                                   {item.name || item.id || ''}
                                 </Text>

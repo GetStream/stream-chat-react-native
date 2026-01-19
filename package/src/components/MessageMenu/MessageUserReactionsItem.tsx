@@ -39,7 +39,6 @@ export const MessageUserReactionsItem = ({
           avatarInnerContainer,
           avatarName,
           avatarNameContainer,
-          avatarSize,
           filledBackgroundColor = light_blue,
           iconFilledColor = accent_blue,
           iconUnFilledColor = grey,
@@ -53,19 +52,6 @@ export const MessageUserReactionsItem = ({
   } = useTheme();
   const { client } = useChatContext();
   const alignment = client.userID && client.userID === id ? 'left' : 'right';
-  const x = avatarSize / 2 - (avatarSize / (radius * 4)) * (alignment === 'left' ? 1 : -1);
-  const y = avatarSize - radius;
-
-  const left =
-    alignment === 'left'
-      ? x -
-        (Number(reactionBubbleBackground.width || 0) || styles.reactionBubbleBackground.width) +
-        radius
-      : x - radius;
-  const top =
-    y -
-    radius -
-    (Number(reactionBubbleBackground.height || 0) || styles.reactionBubbleBackground.height);
 
   const Icon = supportedReactions.find((reaction) => reaction.type === type)?.Icon ?? Unknown;
 
@@ -75,7 +61,7 @@ export const MessageUserReactionsItem = ({
       style={[styles.avatarContainer, avatarContainer]}
     >
       <View style={[styles.avatarInnerContainer, avatarInnerContainer]}>
-        <MessageUserReactionsAvatar reaction={reaction} size={avatarSize} />
+        <MessageUserReactionsAvatar reaction={reaction} size={'lg'} />
         <View
           style={[
             styles.reactionBubbleBackground,
@@ -84,8 +70,8 @@ export const MessageUserReactionsItem = ({
                 alignment === 'left' ? filledBackgroundColor : unfilledBackgroundColor,
               borderColor: alignment === 'left' ? white : grey_gainsboro,
               borderWidth: radius / 2,
-              left,
-              top,
+              bottom: 0,
+              left: 0,
             },
             reactionBubbleBackground,
           ]}
@@ -123,7 +109,6 @@ const styles = StyleSheet.create({
   },
   avatarNameContainer: {
     alignItems: 'center',
-    flexDirection: 'row',
     flexGrow: 1,
   },
   reactionBubbleBackground: {

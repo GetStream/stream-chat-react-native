@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
 import {
-  Avatar,
   ChannelList,
   ChannelListMessenger,
   ChannelListMessengerProps,
@@ -12,6 +11,8 @@ import {
   useChannelPreviewDisplayName,
   useChannelsContext,
   useTheme,
+  Avatar,
+  getInitialsFromName,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -66,6 +67,16 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
     },
   } = useTheme();
 
+  const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
+
+  const placeholder = useMemo(() => {
+    if (displayAvatar?.name) {
+      return <Text style={{ color: '#003179' }}>{getInitialsFromName(displayAvatar?.name)}</Text>;
+    } else {
+      return <Text style={{ color: '#003179' }}>?</Text>;
+    }
+  }, [displayAvatar.name]);
+
   if (!chatClient) {
     return null;
   }
@@ -73,8 +84,6 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   if (Object.keys(channel.state.members).length === 2) {
     return null;
   }
-
-  const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
 
   const switchToChannel = () => {
     navigation.reset({
@@ -106,17 +115,9 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
     >
       <View style={styles.groupContainer}>
         {displayAvatar.images ? (
-          <GroupAvatar
-            images={displayAvatar.images}
-            names={displayAvatar.names}
-            size={40}
-          />
+          <GroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />
         ) : (
-          <Avatar
-            image={displayAvatar.image}
-            name={displayAvatar.name}
-            size={40}
-          />
+          <Avatar image={displayAvatar.image} placeholder={placeholder} size={'lg'} />
         )}
         <Text style={[styles.nameText, { color: black }]}>{name}</Text>
       </View>
