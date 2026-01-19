@@ -41,6 +41,7 @@ export const Avatar = (props: AvatarProps) => {
         { backgroundColor: imageUrl ? undefined : '#D2E3FF' },
         showBorder ? styles.border : undefined,
       ]}
+      testID='avatar-image'
     >
       {imageUrl ? (
         <Image source={{ uri: imageUrl }} style={[styles.image, sizes[size]]} />

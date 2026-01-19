@@ -11,7 +11,7 @@ export type MessageUserReactionsAvatarProps = {
    * The reaction object
    */
   reaction: Reaction;
-} & Pick<AvatarProps, 'size'>;
+} & Partial<Pick<AvatarProps, 'size'>>;
 
 export const MessageUserReactionsAvatar = (props: MessageUserReactionsAvatarProps) => {
   const {
@@ -23,7 +23,7 @@ export const MessageUserReactionsAvatar = (props: MessageUserReactionsAvatarProp
     return <Text style={styles.text}>{getInitialsFromName(name)}</Text>;
   }, [name]);
 
-  return <Avatar imageUrl={image} placeholder={placeholder} size={size} />;
+  return <Avatar imageUrl={image} placeholder={placeholder} size={size ?? 'lg'} />;
 };
 
 const styles = StyleSheet.create({

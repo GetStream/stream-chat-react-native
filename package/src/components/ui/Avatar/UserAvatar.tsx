@@ -38,7 +38,7 @@ export const UserAvatar = (props: UserAvatarProps) => {
   }
 
   return (
-    <View style={styles.wrapper}>
+    <View style={styles.wrapper} testID='user-avatar'>
       <Avatar imageUrl={user.image} placeholder={placeholder} showBorder={showBorder} size={size} />
       {showOnlineIndicator ? (
         <View style={styles.onlineIndicatorWrapper}>
