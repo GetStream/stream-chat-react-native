@@ -10,7 +10,7 @@ on:
 
 jobs:
   check_pr:
-    runs-on: ubuntu-latest
+    runs-on: public
     strategy:
       matrix:
         node-version: [24.x]
