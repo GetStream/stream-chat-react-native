@@ -992,8 +992,14 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       styles.contentContainer,
       { paddingBottom: messageInputFloating ? messageInputHeight : 0 },
       contentContainer,
+      additionalFlashListProps?.contentContainerStyle,
     ],
-    [contentContainer, messageInputFloating, messageInputHeight],
+    [
+      additionalFlashListProps?.contentContainerStyle,
+      contentContainer,
+      messageInputFloating,
+      messageInputHeight,
+    ],
   );
 
   const currentListHeightRef = useRef<number | undefined>(undefined);
