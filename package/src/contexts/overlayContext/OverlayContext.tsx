@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
 
-import type { Attachment } from 'stream-chat';
-
-import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
+import { SharedValue } from 'react-native-reanimated';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
+import { ImageGalleryProviderProps } from '../imageGalleryContext/ImageGalleryContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -15,6 +14,7 @@ export type Overlay = 'alert' | 'gallery' | 'none';
 
 export type OverlayContextValue = {
   overlay: Overlay;
+  overlayOpacity: SharedValue<number>;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   style?: DeepPartial<Theme>;
 };
@@ -23,17 +23,9 @@ export const OverlayContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as OverlayContextValue,
 );
 
-export type OverlayProviderProps = ImageGalleryCustomComponents & {
-  autoPlayVideo?: boolean;
-  /**
-   * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
-   * */
-  giphyVersion?: keyof NonNullable<Attachment['giphy']>;
+export type OverlayProviderProps = ImageGalleryProviderProps & {
   /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
   i18nInstance?: Streami18n;
-  imageGalleryGridHandleHeight?: number;
-  imageGalleryGridSnapPoints?: [string | number, string | number];
-  numberOfImageGalleryGridColumns?: number;
   value?: Partial<OverlayContextValue>;
 };
 

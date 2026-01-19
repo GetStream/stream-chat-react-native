@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import type { ImageStyle, StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
+import { useChatConfigContext } from '../../../contexts/chatConfigContext/ChatConfigContext';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useStateStore } from '../../../hooks';
+import {
+  ImageGalleryAsset,
+  ImageGalleryState,
+} from '../../../state-store/image-gallery-state-store';
+import { getResizedImageUrl } from '../../../utils/getResizedImageUrl';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
 
 const oneEighth = 1 / 8;
@@ -11,16 +19,18 @@ type Props = {
   accessibilityLabel: string;
   index: number;
   offsetScale: SharedValue<number>;
-  photo: { uri: string };
-  previous: boolean;
+  photo: ImageGalleryAsset;
   scale: SharedValue<number>;
   screenHeight: number;
-  selected: boolean;
-  shouldRender: boolean;
+  screenWidth: number;
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
   style?: StyleProp<ImageStyle>;
 };
+
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  currentIndex: state.currentIndex,
+});
 
 export const AnimatedGalleryImage = React.memo(
   (props: Props) => {
@@ -29,15 +39,29 @@ export const AnimatedGalleryImage = React.memo(
       index,
       offsetScale,
       photo,
-      previous,
       scale,
       screenHeight,
-      selected,
-      shouldRender,
+      screenWidth,
       style,
       translateX,
       translateY,
     } = props;
+    const { imageGalleryStateStore } = useImageGalleryContext();
+    const { resizableCDNHosts } = useChatConfigContext();
+    const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
+
+    const uri = useMemo(() => {
+      return getResizedImageUrl({
+        height: screenHeight,
+        resizableCDNHosts,
+        url: photo.uri,
+        width: screenWidth,
+      });
+    }, [photo.uri, resizableCDNHosts, screenHeight, screenWidth]);
+
+    const selected = currentIndex === index;
+    const previous = currentIndex > index;
+    const shouldRender = Math.abs(currentIndex - index) < 4;
 
     const animatedStyles = useAnimatedGalleryStyle({
       index,
@@ -63,19 +87,17 @@ export const AnimatedGalleryImage = React.memo(
       <Animated.Image
         accessibilityLabel={accessibilityLabel}
         resizeMode={'contain'}
-        source={{ uri: photo.uri }}
+        source={{ uri }}
         style={[...animatedStyles, style]}
       />
     );
   },
   (prevProps, nextProps) => {
     if (
-      prevProps.selected === nextProps.selected &&
-      prevProps.shouldRender === nextProps.shouldRender &&
       prevProps.photo.uri === nextProps.photo.uri &&
-      prevProps.previous === nextProps.previous &&
       prevProps.index === nextProps.index &&
-      prevProps.screenHeight === nextProps.screenHeight
+      prevProps.screenHeight === nextProps.screenHeight &&
+      prevProps.screenWidth === nextProps.screenWidth
     ) {
       return true;
     }

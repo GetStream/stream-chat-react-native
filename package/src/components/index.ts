@@ -81,6 +81,8 @@ export * from './ImageGallery/components/ImageGalleryHeader';
 export * from './ImageGallery/components/ImageGalleryOverlay';
 export * from './ImageGallery/components/ImageGrid';
 export * from './ImageGallery/components/ImageGridHandle';
+export * from './ImageGallery/components/ImageGalleryVideoControl';
+export * from './ImageGallery/hooks/useImageGalleryVideoPlayer';
 
 export * from './Indicators/EmptyStateIndicator';
 export * from './Indicators/LoadingDot';

@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
+
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useStateStore } from '../../../hooks';
 
 import {
   isVideoPlayerAvailable,
@@ -12,29 +15,27 @@ import {
   VideoType,
 } from '../../../native';
 
+import {
+  ImageGalleryAsset,
+  ImageGalleryState,
+} from '../../../state-store/image-gallery-state-store';
+import { VideoPlayerState } from '../../../state-store/video-player';
+import { ONE_SECOND_IN_MILLISECONDS } from '../../../utils/constants';
 import { Spinner } from '../../UIComponents/Spinner';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
+import { useImageGalleryVideoPlayer } from '../hooks/useImageGalleryVideoPlayer';
 
 const oneEighth = 1 / 8;
 
 export type AnimatedGalleryVideoType = {
   attachmentId: string;
-  handleEnd: () => void;
-  handleLoad: (index: string, duration: number) => void;
-  handleProgress: (index: string, progress: number, hasEnd?: boolean) => void;
   index: number;
   offsetScale: SharedValue<number>;
-  paused: boolean;
-  previous: boolean;
   scale: SharedValue<number>;
   screenHeight: number;
-  selected: boolean;
-  shouldRender: boolean;
-  source: { uri: string };
+  photo: ImageGalleryAsset;
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
-  videoRef: React.RefObject<VideoType>;
-  repeat?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -48,46 +49,62 @@ const styles = StyleSheet.create({
   },
 });
 
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  currentIndex: state.currentIndex,
+});
+
+const videoPlayerSelector = (state: VideoPlayerState) => ({
+  isPlaying: state.isPlaying,
+});
+
 export const AnimatedGalleryVideo = React.memo(
   (props: AnimatedGalleryVideoType) => {
     const [opacity, setOpacity] = useState<number>(1);
+    const { imageGalleryStateStore } = useImageGalleryContext();
+    const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
     const {
       attachmentId,
-      handleEnd,
-      handleLoad,
-      handleProgress,
       index,
       offsetScale,
-      paused,
-      previous,
-      repeat,
       scale,
       screenHeight,
-      selected,
-      shouldRender,
-      source,
       style,
+      photo,
       translateX,
       translateY,
-      videoRef,
     } = props;
+
+    const videoRef = useRef<VideoType>(null);
+
+    const videoPlayer = useImageGalleryVideoPlayer({
+      id: attachmentId,
+    });
+
+    useEffect(() => {
+      if (videoRef.current) {
+        videoPlayer.initPlayer({ playerRef: videoRef.current });
+      }
+    }, [videoPlayer]);
+
+    const { isPlaying } = useStateStore(videoPlayer.state, videoPlayerSelector);
+
     const onLoadStart = () => {
       setOpacity(1);
     };
 
     const onLoad = (payload: VideoPayloadData) => {
       setOpacity(0);
-      // Duration is in seconds so we convert to milliseconds.
-      handleLoad(attachmentId, payload.duration * 1000);
+
+      videoPlayer.duration = payload.duration * ONE_SECOND_IN_MILLISECONDS;
     };
 
     const onEnd = () => {
-      handleEnd();
+      videoPlayer.stop();
     };
 
     const onProgress = (data: VideoProgressData) => {
-      handleProgress(attachmentId, data.currentTime / data.seekableDuration);
+      videoPlayer.position = data.currentTime * ONE_SECOND_IN_MILLISECONDS;
     };
 
     const onBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
@@ -108,13 +125,10 @@ export const AnimatedGalleryVideo = React.memo(
       } else {
         // Update your UI for the loaded state
         setOpacity(0);
-        handleLoad(attachmentId, playbackStatus.durationMillis);
+        videoPlayer.duration = playbackStatus.durationMillis;
         if (playbackStatus.isPlaying) {
           // Update your UI for the playing state
-          handleProgress(
-            attachmentId,
-            playbackStatus.positionMillis / playbackStatus.durationMillis,
-          );
+          videoPlayer.progress = playbackStatus.positionMillis / playbackStatus.durationMillis;
         }
 
         if (playbackStatus.isBuffering) {
@@ -124,10 +138,14 @@ export const AnimatedGalleryVideo = React.memo(
 
         if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
           // The player has just finished playing and will stop. Maybe you want to play something else?
-          handleEnd();
+          videoPlayer.stop();
         }
       }
     };
+
+    const selected = currentIndex === index;
+    const previous = currentIndex > index;
+    const shouldRender = Math.abs(currentIndex - index) < 4;
 
     const animatedStyles = useAnimatedGalleryStyle({
       index,
@@ -164,13 +182,13 @@ export const AnimatedGalleryVideo = React.memo(
             onLoadStart={onLoadStart}
             onPlaybackStatusUpdate={onPlayBackStatusUpdate}
             onProgress={onProgress}
-            paused={paused}
-            repeat={repeat}
+            paused={!isPlaying}
+            repeat={true}
             resizeMode='contain'
             style={style}
             testID='video-player'
-            uri={source.uri}
-            videoRef={videoRef}
+            uri={photo.uri}
+            videoRef={videoRef as RefObject<VideoType>}
           />
         ) : null}
         <Animated.View
@@ -195,14 +213,9 @@ export const AnimatedGalleryVideo = React.memo(
 
   (prevProps, nextProps) => {
     if (
-      prevProps.paused === nextProps.paused &&
-      prevProps.repeat === nextProps.repeat &&
-      prevProps.shouldRender === nextProps.shouldRender &&
-      prevProps.source.uri === nextProps.source.uri &&
       prevProps.screenHeight === nextProps.screenHeight &&
-      prevProps.selected === nextProps.selected &&
-      prevProps.previous === nextProps.previous &&
-      prevProps.index === nextProps.index
+      prevProps.index === nextProps.index &&
+      prevProps.photo === nextProps.photo
     ) {
       return true;
     }

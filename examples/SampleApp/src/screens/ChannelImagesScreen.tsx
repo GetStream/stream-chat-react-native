@@ -13,10 +13,11 @@ import Dayjs from 'dayjs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   DateHeader,
-  Photo,
   useImageGalleryContext,
   useOverlayContext,
   useTheme,
+  ImageGalleryState,
+  useStateStore,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -24,7 +25,6 @@ import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { Picture } from '../icons/Picture';
 
 import type { RouteProp } from '@react-navigation/native';
-import type { Attachment } from 'stream-chat';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -61,16 +61,17 @@ export type ChannelImagesScreenProps = {
   route: ChannelImagesScreenRouteProp;
 };
 
+const selector = (state: ImageGalleryState) => ({
+  assets: state.assets,
+});
+
 export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   route: {
     params: { channel },
   },
 }) => {
-  const {
-    messages: images,
-    setMessages: setImages,
-    setSelectedMessage: setImage,
-  } = useImageGalleryContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { assets } = useStateStore(imageGalleryStateStore.state, selector);
   const { setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
   const {
@@ -78,8 +79,6 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
       colors: { white },
     },
   } = useTheme();
-
-  const channelImages = useRef(images);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState(
     Dayjs(messages?.[0]?.created_at).format('MMM YYYY'),
@@ -106,30 +105,6 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     }
   });
 
-  /**
-   * Photos array created from all currently available
-   * photo attachments
-   */
-  const photos = messages.reduce((acc: Photo[], cur) => {
-    const attachmentImages =
-      (cur.attachments as Attachment[])?.filter(
-        (attachment) =>
-          attachment.type === 'image' &&
-          !attachment.title_link &&
-          !attachment.og_scrape_url &&
-          (attachment.image_url || attachment.thumb_url),
-      ) || [];
-
-    const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
-      created_at: cur.created_at,
-      id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
-      messageId: cur.id,
-      uri: attachmentImage.image_url || (attachmentImage.thumb_url as string),
-    }));
-
-    return [...acc, ...attachmentPhotos];
-  }, []);
-
   const messagesWithImages = messages
     .map((message) => ({ ...message, groupStyles: [], readBy: false }))
     .filter((message) => {
@@ -145,24 +120,11 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
       return false;
     });
 
-  /**
-   * This is for the useEffect to run again in the case that a message
-   * gets edited with more or the same number of images
-   */
-  const imageString = messagesWithImages
-    .map((message) =>
-      (message.attachments as Attachment[])
-        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
-        .join(),
-    )
-    .join();
-
   useEffect(() => {
-    setImages(messagesWithImages);
-    const channelImagesCurrent = channelImages.current;
-    return () => setImages(channelImagesCurrent);
+    imageGalleryStateStore.openImageGallery({ messages: messagesWithImages });
+    return () => imageGalleryStateStore.clear();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageString, setImages]);
+  }, [imageGalleryStateStore, messagesWithImages.length]);
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: white }]}>
@@ -170,7 +132,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
       <View style={styles.flex}>
         <FlatList
           contentContainerStyle={styles.contentContainer}
-          data={photos}
+          data={assets}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           ListEmptyComponent={EmptyListComponent}
           numColumns={3}
@@ -180,9 +142,9 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => {
-                setImage({
-                  messageId: item.messageId,
-                  url: item.uri,
+                imageGalleryStateStore.openImageGallery({
+                  messages: messagesWithImages,
+                  selectedAttachmentUrl: item.uri,
                 });
                 setOverlay('gallery');
               }}
@@ -202,7 +164,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
             viewAreaCoveragePercentThreshold: 50,
           }}
         />
-        {photos && photos.length ? (
+        {assets.length > 0 ? (
           <View style={styles.stickyHeader}>
             <DateHeader dateString={stickyHeaderDate} />
           </View>

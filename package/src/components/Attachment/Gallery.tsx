@@ -36,10 +36,7 @@ import { isVideoPlayerAvailable } from '../../native';
 import { FileTypes } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
-export type GalleryPropsWithContext = Pick<
-  ImageGalleryContextValue,
-  'setSelectedMessage' | 'setMessages'
-> &
+export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<
     MessageContextValue,
     | 'alignment'
@@ -51,11 +48,11 @@ export type GalleryPropsWithContext = Pick<
     | 'onPressIn'
     | 'preventPress'
     | 'threadList'
+    | 'message'
   > &
   Pick<
     MessagesContextValue,
     | 'additionalPressableProps'
-    | 'legacyImageViewerSwipeBehaviour'
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
@@ -65,19 +62,6 @@ export type GalleryPropsWithContext = Pick<
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
     hasThreadReplies?: boolean;
-    /**
-     * `message` prop has been introduced here as part of `legacyImageViewerSwipeBehaviour` prop.
-     * https://github.com/GetStream/stream-chat-react-native/commit/d5eac6193047916f140efe8e396a671675c9a63f
-     * messageId and messageText may seem redundant now, but to avoid breaking change as part
-     * of minor release, we are keeping those props.
-     *
-     * Also `message` type should ideally be imported from MessageContextValue and not be explicitely mentioned
-     * here, but due to some circular dependencies within the SDK, it causes "excessive deep nesting" issue with
-     * typescript within Channel component. We should take it as a mini-project and resolve all these circular imports.
-     *
-     * TODO: Fix circular dependencies of imports
-     */
-    message?: LocalMessage;
   };
 
 const GalleryWithContext = (props: GalleryPropsWithContext) => {
@@ -86,19 +70,17 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     alignment,
     groupStyles,
     hasThreadReplies,
+    imageGalleryStateStore,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     ImageReloadIndicator,
     images,
-    legacyImageViewerSwipeBehaviour,
     message,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
-    setMessages,
     setOverlay,
-    setSelectedMessage,
     threadList,
     videos,
     VideoThumbnail,
@@ -204,13 +186,13 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   additionalPressableProps={additionalPressableProps}
                   borderRadius={borderRadius}
                   colIndex={colIndex}
+                  imageGalleryStateStore={imageGalleryStateStore}
                   ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
                   ImageLoadingIndicator={ImageLoadingIndicator}
                   ImageReloadIndicator={ImageReloadIndicator}
                   imagesAndVideos={imagesAndVideos}
                   invertedDirections={invertedDirections || false}
                   key={rowIndex}
-                  legacyImageViewerSwipeBehaviour={legacyImageViewerSwipeBehaviour}
                   message={message}
                   numOfColumns={numOfColumns}
                   numOfRows={numOfRows}
@@ -219,9 +201,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   onPressIn={onPressIn}
                   preventPress={preventPress}
                   rowIndex={rowIndex}
-                  setMessages={setMessages}
                   setOverlay={setOverlay}
-                  setSelectedMessage={setSelectedMessage}
                   thumbnail={thumbnail}
                   VideoThumbnail={VideoThumbnail}
                 />
@@ -252,13 +232,12 @@ type GalleryThumbnailProps = {
 } & Pick<
   MessagesContextValue,
   | 'additionalPressableProps'
-  | 'legacyImageViewerSwipeBehaviour'
   | 'VideoThumbnail'
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
   | 'ImageReloadIndicator'
 > &
-  Pick<ImageGalleryContextValue, 'setSelectedMessage' | 'setMessages'> &
+  Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<OverlayContextValue, 'setOverlay'>;
 
@@ -266,12 +245,12 @@ const GalleryThumbnail = ({
   additionalPressableProps,
   borderRadius,
   colIndex,
+  imageGalleryStateStore,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
   ImageReloadIndicator,
   imagesAndVideos,
   invertedDirections,
-  legacyImageViewerSwipeBehaviour,
   message,
   numOfColumns,
   numOfRows,
@@ -280,9 +259,7 @@ const GalleryThumbnail = ({
   onPressIn,
   preventPress,
   rowIndex,
-  setMessages,
   setOverlay,
-  setSelectedMessage,
   thumbnail,
   VideoThumbnail,
 }: GalleryThumbnailProps) => {
@@ -304,17 +281,14 @@ const GalleryThumbnail = ({
   const { t } = useTranslationContext();
 
   const openImageViewer = () => {
-    if (!legacyImageViewerSwipeBehaviour && message) {
-      // Added if-else to keep the logic readable, instead of DRY.
-      // if - legacyImageViewerSwipeBehaviour is disabled
-      // else - legacyImageViewerSwipeBehaviour is enabled
-      setMessages([message]);
-      setSelectedMessage({ messageId: message.id, url: thumbnail.url });
-      setOverlay('gallery');
-    } else if (legacyImageViewerSwipeBehaviour) {
-      setSelectedMessage({ messageId: message?.id, url: thumbnail.url });
-      setOverlay('gallery');
+    if (!message) {
+      return;
     }
+    imageGalleryStateStore.openImageGallery({
+      messages: [message],
+      selectedAttachmentUrl: thumbnail.url,
+    });
+    setOverlay('gallery');
   };
 
   const defaultOnPress = () => {
@@ -585,13 +559,12 @@ export const Gallery = (props: GalleryProps) => {
     onPressIn: propOnPressIn,
     preventPress: propPreventPress,
     setOverlay: propSetOverlay,
-    setSelectedMessage: propSetSelectedMessage,
     threadList: propThreadList,
     videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
   } = props;
 
-  const { setMessages, setSelectedMessage: contextSetSelectedMessage } = useImageGalleryContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -609,7 +582,6 @@ export const Gallery = (props: GalleryProps) => {
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
     ImageReloadIndicator: ContextImageReloadIndicator,
-    legacyImageViewerSwipeBehaviour,
     myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext();
@@ -631,7 +603,6 @@ export const Gallery = (props: GalleryProps) => {
   const onPress = propOnPress || contextOnPress;
   const preventPress =
     typeof propPreventPress === 'boolean' ? propPreventPress : contextPreventPress;
-  const setSelectedMessage = propSetSelectedMessage || contextSetSelectedMessage;
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
   const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
@@ -649,20 +620,18 @@ export const Gallery = (props: GalleryProps) => {
         channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
+        imageGalleryStateStore,
         ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
         ImageReloadIndicator,
         images,
-        legacyImageViewerSwipeBehaviour,
         message,
         myMessageTheme,
         onLongPress,
         onPress,
         onPressIn,
         preventPress,
-        setMessages,
         setOverlay,
-        setSelectedMessage,
         threadList,
         videos,
         VideoThumbnail,
