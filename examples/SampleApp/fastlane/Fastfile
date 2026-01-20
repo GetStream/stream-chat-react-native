@@ -53,6 +53,7 @@ platform :ios do
       xcargs: settings_to_override,
       include_symbols: true,
       output_directory: build_output_directory
+      output_name: File.basename(output_ipa_name, '.ipa')
     )
 
     if deploy
@@ -91,7 +92,7 @@ platform :ios do
       in_house: false
     )
   end
-  
+
   desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
   lane :match_me do |options|
     custom_match(
@@ -112,13 +113,13 @@ platform :android do
     deploy = options.fetch(:deploy, false)
 
     UI.message("Deploying to Firebase: #{deploy}")
-    
-    # Clean 
+
+    # Clean
     gradle(
         task: "clean",
         project_dir: "./android"
     )
-  
+
     # Build the AAB
     gradle(
         task: "assemble",
