@@ -12,17 +12,20 @@ type ExtraKeyboardControllerProps = {
   behavior?: 'translate-with-padding';
 };
 
+type KeyboardControllerModule = typeof import('react-native-keyboard-controller');
+
+const optionalRequire = <T,>(): T | undefined => {
+  try {
+    return require('react-native-keyboard-controller') as T;
+  } catch {
+    return undefined;
+  }
+};
+
 export type KeyboardCompatibleViewProps = ReactNativeKeyboardAvoidingViewProps &
   ExtraKeyboardControllerProps;
 
-// @ts-ignore
-let KeyboardControllerPackage;
-
-try {
-  KeyboardControllerPackage = require('react-native-keyboard-controller');
-} catch (e) {
-  KeyboardControllerPackage = undefined;
-}
+const KeyboardControllerPackage = optionalRequire<KeyboardControllerModule>();
 
 const { AndroidSoftInputModes, KeyboardController, KeyboardProvider, KeyboardAvoidingView } =
   KeyboardControllerPackage ?? {};
@@ -31,7 +34,9 @@ export const KeyboardCompatibleView = (props: KeyboardCompatibleViewProps) => {
   const { behavior = 'translate-with-padding', children, ...rest } = props;
 
   useEffect(() => {
-    KeyboardController?.setInputMode(AndroidSoftInputModes.SOFT_INPUT_ADJUST_RESIZE);
+    if (AndroidSoftInputModes) {
+      KeyboardController?.setInputMode(AndroidSoftInputModes.SOFT_INPUT_ADJUST_RESIZE);
+    }
 
     return () => KeyboardController?.setDefaultMode();
   }, []);
@@ -39,6 +44,7 @@ export const KeyboardCompatibleView = (props: KeyboardCompatibleViewProps) => {
   if (KeyboardProvider && KeyboardAvoidingView) {
     return (
       <KeyboardProvider>
+        {/* @ts-expect-error - The reason is that react-native-keyboard-controller's KeyboardAvoidingViewProps is a discriminated union, not a simple behavior union so it complains about the `position` value passed. */}
         <KeyboardAvoidingView behavior={behavior} {...rest}>
           {children}
         </KeyboardAvoidingView>
@@ -60,7 +66,6 @@ export const KeyboardCompatibleView = (props: KeyboardCompatibleViewProps) => {
 };
 
 export const dismissKeyboard = () => {
-  // @ts-ignore
   if (KeyboardControllerPackage?.KeyboardController) {
     KeyboardControllerPackage?.KeyboardController.dismiss();
   }
