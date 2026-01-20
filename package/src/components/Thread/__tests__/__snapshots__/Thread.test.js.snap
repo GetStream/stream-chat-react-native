@@ -296,28 +296,36 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-avatar"
                           >
-                            <View>
+                            <View
+                              style={
+                                {
+                                  "padding": 2,
+                                }
+                              }
+                              testID="user-avatar"
+                            >
                               <View
                                 style={
                                   [
                                     {
                                       "alignItems": "center",
+                                      "borderRadius": 9999,
                                       "justifyContent": "center",
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "borderRadius": 16,
-                                      "height": 32,
-                                      "width": 32,
+                                      "height": 24,
+                                      "width": 24,
                                     },
-                                    {},
+                                    {
+                                      "backgroundColor": undefined,
+                                    },
                                     undefined,
                                   ]
                                 }
+                                testID="avatar-image"
                               >
                                 <Image
-                                  accessibilityLabel="Avatar Image"
-                                  onError={[Function]}
                                   source={
                                     {
                                       "uri": "https://i.imgur.com/LuuGvh0.png",
@@ -325,21 +333,13 @@ exports[`Thread should match thread snapshot 1`] = `
                                   }
                                   style={
                                     [
+                                      {},
                                       {
-                                        "borderRadius": 16,
-                                        "height": 32,
-                                        "width": 32,
+                                        "height": 24,
+                                        "width": 24,
                                       },
-                                      {
-                                        "backgroundColor": "#ececec",
-                                        "borderRadius": 16,
-                                        "height": 32,
-                                        "width": 32,
-                                      },
-                                      undefined,
                                     ]
                                   }
-                                  testID="avatar-image"
                                 />
                               </View>
                             </View>
@@ -673,28 +673,36 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-avatar"
                           >
-                            <View>
+                            <View
+                              style={
+                                {
+                                  "padding": 2,
+                                }
+                              }
+                              testID="user-avatar"
+                            >
                               <View
                                 style={
                                   [
                                     {
                                       "alignItems": "center",
+                                      "borderRadius": 9999,
                                       "justifyContent": "center",
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "borderRadius": 16,
-                                      "height": 32,
-                                      "width": 32,
+                                      "height": 24,
+                                      "width": 24,
                                     },
-                                    {},
+                                    {
+                                      "backgroundColor": undefined,
+                                    },
                                     undefined,
                                   ]
                                 }
+                                testID="avatar-image"
                               >
                                 <Image
-                                  accessibilityLabel="Avatar Image"
-                                  onError={[Function]}
                                   source={
                                     {
                                       "uri": "https://i.imgur.com/spueyAP.png",
@@ -702,21 +710,13 @@ exports[`Thread should match thread snapshot 1`] = `
                                   }
                                   style={
                                     [
+                                      {},
                                       {
-                                        "borderRadius": 16,
-                                        "height": 32,
-                                        "width": 32,
+                                        "height": 24,
+                                        "width": 24,
                                       },
-                                      {
-                                        "backgroundColor": "#ececec",
-                                        "borderRadius": 16,
-                                        "height": 32,
-                                        "width": 32,
-                                      },
-                                      undefined,
                                     ]
                                   }
-                                  testID="avatar-image"
                                 />
                               </View>
                             </View>
@@ -1088,28 +1088,36 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-avatar"
                           >
-                            <View>
+                            <View
+                              style={
+                                {
+                                  "padding": 2,
+                                }
+                              }
+                              testID="user-avatar"
+                            >
                               <View
                                 style={
                                   [
                                     {
                                       "alignItems": "center",
+                                      "borderRadius": 9999,
                                       "justifyContent": "center",
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "borderRadius": 16,
-                                      "height": 32,
-                                      "width": 32,
+                                      "height": 24,
+                                      "width": 24,
                                     },
-                                    {},
+                                    {
+                                      "backgroundColor": undefined,
+                                    },
                                     undefined,
                                   ]
                                 }
+                                testID="avatar-image"
                               >
                                 <Image
-                                  accessibilityLabel="Avatar Image"
-                                  onError={[Function]}
                                   source={
                                     {
                                       "uri": "https://i.imgur.com/LuuGvh0.png",
@@ -1117,21 +1125,13 @@ exports[`Thread should match thread snapshot 1`] = `
                                   }
                                   style={
                                     [
+                                      {},
                                       {
-                                        "borderRadius": 16,
-                                        "height": 32,
-                                        "width": 32,
+                                        "height": 24,
+                                        "width": 24,
                                       },
-                                      {
-                                        "backgroundColor": "#ececec",
-                                        "borderRadius": 16,
-                                        "height": 32,
-                                        "width": 32,
-                                      },
-                                      undefined,
                                     ]
                                   }
-                                  testID="avatar-image"
                                 />
                               </View>
                             </View>
@@ -1469,28 +1469,36 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-avatar"
                           >
-                            <View>
+                            <View
+                              style={
+                                {
+                                  "padding": 2,
+                                }
+                              }
+                              testID="user-avatar"
+                            >
                               <View
                                 style={
                                   [
                                     {
                                       "alignItems": "center",
+                                      "borderRadius": 9999,
                                       "justifyContent": "center",
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "borderRadius": 16,
-                                      "height": 32,
-                                      "width": 32,
+                                      "height": 24,
+                                      "width": 24,
                                     },
-                                    {},
+                                    {
+                                      "backgroundColor": undefined,
+                                    },
                                     undefined,
                                   ]
                                 }
+                                testID="avatar-image"
                               >
                                 <Image
-                                  accessibilityLabel="Avatar Image"
-                                  onError={[Function]}
                                   source={
                                     {
                                       "uri": "https://i.imgur.com/spueyAP.png",
@@ -1498,21 +1506,13 @@ exports[`Thread should match thread snapshot 1`] = `
                                   }
                                   style={
                                     [
+                                      {},
                                       {
-                                        "borderRadius": 16,
-                                        "height": 32,
-                                        "width": 32,
+                                        "height": 24,
+                                        "width": 24,
                                       },
-                                      {
-                                        "backgroundColor": "#ececec",
-                                        "borderRadius": 16,
-                                        "height": 32,
-                                        "width": 32,
-                                      },
-                                      undefined,
                                     ]
                                   }
-                                  testID="avatar-image"
                                 />
                               </View>
                             </View>

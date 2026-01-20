@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
-import { Avatar, Spinner, useTheme, useViewport } from 'stream-chat-react-native';
+import { Spinner, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 import { DEFAULT_PAGINATION_LIMIT } from '../../utils/constants';
 
 import type { MessageResponse } from 'stream-chat';
@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   itemContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
     borderBottomWidth: 1,
     flex: 1,
     flexDirection: 'row',
@@ -131,12 +133,8 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
               style={[styles.itemContainer, { borderBottomColor: border.surfaceSubtle }]}
               testID='channel-preview-button'
             >
-              <Avatar
-                image={item.user?.image}
-                name={item.user?.name}
-                online={item?.user?.online}
-                size={40}
-              />
+              {item.user ? <UserAvatar user={item.user} size={'lg'} /> : null}
+
               <View style={styles.flex}>
                 <View style={styles.row}>
                   <Text

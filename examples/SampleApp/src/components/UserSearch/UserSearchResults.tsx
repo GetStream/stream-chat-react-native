@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import dayjs from 'dayjs';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Avatar, CheckSend, Close, useTheme, useViewport } from 'stream-chat-react-native';
+import { CheckSend, Close, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
 import { useUserSearchContext } from '../../context/UserSearchContext';
 
@@ -203,7 +203,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 },
               ]}
             >
-              <Avatar image={item.image} name={item.name} size={40} />
+              <UserAvatar user={item} size={'lg'} />
               <View style={styles.searchResultUserDetails}>
                 <Text
                   style={[

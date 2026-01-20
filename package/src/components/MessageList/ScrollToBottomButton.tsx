@@ -5,7 +5,7 @@ import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { NewDown } from '../../icons/NewDown';
-import { BadgeNotification } from '../ui';
+import { BadgeNotification } from '../ui/BadgeNotification';
 import { IconButton } from '../ui/IconButton';
 
 const styles = StyleSheet.create({

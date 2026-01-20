@@ -20,7 +20,11 @@
     "release-next": "echo \"Skipping next release for SampleApp\"",
     "test:unit": "echo \"Skipping unit tests for SampleApp\"",
     "clean": "watchman watch-del-all && yarn cache clean && rm -rf ios/build && pod cache clean --all && rm -rf android/build && cd android && ./gradlew clean && cd -",
-    "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
+    "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -",
+    "fastlane:android-build": "bundle exec fastlane android firebase_build_and_upload deploy:false",
+    "fastlane:android-deploy": "bundle exec fastlane android firebase_build_and_upload deploy:true",
+    "fastlane:ios-build": "bundle exec fastlane ios deploy_to_testflight_qa deploy:false",
+    "fastlane:ios-deploy": "bundle exec fastlane ios deploy_to_testflight_qa deploy:true"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",

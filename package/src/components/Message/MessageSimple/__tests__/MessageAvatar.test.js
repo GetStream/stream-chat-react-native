@@ -37,7 +37,7 @@ describe('MessageAvatar', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('spacer')).toBeTruthy();
-      expect(screen.queryAllByTestId('avatar-image')).toHaveLength(0);
+      expect(screen.queryAllByTestId('user-avatar')).toHaveLength(0);
     });
 
     const staticMessage = generateStaticMessage('hi', {
@@ -57,7 +57,7 @@ describe('MessageAvatar', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('message-avatar')).toBeTruthy();
-      expect(screen.getByTestId('avatar-image')).toBeTruthy();
+      expect(screen.getByTestId('user-avatar')).toBeTruthy();
       expect(screen.toJSON()).toMatchSnapshot();
     });
   });

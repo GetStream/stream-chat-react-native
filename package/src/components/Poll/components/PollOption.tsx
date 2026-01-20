@@ -17,7 +17,7 @@ import {
 } from '../../../contexts';
 
 import { Check } from '../../../icons';
-import { Avatar } from '../../Avatar/Avatar';
+import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { usePollState } from '../hooks/usePollState';
 
 export type PollOptionProps = {
@@ -120,7 +120,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
         <Text style={[styles.text, { color: black }, text]}>{option.text}</Text>
         <View style={[styles.votesContainer, votesContainer]}>
           {relevantVotes.map((vote: PollVote) => (
-            <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
+            <UserAvatar user={vote.user} size='xs' showBorder key={vote.id} />
           ))}
           <Text style={{ color: black, marginLeft: 2 }}>{voteCountsByOption[option.id] || 0}</Text>
         </View>

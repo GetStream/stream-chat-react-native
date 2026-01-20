@@ -4,36 +4,28 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { UserResponse } from 'stream-chat';
 
+import { Avatar } from './Avatar';
 import { fontSizes, iconSizes, indicatorSizes, numberOfInitials } from './constants';
 
-import { PeopleIcon } from '../../icons/PeopleIcon';
-import { NewAvatar } from '../ui/Avatar';
+import { PeopleIcon } from '../../../icons/PeopleIcon';
+import { getInitialsFromName } from '../../../utils/utils';
+import { OnlineIndicator } from '../OnlineIndicator';
 
-import { OnlineIndicator } from '../ui/OnlineIndicator';
-
-const getInitials = (name: string, numberOfInitials: number = 2) => {
-  return name
-    .split(' ')
-    .slice(0, numberOfInitials)
-    .map((n) => n.charAt(0))
-    .join('');
-};
-
-export type NewUserAvatarProps = {
+export type UserAvatarProps = {
   user?: UserResponse;
   showOnlineIndicator?: boolean;
   size: 'xs' | 'sm' | 'md' | 'lg';
   showBorder?: boolean;
 };
 
-export const NewUserAvatar = (props: NewUserAvatarProps) => {
-  const { user, size, showBorder = false, showOnlineIndicator } = props;
+export const UserAvatar = (props: UserAvatarProps) => {
+  const { user, size, showBorder = !!user?.image, showOnlineIndicator } = props;
 
   const placeholder = useMemo(() => {
     if (user?.name) {
       return (
         <Text style={[styles.text, fontSizes[size]]}>
-          {getInitials(user.name, numberOfInitials[size])}
+          {getInitialsFromName(user.name, numberOfInitials[size])}
         </Text>
       );
     } else {
@@ -46,13 +38,8 @@ export const NewUserAvatar = (props: NewUserAvatarProps) => {
   }
 
   return (
-    <View style={styles.wrapper}>
-      <NewAvatar
-        imageUrl={user.image}
-        placeholder={placeholder}
-        showBorder={showBorder}
-        size={size}
-      />
+    <View style={styles.wrapper} testID='user-avatar'>
+      <Avatar imageUrl={user.image} placeholder={placeholder} showBorder={showBorder} size={size} />
       {showOnlineIndicator ? (
         <View style={styles.onlineIndicatorWrapper}>
           <OnlineIndicator online={true} size={indicatorSizes[size]} />

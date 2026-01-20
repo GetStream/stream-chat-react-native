@@ -56,10 +56,7 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
-import {
-  MessageInputHeightState,
-  messageInputHeightStore,
-} from '../../state-store/message-input-height-store';
+import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -179,7 +176,7 @@ type MessageListPropsWithContext = Pick<
     | 'TypingIndicatorContainer'
     | 'UnreadMessagesNotification'
   > &
-  Pick<MessageInputContextValue, 'messageInputFloating'> &
+  Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
   Pick<
     ThreadContextValue,
     'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadInstance'
@@ -294,6 +291,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     markRead,
     maximumMessageLimit,
     messageInputFloating,
+    messageInputHeightStore,
     myMessageTheme,
     NetworkDownIndicator,
     noGroupByUser,
@@ -319,7 +317,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
   const { height: messageInputHeight } = useStateStore(
-    messageInputHeightStore,
+    messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
 
@@ -1262,7 +1260,7 @@ export const MessageList = (props: MessageListProps) => {
     TypingIndicatorContainer,
     UnreadMessagesNotification,
   } = useMessagesContext();
-  const { messageInputFloating } = useMessageInputContext();
+  const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
 
@@ -1295,6 +1293,7 @@ export const MessageList = (props: MessageListProps) => {
         maximumMessageLimit,
         Message,
         messageInputFloating,
+        messageInputHeightStore,
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,

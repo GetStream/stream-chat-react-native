@@ -6,8 +6,8 @@ import { PollVote as PollVoteClass, VotingVisibility } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../../contexts';
 import { getDateString } from '../../../../utils/i18n/getDateString';
+import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
 
-import { Avatar } from '../../../Avatar/Avatar';
 import { usePollState } from '../../hooks/usePollState';
 
 export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
@@ -42,10 +42,8 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
 
   return (
     <View style={[styles.voteContainer, container]}>
-      <View style={{ flexDirection: 'row' }}>
-        {!isAnonymous && vote.user?.image ? (
-          <Avatar image={vote.user.image as string} key={vote.id} size={20} />
-        ) : null}
+      <View style={styles.userContainer}>
+        {!isAnonymous ? <UserAvatar user={vote.user} size='xs' showBorder /> : null}
         <Text style={[styles.voteUserName, { color: black }, userName]}>
           {isAnonymous ? t('Anonymous') : (vote.user?.name ?? vote.user?.id)}
         </Text>
@@ -64,5 +62,9 @@ const styles = StyleSheet.create({
   },
   voteCount: { fontSize: 16, marginLeft: 16 },
   voteDate: { fontSize: 14 },
-  voteUserName: { fontSize: 14, marginLeft: 2 },
+  voteUserName: { fontSize: 14, marginLeft: 4 },
+  userContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
