@@ -18,12 +18,7 @@ export const ChannelPreviewAvatar = ({ channel }: ChannelPreviewAvatarProps) => 
   const online = useChannelPreviewDisplayPresence(channel);
 
   return otherMembers.length === 1 ? (
-    <UserAvatar
-      size='lg'
-      user={otherMembers[0].user}
-      showBorder={otherMembers[0].user?.image ? true : false}
-      showOnlineIndicator={online}
-    />
+    <UserAvatar size='lg' user={otherMembers[0].user} showOnlineIndicator={online} />
   ) : (
     <ChannelAvatar channel={channel} size='lg' />
   );

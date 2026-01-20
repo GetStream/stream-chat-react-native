@@ -19,7 +19,7 @@ export type UserAvatarProps = {
 };
 
 export const UserAvatar = (props: UserAvatarProps) => {
-  const { user, size, showBorder = false, showOnlineIndicator } = props;
+  const { user, size, showBorder = !!user?.image, showOnlineIndicator } = props;
 
   const placeholder = useMemo(() => {
     if (user?.name) {

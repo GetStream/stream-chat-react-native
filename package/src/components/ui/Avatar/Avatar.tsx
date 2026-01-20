@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -30,21 +30,30 @@ const sizes = {
 };
 
 export const Avatar = (props: AvatarProps) => {
+  const [error, setError] = useState(false);
   const { size, imageUrl, placeholder, showBorder } = props;
   const styles = useStyles();
+
+  const onHandleError = useCallback(() => {
+    setError(true);
+  }, []);
 
   return (
     <View
       style={[
         styles.container,
         sizes[size],
-        { backgroundColor: imageUrl ? undefined : '#D2E3FF' },
+        { backgroundColor: imageUrl && !error ? undefined : '#D2E3FF' },
         showBorder ? styles.border : undefined,
       ]}
       testID='avatar-image'
     >
-      {imageUrl ? (
-        <Image source={{ uri: imageUrl }} style={[styles.image, sizes[size]]} />
+      {imageUrl && !error ? (
+        <Image
+          onError={onHandleError}
+          source={{ uri: imageUrl }}
+          style={[styles.image, sizes[size]]}
+        />
       ) : (
         placeholder
       )}
@@ -61,7 +70,7 @@ const useStyles = () => {
       StyleSheet.create({
         border: {
           borderColor: colors.border.image,
-          borderWidth: 2,
+          borderWidth: 1,
         },
         container: {
           alignItems: 'center',
