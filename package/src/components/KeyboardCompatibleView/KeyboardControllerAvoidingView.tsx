@@ -1,17 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   Keyboard,
   Platform,
   KeyboardAvoidingViewProps as ReactNativeKeyboardAvoidingViewProps,
 } from 'react-native';
-
-import {
-  KeyboardAvoidingView as KeyboardControllerPackageKeyboardAvoidingView,
-  KeyboardController as KeyboardControllerPackageKeyboardController,
-  KeyboardEvents,
-  KeyboardProvider,
-} from 'react-native-keyboard-controller';
 
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from './KeyboardCompatibleView';
 
@@ -22,14 +15,8 @@ type ExtraKeyboardControllerProps = {
 export type KeyboardCompatibleViewProps = ReactNativeKeyboardAvoidingViewProps &
   ExtraKeyboardControllerProps;
 
-let KeyboardControllerPackage:
-  | {
-      KeyboardAvoidingView: typeof KeyboardControllerPackageKeyboardAvoidingView;
-      KeyboardController: typeof KeyboardControllerPackageKeyboardController;
-      KeyboardProvider: typeof KeyboardProvider;
-      KeyboardEvents: typeof KeyboardEvents;
-    }
-  | undefined;
+// @ts-ignore
+let KeyboardControllerPackage;
 
 try {
   KeyboardControllerPackage = require('react-native-keyboard-controller');
@@ -37,16 +24,21 @@ try {
   KeyboardControllerPackage = undefined;
 }
 
+const { AndroidSoftInputModes, KeyboardController, KeyboardProvider, KeyboardAvoidingView } =
+  KeyboardControllerPackage ?? {};
+
 export const KeyboardCompatibleView = (props: KeyboardCompatibleViewProps) => {
   const { behavior = 'translate-with-padding', children, ...rest } = props;
 
-  const KeyboardProvider = KeyboardControllerPackage?.KeyboardProvider;
-  const KeyboardAvoidingView = KeyboardControllerPackage?.KeyboardAvoidingView;
+  useEffect(() => {
+    KeyboardController?.setInputMode(AndroidSoftInputModes.SOFT_INPUT_ADJUST_RESIZE);
+
+    return () => KeyboardController?.setDefaultMode();
+  }, []);
 
   if (KeyboardProvider && KeyboardAvoidingView) {
     return (
       <KeyboardProvider>
-        {/* @ts-expect-error - The reason is that react-native-keyboard-controller's KeyboardAvoidingViewProps is a discriminated union, not a simple behavior union so it complains about the `position` value passed. */}
         <KeyboardAvoidingView behavior={behavior} {...rest}>
           {children}
         </KeyboardAvoidingView>
@@ -68,6 +60,7 @@ export const KeyboardCompatibleView = (props: KeyboardCompatibleViewProps) => {
 };
 
 export const dismissKeyboard = () => {
+  // @ts-ignore
   if (KeyboardControllerPackage?.KeyboardController) {
     KeyboardControllerPackage?.KeyboardController.dismiss();
   }

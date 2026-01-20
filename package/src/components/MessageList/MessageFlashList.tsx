@@ -260,10 +260,6 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'generic-message';
 };
 
-const renderItem = ({ item: message }: { item: LocalMessage }) => {
-  return <MessageWrapper message={message} />;
-};
-
 const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
@@ -367,16 +363,29 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [myMessageThemeString, theme],
   );
 
-  const {
-    messageListPreviousAndNextMessageStore,
-    processedMessageList,
-    rawMessageList,
-    viewabilityChangedCallback,
-  } = useMessageList({
+  const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
     isFlashList: true,
     isLiveStreaming,
     threadList,
   });
+
+  const processedMessageListRef = useRef(processedMessageList);
+  processedMessageListRef.current = processedMessageList;
+
+  const renderItem = useCallback(
+    ({ item: message, index }: { item: LocalMessage; index: number }) => {
+      const previousMessage = processedMessageListRef.current[index - 1];
+      const nextMessage = processedMessageListRef.current[index + 1];
+      return (
+        <MessageWrapper
+          message={message}
+          previousMessage={previousMessage}
+          nextMessage={nextMessage}
+        />
+      );
+    },
+    [processedMessageListRef],
+  );
 
   /**
    * We need topMessage and channelLastRead values to set the initial scroll position.
@@ -744,20 +753,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
-      messageListPreviousAndNextMessageStore,
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
       setNativeScrollability,
     }),
-    [
-      goToMessage,
-      messageListPreviousAndNextMessageStore,
-      modifiedTheme,
-      noGroupByUser,
-      onThreadSelect,
-      setNativeScrollability,
-    ],
+    [goToMessage, modifiedTheme, noGroupByUser, onThreadSelect, setNativeScrollability],
   );
 
   /**

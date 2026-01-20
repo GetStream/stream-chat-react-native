@@ -1,12 +1,6 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { LocalMessage } from 'stream-chat';
-
-import { useStateStore } from '../../../hooks/useStateStore';
-import {
-  MessagePreviousAndNextMessageStore,
-  MessagePreviousAndNextMessageStoreType,
-} from '../../../state-store/message-list-prev-next-state';
 
 export const getDateSeparatorValue = ({
   hideDateSeparators,
@@ -37,20 +31,12 @@ export const getDateSeparatorValue = ({
 export const useMessageDateSeparator = ({
   hideDateSeparators,
   message,
-  messageListPreviousAndNextMessageStore,
+  previousMessage,
 }: {
   hideDateSeparators?: boolean;
   message?: LocalMessage;
-  messageListPreviousAndNextMessageStore: MessagePreviousAndNextMessageStore;
+  previousMessage?: LocalMessage;
 }) => {
-  const selector = useCallback(
-    (state: MessagePreviousAndNextMessageStoreType) => ({
-      previousMessage: message ? state.messageList[message.id]?.previousMessage : undefined,
-    }),
-    [message],
-  );
-  const { previousMessage } = useStateStore(messageListPreviousAndNextMessageStore.state, selector);
-
   const dateSeparatorDate = useMemo(() => {
     if (!message && !previousMessage) {
       return undefined;

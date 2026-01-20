@@ -251,10 +251,6 @@ type MessageListPropsWithContext = Pick<
     isLiveStreaming?: boolean;
   };
 
-const renderItem = ({ item: message }: { item: LocalMessage }) => {
-  return <MessageWrapper message={message} />;
-};
-
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
@@ -351,15 +347,29 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const {
-    messageListPreviousAndNextMessageStore,
-    processedMessageList,
-    rawMessageList,
-    viewabilityChangedCallback,
-  } = useMessageList({
+  const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
     isLiveStreaming,
     threadList,
   });
+
+  const processedMessageListRef = useRef(processedMessageList);
+  processedMessageListRef.current = processedMessageList;
+
+  const renderItem = useCallback(
+    ({ item: message, index }: { item: LocalMessage; index: number }) => {
+      const previousMessage = processedMessageListRef.current[index + 1];
+      const nextMessage = processedMessageListRef.current[index - 1];
+      return (
+        <MessageWrapper
+          message={message}
+          previousMessage={previousMessage}
+          nextMessage={nextMessage}
+        />
+      );
+    },
+    [processedMessageListRef],
+  );
+
   const messageListLengthBeforeUpdate = useRef(0);
   const messageListLengthAfterUpdate = processedMessageList.length;
 
@@ -807,7 +817,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
-      messageListPreviousAndNextMessageStore,
+      // messageListPreviousAndNextMessageStore,
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
@@ -815,7 +825,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }),
     [
       goToMessage,
-      messageListPreviousAndNextMessageStore,
+      // messageListPreviousAndNextMessageStore,
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
@@ -1137,6 +1147,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       ) : (
         <MessageListItemProvider value={messageListItemContextValue}>
           <FlatList
+            // layout={LinearTransition.duration(200)}
             contentContainerStyle={flatListContentContainerStyle}
             /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
             data={processedMessageList}

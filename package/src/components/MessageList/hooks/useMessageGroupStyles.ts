@@ -1,15 +1,10 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { LocalMessage } from 'stream-chat';
 
 import { useMessageDateSeparator } from './useMessageDateSeparator';
 
 import { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
-import { useStateStore } from '../../../hooks/useStateStore';
-import {
-  MessagePreviousAndNextMessageStore,
-  MessagePreviousAndNextMessageStoreType,
-} from '../../../state-store/message-list-prev-next-state';
 import { getGroupStyle } from '../utils/getGroupStyles';
 
 /**
@@ -20,7 +15,8 @@ export const useMessageGroupStyles = ({
   dateSeparatorDate,
   maxTimeBetweenGroupedMessages,
   message,
-  messageListPreviousAndNextMessageStore,
+  previousMessage,
+  nextMessage,
   getMessageGroupStyle = getGroupStyle,
 }: {
   noGroupByUser?: boolean;
@@ -28,24 +24,13 @@ export const useMessageGroupStyles = ({
   dateSeparatorDate?: Date;
   maxTimeBetweenGroupedMessages?: number;
   message: LocalMessage;
-  messageListPreviousAndNextMessageStore: MessagePreviousAndNextMessageStore;
+  previousMessage?: LocalMessage;
+  nextMessage?: LocalMessage;
 }) => {
-  const selector = useCallback(
-    (state: MessagePreviousAndNextMessageStoreType) => ({
-      nextMessage: state.messageList[message.id]?.nextMessage,
-      previousMessage: state.messageList[message.id]?.previousMessage,
-    }),
-    [message.id],
-  );
-  const { previousMessage, nextMessage } = useStateStore(
-    messageListPreviousAndNextMessageStore.state,
-    selector,
-  );
-
   // This is needed to calculate the group styles for the next message
   const nextMessageDateSeparatorDate = useMessageDateSeparator({
     message: nextMessage,
-    messageListPreviousAndNextMessageStore,
+    previousMessage: message,
   });
 
   const groupStyles = useMemo(() => {

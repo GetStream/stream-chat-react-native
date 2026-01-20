@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
@@ -11,7 +11,6 @@ import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessa
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
 import { useRAFCoalescedValue } from '../../../hooks';
-import { MessagePreviousAndNextMessageStore } from '../../../state-store/message-list-prev-next-state';
 
 export type UseMessageListParams = {
   threadList?: boolean;
@@ -60,9 +59,9 @@ export const useMessageList = (params: UseMessageListParams) => {
   const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
   const { threadMessages } = useThreadContext();
   const messageList = threadList ? threadMessages : messages;
-  const [messageListPreviousAndNextMessageStore] = useState(
-    () => new MessagePreviousAndNextMessageStore(),
-  );
+  // const [messageListPreviousAndNextMessageStore] = useState(
+  //   () => new MessagePreviousAndNextMessageStore(),
+  // );
 
   const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList = [];
@@ -84,24 +83,24 @@ export const useMessageList = (params: UseMessageListParams) => {
     return newMessageList;
   }, [messageList, deletedMessagesVisibilityType, client.userID, isFlashList]);
 
-  useEffect(() => {
-    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({
-      isFlashList,
-      messages: processedMessageList,
-    });
-  }, [processedMessageList, messageListPreviousAndNextMessageStore, isFlashList]);
+  // useEffect(() => {
+  //   messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({
+  //     isFlashList,
+  //     messages: processedMessageList,
+  //   });
+  // }, [processedMessageList, messageListPreviousAndNextMessageStore, isFlashList]);
 
   const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 
   return useMemo(
     () => ({
-      messageListPreviousAndNextMessageStore,
+      // messageListPreviousAndNextMessageStore,
       /** Messages enriched with dates/readby/groups and also reversed in order */
       processedMessageList: data,
       /** Raw messages from the channel state */
       rawMessageList: messageList,
       viewabilityChangedCallback,
     }),
-    [data, messageList, messageListPreviousAndNextMessageStore, viewabilityChangedCallback],
+    [data, messageList, viewabilityChangedCallback],
   );
 };
