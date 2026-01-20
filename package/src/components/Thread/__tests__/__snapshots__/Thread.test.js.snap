@@ -35,6 +35,7 @@ exports[`Thread should match thread snapshot 1`] = `
       <RCTScrollView
         ListFooterComponent={null}
         ListHeaderComponent={[Function]}
+        collapsable={false}
         contentContainerStyle={
           [
             {
@@ -140,6 +141,7 @@ exports[`Thread should match thread snapshot 1`] = `
         isInvertedVirtualizedList={true}
         keyExtractor={[Function]}
         keyboardShouldPersistTaps="handled"
+        layout={BaseAnimationMock {}}
         maintainVisibleContentPosition={
           {
             "autoscrollToTopThreshold": 10,
