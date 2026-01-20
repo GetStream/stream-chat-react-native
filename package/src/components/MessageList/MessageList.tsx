@@ -1134,6 +1134,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     );
   }
 
+  // TODO: Make sure this is actually overridable as the previous FlatList was.
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -1146,8 +1147,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         </View>
       ) : (
         <MessageListItemProvider value={messageListItemContextValue}>
-          <FlatList
-            // layout={LinearTransition.duration(200)}
+          <Animated.FlatList<LocalMessage>
+            // TODO: Consider hiding this behind a feature flag.
+            layout={LinearTransition.duration(200)}
             contentContainerStyle={flatListContentContainerStyle}
             /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
             data={processedMessageList}
@@ -1172,11 +1174,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             onScrollToIndexFailed={onScrollToIndexFailedRef.current}
             onTouchEnd={dismissImagePicker}
             onViewableItemsChanged={stableOnViewableItemsChanged}
+            // @ts-expect-error Safe to do for now
             ref={refCallback}
             renderItem={renderItem}
             scrollEventThrottle={isLiveStreaming ? 16 : undefined}
             showsVerticalScrollIndicator={false}
-            // @ts-expect-error react-native internal
             strictMode={isLiveStreaming}
             style={flatListStyle}
             testID='message-flat-list'
