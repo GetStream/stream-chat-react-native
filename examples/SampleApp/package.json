@@ -51,7 +51,6 @@
     "react-native-gesture-handler": "^2.26.0",
     "react-native-haptic-feedback": "^2.3.3",
     "react-native-image-picker": "^8.2.1",
-    "react-native-keyboard-controller": "^1.20.2",
     "react-native-maps": "1.20.1",
     "react-native-nitro-modules": "^0.31.3",
     "react-native-nitro-sound": "^0.2.9",

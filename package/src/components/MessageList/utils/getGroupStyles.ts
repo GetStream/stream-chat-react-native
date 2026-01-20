@@ -4,8 +4,8 @@ import { isEditedMessage } from '../../../utils/utils';
 
 export type MessageGroupStylesParams = {
   message: LocalMessage;
-  previousMessage: LocalMessage;
-  nextMessage: LocalMessage;
+  previousMessage?: LocalMessage;
+  nextMessage?: LocalMessage;
   maxTimeBetweenGroupedMessages?: number;
   dateSeparatorDate?: Date;
   nextMessageDateSeparatorDate?: Date;

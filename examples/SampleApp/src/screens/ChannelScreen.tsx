@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Channel,
@@ -20,7 +19,7 @@ import {
   ChannelAvatar,
   useChannelPreviewDisplayPresence,
 } from 'stream-chat-react-native';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAppContext } from '../context/AppContext';
@@ -230,7 +229,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
     [chatClient, colors, t, handleMessageInfo],
   );
-  const headerHeight = useHeaderHeight();
 
   if (!channel || !chatClient) {
     return null;
@@ -247,7 +245,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         disableTypingIndicator
         enforceUniqueReaction
         initialScrollToFirstUnreadMessage
-        keyboardVerticalOffset={headerHeight}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageActions={messageActions}
         MessageHeader={MessageReminderHeader}
         MessageLocation={MessageLocation}
