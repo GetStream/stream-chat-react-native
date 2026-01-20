@@ -36,12 +36,16 @@ exports[`MessageAvatar should render message avatar 1`] = `
           {
             "backgroundColor": undefined,
           },
-          undefined,
+          {
+            "borderColor": "hsla(0, 0%, 0%, 0.1)",
+            "borderWidth": 1,
+          },
         ]
       }
       testID="avatar-image"
     >
       <Image
+        onError={[Function]}
         source={
           {
             "uri": "https://i.imgur.com/ytIyojl.png",
