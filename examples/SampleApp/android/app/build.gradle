@@ -79,15 +79,15 @@ android {
 
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-    namespace "com.sampleapp"
+    namespace "io.getstream.reactnative.sampleapp"
 
     defaultConfig {
-        applicationId "com.sampleapp"
+        applicationId "io.getstream.reactnative.sampleapp"
         minSdkVersion rootProject.ext.minSdkVersion
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 22
+        versionCode 1
         versionName "0.0.22"
     }
 
