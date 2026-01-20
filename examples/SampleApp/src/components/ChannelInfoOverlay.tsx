@@ -311,7 +311,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                               <View style={styles.userItemContainer}>
                                 <UserAvatar
                                   user={item}
-                                  size='md'
+                                  size='lg'
                                   showOnlineIndicator={item.online}
                                 />
 

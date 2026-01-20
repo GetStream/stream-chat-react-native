@@ -117,7 +117,7 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
         {displayAvatar.images ? (
           <GroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />
         ) : (
-          <Avatar image={displayAvatar.image} placeholder={placeholder} size={'lg'} />
+          <Avatar imageUrl={displayAvatar.image} placeholder={placeholder} size={'lg'} />
         )}
         <Text style={[styles.nameText, { color: black }]}>{name}</Text>
       </View>

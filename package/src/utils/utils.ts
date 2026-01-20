@@ -363,9 +363,13 @@ export const checkQuotedMessageEquality = (
  * @returns string
  */
 export const getInitialsFromName = (name: string, numberOfInitials: number = 2) => {
-  return name
-    .split(' ')
+  if (!name) return '';
+  const trimmed = name.trim();
+
+  if (!trimmed) return '';
+  return trimmed
+    .split(/\s+/)
     .slice(0, numberOfInitials)
-    .map((n) => n.charAt(0))
+    .map((n) => n.charAt(0).toUpperCase())
     .join('');
 };
