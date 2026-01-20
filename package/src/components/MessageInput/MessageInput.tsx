@@ -64,11 +64,7 @@ import {
 import { useKeyboardVisibility } from '../../hooks/useKeyboardVisibility';
 import { useStateStore } from '../../hooks/useStateStore';
 import { isAudioRecorderAvailable, NativeHandlers } from '../../native';
-import {
-  MessageInputHeightState,
-  messageInputHeightStore,
-  setMessageInputHeight,
-} from '../../state-store/message-input-height-store';
+import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
@@ -166,6 +162,7 @@ type MessageInputPropsWithContext = Pick<
     | 'CreatePollIcon'
     | 'FileSelectorIcon'
     | 'messageInputFloating'
+    | 'messageInputHeightStore'
     | 'ImageSelectorIcon'
     | 'VideoRecorderSelectorIcon'
     | 'CommandInput'
@@ -235,6 +232,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     editing,
     hasAttachments,
     messageInputFloating,
+    messageInputHeightStore,
     Input,
     inputBoxRef,
     InputButtons,
@@ -261,7 +259,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { command } = useStateStore(textComposer.state, textComposerStateSelector);
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
 
-  const { height } = useStateStore(messageInputHeightStore, messageInputHeightStoreSelector);
+  const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
   const {
     theme: {
       colors: { border, grey_whisper, white, white_smoke },
@@ -465,7 +463,11 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
           nativeEvent: {
             layout: { height: newHeight },
           },
-        }) => setMessageInputHeight(messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight)} // 24 is the position of the input from the bottom of the screen
+        }) =>
+          messageInputHeightStore.setHeight(
+            messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
+          )
+        } // 24 is the position of the input from the bottom of the screen
         style={
           messageInputFloating
             ? [styles.floatingWrapper, { bottom: BOTTOM_OFFSET }, floatingWrapper]
@@ -856,6 +858,7 @@ export const MessageInput = (props: MessageInputProps) => {
     InputButtons,
     CommandInput,
     messageInputFloating,
+    messageInputHeightStore,
     openPollCreationDialog,
     SendButton,
     sendMessage,
@@ -933,6 +936,7 @@ export const MessageInput = (props: MessageInputProps) => {
         isOnline,
         members,
         messageInputFloating,
+        messageInputHeightStore,
         openPollCreationDialog,
         Reply,
         selectedPicker,

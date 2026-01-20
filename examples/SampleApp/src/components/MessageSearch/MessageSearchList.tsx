@@ -133,7 +133,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
               style={[styles.itemContainer, { borderBottomColor: border.surfaceSubtle }]}
               testID='channel-preview-button'
             >
-              <UserAvatar user={item.user} size={'lg'} />
+              {item.user ? <UserAvatar user={item.user} size={'lg'} /> : null}
 
               <View style={styles.flex}>
                 <View style={styles.row}>
