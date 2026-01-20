@@ -817,20 +817,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
-      // messageListPreviousAndNextMessageStore,
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
       setNativeScrollability,
     }),
-    [
-      goToMessage,
-      // messageListPreviousAndNextMessageStore,
-      modifiedTheme,
-      noGroupByUser,
-      onThreadSelect,
-      setNativeScrollability,
-    ],
+    [goToMessage, modifiedTheme, noGroupByUser, onThreadSelect, setNativeScrollability],
   );
 
   /**
