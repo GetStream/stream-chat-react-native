@@ -27,7 +27,6 @@ export * from './AutoCompleteInput/AutoCompleteSuggestionHeader';
 export * from './AutoCompleteInput/AutoCompleteSuggestionItem';
 export * from './AutoCompleteInput/AutoCompleteSuggestionList';
 
-export * from './Avatar/Avatar';
 export * from './Avatar/GroupAvatar';
 
 export * from './Channel/Channel';
@@ -51,7 +50,6 @@ export * from './ChannelList/hooks/usePaginatedChannels';
 export * from './ChannelList/hooks/useChannelMembershipState';
 export * from './ChannelList/Skeleton';
 
-export * from './ChannelPreview/ChannelAvatar';
 export * from './ChannelPreview/ChannelPreview';
 export * from './ChannelPreview/ChannelPreviewMessenger';
 export * from './ChannelPreview/ChannelPreviewMessage';

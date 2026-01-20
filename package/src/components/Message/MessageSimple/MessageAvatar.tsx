@@ -1,27 +1,23 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-
-import { Avatar, AvatarProps } from '../../Avatar/Avatar';
+import { AvatarProps, UserAvatar } from '../../ui';
 
 export type MessageAvatarPropsWithContext = Pick<
   MessageContextValue,
   'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
 > &
-  Pick<ChatContextValue, 'ImageComponent'> &
   Partial<Pick<AvatarProps, 'size'>>;
 
 const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
-  const { alignment, ImageComponent, lastGroupMessage, message, showAvatar, size } = props;
+  const { alignment, lastGroupMessage, message, showAvatar, size } = props;
   const {
     theme: {
-      avatar: { BASE_AVATAR_SIZE },
       messageSimple: {
         avatarWrapper: { container, leftAlign, rightAlign, spacer },
       },
@@ -35,13 +31,8 @@ const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
       style={[alignment === 'left' ? leftAlign : rightAlign, container]}
       testID='message-avatar'
     >
-      {visible ? (
-        <Avatar
-          image={message.user?.image}
-          ImageComponent={ImageComponent}
-          name={message.user?.name || message.user?.id}
-          size={size || BASE_AVATAR_SIZE}
-        />
+      {visible && message.user ? (
+        <UserAvatar user={message.user} size={size ?? 'sm'} />
       ) : (
         <View style={spacer} testID='spacer' />
       )}
@@ -81,13 +72,11 @@ export type MessageAvatarProps = Partial<MessageAvatarPropsWithContext>;
 
 export const MessageAvatar = (props: MessageAvatarProps) => {
   const { alignment, lastGroupMessage, message, showAvatar } = useMessageContext();
-  const { ImageComponent } = useChatContext();
 
   return (
     <MemoizedMessageAvatar
       {...{
         alignment,
-        ImageComponent,
         lastGroupMessage,
         message,
         showAvatar,

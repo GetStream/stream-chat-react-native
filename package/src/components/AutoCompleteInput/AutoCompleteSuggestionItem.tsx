@@ -10,7 +10,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { AtMentions } from '../../icons/AtMentions';
 import type { Emoji } from '../../types/types';
 
-import { Avatar } from '../Avatar/Avatar';
+import { UserAvatar } from '../ui/Avatar/UserAvatar';
 
 export type AutoCompleteSuggestionItemProps = {
   itemProps: TextComposerSuggestion;
@@ -18,20 +18,20 @@ export type AutoCompleteSuggestionItemProps = {
 };
 
 export const MentionSuggestionItem = (item: UserSuggestion) => {
-  const { id, image, name, online } = item;
+  const { id, name, online } = item;
   const {
     theme: {
       colors: { accent_blue, black },
       messageInput: {
         suggestions: {
-          mention: { avatarSize, column, container: mentionContainer, name: nameStyle },
+          mention: { column, container: mentionContainer, name: nameStyle },
         },
       },
     },
   } = useTheme();
   return (
     <View style={[styles.container, mentionContainer]}>
-      <Avatar image={image} name={name} online={online} size={avatarSize} />
+      <UserAvatar user={item} size='md' showOnlineIndicator={online} />
       <View style={[styles.column, column]}>
         <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
           {name || id}

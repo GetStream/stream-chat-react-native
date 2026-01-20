@@ -4,7 +4,6 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Channel,
-  ChannelAvatar,
   MessageInput,
   MessageList,
   MessageFlashList,
@@ -17,6 +16,9 @@ import {
   AITypingIndicatorView,
   useTranslationContext,
   MessageActionsParams,
+  UserAvatar,
+  ChannelAvatar,
+  useChannelPreviewDisplayPresence,
 } from 'stream-chat-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -53,6 +55,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { closePicker } = useAttachmentPickerContext();
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel, 30);
+  const online = useChannelPreviewDisplayPresence(channel);
   const { isOnline } = useChatContext();
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
@@ -92,6 +95,10 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
     return null;
   }
 
+  const members = channel.state.members;
+  const membersValues = Object.values(members);
+  const otherMembers = membersValues.filter((member) => member.user?.id !== chatClient?.user?.id);
+
   return (
     <ScreenHeader
       onBack={onBackPress}
@@ -103,7 +110,16 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
             opacity: pressed ? 0.5 : 1,
           })}
         >
-          <ChannelAvatar channel={channel} />
+          {otherMembers.length === 1 ? (
+            <UserAvatar
+              size='lg'
+              user={otherMembers[0].user}
+              showBorder={otherMembers[0].user?.image ? true : false}
+              showOnlineIndicator={online}
+            />
+          ) : (
+            <ChannelAvatar channel={channel} size='lg' />
+          )}
         </Pressable>
       )}
       showUnreadCountBadge

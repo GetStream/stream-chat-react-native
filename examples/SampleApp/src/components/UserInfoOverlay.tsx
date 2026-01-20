@@ -15,7 +15,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import {
-  Avatar,
   CircleClose,
   MessageIcon,
   useChatContext,
@@ -23,6 +22,7 @@ import {
   UserMinus,
   useTheme,
   useViewport,
+  UserAvatar,
 } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
@@ -34,8 +34,6 @@ import { useUserInfoOverlayActions } from '../hooks/useUserInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 dayjs.extend(relativeTime);
-
-const avatarSize = 64;
 
 const styles = StyleSheet.create({
   avatarPresenceIndicator: {
@@ -77,10 +75,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   userItemContainer: {
-    marginHorizontal: 8,
-    paddingBottom: 24,
-    paddingTop: 16,
-    width: 64,
+    paddingVertical: 16,
   },
   userName: {
     fontSize: 12,
@@ -269,12 +264,11 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                             : `Last Seen ${dayjs(member.user?.last_active).fromNow()}`}
                         </Text>
                         <View style={styles.userItemContainer}>
-                          <Avatar
-                            image={member.user?.image}
-                            name={member.user?.name || member.user?.id}
-                            online={member.user?.online}
-                            presenceIndicatorContainerStyle={styles.avatarPresenceIndicator}
-                            size={avatarSize}
+                          <UserAvatar
+                            user={member.user}
+                            size='lg'
+                            showBorder
+                            showOnlineIndicator={member.user?.online}
                           />
                         </View>
                       </View>

@@ -355,3 +355,21 @@ export const checkQuotedMessageEquality = (
 
   return quotedMessageEqual;
 };
+
+/**
+ * Utility to get initials from name.
+ * @param name string
+ * @param numberOfInitials number - optional, default is 2
+ * @returns string
+ */
+export const getInitialsFromName = (name: string, numberOfInitials: number = 2) => {
+  if (!name) return '';
+  const trimmed = name.trim();
+
+  if (!trimmed) return '';
+  return trimmed
+    .split(/\s+/)
+    .slice(0, numberOfInitials)
+    .map((n) => n.charAt(0).toUpperCase())
+    .join('');
+};

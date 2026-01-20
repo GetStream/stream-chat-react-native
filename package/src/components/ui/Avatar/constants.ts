@@ -1,16 +1,16 @@
-import { NewUserAvatarProps } from './UserAvatar';
+import { UserAvatarProps } from './UserAvatar';
 
-import { FontWeightType } from '../../theme/primitives/typography';
-import { OnlineIndicatorProps } from '../ui/OnlineIndicator';
+import { FontWeightType } from '../../../theme/primitives/typography';
+import { OnlineIndicatorProps } from '../OnlineIndicator';
 
-const indicatorSizes: Record<NewUserAvatarProps['size'], OnlineIndicatorProps['size']> = {
+const indicatorSizes: Record<UserAvatarProps['size'], OnlineIndicatorProps['size']> = {
   xs: 'sm',
   sm: 'sm',
   md: 'md',
   lg: 'lg',
 };
 
-const iconSizes: Record<NewUserAvatarProps['size'], number> = {
+const iconSizes: Record<UserAvatarProps['size'], number> = {
   xs: 10,
   sm: 12,
   md: 16,
@@ -18,7 +18,7 @@ const iconSizes: Record<NewUserAvatarProps['size'], number> = {
 };
 
 const fontSizes: Record<
-  NewUserAvatarProps['size'],
+  UserAvatarProps['size'],
   { fontSize: number; lineHeight: number; fontWeight: FontWeightType }
 > = {
   xs: { fontSize: 12, lineHeight: 16, fontWeight: '600' },
@@ -27,7 +27,7 @@ const fontSizes: Record<
   lg: { fontSize: 15, lineHeight: 20, fontWeight: '600' },
 };
 
-const numberOfInitials: Record<NewUserAvatarProps['size'], number> = {
+const numberOfInitials: Record<UserAvatarProps['size'], number> = {
   xs: 1,
   sm: 1,
   md: 2,

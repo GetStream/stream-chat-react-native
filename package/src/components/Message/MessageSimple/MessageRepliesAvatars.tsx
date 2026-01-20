@@ -4,8 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-
-import { Avatar } from '../../Avatar/Avatar';
+import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 
 const styles = StyleSheet.create({
   avatarContainer: {
@@ -24,17 +23,14 @@ export type MessageRepliesAvatarsProps = Pick<MessageContextValue, 'alignment' |
 export const MessageRepliesAvatarsWithContext = (
   props: MessageRepliesAvatarsProps & Pick<ChatContextValue, 'ImageComponent'>,
 ) => {
-  const { alignment, ImageComponent, message } = props;
+  const { alignment, message } = props;
 
   const {
     theme: {
-      colors: { white_snow },
       messageSimple: {
         replies: {
-          avatar,
           avatarContainerMultiple,
           avatarContainerSingle,
-          avatarSize,
           leftAvatarsContainer,
           rightAvatarsContainer,
         },
@@ -64,19 +60,7 @@ export const MessageRepliesAvatarsWithContext = (
                 }
           }
         >
-          <Avatar
-            containerStyle={[
-              i === 1 && {
-                borderColor: white_snow,
-                borderWidth: 1,
-              },
-              avatar,
-            ]}
-            image={user.image}
-            ImageComponent={ImageComponent}
-            name={user.name}
-            size={avatarSize ? avatarSize : i === 1 ? 18 : 16}
-          />
+          <UserAvatar user={user} size={'xs'} showBorder />
         </View>
       ))}
     </View>

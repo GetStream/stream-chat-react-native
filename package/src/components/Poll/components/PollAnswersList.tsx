@@ -14,7 +14,7 @@ import {
   useTranslationContext,
 } from '../../../contexts';
 import { getDateString } from '../../../utils/i18n/getDateString';
-import { Avatar } from '../../Avatar/Avatar';
+import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
 import { usePollState } from '../hooks/usePollState';
 
@@ -114,7 +114,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
       <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
         <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
           {!isAnonymous && answer.user?.image ? (
-            <Avatar image={answer.user?.image as string} size={20} />
+            <UserAvatar user={answer.user} size='xs' showBorder />
           ) : null}
           <Text style={{ color: black, fontSize: 14, marginLeft: 2 }}>
             {isAnonymous ? t('Anonymous') : answer.user?.name}

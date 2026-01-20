@@ -27,9 +27,9 @@ import { useStateStore } from '../../hooks';
 import { MessageBubble } from '../../icons';
 import { FileTypes } from '../../types/types';
 import { getDateString } from '../../utils/i18n/getDateString';
-import { Avatar } from '../Avatar/Avatar';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { MessagePreview } from '../MessagePreview/MessagePreview';
+import { UserAvatar } from '../ui/Avatar/UserAvatar';
 
 export type ThreadListItemProps = {
   thread: Thread;
@@ -365,11 +365,10 @@ export const ThreadListItemComponent = () => {
         ) : null}
       </View>
       <View style={[styles.contentRow, threadListItem.contentRow]}>
-        <Avatar
-          image={lastReply?.user?.image as string}
-          online={lastReply?.user?.online}
-          size={40}
-        />
+        {lastReply?.user ? (
+          <UserAvatar user={lastReply?.user} size='lg' showOnlineIndicator showBorder />
+        ) : null}
+
         <View style={[styles.contentTextWrapper, threadListItem.contentTextWrapper]}>
           <Text style={[styles.boldText, { color: text_low_emphasis }, threadListItem.boldText]}>
             {lastReply?.user?.name}
