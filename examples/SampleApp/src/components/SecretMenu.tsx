@@ -372,22 +372,24 @@ export const SecretMenu = ({
             </View>
           </View>
         </View>
-        <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
-          <Folder height={20} pathFill={grey} width={20} />
-          <View>
-            <Text style={[menuDrawerStyles.menuTitle]}>Message Input Floating</Text>
-            <View style={{ marginLeft: 16 }}>
-              {messageInputFloatingConfigItems.map((item) => (
-                <SecretMenuMessageInputFloatingConfigItem
-                  key={item.value.toString()}
-                  messageInputFloatingConfigItem={item}
-                  storeMessageInputFloating={storeMessageInputFloating}
-                  isSelected={item.value === selectedMessageInputFloating}
-                />
-              ))}
+        {Platform.OS === 'ios' ? (
+          <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+            <Folder height={20} pathFill={grey} width={20} />
+            <View>
+              <Text style={[menuDrawerStyles.menuTitle]}>Message Input Floating</Text>
+              <View style={{ marginLeft: 16 }}>
+                {messageInputFloatingConfigItems.map((item) => (
+                  <SecretMenuMessageInputFloatingConfigItem
+                    key={item.value.toString()}
+                    messageInputFloatingConfigItem={item}
+                    storeMessageInputFloating={storeMessageInputFloating}
+                    isSelected={item.value === selectedMessageInputFloating}
+                  />
+                ))}
+              </View>
             </View>
           </View>
-        </View>
+        ) : null}
         <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
           <Edit height={20} pathFill={grey} width={20} />
           <View>

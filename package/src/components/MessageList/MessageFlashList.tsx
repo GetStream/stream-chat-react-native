@@ -52,10 +52,7 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
-import {
-  MessageInputHeightState,
-  messageInputHeightStore,
-} from '../../state-store/message-input-height-store';
+import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 let FlashList;
@@ -133,7 +130,7 @@ type MessageFlashListPropsWithContext = Pick<
     | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
-  Pick<MessageInputContextValue, 'messageInputFloating'> &
+  Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<
     MessagesContextValue,
@@ -293,6 +290,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     markRead,
     maximumMessageLimit,
     messageInputFloating,
+    messageInputHeightStore,
     myMessageTheme,
     readEvents,
     NetworkDownIndicator,
@@ -318,7 +316,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const flashListRef = useRef<FlashListRef<LocalMessage> | null>(null);
 
   const { height: messageInputHeight } = useStateStore(
-    messageInputHeightStore,
+    messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
 
@@ -1158,7 +1156,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
-  const { messageInputFloating } = useMessageInputContext();
+  const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
 
   return (
     <MessageFlashListWithContext
@@ -1190,6 +1188,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         maximumMessageLimit,
         Message,
         messageInputFloating,
+        messageInputHeightStore,
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,

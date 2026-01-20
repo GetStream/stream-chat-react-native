@@ -59,6 +59,7 @@ import {
 } from '../../middlewares/attachments';
 
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
+import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
 import {
@@ -384,6 +385,7 @@ export type InputMessageInputContextValue = {
    */
   setInputRef?: (ref: TextInput | null) => void;
   showPollCreationDialog?: boolean;
+  messageInputHeightStore: MessageInputHeightStore;
 };
 
 export type MessageInputContextValue = LocalMessageInputContext &

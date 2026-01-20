@@ -110,6 +110,7 @@ import {
   ChannelUnreadStateStore,
   ChannelUnreadStateStoreType,
 } from '../../state-store/channel-unread-state';
+import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
@@ -785,6 +786,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
+  const [messageInputHeightStore] = useState(new MessageInputHeightStore());
   // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
@@ -1874,6 +1876,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     Input,
     InputButtons,
     messageInputFloating,
+    messageInputHeightStore,
     openPollCreationDialog,
     SendButton,
     sendMessage,
