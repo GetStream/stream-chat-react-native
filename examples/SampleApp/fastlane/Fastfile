@@ -52,7 +52,7 @@ platform :ios do
       clean: true,
       xcargs: settings_to_override,
       include_symbols: true,
-      output_directory: build_output_directory
+      output_directory: build_output_directory,
       output_name: File.basename(output_ipa_name, '.ipa')
     )
 
