@@ -38,6 +38,24 @@ platform :ios do
 
     UI.message("Deploying to Testflight: #{deploy}")
 
+    if deploy
+      increment_version_number(
+        version_number: load_json(json_path: './package.json')['version'],
+        xcodeproj: xcode_project
+      )
+
+      current_build_number = app_store_build_number(
+        api_key: appstore_api_key,
+        live: false,
+        app_identifier: bundle_id
+      )
+
+      increment_build_number(
+        build_number: current_build_number + 1,
+        xcodeproj: xcode_project
+      )
+    end
+
     settings_to_override = {
       BUNDLE_IDENTIFIER: bundle_id,
       PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
@@ -57,30 +75,15 @@ platform :ios do
     )
 
     if deploy
-      increment_version_number(
-        version_number: load_json(json_path: './package.json')['version'],
-        xcodeproj: xcode_project
-      )
-
-      current_build_number = app_store_build_number(
-        api_key: appstore_api_key,
-        live: false,
-        app_identifier: bundle_id
-      )
-
-      increment_build_number(
-        build_number: current_build_number + 1,
-        xcodeproj: xcode_project
-      )
-
       upload_to_testflight(
+        api_key: appstore_api_key,
         groups: ['Testers'],
         changelog: 'Lots of amazing new features to test out!',
         reject_build_waiting_for_review: false,
         ipa: "#{build_output_directory}/#{output_ipa_name}"
       )
     else
-        UI.message("Skipping Testflight upload! (deploy: #{deploy})")
+      UI.message("Skipping Testflight upload! (deploy: #{deploy})")
     end
   end
 
