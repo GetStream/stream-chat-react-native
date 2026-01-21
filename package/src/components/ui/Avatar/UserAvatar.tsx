@@ -7,39 +7,53 @@ import { UserResponse } from 'stream-chat';
 import { Avatar } from './Avatar';
 import { fontSizes, iconSizes, indicatorSizes, numberOfInitials } from './constants';
 
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { PeopleIcon } from '../../../icons/PeopleIcon';
-import { getInitialsFromName } from '../../../utils/utils';
+import { getInitialsFromName, hashStringToNumber } from '../../../utils/utils';
 import { OnlineIndicator } from '../OnlineIndicator';
 
 export type UserAvatarProps = {
-  user?: UserResponse;
+  user: UserResponse;
   showOnlineIndicator?: boolean;
   size: 'xs' | 'sm' | 'md' | 'lg';
   showBorder?: boolean;
 };
 
 export const UserAvatar = (props: UserAvatarProps) => {
-  const { user, size, showBorder = !!user?.image, showOnlineIndicator } = props;
+  const { user, size, showBorder = !!user.image, showOnlineIndicator } = props;
+  const {
+    theme: {
+      colors: { avatarPalette },
+    },
+  } = useTheme();
+  const styles = useStyles();
+  const hashedValue = hashStringToNumber(user.id);
+  const index = hashedValue % (avatarPalette?.length ?? 1);
+  const avatarColors = avatarPalette?.[index];
 
   const placeholder = useMemo(() => {
-    if (user?.name) {
+    if (user.name) {
       return (
-        <Text style={[styles.text, fontSizes[size]]}>
+        <Text style={[fontSizes[size], { color: avatarColors?.text }]}>
           {getInitialsFromName(user.name, numberOfInitials[size])}
         </Text>
       );
     } else {
-      return <PeopleIcon height={iconSizes[size]} stroke={'#003179'} width={iconSizes[size]} />;
+      return (
+        <PeopleIcon height={iconSizes[size]} stroke={avatarColors?.text} width={iconSizes[size]} />
+      );
     }
-  }, [user?.name, size]);
-
-  if (!user) {
-    return null;
-  }
+  }, [user.name, size, avatarColors]);
 
   return (
     <View style={styles.wrapper} testID='user-avatar'>
-      <Avatar imageUrl={user.image} placeholder={placeholder} showBorder={showBorder} size={size} />
+      <Avatar
+        backgroundColor={avatarColors?.bg}
+        imageUrl={user.image}
+        placeholder={placeholder}
+        showBorder={showBorder}
+        size={size}
+      />
       {showOnlineIndicator ? (
         <View style={styles.onlineIndicatorWrapper}>
           <OnlineIndicator online={true} size={indicatorSizes[size]} />
@@ -49,16 +63,22 @@ export const UserAvatar = (props: UserAvatarProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  text: {
-    color: '#003179',
-  },
-  onlineIndicatorWrapper: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  wrapper: {
-    padding: 2,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { spacing },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        onlineIndicatorWrapper: {
+          position: 'absolute',
+          right: 0,
+          top: 0,
+        },
+        wrapper: {
+          padding: spacing.xxs,
+        },
+      }),
+    [spacing],
+  );
+};

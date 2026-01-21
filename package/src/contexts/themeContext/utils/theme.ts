@@ -2,7 +2,7 @@ import { type ColorValue, type ImageStyle, type TextStyle, type ViewStyle } from
 import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
-import { lightColors, type NewColors } from '../../../theme/primitives/colors';
+import { AvatarPalette, lightColors, type NewColors } from '../../../theme/primitives/colors';
 import { Radius } from '../../../theme/primitives/radius';
 import { Spacing } from '../../../theme/primitives/spacing';
 import { Typography } from '../../../theme/primitives/typography';
@@ -191,7 +191,8 @@ export type Theme = {
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
   };
-  colors: typeof Colors & NewColors & { [key: string]: string | { [key: string]: string } };
+  colors: typeof Colors &
+    NewColors & { [key: string]: string | { [key: string]: string } | AvatarPalette };
   dateHeader: {
     container: ViewStyle;
     text: TextStyle;

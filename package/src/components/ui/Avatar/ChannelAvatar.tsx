@@ -10,7 +10,9 @@ import { UserAvatar } from './UserAvatar';
 
 import { useChannelPreviewDisplayPresence } from '../../../components/ChannelPreview/hooks/useChannelPreviewDisplayPresence';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { GroupIcon } from '../../../icons/GroupIcon';
+import { hashStringToNumber } from '../../../utils/utils';
 
 export type ChannelAvatarProps = {
   channel: Channel;
@@ -25,31 +27,36 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const members = Object.values(channel.state.members);
   const online = useChannelPreviewDisplayPresence(channel);
 
+  const {
+    theme: {
+      colors: { avatarPalette },
+    },
+  } = useTheme();
+
+  const hashedValue = hashStringToNumber(channel.cid);
+  const index = hashedValue % (avatarPalette?.length ?? 1);
+  const avatarColors = avatarPalette?.[index];
+
   const { size, showBorder = true, showOnlineIndicator = online } = props;
 
   const channelImage = channel.data?.image;
 
   const placeholder = useMemo(() => {
-    return <GroupIcon height={iconSizes[size]} stroke={'#003179'} width={iconSizes[size]} />;
-  }, [size]);
+    return (
+      <GroupIcon height={iconSizes[size]} stroke={avatarColors?.text} width={iconSizes[size]} />
+    );
+  }, [size, avatarColors]);
 
   if (!channelImage) {
-    if (members.length === 1) {
+    const otherMembers = members.filter((member) => member.user?.id !== client?.user?.id);
+    const otherUser = otherMembers[0].user;
+
+    const user = members.length === 1 ? client.user : members.length === 2 ? otherUser : null;
+    if (user) {
       return (
         <UserAvatar
-          user={client.user}
+          user={user}
           size={size}
-          showBorder={showBorder}
-          showOnlineIndicator={showOnlineIndicator}
-        />
-      );
-    } else if (members.length === 2) {
-      const otherMembers = members.filter((member) => member.user?.id !== client?.user?.id);
-      const otherUser = otherMembers[0].user;
-      return (
-        <UserAvatar
-          size={size}
-          user={otherUser}
           showBorder={showBorder}
           showOnlineIndicator={showOnlineIndicator}
         />
@@ -58,6 +65,12 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   }
 
   return (
-    <Avatar imageUrl={channelImage} placeholder={placeholder} showBorder={showBorder} size={size} />
+    <Avatar
+      backgroundColor={avatarColors?.bg}
+      imageUrl={channelImage}
+      placeholder={placeholder}
+      showBorder={showBorder}
+      size={size}
+    />
   );
 };

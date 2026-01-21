@@ -8,6 +8,7 @@ export type AvatarProps = {
   imageUrl?: string;
   placeholder?: React.ReactNode;
   showBorder?: boolean;
+  backgroundColor?: string;
 };
 
 const sizes = {
@@ -31,7 +32,13 @@ const sizes = {
 
 export const Avatar = (props: AvatarProps) => {
   const [error, setError] = useState(false);
-  const { size, imageUrl, placeholder, showBorder } = props;
+  const {
+    theme: {
+      colors: { avatarPalette },
+    },
+  } = useTheme();
+  const defaultAvatarBg = avatarPalette?.[0].bg;
+  const { backgroundColor = defaultAvatarBg, size, imageUrl, placeholder, showBorder } = props;
   const styles = useStyles();
 
   const onHandleError = useCallback(() => {
@@ -43,7 +50,7 @@ export const Avatar = (props: AvatarProps) => {
       style={[
         styles.container,
         sizes[size],
-        { backgroundColor: imageUrl && !error ? undefined : '#D2E3FF' },
+        { backgroundColor },
         showBorder ? styles.border : undefined,
       ]}
       testID='avatar-image'
