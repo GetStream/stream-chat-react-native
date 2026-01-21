@@ -75,7 +75,7 @@
     "i18next": "^25.2.1",
     "intl-pluralrules": "^2.0.1",
     "linkifyjs": "^4.3.1",
-    "lodash-es": "4.17.21",
+    "lodash-es": "4.17.23",
     "mime-types": "^2.1.35",
     "path": "0.12.7",
     "react-native-markdown-package": "1.8.2",
