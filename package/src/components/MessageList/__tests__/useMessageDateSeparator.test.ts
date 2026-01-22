@@ -2,15 +2,12 @@ import { renderHook } from '@testing-library/react-native';
 
 import { LocalMessage } from 'stream-chat';
 
-import { MessagePreviousAndNextMessageStore } from '../../../state-store/message-list-prev-next-state';
 import { useMessageDateSeparator } from '../hooks/useMessageDateSeparator';
 
 describe('useMessageDateSeparator', () => {
-  let messageListPreviousAndNextMessageStore: MessagePreviousAndNextMessageStore;
   let messages: LocalMessage[];
 
   beforeEach(() => {
-    messageListPreviousAndNextMessageStore = new MessagePreviousAndNextMessageStore();
     messages = [
       {
         created_at: new Date('2020-01-01T00:00:00.000Z'),
@@ -28,13 +25,10 @@ describe('useMessageDateSeparator', () => {
         text: 'Hello World',
       },
     ] as LocalMessage[];
-    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({ messages });
   });
 
   it('should return undefined if no message is passed', () => {
-    const { result } = renderHook(() =>
-      useMessageDateSeparator({ message: undefined, messageListPreviousAndNextMessageStore }),
-    );
+    const { result } = renderHook(() => useMessageDateSeparator({ message: undefined }));
     expect(result.current).toBeUndefined();
   });
 
@@ -43,7 +37,7 @@ describe('useMessageDateSeparator', () => {
       useMessageDateSeparator({
         hideDateSeparators: true,
         message: messages[1],
-        messageListPreviousAndNextMessageStore,
+        previousMessage: messages[0],
       }),
     );
     expect(result.current).toBeUndefined();
@@ -51,7 +45,7 @@ describe('useMessageDateSeparator', () => {
 
   it('should return the date separator for a message if previous message is not the same day', () => {
     const { result } = renderHook(() =>
-      useMessageDateSeparator({ message: messages[1], messageListPreviousAndNextMessageStore }),
+      useMessageDateSeparator({ message: messages[1], previousMessage: messages[0] }),
     );
     expect(result.current).toBe(messages[1].created_at);
   });
@@ -69,14 +63,12 @@ describe('useMessageDateSeparator', () => {
         text: 'World',
       },
     ] as LocalMessage[];
-    const messageListPreviousAndNextMessageStore = new MessagePreviousAndNextMessageStore();
-    messageListPreviousAndNextMessageStore.setMessageListPreviousAndNextMessage({ messages });
     const { result: resultOfFirstMessage } = renderHook(() =>
-      useMessageDateSeparator({ message: messages[0], messageListPreviousAndNextMessageStore }),
+      useMessageDateSeparator({ message: messages[0], previousMessage: undefined }),
     );
     expect(resultOfFirstMessage.current).toBe(messages[0].created_at);
     const { result: resultOfSecondMessage } = renderHook(() =>
-      useMessageDateSeparator({ message: messages[1], messageListPreviousAndNextMessageStore }),
+      useMessageDateSeparator({ message: messages[1], previousMessage: messages[0] }),
     );
     expect(resultOfSecondMessage.current).toBeUndefined();
   });

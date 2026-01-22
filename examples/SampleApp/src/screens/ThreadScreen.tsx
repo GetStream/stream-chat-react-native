@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useHeaderHeight } from '@react-navigation/elements';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import {
   Channel,
@@ -86,8 +85,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   const { client: chatClient } = useChatContext();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
-  const { messageInputFloating } = useAppContext();
-  const headerHeight = useHeaderHeight();
+  const { messageInputFloating, messageListImplementation } = useAppContext();
 
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,
@@ -125,7 +123,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
         enforceUniqueReaction
-        keyboardVerticalOffset={headerHeight}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
         MessageHeader={MessageReminderHeader}
@@ -135,7 +133,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         threadList
       >
         <ThreadHeader thread={thread} />
-        <Thread onThreadDismount={onThreadDismount} />
+        <Thread onThreadDismount={onThreadDismount} shouldUseFlashList={messageListImplementation === 'flashlist'} />
       </Channel>
     </View>
   );
