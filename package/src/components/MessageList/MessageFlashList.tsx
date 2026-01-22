@@ -1236,7 +1236,7 @@ const styles = StyleSheet.create({
   scrollToBottomButtonContainer: {
     bottom: 8,
     position: 'absolute',
-    right: 24,
+    right: 16,
   },
   stickyHeaderContainer: {
     left: 0,

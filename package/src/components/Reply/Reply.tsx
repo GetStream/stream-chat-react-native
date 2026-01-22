@@ -120,10 +120,6 @@ const SubtitleText = React.memo(({ message }: { message?: LocalMessage | null })
       return message?.text;
     }
 
-    if (imageAttachments?.length && videoAttachments?.length) {
-      return `${imageAttachments?.length + videoAttachments.length} Media`;
-    }
-
     if (onlyImages) {
       if (imageAttachments?.length === 1) {
         return 'Photo';
@@ -193,6 +189,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     (attachment) => attachment.type === FileTypes.VoiceRecording,
   );
   const fileAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.File);
+  const onlyImages = imageAttachments?.length && imageAttachments?.length === attachments?.length;
   const onlyAudio = audioAttachments?.length && audioAttachments?.length === attachments?.length;
   const onlyVideos = videoAttachments?.length && videoAttachments?.length === attachments?.length;
   const onlyVoiceRecordings =
@@ -238,21 +235,26 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     );
   }
 
-  if (fileAttachments?.length) {
-    return (
-      <NewFile height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...fileIcon} />
-    );
-  }
-
   if (onlyVideos) {
     return (
       <NewVideo height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...videoIcon} />
     );
   }
 
-  if (imageAttachments?.length) {
+  if (onlyImages) {
     return (
       <NewPhoto height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...photoIcon} />
+    );
+  }
+
+  if (
+    fileAttachments?.length ||
+    imageAttachments?.length ||
+    videoAttachments?.length ||
+    audioAttachments?.length
+  ) {
+    return (
+      <NewFile height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...fileIcon} />
     );
   }
 
