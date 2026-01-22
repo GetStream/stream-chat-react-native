@@ -68,6 +68,7 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
      * Call custom function on closing thread if handling thread state elsewhere
      */
     onThreadDismount?: () => void;
+    shouldUseFlashList?: boolean;
   };
 
 const ThreadWithContext = (props: ThreadPropsWithContext) => {
@@ -86,6 +87,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     parentMessagePreventPress = true,
     thread,
     threadInstance,
+    shouldUseFlashList = false,
   } = props;
 
   useEffect(() => {
@@ -125,7 +127,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   return (
     <React.Fragment key={`thread-${thread.id}`}>
-      {FlashList ? (
+      {FlashList && shouldUseFlashList ? (
         <MessageFlashList
           HeaderComponent={MemoizedThreadFooterComponent}
           threadList
