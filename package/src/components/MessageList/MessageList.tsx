@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   scrollToBottomButtonContainer: {
     bottom: 8,
     position: 'absolute',
-    right: 24,
+    right: 16,
   },
   stickyHeaderContainer: {
     left: 0,
@@ -248,10 +248,6 @@ type MessageListPropsWithContext = Pick<
     isLiveStreaming?: boolean;
   };
 
-const renderItem = ({ item: message }: { item: LocalMessage }) => {
-  return <MessageWrapper message={message} />;
-};
-
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
@@ -349,15 +345,29 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const {
-    messageListPreviousAndNextMessageStore,
-    processedMessageList,
-    rawMessageList,
-    viewabilityChangedCallback,
-  } = useMessageList({
+  const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
     isLiveStreaming,
     threadList,
   });
+
+  const processedMessageListRef = useRef(processedMessageList);
+  processedMessageListRef.current = processedMessageList;
+
+  const renderItem = useCallback(
+    ({ item: message, index }: { item: LocalMessage; index: number }) => {
+      const previousMessage = processedMessageListRef.current[index + 1];
+      const nextMessage = processedMessageListRef.current[index - 1];
+      return (
+        <MessageWrapper
+          message={message}
+          previousMessage={previousMessage}
+          nextMessage={nextMessage}
+        />
+      );
+    },
+    [processedMessageListRef],
+  );
+
   const messageListLengthBeforeUpdate = useRef(0);
   const messageListLengthAfterUpdate = processedMessageList.length;
 
@@ -805,20 +815,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
-      messageListPreviousAndNextMessageStore,
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
       setNativeScrollability,
     }),
-    [
-      goToMessage,
-      messageListPreviousAndNextMessageStore,
-      modifiedTheme,
-      noGroupByUser,
-      onThreadSelect,
-      setNativeScrollability,
-    ],
+    [goToMessage, modifiedTheme, noGroupByUser, onThreadSelect, setNativeScrollability],
   );
 
   /**
@@ -1122,6 +1124,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     );
   }
 
+  // TODO: Make sure this is actually overridable as the previous FlatList was.
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -1134,7 +1137,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         </View>
       ) : (
         <MessageListItemProvider value={messageListItemContextValue}>
-          <FlatList
+          <Animated.FlatList<LocalMessage>
+            // TODO: Consider hiding this behind a feature flag.
+            layout={LinearTransition.duration(200)}
             contentContainerStyle={flatListContentContainerStyle}
             /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
             data={processedMessageList}
@@ -1159,11 +1164,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             onScrollToIndexFailed={onScrollToIndexFailedRef.current}
             onTouchEnd={dismissImagePicker}
             onViewableItemsChanged={stableOnViewableItemsChanged}
+            // @ts-expect-error Safe to do for now
             ref={refCallback}
             renderItem={renderItem}
             scrollEventThrottle={isLiveStreaming ? 16 : undefined}
             showsVerticalScrollIndicator={false}
-            // @ts-expect-error react-native internal
             strictMode={isLiveStreaming}
             style={flatListStyle}
             testID='message-flat-list'

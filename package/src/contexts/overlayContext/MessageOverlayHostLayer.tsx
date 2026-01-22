@@ -9,13 +9,15 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
   withDecay,
-  withTiming,
+  withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PortalHost } from 'react-native-teleport';
 
 import { closeOverlay, useOverlayController } from '../../state-store';
 import { finalizeCloseOverlay } from '../../state-store';
+
+const DURATION = 300;
 
 export const MessageOverlayHostLayer = () => {
   const { messageH, topH, bottomH, id, closing } = useOverlayController();
@@ -39,7 +41,11 @@ export const MessageOverlayHostLayer = () => {
 
   useEffect(() => {
     const target = isActive && !closing ? 1 : 0;
-    backdrop.value = withTiming(target, { duration: 150 });
+    backdrop.value = withSpring(target, { duration: DURATION + target * 100 }, (finished) => {
+      if (finished && closing) {
+        runOnJS(finalizeCloseOverlay)();
+      }
+    });
   }, [isActive, closing, backdrop]);
 
   const backdropStyle = useAnimatedStyle(() => ({
@@ -112,7 +118,7 @@ export const MessageOverlayHostLayer = () => {
   const closeCompStyle = useAnimatedStyle(() => {
     const target = closing ? -scrollAtClose.value : 0;
     return {
-      transform: [{ translateY: withTiming(target, { duration: 150 }) }],
+      transform: [{ translateY: withSpring(target, { duration: DURATION }) }],
     };
   }, [closing]);
 
@@ -130,7 +136,10 @@ export const MessageOverlayHostLayer = () => {
   const topItemTranslateStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? 0 : shiftY.value) : 0;
     return {
-      transform: [{ scale: backdrop.value }, { translateY: withTiming(target, { duration: 150 }) }],
+      transform: [
+        { scale: backdrop.value },
+        { translateY: withSpring(target, { duration: DURATION }) },
+      ],
     };
   }, [isActive, closing]);
 
@@ -148,7 +157,10 @@ export const MessageOverlayHostLayer = () => {
   const bottomItemTranslateStyle = useAnimatedStyle(() => {
     const target = isActive ? (closing ? 0 : shiftY.value) : 0;
     return {
-      transform: [{ scale: backdrop.value }, { translateY: withTiming(target, { duration: 150 }) }],
+      transform: [
+        { scale: backdrop.value },
+        { translateY: withSpring(target, { duration: DURATION }) },
+      ],
     };
   }, [isActive, closing]);
 
@@ -169,11 +181,7 @@ export const MessageOverlayHostLayer = () => {
     return {
       transform: [
         {
-          translateY: withTiming(target, { duration: 150 }, (finished) => {
-            if (finished && closing) {
-              runOnJS(finalizeCloseOverlay)();
-            }
-          }),
+          translateY: withSpring(target, { duration: DURATION }),
         },
       ],
     };

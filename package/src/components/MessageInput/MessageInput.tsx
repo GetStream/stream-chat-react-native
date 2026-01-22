@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, Platform, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
+import { Modal, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 
 import {
   Gesture,
@@ -20,6 +20,8 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from 'react-native-reanimated';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
 
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
   },
   floatingWrapper: {
     left: 0,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     position: 'absolute',
     right: 0,
   },
@@ -123,8 +125,8 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     borderTopWidth: 1,
-    paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
 });
 
@@ -452,13 +454,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       },
     ],
   }));
+  const { bottom } = useSafeAreaInsets();
 
-  const BOTTOM_OFFSET = isKeyboardVisible ? 24 : Platform.OS === 'ios' ? 32 : 24;
+  const BOTTOM_OFFSET = isKeyboardVisible ? 16 : bottom ? bottom : 16;
 
   return (
     <>
       <Animated.View
-        layout={LinearTransition.duration(200)}
         onLayout={({
           nativeEvent: {
             layout: { height: newHeight },

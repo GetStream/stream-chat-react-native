@@ -38,23 +38,6 @@ platform :ios do
 
     UI.message("Deploying to Testflight: #{deploy}")
 
-    settings_to_override = {
-      BUNDLE_IDENTIFIER: bundle_id,
-      PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
-    }
-
-    gym(
-      workspace: xcode_workspace,
-      scheme: 'SampleApp',
-      export_method: 'app-store',
-      export_options: './fastlane/testflight_gym_export_options.plist',
-      silent: true,
-      clean: true,
-      xcargs: settings_to_override,
-      include_symbols: true,
-      output_directory: build_output_directory
-    )
-
     if deploy
       increment_version_number(
         version_number: load_json(json_path: './package.json')['version'],
@@ -71,15 +54,36 @@ platform :ios do
         build_number: current_build_number + 1,
         xcodeproj: xcode_project
       )
+    end
 
+    settings_to_override = {
+      BUNDLE_IDENTIFIER: bundle_id,
+      PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
+    }
+
+    gym(
+      workspace: xcode_workspace,
+      scheme: 'SampleApp',
+      export_method: 'app-store',
+      export_options: './fastlane/testflight_gym_export_options.plist',
+      silent: true,
+      clean: true,
+      xcargs: settings_to_override,
+      include_symbols: true,
+      output_directory: build_output_directory,
+      output_name: File.basename(output_ipa_name, '.ipa')
+    )
+
+    if deploy
       upload_to_testflight(
+        api_key: appstore_api_key,
         groups: ['Testers'],
         changelog: 'Lots of amazing new features to test out!',
         reject_build_waiting_for_review: false,
         ipa: "#{build_output_directory}/#{output_ipa_name}"
       )
     else
-        UI.message("Skipping Testflight upload! (deploy: #{deploy})")
+      UI.message("Skipping Testflight upload! (deploy: #{deploy})")
     end
   end
 
@@ -91,7 +95,7 @@ platform :ios do
       in_house: false
     )
   end
-  
+
   desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
   lane :match_me do |options|
     custom_match(
@@ -112,13 +116,13 @@ platform :android do
     deploy = options.fetch(:deploy, false)
 
     UI.message("Deploying to Firebase: #{deploy}")
-    
-    # Clean 
+
+    # Clean
     gradle(
         task: "clean",
         project_dir: "./android"
     )
-  
+
     # Build the AAB
     gradle(
         task: "assemble",

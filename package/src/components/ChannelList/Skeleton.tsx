@@ -17,6 +17,8 @@ const paddingLarge = 16;
 const paddingMedium = 12;
 const paddingSmall = 8;
 
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
 const styles = StyleSheet.create({
   background: {
     height: 64,
@@ -148,7 +150,7 @@ export const Skeleton = () => {
         </Svg>
       </Animated.View>
       <Svg height={height} width={width}>
-        <Path {...svgAnimatedProps} fill={maskFillColor || white_snow} />
+        <AnimatedPath animatedProps={svgAnimatedProps} fill={maskFillColor || white_snow} />
       </Svg>
     </View>
   );

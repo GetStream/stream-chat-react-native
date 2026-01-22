@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   Keyboard,
@@ -6,42 +6,40 @@ import {
   KeyboardAvoidingViewProps as ReactNativeKeyboardAvoidingViewProps,
 } from 'react-native';
 
-import {
-  KeyboardAvoidingView as KeyboardControllerPackageKeyboardAvoidingView,
-  KeyboardController as KeyboardControllerPackageKeyboardController,
-  KeyboardEvents,
-  KeyboardProvider,
-} from 'react-native-keyboard-controller';
-
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from './KeyboardCompatibleView';
 
 type ExtraKeyboardControllerProps = {
   behavior?: 'translate-with-padding';
 };
 
+type KeyboardControllerModule = typeof import('react-native-keyboard-controller');
+
+const optionalRequire = <T,>(): T | undefined => {
+  try {
+    return require('react-native-keyboard-controller') as T;
+  } catch {
+    return undefined;
+  }
+};
+
 export type KeyboardCompatibleViewProps = ReactNativeKeyboardAvoidingViewProps &
   ExtraKeyboardControllerProps;
 
-let KeyboardControllerPackage:
-  | {
-      KeyboardAvoidingView: typeof KeyboardControllerPackageKeyboardAvoidingView;
-      KeyboardController: typeof KeyboardControllerPackageKeyboardController;
-      KeyboardProvider: typeof KeyboardProvider;
-      KeyboardEvents: typeof KeyboardEvents;
-    }
-  | undefined;
+const KeyboardControllerPackage = optionalRequire<KeyboardControllerModule>();
 
-try {
-  KeyboardControllerPackage = require('react-native-keyboard-controller');
-} catch (e) {
-  KeyboardControllerPackage = undefined;
-}
+const { AndroidSoftInputModes, KeyboardController, KeyboardProvider, KeyboardAvoidingView } =
+  KeyboardControllerPackage ?? {};
 
 export const KeyboardCompatibleView = (props: KeyboardCompatibleViewProps) => {
   const { behavior = 'translate-with-padding', children, ...rest } = props;
 
-  const KeyboardProvider = KeyboardControllerPackage?.KeyboardProvider;
-  const KeyboardAvoidingView = KeyboardControllerPackage?.KeyboardAvoidingView;
+  useEffect(() => {
+    if (AndroidSoftInputModes) {
+      KeyboardController?.setInputMode(AndroidSoftInputModes.SOFT_INPUT_ADJUST_RESIZE);
+    }
+
+    return () => KeyboardController?.setDefaultMode();
+  }, []);
 
   if (KeyboardProvider && KeyboardAvoidingView) {
     return (
