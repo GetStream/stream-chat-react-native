@@ -461,6 +461,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   return (
     <>
       <Animated.View
+        layout={LinearTransition.duration(200)}
         onLayout={({
           nativeEvent: {
             layout: { height: newHeight },
