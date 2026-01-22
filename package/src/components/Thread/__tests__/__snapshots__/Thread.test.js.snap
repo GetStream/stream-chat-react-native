@@ -1896,19 +1896,18 @@ exports[`Thread should match thread snapshot 1`] = `
       />
     </View>
     <View
-      layout={BaseAnimationMock {}}
       onLayout={[Function]}
       style={
         [
           {
             "borderTopWidth": 1,
-            "paddingHorizontal": 24,
-            "paddingTop": 24,
+            "paddingHorizontal": 16,
+            "paddingTop": 16,
           },
           {
             "backgroundColor": "#FFFFFF",
             "borderColor": "#E2E6EA",
-            "paddingBottom": 32,
+            "paddingBottom": 16,
           },
           {},
         ]
