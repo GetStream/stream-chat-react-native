@@ -10,6 +10,7 @@ configPromise.then((config) => {
       'main',
       {
         name:"V8-release",
+        channel: 'latest',
         range: "8.x",
       },
       {
