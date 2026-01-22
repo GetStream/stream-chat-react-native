@@ -120,10 +120,6 @@ const SubtitleText = React.memo(({ message }: { message?: LocalMessage | null })
       return message?.text;
     }
 
-    if (imageAttachments?.length && videoAttachments?.length) {
-      return `${imageAttachments?.length + videoAttachments.length} Media`;
-    }
-
     if (onlyImages) {
       if (imageAttachments?.length === 1) {
         return 'Photo';
