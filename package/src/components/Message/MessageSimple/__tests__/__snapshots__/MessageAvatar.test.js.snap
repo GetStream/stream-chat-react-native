@@ -15,7 +15,7 @@ exports[`MessageAvatar should render message avatar 1`] = `
   <View
     style={
       {
-        "padding": 2,
+        "padding": 4,
       }
     }
     testID="user-avatar"
@@ -34,7 +34,7 @@ exports[`MessageAvatar should render message avatar 1`] = `
             "width": 24,
           },
           {
-            "backgroundColor": undefined,
+            "backgroundColor": "#D7F7FB",
           },
           {
             "borderColor": "hsla(0, 0%, 0%, 0.1)",

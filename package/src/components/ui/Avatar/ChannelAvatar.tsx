@@ -49,7 +49,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
 
   if (!channelImage) {
     const otherMembers = members.filter((member) => member.user?.id !== client?.user?.id);
-    const otherUser = otherMembers[0].user;
+    const otherUser = otherMembers?.[0]?.user;
 
     const user = members.length === 1 ? client.user : members.length === 2 ? otherUser : null;
     if (user) {

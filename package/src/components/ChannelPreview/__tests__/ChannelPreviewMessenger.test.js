@@ -58,7 +58,7 @@ describe('ChannelPreviewMessenger', () => {
 
   it('should call setActiveChannel on click', async () => {
     const onSelect = jest.fn();
-    await initializeChannel(generateChannelResponse());
+    await initializeChannel(generateChannelResponse({}));
 
     render(
       getComponent({
