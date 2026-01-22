@@ -137,7 +137,6 @@ class _Audio {
   startPlayer = async (uri, _, onPlaybackStatusUpdate) => {
     try {
       const playback = await audioRecorderPlayer.startPlayer(uri);
-      console.log({ playback });
       audioRecorderPlayer.addPlayBackListener((status) => {
         onPlaybackStatusUpdate(status);
       });
@@ -191,6 +190,7 @@ class _Audio {
   };
   stopRecording = async () => {
     try {
+      if(!audioRecorderPlayer._isRecording) return;
       await audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
     } catch (error) {
