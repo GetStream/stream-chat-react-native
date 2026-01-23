@@ -46,7 +46,7 @@ export const UserAvatar = (props: UserAvatarProps) => {
   }, [user.name, size, avatarColors]);
 
   return (
-    <View style={styles.wrapper} testID='user-avatar'>
+    <View testID='user-avatar'>
       <Avatar
         backgroundColor={avatarColors?.bg}
         imageUrl={user.image}
@@ -64,21 +64,15 @@ export const UserAvatar = (props: UserAvatarProps) => {
 };
 
 const useStyles = () => {
-  const {
-    theme: { spacing },
-  } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
         onlineIndicatorWrapper: {
           position: 'absolute',
-          right: 0,
-          top: 0,
-        },
-        wrapper: {
-          padding: spacing.xxs,
+          right: -2,
+          top: -2,
         },
       }),
-    [spacing],
+    [],
   );
 };
