@@ -95,7 +95,7 @@ platform :ios do
         changelog: 'Lots of amazing new features to test out!',
         reject_build_waiting_for_review: true,
         ipa: "#{build_output_directory}/#{output_ipa_name}",
-        skip_waiting_for_build_processing: false
+        skip_waiting_for_build_processing: true
       )
     else
       UI.message("Skipping Testflight upload! (deploy: #{deploy})")
