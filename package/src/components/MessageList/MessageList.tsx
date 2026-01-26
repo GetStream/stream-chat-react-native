@@ -233,10 +233,6 @@ type MessageListPropsWithContext = Pick<
     isLiveStreaming?: boolean;
   };
 
-const renderItem = ({ item: message }: { item: LocalMessage }) => {
-  return <MessageWrapper message={message} />;
-};
-
 /**
  * The message list component renders a list of messages. It consumes the following contexts:
  *
@@ -320,16 +316,30 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const {
-    messageListPreviousAndNextMessageStore,
-    processedMessageList,
-    rawMessageList,
-    viewabilityChangedCallback,
-  } = useMessageList({
+  const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
     isLiveStreaming,
     noGroupByUser,
     threadList,
   });
+
+  const processedMessageListRef = useRef(processedMessageList);
+  processedMessageListRef.current = processedMessageList;
+
+  const renderItem = useCallback(
+    ({ item: message, index }: { item: LocalMessage; index: number }) => {
+      const previousMessage = processedMessageListRef.current[index + 1];
+      const nextMessage = processedMessageListRef.current[index - 1];
+      return (
+        <MessageWrapper
+          message={message}
+          nextMessage={nextMessage}
+          previousMessage={previousMessage}
+        />
+      );
+    },
+    [processedMessageListRef],
+  );
+
   const messageListLengthBeforeUpdate = useRef(0);
   const messageListLengthAfterUpdate = processedMessageList.length;
 
@@ -771,18 +781,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
-      messageListPreviousAndNextMessageStore,
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
     }),
-    [
-      goToMessage,
-      messageListPreviousAndNextMessageStore,
-      modifiedTheme,
-      noGroupByUser,
-      onThreadSelect,
-    ],
+    [goToMessage, modifiedTheme, noGroupByUser, onThreadSelect],
   );
 
   /**

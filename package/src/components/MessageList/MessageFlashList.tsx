@@ -254,10 +254,6 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'generic-message';
 };
 
-const renderItem = ({ item: message }: { item: LocalMessage }) => {
-  return <MessageWrapper message={message} />;
-};
-
 const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
@@ -350,17 +346,27 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [myMessageThemeString, theme],
   );
 
-  const {
-    messageListPreviousAndNextMessageStore,
-    processedMessageList,
-    rawMessageList,
-    viewabilityChangedCallback,
-  } = useMessageList({
+  const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
     isFlashList: true,
     isLiveStreaming,
     noGroupByUser,
     threadList,
   });
+
+  const renderItem = useCallback(
+    ({ item: message, index }: { item: LocalMessage; index: number }) => {
+      const previousMessage = processedMessageList[index - 1];
+      const nextMessage = processedMessageList[index + 1];
+      return (
+        <MessageWrapper
+          message={message}
+          nextMessage={nextMessage}
+          previousMessage={previousMessage}
+        />
+      );
+    },
+    [processedMessageList],
+  );
 
   /**
    * We need topMessage and channelLastRead values to set the initial scroll position.
@@ -722,18 +728,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const messageListItemContextValue: MessageListItemContextValue = useMemo(
     () => ({
       goToMessage,
-      messageListPreviousAndNextMessageStore,
       modifiedTheme,
       noGroupByUser,
       onThreadSelect,
     }),
-    [
-      goToMessage,
-      messageListPreviousAndNextMessageStore,
-      modifiedTheme,
-      noGroupByUser,
-      onThreadSelect,
-    ],
+    [goToMessage, modifiedTheme, noGroupByUser, onThreadSelect],
   );
 
   const messagesWithImages =

@@ -10,8 +10,8 @@ import type { GroupType } from '../hooks/useMessageList';
 
 export type MessageGroupStylesParams = {
   message: LocalMessage;
-  previousMessage: LocalMessage;
-  nextMessage: LocalMessage;
+  previousMessage?: LocalMessage;
+  nextMessage?: LocalMessage;
   maxTimeBetweenGroupedMessages?: number;
   dateSeparatorDate?: Date;
   nextMessageDateSeparatorDate?: Date;
