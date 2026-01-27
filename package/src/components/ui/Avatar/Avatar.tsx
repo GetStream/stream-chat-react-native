@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { foundations } from '../../../theme';
 
 export type AvatarProps = {
   size: 'xs' | 'sm' | 'md' | 'lg';
@@ -63,23 +64,24 @@ export const Avatar = (props: AvatarProps) => {
 
 const useStyles = () => {
   const {
-    theme: { colors, radius },
+    theme: { semantics },
   } = useTheme();
+  const { borderCoreOpacity10 } = semantics;
   return useMemo(
     () =>
       StyleSheet.create({
         border: {
-          borderColor: colors.border.image,
+          borderColor: borderCoreOpacity10,
           borderWidth: 1,
         },
         container: {
           alignItems: 'center',
-          borderRadius: radius.full,
+          borderRadius: foundations.radius.radiusFull,
           justifyContent: 'center',
           overflow: 'hidden',
         },
         image: {},
       }),
-    [colors, radius],
+    [borderCoreOpacity10],
   );
 };

@@ -24,7 +24,8 @@
     "noEmitOnError": false,
     "noImplicitAny": true,
     "allowJs": true,
-    "checkJs": false
+    "checkJs": false,
+    "moduleSuffixes": [".ios", ".android", "", ".web"]
   },
   "include": ["./src/**/*"],
   "exclude": [

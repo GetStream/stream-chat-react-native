@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTheme } from '../../contexts';
 import { NewPlayIcon } from '../../icons/NewPlayIcon';
-import { palette } from '../../theme/primitives/palette';
+import { foundations } from '../../theme';
 
 const sizes = {
   lg: {
@@ -32,27 +32,37 @@ export type VideoPlayIndicatorProps = {
 
 export const VideoPlayIndicator = (props: VideoPlayIndicatorProps) => {
   const { size = 'md' } = props;
+  const {
+    theme: { semantics },
+  } = useTheme();
   const styles = useStyles();
 
   return (
     <View style={[styles.container, sizes[size]]}>
-      <NewPlayIcon fill={palette.white} height={iconSizes[size]} width={iconSizes[size]} />
+      <NewPlayIcon
+        fill={semantics.controlPlayControlIconInverse}
+        height={iconSizes[size]}
+        width={iconSizes[size]}
+      />
     </View>
   );
 };
 
 const useStyles = () => {
   const {
-    theme: { radius },
+    theme: { semantics },
   } = useTheme();
+
+  const { controlPlayControlBgInverse } = semantics;
+
   return useMemo(() => {
     return StyleSheet.create({
       container: {
         alignItems: 'center',
-        backgroundColor: palette.black,
-        borderRadius: radius.full,
+        backgroundColor: controlPlayControlBgInverse,
+        borderRadius: foundations.radius.radiusFull,
         justifyContent: 'center',
       },
     });
-  }, [radius]);
+  }, [controlPlayControlBgInverse]);
 };

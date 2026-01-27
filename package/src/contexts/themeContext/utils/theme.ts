@@ -1,11 +1,14 @@
 import { type ColorValue, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
 import type { CircleProps, StopProps } from 'react-native-svg';
 
+import {
+  primitives,
+  foundations,
+  components,
+  semantics,
+} from '../../../../src/theme/light/StreamTokens';
+
 import type { IconProps } from '../../../icons/utils/base';
-import { lightColors, type NewColors } from '../../../theme/primitives/colors';
-import { Radius } from '../../../theme/primitives/radius';
-import { Spacing } from '../../../theme/primitives/spacing';
-import { Typography } from '../../../theme/primitives/typography';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 export const BASE_AVATAR_SIZE = 32;
@@ -169,6 +172,7 @@ export type Theme = {
     height: number;
     maskFillColor?: ColorValue;
   };
+  colors: typeof Colors;
   channelPreview: {
     avatar: {
       size: number;
@@ -191,7 +195,6 @@ export type Theme = {
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
   };
-  colors: typeof Colors & NewColors & { [key: string]: string | { [key: string]: string } };
   dateHeader: {
     container: ViewStyle;
     text: TextStyle;
@@ -889,15 +892,23 @@ export type Theme = {
     thumb: ViewStyle;
     waveform: ViewStyle;
   };
-  spacing: typeof Spacing;
-  radius: typeof Radius;
-  typography: typeof Typography;
+  // spacing: typeof Spacing;
+  // radius: typeof Radius;
+  // typography: typeof Typography;
+  primitives: typeof primitives;
+  foundations: typeof foundations;
+  components: typeof components;
+  semantics: typeof semantics;
 };
 
 export const defaultTheme: Theme = {
-  spacing: Spacing,
-  radius: Radius,
-  typography: Typography,
+  primitives,
+  foundations,
+  components,
+  semantics,
+  // spacing: Spacing,
+  // radius: Radius,
+  // typography: Typography,
   aiTypingIndicatorView: {
     container: {},
     text: {},
@@ -1014,7 +1025,6 @@ export const defaultTheme: Theme = {
   },
   colors: {
     ...Colors,
-    ...lightColors,
   },
   dateHeader: {
     container: {},
