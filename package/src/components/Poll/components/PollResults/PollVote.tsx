@@ -43,7 +43,7 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
   return (
     <View style={[styles.voteContainer, container]}>
       <View style={styles.userContainer}>
-        {!isAnonymous ? <UserAvatar user={vote.user} size='xs' showBorder /> : null}
+        {!isAnonymous && vote.user ? <UserAvatar user={vote.user} size='xs' showBorder /> : null}
         <Text style={[styles.voteUserName, { color: black }, userName]}>
           {isAnonymous ? t('Anonymous') : (vote.user?.name ?? vote.user?.id)}
         </Text>

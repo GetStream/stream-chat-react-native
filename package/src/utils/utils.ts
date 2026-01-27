@@ -373,3 +373,15 @@ export const getInitialsFromName = (name: string, numberOfInitials: number = 2) 
     .map((n) => n.charAt(0).toUpperCase())
     .join('');
 };
+
+// Utility to hash a string to a number
+export const hashStringToNumber = (str: string) => {
+  let hash = 0;
+
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+
+  return Math.abs(hash) ?? 0;
+};

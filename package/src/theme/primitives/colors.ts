@@ -14,6 +14,13 @@ type Pallete = {
   950: string;
 };
 
+export type AvatarColorPair = {
+  bg: string;
+  text: string;
+};
+
+export type AvatarPalette = AvatarColorPair[];
+
 type AccentColors = {
   primary: string;
   success: string;
@@ -75,6 +82,7 @@ export type RemoveControlColors = {
 
 export type NewColors = {
   brand: Pallete;
+  avatarPalette?: AvatarPalette;
   accent: AccentColors;
   state: StateColors;
   text: TextColors;
@@ -86,6 +94,28 @@ export type NewColors = {
 
 export function resolveTheme(input: NewColors) {
   const brand = input.brand ?? palette.blue;
+  const avatarPalette = input.avatarPalette ?? [
+    {
+      bg: palette.blue[100],
+      text: palette.blue[800],
+    },
+    {
+      bg: palette.cyan[100],
+      text: palette.cyan[800],
+    },
+    {
+      bg: palette.green[100],
+      text: palette.green[800],
+    },
+    {
+      bg: palette.purple[100],
+      text: palette.purple[800],
+    },
+    {
+      bg: palette.yellow[100],
+      text: palette.yellow[800],
+    },
+  ];
   const accent = input.accent ?? {
     primary: brand[500],
     success: palette.green[500],
@@ -140,6 +170,7 @@ export function resolveTheme(input: NewColors) {
   };
   return {
     brand,
+    avatarPalette,
     accent,
     text,
     state,
@@ -152,6 +183,28 @@ export function resolveTheme(input: NewColors) {
 
 export const lightColors = {
   brand: palette.blue,
+  avatarPalette: [
+    {
+      bg: palette.blue[100],
+      text: palette.blue[800],
+    },
+    {
+      bg: palette.cyan[100],
+      text: palette.cyan[800],
+    },
+    {
+      bg: palette.green[100],
+      text: palette.green[800],
+    },
+    {
+      bg: palette.purple[100],
+      text: palette.purple[800],
+    },
+    {
+      bg: palette.yellow[100],
+      text: palette.yellow[800],
+    },
+  ],
   accent: {
     primary: palette.blue[500],
     success: palette.green[500],
@@ -220,6 +273,28 @@ export const darkColors = {
     900: palette.blue[50],
     950: palette.white,
   },
+  avatarPalette: [
+    {
+      bg: palette.blue[800],
+      text: palette.blue[100],
+    },
+    {
+      bg: palette.cyan[800],
+      text: palette.cyan[100],
+    },
+    {
+      bg: palette.green[800],
+      text: palette.green[100],
+    },
+    {
+      bg: palette.purple[800],
+      text: palette.purple[100],
+    },
+    {
+      bg: palette.yellow[800],
+      text: palette.yellow[100],
+    },
+  ],
   accent: {
     primary: palette.blue[400],
     success: palette.green[400],

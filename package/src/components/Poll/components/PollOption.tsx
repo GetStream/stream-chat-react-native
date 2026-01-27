@@ -119,9 +119,9 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
         <VoteButton option={option} />
         <Text style={[styles.text, { color: black }, text]}>{option.text}</Text>
         <View style={[styles.votesContainer, votesContainer]}>
-          {relevantVotes.map((vote: PollVote) => (
-            <UserAvatar user={vote.user} size='xs' showBorder key={vote.id} />
-          ))}
+          {relevantVotes.map((vote: PollVote) =>
+            vote.user ? <UserAvatar user={vote.user} size='xs' showBorder key={vote.id} /> : null,
+          )}
           <Text style={{ color: black, marginLeft: 2 }}>{voteCountsByOption[option.id] || 0}</Text>
         </View>
       </View>

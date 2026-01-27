@@ -3,6 +3,25 @@ import { UserAvatarProps } from './UserAvatar';
 import { FontWeightType } from '../../../theme/primitives/typography';
 import { OnlineIndicatorProps } from '../OnlineIndicator';
 
+const avatarSizes = {
+  lg: {
+    height: 40,
+    width: 40,
+  },
+  md: {
+    height: 32,
+    width: 32,
+  },
+  sm: {
+    height: 24,
+    width: 24,
+  },
+  xs: {
+    height: 20,
+    width: 20,
+  },
+};
+
 const indicatorSizes: Record<UserAvatarProps['size'], OnlineIndicatorProps['size']> = {
   xs: 'sm',
   sm: 'sm',
@@ -34,4 +53,4 @@ const numberOfInitials: Record<UserAvatarProps['size'], number> = {
   lg: 2,
 };
 
-export { indicatorSizes, iconSizes, fontSizes, numberOfInitials };
+export { indicatorSizes, iconSizes, fontSizes, numberOfInitials, avatarSizes };
