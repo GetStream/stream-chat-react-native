@@ -297,11 +297,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             testID="message-avatar"
                           >
                             <View
-                              style={
-                                {
-                                  "padding": 4,
-                                }
-                              }
                               testID="user-avatar"
                             >
                               <View
@@ -678,11 +673,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             testID="message-avatar"
                           >
                             <View
-                              style={
-                                {
-                                  "padding": 4,
-                                }
-                              }
                               testID="user-avatar"
                             >
                               <View
@@ -1097,11 +1087,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             testID="message-avatar"
                           >
                             <View
-                              style={
-                                {
-                                  "padding": 4,
-                                }
-                              }
                               testID="user-avatar"
                             >
                               <View
@@ -1482,11 +1467,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             testID="message-avatar"
                           >
                             <View
-                              style={
-                                {
-                                  "padding": 4,
-                                }
-                              }
                               testID="user-avatar"
                             >
                               <View
@@ -1896,6 +1876,7 @@ exports[`Thread should match thread snapshot 1`] = `
       />
     </View>
     <View
+      layout={BaseAnimationMock {}}
       onLayout={[Function]}
       style={
         [

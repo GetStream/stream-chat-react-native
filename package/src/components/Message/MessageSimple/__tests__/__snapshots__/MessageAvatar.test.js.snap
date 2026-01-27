@@ -13,11 +13,6 @@ exports[`MessageAvatar should render message avatar 1`] = `
   testID="message-avatar"
 >
   <View
-    style={
-      {
-        "padding": 4,
-      }
-    }
     testID="user-avatar"
   >
     <View
