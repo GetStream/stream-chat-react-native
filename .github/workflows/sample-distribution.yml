@@ -51,38 +51,38 @@ jobs:
           bundle exec pod install
       - name: Build and release Testflight QA
         working-directory: examples/SampleApp
-        run: bundle exec fastlane ios deploy_to_testflight_qa deploy:true
+        run: bundle exec fastlane ios deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
 
-  # build_and_deploy_android_firebase:
-  #   name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
-  #   runs-on: public
-  #   strategy:
-  #     matrix:
-  #       node-version: [24.x]
-  #   steps:
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-java@v3
-  #       with:
-  #         distribution: 'zulu'
-  #         java-version: '17'
-  #         check-latest: true
-  #     - name: Setup Android SDK
-  #       uses: amyu/setup-android@v5
+  build_and_deploy_android_firebase:
+    name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
+    runs-on: public
+    strategy:
+      matrix:
+        node-version: [24.x]
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          check-latest: true
+      - name: Setup Android SDK
+        uses: amyu/setup-android@v5
 
-  #     - uses: ./.github/actions/ruby-cache
-  #     - name: Install && Build - SDK and Sample App
-  #       uses: ./.github/actions/install-and-build-sdk
-  #     - name: Build and deploy Android Firebase
-  #       working-directory: examples/SampleApp
-  #       run: bundle exec fastlane android firebase_build_and_upload deploy:${{ github.ref == 'refs/heads/develop' }};
-  #       env:
-  #         ANDROID_FIREBASE_APP_ID: ${{ secrets.ANDROID_FIREBASE_APP_ID }}
-  #         FIREBASE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
+      - uses: ./.github/actions/ruby-cache
+      - name: Install && Build - SDK and Sample App
+        uses: ./.github/actions/install-and-build-sdk
+      - name: Build and deploy Android Firebase
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane android firebase_build_and_upload deploy:${{ github.ref == 'refs/heads/develop' }};
+        env:
+          ANDROID_FIREBASE_APP_ID: ${{ secrets.ANDROID_FIREBASE_APP_ID }}
+          FIREBASE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
