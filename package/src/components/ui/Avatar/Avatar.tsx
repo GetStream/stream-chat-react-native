@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { foundations } from '../../../theme';
+import { primitives } from '../../../theme';
 
 export type AvatarProps = {
   size: 'xs' | 'sm' | 'md' | 'lg';
@@ -76,7 +76,7 @@ const useStyles = () => {
         },
         container: {
           alignItems: 'center',
-          borderRadius: foundations.radius.radiusFull,
+          borderRadius: primitives.radiusMax,
           justifyContent: 'center',
           overflow: 'hidden',
         },

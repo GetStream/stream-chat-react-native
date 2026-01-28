@@ -4,7 +4,7 @@ import merge from 'lodash/merge';
 
 import { defaultTheme, Theme } from './utils/theme';
 
-import { resolveTokenRefsWithTopoEvaluation } from '../../theme/topologicalResolution';
+import { resolveTokensTopologically } from '../../theme/topologicalResolution';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -38,9 +38,7 @@ export const mergeThemes = (params: MergedThemesParams) => {
     merge(finalTheme, style);
   }
 
-  const { resolved: semantics } = resolveTokenRefsWithTopoEvaluation(finalTheme.semantics, {
-    collectTopoOrder: true,
-  });
+  const semantics = resolveTokensTopologically(finalTheme.semantics);
 
   console.log('TESTTESTTEST: ', { ...finalTheme, semantics });
 

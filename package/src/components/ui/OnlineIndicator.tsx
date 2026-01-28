@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { foundations } from '../../theme';
+import { primitives } from '../../theme';
 
 export type OnlineIndicatorProps = {
   online: boolean;
@@ -44,7 +44,7 @@ const useStyles = () => {
       StyleSheet.create({
         indicator: {
           borderColor: presenceBorder,
-          borderRadius: foundations.radius.radiusFull,
+          borderRadius: primitives.radiusMax,
         },
         online: {
           backgroundColor: presenceBgOnline,

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts';
 import { NewPlayIcon } from '../../icons/NewPlayIcon';
-import { foundations } from '../../theme';
+import { primitives } from '../../theme';
 
 const sizes = {
   lg: {
@@ -60,7 +60,7 @@ const useStyles = () => {
       container: {
         alignItems: 'center',
         backgroundColor: controlPlayControlBgInverse,
-        borderRadius: foundations.radius.radiusFull,
+        borderRadius: primitives.radiusMax,
         justifyContent: 'center',
       },
     });

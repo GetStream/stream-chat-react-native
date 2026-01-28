@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { foundations, primitives } from '../../theme';
+import { primitives } from '../../theme';
 
 export type BadgeNotificationProps = {
   type: 'primary' | 'error' | 'neutral';
@@ -63,7 +63,7 @@ const useStyles = () => {
           textAlign: 'center',
           paddingHorizontal: primitives.spacingXxs,
           borderColor: badgeBorder,
-          borderRadius: foundations.radius.radiusFull,
+          borderRadius: primitives.radiusMax,
         },
       }),
     [badgeText, badgeBorder],

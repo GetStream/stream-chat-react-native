@@ -1,53 +1,21 @@
-type ResolveOptions = {
-  strict?: boolean;
-  allowDotPath?: boolean;
-
-  /**
-   * If true, we collect a "dependency-first" evaluation order (a topo order).
-   * Useful for debugging / precomputing.
-   */
-  collectTopoOrder?: boolean;
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null && value.constructor === Object;
 };
 
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && (value as any).constructor === Object;
-}
-
-function getByPath(root: any, path: string): unknown {
-  const parts = path.split('.').filter(Boolean);
-  let cur: any = root;
-  for (const p of parts) {
-    if (cur == null || (typeof cur !== 'object' && typeof cur !== 'function')) return undefined;
-    cur = cur[p];
-  }
-  return cur;
-}
-
 /**
- * Resolves "$token" references in `dictionary` by performing a DFS:
- * deps first, then node — i.e. a topological evaluation.
- *
- * If collectTopoOrder is enabled, returns the explicit topo evaluation order
- * (each token appears after its dependencies).
+ * Resolves "$token" references in `dictionary` by performing a DFS.
+ * deps first, then node - i.e. a topological evaluation.
  */
-export function resolveTokenRefsWithTopoEvaluation<T extends Record<string, any>>(
-  dictionary: T,
-  options: ResolveOptions = {},
-): { resolved: T; topoOrder?: string[] } {
-  const { strict = true, allowDotPath = false, collectTopoOrder = false } = options;
-
+export const resolveTokensTopologically = <T extends Record<string, unknown>>(dictionary: T): T => {
   const resolvedMemo = new Map<string, unknown>();
 
-  // "active DFS stack" for cycle detection
+  // Used purely for cycle detection (even though we do not expect
+  // cycles we want to assert early to make sure we raise an alarm).
   const visiting = new Set<string>();
-
-  // Optional: explicit "topological evaluation" order
-  const topoOrder: string[] | undefined = collectTopoOrder ? [] : undefined;
-  const topoPushed = new Set<string>(); // avoid duplicates in topoOrder
 
   const resolveValueDeep = (value: unknown): unknown => {
     if (typeof value === 'string' && value.startsWith('$')) {
-      return evaluateTokenByTopoDFS(value.slice(1), value);
+      return dfs(value.slice(1), value);
     }
 
     if (Array.isArray(value)) return value.map(resolveValueDeep);
@@ -62,12 +30,11 @@ export function resolveTokenRefsWithTopoEvaluation<T extends Record<string, any>
   };
 
   /**
-   * This is the "toposort" part:
+   * This is the topological sort part:
    * - DFS into dependencies first
    * - then memoize the current token
-   * - optionally push token into topoOrder AFTER its deps are resolved
    */
-  const evaluateTokenByTopoDFS = (tokenKeyOrPath: string, originalRef: string): unknown => {
+  const dfs = (tokenKeyOrPath: string, originalRef: string): unknown => {
     const cacheKey = tokenKeyOrPath;
 
     if (resolvedMemo.has(cacheKey)) return resolvedMemo.get(cacheKey);
@@ -78,33 +45,23 @@ export function resolveTokenRefsWithTopoEvaluation<T extends Record<string, any>
 
     visiting.add(cacheKey);
 
-    const raw = allowDotPath
-      ? getByPath(dictionary, tokenKeyOrPath)
-      : (dictionary as any)[tokenKeyOrPath];
+    const raw = dictionary[tokenKeyOrPath];
 
     if (raw === undefined) {
-      visiting.delete(cacheKey);
-      if (strict) {
-        throw new Error(`Unresolved reference: "${originalRef}" (missing "${tokenKeyOrPath}")`);
-      }
-      return originalRef;
+      // is throwing maybe too strict here ?
+      throw new Error(`Unresolved reference: "${originalRef}" (missing "${tokenKeyOrPath}")`);
     }
 
-    // DFS: resolve dependencies inside `raw` BEFORE finalizing this token.
+    // resolve dependencies inside `raw` BEFORE finalizing this token
+    // so that we can throw if there's a cycle or the dep graph is not
+    // connected)
     const fullyResolved = resolveValueDeep(raw);
 
     resolvedMemo.set(cacheKey, fullyResolved);
     visiting.delete(cacheKey);
 
-    if (topoOrder && !topoPushed.has(cacheKey)) {
-      topoOrder.push(cacheKey); // deps-first ⇒ topo order
-      topoPushed.add(cacheKey);
-    }
-
     return fullyResolved;
   };
 
-  const resolved = resolveValueDeep(dictionary) as T;
-
-  return { resolved, topoOrder };
-}
+  return resolveValueDeep(dictionary) as T;
+};
