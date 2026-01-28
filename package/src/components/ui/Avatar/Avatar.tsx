@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ColorValue, Image, StyleSheet, View } from 'react-native';
+import { ColorValue, StyleSheet, View } from 'react-native';
 
 import { avatarSizes } from './constants';
 
+import { useChatContext } from '../../../contexts';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
 
@@ -19,6 +20,7 @@ export const Avatar = (props: AvatarProps) => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { ImageComponent } = useChatContext();
   const defaultAvatarBg = semantics.avatarPaletteBg1;
   const { backgroundColor = defaultAvatarBg, size, imageUrl, placeholder, showBorder } = props;
   const styles = useStyles();
@@ -38,7 +40,7 @@ export const Avatar = (props: AvatarProps) => {
       testID='avatar-image'
     >
       {imageUrl && !error ? (
-        <Image
+        <ImageComponent
           onError={onHandleError}
           source={{ uri: imageUrl }}
           style={[styles.image, avatarSizes[size]]}
