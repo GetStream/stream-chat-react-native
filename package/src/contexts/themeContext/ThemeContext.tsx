@@ -40,8 +40,6 @@ export const mergeThemes = (params: MergedThemesParams) => {
 
   const semantics = resolveTokensTopologically(finalTheme.semantics);
 
-  console.log('TESTTESTTEST: ', { ...finalTheme, semantics });
-
   return { ...finalTheme, semantics };
 };
 
