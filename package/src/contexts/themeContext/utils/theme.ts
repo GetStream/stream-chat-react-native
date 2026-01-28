@@ -1023,9 +1023,7 @@ export const defaultTheme: Theme = {
     unreadContainer: {},
     unreadText: {},
   },
-  colors: {
-    ...Colors,
-  },
+  colors: Colors,
   dateHeader: {
     container: {},
     text: {},

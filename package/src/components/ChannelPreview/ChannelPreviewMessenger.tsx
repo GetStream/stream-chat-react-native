@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import type { ChannelPreviewProps } from './ChannelPreview';
-import { ChannelPreviewAvatar } from './ChannelPreviewAvatar';
 import { ChannelPreviewMessage } from './ChannelPreviewMessage';
 import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewStatus } from './ChannelPreviewStatus';
@@ -18,6 +17,7 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useViewport } from '../../hooks/useViewport';
+import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
 
 const styles = StyleSheet.create({
   container: {
@@ -104,7 +104,7 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
     maxUnreadCount,
     muted,
     onSelect,
-    PreviewAvatar = ChannelPreviewAvatar,
+    PreviewAvatar = ChannelAvatar,
     PreviewMessage = ChannelPreviewMessage,
     PreviewMutedStatus = ChannelPreviewMutedStatus,
     PreviewStatus = ChannelPreviewStatus,
@@ -144,7 +144,7 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
       ]}
       testID='channel-preview-button'
     >
-      <PreviewAvatar channel={channel} />
+      <PreviewAvatar channel={channel} size='lg' />
       <View
         style={[styles.contentContainer, contentContainer]}
         testID={`channel-preview-content-${channel.id}`}

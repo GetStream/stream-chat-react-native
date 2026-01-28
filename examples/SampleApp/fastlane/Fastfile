@@ -31,6 +31,22 @@ end
 #######################
 
 platform :ios do
+  private_lane :latest_appstore_version_code do |options|
+    livestates = [true, false]
+    version_codes = []
+    livestates.each do |livestate|
+      vc = app_store_build_number(
+        live: livestate,
+        app_identifier: bundle_id
+      )
+    rescue StandardError
+      puts("No app store build found for liveState: #{livestate} bundle_id: #{bundle_id}")
+    else
+      version_codes.append(vc)
+    end
+    version_codes.max
+  end
+
   lane :deploy_to_testflight_qa do |options|
     match_me
 
@@ -44,11 +60,9 @@ platform :ios do
         xcodeproj: xcode_project
       )
 
-      current_build_number = app_store_build_number(
-        api_key: appstore_api_key,
-        live: false,
-        app_identifier: bundle_id
-      )
+      current_build_number = latest_appstore_version_code
+
+      puts("Current build number: #{current_build_number}")
 
       increment_build_number(
         build_number: current_build_number + 1,
@@ -79,8 +93,9 @@ platform :ios do
         api_key: appstore_api_key,
         groups: ['Testers'],
         changelog: 'Lots of amazing new features to test out!',
-        reject_build_waiting_for_review: false,
-        ipa: "#{build_output_directory}/#{output_ipa_name}"
+        reject_build_waiting_for_review: true,
+        ipa: "#{build_output_directory}/#{output_ipa_name}",
+        skip_waiting_for_build_processing: true
       )
     else
       UI.message("Skipping Testflight upload! (deploy: #{deploy})")

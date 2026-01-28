@@ -17,6 +17,7 @@ import { NewFile } from '../../icons/NewFile';
 import { NewLink } from '../../icons/NewLink';
 import { NewMapPin } from '../../icons/NewMapPin';
 import { NewMic } from '../../icons/NewMic';
+import { NewPencil } from '../../icons/NewPencil';
 import { NewPhoto } from '../../icons/NewPhoto';
 import { NewPoll } from '../../icons/NewPoll';
 import { NewVideo } from '../../icons/NewVideo';
@@ -318,9 +319,13 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
             leftContainer,
           ]}
         >
-          <Text numberOfLines={1} style={[styles.title, titleStyle]}>
-            {title}
-          </Text>
+          <View style={styles.titleContainer}>
+            {mode === 'edit' ? <NewPencil height={12} width={12} stroke={'#384047'} /> : null}
+            <Text numberOfLines={1} style={[styles.title, titleStyle]}>
+              {title}
+            </Text>
+          </View>
+
           <View style={[styles.subtitleContainer, subtitleContainer]}>
             <SubtitleIcon message={quotedMessage} />
             <SubtitleText message={quotedMessage} />
@@ -463,6 +468,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 4,
     paddingTop: 4,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
   },
   title: {
     color: '#384047',

@@ -297,11 +297,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             testID="message-avatar"
                           >
                             <View
-                              style={
-                                {
-                                  "padding": 2,
-                                }
-                              }
                               testID="user-avatar"
                             >
                               <View
@@ -318,7 +313,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 24,
                                     },
                                     {
-                                      "backgroundColor": undefined,
+                                      "backgroundColor": "#FFF1C2",
                                     },
                                     {
                                       "borderColor": "hsla(0, 0%, 0%, 0.1)",
@@ -678,11 +673,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             testID="message-avatar"
                           >
                             <View
-                              style={
-                                {
-                                  "padding": 2,
-                                }
-                              }
                               testID="user-avatar"
                             >
                               <View
@@ -699,7 +689,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 24,
                                     },
                                     {
-                                      "backgroundColor": undefined,
+                                      "backgroundColor": "#C9FCE7",
                                     },
                                     {
                                       "borderColor": "hsla(0, 0%, 0%, 0.1)",
@@ -1097,11 +1087,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             testID="message-avatar"
                           >
                             <View
-                              style={
-                                {
-                                  "padding": 2,
-                                }
-                              }
                               testID="user-avatar"
                             >
                               <View
@@ -1118,7 +1103,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 24,
                                     },
                                     {
-                                      "backgroundColor": undefined,
+                                      "backgroundColor": "#FFF1C2",
                                     },
                                     {
                                       "borderColor": "hsla(0, 0%, 0%, 0.1)",
@@ -1482,11 +1467,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             testID="message-avatar"
                           >
                             <View
-                              style={
-                                {
-                                  "padding": 2,
-                                }
-                              }
                               testID="user-avatar"
                             >
                               <View
@@ -1503,7 +1483,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 24,
                                     },
                                     {
-                                      "backgroundColor": undefined,
+                                      "backgroundColor": "#C9FCE7",
                                     },
                                     {
                                       "borderColor": "hsla(0, 0%, 0%, 0.1)",
@@ -1896,6 +1876,7 @@ exports[`Thread should match thread snapshot 1`] = `
       />
     </View>
     <View
+      layout={BaseAnimationMock {}}
       onLayout={[Function]}
       style={
         [

@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
+import { avatarSizes } from './constants';
+
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
 
@@ -9,30 +11,18 @@ export type AvatarProps = {
   imageUrl?: string;
   placeholder?: React.ReactNode;
   showBorder?: boolean;
-};
-
-const sizes = {
-  lg: {
-    height: 40,
-    width: 40,
-  },
-  md: {
-    height: 32,
-    width: 32,
-  },
-  sm: {
-    height: 24,
-    width: 24,
-  },
-  xs: {
-    height: 20,
-    width: 20,
-  },
+  backgroundColor?: string;
 };
 
 export const Avatar = (props: AvatarProps) => {
   const [error, setError] = useState(false);
-  const { size, imageUrl, placeholder, showBorder } = props;
+  const {
+    theme: {
+      colors: { avatarPalette },
+    },
+  } = useTheme();
+  const defaultAvatarBg = avatarPalette?.[0].bg;
+  const { backgroundColor = defaultAvatarBg, size, imageUrl, placeholder, showBorder } = props;
   const styles = useStyles();
 
   const onHandleError = useCallback(() => {
@@ -43,8 +33,8 @@ export const Avatar = (props: AvatarProps) => {
     <View
       style={[
         styles.container,
-        sizes[size],
-        { backgroundColor: imageUrl && !error ? undefined : '#D2E3FF' },
+        avatarSizes[size],
+        { backgroundColor },
         showBorder ? styles.border : undefined,
       ]}
       testID='avatar-image'
@@ -53,7 +43,7 @@ export const Avatar = (props: AvatarProps) => {
         <Image
           onError={onHandleError}
           source={{ uri: imageUrl }}
-          style={[styles.image, sizes[size]]}
+          style={[styles.image, avatarSizes[size]]}
         />
       ) : (
         placeholder
