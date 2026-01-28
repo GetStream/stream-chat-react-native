@@ -716,6 +716,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
         emitter: payload?.emitter || 'message',
         event: payload?.event,
         message,
+        additionalInfo: payload && 'additionalInfo' in payload ? payload.additionalInfo : undefined,
       };
 
       const handleOnLongPress = () => {
