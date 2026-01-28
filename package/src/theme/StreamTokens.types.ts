@@ -17,6 +17,7 @@ export interface FoundationsColors {
   baseTransparentWhite70: ColorValue;
   baseWhite: ColorValue;
   blue100: ColorValue;
+  blue150: ColorValue;
   blue200: ColorValue;
   blue300: ColorValue;
   blue400: ColorValue;
@@ -26,8 +27,8 @@ export interface FoundationsColors {
   blue700: ColorValue;
   blue800: ColorValue;
   blue900: ColorValue;
-  blue950: ColorValue;
   cyan100: ColorValue;
+  cyan150: ColorValue;
   cyan200: ColorValue;
   cyan300: ColorValue;
   cyan400: ColorValue;
@@ -37,8 +38,8 @@ export interface FoundationsColors {
   cyan700: ColorValue;
   cyan800: ColorValue;
   cyan900: ColorValue;
-  cyan950: ColorValue;
   green100: ColorValue;
+  green150: ColorValue;
   green200: ColorValue;
   green300: ColorValue;
   green400: ColorValue;
@@ -48,8 +49,19 @@ export interface FoundationsColors {
   green700: ColorValue;
   green800: ColorValue;
   green900: ColorValue;
-  green950: ColorValue;
+  lime100: ColorValue;
+  lime150: ColorValue;
+  lime200: ColorValue;
+  lime300: ColorValue;
+  lime400: ColorValue;
+  lime50: ColorValue;
+  lime500: ColorValue;
+  lime600: ColorValue;
+  lime700: ColorValue;
+  lime800: ColorValue;
+  lime900: ColorValue;
   neutral100: ColorValue;
+  neutral150: ColorValue;
   neutral200: ColorValue;
   neutral300: ColorValue;
   neutral400: ColorValue;
@@ -59,8 +71,8 @@ export interface FoundationsColors {
   neutral700: ColorValue;
   neutral800: ColorValue;
   neutral900: ColorValue;
-  neutral950: ColorValue;
   purple100: ColorValue;
+  purple150: ColorValue;
   purple200: ColorValue;
   purple300: ColorValue;
   purple400: ColorValue;
@@ -70,8 +82,8 @@ export interface FoundationsColors {
   purple700: ColorValue;
   purple800: ColorValue;
   purple900: ColorValue;
-  purple950: ColorValue;
   red100: ColorValue;
+  red150: ColorValue;
   red200: ColorValue;
   red300: ColorValue;
   red400: ColorValue;
@@ -81,8 +93,8 @@ export interface FoundationsColors {
   red700: ColorValue;
   red800: ColorValue;
   red900: ColorValue;
-  red950: ColorValue;
   slate100: ColorValue;
+  slate150: ColorValue;
   slate200: ColorValue;
   slate300: ColorValue;
   slate400: ColorValue;
@@ -92,8 +104,19 @@ export interface FoundationsColors {
   slate700: ColorValue;
   slate800: ColorValue;
   slate900: ColorValue;
-  slate950: ColorValue;
+  violet100: ColorValue;
+  violet150: ColorValue;
+  violet200: ColorValue;
+  violet300: ColorValue;
+  violet400: ColorValue;
+  violet50: ColorValue;
+  violet500: ColorValue;
+  violet600: ColorValue;
+  violet700: ColorValue;
+  violet800: ColorValue;
+  violet900: ColorValue;
   yellow100: ColorValue;
+  yellow150: ColorValue;
   yellow200: ColorValue;
   yellow300: ColorValue;
   yellow400: ColorValue;
@@ -103,7 +126,6 @@ export interface FoundationsColors {
   yellow700: ColorValue;
   yellow800: ColorValue;
   yellow900: ColorValue;
-  yellow950: ColorValue;
 }
 
 export interface FoundationsLayout {
@@ -301,7 +323,14 @@ export interface ChatPrimitives {
 }
 
 export interface ChatSemantics {
+  accentBlack: ColorValue;
+  accentError: ColorValue;
+  accentNeutral: ColorValue;
+  accentPrimary: ColorValue;
+  accentSuccess: ColorValue;
+  accentWarning: ColorValue;
   avatarBgDefault: ColorValue;
+  avatarBgPlaceholder: ColorValue;
   avatarPaletteBg1: ColorValue;
   avatarPaletteBg2: ColorValue;
   avatarPaletteBg3: ColorValue;
@@ -313,6 +342,7 @@ export interface ChatSemantics {
   avatarPaletteText4: ColorValue;
   avatarPaletteText5: ColorValue;
   avatarTextDefault: ColorValue;
+  avatarTextPlaceholder: ColorValue;
   backgroundCoreApp: ColorValue;
   backgroundCoreDisabled: ColorValue;
   backgroundCoreHover: ColorValue;
@@ -349,6 +379,17 @@ export interface ChatSemantics {
   borderUtilitySelected: ColorValue;
   borderUtilitySuccess: ColorValue;
   borderUtilityWarning: ColorValue;
+  brand100: ColorValue;
+  brand150: ColorValue;
+  brand200: ColorValue;
+  brand300: ColorValue;
+  brand400: ColorValue;
+  brand50: ColorValue;
+  brand500: ColorValue;
+  brand600: ColorValue;
+  brand700: ColorValue;
+  brand800: ColorValue;
+  brand900: ColorValue;
   buttonDestructiveBg: ColorValue;
   buttonDestructiveBgLiquidGlass: ColorValue;
   buttonDestructiveBorder: ColorValue;
@@ -390,23 +431,6 @@ export interface ChatSemantics {
   chatThreadConnectorOutgoing: ColorValue;
   chatWaveformBar: ColorValue;
   chatWaveformBarPlaying: ColorValue;
-  colorAccentBlack: ColorValue;
-  colorAccentError: ColorValue;
-  colorAccentNeutral: ColorValue;
-  colorAccentPrimary: ColorValue;
-  colorAccentSuccess: ColorValue;
-  colorAccentWarning: ColorValue;
-  colorBrand100: ColorValue;
-  colorBrand200: ColorValue;
-  colorBrand300: ColorValue;
-  colorBrand400: ColorValue;
-  colorBrand50: ColorValue;
-  colorBrand500: ColorValue;
-  colorBrand600: ColorValue;
-  colorBrand700: ColorValue;
-  colorBrand800: ColorValue;
-  colorBrand900: ColorValue;
-  colorBrand950: ColorValue;
   composerBg: ColorValue;
   controlPlayControlBg: ColorValue;
   controlPlayControlBgInverse: ColorValue;
