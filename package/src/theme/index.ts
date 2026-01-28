@@ -1,2 +1,2 @@
 // TODO: Handle color scheme here.
-export * from './light/StreamTokens';
+export * from './generated/light/StreamTokens';

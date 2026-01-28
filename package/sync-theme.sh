@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEST="src/theme"
+DEST="src/theme/generated"
 DEFAULT_SRC="../../design-system-tokens/build/reactnative"
 FALLBACK_SRC="${1:-}"
 
