@@ -1,3 +1,5 @@
+import { Theme } from '../contexts';
+
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && value.constructor === Object;
 };
@@ -6,7 +8,7 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> => {
  * Resolves "$token" references in `dictionary` by performing a DFS.
  * deps first, then node - i.e. a topological evaluation.
  */
-export const resolveTokensTopologically = <T extends Record<string, unknown>>(dictionary: T): T => {
+export const resolveTokensTopologically = <T extends Theme['semantics']>(dictionary: T): T => {
   const resolvedMemo = new Map<string, unknown>();
 
   // Used purely for cycle detection (even though we do not expect
@@ -45,7 +47,7 @@ export const resolveTokensTopologically = <T extends Record<string, unknown>>(di
 
     visiting.add(cacheKey);
 
-    const raw = dictionary[tokenKeyOrPath];
+    const raw = dictionary[tokenKeyOrPath as keyof Theme['semantics']];
 
     if (raw === undefined) {
       // is throwing maybe too strict here ?
