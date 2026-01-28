@@ -118,7 +118,8 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
 
   const {
     theme: {
-      colors: { black, border, grey, white },
+      colors: { black, grey, white },
+      semantics,
     },
   } = useTheme();
   const insets = useSafeAreaInsets();
@@ -129,7 +130,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
         styles.safeAreaContainer,
         {
           backgroundColor: white,
-          borderBottomColor: border.surfaceSubtle,
+          borderBottomColor: semantics.borderCoreSubtle,
           height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
         },
         style,

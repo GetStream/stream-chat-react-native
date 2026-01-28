@@ -22,33 +22,32 @@ export type UserAvatarProps = {
 export const UserAvatar = (props: UserAvatarProps) => {
   const { user, size, showBorder = !!user.image, showOnlineIndicator } = props;
   const {
-    theme: {
-      colors: { avatarPalette },
-    },
+    theme: { semantics },
   } = useTheme();
   const styles = useStyles();
   const hashedValue = hashStringToNumber(user.id);
-  const index = hashedValue % (avatarPalette?.length ?? 1);
-  const avatarColors = avatarPalette?.[index];
+  const index = ((hashedValue % 5) + 1) as 1 | 2 | 3 | 4 | 5;
+  const avatarBackgroundColor = semantics[`avatarPaletteBg${index}`];
+  const avatarTextColor = semantics[`avatarPaletteText${index}`];
 
   const placeholder = useMemo(() => {
     if (user.name) {
       return (
-        <Text style={[fontSizes[size], { color: avatarColors?.text }]}>
+        <Text style={[fontSizes[size], { color: avatarTextColor }]}>
           {getInitialsFromName(user.name, numberOfInitials[size])}
         </Text>
       );
     } else {
       return (
-        <PeopleIcon height={iconSizes[size]} stroke={avatarColors?.text} width={iconSizes[size]} />
+        <PeopleIcon height={iconSizes[size]} stroke={avatarTextColor} width={iconSizes[size]} />
       );
     }
-  }, [user.name, size, avatarColors]);
+  }, [user.name, size, avatarTextColor]);
 
   return (
     <View testID='user-avatar'>
       <Avatar
-        backgroundColor={avatarColors?.bg}
+        backgroundColor={avatarBackgroundColor}
         imageUrl={user.image}
         placeholder={placeholder}
         showBorder={showBorder}

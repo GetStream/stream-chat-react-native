@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 
 export type OnlineIndicatorProps = {
   online: boolean;
@@ -33,25 +34,25 @@ export const OnlineIndicator = ({ online, size = 'md' }: OnlineIndicatorProps) =
 
 const useStyles = () => {
   const {
-    theme: {
-      colors: { accent, presence },
-      radius,
-    },
+    theme: { semantics },
   } = useTheme();
+
+  const { presenceBorder, presenceBgOffline, presenceBgOnline } = semantics;
+
   return useMemo(
     () =>
       StyleSheet.create({
         indicator: {
-          borderColor: presence.border,
-          borderRadius: radius.full,
+          borderColor: presenceBorder,
+          borderRadius: primitives.radiusMax,
         },
         online: {
-          backgroundColor: accent.success,
+          backgroundColor: presenceBgOnline,
         },
         offline: {
-          backgroundColor: accent.neutral,
+          backgroundColor: presenceBgOffline,
         },
       }),
-    [accent, presence, radius],
+    [presenceBgOnline, presenceBgOffline, presenceBorder],
   );
 };

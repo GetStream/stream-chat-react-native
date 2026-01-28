@@ -4,6 +4,7 @@ import merge from 'lodash/merge';
 
 import { defaultTheme, Theme } from './utils/theme';
 
+import { resolveTokensTopologically } from '../../theme/topologicalResolution';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -37,7 +38,9 @@ export const mergeThemes = (params: MergedThemesParams) => {
     merge(finalTheme, style);
   }
 
-  return finalTheme;
+  const semantics = resolveTokensTopologically(finalTheme.semantics);
+
+  return { ...finalTheme, semantics };
 };
 
 export const ThemeContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as Theme);

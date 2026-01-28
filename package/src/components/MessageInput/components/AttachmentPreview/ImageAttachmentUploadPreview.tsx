@@ -10,6 +10,7 @@ import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressInd
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
@@ -83,14 +84,17 @@ export const ImageAttachmentUploadPreview = ({
 
 const useStyles = () => {
   const {
-    theme: { spacing, radius, colors },
+    theme: { semantics },
   } = useTheme();
+
+  const { borderCoreOpacity10 } = semantics;
+
   return useMemo(
     () =>
       StyleSheet.create({
         container: {
-          borderColor: colors.border.image,
-          borderRadius: radius.lg,
+          borderColor: borderCoreOpacity10,
+          borderRadius: primitives.radiusLg,
           borderWidth: 1,
           flexDirection: 'row',
           overflow: 'hidden',
@@ -101,9 +105,9 @@ const useStyles = () => {
           width: IMAGE_PREVIEW_SIZE,
         },
         wrapper: {
-          padding: spacing.xxs,
+          padding: primitives.spacingXxs,
         },
       }),
-    [colors, radius, spacing],
+    [borderCoreOpacity10],
   );
 };

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 
 export type BadgeCountProps = {
   count: number;
@@ -30,26 +31,25 @@ export const BadgeCount = (props: BadgeCountProps) => {
 
 const useStyles = () => {
   const {
-    theme: {
-      colors: { border, badge },
-      typography,
-    },
+    theme: { semantics },
   } = useTheme();
+
+  const { badgeBgInverse, badgeTextInverse, borderCoreSubtle } = semantics;
 
   return useMemo(
     () =>
       StyleSheet.create({
         text: {
-          backgroundColor: badge.bgInverse,
-          borderColor: border.surfaceSubtle,
+          backgroundColor: badgeBgInverse,
+          borderColor: borderCoreSubtle,
           borderWidth: 1,
-          color: badge.textInverse,
-          fontSize: typography.fontSize.xs,
-          fontWeight: typography.fontWeight.bold,
+          color: badgeTextInverse,
+          fontSize: primitives.typographyFontSizeXs,
+          fontWeight: primitives.typographyFontWeightBold,
           includeFontPadding: false,
           textAlign: 'center',
         },
       }),
-    [border, badge, typography],
+    [badgeBgInverse, badgeTextInverse, borderCoreSubtle],
   );
 };
