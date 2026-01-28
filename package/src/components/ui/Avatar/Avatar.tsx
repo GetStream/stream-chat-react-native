@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { ColorValue, Image, StyleSheet, View } from 'react-native';
 
 import { avatarSizes } from './constants';
 
@@ -11,17 +11,15 @@ export type AvatarProps = {
   imageUrl?: string;
   placeholder?: React.ReactNode;
   showBorder?: boolean;
-  backgroundColor?: string;
+  backgroundColor?: ColorValue;
 };
 
 export const Avatar = (props: AvatarProps) => {
   const [error, setError] = useState(false);
   const {
-    theme: {
-      colors: { avatarPalette },
-    },
+    theme: { semantics },
   } = useTheme();
-  const defaultAvatarBg = avatarPalette?.[0].bg;
+  const defaultAvatarBg = semantics.avatarPaletteBg1;
   const { backgroundColor = defaultAvatarBg, size, imageUrl, placeholder, showBorder } = props;
   const styles = useStyles();
 

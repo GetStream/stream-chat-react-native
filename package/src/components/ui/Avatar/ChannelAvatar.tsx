@@ -28,24 +28,21 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const online = useChannelPreviewDisplayPresence(channel);
 
   const {
-    theme: {
-      colors: { avatarPalette },
-    },
+    theme: { semantics },
   } = useTheme();
 
   const hashedValue = hashStringToNumber(channel.cid);
-  const index = hashedValue % (avatarPalette?.length ?? 1);
-  const avatarColors = avatarPalette?.[index];
+  const index = ((hashedValue % 5) + 1) as 1 | 2 | 3 | 4 | 5;
+  const avatarBackgroundColor = semantics[`avatarPaletteBg${index}`];
+  const avatarTextColor = semantics[`avatarPaletteText${index}`];
 
   const { size, showBorder = true, showOnlineIndicator = online } = props;
 
   const channelImage = channel.data?.image;
 
   const placeholder = useMemo(() => {
-    return (
-      <GroupIcon height={iconSizes[size]} stroke={avatarColors?.text} width={iconSizes[size]} />
-    );
-  }, [size, avatarColors]);
+    return <GroupIcon height={iconSizes[size]} stroke={avatarTextColor} width={iconSizes[size]} />;
+  }, [size, avatarTextColor]);
 
   if (!channelImage) {
     const otherMembers = members.filter((member) => member.user?.id !== client?.user?.id);
@@ -66,7 +63,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
 
   return (
     <Avatar
-      backgroundColor={avatarColors?.bg}
+      backgroundColor={avatarBackgroundColor}
       imageUrl={channelImage}
       placeholder={placeholder}
       showBorder={showBorder}
