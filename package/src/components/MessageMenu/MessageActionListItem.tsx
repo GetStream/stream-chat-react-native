@@ -1,5 +1,7 @@
 import React from 'react';
-import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
+import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
+
+import { Pressable } from 'react-native-gesture-handler';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
