@@ -45,7 +45,8 @@ const AttachmentActionsWithContext = (props: AttachmentActionsPropsWithContext) 
 
   const {
     theme: {
-      colors: { accent_blue, black, border, transparent, white },
+      semantics,
+      colors: { accent_blue, black, transparent, white },
       messageSimple: {
         actions: {
           button: {
@@ -82,7 +83,7 @@ const AttachmentActionsWithContext = (props: AttachmentActionsPropsWithContext) 
                   ? primaryBackgroundColor || accent_blue
                   : defaultBackgroundColor || white,
                 borderColor: primary
-                  ? primaryBorderColor || border.surfaceSubtle
+                  ? primaryBorderColor || semantics.borderCoreDefault
                   : defaultBorderColor || transparent,
               },
               buttonStyle,

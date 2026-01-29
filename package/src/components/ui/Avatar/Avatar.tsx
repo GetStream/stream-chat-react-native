@@ -1,26 +1,27 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { ColorValue, StyleSheet, View } from 'react-native';
 
 import { avatarSizes } from './constants';
 
+import { useChatContext } from '../../../contexts';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../theme';
 
 export type AvatarProps = {
   size: 'xs' | 'sm' | 'md' | 'lg';
   imageUrl?: string;
   placeholder?: React.ReactNode;
   showBorder?: boolean;
-  backgroundColor?: string;
+  backgroundColor?: ColorValue;
 };
 
 export const Avatar = (props: AvatarProps) => {
   const [error, setError] = useState(false);
   const {
-    theme: {
-      colors: { avatarPalette },
-    },
+    theme: { semantics },
   } = useTheme();
-  const defaultAvatarBg = avatarPalette?.[0].bg;
+  const { ImageComponent } = useChatContext();
+  const defaultAvatarBg = semantics.avatarPaletteBg1;
   const { backgroundColor = defaultAvatarBg, size, imageUrl, placeholder, showBorder } = props;
   const styles = useStyles();
 
@@ -39,7 +40,7 @@ export const Avatar = (props: AvatarProps) => {
       testID='avatar-image'
     >
       {imageUrl && !error ? (
-        <Image
+        <ImageComponent
           onError={onHandleError}
           source={{ uri: imageUrl }}
           style={[styles.image, avatarSizes[size]]}
@@ -53,23 +54,24 @@ export const Avatar = (props: AvatarProps) => {
 
 const useStyles = () => {
   const {
-    theme: { colors, radius },
+    theme: { semantics },
   } = useTheme();
+  const { borderCoreOpacity10 } = semantics;
   return useMemo(
     () =>
       StyleSheet.create({
         border: {
-          borderColor: colors.border.image,
+          borderColor: borderCoreOpacity10,
           borderWidth: 1,
         },
         container: {
           alignItems: 'center',
-          borderRadius: radius.full,
+          borderRadius: primitives.radiusMax,
           justifyContent: 'center',
           overflow: 'hidden',
         },
         image: {},
       }),
-    [colors, radius],
+    [borderCoreOpacity10],
   );
 };

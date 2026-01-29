@@ -75,7 +75,18 @@ export default tsEslint.config(
     settings: {
       'import/resolver': {
         node: {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          extensions: [
+            '.js',
+            '.jsx',
+            '.ts',
+            '.tsx',
+            '.ios.ts',
+            '.android.ts',
+            '.web.ts',
+            '.ios.tsx',
+            '.android.tsx',
+            '.web.tsx',
+          ],
           paths: ['src'],
         },
       },

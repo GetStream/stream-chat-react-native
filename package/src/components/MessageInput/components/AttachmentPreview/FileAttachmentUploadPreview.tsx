@@ -13,6 +13,7 @@ import { WritingDirectionAwareText } from '../../../../components/RTLComponents/
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessagesContext } from '../../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import {
   getDurationLabelFromDuration,
@@ -106,25 +107,23 @@ export const FileAttachmentUploadPreview = ({
 
 const useStyles = () => {
   const {
-    theme: {
-      colors: { border, text },
-      radius,
-      spacing,
-      typography: { fontSize, fontWeight },
-    },
+    theme: { semantics },
   } = useTheme();
+
+  const { borderCoreDefault, textPrimary, textSecondary } = semantics;
+
   return useMemo(
     () =>
       StyleSheet.create({
         dismissWrapper: { position: 'absolute', right: 0, top: 0 },
         fileContainer: {
-          borderRadius: radius.lg,
-          borderColor: border.surfaceSubtle,
+          borderRadius: primitives.radiusLg,
+          borderColor: borderCoreDefault,
           borderWidth: 1,
           flexDirection: 'row',
-          gap: spacing.sm,
+          gap: primitives.spacingSm,
           width: 224, // TODO: Not sure how to omit this
-          padding: spacing.md,
+          padding: primitives.spacingMd,
         },
         fileContent: {
           flexShrink: 1,
@@ -136,21 +135,21 @@ const useStyles = () => {
           justifyContent: 'center',
         },
         filenameText: {
-          color: text.primary,
-          fontSize: fontSize.xs,
-          fontWeight: fontWeight.semibold,
+          color: textPrimary,
+          fontSize: primitives.typographyFontSizeXs,
+          fontWeight: primitives.typographyFontWeightSemiBold,
         },
         fileSizeText: {
-          color: text.secondary,
-          fontSize: fontSize.xs,
+          color: textSecondary,
+          fontSize: primitives.typographyFontSizeXs,
         },
         overlay: {
-          borderRadius: radius.lg,
+          borderRadius: primitives.radiusLg,
         },
         wrapper: {
-          padding: spacing.xxs,
+          padding: primitives.spacingXxs,
         },
       }),
-    [radius, border, spacing, text, fontSize, fontWeight],
+    [borderCoreDefault, textPrimary, textSecondary],
   );
 };

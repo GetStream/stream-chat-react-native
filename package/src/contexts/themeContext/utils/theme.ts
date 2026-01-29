@@ -2,10 +2,7 @@ import { type ColorValue, type ImageStyle, type TextStyle, type ViewStyle } from
 import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
-import { AvatarPalette, lightColors, type NewColors } from '../../../theme/primitives/colors';
-import { Radius } from '../../../theme/primitives/radius';
-import { Spacing } from '../../../theme/primitives/spacing';
-import { Typography } from '../../../theme/primitives/typography';
+import { semantics } from '../../../theme';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 export const BASE_AVATAR_SIZE = 32;
@@ -169,6 +166,7 @@ export type Theme = {
     height: number;
     maskFillColor?: ColorValue;
   };
+  colors: typeof Colors;
   channelPreview: {
     avatar: {
       size: number;
@@ -191,8 +189,6 @@ export type Theme = {
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
   };
-  colors: typeof Colors &
-    NewColors & { [key: string]: string | { [key: string]: string } | AvatarPalette };
   dateHeader: {
     container: ViewStyle;
     text: TextStyle;
@@ -890,15 +886,11 @@ export type Theme = {
     thumb: ViewStyle;
     waveform: ViewStyle;
   };
-  spacing: typeof Spacing;
-  radius: typeof Radius;
-  typography: typeof Typography;
+  semantics: typeof semantics;
 };
 
 export const defaultTheme: Theme = {
-  spacing: Spacing,
-  radius: Radius,
-  typography: Typography,
+  semantics,
   aiTypingIndicatorView: {
     container: {},
     text: {},
@@ -1013,10 +1005,7 @@ export const defaultTheme: Theme = {
     unreadContainer: {},
     unreadText: {},
   },
-  colors: {
-    ...Colors,
-    ...lightColors,
-  },
+  colors: Colors,
   dateHeader: {
     container: {},
     text: {},

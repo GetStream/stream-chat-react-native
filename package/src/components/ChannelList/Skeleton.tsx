@@ -46,7 +46,8 @@ export const Skeleton = () => {
         height = 64,
         maskFillColor,
       },
-      colors: { border, grey_gainsboro, white_snow },
+      colors: { grey_gainsboro, white_snow },
+      semantics,
     },
   } = useTheme();
 
@@ -126,7 +127,7 @@ export const Skeleton = () => {
 
   return (
     <View
-      style={[styles.container, { borderBottomColor: border.surfaceSubtle }, container]}
+      style={[styles.container, { borderBottomColor: semantics.borderCoreDefault }, container]}
       testID='channel-preview-skeleton'
     >
       <View style={[styles.background, { backgroundColor: white_snow }, background]} />

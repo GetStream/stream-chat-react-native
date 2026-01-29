@@ -26,6 +26,8 @@ const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
 
   const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
+  console.log(message);
+
   return (
     <View
       style={[alignment === 'left' ? leftAlign : rightAlign, container]}

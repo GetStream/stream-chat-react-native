@@ -264,7 +264,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
   const {
     theme: {
-      colors: { border, grey_whisper, white, white_smoke },
+      semantics,
+      colors: { grey_whisper, white, white_smoke },
       messageInput: {
         attachmentSelectionBar,
         container,
@@ -478,7 +479,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 styles.wrapper,
                 {
                   backgroundColor: white,
-                  borderColor: border.surfaceSubtle,
+                  borderColor: semantics.borderCoreDefault,
                   paddingBottom: BOTTOM_OFFSET,
                 },
                 wrapper,

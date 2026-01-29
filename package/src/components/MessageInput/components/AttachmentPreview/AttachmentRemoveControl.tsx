@@ -4,13 +4,14 @@ import { Pressable, PressableProps, StyleSheet } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { NewClose } from '../../../../icons/NewClose';
+import { primitives } from '../../../../theme';
 
 type AttachmentRemoveControlProps = PressableProps;
 
 export const AttachmentRemoveControl = ({ onPress }: AttachmentRemoveControlProps) => {
   const {
     theme: {
-      colors: { control },
+      semantics,
       messageInput: {
         dismissAttachmentUpload: { dismiss, dismissIcon, dismissIconColor },
       },
@@ -30,29 +31,34 @@ export const AttachmentRemoveControl = ({ onPress }: AttachmentRemoveControlProp
       ]}
       testID='remove-upload-preview'
     >
-      <NewClose height={16} stroke={dismissIconColor || control.icon} {...dismissIcon} width={16} />
+      <NewClose
+        height={16}
+        stroke={dismissIconColor || semantics.controlRemoveControlIcon}
+        {...dismissIcon}
+        width={16}
+      />
     </Pressable>
   );
 };
 
 const useStyles = () => {
   const {
-    theme: {
-      colors: { control },
-      radius,
-    },
+    theme: { semantics },
   } = useTheme();
+
+  const { controlRemoveControlBg, controlRemoveControlBorder } = semantics;
+
   return useMemo(
     () =>
       StyleSheet.create({
         dismiss: {
-          backgroundColor: control.bg,
-          borderColor: control.border,
-          borderRadius: radius.xl,
+          backgroundColor: controlRemoveControlBg,
+          borderColor: controlRemoveControlBorder,
+          borderRadius: primitives.radiusXl,
           borderWidth: 2,
           overflow: 'hidden',
         },
       }),
-    [control, radius],
+    [controlRemoveControlBg, controlRemoveControlBorder],
   );
 };
