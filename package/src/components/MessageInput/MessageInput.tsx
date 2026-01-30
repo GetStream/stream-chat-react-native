@@ -1,24 +1,15 @@
 import React, { useEffect } from 'react';
 import { Modal, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-  PanGestureHandlerEventPayload,
-} from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   FadeIn,
   FadeOut,
   interpolate,
   LinearTransition,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
-  ZoomIn,
-  ZoomOut,
 } from 'react-native-reanimated';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,7 +17,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
 
 import { OutputButtons } from './components/OutputButtons';
-import { useAudioRecorder } from './hooks/useAudioRecorder';
 import { useCountdown } from './hooks/useCountdown';
 
 import {
@@ -65,10 +55,11 @@ import {
 
 import { useKeyboardVisibility } from '../../hooks/useKeyboardVisibility';
 import { useStateStore } from '../../hooks/useStateStore';
-import { isAudioRecorderAvailable, NativeHandlers } from '../../native';
+import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
+import { GiphyBadge } from '../ui/GiphyBadge';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
 const styles = StyleSheet.create({
@@ -85,9 +76,11 @@ const styles = StyleSheet.create({
   },
   floatingWrapper: {
     left: 0,
-    paddingHorizontal: 16,
     position: 'absolute',
     right: 0,
+  },
+  giphyContainer: {
+    padding: 8,
   },
   inputBoxContainer: {
     flex: 1,
@@ -124,9 +117,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   wrapper: {
-    borderTopWidth: 1,
     paddingHorizontal: 16,
     paddingTop: 16,
+  },
+  audioLockIndicatorWrapper: {
+    position: 'absolute',
+    right: 16,
+    padding: 4,
   },
 });
 
@@ -138,6 +135,7 @@ type MessageInputPropsWithContext = Pick<
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
+    | 'audioRecorderManager'
     | 'additionalTextInputProps'
     | 'audioRecordingEnabled'
     | 'asyncMessagesLockDistance'
@@ -167,7 +165,6 @@ type MessageInputPropsWithContext = Pick<
     | 'messageInputHeightStore'
     | 'ImageSelectorIcon'
     | 'VideoRecorderSelectorIcon'
-    | 'CommandInput'
     | 'SendButton'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
@@ -181,7 +178,8 @@ type MessageInputPropsWithContext = Pick<
   > &
   Pick<MessagesContextValue, 'Reply'> &
   Pick<TranslationContextValue, 't'> &
-  Pick<MessageComposerAPIContextValue, 'clearEditingState'> & {
+  Pick<MessageComposerAPIContextValue, 'clearEditingState'> &
+  Pick<AudioRecorderManagerState, 'micLocked'> & {
     editing: boolean;
     hasAttachments: boolean;
     isKeyboardVisible: boolean;
@@ -190,6 +188,8 @@ type MessageInputPropsWithContext = Pick<
         ref: React.Ref<TextInput> | undefined;
       }
     >;
+    isRecordingStateIdle?: boolean;
+    recordingStatus?: string;
   };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
@@ -213,15 +213,11 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     attachmentSelectionBarHeight,
     bottomInset,
     selectedPicker,
-
     additionalTextInputProps,
     asyncMessagesLockDistance,
-    asyncMessagesMinimumPressDuration,
-    asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     AttachmentUploadPreviewList,
     AudioRecorder,
-    audioRecordingEnabled,
     AudioRecordingInProgress,
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
@@ -238,18 +234,18 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     Input,
     inputBoxRef,
     InputButtons,
-    CommandInput,
     isKeyboardVisible,
-    isOnline,
     members,
     Reply,
     threadList,
     sendMessage,
     showPollCreationDialog,
     ShowThreadMessageInChannelButton,
-    StartAudioRecordingButton,
     TextInputComponent,
     watchers,
+    micLocked,
+    isRecordingStateIdle,
+    recordingStatus,
   } = props;
 
   const messageComposer = useMessageComposer();
@@ -264,7 +260,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
   const {
     theme: {
-      colors: { border, grey_whisper, white, white_smoke },
+      colors: { border, white, white_smoke },
       messageInput: {
         attachmentSelectionBar,
         container,
@@ -276,7 +272,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         inputContainer,
         inputButtonsContainer,
         inputFloatingContainer,
-        micButtonContainer,
         outputButtonsContainer,
         suggestionsListContainer: { container: suggestionListContainer },
         wrapper,
@@ -350,80 +345,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const isFocused = inputBoxRef.current?.isFocused();
 
-  const {
-    deleteVoiceRecording,
-    micLocked,
-    permissionsGranted,
-    recording,
-    recordingDuration,
-    recordingStatus,
-    setMicLocked,
-    startVoiceRecording,
-    stopVoiceRecording,
-    uploadVoiceRecording,
-    waveformData,
-  } = useAudioRecorder();
-
-  const asyncAudioEnabled = audioRecordingEnabled && isAudioRecorderAvailable();
-
   const micPositionX = useSharedValue(0);
   const micPositionY = useSharedValue(0);
   const X_AXIS_POSITION = -asyncMessagesSlideToCancelDistance;
   const Y_AXIS_POSITION = -asyncMessagesLockDistance;
-
-  const resetAudioRecording = async () => {
-    await deleteVoiceRecording();
-  };
-
-  const micLockHandler = () => {
-    setMicLocked(true);
-    NativeHandlers.triggerHaptic('impactMedium');
-  };
-
-  const panGestureMic = Gesture.Pan()
-    .activateAfterLongPress(asyncMessagesMinimumPressDuration + 100)
-    .onChange((event: PanGestureHandlerEventPayload) => {
-      const newPositionX = event.translationX;
-      const newPositionY = event.translationY;
-
-      if (newPositionX <= 0 && newPositionX >= X_AXIS_POSITION) {
-        micPositionX.value = newPositionX;
-      }
-      if (newPositionY <= 0 && newPositionY >= Y_AXIS_POSITION) {
-        micPositionY.value = newPositionY;
-      }
-    })
-    .onEnd(() => {
-      const belowThresholdY = micPositionY.value > Y_AXIS_POSITION / 2;
-      const belowThresholdX = micPositionX.value > X_AXIS_POSITION / 2;
-
-      if (belowThresholdY && belowThresholdX) {
-        micPositionY.value = withSpring(0);
-        micPositionX.value = withSpring(0);
-        if (recordingStatus === 'recording') {
-          runOnJS(uploadVoiceRecording)(asyncMessagesMultiSendEnabled);
-        }
-        return;
-      }
-
-      if (!belowThresholdY) {
-        micPositionY.value = withSpring(Y_AXIS_POSITION);
-        runOnJS(micLockHandler)();
-      }
-
-      if (!belowThresholdX) {
-        micPositionX.value = withSpring(X_AXIS_POSITION);
-        runOnJS(resetAudioRecording)();
-      }
-
-      micPositionX.value = 0;
-      micPositionY.value = 0;
-    })
-    .onStart(() => {
-      micPositionX.value = 0;
-      micPositionY.value = 0;
-      runOnJS(setMicLocked)(false);
-    });
 
   const lockIndicatorAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -437,22 +362,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       },
     ],
   }));
-  const micButttonAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
-    transform: [{ translateX: micPositionX.value }, { translateY: micPositionY.value }],
-  }));
   const slideToCancelAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(micPositionX.value, [0, X_AXIS_POSITION], [1, 0], Extrapolation.CLAMP),
-    transform: [
-      {
-        translateX: interpolate(
-          micPositionX.value,
-          [0, X_AXIS_POSITION],
-          [0, X_AXIS_POSITION / 2],
-          Extrapolation.CLAMP,
-        ),
-      },
-    ],
   }));
   const { bottom } = useSafeAreaInsets();
 
@@ -470,164 +381,140 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
           messageInputHeightStore.setHeight(
             messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
           )
-        } // 24 is the position of the input from the bottom of the screen
+        } // BOTTOM OFFSET is the position of the input from the bottom of the screen
         style={
           messageInputFloating
-            ? [styles.floatingWrapper, { bottom: BOTTOM_OFFSET }, floatingWrapper]
+            ? [styles.wrapper, styles.floatingWrapper, { bottom: BOTTOM_OFFSET }, floatingWrapper]
             : [
                 styles.wrapper,
                 {
+                  borderTopWidth: 1,
                   backgroundColor: white,
-                  borderColor: border.surfaceSubtle,
+                  borderColor: border.default,
                   paddingBottom: BOTTOM_OFFSET,
                 },
                 wrapper,
               ]
         }
       >
-        {recording && (
-          <>
-            <AudioRecordingLockIndicator
-              messageInputHeight={height}
-              micLocked={micLocked}
-              style={lockIndicatorAnimatedStyle}
-            />
-            {recordingStatus === 'stopped' ? (
-              <AudioRecordingPreview
-                recordingDuration={recordingDuration}
-                uri={
-                  typeof recording !== 'string'
-                    ? (recording?.getURI() as string)
-                    : (recording as string)
-                }
-                waveformData={waveformData}
-              />
-            ) : micLocked ? (
-              <AudioRecordingInProgress
-                recordingDuration={recordingDuration}
-                waveformData={waveformData}
-              />
+        {Input ? (
+          <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
+        ) : (
+          <Animated.View
+            style={[styles.container, container]}
+            layout={LinearTransition.duration(200)}
+          >
+            {isRecordingStateIdle ? (
+              <View
+                style={[
+                  styles.inputButtonsContainer,
+                  messageInputFloating ? styles.shadow : null,
+                  inputButtonsContainer,
+                ]}
+              >
+                {InputButtons && <InputButtons />}
+              </View>
             ) : null}
-          </>
-        )}
-
-        <View style={[styles.container, container]}>
-          {Input ? (
-            <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
-          ) : (
-            <>
-              {recording ? (
-                <AudioRecorder
-                  deleteVoiceRecording={deleteVoiceRecording}
-                  micLocked={micLocked}
-                  recording={recording}
-                  recordingDuration={recordingDuration}
-                  recordingStopped={recordingStatus === 'stopped'}
-                  slideToCancelStyle={slideToCancelAnimatedStyle}
-                  stopVoiceRecording={stopVoiceRecording}
-                  uploadVoiceRecording={uploadVoiceRecording}
-                />
-              ) : (
-                <>
+            <View
+              style={[
+                styles.inputBoxWrapper,
+                {
+                  backgroundColor: white,
+                  borderColor: border.default,
+                },
+                messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
+                inputBoxWrapper,
+                isFocused ? focusedInputBoxContainer : null,
+              ]}
+            >
+              <View style={[styles.inputBoxContainer, inputBoxContainer]}>
+                {recordingStatus === 'stopped' ? (
+                  <AudioRecordingPreview />
+                ) : micLocked ? (
+                  <AudioRecordingInProgress />
+                ) : null}
+                {isRecordingStateIdle ? (
                   <View
                     style={[
-                      styles.inputButtonsContainer,
-                      messageInputFloating ? styles.shadow : null,
-                      inputButtonsContainer,
-                    ]}
-                  >
-                    {InputButtons && <InputButtons />}
-                  </View>
-                  <Animated.View
-                    layout={LinearTransition.duration(200)}
-                    style={[
-                      styles.inputBoxWrapper,
+                      styles.contentContainer,
                       {
-                        backgroundColor: white,
-                        borderColor: grey_whisper,
+                        paddingTop: hasAttachments || quotedMessage || editing ? 8 : 0,
                       },
-                      messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
-                      inputBoxWrapper,
-                      isFocused ? focusedInputBoxContainer : null,
+                      contentContainer,
                     ]}
                   >
-                    <View style={[styles.inputBoxContainer, inputBoxContainer]}>
-                      <View
-                        style={[
-                          styles.contentContainer,
-                          {
-                            paddingTop: hasAttachments || quotedMessage || editing ? 8 : 0,
-                          },
-                          contentContainer,
-                        ]}
+                    {editing ? (
+                      <Animated.View
+                        entering={FadeIn.duration(200)}
+                        exiting={FadeOut.duration(200)}
                       >
-                        {editing ? (
-                          <Animated.View
-                            entering={FadeIn.duration(200)}
-                            exiting={FadeOut.duration(200)}
-                          >
-                            <Reply
-                              mode='edit'
-                              onDismiss={onDismissEditMessage}
-                              quotedMessage={messageComposer.editedMessage}
-                            />
-                          </Animated.View>
-                        ) : null}
-                        {quotedMessage ? (
-                          <Animated.View
-                            entering={FadeIn.duration(200)}
-                            exiting={FadeOut.duration(200)}
-                          >
-                            <Reply mode='reply' />
-                          </Animated.View>
-                        ) : null}
-                        <AttachmentUploadPreviewList />
-                      </View>
+                        <Reply
+                          mode='edit'
+                          onDismiss={onDismissEditMessage}
+                          quotedMessage={messageComposer.editedMessage}
+                        />
+                      </Animated.View>
+                    ) : null}
+                    {quotedMessage ? (
+                      <Animated.View
+                        entering={FadeIn.duration(200)}
+                        exiting={FadeOut.duration(200)}
+                      >
+                        <Reply mode='reply' />
+                      </Animated.View>
+                    ) : null}
+                    <AttachmentUploadPreviewList />
+                  </View>
+                ) : null}
 
-                      <View style={[styles.inputContainer, inputContainer]}>
-                        {command ? (
-                          <CommandInput disabled={!isOnline} />
-                        ) : (
-                          <AutoCompleteInput
-                            cooldownRemainingSeconds={cooldownRemainingSeconds}
-                            TextInputComponent={TextInputComponent}
-                            {...additionalTextInputProps}
-                          />
-                        )}
-
-                        <View style={[styles.outputButtonsContainer, outputButtonsContainer]}>
-                          <OutputButtons />
+                <View style={[styles.inputContainer, inputContainer]}>
+                  {!isRecordingStateIdle ? (
+                    <AudioRecorder slideToCancelStyle={slideToCancelAnimatedStyle} />
+                  ) : (
+                    <>
+                      {command ? (
+                        <View style={styles.giphyContainer}>
+                          <GiphyBadge />
                         </View>
-                      </View>
-                    </View>
-                  </Animated.View>
-                </>
-              )}
+                      ) : null}
 
-              {asyncAudioEnabled && !micLocked ? (
-                <GestureDetector gesture={panGestureMic}>
-                  <Animated.View entering={ZoomIn.duration(200)} exiting={ZoomOut.duration(200)}>
-                    <Animated.View
-                      style={[
-                        styles.micButtonContainer,
-                        micButttonAnimatedStyle,
-                        micButtonContainer,
-                      ]}
-                    >
-                      <StartAudioRecordingButton
-                        permissionsGranted={permissionsGranted}
-                        recording={recording}
-                        startVoiceRecording={startVoiceRecording}
+                      <AutoCompleteInput
+                        cooldownRemainingSeconds={cooldownRemainingSeconds}
+                        TextInputComponent={TextInputComponent}
+                        {...additionalTextInputProps}
                       />
-                    </Animated.View>
-                  </Animated.View>
-                </GestureDetector>
-              ) : null}
-            </>
-          )}
-        </View>
+                    </>
+                  )}
+
+                  {(recordingStatus === 'idle' || recordingStatus === 'recording') && !micLocked ? (
+                    <View style={[styles.outputButtonsContainer, outputButtonsContainer]}>
+                      <OutputButtons micPositionX={micPositionX} micPositionY={micPositionY} />
+                    </View>
+                  ) : null}
+                </View>
+              </View>
+            </View>
+          </Animated.View>
+        )}
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </Animated.View>
+
+      {!isRecordingStateIdle ? (
+        <View
+          style={[
+            styles.audioLockIndicatorWrapper,
+            {
+              bottom: messageInputFloating ? 0 : 16,
+            },
+          ]}
+        >
+          <AudioRecordingLockIndicator
+            messageInputHeight={height}
+            micLocked={micLocked}
+            style={lockIndicatorAnimatedStyle}
+          />
+        </View>
+      ) : null}
 
       <Animated.View
         entering={FadeIn.duration(200)}
@@ -699,6 +586,9 @@ const areEqual = (
     showPollCreationDialog: prevShowPollCreationDialog,
     t: prevT,
     threadList: prevThreadList,
+    micLocked: prevMicLocked,
+    isRecordingStateIdle: prevIsRecordingStateIdle,
+    recordingStatus: prevRecordingStatus,
   } = prevProps;
   const {
     additionalTextInputProps: nextAdditionalTextInputProps,
@@ -718,6 +608,9 @@ const areEqual = (
     showPollCreationDialog: nextShowPollCreationDialog,
     t: nextT,
     threadList: nextThreadList,
+    micLocked: nextMicLocked,
+    isRecordingStateIdle: nextIsRecordingStateIdle,
+    recordingStatus: nextRecordingStatus,
   } = nextProps;
 
   const tEqual = prevT === nextT;
@@ -802,6 +695,21 @@ const areEqual = (
     return false;
   }
 
+  const micLockedEqual = prevMicLocked === nextMicLocked;
+  if (!micLockedEqual) {
+    return false;
+  }
+
+  const isRecordingStateIdleEqual = prevIsRecordingStateIdle === nextIsRecordingStateIdle;
+  if (!isRecordingStateIdleEqual) {
+    return false;
+  }
+
+  const recordingStatusEqual = prevRecordingStatus === nextRecordingStatus;
+  if (!recordingStatusEqual) {
+    return false;
+  }
+
   return true;
 };
 
@@ -811,6 +719,12 @@ const MemoizedMessageInput = React.memo(
 ) as typeof MessageInputWithContext;
 
 export type MessageInputProps = Partial<MessageInputPropsWithContext>;
+
+const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
+  micLocked: state.micLocked,
+  isRecordingStateIdle: state.status === 'idle',
+  recordingStatus: state.status,
+});
 
 /**
  * UI Component for message input
@@ -828,6 +742,7 @@ export const MessageInput = (props: MessageInputProps) => {
   const { channel, members, threadList, watchers } = useChannelContext();
 
   const {
+    audioRecorderManager,
     additionalTextInputProps,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
@@ -859,7 +774,6 @@ export const MessageInput = (props: MessageInputProps) => {
     Input,
     inputBoxRef,
     InputButtons,
-    CommandInput,
     messageInputFloating,
     messageInputHeightStore,
     openPollCreationDialog,
@@ -883,6 +797,11 @@ export const MessageInput = (props: MessageInputProps) => {
   const { attachments } = useAttachmentManagerState();
   const isKeyboardVisible = useKeyboardVisibility();
 
+  const { micLocked, isRecordingStateIdle, recordingStatus } = useStateStore(
+    audioRecorderManager.state,
+    audioRecorderSelector,
+  );
+
   const { t } = useTranslationContext();
 
   /**
@@ -896,6 +815,10 @@ export const MessageInput = (props: MessageInputProps) => {
   return (
     <MemoizedMessageInput
       {...{
+        audioRecorderManager,
+        isRecordingStateIdle,
+        recordingStatus,
+        micLocked,
         additionalTextInputProps,
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
@@ -921,7 +844,6 @@ export const MessageInput = (props: MessageInputProps) => {
         clearEditingState,
         closeAttachmentPicker,
         closePollCreationDialog,
-        CommandInput,
         compressImageQuality,
         cooldownEndsAt,
         CooldownTimer,

@@ -17,8 +17,8 @@ export const Typography: TypographyType = {
   },
   lineHeight: {
     tight: 16,
-    normal: 24,
-    relaxed: 32,
+    normal: 20,
+    relaxed: 24,
   },
   fontSize: {
     micro: 8,

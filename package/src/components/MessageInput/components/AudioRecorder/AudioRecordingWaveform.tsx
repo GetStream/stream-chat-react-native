@@ -1,27 +1,26 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 
-export type AudioRecordingWaveformProps = {
+export type AudioRecordingWaveformProps = Pick<AudioRecorderManagerState, 'waveformData'> & {
   /**
    * Maximum number of waveform lines that should be rendered in the UI.
    */
   maxDataPointsDrawn: number;
-  /**
-   * The waveform data to be presented to show the audio levels.
-   */
-  waveformData: number[];
 };
+
+const WAVEFORM_MAX_HEIGHT = 20;
 
 /**
  * Waveform Component displayed when the audio is in the recording state.
  */
 export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
   const { maxDataPointsDrawn, waveformData } = props;
+  const styles = useStyles();
   const {
     theme: {
-      colors: { grey_dark },
       messageInput: {
         audioRecordingWaveform: { container, waveform: waveformTheme },
       },
@@ -35,8 +34,7 @@ export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
           style={[
             styles.waveform,
             {
-              backgroundColor: grey_dark,
-              height: waveform * 30 > 3 ? waveform * 30 : 3,
+              height: waveform * WAVEFORM_MAX_HEIGHT,
             },
             waveformTheme,
           ]}
@@ -46,17 +44,29 @@ export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-  },
-  waveform: {
-    alignSelf: 'center',
-    borderRadius: 2,
-    marginHorizontal: 1,
-    width: 2,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { colors, radius },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          alignSelf: 'center',
+          flexDirection: 'row',
+        },
+        waveform: {
+          alignSelf: 'center',
+          borderRadius: radius.xxs,
+          marginHorizontal: 1,
+          width: 2,
+          minHeight: 2,
+          maxHeight: WAVEFORM_MAX_HEIGHT,
+          backgroundColor: colors.border.opacity25,
+        },
+      }),
+    [radius, colors],
+  );
+};
 
 AudioRecordingWaveform.displayName = 'AudioRecordingWaveform{messageInput}';

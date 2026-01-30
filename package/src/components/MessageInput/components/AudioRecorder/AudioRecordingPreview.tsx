@@ -3,26 +3,20 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
 
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useAudioPlayer } from '../../../../hooks/useAudioPlayer';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Pause, Play } from '../../../../icons';
 
+import { NewPause } from '../../../../icons/NewPause';
+import { NewPlay } from '../../../../icons/NewPlay';
 import { NativeHandlers } from '../../../../native';
 import { AudioPlayerState } from '../../../../state-store/audio-player';
+import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { WaveProgressBar } from '../../../ProgressControl/WaveProgressBar';
 
 const ONE_SECOND_IN_MILLISECONDS = 1000;
 const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
-
-export type AudioRecordingPreviewProps = {
-  recordingDuration: number;
-  uri: string;
-  /**
-   * The waveform data to be presented to show the audio levels.
-   */
-  waveformData: number[];
-};
 
 const audioPlayerSelector = (state: AudioPlayerState) => ({
   duration: state.duration,
@@ -31,11 +25,27 @@ const audioPlayerSelector = (state: AudioPlayerState) => ({
   progress: state.progress,
 });
 
+const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
+  duration: state.duration,
+  waveformData: state.waveformData,
+  recording: state.recording,
+});
+
 /**
  * Component displayed when the audio is recorded and can be previewed.
  */
-export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
-  const { recordingDuration, uri, waveformData } = props;
+export const AudioRecordingPreview = () => {
+  const { audioRecorderManager } = useMessageInputContext();
+  const styles = useStyles();
+
+  const {
+    duration: recordingDuration,
+    waveformData,
+    recording,
+  } = useStateStore(audioRecorderManager.state, audioRecorderSelector);
+
+  const uri =
+    typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string);
 
   const audioPlayer = useAudioPlayer({
     duration: recordingDuration / ONE_SECOND_IN_MILLISECONDS,
@@ -61,7 +71,7 @@ export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
 
   const {
     theme: {
-      colors: { accent_blue, grey_dark },
+      colors: { accent, text },
       messageInput: {
         audioRecordingPreview: {
           container,
@@ -92,47 +102,61 @@ export const AudioRecordingPreview = (props: AudioRecordingPreviewProps) => {
   return (
     <View style={[styles.container, container]}>
       <View style={[styles.infoContainer, infoContainer]}>
-        <Pressable onPress={handlePlayPause}>
+        <Pressable onPress={handlePlayPause} hitSlop={15}>
           {!isPlaying ? (
-            <Play fill={accent_blue} height={32} width={32} {...playIcon} />
+            <NewPlay fill={text.primary} height={20} width={20} {...playIcon} />
           ) : (
-            <Pause fill={accent_blue} height={32} width={32} {...pauseIcon} />
+            <NewPause fill={text.primary} height={20} width={20} {...pauseIcon} />
           )}
         </Pressable>
         {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
-        <Text style={[styles.currentTime, { color: grey_dark }, currentTime]}>
+        <Text
+          style={[
+            styles.durationText,
+            currentTime,
+            { color: isPlaying ? accent.primary : text.primary },
+          ]}
+        >
           {progressDuration}
         </Text>
       </View>
       <View style={[styles.progressBar, progressBar]}>
         {/* Since the progress is in range 0-1 we convert it in terms of 100% */}
-        <WaveProgressBar progress={progress} waveformData={waveformData} />
+        <WaveProgressBar amplitudesCount={60} progress={progress} waveformData={waveformData} />
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
-    paddingBottom: 8,
-    paddingTop: 4,
-  },
-  currentTime: {
-    fontSize: 16,
-    marginLeft: 4,
-  },
-  infoContainer: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'row',
-  },
-  progressBar: {
-    flex: 3,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { spacing, typography },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingVertical: spacing.sm,
+          paddingLeft: spacing.sm,
+          paddingRight: spacing.md,
+        },
+        durationText: {
+          fontSize: typography.fontSize.md,
+          fontWeight: typography.fontWeight.semibold,
+          lineHeight: typography.lineHeight.normal,
+        },
+        infoContainer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: spacing.sm,
+        },
+        progressBar: {},
+      }),
+    [spacing, typography],
+  );
+};
 
 AudioRecordingPreview.displayName = 'AudioRecordingPreview{messageInput}';

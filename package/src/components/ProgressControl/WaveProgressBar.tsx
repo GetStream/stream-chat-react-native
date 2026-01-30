@@ -43,13 +43,13 @@ export type WaveProgressBarProps = {
 };
 
 const WAVEFORM_WIDTH = 2;
-const WAVE_MAX_HEIGHT = 25;
-const WAVE_MIN_HEIGHT = 3;
+const WAVE_MAX_HEIGHT = 20;
+const WAVE_MIN_HEIGHT = 2;
 
 const ProgressControlThumb = ({ style }: { style?: StyleProp<ViewStyle> }) => {
   const {
     theme: {
-      colors: { black, grey_dark, static_white },
+      colors: { accent, border, black },
     },
   } = useTheme();
   return (
@@ -58,8 +58,8 @@ const ProgressControlThumb = ({ style }: { style?: StyleProp<ViewStyle> }) => {
       style={[
         styles.progressControlThumbStyle,
         {
-          backgroundColor: static_white,
-          borderColor: grey_dark,
+          backgroundColor: accent.primary,
+          borderColor: border.onAccent,
           shadowColor: black,
         },
         style,
@@ -108,7 +108,7 @@ export const WaveProgressBar = React.memo(
 
     const {
       theme: {
-        colors: { accent_blue, grey_dark },
+        colors: { accent, grey_dark },
         waveProgressBar: { container, thumb, waveform: waveformTheme },
       },
     } = useTheme();
@@ -162,7 +162,7 @@ export const WaveProgressBar = React.memo(
                 styles.waveform,
                 {
                   backgroundColor:
-                    index < currentWaveformProgress ? filledColor || accent_blue : grey_dark,
+                    index < currentWaveformProgress ? filledColor || accent.primary : grey_dark,
                   height:
                     waveform * WAVE_MAX_HEIGHT > WAVE_MIN_HEIGHT
                       ? waveform * WAVE_MAX_HEIGHT
@@ -199,17 +199,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   progressControlThumbStyle: {
-    borderRadius: 5,
-    borderWidth: 0.2,
+    height: 12,
+    width: 12,
+    borderRadius: 6,
+    borderWidth: 2,
     elevation: 6,
-    height: 28,
     shadowOffset: {
       height: 3,
       width: 0,
     },
     shadowOpacity: 0.27,
     shadowRadius: 4.65,
-    width: WAVEFORM_WIDTH * 2,
   },
   waveform: {
     alignSelf: 'center',

@@ -149,7 +149,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
                   Alert.alert('Not implemented.');
                 }}
                 style={{
-                  borderBottomColor: border.surfaceSubtle,
+                  borderBottomColor: border.default,
                   borderBottomWidth: index === section.data.length - 1 ? 0 : 1,
                 }}
               >

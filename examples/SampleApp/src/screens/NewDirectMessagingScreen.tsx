@@ -208,7 +208,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           styles.searchContainer,
           {
             backgroundColor: white,
-            borderBottomColor: border.surfaceSubtle,
+            borderBottomColor: border.default,
           },
         ]}
       >

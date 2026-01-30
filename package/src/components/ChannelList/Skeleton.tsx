@@ -126,7 +126,7 @@ export const Skeleton = () => {
 
   return (
     <View
-      style={[styles.container, { borderBottomColor: border.surfaceSubtle }, container]}
+      style={[styles.container, { borderBottomColor: border.default }, container]}
       testID='channel-preview-skeleton'
     >
       <View style={[styles.background, { backgroundColor: white_snow }, background]} />

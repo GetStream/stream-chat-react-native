@@ -130,7 +130,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
                   messageId: item.id,
                 });
               }}
-              style={[styles.itemContainer, { borderBottomColor: border.surfaceSubtle }]}
+              style={[styles.itemContainer, { borderBottomColor: border.default }]}
               testID='channel-preview-button'
             >
               {item.user ? <UserAvatar user={item.user} size={'lg'} /> : null}

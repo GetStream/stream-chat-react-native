@@ -329,7 +329,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.surfaceSubtle,
+                              borderTopColor: border.default,
                             },
                           ]}
                         >
@@ -344,7 +344,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.surfaceSubtle,
+                              borderTopColor: border.default,
                             },
                           ]}
                         >
@@ -361,7 +361,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.surfaceSubtle,
+                              borderTopColor: border.default,
                             },
                           ]}
                         >
@@ -376,7 +376,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
 
                       {otherMembers.length > 1 && (
                         <Pressable onPress={leaveGroup}>
-                          <View style={[styles.row, { borderTopColor: border.surfaceSubtle }]}>
+                          <View style={[styles.row, { borderTopColor: border.default }]}>
                             <View style={styles.rowInner}>
                               <UserMinus pathFill={grey} />
                             </View>
@@ -389,7 +389,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.surfaceSubtle,
+                              borderTopColor: border.default,
                             },
                           ]}
                         >
@@ -406,8 +406,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.lastRow,
                             {
-                              borderBottomColor: border.surfaceSubtle,
-                              borderTopColor: border.surfaceSubtle,
+                              borderBottomColor: border.default,
+                              borderTopColor: border.default,
                             },
                           ]}
                         >

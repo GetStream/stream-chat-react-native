@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   scrollToBottomButtonContainer: {
-    bottom: 8,
     position: 'absolute',
     right: 16,
   },
@@ -1192,7 +1191,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           layout={LinearTransition.duration(200)}
           style={[
             styles.scrollToBottomButtonContainer,
-            { bottom: messageInputFloating ? messageInputHeight + 8 : 8 },
+            { bottom: messageInputFloating ? messageInputHeight : 16 },
             scrollToBottomButtonContainer,
           ]}
         >

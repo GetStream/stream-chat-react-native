@@ -41,7 +41,7 @@ const useStyles = () => {
       StyleSheet.create({
         text: {
           backgroundColor: badge.bgInverse,
-          borderColor: border.surfaceSubtle,
+          borderColor: border.subtle,
           borderWidth: 1,
           color: badge.textInverse,
           fontSize: typography.fontSize.xs,

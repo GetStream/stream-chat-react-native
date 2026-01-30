@@ -138,7 +138,7 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
       style={[
         // { opacity: pressed ? 0.5 : 1 },
         styles.container,
-        { backgroundColor: white_snow, borderBottomColor: border.surfaceSubtle },
+        { backgroundColor: white_snow, borderBottomColor: border.default },
         container,
       ]}
       testID='channel-preview-button'

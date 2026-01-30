@@ -57,6 +57,14 @@ const MAX_NUMBER_OF_LINES = 5;
 const LINE_HEIGHT = 20;
 const PADDING_VERTICAL = 12;
 
+const commandPlaceHolders: Record<string, string> = {
+  giphy: 'Search GIFs',
+  ban: '@username',
+  unban: '@username',
+  mute: '@username',
+  unmute: '@username',
+};
+
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const {
     channel,
@@ -64,6 +72,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     setInputBoxRef,
     t,
     TextInputComponent = RNTextInput,
+    placeholder,
     ...rest
   } = props;
   const [localText, setLocalText] = useState('');
@@ -115,12 +124,14 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   } = useTheme();
 
   const placeholderText = useMemo(() => {
-    return command
-      ? t('Search')
-      : cooldownRemainingSeconds
-        ? `Slow mode, wait ${cooldownRemainingSeconds}s...`
-        : t('Send a message');
-  }, [command, cooldownRemainingSeconds, t]);
+    return placeholder
+      ? placeholder
+      : command
+        ? commandPlaceHolders[command.name ?? '']
+        : cooldownRemainingSeconds
+          ? `Slow mode, wait ${cooldownRemainingSeconds}s...`
+          : t('Send a message');
+  }, [command, cooldownRemainingSeconds, t, placeholder]);
 
   return (
     <TextInputComponent
@@ -138,6 +149,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
         {
           color: black,
           maxHeight: LINE_HEIGHT * numberOfLines + PADDING_VERTICAL * 2,
+          paddingLeft: command ? 0 : 16,
           paddingRight: command ? 4 : 8,
           textAlign: I18nManager.isRTL ? 'right' : 'left',
         },

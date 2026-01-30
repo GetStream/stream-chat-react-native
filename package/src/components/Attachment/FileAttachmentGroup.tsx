@@ -69,6 +69,7 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
               item={{ ...file, id: index.toString(), type: file.type }}
               message={message}
               showSpeedSettings={true}
+              containerStyle={{ minWidth: 320, borderWidth: 0 }}
             />
           ) : (
             <Attachment attachment={file} />

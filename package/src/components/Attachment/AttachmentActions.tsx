@@ -82,7 +82,7 @@ const AttachmentActionsWithContext = (props: AttachmentActionsPropsWithContext) 
                   ? primaryBackgroundColor || accent_blue
                   : defaultBackgroundColor || white,
                 borderColor: primary
-                  ? primaryBorderColor || border.surfaceSubtle
+                  ? primaryBorderColor || border.default
                   : defaultBorderColor || transparent,
               },
               buttonStyle,

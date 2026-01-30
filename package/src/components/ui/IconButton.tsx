@@ -77,8 +77,10 @@ export const IconButton = (props: IconButtonProps) => {
               ? selectedColor
               : pressed
                 ? '#F5F6F7'
-                : getBackgroundColor({ status, type }),
-          borderColor: '#E2E6EA',
+                : category === 'outline'
+                  ? 'none'
+                  : getBackgroundColor({ status, type }),
+          borderColor: type === 'destructive' ? '#D92F26' : '#E2E6EA',
           borderWidth: category === 'outline' || category === 'filled' ? 1 : 0,
         },
         style as StyleProp<ViewStyle>,

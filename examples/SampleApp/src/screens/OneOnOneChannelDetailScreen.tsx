@@ -227,7 +227,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
             style={[
               styles.userNameContainer,
               {
-                borderTopColor: border.surfaceSubtle,
+                borderTopColor: border.default,
               },
             ]}
           >
@@ -266,7 +266,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: border.default,
             },
           ]}
         >
@@ -305,7 +305,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: border.default,
             },
           ]}
         >
@@ -351,7 +351,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: border.default,
             },
           ]}
         >
@@ -381,7 +381,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: border.default,
             },
           ]}
         >
@@ -411,7 +411,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: border.default,
             },
           ]}
         >
@@ -441,7 +441,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: border.default,
             },
           ]}
         >
@@ -468,7 +468,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: border.default,
             },
           ]}
         >

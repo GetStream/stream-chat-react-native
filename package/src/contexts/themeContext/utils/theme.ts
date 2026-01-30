@@ -321,11 +321,6 @@ export type Theme = {
       container: ViewStyle;
       waveform: ViewStyle;
     };
-    commandInput: {
-      closeButton: ViewStyle;
-      container: ViewStyle;
-      text: TextStyle;
-    };
     container: ViewStyle;
     contentContainer: ViewStyle;
     cooldownButtonContainer: ViewStyle;
@@ -1133,11 +1128,6 @@ export const defaultTheme: Theme = {
       progressBar: {},
     },
     audioRecordingWaveform: { container: {}, waveform: {} },
-    commandInput: {
-      closeButton: {},
-      container: {},
-      text: {},
-    },
     container: {},
     contentContainer: {},
     cooldownButtonContainer: {},

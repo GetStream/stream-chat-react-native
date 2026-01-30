@@ -20,6 +20,7 @@ export const AttachmentRemoveControl = ({ onPress }: AttachmentRemoveControlProp
 
   return (
     <Pressable
+      hitSlop={15}
       onPress={onPress}
       style={({ pressed }) => [
         styles.dismiss,

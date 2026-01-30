@@ -59,7 +59,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         border: {
-          borderColor: colors.border.image,
+          borderColor: colors.border.opacity10,
           borderWidth: 1,
         },
         container: {

@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import {
   AttachmentPickerContextValue,
@@ -51,9 +53,13 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   }
 
   return hasAttachmentUploadCapabilities ? (
-    <View style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}>
+    <Animated.View
+      entering={ZoomIn.duration(200)}
+      exiting={ZoomOut.duration(200)}
+      style={[styles.attachButtonContainer, attachButtonContainer]}
+    >
       <AttachButton />
-    </View>
+    </Animated.View>
   ) : null;
 };
 

@@ -276,7 +276,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               style={[
                 styles.memberContainer,
                 {
-                  borderBottomColor: border.surfaceSubtle,
+                  borderBottomColor: border.default,
                 },
               ]}
             >
@@ -306,7 +306,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.loadMoreButton,
               {
-                borderBottomColor: border.surfaceSubtle,
+                borderBottomColor: border.default,
               },
             ]}
           >
@@ -330,7 +330,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.changeNameContainer,
               {
-                borderBottomColor: border.surfaceSubtle,
+                borderBottomColor: border.default,
               },
             ]}
           >
@@ -382,7 +382,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.surfaceSubtle,
+                borderBottomColor: border.default,
               },
             ]}
           >
@@ -427,7 +427,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.surfaceSubtle,
+                borderBottomColor: border.default,
               },
             ]}
           >
@@ -457,7 +457,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.surfaceSubtle,
+                borderBottomColor: border.default,
               },
             ]}
           >
@@ -487,7 +487,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.surfaceSubtle,
+                borderBottomColor: border.default,
               },
             ]}
           >
@@ -513,7 +513,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.surfaceSubtle,
+                borderBottomColor: border.default,
               },
             ]}
           >

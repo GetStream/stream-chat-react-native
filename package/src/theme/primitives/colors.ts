@@ -27,6 +27,7 @@ type AccentColors = {
   warning: string;
   error: string;
   neutral: string;
+  black: string;
 };
 
 type StateColors = {
@@ -55,13 +56,13 @@ type PresenceColors = {
 };
 
 type BorderCore = {
-  surface: string;
-  surfaceSubtle: string;
-  surfaceStrong: string;
+  default: string;
+  subtle: string;
+  strong: string;
   onDark: string;
   onAccent: string;
-  subtle: string;
-  image: string;
+  opacity10: string;
+  opacity25: string;
 };
 
 export type BadgeColors = {
@@ -122,14 +123,15 @@ export function resolveTheme(input: NewColors) {
     warning: palette.yellow[500],
     error: palette.red[500],
     neutral: palette.slate[500],
+    black: palette.black,
   };
   const text = input.text ?? {
-    primary: brand[900],
-    secondary: brand[700],
-    tertiary: brand[500],
+    primary: palette.slate[900],
+    secondary: palette.slate[700],
+    tertiary: palette.slate[500],
     inverse: palette.white,
     onAccent: palette.white,
-    disabled: brand[400],
+    disabled: palette.slate[400],
     link: accent.primary,
   };
   const state = input.state ?? {
@@ -211,6 +213,7 @@ export const lightColors = {
     warning: palette.yellow[500],
     error: palette.red[500],
     neutral: palette.slate[500],
+    black: palette.black,
   },
   state: {
     hover: palette.black5,
@@ -230,13 +233,13 @@ export const lightColors = {
     link: palette.blue[500],
   },
   border: {
-    surface: palette.slate[400],
-    surfaceSubtle: palette.slate[200],
-    surfaceStrong: palette.slate[600],
+    default: palette.slate[150],
+    subtle: palette.slate[100],
+    strong: palette.slate[200],
     onDark: palette.white,
     onAccent: palette.white,
-    subtle: palette.slate[100],
-    image: palette.black10,
+    opacity10: palette.black10,
+    opacity25: palette.black25,
   },
   control: {
     bg: palette.slate[900],
@@ -301,6 +304,7 @@ export const darkColors = {
     warning: palette.yellow[400],
     error: palette.red[400],
     neutral: palette.neutral[500],
+    black: palette.black,
   },
   state: {
     hover: palette.black5,
@@ -311,22 +315,22 @@ export const darkColors = {
     textDisabled: palette.neutral[600],
   },
   text: {
-    primary: palette.neutral[50],
-    secondary: palette.neutral[300],
-    tertiary: palette.neutral[400],
+    primary: palette.white,
+    secondary: palette.neutral[100],
+    tertiary: palette.neutral[300],
     inverse: palette.black,
     onAccent: palette.white,
-    disabled: palette.neutral[600],
-    link: palette.blue[500],
+    disabled: palette.neutral[400],
+    link: palette.white,
   },
   border: {
-    surface: palette.neutral[500],
-    surfaceSubtle: palette.neutral[700],
-    surfaceStrong: palette.neutral[400],
+    default: palette.neutral[600],
+    subtle: palette.neutral[700],
+    strong: palette.neutral[500],
     onDark: palette.white,
     onAccent: palette.white,
-    subtle: palette.neutral[800],
-    image: palette.white20,
+    opacity10: palette.white10,
+    opacity25: palette.white25,
   },
   control: {
     bg: palette.neutral[800],

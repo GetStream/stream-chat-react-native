@@ -30,7 +30,6 @@ export const useCreateMessageInputContext = ({
   CameraSelectorIcon,
   closeAttachmentPicker,
   closePollCreationDialog,
-  CommandInput,
   compressImageQuality,
   cooldownEndsAt,
   CooldownTimer,
@@ -71,6 +70,11 @@ export const useCreateMessageInputContext = ({
   uploadNewFile,
   VideoAttachmentUploadPreview,
   VideoRecorderSelectorIcon,
+  audioRecorderManager,
+  startVoiceRecording,
+  deleteVoiceRecording,
+  uploadVoiceRecording,
+  stopVoiceRecording,
 }: MessageInputContextValue & Pick<ThreadContextValue, 'thread'>) => {
   const threadId = thread?.id;
 
@@ -102,7 +106,6 @@ export const useCreateMessageInputContext = ({
       CameraSelectorIcon,
       closeAttachmentPicker,
       closePollCreationDialog,
-      CommandInput,
       compressImageQuality,
       cooldownEndsAt,
       CooldownTimer,
@@ -142,6 +145,11 @@ export const useCreateMessageInputContext = ({
       uploadNewFile,
       VideoAttachmentUploadPreview,
       VideoRecorderSelectorIcon,
+      audioRecorderManager,
+      startVoiceRecording,
+      deleteVoiceRecording,
+      uploadVoiceRecording,
+      stopVoiceRecording,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [cooldownEndsAt, threadId, showPollCreationDialog, selectedPicker],

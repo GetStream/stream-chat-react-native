@@ -110,7 +110,7 @@ const useStyles = () => {
       colors: { border, text },
       radius,
       spacing,
-      typography: { fontSize, fontWeight },
+      typography: { fontSize, fontWeight, lineHeight },
     },
   } = useTheme();
   return useMemo(
@@ -118,31 +118,34 @@ const useStyles = () => {
       StyleSheet.create({
         dismissWrapper: { position: 'absolute', right: 0, top: 0 },
         fileContainer: {
+          alignItems: 'center',
           borderRadius: radius.lg,
-          borderColor: border.surfaceSubtle,
+          borderColor: border.default,
           borderWidth: 1,
           flexDirection: 'row',
           gap: spacing.sm,
           width: 224, // TODO: Not sure how to omit this
           padding: spacing.md,
         },
-        fileContent: {
-          flexShrink: 1,
-          justifyContent: 'space-between',
-        },
         fileIcon: {
           alignItems: 'center',
           alignSelf: 'center',
           justifyContent: 'center',
         },
+        fileContent: {
+          flexShrink: 1,
+          justifyContent: 'space-between',
+        },
         filenameText: {
           color: text.primary,
           fontSize: fontSize.xs,
           fontWeight: fontWeight.semibold,
+          lineHeight: lineHeight.tight,
         },
         fileSizeText: {
           color: text.secondary,
           fontSize: fontSize.xs,
+          paddingTop: 4,
         },
         overlay: {
           borderRadius: radius.lg,
@@ -151,6 +154,6 @@ const useStyles = () => {
           padding: spacing.xxs,
         },
       }),
-    [radius, border, spacing, text, fontSize, fontWeight],
+    [radius, border, spacing, text, fontSize, fontWeight, lineHeight],
   );
 };
