@@ -1895,7 +1895,6 @@ exports[`Thread should match thread snapshot 1`] = `
       }
     >
       <View
-        layout={BaseAnimationMock {}}
         style={
           [
             {
@@ -1909,6 +1908,7 @@ exports[`Thread should match thread snapshot 1`] = `
         }
       >
         <View
+          layout={BaseAnimationMock {}}
           style={
             [
               {
@@ -2068,6 +2068,7 @@ exports[`Thread should match thread snapshot 1`] = `
           </View>
         </View>
         <View
+          layout={BaseAnimationMock {}}
           style={
             [
               {
@@ -2095,6 +2096,7 @@ exports[`Thread should match thread snapshot 1`] = `
             }
           >
             <View
+              layout={BaseAnimationMock {}}
               style={
                 [
                   {
@@ -2110,6 +2112,7 @@ exports[`Thread should match thread snapshot 1`] = `
               }
             />
             <View
+              layout={BaseAnimationMock {}}
               style={
                 [
                   {
