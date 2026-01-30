@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 import { resampleWaveformData } from '../MessageInput/utils/audioSampling';
 
 export type WaveProgressBarProps = {
@@ -43,27 +44,15 @@ export type WaveProgressBarProps = {
 };
 
 const WAVEFORM_WIDTH = 2;
-const WAVE_MAX_HEIGHT = 25;
-const WAVE_MIN_HEIGHT = 3;
+const WAVE_MAX_HEIGHT = 20;
+const WAVE_MIN_HEIGHT = 2;
 
 const ProgressControlThumb = ({ style }: { style?: StyleProp<ViewStyle> }) => {
-  const {
-    theme: {
-      colors: { black, grey_dark, static_white },
-    },
-  } = useTheme();
+  const styles = useStyles();
   return (
     <View
-      hitSlop={{ bottom: 20, left: 20, right: 20, top: 20 }}
-      style={[
-        styles.progressControlThumbStyle,
-        {
-          backgroundColor: static_white,
-          borderColor: grey_dark,
-          shadowColor: black,
-        },
-        style,
-      ]}
+      hitSlop={20}
+      style={[styles.progressControlThumbStyle, primitives.lightElevation4, style]}
     />
   );
 };
@@ -85,6 +74,8 @@ export const WaveProgressBar = React.memo(
     const fullWidth = (amplitudesCount - 1) * eachWaveformWidth;
     const state = useSharedValue(progress);
     const [currentWaveformProgress, setCurrentWaveformProgress] = useState<number>(0);
+
+    const styles = useStyles();
 
     const waveFormNumberFromProgress = useCallback(
       (progress: number) => {
@@ -108,7 +99,7 @@ export const WaveProgressBar = React.memo(
 
     const {
       theme: {
-        colors: { accent_blue, grey_dark },
+        semantics,
         waveProgressBar: { container, thumb, waveform: waveformTheme },
       },
     } = useTheme();
@@ -162,7 +153,9 @@ export const WaveProgressBar = React.memo(
                 styles.waveform,
                 {
                   backgroundColor:
-                    index < currentWaveformProgress ? filledColor || accent_blue : grey_dark,
+                    index < currentWaveformProgress
+                      ? filledColor || semantics.chatWaveformBarPlaying
+                      : semantics.chatWaveformBar,
                   height:
                     waveform * WAVE_MAX_HEIGHT > WAVE_MIN_HEIGHT
                       ? waveform * WAVE_MAX_HEIGHT
@@ -193,30 +186,41 @@ export const WaveProgressBar = React.memo(
   },
 );
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  progressControlThumbStyle: {
-    borderRadius: 5,
-    borderWidth: 0.2,
-    elevation: 6,
-    height: 28,
-    shadowOffset: {
-      height: 3,
-      width: 0,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    width: WAVEFORM_WIDTH * 2,
-  },
-  waveform: {
-    alignSelf: 'center',
-    borderRadius: 2,
-    marginRight: WAVEFORM_WIDTH,
-    width: WAVEFORM_WIDTH,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+        },
+        progressControlThumbStyle: {
+          backgroundColor: semantics.accentPrimary,
+          borderColor: semantics.borderCoreOnAccent,
+          height: 12,
+          width: 12,
+          borderRadius: primitives.radiusMax,
+          borderWidth: 2,
+          elevation: 6,
+          shadowOffset: {
+            height: 3,
+            width: 0,
+          },
+          shadowOpacity: 0.27,
+          shadowRadius: 4.65,
+        },
+        waveform: {
+          alignSelf: 'center',
+          borderRadius: primitives.radiusXxs,
+          marginRight: WAVEFORM_WIDTH,
+          width: WAVEFORM_WIDTH,
+        },
+      }),
+    [semantics],
+  );
+};
 
 WaveProgressBar.displayName = 'WaveProgressBar';

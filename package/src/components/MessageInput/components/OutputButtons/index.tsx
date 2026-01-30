@@ -22,10 +22,12 @@ import {
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
-import { AudioRecordingButton } from '../../components/AudioRecorder/AudioRecordingButton';
 import { useCountdown } from '../../hooks/useCountdown';
 
-export type OutputButtonsProps = Partial<OutputButtonsWithContextProps>;
+export type OutputButtonsProps = Partial<OutputButtonsWithContextProps> & {
+  micPositionX: Animated.SharedValue<number>;
+  micPositionY: Animated.SharedValue<number>;
+};
 
 export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel'> &
@@ -41,7 +43,10 @@ export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
     | 'SendButton'
     | 'StopMessageStreamingButton'
     | 'StartAudioRecordingButton'
-  >;
+  > & {
+    micPositionX: Animated.SharedValue<number>;
+    micPositionY: Animated.SharedValue<number>;
+  };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
@@ -56,6 +61,9 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
     isOnline,
     SendButton,
     StopMessageStreamingButton,
+    StartAudioRecordingButton,
+    micPositionX,
+    micPositionY,
   } = props;
   const {
     theme: {
@@ -88,7 +96,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
     return <StopMessageStreamingButton onPress={stopGenerating} />;
   }
 
-  if (editing) {
+  if (editing || command) {
     return (
       <Animated.View
         entering={ZoomIn.duration(200)}
@@ -134,7 +142,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
       key='audio-recording-button'
       style={audioRecordingButtonContainer}
     >
-      <AudioRecordingButton />
+      <StartAudioRecordingButton micPositionX={micPositionX} micPositionY={micPositionY} />
     </Animated.View>
   );
 };

@@ -190,7 +190,6 @@ class _Audio {
   };
   stopRecording = async () => {
     try {
-      if (!audioRecorderPlayer._isRecording) return;
       await audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
     } catch (error) {

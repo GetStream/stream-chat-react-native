@@ -43,13 +43,12 @@ import type { AudioRecorderProps } from '../../components/MessageInput/component
 import type { AudioRecordingButtonProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingButton';
 import type { AudioRecordingInProgressProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingInProgress';
 import type { AudioRecordingLockIndicatorProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
-import type { AudioRecordingPreviewProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
-import type { CommandInputProps } from '../../components/MessageInput/components/CommandInput';
 import type { AttachButtonProps } from '../../components/MessageInput/components/InputButtons/AttachButton';
 import type { InputButtonsProps } from '../../components/MessageInput/components/InputButtons/index';
 import type { CooldownTimerProps } from '../../components/MessageInput/components/OutputButtons/CooldownTimer';
 import type { SendButtonProps } from '../../components/MessageInput/components/OutputButtons/SendButton';
+import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
 import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
 import { useStableCallback } from '../../hooks/useStableCallback';
@@ -59,6 +58,7 @@ import {
 } from '../../middlewares/attachments';
 
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
+import { AudioRecorderManager } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
@@ -100,6 +100,11 @@ export type LocalMessageInputContext = {
   takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
   toggleAttachmentPicker: () => void;
   uploadNewFile: (file: File) => Promise<void>;
+  audioRecorderManager: AudioRecorderManager;
+  startVoiceRecording: () => Promise<void>;
+  deleteVoiceRecording: () => Promise<void>;
+  uploadVoiceRecording: (multiSendEnabled: boolean) => Promise<void>;
+  stopVoiceRecording: () => Promise<void>;
 };
 
 export type InputMessageInputContextValue = {
@@ -161,7 +166,7 @@ export type InputMessageInputContextValue = {
    * **Default**
    * [AudioRecordingPreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx)
    */
-  AudioRecordingPreview: React.ComponentType<AudioRecordingPreviewProps>;
+  AudioRecordingPreview: React.ComponentType;
   /**
    * Custom UI component to render audio recording waveform.
    *
@@ -272,7 +277,6 @@ export type InputMessageInputContextValue = {
   /** When false, ImageSelectorIcon will be hidden */
   hasImagePicker: boolean;
 
-  CommandInput: React.ComponentType<CommandInputProps>;
   /**
    * Custom UI component for send button.
    *
@@ -405,6 +409,7 @@ export const MessageInputProvider = ({
     useAttachmentPickerContext();
   const { client } = useChatContext();
   const channelCapabilities = useOwnCapabilitiesContext();
+  const [audioRecorderManager] = useState(new AudioRecorderManager());
 
   const { uploadAbortControllerRef } = useChannelContext();
   const { clearEditingState } = useMessageComposerAPIContext();
@@ -669,6 +674,9 @@ export const MessageInputProvider = ({
     defaultOpenPollCreationDialog();
   });
 
+  const { deleteVoiceRecording, startVoiceRecording, stopVoiceRecording, uploadVoiceRecording } =
+    useAudioRecorder({ audioRecorderManager, sendMessage });
+
   const messageInputContext = useCreateMessageInputContext({
     closeAttachmentPicker,
     cooldownEndsAt,
@@ -687,6 +695,11 @@ export const MessageInputProvider = ({
     selectedPicker,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,
+    audioRecorderManager,
+    startVoiceRecording,
+    deleteVoiceRecording,
+    uploadVoiceRecording,
+    stopVoiceRecording,
   });
   return (
     <MessageInputContext.Provider

@@ -1,5 +1,5 @@
 import React, { RefObject, useEffect, useMemo } from 'react';
-import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -14,7 +14,9 @@ import {
 import { useTheme } from '../../contexts';
 import { useStateStore } from '../../hooks';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
-import { Audio, Pause, Play } from '../../icons';
+import { Audio } from '../../icons';
+import { NewPause } from '../../icons/NewPause';
+import { NewPlay } from '../../icons/NewPlay';
 import {
   NativeHandlers,
   SoundReturnType,
@@ -56,6 +58,8 @@ export type AudioAttachmentProps = {
    * If true, the audio attachment is in preview mode in the message input.
    */
   isPreview?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
+  maxAmplitudesCount?: number;
 };
 
 const audioPlayerSelector = (state: AudioPlayerState) => ({
@@ -81,6 +85,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     testID,
     titleMaxLength,
     isPreview = false,
+    containerStyle,
+    maxAmplitudesCount = 30,
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
 
@@ -173,7 +179,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         speedChangeButton,
         speedChangeButtonText,
       },
-      colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white, white },
+      colors: { black, static_white, white },
+      semantics,
       messageInput: {
         fileAttachmentUploadPreview: { filenameText },
       },
@@ -197,9 +204,10 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         styles.container,
         {
           backgroundColor: white,
-          borderColor: grey_whisper,
+          borderColor: semantics.borderCoreDefault,
         },
         container,
+        containerStyle,
       ]}
       testID={testID}
     >
@@ -209,14 +217,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           onPress={handlePlayPause}
           style={[
             styles.playPauseButton,
-            { backgroundColor: static_white, shadowColor: black },
+            { backgroundColor: static_white, borderColor: semantics.borderCoreDefault },
             playPauseButton,
           ]}
         >
           {!isPlaying ? (
-            <Play fill={static_black} height={32} width={32} />
+            <NewPlay fill={semantics.textSecondary} height={20} width={20} />
           ) : (
-            <Pause fill={static_black} height={32} width={32} />
+            <NewPause fill={semantics.textSecondary} height={20} width={20} />
           )}
         </Pressable>
       </View>
@@ -227,25 +235,31 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           style={[
             styles.filenameText,
             {
-              color: black,
+              color: semantics.textPrimary,
             },
             I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
             filenameText,
           ]}
         >
           {isVoiceRecordingAttachment(item)
-            ? 'Recording'
+            ? 'Voice Message'
             : getTrimmedAttachmentTitle(item.title, titleMaxLength)}
         </Text>
         <View style={styles.audioInfo}>
-          <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>
+          <Text
+            style={[
+              styles.progressDurationText,
+              { color: isPlaying ? semantics.accentPrimary : semantics.textSecondary },
+              progressDurationText,
+            ]}
+          >
             {progressDuration}
           </Text>
           {!hideProgressBar && (
             <View style={[styles.progressControlContainer, progressControlContainer]}>
               {item.waveform_data ? (
                 <WaveProgressBar
-                  amplitudesCount={30}
+                  amplitudesCount={maxAmplitudesCount}
                   onEndDrag={dragEnd}
                   onProgressDrag={dragProgress}
                   onStartDrag={dragStart}
@@ -254,7 +268,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                 />
               ) : (
                 <ProgressControl
-                  filledColor={accent_blue}
+                  filledColor={semantics.accentPrimary}
                   onEndDrag={dragEnd}
                   onStartDrag={dragStart}
                   progress={progress}
@@ -314,33 +328,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     borderWidth: 1,
-    flex: 1,
     flexDirection: 'row',
-    paddingLeft: 8,
-    paddingRight: 16,
+    paddingHorizontal: 12,
     paddingVertical: 12,
+    width: 224, // TODO: Not sure how to omit this
+    gap: 12,
   },
   filenameText: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 13,
+    fontWeight: '600',
+    lineHeight: 16,
     marginBottom: 8,
   },
-  leftContainer: {
-    marginRight: 8,
-  },
+  leftContainer: {},
   playPauseButton: {
     alignItems: 'center',
     borderRadius: 50,
-    elevation: 4,
     justifyContent: 'center',
-    marginRight: 8,
-    padding: 4,
-    shadowOffset: {
-      height: 2,
-      width: 0,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
+    padding: 12,
+    borderWidth: 1,
   },
   progressControlContainer: {
     flexGrow: 1,
@@ -348,6 +354,8 @@ const styles = StyleSheet.create({
   },
   progressDurationText: {
     fontSize: 12,
+    fontWeight: '400',
+    lineHeight: 16,
     marginRight: 8,
   },
   rightContainer: {
