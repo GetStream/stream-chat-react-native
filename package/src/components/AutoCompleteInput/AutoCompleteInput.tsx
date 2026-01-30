@@ -57,13 +57,23 @@ const MAX_NUMBER_OF_LINES = 5;
 const LINE_HEIGHT = 20;
 const PADDING_VERTICAL = 12;
 
+const commandPlaceHolders: Record<string, string> = {
+  giphy: 'Search GIFs',
+  ban: '@username',
+  unban: '@username',
+  mute: '@username',
+  unmute: '@username',
+};
+
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
+  const styles = useStyles();
   const {
     channel,
     cooldownRemainingSeconds,
     setInputBoxRef,
     t,
     TextInputComponent = RNTextInput,
+    placeholder,
     ...rest
   } = props;
   const [localText, setLocalText] = useState('');
@@ -109,18 +119,20 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   const {
     theme: {
-      colors: { black, grey },
       messageInput: { inputBox },
+      semantics,
     },
   } = useTheme();
 
   const placeholderText = useMemo(() => {
-    return command
-      ? t('Search')
-      : cooldownRemainingSeconds
-        ? `Slow mode, wait ${cooldownRemainingSeconds}s...`
-        : t('Send a message');
-  }, [command, cooldownRemainingSeconds, t]);
+    return placeholder
+      ? placeholder
+      : command
+        ? commandPlaceHolders[command.name ?? '']
+        : cooldownRemainingSeconds
+          ? `Slow mode, wait ${cooldownRemainingSeconds}s...`
+          : t('Send a message');
+  }, [command, cooldownRemainingSeconds, t, placeholder]);
 
   return (
     <TextInputComponent
@@ -131,13 +143,13 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       onChangeText={onChangeTextHandler}
       onSelectionChange={handleSelectionChange}
       placeholder={placeholderText}
-      placeholderTextColor={grey}
+      placeholderTextColor={semantics.inputTextPlaceholder}
       ref={setInputBoxRef}
       style={[
         styles.inputBox,
         {
-          color: black,
           maxHeight: LINE_HEIGHT * numberOfLines + PADDING_VERTICAL * 2,
+          paddingLeft: command ? 0 : 16,
           paddingRight: command ? 4 : 8,
           textAlign: I18nManager.isRTL ? 'right' : 'left',
         },
@@ -206,16 +218,24 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  inputBox: {
-    flex: 1,
-    fontSize: 16,
-    includeFontPadding: false, // for android vertical text centering
-    lineHeight: 20,
-    paddingLeft: 16,
-    paddingVertical: 12,
-    textAlignVertical: 'center', // for android vertical text centering
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      inputBox: {
+        color: semantics.inputTextDefault,
+        flex: 1,
+        fontSize: 16,
+        includeFontPadding: false, // for android vertical text centering
+        lineHeight: 20,
+        paddingLeft: 16,
+        paddingVertical: 12,
+        textAlignVertical: 'center', // for android vertical text centering
+      },
+    });
+  }, [semantics]);
+};
 
 AutoCompleteInput.displayName = 'AutoCompleteInput{messageInput{inputBox}}';

@@ -58,13 +58,13 @@ const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
   const { disabled, onPress } = props;
   const {
     theme: {
-      colors: { accent_blue, grey },
+      semantics,
     },
   } = useTheme();
 
   return (
     <RoundButton disabled={disabled} onPress={onPress}>
-      <Check pathFill={!disabled ? accent_blue : grey} />
+      <Check pathFill={!disabled ? semantics.accentPrimary : semantics.textPrimary} />
     </RoundButton>
   );
 };
@@ -86,7 +86,8 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
 
   const {
     theme: {
-      colors: { bg_gradient_end, bg_gradient_start, black, border, grey, white_snow },
+      colors: { bg_gradient_end, bg_gradient_start, black, grey, white_snow },
+      semantics,
     },
   } = useTheme();
   const { vw } = useViewport();
@@ -128,7 +129,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
             styles.inputBoxContainer,
             {
               backgroundColor: white_snow,
-              borderColor: border.surfaceSubtle,
+              borderColor: semantics.borderCoreDefault,
             },
           ]}
         >

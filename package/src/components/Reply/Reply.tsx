@@ -17,10 +17,10 @@ import { NewFile } from '../../icons/NewFile';
 import { NewLink } from '../../icons/NewLink';
 import { NewMapPin } from '../../icons/NewMapPin';
 import { NewMic } from '../../icons/NewMic';
-import { NewPencil } from '../../icons/NewPencil';
 import { NewPhoto } from '../../icons/NewPhoto';
 import { NewPoll } from '../../icons/NewPoll';
 import { NewVideo } from '../../icons/NewVideo';
+import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { checkQuotedMessageEquality } from '../../utils/utils';
 import { FileIcon } from '../Attachment/FileIcon';
@@ -38,6 +38,7 @@ const selector = (nextValue: PollState) => ({
 const RightContent = React.memo((props: { message: LocalMessage }) => {
   const { message } = props;
   const attachments = message?.attachments;
+  const styles = useStyles();
 
   if (!attachments || attachments.length > 1) {
     return null;
@@ -47,14 +48,14 @@ const RightContent = React.memo((props: { message: LocalMessage }) => {
 
   if (attachment?.type === FileTypes.Image) {
     return (
-      <View style={styles.contentWrapper}>
+      <View style={[styles.contentWrapper, styles.contentBorder]}>
         <Image source={{ uri: attachment.image_url }} style={StyleSheet.absoluteFillObject} />
       </View>
     );
   }
   if (attachment?.type === FileTypes.Video) {
     return (
-      <View style={styles.contentWrapper}>
+      <View style={[styles.contentWrapper, styles.contentBorder]}>
         <View style={styles.attachmentContainer}>
           <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFillObject} />
           <VideoPlayIndicator size='sm' />
@@ -79,6 +80,7 @@ const SubtitleText = React.memo(({ message }: { message?: LocalMessage | null })
       reply: { subtitle: subtitleStyle },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const subtitle = useMemo(() => {
     const attachments = message?.attachments;
@@ -175,9 +177,12 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
   const { message } = props;
   const {
     theme: {
+      semantics,
       reply: { pollIcon, locationIcon, linkIcon, audioIcon, fileIcon, videoIcon, photoIcon },
     },
   } = useTheme();
+  const styles = useStyles();
+
   if (!message) {
     return null;
   }
@@ -201,7 +206,13 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
 
   if (message.poll_id) {
     return (
-      <NewPoll height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...pollIcon} />
+      <NewPoll
+        height={12}
+        stroke={semantics.textPrimary}
+        style={styles.iconStyle}
+        width={12}
+        {...pollIcon}
+      />
     );
   }
 
@@ -209,7 +220,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewMapPin
         height={12}
-        stroke={'#384047'}
+        stroke={semantics.textPrimary}
         style={styles.iconStyle}
         width={12}
         {...locationIcon}
@@ -219,7 +230,13 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
 
   if (hasLink) {
     return (
-      <NewLink height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...linkIcon} />
+      <NewLink
+        height={12}
+        stroke={semantics.textPrimary}
+        style={styles.iconStyle}
+        width={12}
+        {...linkIcon}
+      />
     );
   }
 
@@ -227,7 +244,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewMic
         height={12}
-        stroke={'#384047'}
+        stroke={semantics.textPrimary}
         strokeWidth={1.2}
         style={styles.iconStyle}
         width={12}
@@ -238,13 +255,25 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
 
   if (onlyVideos) {
     return (
-      <NewVideo height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...videoIcon} />
+      <NewVideo
+        height={12}
+        stroke={semantics.textPrimary}
+        style={styles.iconStyle}
+        width={12}
+        {...videoIcon}
+      />
     );
   }
 
   if (onlyImages) {
     return (
-      <NewPhoto height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...photoIcon} />
+      <NewPhoto
+        height={12}
+        stroke={semantics.textPrimary}
+        style={styles.iconStyle}
+        width={12}
+        {...photoIcon}
+      />
     );
   }
 
@@ -255,7 +284,13 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     audioAttachments?.length
   ) {
     return (
-      <NewFile height={12} stroke={'#384047'} style={styles.iconStyle} width={12} {...fileIcon} />
+      <NewFile
+        height={12}
+        stroke={semantics.textPrimary}
+        style={styles.iconStyle}
+        width={12}
+        {...fileIcon}
+      />
     );
   }
 
@@ -275,7 +310,6 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   const { isMyMessage, message: messageFromContext, mode, onDismiss, quotedMessage, style } = props;
   const {
     theme: {
-      colors: { grey_whisper },
       reply: {
         wrapper,
         container,
@@ -285,8 +319,10 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         subtitleContainer,
         dismissWrapper,
       },
+      semantics,
     },
   } = useTheme();
+  const styles = useStyles();
 
   const title = useMemo(
     () =>
@@ -294,7 +330,9 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         ? 'Edit Message'
         : isMyMessage
           ? 'You'
-          : `Reply to ${quotedMessage?.user?.name}`,
+          : quotedMessage?.user?.name
+            ? `Reply to ${quotedMessage?.user?.name}`
+            : 'Reply',
     [mode, isMyMessage, quotedMessage?.user?.name],
   );
 
@@ -307,7 +345,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       <View
         style={[
           styles.container,
-          { backgroundColor: isMyMessage ? '#F2F4F6' : '#D2E3FF', borderColor: grey_whisper },
+          { backgroundColor: isMyMessage ? semantics.chatBgIncoming : semantics.chatBgOutgoing },
           container,
           style,
         ]}
@@ -315,12 +353,15 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         <View
           style={[
             styles.leftContainer,
-            { borderLeftColor: isMyMessage ? '#B8BEC4' : '#4E8BFF' },
+            {
+              borderLeftColor: isMyMessage
+                ? semantics.chatReplyIndicatorIncoming
+                : semantics.chatReplyIndicatorOutgoing,
+            },
             leftContainer,
           ]}
         >
           <View style={styles.titleContainer}>
-            {mode === 'edit' ? <NewPencil height={12} width={12} stroke={'#384047'} /> : null}
             <Text numberOfLines={1} style={[styles.title, titleStyle]}>
               {title}
             </Text>
@@ -412,76 +453,76 @@ export const Reply = (props: ReplyProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  attachmentContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  container: {
-    borderRadius: 12,
-    flexDirection: 'row',
-    padding: 8,
-  },
-  contentWrapper: {
-    backgroundColor: 'white',
-    borderColor: '#E2E6EA',
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 40,
-    overflow: 'hidden',
-    width: 40,
-  },
-  dismissWrapper: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  iconStyle: {},
-  imageAttachment: {},
-  leftContainer: {
-    borderLeftColor: '#B8BEC4',
-    borderLeftWidth: 2,
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-  },
-  playIconContainer: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 10,
-    height: 20,
-    justifyContent: 'center',
-    width: 20,
-  },
-  rightContainer: {},
-  subtitle: {
-    color: '#384047',
-    flexShrink: 1,
-    fontSize: 12,
-    includeFontPadding: false,
-    lineHeight: 16,
-  },
-  subtitleContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 4,
-    paddingTop: 4,
-  },
-  titleContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 4,
-  },
-  title: {
-    color: '#384047',
-    fontSize: 12,
-    fontWeight: 'bold',
-    includeFontPadding: false,
-    lineHeight: 16,
-  },
-  wrapper: {
-    padding: 4,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        attachmentContainer: {
+          alignItems: 'center',
+          flex: 1,
+          justifyContent: 'center',
+        },
+        container: {
+          borderRadius: primitives.radiusLg,
+          flexDirection: 'row',
+          padding: primitives.spacingXs,
+        },
+        contentWrapper: {
+          borderRadius: primitives.radiusMd,
+          borderWidth: 1,
+          height: 40,
+          overflow: 'hidden',
+          width: 40,
+        },
+        contentBorder: {
+          borderColor: semantics.borderCoreOpacity10,
+        },
+        dismissWrapper: {
+          position: 'absolute',
+          right: 0,
+          top: 0,
+        },
+        iconStyle: {},
+        leftContainer: {
+          borderLeftWidth: 2,
+          flex: 1,
+          justifyContent: 'center',
+          paddingHorizontal: primitives.spacingXs,
+        },
+        rightContainer: {},
+        subtitle: {
+          color: semantics.textPrimary,
+          flexShrink: 1,
+          fontSize: primitives.typographyFontSizeXs,
+          fontWeight: primitives.typographyFontWeightRegular,
+          includeFontPadding: false,
+          lineHeight: 16,
+        },
+        subtitleContainer: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: primitives.spacingXxs,
+          paddingTop: primitives.spacingXxs,
+        },
+        titleContainer: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: primitives.spacingXxs,
+        },
+        title: {
+          color: semantics.textPrimary,
+          fontSize: primitives.typographyFontSizeXs,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          includeFontPadding: false,
+          lineHeight: 16,
+        },
+        wrapper: {
+          padding: primitives.spacingXxs,
+        },
+      }),
+    [semantics],
+  );
+};

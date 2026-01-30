@@ -134,7 +134,8 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
 }) => {
   const {
     theme: {
-      colors: { accent_green, accent_red, black, border, grey, white, white_smoke },
+      colors: { accent_green, accent_red, black, grey, white, white_smoke },
+      semantics,
     },
   } = useTheme();
   const { chatClient } = useAppContext();
@@ -148,13 +149,13 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   const user = member?.user;
   const [muted, setMuted] = useState(
     chatClient?.mutedUsers &&
-      chatClient?.mutedUsers?.findIndex((mutedUser) => mutedUser.target.id === user?.id) > -1,
+    chatClient?.mutedUsers?.findIndex((mutedUser) => mutedUser.target.id === user?.id) > -1,
   );
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     chatClient?.mutedChannels &&
-      chatClient.mutedChannels.findIndex(
-        (mutedChannel) => mutedChannel.channel?.id === channel.id,
-      ) > -1,
+    chatClient.mutedChannels.findIndex(
+      (mutedChannel) => mutedChannel.channel?.id === channel.id,
+    ) > -1,
   );
 
   /**
@@ -227,7 +228,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
             style={[
               styles.userNameContainer,
               {
-                borderTopColor: border.surfaceSubtle,
+                borderTopColor: semantics.borderCoreDefault,
               },
             ]}
           >
@@ -266,7 +267,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: semantics.borderCoreDefault,
             },
           ]}
         >
@@ -305,7 +306,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: semantics.borderCoreDefault,
             },
           ]}
         >
@@ -351,7 +352,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: semantics.borderCoreDefault,
             },
           ]}
         >
@@ -381,7 +382,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: semantics.borderCoreDefault,
             },
           ]}
         >
@@ -411,7 +412,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: semantics.borderCoreDefault,
             },
           ]}
         >
@@ -441,7 +442,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: semantics.borderCoreDefault,
             },
           ]}
         >
@@ -468,7 +469,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           style={[
             styles.actionContainer,
             {
-              borderBottomColor: border.surfaceSubtle,
+              borderBottomColor: semantics.borderCoreDefault,
             },
           ]}
         >

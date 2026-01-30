@@ -90,7 +90,8 @@ type Props = {
 export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
   const {
     theme: {
-      colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
+      colors: { black, grey, grey_gainsboro, grey_whisper, white_snow },
+      semantics,
     },
   } = useTheme();
   const { switchUser } = useAppContext();
@@ -125,7 +126,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
             onPress={() => {
               switchUser(u.id);
             }}
-            style={[styles.userContainer, { borderBottomColor: border.surfaceSubtle }]}
+            style={[styles.userContainer, { borderBottomColor: semantics.borderCoreDefault }]}
             testID={`user-selector-button-${u.id}`}
           >
             <Image
@@ -156,7 +157,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
           onPress={() => {
             navigation.navigate('AdvancedUserSelectorScreen');
           }}
-          style={[styles.userContainer, { borderBottomColor: border.surfaceSubtle }]}
+          style={[styles.userContainer, { borderBottomColor: semantics.borderCoreDefault }]}
         >
           <View
             style={{

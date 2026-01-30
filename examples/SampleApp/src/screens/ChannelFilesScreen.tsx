@@ -83,7 +83,8 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   const insets = useSafeAreaInsets();
   const {
     theme: {
-      colors: { black, border, grey, white_snow },
+      colors: { black, grey, white_snow },
+      semantics,
     },
   } = useTheme();
 
@@ -149,7 +150,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
                   Alert.alert('Not implemented.');
                 }}
                 style={{
-                  borderBottomColor: border.surfaceSubtle,
+                  borderBottomColor: semantics.borderCoreDefault,
                   borderBottomWidth: index === section.data.length - 1 ? 0 : 1,
                 }}
               >

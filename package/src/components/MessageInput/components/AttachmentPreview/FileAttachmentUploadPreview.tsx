@@ -117,6 +117,7 @@ const useStyles = () => {
       StyleSheet.create({
         dismissWrapper: { position: 'absolute', right: 0, top: 0 },
         fileContainer: {
+          alignItems: 'center',
           borderRadius: primitives.radiusLg,
           borderColor: borderCoreDefault,
           borderWidth: 1,
@@ -125,23 +126,27 @@ const useStyles = () => {
           width: 224, // TODO: Not sure how to omit this
           padding: primitives.spacingMd,
         },
-        fileContent: {
-          flexShrink: 1,
-          justifyContent: 'space-between',
-        },
         fileIcon: {
           alignItems: 'center',
           alignSelf: 'center',
           justifyContent: 'center',
         },
+        fileContent: {
+          flexShrink: 1,
+          justifyContent: 'space-between',
+        },
         filenameText: {
           color: textPrimary,
           fontSize: primitives.typographyFontSizeXs,
           fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightTight,
         },
         fileSizeText: {
           color: textSecondary,
           fontSize: primitives.typographyFontSizeXs,
+          lineHeight: primitives.typographyLineHeightTight,
+          fontWeight: primitives.typographyFontWeightRegular,
+          paddingTop: primitives.spacingXxs,
         },
         overlay: {
           borderRadius: primitives.radiusLg,

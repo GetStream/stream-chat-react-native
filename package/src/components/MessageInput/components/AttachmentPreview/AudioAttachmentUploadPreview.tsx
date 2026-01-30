@@ -11,6 +11,7 @@ import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressInd
 import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
+import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
@@ -24,6 +25,7 @@ export const AudioAttachmentUploadPreview = ({
   handleRetry,
   removeAttachments,
 }: AudioAttachmentUploadPreviewProps) => {
+  const styles = useStyles();
   const { enableOfflineSupport } = useChatContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
@@ -56,18 +58,18 @@ export const AudioAttachmentUploadPreview = ({
   }, [attachment, removeAttachments]);
 
   return (
-    <View testID={'audio-attachment-upload-preview'}>
+    <View style={styles.wrapper} testID={'audio-attachment-upload-preview'}>
       <AttachmentUploadProgressIndicator
         onPress={onRetryHandler}
         style={styles.overlay}
         type={indicatorType}
       >
         <AudioAttachment
-          hideProgressBar={true}
           isPreview={true}
           item={finalAttachment}
           showSpeedSettings={false}
           titleMaxLength={12}
+          maxAmplitudesCount={25}
         />
       </AttachmentUploadProgressIndicator>
       <View style={styles.dismissWrapper}>
@@ -80,15 +82,22 @@ export const AudioAttachmentUploadPreview = ({
   );
 };
 
-const styles = StyleSheet.create({
-  dismissWrapper: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  overlay: {
-    borderRadius: 12,
-    marginHorizontal: 8,
-    marginTop: 2,
-  },
-});
+const useStyles = () => {
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        dismissWrapper: {
+          position: 'absolute',
+          right: 0,
+          top: 0,
+        },
+        overlay: {
+          borderRadius: primitives.radiusLg,
+        },
+        wrapper: {
+          padding: primitives.spacingXxs,
+        },
+      }),
+    [],
+  );
+};

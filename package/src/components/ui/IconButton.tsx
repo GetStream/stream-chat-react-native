@@ -1,12 +1,20 @@
 import React from 'react';
-import { Pressable, PressableProps, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  ColorValue,
+  Pressable,
+  PressableProps,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../icons/utils/base';
 
 export type IconButtonProps = PressableProps & {
   Icon: React.FC<IconProps> | React.ReactNode;
-  iconColor?: string;
+  iconColor?: ColorValue;
   onPress?: () => void;
   size?: 'sm' | 'md' | 'lg';
   status?: 'disabled' | 'pressed' | 'selected' | 'enabled';
@@ -77,8 +85,10 @@ export const IconButton = (props: IconButtonProps) => {
               ? selectedColor
               : pressed
                 ? '#F5F6F7'
-                : getBackgroundColor({ status, type }),
-          borderColor: '#E2E6EA',
+                : category === 'outline'
+                  ? 'none'
+                  : getBackgroundColor({ status, type }),
+          borderColor: type === 'destructive' ? '#D92F26' : '#E2E6EA',
           borderWidth: category === 'outline' || category === 'filled' ? 1 : 0,
         },
         style as StyleProp<ViewStyle>,

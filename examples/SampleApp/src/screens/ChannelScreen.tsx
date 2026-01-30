@@ -221,7 +221,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   return (
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
       <Channel
-        audioRecordingEnabled={false}
+        audioRecordingEnabled={true}
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
         messageInputFloating={messageInputFloating}

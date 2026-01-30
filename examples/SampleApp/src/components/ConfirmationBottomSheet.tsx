@@ -52,7 +52,8 @@ export const ConfirmationBottomSheet: React.FC = () => {
 
   const {
     theme: {
-      colors: { accent_red, black, border, grey, white },
+      colors: { accent_red, black, grey, white },
+      semantics,
     },
   } = useTheme();
   const inset = useSafeAreaInsets();
@@ -86,7 +87,7 @@ export const ConfirmationBottomSheet: React.FC = () => {
         style={[
           styles.actionButtonsContainer,
           {
-            borderTopColor: border.surfaceSubtle,
+            borderTopColor: semantics.borderCoreDefault,
           },
         ]}
       >

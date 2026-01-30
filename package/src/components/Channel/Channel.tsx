@@ -185,7 +185,6 @@ import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../
 import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
 import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
 import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
-import { CommandInput as CommandInputDefault } from '../MessageInput/components/CommandInput';
 import { InputButtons as InputButtonsDefault } from '../MessageInput/components/InputButtons';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/components/InputButtons/AttachButton';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/components/OutputButtons/CooldownTimer';
@@ -561,7 +560,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     asyncMessagesLockDistance = 50,
     asyncMessagesMinimumPressDuration = 500,
     asyncMessagesMultiSendEnabled = true,
-    asyncMessagesSlideToCancelDistance = 100,
+    asyncMessagesSlideToCancelDistance = 75,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
@@ -665,7 +664,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
-    CommandInput = CommandInputDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
     keyboardBehavior,
@@ -1857,7 +1855,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionList,
     CameraSelectorIcon,
     channelId,
-    CommandInput,
     compressImageQuality,
     CooldownTimer,
     CreatePollContent,
