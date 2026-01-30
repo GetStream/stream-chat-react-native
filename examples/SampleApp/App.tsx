@@ -196,6 +196,9 @@ const App = () => {
         drafts: {
           enabled: true,
         },
+        linkPreviews: {
+          enabled: true,
+        }
       });
 
       setupCommandUIMiddlewares(composer);

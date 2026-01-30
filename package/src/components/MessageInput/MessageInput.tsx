@@ -25,9 +25,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
 
+import { LinkPreviewList } from './components/LinkPreviewList';
 import { OutputButtons } from './components/OutputButtons';
 import { useAudioRecorder } from './hooks/useAudioRecorder';
 import { useCountdown } from './hooks/useCountdown';
+
+import { useHasLinkPreviews } from './hooks/useLinkPreviews';
 
 import {
   ChatContextValue,
@@ -262,6 +265,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
 
   const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
+
+  const hasLinkPreviews = useHasLinkPreviews();
+
   const {
     theme: {
       semantics,
@@ -530,7 +536,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 />
               ) : (
                 <>
-                  <View
+                  <Animated.View
+                    layout={LinearTransition.duration(200)}
                     style={[
                       styles.inputButtonsContainer,
                       messageInputFloating ? styles.shadow : null,
@@ -538,7 +545,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     ]}
                   >
                     {InputButtons && <InputButtons />}
-                  </View>
+                  </Animated.View>
                   <Animated.View
                     layout={LinearTransition.duration(200)}
                     style={[
@@ -553,11 +560,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     ]}
                   >
                     <View style={[styles.inputBoxContainer, inputBoxContainer]}>
-                      <View
+                      <Animated.View
+                        layout={LinearTransition.duration(200)}
                         style={[
                           styles.contentContainer,
                           {
-                            paddingTop: hasAttachments || quotedMessage || editing ? 8 : 0,
+                            paddingTop:
+                              hasAttachments || quotedMessage || editing || hasLinkPreviews ? 8 : 0,
                           },
                           contentContainer,
                         ]}
@@ -583,9 +592,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                           </Animated.View>
                         ) : null}
                         <AttachmentUploadPreviewList />
-                      </View>
+                        <LinkPreviewList />
+                      </Animated.View>
 
-                      <View style={[styles.inputContainer, inputContainer]}>
+                      <Animated.View
+                        layout={LinearTransition.duration(200)}
+                        style={[styles.inputContainer, inputContainer]}
+                      >
                         {command ? (
                           <CommandInput disabled={!isOnline} />
                         ) : (
@@ -599,7 +612,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         <View style={[styles.outputButtonsContainer, outputButtonsContainer]}>
                           <OutputButtons />
                         </View>
-                      </View>
+                      </Animated.View>
                     </View>
                   </Animated.View>
                 </>

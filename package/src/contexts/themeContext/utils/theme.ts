@@ -422,6 +422,18 @@ export type Theme = {
       upload: ImageStyle;
     };
     wrapper: ViewStyle;
+    linkPreviewList: {
+      linkContainer: ViewStyle;
+      linkIcon: ViewStyle;
+      container: ViewStyle;
+      imageWrapper: ViewStyle;
+      dismissWrapper: ViewStyle;
+      thumbnail: ImageStyle;
+      wrapper: ViewStyle;
+      metadataContainer: ViewStyle;
+      text: TextStyle;
+      titleText: TextStyle;
+    };
   };
   messageList: {
     container: ViewStyle;
@@ -1227,6 +1239,18 @@ export const defaultTheme: Theme = {
       upload: {},
     },
     wrapper: {},
+    linkPreviewList: {
+      linkContainer: {},
+      linkIcon: {},
+      container: {},
+      imageWrapper: {},
+      dismissWrapper: {},
+      thumbnail: {},
+      wrapper: {},
+      metadataContainer: {},
+      text: {},
+      titleText: {},
+    },
   },
   messageList: {
     container: {},
