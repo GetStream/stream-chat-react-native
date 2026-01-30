@@ -422,7 +422,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             layout={LinearTransition.duration(200)}
           >
             {isRecordingStateIdle ? (
-              <View
+              <Animated.View
+                layout={LinearTransition.duration(200)}
                 style={[
                   styles.inputButtonsContainer,
                   messageInputFloating ? styles.shadow : null,
@@ -430,9 +431,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 ]}
               >
                 {InputButtons && <InputButtons />}
-              </View>
+              </Animated.View>
             ) : null}
-            <View
+            <Animated.View
+              layout={LinearTransition.duration(200)}
               style={[
                 styles.inputBoxWrapper,
                 messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
@@ -447,12 +449,15 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   <AudioRecordingInProgress />
                 ) : null}
                 {isRecordingStateIdle ? (
-                  <View
+                  <Animated.View
+                    layout={LinearTransition.duration(200)}
                     style={[
                       styles.contentContainer,
                       {
                         paddingTop:
-                          hasAttachments || quotedMessage || editing ? primitives.spacingXs : 0,
+                          hasAttachments || quotedMessage || editing || hasLinkPreviews
+                            ? primitives.spacingXs
+                            : 0,
                       },
                       contentContainer,
                     ]}
@@ -478,10 +483,14 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       </Animated.View>
                     ) : null}
                     <AttachmentUploadPreviewList />
-                  </View>
+                    <LinkPreviewList />
+                  </Animated.View>
                 ) : null}
 
-                <View style={[styles.inputContainer, inputContainer]}>
+                <Animated.View
+                  style={[styles.inputContainer, inputContainer]}
+                  layout={LinearTransition.duration(200)}
+                >
                   {!isRecordingStateIdle ? (
                     <AudioRecorder slideToCancelStyle={slideToCancelAnimatedStyle} />
                   ) : (
@@ -505,9 +514,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       <OutputButtons micPositionX={micPositionX} micPositionY={micPositionY} />
                     </View>
                   ) : null}
-                </View>
+                </Animated.View>
               </View>
-            </View>
+            </Animated.View>
           </Animated.View>
         )}
         <ShowThreadMessageInChannelButton threadList={threadList} />
