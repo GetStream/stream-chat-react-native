@@ -90,7 +90,7 @@ type Props = {
 export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
   const {
     theme: {
-      colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
+      colors: { black, grey, grey_gainsboro, grey_whisper, white_snow },
       semantics,
     },
   } = useTheme();

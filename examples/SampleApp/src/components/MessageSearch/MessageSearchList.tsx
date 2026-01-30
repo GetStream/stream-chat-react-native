@@ -72,7 +72,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
     } = props;
     const {
       theme: {
-        colors: { black, border, grey, white_snow },
+        colors: { black, grey, white_snow },
         semantics,
       },
     } = useTheme();

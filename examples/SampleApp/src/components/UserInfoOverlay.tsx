@@ -105,7 +105,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
 
   const {
     theme: {
-      colors: { accent_red, black, border, grey, white },
+      colors: { accent_red, black, grey, white },
       semantics,
     },
   } = useTheme();
