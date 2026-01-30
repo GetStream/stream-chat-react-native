@@ -313,10 +313,10 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 24,
                                     },
                                     {
-                                      "backgroundColor": "#FFF1C2",
+                                      "backgroundColor": "#fcedb9",
                                     },
                                     {
-                                      "borderColor": "hsla(0, 0%, 0%, 0.1)",
+                                      "borderColor": "rgba(0, 0, 0, 0.1)",
                                       "borderWidth": 1,
                                     },
                                   ]
@@ -689,10 +689,10 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 24,
                                     },
                                     {
-                                      "backgroundColor": "#C9FCE7",
+                                      "backgroundColor": "#bdfcdb",
                                     },
                                     {
-                                      "borderColor": "hsla(0, 0%, 0%, 0.1)",
+                                      "borderColor": "rgba(0, 0, 0, 0.1)",
                                       "borderWidth": 1,
                                     },
                                   ]
@@ -1103,10 +1103,10 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 24,
                                     },
                                     {
-                                      "backgroundColor": "#FFF1C2",
+                                      "backgroundColor": "#fcedb9",
                                     },
                                     {
-                                      "borderColor": "hsla(0, 0%, 0%, 0.1)",
+                                      "borderColor": "rgba(0, 0, 0, 0.1)",
                                       "borderWidth": 1,
                                     },
                                   ]
@@ -1483,10 +1483,10 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 24,
                                     },
                                     {
-                                      "backgroundColor": "#C9FCE7",
+                                      "backgroundColor": "#bdfcdb",
                                     },
                                     {
-                                      "borderColor": "hsla(0, 0%, 0%, 0.1)",
+                                      "borderColor": "rgba(0, 0, 0, 0.1)",
                                       "borderWidth": 1,
                                     },
                                   ]
@@ -1881,13 +1881,13 @@ exports[`Thread should match thread snapshot 1`] = `
       style={
         [
           {
-            "borderTopWidth": 1,
             "paddingHorizontal": 16,
             "paddingTop": 16,
           },
           {
-            "backgroundColor": "#FFFFFF",
-            "borderColor": "#E2E6EA",
+            "backgroundColor": "#ffffff",
+            "borderColor": "#d5dbe1",
+            "borderTopWidth": 1,
             "paddingBottom": 16,
           },
           {},
@@ -1895,6 +1895,7 @@ exports[`Thread should match thread snapshot 1`] = `
       }
     >
       <View
+        layout={BaseAnimationMock {}}
         style={
           [
             {
@@ -1919,6 +1920,8 @@ exports[`Thread should match thread snapshot 1`] = `
           }
         >
           <View
+            entering={BaseAnimationMock {}}
+            exiting={BaseAnimationMock {}}
             style={
               [
                 {},
@@ -2065,18 +2068,15 @@ exports[`Thread should match thread snapshot 1`] = `
           </View>
         </View>
         <View
-          layout={BaseAnimationMock {}}
           style={
             [
               {
+                "backgroundColor": "#ffffff",
+                "borderColor": "#d5dbe1",
                 "borderRadius": 24,
                 "borderWidth": 1,
                 "flex": 1,
                 "flexDirection": "row",
-              },
-              {
-                "backgroundColor": "#FFFFFF",
-                "borderColor": "#ECEBEB",
               },
               null,
               {},
@@ -2129,10 +2129,11 @@ exports[`Thread should match thread snapshot 1`] = `
                 onChangeText={[Function]}
                 onSelectionChange={[Function]}
                 placeholder="Send a message"
-                placeholderTextColor="#7A7A7A"
+                placeholderTextColor="#687385"
                 style={
                   [
                     {
+                      "color": "#1a1b25",
                       "flex": 1,
                       "fontSize": 16,
                       "includeFontPadding": false,
@@ -2142,8 +2143,8 @@ exports[`Thread should match thread snapshot 1`] = `
                       "textAlignVertical": "center",
                     },
                     {
-                      "color": "#000000",
                       "maxHeight": 124,
+                      "paddingLeft": 16,
                       "paddingRight": 8,
                       "textAlign": "left",
                     },
@@ -2170,118 +2171,108 @@ exports[`Thread should match thread snapshot 1`] = `
                   style={{}}
                 >
                   <View
-                    accessibilityLabel="Start recording"
-                    accessibilityState={
-                      {
-                        "busy": undefined,
-                        "checked": undefined,
-                        "disabled": false,
-                        "expanded": undefined,
-                        "selected": undefined,
-                      }
-                    }
-                    accessibilityValue={
-                      {
-                        "max": undefined,
-                        "min": undefined,
-                        "now": undefined,
-                        "text": undefined,
-                      }
-                    }
-                    accessible={true}
                     collapsable={false}
-                    focusable={true}
-                    onBlur={[Function]}
-                    onClick={[Function]}
-                    onFocus={[Function]}
-                    onResponderGrant={[Function]}
-                    onResponderMove={[Function]}
-                    onResponderRelease={[Function]}
-                    onResponderTerminate={[Function]}
-                    onResponderTerminationRequest={[Function]}
-                    onStartShouldSetResponder={[Function]}
                     style={
                       [
+                        {},
                         {
-                          "alignItems": "center",
-                          "justifyContent": "center",
+                          "transform": [
+                            {
+                              "scale": 1,
+                            },
+                          ],
                         },
-                        {
-                          "borderRadius": 16,
-                          "height": 32,
-                          "width": 32,
-                        },
-                        {
-                          "backgroundColor": "#FFFFFF",
-                          "borderColor": "#E2E6EA",
-                          "borderWidth": 0,
-                        },
-                        undefined,
+                        {},
                       ]
                     }
                   >
-                    <RNSVGSvgView
-                      align="xMidYMid"
-                      bbHeight={20}
-                      bbWidth={20}
-                      fill="none"
-                      focusable={false}
-                      height={20}
-                      meetOrSlice={0}
-                      minX={0}
-                      minY={0}
-                      stroke="#384047"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
+                    <View
+                      accessibilityLabel="Start recording"
+                      accessibilityState={
+                        {
+                          "busy": undefined,
+                          "checked": undefined,
+                          "disabled": false,
+                          "expanded": undefined,
+                          "selected": undefined,
+                        }
+                      }
+                      accessibilityValue={
+                        {
+                          "max": undefined,
+                          "min": undefined,
+                          "now": undefined,
+                          "text": undefined,
+                        }
+                      }
+                      accessible={true}
+                      collapsable={false}
+                      focusable={true}
+                      onBlur={[Function]}
+                      onClick={[Function]}
+                      onFocus={[Function]}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
                       style={
                         [
                           {
-                            "backgroundColor": "transparent",
+                            "alignItems": "center",
+                            "justifyContent": "center",
+                          },
+                          {
+                            "borderRadius": 16,
+                            "height": 32,
+                            "width": 32,
+                          },
+                          {
+                            "backgroundColor": "#FFFFFF",
+                            "borderColor": "#E2E6EA",
                             "borderWidth": 0,
                           },
-                          {
-                            "flex": 0,
-                            "height": 20,
-                            "width": 20,
-                          },
+                          undefined,
                         ]
                       }
-                      vbHeight={20}
-                      vbWidth={20}
-                      width={20}
                     >
-                      <RNSVGGroup
-                        fill={null}
-                        propList={
+                      <RNSVGSvgView
+                        align="xMidYMid"
+                        bbHeight={20}
+                        bbWidth={20}
+                        fill="none"
+                        focusable={false}
+                        height={20}
+                        meetOrSlice={0}
+                        minX={0}
+                        minY={0}
+                        stroke="#384047"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        style={
                           [
-                            "fill",
-                            "stroke",
-                            "strokeWidth",
-                            "strokeLinecap",
-                            "strokeLinejoin",
+                            {
+                              "backgroundColor": "transparent",
+                              "borderWidth": 0,
+                            },
+                            {
+                              "flex": 0,
+                              "height": 20,
+                              "width": 20,
+                            },
                           ]
                         }
-                        stroke={
-                          {
-                            "payload": 4281876551,
-                            "type": 0,
-                          }
-                        }
-                        strokeLinecap={1}
-                        strokeLinejoin={1}
-                        strokeWidth={1.5}
+                        vbHeight={20}
+                        vbWidth={20}
+                        width={20}
                       >
-                        <RNSVGPath
-                          d="M10.0007 15.8334C12.5636 15.8334 14.7662 14.2908 15.7307 12.0834M10.0007 15.8334C7.4378 15.8334 5.23519 14.2908 4.27075 12.0834M10.0007 15.8334V17.7084M10.0007 13.1251C8.04469 13.1251 6.45903 11.5394 6.45903 9.58341V5.83341C6.45903 3.87741 8.04469 2.29175 10.0007 2.29175C11.9567 2.29175 13.5423 3.87741 13.5423 5.83341V9.58341C13.5423 11.5394 11.9567 13.1251 10.0007 13.1251Z"
-                          fill={
-                            {
-                              "payload": 4278190080,
-                              "type": 0,
-                            }
-                          }
+                        <RNSVGGroup
+                          fill={null}
                           propList={
                             [
+                              "fill",
                               "stroke",
                               "strokeWidth",
                               "strokeLinecap",
@@ -2297,9 +2288,36 @@ exports[`Thread should match thread snapshot 1`] = `
                           strokeLinecap={1}
                           strokeLinejoin={1}
                           strokeWidth={1.5}
-                        />
-                      </RNSVGGroup>
-                    </RNSVGSvgView>
+                        >
+                          <RNSVGPath
+                            d="M10.0007 15.8334C12.5636 15.8334 14.7662 14.2908 15.7307 12.0834M10.0007 15.8334C7.4378 15.8334 5.23519 14.2908 4.27075 12.0834M10.0007 15.8334V17.7084M10.0007 13.1251C8.04469 13.1251 6.45903 11.5394 6.45903 9.58341V5.83341C6.45903 3.87741 8.04469 2.29175 10.0007 2.29175C11.9567 2.29175 13.5423 3.87741 13.5423 5.83341V9.58341C13.5423 11.5394 11.9567 13.1251 10.0007 13.1251Z"
+                            fill={
+                              {
+                                "payload": 4278190080,
+                                "type": 0,
+                              }
+                            }
+                            propList={
+                              [
+                                "stroke",
+                                "strokeWidth",
+                                "strokeLinecap",
+                                "strokeLinejoin",
+                              ]
+                            }
+                            stroke={
+                              {
+                                "payload": 4281876551,
+                                "type": 0,
+                              }
+                            }
+                            strokeLinecap={1}
+                            strokeLinejoin={1}
+                            strokeWidth={1.5}
+                          />
+                        </RNSVGGroup>
+                      </RNSVGSvgView>
+                    </View>
                   </View>
                 </View>
               </View>

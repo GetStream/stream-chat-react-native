@@ -106,6 +106,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const {
     theme: {
       colors: { accent_red, black, border, grey, white },
+      semantics,
     },
   } = useTheme();
 
@@ -122,19 +123,19 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
     }
     showScreen.value = show
       ? withTiming(1, {
-          duration: 150,
-          easing: Easing.in(Easing.ease),
-        })
+        duration: 150,
+        easing: Easing.in(Easing.ease),
+      })
       : withTiming(
-          0,
-          {
-            duration: 150,
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            runOnJS(reset)();
-          },
-        );
+        0,
+        {
+          duration: 150,
+          easing: Easing.out(Easing.ease),
+        },
+        () => {
+          runOnJS(reset)();
+        },
+      );
   };
 
   useEffect(() => {
@@ -180,12 +181,12 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
         translateY.value =
           evt.velocityY > 1000
             ? withDecay({
-                velocity: evt.velocityY,
-              })
+              velocity: evt.velocityY,
+            })
             : withTiming(screenHeight, {
-                duration: 200,
-                easing: Easing.out(Easing.ease),
-              });
+              duration: 200,
+              easing: Easing.out(Easing.ease),
+            });
       } else {
         translateY.value = withTiming(0);
         overlayOpacity.value = withTiming(1);
@@ -216,8 +217,8 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
 
   const self = channel
     ? Object.values(channel.state.members).find(
-        (channelMember) => channelMember.user?.id === client.user?.id,
-      )
+      (channelMember) => channelMember.user?.id === client.user?.id,
+    )
     : undefined;
 
   const { viewInfo, messageUser, removeFromGroup, cancel } = useUserInfoOverlayActions();
@@ -277,7 +278,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.default,
+                              borderTopColor: semantics.borderCoreDefault,
                             },
                           ]}
                         >
@@ -292,7 +293,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.default,
+                              borderTopColor: semantics.borderCoreDefault,
                             },
                           ]}
                         >
@@ -308,7 +309,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                             style={[
                               styles.row,
                               {
-                                borderTopColor: border.default,
+                                borderTopColor: semantics.borderCoreDefault,
                               },
                             ]}
                           >
@@ -326,8 +327,8 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           style={[
                             styles.lastRow,
                             {
-                              borderBottomColor: border.default,
-                              borderTopColor: border.default,
+                              borderBottomColor: semantics.borderCoreDefault,
+                              borderTopColor: semantics.borderCoreDefault,
                             },
                           ]}
                         >

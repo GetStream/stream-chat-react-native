@@ -11,7 +11,7 @@ import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressInd
 import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
@@ -83,9 +83,6 @@ export const AudioAttachmentUploadPreview = ({
 };
 
 const useStyles = () => {
-  const {
-    theme: { radius, spacing },
-  } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
@@ -95,12 +92,12 @@ const useStyles = () => {
           top: 0,
         },
         overlay: {
-          borderRadius: radius.lg,
+          borderRadius: primitives.radiusLg,
         },
         wrapper: {
-          padding: spacing.xxs,
+          padding: primitives.spacingXxs,
         },
       }),
-    [radius, spacing],
+    [],
   );
 };

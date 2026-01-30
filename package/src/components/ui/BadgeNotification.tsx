@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 
 export type BadgeNotificationProps = {
   type: 'primary' | 'error' | 'neutral';
@@ -29,15 +30,13 @@ export const BadgeNotification = (props: BadgeNotificationProps) => {
   const { type, count, size = 'md', testID } = props;
   const styles = useStyles();
   const {
-    theme: {
-      colors: { accent },
-    },
+    theme: { semantics },
   } = useTheme();
 
   const colors = {
-    error: accent.error,
-    neutral: accent.neutral,
-    primary: accent.primary,
+    error: semantics.badgeBgError,
+    neutral: semantics.badgeBgNeutral,
+    primary: semantics.badgeBgPrimary,
   };
 
   return (
@@ -49,26 +48,24 @@ export const BadgeNotification = (props: BadgeNotificationProps) => {
 
 const useStyles = () => {
   const {
-    theme: {
-      radius,
-      colors: { badge },
-      typography,
-      spacing,
-    },
+    theme: { semantics },
   } = useTheme();
+
+  const { badgeText, badgeBorder } = semantics;
+
   return useMemo(
     () =>
       StyleSheet.create({
         text: {
-          color: badge.text,
-          fontWeight: typography.fontWeight.bold,
+          color: badgeText,
+          fontWeight: primitives.typographyFontWeightBold,
           includeFontPadding: false,
           textAlign: 'center',
-          paddingHorizontal: spacing.xxs,
-          borderColor: badge.border,
-          borderRadius: radius.full,
+          paddingHorizontal: primitives.spacingXxs,
+          borderColor: badgeBorder,
+          borderRadius: primitives.radiusMax,
         },
       }),
-    [radius, badge, typography, spacing],
+    [badgeText, badgeBorder],
   );
 };

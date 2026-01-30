@@ -97,12 +97,12 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
         bg_gradient_end,
         bg_gradient_start,
         black,
-        border,
         grey,
         grey_gainsboro,
         white_smoke,
         white_snow,
       },
+      semantics,
     },
   } = useTheme();
   const { vw } = useViewport();
@@ -199,7 +199,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 styles.searchResultContainer,
                 {
                   backgroundColor: white_snow,
-                  borderBottomColor: border.default,
+                  borderBottomColor: semantics.borderCoreDefault,
                 },
               ]}
             >

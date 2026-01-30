@@ -52,74 +52,77 @@ export const useAudioRecorder = ({
   /**
    * Function to start voice recording.
    */
-  const startVoiceRecording = async () => {
+  const startVoiceRecording = useCallback(async () => {
     await audioRecorderManager.startRecording();
-  };
+  }, [audioRecorderManager]);
 
   /**
    * Function to delete voice recording.
    */
-  const deleteVoiceRecording = async () => {
+  const deleteVoiceRecording = useCallback(async () => {
     await stopVoiceRecording();
     audioRecorderManager.reset();
-  };
+  }, [audioRecorderManager, stopVoiceRecording]);
 
   /**
    * Function to upload or send voice recording.
    * @param multiSendEnabled boolean
    */
-  const uploadVoiceRecording = async (multiSendEnabled: boolean) => {
-    try {
-      const { recording, duration, waveformData } = audioRecorderManager.state.getLatestValue();
-      await stopVoiceRecording();
+  const uploadVoiceRecording = useCallback(
+    async (multiSendEnabled: boolean) => {
+      try {
+        const { recording, duration, waveformData } = audioRecorderManager.state.getLatestValue();
+        await stopVoiceRecording();
 
-      const durationInSeconds = parseFloat((duration / 1000).toFixed(3));
+        const durationInSeconds = parseFloat((duration / 1000).toFixed(3));
 
-      const resampledWaveformData =
-        waveformData.length > 100 ? resampleWaveformData(waveformData, 100) : waveformData;
+        const resampledWaveformData =
+          waveformData.length > 100 ? resampleWaveformData(waveformData, 100) : waveformData;
 
-      const clearFilter = new RegExp('[.:]', 'g');
-      const date = new Date().toISOString().replace(clearFilter, '_');
+        const clearFilter = new RegExp('[.:]', 'g');
+        const date = new Date().toISOString().replace(clearFilter, '_');
 
-      const file: File = {
-        duration: durationInSeconds,
-        name: `audio_recording_${date}.aac`,
-        size: 0,
-        type: 'audio/aac',
-        uri:
-          typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
-        waveform_data: resampledWaveformData,
-      };
+        const file: File = {
+          duration: durationInSeconds,
+          name: `audio_recording_${date}.aac`,
+          size: 0,
+          type: 'audio/aac',
+          uri:
+            typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
+          waveform_data: resampledWaveformData,
+        };
 
-      const audioFile: LocalVoiceRecordingAttachment = {
-        asset_url:
-          typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
-        duration: durationInSeconds,
-        file_size: 0,
-        localMetadata: {
-          file,
-          id: generateRandomId(),
-          uploadState: 'pending',
-        },
-        mime_type: 'audio/aac',
-        title: `audio_recording_${date}.aac`,
-        type: FileTypes.VoiceRecording,
-        waveform_data: resampledWaveformData,
-      };
+        const audioFile: LocalVoiceRecordingAttachment = {
+          asset_url:
+            typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
+          duration: durationInSeconds,
+          file_size: 0,
+          localMetadata: {
+            file,
+            id: generateRandomId(),
+            uploadState: 'pending',
+          },
+          mime_type: 'audio/aac',
+          title: `audio_recording_${date}.aac`,
+          type: FileTypes.VoiceRecording,
+          waveform_data: resampledWaveformData,
+        };
 
-      audioRecorderManager.reset();
+        audioRecorderManager.reset();
 
-      if (multiSendEnabled) {
-        await attachmentManager.uploadAttachment(audioFile);
-      } else {
-        // FIXME: cannot call handleSubmit() directly as the function has stale reference to file uploads
-        await attachmentManager.uploadAttachment(audioFile);
-        setIsScheduleForSubmit(true);
+        if (multiSendEnabled) {
+          await attachmentManager.uploadAttachment(audioFile);
+        } else {
+          // FIXME: cannot call handleSubmit() directly as the function has stale reference to file uploads
+          await attachmentManager.uploadAttachment(audioFile);
+          setIsScheduleForSubmit(true);
+        }
+      } catch (error) {
+        console.log('Error uploading voice recording: ', error);
       }
-    } catch (error) {
-      console.log('Error uploading voice recording: ', error);
-    }
-  };
+    },
+    [audioRecorderManager, attachmentManager, stopVoiceRecording],
+  );
 
   return {
     deleteVoiceRecording,

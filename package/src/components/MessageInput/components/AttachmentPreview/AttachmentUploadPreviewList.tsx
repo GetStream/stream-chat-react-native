@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -20,6 +20,7 @@ import {
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { isSoundPackageAvailable } from '../../../../native';
+import { primitives } from '../../../../theme';
 
 const IMAGE_PREVIEW_SIZE = 72;
 const FILE_PREVIEW_HEIGHT = 224;
@@ -33,7 +34,6 @@ export type AttachmentUploadListPreviewPropsWithContext = Pick<
 >;
 
 const ItemSeparatorComponent = () => {
-  const styles = useStyles();
   const {
     theme: {
       messageInput: {
@@ -76,7 +76,6 @@ const UnMemoizedAttachmentUploadPreviewList = (
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
 
-  const styles = useStyles();
   const {
     theme: {
       messageInput: {
@@ -234,25 +233,15 @@ export const AttachmentUploadPreviewList = (props: AttachmentUploadPreviewListPr
   );
 };
 
-const useStyles = () => {
-  const {
-    theme: { spacing },
-  } = useTheme();
-
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        flatList: {
-          overflow: 'visible',
-        },
-        itemSeparator: {
-          width: spacing.xs,
-        },
-        wrapper: {},
-      }),
-    [spacing.xs],
-  );
-};
+const styles = StyleSheet.create({
+  flatList: {
+    overflow: 'visible',
+  },
+  itemSeparator: {
+    width: primitives.spacingXs,
+  },
+  wrapper: {},
+});
 
 AttachmentUploadPreviewList.displayName =
   'AttachmentUploadPreviewList{messageInput{attachmentUploadPreviewList}}';

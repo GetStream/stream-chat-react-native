@@ -8,6 +8,7 @@ import { NewChevronLeft } from '../../../../icons/NewChevronTop';
 import { NewLock } from '../../../../icons/NewLock';
 import { NewUnlock } from '../../../../icons/NewUnlock';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
+import { primitives } from '../../../../theme';
 
 export type AudioRecordingLockIndicatorProps = Pick<AudioRecorderManagerState, 'micLocked'> & {
   /**
@@ -46,7 +47,7 @@ export const AudioRecordingLockIndicator = ({
 
   const {
     theme: {
-      colors: { text, accent },
+      semantics,
       messageInput: {
         audioRecordingLockIndicator: { arrowUpIcon, container, lockIcon },
       },
@@ -63,12 +64,12 @@ export const AudioRecordingLockIndicator = ({
       style={[styles.container, style, { bottom: messageInputHeight }, container]}
     >
       {micLocked ? (
-        <NewLock stroke={accent.primary} height={20} width={20} />
+        <NewLock stroke={semantics.accentPrimary} height={20} width={20} />
       ) : (
-        <NewUnlock stroke={text.primary} height={20} width={20} {...lockIcon} />
+        <NewUnlock stroke={semantics.textPrimary} height={20} width={20} {...lockIcon} />
       )}
       {!micLocked && (
-        <NewChevronLeft stroke={text.primary} height={20} width={20} {...arrowUpIcon} />
+        <NewChevronLeft stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
       )}
     </Animated.View>
   );
@@ -77,9 +78,8 @@ export const AudioRecordingLockIndicator = ({
 const useStyles = () => {
   const {
     theme: {
-      colors: { white, border },
-      radius,
-      spacing,
+      colors: { white },
+      semantics,
     },
   } = useTheme();
   return useMemo(
@@ -87,11 +87,11 @@ const useStyles = () => {
       StyleSheet.create({
         container: {
           backgroundColor: white,
-          borderColor: border.default,
+          borderColor: semantics.borderCoreDefault,
           borderWidth: 1,
-          borderRadius: radius.full,
-          padding: spacing.xs,
-          gap: spacing.xxs,
+          borderRadius: primitives.radiusMax,
+          padding: primitives.spacingXs,
+          gap: primitives.spacingXxs,
 
           // Replace shadow styles with theme-based tokens when available
           shadowColor: '#000',
@@ -105,6 +105,6 @@ const useStyles = () => {
           elevation: 5,
         },
       }),
-    [white, border, radius, spacing],
+    [white, semantics.borderCoreDefault],
   );
 };

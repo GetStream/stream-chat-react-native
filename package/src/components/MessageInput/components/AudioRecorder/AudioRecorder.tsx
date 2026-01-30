@@ -21,6 +21,7 @@ import { NewTick } from '../../../../icons/NewTick';
 import { NewTrash } from '../../../../icons/NewTrash';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
+import { primitives } from '../../../../theme';
 
 type AudioRecorderPropsWithContext = Pick<
   MessageInputContextValue,
@@ -43,9 +44,7 @@ const StopRecording = ({
   stopVoiceRecordingHandler: () => Promise<void>;
 }) => {
   const {
-    theme: {
-      colors: { accent },
-    },
+    theme: { semantics },
   } = useTheme();
 
   const onStopVoiceRecording = () => {
@@ -57,7 +56,7 @@ const StopRecording = ({
     <IconButton
       onPress={onStopVoiceRecording}
       Icon={NewStop}
-      iconColor={accent.error}
+      iconColor={semantics.accentError}
       type='destructive'
       size='sm'
       category='outline'
@@ -124,7 +123,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
   const recordingStopped = status === 'stopped';
   const {
     theme: {
-      colors: { accent, grey_dark },
+      semantics,
       messageInput: {
         audioRecorder: { arrowLeftIcon, micContainer, micIcon, slideToCancelContainer },
       },
@@ -159,7 +158,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
     return (
       <>
         <View style={[styles.micContainer, micContainer]} testID='recording-active-container'>
-          <NewMic height={20} width={20} stroke={accent.error} {...micIcon} />
+          <NewMic height={20} width={20} stroke={semantics.accentError} {...micIcon} />
           <Text style={[styles.durationLabel]}>
             {duration ? dayjs.duration(duration).format('mm:ss') : '00:00'}
           </Text>
@@ -167,8 +166,15 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
         <Animated.View
           style={[styles.slideToCancelContainer, slideToCancelStyle, slideToCancelContainer]}
         >
-          <Text style={[styles.slideToCancel, { color: grey_dark }]}>{t('Slide to Cancel')}</Text>
-          <NewChevronLeft stroke={grey_dark} height={20} width={20} {...arrowLeftIcon} />
+          <Text style={[styles.slideToCancel, { color: semantics.textPrimary }]}>
+            {t('Slide to Cancel')}
+          </Text>
+          <NewChevronLeft
+            stroke={semantics.textTertiary}
+            height={20}
+            width={20}
+            {...arrowLeftIcon}
+          />
         </Animated.View>
       </>
     );
@@ -223,14 +229,14 @@ export const AudioRecorder = (props: AudioRecorderProps) => {
 
 const useStyles = () => {
   const {
-    theme: { colors, spacing, typography },
+    theme: { semantics },
   } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
         container: {
           flex: 1,
-          padding: spacing.xs,
+          padding: primitives.spacingXs,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -238,32 +244,32 @@ const useStyles = () => {
         checkContainer: {},
         deleteContainer: {},
         durationLabel: {
-          fontSize: typography.fontSize.md,
-          fontWeight: typography.fontWeight.semibold,
-          lineHeight: typography.lineHeight.normal,
-          color: colors.text.primary,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
         },
         micContainer: {
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'center',
-          gap: spacing.sm,
-          paddingHorizontal: spacing.md,
+          gap: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingMd,
         },
         pausedContainer: {},
         slideToCancel: {
-          fontSize: typography.fontSize.md,
-          fontWeight: typography.fontWeight.regular,
-          lineHeight: typography.lineHeight.normal,
-          color: colors.text.primary,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
         },
         slideToCancelContainer: {
           alignItems: 'center',
           flexDirection: 'row',
-          gap: spacing.xxs,
+          gap: primitives.spacingXxs,
         },
       }),
-    [colors, spacing, typography],
+    [semantics.textPrimary],
   );
 };
 

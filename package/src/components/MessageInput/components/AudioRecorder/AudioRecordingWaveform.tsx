@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
+import { primitives } from '../../../../theme';
 
 export type AudioRecordingWaveformProps = Pick<AudioRecorderManagerState, 'waveformData'> & {
   /**
@@ -46,7 +47,7 @@ export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
 
 const useStyles = () => {
   const {
-    theme: { colors, radius },
+    theme: { semantics },
   } = useTheme();
   return useMemo(
     () =>
@@ -57,15 +58,15 @@ const useStyles = () => {
         },
         waveform: {
           alignSelf: 'center',
-          borderRadius: radius.xxs,
+          borderRadius: primitives.radiusXxs,
           marginHorizontal: 1,
           width: 2,
           minHeight: 2,
           maxHeight: WAVEFORM_MAX_HEIGHT,
-          backgroundColor: colors.border.opacity25,
+          backgroundColor: semantics.chatWaveformBar,
         },
       }),
-    [radius, colors],
+    [semantics.chatWaveformBar],
   );
 };
 

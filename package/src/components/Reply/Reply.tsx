@@ -20,6 +20,7 @@ import { NewMic } from '../../icons/NewMic';
 import { NewPhoto } from '../../icons/NewPhoto';
 import { NewPoll } from '../../icons/NewPoll';
 import { NewVideo } from '../../icons/NewVideo';
+import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { checkQuotedMessageEquality } from '../../utils/utils';
 import { FileIcon } from '../Attachment/FileIcon';
@@ -176,7 +177,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
   const { message } = props;
   const {
     theme: {
-      colors,
+      semantics,
       reply: { pollIcon, locationIcon, linkIcon, audioIcon, fileIcon, videoIcon, photoIcon },
     },
   } = useTheme();
@@ -207,7 +208,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewPoll
         height={12}
-        stroke={colors.text.primary}
+        stroke={semantics.textPrimary}
         style={styles.iconStyle}
         width={12}
         {...pollIcon}
@@ -219,7 +220,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewMapPin
         height={12}
-        stroke={colors.text.primary}
+        stroke={semantics.textPrimary}
         style={styles.iconStyle}
         width={12}
         {...locationIcon}
@@ -231,7 +232,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewLink
         height={12}
-        stroke={colors.text.primary}
+        stroke={semantics.textPrimary}
         style={styles.iconStyle}
         width={12}
         {...linkIcon}
@@ -243,7 +244,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewMic
         height={12}
-        stroke={colors.text.primary}
+        stroke={semantics.textPrimary}
         strokeWidth={1.2}
         style={styles.iconStyle}
         width={12}
@@ -256,7 +257,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewVideo
         height={12}
-        stroke={colors.text.primary}
+        stroke={semantics.textPrimary}
         style={styles.iconStyle}
         width={12}
         {...videoIcon}
@@ -268,7 +269,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewPhoto
         height={12}
-        stroke={colors.text.primary}
+        stroke={semantics.textPrimary}
         style={styles.iconStyle}
         width={12}
         {...photoIcon}
@@ -285,7 +286,7 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
     return (
       <NewFile
         height={12}
-        stroke={colors.text.primary}
+        stroke={semantics.textPrimary}
         style={styles.iconStyle}
         width={12}
         {...fileIcon}
@@ -318,6 +319,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         subtitleContainer,
         dismissWrapper,
       },
+      semantics,
     },
   } = useTheme();
   const styles = useStyles();
@@ -343,7 +345,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       <View
         style={[
           styles.container,
-          { backgroundColor: isMyMessage ? '#F2F4F6' : '#D2E3FF' },
+          { backgroundColor: isMyMessage ? semantics.chatBgIncoming : semantics.chatBgOutgoing },
           container,
           style,
         ]}
@@ -351,7 +353,11 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         <View
           style={[
             styles.leftContainer,
-            { borderLeftColor: isMyMessage ? '#B8BEC4' : '#4E8BFF' },
+            {
+              borderLeftColor: isMyMessage
+                ? semantics.chatReplyIndicatorIncoming
+                : semantics.chatReplyIndicatorOutgoing,
+            },
             leftContainer,
           ]}
         >
@@ -449,7 +455,7 @@ export const Reply = (props: ReplyProps) => {
 
 const useStyles = () => {
   const {
-    theme: { colors, radius, spacing, typography },
+    theme: { semantics },
   } = useTheme();
   return useMemo(
     () =>
@@ -460,19 +466,19 @@ const useStyles = () => {
           justifyContent: 'center',
         },
         container: {
-          borderRadius: radius.lg,
+          borderRadius: primitives.radiusLg,
           flexDirection: 'row',
-          padding: spacing.xs,
+          padding: primitives.spacingXs,
         },
         contentWrapper: {
-          borderRadius: radius.md,
+          borderRadius: primitives.radiusMd,
           borderWidth: 1,
           height: 40,
           overflow: 'hidden',
           width: 40,
         },
         contentBorder: {
-          borderColor: colors.border.opacity10,
+          borderColor: semantics.borderCoreOpacity10,
         },
         dismissWrapper: {
           position: 'absolute',
@@ -484,39 +490,39 @@ const useStyles = () => {
           borderLeftWidth: 2,
           flex: 1,
           justifyContent: 'center',
-          paddingHorizontal: spacing.xs,
+          paddingHorizontal: primitives.spacingXs,
         },
         rightContainer: {},
         subtitle: {
-          color: colors.text.primary,
+          color: semantics.textPrimary,
           flexShrink: 1,
-          fontSize: typography.fontSize.xs,
-          fontWeight: typography.fontWeight.regular,
+          fontSize: primitives.typographyFontSizeXs,
+          fontWeight: primitives.typographyFontWeightRegular,
           includeFontPadding: false,
           lineHeight: 16,
         },
         subtitleContainer: {
           alignItems: 'center',
           flexDirection: 'row',
-          gap: spacing.xxs,
-          paddingTop: spacing.xxs,
+          gap: primitives.spacingXxs,
+          paddingTop: primitives.spacingXxs,
         },
         titleContainer: {
           alignItems: 'center',
           flexDirection: 'row',
-          gap: spacing.xxs,
+          gap: primitives.spacingXxs,
         },
         title: {
-          color: colors.text.primary,
-          fontSize: typography.fontSize.xs,
-          fontWeight: typography.fontWeight.semibold,
+          color: semantics.textPrimary,
+          fontSize: primitives.typographyFontSizeXs,
+          fontWeight: primitives.typographyFontWeightSemiBold,
           includeFontPadding: false,
           lineHeight: 16,
         },
         wrapper: {
-          padding: spacing.xxs,
+          padding: primitives.spacingXxs,
         },
       }),
-    [colors, radius, spacing, typography],
+    [semantics],
   );
 };

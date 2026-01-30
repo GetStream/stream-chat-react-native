@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ColorValue, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -14,7 +14,7 @@ export type ProgressControlProps = {
   /**
    * The color of the filled progress bar
    */
-  filledColor: string;
+  filledColor: ColorValue;
   /**
    * The progress of the progress bar in percentage
    */

@@ -163,7 +163,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const { setOverlay } = useOverlayContext();
   const {
     theme: {
-      colors: { accent_blue, accent_green, black, border, grey, white, white_smoke },
+      colors: { accent_blue, accent_green, black, grey, white, white_smoke },
+      semantics,
     },
   } = useTheme();
 
@@ -276,7 +277,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               style={[
                 styles.memberContainer,
                 {
-                  borderBottomColor: border.default,
+                  borderBottomColor: semantics.borderCoreDefault,
                 },
               ]}
             >
@@ -306,7 +307,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.loadMoreButton,
               {
-                borderBottomColor: border.default,
+                borderBottomColor: semantics.borderCoreDefault,
               },
             ]}
           >
@@ -330,7 +331,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.changeNameContainer,
               {
-                borderBottomColor: border.default,
+                borderBottomColor: semantics.borderCoreDefault,
               },
             ]}
           >
@@ -382,7 +383,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.default,
+                borderBottomColor: semantics.borderCoreDefault,
               },
             ]}
           >
@@ -427,7 +428,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.default,
+                borderBottomColor: semantics.borderCoreDefault,
               },
             ]}
           >
@@ -457,7 +458,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.default,
+                borderBottomColor: semantics.borderCoreDefault,
               },
             ]}
           >
@@ -487,7 +488,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.default,
+                borderBottomColor: semantics.borderCoreDefault,
               },
             ]}
           >
@@ -513,7 +514,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: border.default,
+                borderBottomColor: semantics.borderCoreDefault,
               },
             ]}
           >

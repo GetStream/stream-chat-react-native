@@ -118,7 +118,8 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 }) => {
   const {
     theme: {
-      colors: { accent_blue, black, border, grey, white },
+      colors: { accent_blue, black, grey, white },
+      semantics,
     },
   } = useTheme();
   const { chatClient } = useAppContext();
@@ -208,7 +209,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           styles.searchContainer,
           {
             backgroundColor: white,
-            borderBottomColor: border.default,
+            borderBottomColor: semantics.borderCoreDefault,
           },
         ]}
       >

@@ -8,6 +8,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { NewCross } from '../../icons/NewCross';
 import { NewGiphy } from '../../icons/NewGiphy';
+import { primitives } from '../../theme';
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
@@ -15,7 +16,7 @@ const textComposerStateSelector = (state: TextComposerState) => ({
 
 export const GiphyBadge = () => {
   const {
-    theme: { colors },
+    theme: { semantics },
   } = useTheme();
   const styles = useStyles();
   const messageComposer = useMessageComposer();
@@ -31,10 +32,10 @@ export const GiphyBadge = () => {
 
   return (
     <View style={styles.container}>
-      <NewGiphy fill={colors.text.onAccent} height={16} width={16} />
+      <NewGiphy fill={semantics.badgeText} height={16} width={16} />
       <Text style={styles.text}>{commandName}</Text>
       <Pressable onPress={onPressHandler}>
-        <NewCross stroke={colors.text.onAccent} height={16} width={16} />
+        <NewCross stroke={semantics.textInverse} height={16} width={16} />
       </Pressable>
     </View>
   );
@@ -42,27 +43,27 @@ export const GiphyBadge = () => {
 
 const useStyles = () => {
   const {
-    theme: { colors, spacing, radius, typography },
+    theme: { semantics },
   } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
         container: {
           alignItems: 'center',
-          backgroundColor: colors.accent.black,
-          borderRadius: radius.full,
+          backgroundColor: semantics.badgeBgInverse,
+          borderRadius: primitives.radiusMax,
           flexDirection: 'row',
-          paddingHorizontal: spacing.xs,
-          paddingVertical: spacing.xxs,
-          gap: spacing.xxs,
+          paddingHorizontal: primitives.spacingXs,
+          paddingVertical: primitives.spacingXxs,
+          gap: primitives.spacingXxs,
         },
         text: {
-          color: colors.text.onAccent,
-          fontSize: typography.fontSize.sm,
-          fontWeight: typography.fontWeight.semibold,
-          lineHeight: typography.lineHeight.normal,
+          color: semantics.textInverse,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
         },
       }),
-    [radius, spacing, typography, colors],
+    [semantics],
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Modal, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -57,75 +57,85 @@ import { useKeyboardVisibility } from '../../hooks/useKeyboardVisibility';
 import { useStateStore } from '../../hooks/useStateStore';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
+import { primitives } from '../../theme';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { GiphyBadge } from '../ui/GiphyBadge';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'space-between',
-  },
-  contentContainer: {
-    gap: 4,
-    overflow: 'hidden',
-    paddingHorizontal: 8,
-  },
-  floatingWrapper: {
-    left: 0,
-    position: 'absolute',
-    right: 0,
-  },
-  giphyContainer: {
-    padding: 8,
-  },
-  inputBoxContainer: {
-    flex: 1,
-  },
-  inputBoxWrapper: {
-    borderRadius: 24,
-    borderWidth: 1,
-    flex: 1,
-    flexDirection: 'row',
-  },
-  inputButtonsContainer: {
-    alignSelf: 'flex-end',
-  },
-  inputContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  micButtonContainer: {},
-  outputButtonsContainer: {
-    alignSelf: 'flex-end',
-    padding: 8,
-  },
-  shadow: {
-    elevation: 6,
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXs,
+        justifyContent: 'space-between',
+      },
+      contentContainer: {
+        gap: primitives.spacingXxs,
+        overflow: 'hidden',
+        paddingHorizontal: primitives.spacingXs,
+      },
+      floatingWrapper: {
+        left: 0,
+        position: 'absolute',
+        right: 0,
+      },
+      giphyContainer: {
+        padding: primitives.spacingXs,
+      },
+      inputBoxContainer: {
+        flex: 1,
+      },
+      inputBoxWrapper: {
+        borderRadius: 24,
+        borderWidth: 1,
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: semantics.composerBg,
+        borderColor: semantics.borderCoreDefault,
+      },
+      inputButtonsContainer: {
+        alignSelf: 'flex-end',
+      },
+      inputContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      },
+      micButtonContainer: {},
+      outputButtonsContainer: {
+        alignSelf: 'flex-end',
+        padding: primitives.spacingXs,
+      },
+      shadow: {
+        elevation: 6,
 
-    shadowColor: 'hsla(0, 0%, 0%, 0.24)',
-    shadowOffset: { height: 4, width: 0 },
-    shadowOpacity: 0.24,
-    shadowRadius: 12,
-  },
-  suggestionsListContainer: {
-    position: 'absolute',
-    width: '100%',
-  },
-  wrapper: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  audioLockIndicatorWrapper: {
-    position: 'absolute',
-    right: 16,
-    padding: 4,
-  },
-});
+        shadowColor: 'hsla(0, 0%, 0%, 0.24)',
+        shadowOffset: { height: 4, width: 0 },
+        shadowOpacity: 0.24,
+        shadowRadius: 12,
+      },
+      suggestionsListContainer: {
+        position: 'absolute',
+        width: '100%',
+      },
+      wrapper: {
+        paddingHorizontal: primitives.spacingMd,
+        paddingTop: primitives.spacingMd,
+      },
+      audioLockIndicatorWrapper: {
+        position: 'absolute',
+        right: primitives.spacingMd,
+        padding: 4,
+      },
+    });
+  }, [semantics]);
+};
 
 type MessageInputPropsWithContext = Pick<
   AttachmentPickerContextValue,
@@ -248,6 +258,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     recordingStatus,
   } = props;
 
+  const styles = useStyles();
   const messageComposer = useMessageComposer();
   const { clearEditingState } = useMessageComposerAPIContext();
   const onDismissEditMessage = () => {
@@ -260,7 +271,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
   const {
     theme: {
-      colors: { border, white, white_smoke },
+      semantics,
       messageInput: {
         attachmentSelectionBar,
         container,
@@ -389,8 +400,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 styles.wrapper,
                 {
                   borderTopWidth: 1,
-                  backgroundColor: white,
-                  borderColor: border.default,
+                  backgroundColor: semantics.composerBg,
+                  borderColor: semantics.borderCoreDefault,
                   paddingBottom: BOTTOM_OFFSET,
                 },
                 wrapper,
@@ -418,10 +429,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             <View
               style={[
                 styles.inputBoxWrapper,
-                {
-                  backgroundColor: white,
-                  borderColor: border.default,
-                },
                 messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
                 inputBoxWrapper,
                 isFocused ? focusedInputBoxContainer : null,
@@ -438,7 +445,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     style={[
                       styles.contentContainer,
                       {
-                        paddingTop: hasAttachments || quotedMessage || editing ? 8 : 0,
+                        paddingTop:
+                          hasAttachments || quotedMessage || editing ? primitives.spacingXs : 0,
                       },
                       contentContainer,
                     ]}
@@ -530,7 +538,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
           exiting={FadeOut.duration(200)}
           style={[
             {
-              backgroundColor: white_smoke,
+              backgroundColor: semantics.composerBg,
               height:
                 attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
             },

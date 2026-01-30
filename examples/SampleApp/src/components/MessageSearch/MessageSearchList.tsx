@@ -73,6 +73,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
     const {
       theme: {
         colors: { black, border, grey, white_snow },
+        semantics,
       },
     } = useTheme();
     const { vw } = useViewport();
@@ -94,13 +95,11 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
             }}
           >
             <Text style={{ color: grey }}>
-              {`${
-                messages.length >= DEFAULT_PAGINATION_LIMIT
-                  ? DEFAULT_PAGINATION_LIMIT
-                  : messages.length
-              }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${
-                messages.length === 1 ? '' : 's'
-              }`}
+              {`${messages.length >= DEFAULT_PAGINATION_LIMIT
+                ? DEFAULT_PAGINATION_LIMIT
+                : messages.length
+                }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${messages.length === 1 ? '' : 's'
+                }`}
             </Text>
           </View>
         )}
@@ -130,7 +129,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
                   messageId: item.id,
                 });
               }}
-              style={[styles.itemContainer, { borderBottomColor: border.default }]}
+              style={[styles.itemContainer, { borderBottomColor: semantics.borderCoreDefault }]}
               testID='channel-preview-button'
             >
               {item.user ? <UserAvatar user={item.user} size={'lg'} /> : null}

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable } from 'react-native-gesture-handler';
 
 import { emojis } from './emojis';
 import { ReactionButton } from './ReactionButton';

@@ -1,12 +1,20 @@
 import React from 'react';
-import { Pressable, PressableProps, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  ColorValue,
+  Pressable,
+  PressableProps,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../icons/utils/base';
 
 export type IconButtonProps = PressableProps & {
   Icon: React.FC<IconProps> | React.ReactNode;
-  iconColor?: string;
+  iconColor?: ColorValue;
   onPress?: () => void;
   size?: 'sm' | 'md' | 'lg';
   status?: 'disabled' | 'pressed' | 'selected' | 'enabled';

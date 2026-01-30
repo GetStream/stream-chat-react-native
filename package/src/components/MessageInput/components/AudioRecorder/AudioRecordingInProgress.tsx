@@ -11,6 +11,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { NewMic } from '../../../../icons/NewMic';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
+import { primitives } from '../../../../theme';
 
 type AudioRecordingInProgressPropsWithContext = Pick<
   MessageInputContextValue,
@@ -30,7 +31,7 @@ const AudioRecordingInProgressWithContext = (props: AudioRecordingInProgressProp
 
   const {
     theme: {
-      colors: { accent },
+      semantics,
       messageInput: {
         audioRecordingInProgress: { container, durationText },
       },
@@ -41,12 +42,13 @@ const AudioRecordingInProgressWithContext = (props: AudioRecordingInProgressProp
     <View style={[styles.container, container]}>
       {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
       <View style={styles.micContainer}>
-        <NewMic height={20} width={20} stroke={accent.error} />
+        <NewMic height={20} width={20} stroke={semantics.accentError} />
         <Text style={[styles.durationText, durationText]}>
           {duration ? dayjs.duration(duration).format('mm:ss') : null}
         </Text>
       </View>
 
+      {/* TODO: Calculate the maxDataPointsDrawn based on the width of the container */}
       <AudioRecordingWaveform maxDataPointsDrawn={maxDataPointsDrawn} waveformData={waveformData} />
     </View>
   );
@@ -84,7 +86,7 @@ export const AudioRecordingInProgress = (props: AudioRecordingInProgressProps) =
 
 const useStyles = () => {
   const {
-    theme: { colors, spacing, typography },
+    theme: { semantics },
   } = useTheme();
   return useMemo(
     () =>
@@ -93,23 +95,23 @@ const useStyles = () => {
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          paddingVertical: spacing.sm,
-          paddingLeft: spacing.sm,
-          paddingRight: spacing.md,
+          paddingVertical: primitives.spacingSm,
+          paddingLeft: primitives.spacingSm,
+          paddingRight: primitives.spacingMd,
         },
         durationText: {
-          fontSize: typography.fontSize.md,
-          fontWeight: typography.fontWeight.semibold,
-          lineHeight: typography.lineHeight.normal,
-          color: colors.text.primary,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
         },
         micContainer: {
           flexDirection: 'row',
           alignItems: 'center',
-          gap: spacing.sm,
+          gap: primitives.spacingSm,
         },
       }),
-    [colors, spacing, typography],
+    [semantics.textPrimary],
   );
 };
 

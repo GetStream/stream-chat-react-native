@@ -66,6 +66,7 @@ const commandPlaceHolders: Record<string, string> = {
 };
 
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
+  const styles = useStyles();
   const {
     channel,
     cooldownRemainingSeconds,
@@ -118,8 +119,8 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   const {
     theme: {
-      colors: { black, grey },
       messageInput: { inputBox },
+      semantics,
     },
   } = useTheme();
 
@@ -142,12 +143,11 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       onChangeText={onChangeTextHandler}
       onSelectionChange={handleSelectionChange}
       placeholder={placeholderText}
-      placeholderTextColor={grey}
+      placeholderTextColor={semantics.inputTextPlaceholder}
       ref={setInputBoxRef}
       style={[
         styles.inputBox,
         {
-          color: black,
           maxHeight: LINE_HEIGHT * numberOfLines + PADDING_VERTICAL * 2,
           paddingLeft: command ? 0 : 16,
           paddingRight: command ? 4 : 8,
@@ -218,16 +218,24 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  inputBox: {
-    flex: 1,
-    fontSize: 16,
-    includeFontPadding: false, // for android vertical text centering
-    lineHeight: 20,
-    paddingLeft: 16,
-    paddingVertical: 12,
-    textAlignVertical: 'center', // for android vertical text centering
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      inputBox: {
+        color: semantics.inputTextDefault,
+        flex: 1,
+        fontSize: 16,
+        includeFontPadding: false, // for android vertical text centering
+        lineHeight: 20,
+        paddingLeft: 16,
+        paddingVertical: 12,
+        textAlignVertical: 'center', // for android vertical text centering
+      },
+    });
+  }, [semantics]);
+};
 
 AutoCompleteInput.displayName = 'AutoCompleteInput{messageInput{inputBox}}';

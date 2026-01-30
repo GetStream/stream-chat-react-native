@@ -179,7 +179,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         speedChangeButton,
         speedChangeButtonText,
       },
-      colors: { accent, border, text, black, static_white, white },
+      colors: { black, static_white, white },
+      semantics,
       messageInput: {
         fileAttachmentUploadPreview: { filenameText },
       },
@@ -203,7 +204,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         styles.container,
         {
           backgroundColor: white,
-          borderColor: border.default,
+          borderColor: semantics.borderCoreDefault,
         },
         container,
         containerStyle,
@@ -216,14 +217,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           onPress={handlePlayPause}
           style={[
             styles.playPauseButton,
-            { backgroundColor: static_white, borderColor: border.default },
+            { backgroundColor: static_white, borderColor: semantics.borderCoreDefault },
             playPauseButton,
           ]}
         >
           {!isPlaying ? (
-            <NewPlay fill={text.secondary} height={20} width={20} />
+            <NewPlay fill={semantics.textSecondary} height={20} width={20} />
           ) : (
-            <NewPause fill={text.secondary} height={20} width={20} />
+            <NewPause fill={semantics.textSecondary} height={20} width={20} />
           )}
         </Pressable>
       </View>
@@ -234,7 +235,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           style={[
             styles.filenameText,
             {
-              color: text.primary,
+              color: semantics.textPrimary,
             },
             I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
             filenameText,
@@ -248,7 +249,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           <Text
             style={[
               styles.progressDurationText,
-              { color: isPlaying ? accent.primary : text.secondary },
+              { color: isPlaying ? semantics.accentPrimary : semantics.textSecondary },
               progressDurationText,
             ]}
           >
@@ -267,7 +268,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                 />
               ) : (
                 <ProgressControl
-                  filledColor={accent.primary}
+                  filledColor={semantics.accentPrimary}
                   onEndDrag={dragEnd}
                   onStartDrag={dragStart}
                   progress={progress}

@@ -13,6 +13,7 @@ import { NewPlay } from '../../../../icons/NewPlay';
 import { NativeHandlers } from '../../../../native';
 import { AudioPlayerState } from '../../../../state-store/audio-player';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
+import { primitives } from '../../../../theme';
 import { WaveProgressBar } from '../../../ProgressControl/WaveProgressBar';
 
 const ONE_SECOND_IN_MILLISECONDS = 1000;
@@ -71,7 +72,7 @@ export const AudioRecordingPreview = () => {
 
   const {
     theme: {
-      colors: { accent, text },
+      semantics,
       messageInput: {
         audioRecordingPreview: {
           container,
@@ -104,9 +105,9 @@ export const AudioRecordingPreview = () => {
       <View style={[styles.infoContainer, infoContainer]}>
         <Pressable onPress={handlePlayPause} hitSlop={15}>
           {!isPlaying ? (
-            <NewPlay fill={text.primary} height={20} width={20} {...playIcon} />
+            <NewPlay fill={semantics.textPrimary} height={20} width={20} {...playIcon} />
           ) : (
-            <NewPause fill={text.primary} height={20} width={20} {...pauseIcon} />
+            <NewPause fill={semantics.textPrimary} height={20} width={20} {...pauseIcon} />
           )}
         </Pressable>
         {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
@@ -114,7 +115,7 @@ export const AudioRecordingPreview = () => {
           style={[
             styles.durationText,
             currentTime,
-            { color: isPlaying ? accent.primary : text.primary },
+            { color: isPlaying ? semantics.accentPrimary : semantics.textPrimary },
           ]}
         >
           {progressDuration}
@@ -129,9 +130,6 @@ export const AudioRecordingPreview = () => {
 };
 
 const useStyles = () => {
-  const {
-    theme: { spacing, typography },
-  } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
@@ -139,23 +137,23 @@ const useStyles = () => {
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          paddingVertical: spacing.sm,
-          paddingLeft: spacing.sm,
-          paddingRight: spacing.md,
+          paddingVertical: primitives.spacingSm,
+          paddingLeft: primitives.spacingSm,
+          paddingRight: primitives.spacingMd,
         },
         durationText: {
-          fontSize: typography.fontSize.md,
-          fontWeight: typography.fontWeight.semibold,
-          lineHeight: typography.lineHeight.normal,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
         },
         infoContainer: {
           flexDirection: 'row',
           alignItems: 'center',
-          gap: spacing.sm,
+          gap: primitives.spacingSm,
         },
         progressBar: {},
       }),
-    [spacing, typography],
+    [],
   );
 };
 

@@ -110,7 +110,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
 
   const {
     theme: {
-      colors: { accent_red, black, border, grey, white },
+      colors: { accent_red, black, grey, white },
+      semantics,
     },
   } = useTheme();
 
@@ -127,19 +128,19 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     }
     showScreen.value = show
       ? withTiming(1, {
-          duration: 150,
-          easing: Easing.in(Easing.ease),
-        })
+        duration: 150,
+        easing: Easing.in(Easing.ease),
+      })
       : withTiming(
-          0,
-          {
-            duration: 150,
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            runOnJS(reset)();
-          },
-        );
+        0,
+        {
+          duration: 150,
+          easing: Easing.out(Easing.ease),
+        },
+        () => {
+          runOnJS(reset)();
+        },
+      );
   };
 
   useEffect(() => {
@@ -185,12 +186,12 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
         translateY.value =
           evt.velocityY > 1000
             ? withDecay({
-                velocity: evt.velocityY,
-              })
+              velocity: evt.velocityY,
+            })
             : withTiming(screenHeight, {
-                duration: 200,
-                easing: Easing.out(Easing.ease),
-              });
+              duration: 200,
+              easing: Easing.out(Easing.ease),
+            });
       } else {
         translateY.value = withTiming(0);
         overlayOpacity.value = withTiming(1);
@@ -225,31 +226,31 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     : 0;
   const channelName = channel
     ? channel.data?.name ||
-      Object.values<ChannelMemberResponse>(channel.state.members)
-        .slice(0)
-        .reduce<string>((returnString, currentMember, index, originalArray) => {
-          const returnStringLength = returnString.length;
-          const currentMemberName =
-            currentMember.user?.name || currentMember.user?.id || 'Unknown User';
-          // a rough approximation of when the +Number shows up
-          if (returnStringLength + (currentMemberName.length + 2) < maxWidth) {
-            if (returnStringLength) {
-              returnString += `, ${currentMemberName}`;
-            } else {
-              returnString = currentMemberName;
-            }
+    Object.values<ChannelMemberResponse>(channel.state.members)
+      .slice(0)
+      .reduce<string>((returnString, currentMember, index, originalArray) => {
+        const returnStringLength = returnString.length;
+        const currentMemberName =
+          currentMember.user?.name || currentMember.user?.id || 'Unknown User';
+        // a rough approximation of when the +Number shows up
+        if (returnStringLength + (currentMemberName.length + 2) < maxWidth) {
+          if (returnStringLength) {
+            returnString += `, ${currentMemberName}`;
           } else {
-            const remainingMembers = originalArray.length - index;
-            returnString += `, +${remainingMembers}`;
-            originalArray.splice(1); // exit early
+            returnString = currentMemberName;
           }
-          return returnString;
-        }, '')
+        } else {
+          const remainingMembers = originalArray.length - index;
+          returnString += `, +${remainingMembers}`;
+          originalArray.splice(1); // exit early
+        }
+        return returnString;
+      }, '')
     : '';
   const otherMembers = channel
     ? Object.values<ChannelMemberResponse>(channel.state.members).filter(
-        (member) => member.user?.id !== clientId,
-      )
+      (member) => member.user?.id !== clientId,
+    )
     : [];
 
   const { viewInfo, pinUnpin, archiveUnarchive, leaveGroup, deleteConversation, cancel } =
@@ -285,11 +286,10 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             ? otherMembers[0].user?.online
                               ? 'Online'
                               : `Last Seen ${dayjs(otherMembers[0].user?.last_active).fromNow()}`
-                            : `${Object.keys(channel.state.members).length} Members, ${
-                                Object.values<ChannelMemberResponse>(channel.state.members).filter(
-                                  (member) => !!member.user?.online,
-                                ).length
-                              } Online`}
+                            : `${Object.keys(channel.state.members).length} Members, ${Object.values<ChannelMemberResponse>(channel.state.members).filter(
+                              (member) => !!member.user?.online,
+                            ).length
+                            } Online`}
                         </Text>
                         <FlatList
                           contentContainerStyle={styles.flatListContent}
@@ -329,7 +329,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.default,
+                              borderTopColor: semantics.borderCoreDefault,
                             },
                           ]}
                         >
@@ -344,7 +344,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.default,
+                              borderTopColor: semantics.borderCoreDefault,
                             },
                           ]}
                         >
@@ -361,7 +361,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.default,
+                              borderTopColor: semantics.borderCoreDefault,
                             },
                           ]}
                         >
@@ -376,7 +376,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
 
                       {otherMembers.length > 1 && (
                         <Pressable onPress={leaveGroup}>
-                          <View style={[styles.row, { borderTopColor: border.default }]}>
+                          <View style={[styles.row, { borderTopColor: semantics.borderCoreDefault }]}>
                             <View style={styles.rowInner}>
                               <UserMinus pathFill={grey} />
                             </View>
@@ -389,7 +389,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.row,
                             {
-                              borderTopColor: border.default,
+                              borderTopColor: semantics.borderCoreDefault,
                             },
                           ]}
                         >
@@ -406,8 +406,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           style={[
                             styles.lastRow,
                             {
-                              borderBottomColor: border.default,
-                              borderTopColor: border.default,
+                              borderBottomColor: semantics.borderCoreDefault,
+                              borderTopColor: semantics.borderCoreDefault,
                             },
                           ]}
                         >
