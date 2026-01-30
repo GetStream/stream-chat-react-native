@@ -417,10 +417,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         {Input ? (
           <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
         ) : (
-          <Animated.View
-            style={[styles.container, container]}
-            layout={LinearTransition.duration(200)}
-          >
+          <View style={[styles.container, container]}>
             {isRecordingStateIdle ? (
               <Animated.View
                 layout={LinearTransition.duration(200)}
@@ -517,7 +514,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 </Animated.View>
               </View>
             </Animated.View>
-          </Animated.View>
+          </View>
         )}
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </Animated.View>
