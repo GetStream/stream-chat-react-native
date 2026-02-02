@@ -85,6 +85,10 @@ export const AnimatedGalleryVideo = React.memo(
       if (videoRef.current) {
         videoPlayer.initPlayer({ playerRef: videoRef.current });
       }
+
+      return () => {
+        videoPlayer.playerRef = null;
+      };
     }, [videoPlayer]);
 
     const { isPlaying } = useStateStore(videoPlayer.state, videoPlayerSelector);
