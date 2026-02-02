@@ -1,32 +1,59 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type BadgeCountProps = {
-  count: number;
-  size: 'sm' | 'xs';
+  count: string | number;
+  size: 'sm' | 'xs' | 'md';
 };
 
 const sizes = {
+  md: {
+    minWidth: 32,
+    height: 32,
+  },
   sm: {
-    borderRadius: 12,
     minWidth: 24,
-    lineHeight: 22,
+    height: 24,
   },
   xs: {
-    borderRadius: 10,
     minWidth: 20,
-    lineHeight: 18,
+    height: 20,
+  },
+};
+
+const textStyles = {
+  md: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: primitives.typographyFontWeightBold,
+    lineHeight: 14,
+  },
+  sm: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: primitives.typographyFontWeightBold,
+    lineHeight: 14,
+  },
+  xs: {
+    fontSize: primitives.typographyFontSizeXxs,
+    fontWeight: primitives.typographyFontWeightBold,
+    lineHeight: 10,
   },
 };
 
 export const BadgeCount = (props: BadgeCountProps) => {
   const { count, size = 'sm' } = props;
   const styles = useStyles();
+  const paddingHorizontal = size === 'xs' ? primitives.spacingXxs : primitives.spacingXs;
 
-  return <Text style={[styles.text, sizes[size]]}>{count}</Text>;
+  return (
+    <View
+      style={[styles.container, sizes[size], primitives.lightElevation2, { paddingHorizontal }]}
+    >
+      <Text style={[styles.text, textStyles[size]]}>{count}</Text>
+    </View>
+  );
 };
 
 const useStyles = () => {
@@ -34,22 +61,24 @@ const useStyles = () => {
     theme: { semantics },
   } = useTheme();
 
-  const { badgeBgInverse, badgeTextInverse, borderCoreSubtle } = semantics;
+  const { badgeBgDefault, badgeTextInverse, borderCoreSubtle } = semantics;
 
   return useMemo(
     () =>
       StyleSheet.create({
-        text: {
-          backgroundColor: badgeBgInverse,
+        container: {
+          backgroundColor: badgeBgDefault,
           borderColor: borderCoreSubtle,
           borderWidth: 1,
+          borderRadius: primitives.radiusMax,
+          justifyContent: 'center',
+        },
+        text: {
           color: badgeTextInverse,
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightBold,
           includeFontPadding: false,
           textAlign: 'center',
         },
       }),
-    [badgeBgInverse, badgeTextInverse, borderCoreSubtle],
+    [badgeBgDefault, badgeTextInverse, borderCoreSubtle],
   );
 };

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
@@ -13,16 +13,27 @@ export type BadgeNotificationProps = {
 
 const sizes = {
   md: {
-    fontSize: 12,
-    lineHeight: 16,
+    height: 20,
     minWidth: 20,
     borderWidth: 2,
   },
   sm: {
-    fontSize: 10,
-    lineHeight: 14,
+    height: 16,
     minWidth: 16,
     borderWidth: 1,
+  },
+};
+
+const textStyles = {
+  md: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: primitives.typographyFontWeightBold,
+    lineHeight: 14,
+  },
+  sm: {
+    fontSize: primitives.typographyFontSizeXxs,
+    fontWeight: primitives.typographyFontWeightBold,
+    lineHeight: 10,
   },
 };
 
@@ -40,9 +51,11 @@ export const BadgeNotification = (props: BadgeNotificationProps) => {
   };
 
   return (
-    <Text style={[styles.text, { backgroundColor: colors[type] }, sizes[size]]} testID={testID}>
-      {count}
-    </Text>
+    <View style={[styles.container, { backgroundColor: colors[type] }, sizes[size]]}>
+      <Text style={[styles.text, textStyles[size]]} testID={testID}>
+        {count}
+      </Text>
+    </View>
   );
 };
 
@@ -56,14 +69,16 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        text: {
-          color: badgeText,
-          fontWeight: primitives.typographyFontWeightBold,
-          includeFontPadding: false,
-          textAlign: 'center',
+        container: {
           paddingHorizontal: primitives.spacingXxs,
           borderColor: badgeBorder,
           borderRadius: primitives.radiusMax,
+          justifyContent: 'center',
+        },
+        text: {
+          color: badgeText,
+          includeFontPadding: false,
+          textAlign: 'center',
         },
       }),
     [badgeText, badgeBorder],
