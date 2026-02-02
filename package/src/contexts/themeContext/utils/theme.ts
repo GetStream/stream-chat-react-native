@@ -411,10 +411,8 @@ export type Theme = {
       overlay: ViewStyle;
     };
     videoAttachmentUploadPreview: {
-      recorderIconContainer: ViewStyle;
-      recorderIcon: IconProps;
-      itemContainer: ViewStyle;
-      upload: ImageStyle;
+      durationContainer: ViewStyle;
+      durationText: TextStyle;
     };
     wrapper: ViewStyle;
     linkPreviewList: {
@@ -1160,6 +1158,10 @@ export const defaultTheme: Theme = {
       upload: {},
       wrapper: {},
     },
+    videoAttachmentUploadPreview: {
+      durationContainer: {},
+      durationText: {},
+    },
     inputBox: {},
     inputBoxContainer: {},
     inputBoxWrapper: {},
@@ -1221,12 +1223,6 @@ export const defaultTheme: Theme = {
       container: {},
       indicatorColor: '',
       overlay: {},
-    },
-    videoAttachmentUploadPreview: {
-      itemContainer: {},
-      recorderIcon: {},
-      recorderIconContainer: {},
-      upload: {},
     },
     wrapper: {},
     linkPreviewList: {

@@ -39,6 +39,7 @@ import type { AttachmentUploadProgressIndicatorProps } from '../../components/Me
 import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
+import { VideoAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
 import type { AudioRecorderProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecorder';
 import type { AudioRecordingButtonProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingButton';
 import type { AudioRecordingInProgressProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingInProgress';
@@ -251,7 +252,7 @@ export type InputMessageInputContextValue = {
   AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentUploadPreviewProps>;
   ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
   FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
-  VideoAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
+  VideoAttachmentUploadPreview: React.ComponentType<VideoAttachmentUploadPreviewProps>;
 
   /**
    * Custom UI component to display the remaining cooldown a user will have to wait before
