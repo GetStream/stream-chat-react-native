@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Channel, UserResponse } from 'stream-chat';
 
@@ -19,9 +19,8 @@ export type ChannelAvatarProps = {
 
 export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const { channel } = props;
-  const members = Object.values(channel.state.members);
   const online = useChannelPreviewDisplayPresence(channel);
-  const { showOnlineIndicator = online } = props;
+  const { showOnlineIndicator = online, size, showBorder = true } = props;
 
   const {
     theme: { semantics },
@@ -31,17 +30,16 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const index = ((hashedValue % 5) + 1) as 1 | 2 | 3 | 4 | 5;
   const avatarBackgroundColor = semantics[`avatarPaletteBg${index}`];
 
-  const { size, showBorder = true } = props;
+  const channelImage = channel.data?.image;
 
-  const channelImage = undefined;
+  const usersForGroup = useMemo(
+    () => Object.values(channel.state.members).map((member) => member.user as UserResponse),
+    [channel.state.members],
+  );
 
   if (!channelImage) {
     return (
-      <UserAvatarGroup
-        size='lg'
-        users={members.map((member) => member.user as UserResponse)}
-        showOnlineIndicator={showOnlineIndicator}
-      />
+      <UserAvatarGroup size='lg' users={usersForGroup} showOnlineIndicator={showOnlineIndicator} />
     );
   }
 

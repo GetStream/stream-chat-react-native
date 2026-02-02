@@ -197,6 +197,7 @@ const useUserAvatarGroupStyles = () => {
   );
 };
 
+// TODO V9: Add theming support here.
 const styles = StyleSheet.create({
   container: {
     padding: 2,
