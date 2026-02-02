@@ -6,10 +6,15 @@ import { primitives } from '../../theme';
 
 export type OnlineIndicatorProps = {
   online: boolean;
-  size: 'lg' | 'sm' | 'md';
+  size: 'xl' | 'lg' | 'sm' | 'md';
 };
 
 const sizes = {
+  xl: {
+    borderWidth: 2,
+    height: 16,
+    width: 16,
+  },
   lg: {
     borderWidth: 2,
     height: 14,
