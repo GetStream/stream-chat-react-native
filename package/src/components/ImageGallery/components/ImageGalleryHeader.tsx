@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
@@ -92,8 +92,13 @@ export const ImageGalleryHeader = (props: Props) => {
 
   const hideOverlay = () => {
     setOverlay('none');
-    imageGalleryStateStore.clear();
   };
+
+  useEffect(() => {
+    return () => {
+      imageGalleryStateStore.clear();
+    };
+  }, [imageGalleryStateStore]);
 
   return (
     <View

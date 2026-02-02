@@ -219,7 +219,7 @@ export class ImageGalleryStateStore {
   };
 
   clear = () => {
-    this.state.partialNext(INITIAL_STATE);
     this.videoPlayerPool.clear();
+    this.state.partialNext(INITIAL_STATE);
   };
 }

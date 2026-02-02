@@ -159,7 +159,6 @@ export const useImageGalleryGestures = ({
   const assetsLength = imageGalleryStateStore.assets.length;
 
   const clearImageGallery = () => {
-    runOnJS(imageGalleryStateStore.clear)();
     runOnJS(setOverlay)('none');
   };
 
