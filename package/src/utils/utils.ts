@@ -234,6 +234,17 @@ export const getDurationLabelFromDuration = (duration: number) => {
   return durationLabel;
 };
 
+export const formatMsToMinSec = (ms: number) => {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  const mm = minutes; // no padding for minutes
+  const ss = String(seconds).padStart(2, '0');
+
+  return `${mm}m ${ss}s`.replace(/^0m\s/, '');
+};
+
 /**
  * Utility to escape special characters in a string.
  * @param text
