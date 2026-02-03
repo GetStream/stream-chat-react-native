@@ -1017,8 +1017,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   );
 
   const flatListContentContainerStyle = useMemo(
-    () => [styles.contentContainer, contentContainer],
-    [contentContainer],
+    () => [
+      styles.contentContainer,
+      contentContainer,
+      additionalFlashListProps?.contentContainerStyle,
+    ],
+    [additionalFlashListProps?.contentContainerStyle, contentContainer],
   );
 
   const currentListHeightRef = useRef<number | undefined>(undefined);
