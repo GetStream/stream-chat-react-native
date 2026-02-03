@@ -50,10 +50,12 @@ export const useAudioRecorder = ({
   }, [isScheduledForSubmit, sendMessage]);
 
   /**
-   * Function to start voice recording.
+   * Function to start voice recording. Will return whether access is granted
+   * with regards to the microphone permission as that's how the underlying
+   * library works on iOS.
    */
   const startVoiceRecording = useCallback(async () => {
-    await audioRecorderManager.startRecording();
+    return await audioRecorderManager.startRecording();
   }, [audioRecorderManager]);
 
   /**
