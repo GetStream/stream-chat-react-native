@@ -196,12 +196,12 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
             return;
           }
 
-          if (!belowThresholdY) {
-            micPositionY.value = withSpring(Y_AXIS_POSITION);
-            runOnJS(micLockHandler)(true);
-          } else if (!belowThresholdX) {
+          if (!belowThresholdX) {
             micPositionX.value = withSpring(X_AXIS_POSITION);
             runOnJS(resetAudioRecording)();
+          } else if (!belowThresholdY) {
+            micPositionY.value = withSpring(Y_AXIS_POSITION);
+            runOnJS(micLockHandler)(true);
           }
 
           micPositionX.value = 0;
