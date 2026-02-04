@@ -133,6 +133,7 @@ export * from './MessageInput/components/AudioRecorder/AudioRecordingInProgress'
 export * from './MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingPreview';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingWaveform';
+export * from './MessageInput/contexts/MicPositionContext';
 
 export * from './MessageInput/components/AttachmentPreview/AttachmentUnsupportedIndicator';
 export * from './MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';

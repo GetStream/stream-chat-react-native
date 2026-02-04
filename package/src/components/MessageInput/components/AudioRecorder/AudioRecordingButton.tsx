@@ -5,7 +5,6 @@ import { Gesture, GestureDetector, State } from 'react-native-gesture-handler';
 import Animated, {
   clamp,
   runOnJS,
-  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -25,6 +24,7 @@ import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
 import { ButtonStylesConfig, useButtonStyles } from '../../../ui/Button/hooks/useButtonStyles';
+import { useMicPositionContext } from '../../contexts/MicPositionContext';
 
 export type AudioRecordingButtonPropsWithContext = Pick<
   MessageInputContextValue,
@@ -50,8 +50,6 @@ export type AudioRecordingButtonPropsWithContext = Pick<
      * Handler to determine what should happen on press of the mic button.
      */
     handlePress?: () => void;
-    micPositionX: SharedValue<number>;
-    micPositionY: SharedValue<number>;
     cancellableDuration: boolean;
   };
 
@@ -75,12 +73,11 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     uploadVoiceRecording,
     handleLongPress,
     handlePress,
-    micPositionX,
-    micPositionY,
     cancellableDuration,
     status,
     recording,
   } = props;
+  const { micPositionX, micPositionY } = useMicPositionContext();
   const activeAudioPlayer = useActiveAudioPlayer();
   const scale = useSharedValue(1);
   const pressed = useSharedValue(false);
@@ -246,10 +243,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   );
 };
 
-export type AudioRecordingButtonProps = Partial<AudioRecordingButtonPropsWithContext> & {
-  micPositionX: SharedValue<number>;
-  micPositionY: SharedValue<number>;
-};
+export type AudioRecordingButtonProps = Partial<AudioRecordingButtonPropsWithContext>;
 
 const MemoizedAudioRecordingButton = React.memo(
   AudioRecordingButtonWithContext,

@@ -24,10 +24,7 @@ import { useStateStore } from '../../../../hooks/useStateStore';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
 import { useIsCooldownActive } from '../../hooks/useIsCooldownActive';
 
-export type OutputButtonsProps = Partial<OutputButtonsWithContextProps> & {
-  micPositionX: Animated.SharedValue<number>;
-  micPositionY: Animated.SharedValue<number>;
-};
+export type OutputButtonsProps = Partial<OutputButtonsWithContextProps>;
 
 export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel'> &
@@ -43,8 +40,6 @@ export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
     | 'StopMessageStreamingButton'
     | 'StartAudioRecordingButton'
   > & {
-    micPositionX: Animated.SharedValue<number>;
-    micPositionY: Animated.SharedValue<number>;
     cooldownIsActive: boolean;
   };
 
@@ -62,8 +57,6 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
     SendButton,
     StopMessageStreamingButton,
     StartAudioRecordingButton,
-    micPositionX,
-    micPositionY,
   } = props;
   const {
     theme: {
@@ -120,7 +113,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
         key='audio-recording-button'
         style={audioRecordingButtonContainer}
       >
-        <StartAudioRecordingButton micPositionX={micPositionX} micPositionY={micPositionY} />
+        <StartAudioRecordingButton />
       </Animated.View>
     );
   } else {
