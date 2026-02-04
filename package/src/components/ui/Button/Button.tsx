@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, PressableProps, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, Pressable, PressableProps, StyleSheet, Text, View } from 'react-native';
 
 import { buttonPadding, buttonSizes } from './constants';
 import { useButtonStyles } from './hooks/useButtonStyles';
@@ -72,6 +72,11 @@ export const Button = ({
   const buttonStyles = useButtonStyles({ variant, type });
   const styles = useStyles();
 
+  const isRTL = I18nManager.isRTL;
+
+  const LeftIcon = isRTL ? TrailingIcon : LeadingIcon;
+  const RightIcon = isRTL ? LeadingIcon : TrailingIcon;
+
   return (
     <View
       style={[
@@ -102,8 +107,8 @@ export const Button = ({
         ]}
         {...rest}
       >
-        {LeadingIcon ? (
-          <LeadingIcon
+        {LeftIcon ? (
+          <LeftIcon
             height={20}
             width={20}
             strokeWidth={1.5}
@@ -129,8 +134,8 @@ export const Button = ({
             ) : (
               label
             )}
-            {TrailingIcon ? (
-              <TrailingIcon
+            {RightIcon ? (
+              <RightIcon
                 height={20}
                 width={20}
                 strokeWidth={1.5}
@@ -166,11 +171,6 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
-        },
-        badgeContainer: {
-          position: 'absolute',
-          top: 0,
-          right: 0,
         },
       }),
     [],
