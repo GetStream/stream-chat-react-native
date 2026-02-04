@@ -8,6 +8,8 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
 
+type IconRenderer = (props: IconProps) => React.ReactNode;
+
 export type ButtonProps = PressableProps & {
   /**
    * The style of the button.
@@ -28,7 +30,7 @@ export type ButtonProps = PressableProps & {
   /**
    * The icon to display on the leading side of the button.
    */
-  LeadingIcon?: React.FC<IconProps>;
+  LeadingIcon?: IconRenderer;
   /**
    * The content to display on the center of the button.
    */
@@ -36,19 +38,11 @@ export type ButtonProps = PressableProps & {
   /**
    * The icon to display on the trailing side of the button.
    */
-  TrailingIcon?: React.FC<IconProps>;
+  TrailingIcon?: IconRenderer;
   /**
    * Whether the button is only an icon.
    */
   iconOnly?: boolean;
-  /**
-   * The props to pass to the trailing icon.
-   */
-  trailingIconProps?: IconProps;
-  /**
-   * The props to pass to the leading icon.
-   */
-  leadingIconProps?: IconProps;
 };
 
 export const Button = ({
@@ -60,8 +54,6 @@ export const Button = ({
   TrailingIcon,
   iconOnly = false,
   label,
-  leadingIconProps,
-  trailingIconProps,
   onLayout,
   disabled = false,
   ...rest
@@ -113,7 +105,6 @@ export const Button = ({
             width={20}
             strokeWidth={1.5}
             stroke={disabled ? buttonStyles.disabledForegroundColor : buttonStyles.foregroundColor}
-            {...leadingIconProps}
           />
         ) : null}
         {!iconOnly ? (
@@ -142,7 +133,6 @@ export const Button = ({
                 stroke={
                   disabled ? buttonStyles.disabledForegroundColor : buttonStyles.foregroundColor
                 }
-                {...trailingIconProps}
               />
             ) : null}
           </>
@@ -158,6 +148,7 @@ const useStyles = () => {
       StyleSheet.create({
         wrapper: {
           borderRadius: primitives.radiusMax,
+          color: 'red',
         },
         container: {
           borderRadius: primitives.radiusMax,

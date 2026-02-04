@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import Animated from 'react-native-reanimated';
@@ -19,6 +19,7 @@ import { NewMic } from '../../../../icons/NewMic';
 import { NewStop } from '../../../../icons/NewStop';
 import { NewTick } from '../../../../icons/NewTick';
 import { NewTrash } from '../../../../icons/NewTrash';
+import { IconProps } from '../../../../icons/utils/base';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
@@ -51,14 +52,18 @@ const StopRecording = ({
     stopVoiceRecordingHandler();
   };
 
+  const StopIcon = useCallback(
+    (props: IconProps) => <NewStop {...props} fill={semantics.buttonDestructiveBg} />,
+    [semantics.buttonDestructiveBg],
+  );
+
   return (
     <Button
       variant='destructive'
       type='outline'
       size='sm'
       onPress={onStopVoiceRecording}
-      LeadingIcon={NewStop}
-      leadingIconProps={{ fill: semantics.buttonDestructiveBg }}
+      LeadingIcon={StopIcon}
       iconOnly
     />
   );
