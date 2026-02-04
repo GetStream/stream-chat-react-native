@@ -1,21 +1,17 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../../theme';
 import { IconButton } from '../../../ui/IconButton';
-
-export type CooldownTimerProps = {
-  seconds: number;
-};
+import { useCooldownRemaining } from '../../hooks/useCooldownRemaining';
 
 /**
  * Renders an amount of seconds left for a cooldown to finish.
- *
- * See `useCountdown` for an example of how to set a countdown
- * to use as the source of `seconds`.
  **/
-export const CooldownTimer = (props: CooldownTimerProps) => {
-  const { seconds } = props;
+export const CooldownTimer = () => {
+  const seconds = useCooldownRemaining();
+  const styles = useStyles();
   const {
     theme: {
       messageInput: {
@@ -30,7 +26,7 @@ export const CooldownTimer = (props: CooldownTimerProps) => {
         {seconds}
       </Text>
     );
-  }, [seconds, text]);
+  }, [seconds, text, styles]);
 
   return (
     <IconButton
@@ -44,6 +40,20 @@ export const CooldownTimer = (props: CooldownTimerProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  text: { color: '#B8BEC4', fontSize: 16, fontWeight: '600' },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        text: {
+          color: semantics.textDisabled,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+        },
+      }),
+    [semantics.textDisabled],
+  );
+};

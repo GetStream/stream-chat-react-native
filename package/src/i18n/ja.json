@@ -106,6 +106,7 @@
   "Show All": "すべて表示",
   "Slide to Cancel": "スライドしてキャンセル",
   "Slow mode ON": "スローモードオン",
+  "Slow mode, wait {{seconds}}s...": "スローモード, {{seconds}}s 待ってください...",
   "Suggest an option": "オプションを提案",
   "The message has been reported to a moderator.": "メッセージはモデレーターに報告されました。",
   "The source message was deleted": "元のメッセージが削除されました",

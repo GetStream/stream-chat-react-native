@@ -106,6 +106,7 @@
   "Show All": "Показать все",
   "Slide to Cancel": "Слайд для отмены",
   "Slow mode ON": "Медленный режим включен",
+  "Slow mode, wait {{seconds}}s...": "Медленный режим, ожидайте {{seconds}}s...",
   "Suggest an option": "Предложить вариант",
   "The message has been reported to a moderator.": "Сообщение отправлено модератору.",
   "The source message was deleted": "Исходное сообщение было удалено",

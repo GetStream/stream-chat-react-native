@@ -106,6 +106,7 @@
   "Show All": "Afficher tout",
   "Slide to Cancel": "Glisser pour annuler",
   "Slow mode ON": "Mode lent activé",
+  "Slow mode, wait {{seconds}}s...": "Mode lent, attendez {{seconds}}s...",
   "Suggest an option": "Suggérer une option",
   "The message has been reported to a moderator.": "Le message a été signalé à un modérateur.",
   "The source message was deleted": "Le message source a été supprimé",
