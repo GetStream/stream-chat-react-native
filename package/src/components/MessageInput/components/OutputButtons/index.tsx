@@ -14,15 +14,15 @@ import {
   useMessageComposerHasSendableData,
   useTheme,
 } from '../../../../contexts';
-import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useMessageCompositionIsEmpty } from '../../../../contexts/messageInputContext/hooks/useMessageCompositionIsEmpty';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
-import { useCountdown } from '../../hooks/useCountdown';
+import { useIsCooldownActive } from '../../hooks/useIsCooldownActive';
 
 export type OutputButtonsProps = Partial<OutputButtonsWithContextProps> & {
   micPositionX: Animated.SharedValue<number>;
@@ -38,7 +38,6 @@ export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
     | 'asyncMessagesLockDistance'
     | 'asyncMessagesMultiSendEnabled'
     | 'audioRecordingEnabled'
-    | 'cooldownEndsAt'
     | 'CooldownTimer'
     | 'SendButton'
     | 'StopMessageStreamingButton'
@@ -46,18 +45,19 @@ export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
   > & {
     micPositionX: Animated.SharedValue<number>;
     micPositionY: Animated.SharedValue<number>;
+    cooldownIsActive: boolean;
   };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
-  hasText: !!state.text,
 });
 
 export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) => {
   const {
+    audioRecordingEnabled,
     channel,
-    cooldownEndsAt,
     CooldownTimer,
+    cooldownIsActive,
     isOnline,
     SendButton,
     StopMessageStreamingButton,
@@ -79,13 +79,9 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   const messageComposer = useMessageComposer();
   const editing = !!messageComposer.editedMessage;
   const { textComposer } = messageComposer;
-  const { command, hasText } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { attachments } = useAttachmentManagerState();
+  const { command } = useStateStore(textComposer.state, textComposerStateSelector);
   const hasSendableData = useMessageComposerHasSendableData();
-
-  const showSendingButton = hasText || attachments.length || command;
-
-  const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
+  const compositionIsEmpty = useMessageCompositionIsEmpty();
 
   const { aiState } = useAIState(channel);
   const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
@@ -94,9 +90,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
 
   if (shouldDisplayStopAIGeneration) {
     return <StopMessageStreamingButton onPress={stopGenerating} />;
-  }
-
-  if (editing || command) {
+  } else if (editing || command) {
     return (
       <Animated.View
         entering={ZoomIn.duration(200)}
@@ -107,9 +101,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
         <EditButton disabled={messageComposer.compositionIsEmpty} />
       </Animated.View>
     );
-  }
-
-  if (cooldownRemainingSeconds) {
+  } else if (cooldownIsActive) {
     return (
       <Animated.View
         entering={ZoomIn.duration(200)}
@@ -117,12 +109,21 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
         key='cooldown-timer'
         style={cooldownButtonContainer}
       >
-        <CooldownTimer seconds={cooldownRemainingSeconds} />
+        <CooldownTimer />
       </Animated.View>
     );
-  }
-
-  if (showSendingButton) {
+  } else if (audioRecordingEnabled && compositionIsEmpty) {
+    return (
+      <Animated.View
+        entering={ZoomIn.duration(200)}
+        exiting={ZoomOut.duration(200)}
+        key='audio-recording-button'
+        style={audioRecordingButtonContainer}
+      >
+        <StartAudioRecordingButton micPositionX={micPositionX} micPositionY={micPositionY} />
+      </Animated.View>
+    );
+  } else {
     return (
       <Animated.View
         entering={ZoomIn.duration(200)}
@@ -134,33 +135,22 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
       </Animated.View>
     );
   }
-
-  return (
-    <Animated.View
-      entering={ZoomIn.duration(200)}
-      exiting={ZoomOut.duration(200)}
-      key='audio-recording-button'
-      style={audioRecordingButtonContainer}
-    >
-      <StartAudioRecordingButton micPositionX={micPositionX} micPositionY={micPositionY} />
-    </Animated.View>
-  );
 };
 
 const areEqual = (
   prevProps: OutputButtonsWithContextProps,
   nextProps: OutputButtonsWithContextProps,
 ) => {
-  const { channel: prevChannel, cooldownEndsAt: prevCooldownEndsAt } = prevProps;
+  const { channel: prevChannel, cooldownIsActive: prevCooldownIsActive } = prevProps;
 
-  const { channel: nextChannel, cooldownEndsAt: nextCooldownEndsAt } = nextProps;
+  const { channel: nextChannel, cooldownIsActive: nextCooldownIsActive } = nextProps;
 
   if (prevChannel?.cid !== nextChannel?.cid) {
     return false;
   }
 
-  const cooldownEndsAtEqual = prevCooldownEndsAt === nextCooldownEndsAt;
-  if (!cooldownEndsAtEqual) {
+  const cooldownIsActiveEqual = prevCooldownIsActive === nextCooldownIsActive;
+  if (!cooldownIsActiveEqual) {
     return false;
   }
 
@@ -181,12 +171,12 @@ export const OutputButtons = (props: OutputButtonsProps) => {
     asyncMessagesSlideToCancelDistance,
     asyncMessagesLockDistance,
     asyncMessagesMultiSendEnabled,
-    cooldownEndsAt,
     CooldownTimer,
     SendButton,
     StopMessageStreamingButton,
     StartAudioRecordingButton,
   } = useMessageInputContext();
+  const cooldownIsActive = useIsCooldownActive();
 
   return (
     <MemoizedOutputButtonsWithContext
@@ -197,7 +187,7 @@ export const OutputButtons = (props: OutputButtonsProps) => {
         asyncMessagesSlideToCancelDistance,
         audioRecordingEnabled,
         channel,
-        cooldownEndsAt,
+        cooldownIsActive,
         CooldownTimer,
         isOnline,
         SendButton,

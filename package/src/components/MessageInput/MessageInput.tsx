@@ -18,7 +18,6 @@ import { type MessageComposerState, type TextComposerState, type UserResponse } 
 
 import { LinkPreviewList } from './components/LinkPreviewList';
 import { OutputButtons } from './components/OutputButtons';
-import { useCountdown } from './hooks/useCountdown';
 
 import { useHasLinkPreviews } from './hooks/useLinkPreviews';
 
@@ -164,8 +163,6 @@ type MessageInputPropsWithContext = Pick<
     | 'AudioRecordingLockIndicator'
     | 'AudioRecordingPreview'
     | 'AutoCompleteSuggestionList'
-    | 'cooldownEndsAt'
-    | 'CooldownTimer'
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
     | 'Input'
@@ -237,7 +234,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     AutoCompleteSuggestionList,
     closeAttachmentPicker,
     closePollCreationDialog,
-    cooldownEndsAt,
     CreatePollContent,
     disableAttachmentPicker,
     editing,
@@ -295,8 +291,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       },
     },
   } = useTheme();
-
-  const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
   // Close the attachment picker state when the component unmounts
   useEffect(
@@ -499,7 +493,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       ) : null}
 
                       <AutoCompleteInput
-                        cooldownRemainingSeconds={cooldownRemainingSeconds}
                         TextInputComponent={TextInputComponent}
                         {...additionalTextInputProps}
                       />
@@ -596,7 +589,6 @@ const areEqual = (
     audioRecordingEnabled: prevAsyncMessagesEnabled,
     channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
-    cooldownEndsAt: prevCooldownEndsAt,
     editing: prevEditing,
     hasAttachments: prevHasAttachments,
     isKeyboardVisible: prevIsKeyboardVisible,
@@ -618,7 +610,6 @@ const areEqual = (
     audioRecordingEnabled: nextAsyncMessagesEnabled,
     channel: nextChannel,
     closePollCreationDialog: nextClosePollCreationDialog,
-    cooldownEndsAt: nextCooldownEndsAt,
     editing: nextEditing,
     isKeyboardVisible: nextIsKeyboardVisible,
     isOnline: nextIsOnline,
@@ -697,11 +688,6 @@ const areEqual = (
 
   const isOnlineEqual = prevIsOnline === nextIsOnline;
   if (!isOnlineEqual) {
-    return false;
-  }
-
-  const cooldownEndsAtEqual = prevCooldownEndsAt === nextCooldownEndsAt;
-  if (!cooldownEndsAtEqual) {
     return false;
   }
 
@@ -785,8 +771,6 @@ export const MessageInput = (props: MessageInputProps) => {
     closeAttachmentPicker,
     closePollCreationDialog,
     compressImageQuality,
-    cooldownEndsAt,
-    CooldownTimer,
     CreatePollContent,
     CreatePollIcon,
     FileSelectorIcon,
@@ -865,8 +849,6 @@ export const MessageInput = (props: MessageInputProps) => {
         closeAttachmentPicker,
         closePollCreationDialog,
         compressImageQuality,
-        cooldownEndsAt,
-        CooldownTimer,
         CreatePollContent,
         CreatePollIcon,
         disableAttachmentPicker,

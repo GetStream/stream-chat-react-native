@@ -25,6 +25,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { useStateStore } from '../../hooks/useStateStore';
+import { useCooldownRemaining } from '../MessageInput/hooks/useCooldownRemaining';
 
 type AutoCompleteInputPropsWithContext = TextInputProps &
   Pick<ChannelContextValue, 'channel'> &
@@ -130,7 +131,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       : command
         ? commandPlaceHolders[command.name ?? '']
         : cooldownRemainingSeconds
-          ? `Slow mode, wait ${cooldownRemainingSeconds}s...`
+          ? t('Slow mode, wait {{seconds}}s...', { seconds: cooldownRemainingSeconds })
           : t('Send a message');
   }, [command, cooldownRemainingSeconds, t, placeholder]);
 
@@ -205,6 +206,7 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
   const { setInputBoxRef } = useMessageInputContext();
   const { t } = useTranslationContext();
   const { channel } = useChannelContext();
+  const cooldownRemainingSeconds = useCooldownRemaining();
 
   return (
     <MemoizedAutoCompleteInput
@@ -212,6 +214,7 @@ export const AutoCompleteInput = (props: AutoCompleteInputProps) => {
         channel,
         setInputBoxRef,
         t,
+        cooldownRemainingSeconds,
       }}
       {...props}
     />

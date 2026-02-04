@@ -31,7 +31,6 @@ export const useCreateMessageInputContext = ({
   closeAttachmentPicker,
   closePollCreationDialog,
   compressImageQuality,
-  cooldownEndsAt,
   CooldownTimer,
   CreatePollContent,
   CreatePollIcon,
@@ -107,7 +106,6 @@ export const useCreateMessageInputContext = ({
       closeAttachmentPicker,
       closePollCreationDialog,
       compressImageQuality,
-      cooldownEndsAt,
       CooldownTimer,
       CreatePollContent,
       CreatePollIcon,
@@ -152,7 +150,7 @@ export const useCreateMessageInputContext = ({
       stopVoiceRecording,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cooldownEndsAt, threadId, showPollCreationDialog, selectedPicker],
+    [threadId, showPollCreationDialog, selectedPicker],
   );
 
   return messageInputContext;

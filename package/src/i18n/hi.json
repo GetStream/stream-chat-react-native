@@ -106,6 +106,7 @@
   "Show All": "सभी दिखाएं",
   "Slide to Cancel": "स्लाइड करके रद्द करें",
   "Slow mode ON": "स्लो मोड चालू",
+  "Slow mode, wait {{seconds}}s...": "स्लो मोड, {{seconds}}s इंतजार करें...",
   "Suggest an option": "एक विकल्प सुझाएं",
   "The message has been reported to a moderator.": "संदेश एक मॉडरेटर को सूचित किया गया है।",
   "The source message was deleted": "स्रोत संदेश हटा दिया गया है",

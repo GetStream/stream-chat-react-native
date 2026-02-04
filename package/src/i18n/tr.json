@@ -106,6 +106,7 @@
   "Show All": "Hepsini göster",
   "Slide to Cancel": "Silmek için kaydırın",
   "Slow mode ON": "Yavaş Mod Açık",
+  "Slow mode, wait {{seconds}}s...": "Yavaş mod, {{seconds}}s bekleyin...",
   "Suggest an option": "Bir seçenek öner",
   "The message has been reported to a moderator.": "Mesaj moderatöre bildirildi.",
   "The source message was deleted": "Kaynak mesaj silindi",

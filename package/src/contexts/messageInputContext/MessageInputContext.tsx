@@ -47,10 +47,8 @@ import type { AudioRecordingLockIndicatorProps } from '../../components/MessageI
 import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 import type { AttachButtonProps } from '../../components/MessageInput/components/InputButtons/AttachButton';
 import type { InputButtonsProps } from '../../components/MessageInput/components/InputButtons/index';
-import type { CooldownTimerProps } from '../../components/MessageInput/components/OutputButtons/CooldownTimer';
 import type { SendButtonProps } from '../../components/MessageInput/components/OutputButtons/SendButton';
 import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
-import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import {
@@ -79,9 +77,6 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type LocalMessageInputContext = {
   closeAttachmentPicker: () => void;
-  /** The time at which the active cooldown will end */
-  cooldownEndsAt: Date;
-
   inputBoxRef: React.RefObject<TextInput | null>;
   openAttachmentPicker: () => void;
   /**
@@ -262,7 +257,7 @@ export type InputMessageInputContextValue = {
    * **default**
    * [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
    */
-  CooldownTimer: React.ComponentType<CooldownTimerProps>;
+  CooldownTimer: React.ComponentType;
   editMessage: (params: {
     localMessage: LocalMessage;
     options?: UpdateMessageOptions;
@@ -428,8 +423,6 @@ export const MessageInputProvider = ({
     allowSendBeforeAttachmentsUpload,
   } = value;
 
-  const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
-
   const messageComposer = useMessageComposer();
   const { attachmentManager, editedMessage } = messageComposer;
   const { availableUploadSlots } = useAttachmentManagerState();
@@ -577,8 +570,6 @@ export const MessageInputProvider = ({
   }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
 
   const sendMessage = useStableCallback(async () => {
-    startCooldown();
-
     if (inputBoxRef.current) {
       inputBoxRef.current.clear();
     }
@@ -680,7 +671,6 @@ export const MessageInputProvider = ({
 
   const messageInputContext = useCreateMessageInputContext({
     closeAttachmentPicker,
-    cooldownEndsAt,
     inputBoxRef,
     openAttachmentPicker,
     pickAndUploadImageFromNativePicker,
