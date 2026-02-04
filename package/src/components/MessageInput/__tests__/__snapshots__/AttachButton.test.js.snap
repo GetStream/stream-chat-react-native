@@ -19,108 +19,123 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
       }
     >
       <View
+        onLayout={[Function]}
         style={
-          {
-            "padding": undefined,
-          }
+          [
+            {
+              "borderRadius": 9999,
+            },
+            {
+              "backgroundColor": undefined,
+              "borderColor": "#d5dbe1",
+              "borderWidth": 1,
+              "height": 48,
+              "width": 48,
+            },
+          ]
         }
       >
         <View
-          onLayout={[Function]}
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             [
               {
-                "borderRadius": 9999,
+                "backgroundColor": "transparent",
               },
               {
-                "backgroundColor": undefined,
-                "borderColor": "#d5dbe1",
-                "borderWidth": 1,
-                "height": 48,
-                "width": 48,
+                "alignItems": "center",
+                "borderRadius": 9999,
+                "flex": 1,
+                "flexDirection": "row",
+                "gap": 8,
+                "justifyContent": "center",
+              },
+              {
+                "paddingHorizontal": 20,
               },
             ]
           }
+          testID="attach-button"
         >
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={20}
+            bbWidth={20}
+            focusable={false}
+            height={20}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            stroke="#1a1b25"
+            strokeWidth={1.5}
             style={
               [
                 {
                   "backgroundColor": "transparent",
+                  "borderWidth": 0,
                 },
                 {
-                  "alignItems": "center",
-                  "borderRadius": 9999,
-                  "flex": 1,
-                  "flexDirection": "row",
-                  "gap": 8,
-                  "justifyContent": "center",
-                },
-                {
-                  "paddingHorizontal": 20,
+                  "flex": 0,
+                  "height": 20,
+                  "width": 20,
                 },
               ]
             }
-            testID="attach-button"
+            vbHeight={20}
+            vbWidth={20}
+            width={20}
           >
-            <RNSVGSvgView
-              align="xMidYMid"
-              bbHeight={20}
-              bbWidth={20}
-              focusable={false}
-              height={20}
-              meetOrSlice={0}
-              minX={0}
-              minY={0}
-              stroke="#1a1b25"
-              strokeWidth={1.5}
-              style={
+            <RNSVGGroup
+              fill={
+                {
+                  "payload": 4278190080,
+                  "type": 0,
+                }
+              }
+              propList={
                 [
-                  {
-                    "backgroundColor": "transparent",
-                    "borderWidth": 0,
-                  },
-                  {
-                    "flex": 0,
-                    "height": 20,
-                    "width": 20,
-                  },
+                  "stroke",
+                  "strokeWidth",
                 ]
               }
-              vbHeight={20}
-              vbWidth={20}
-              width={20}
+              stroke={
+                {
+                  "payload": 4279900965,
+                  "type": 0,
+                }
+              }
+              strokeWidth={1.5}
             >
-              <RNSVGGroup
+              <RNSVGPath
+                d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
                 fill={
                   {
                     "payload": 4278190080,
@@ -140,42 +155,10 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                   }
                 }
                 strokeWidth={1.5}
-              >
-                <RNSVGPath
-                  d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
-                  fill={
-                    {
-                      "payload": 4278190080,
-                      "type": 0,
-                    }
-                  }
-                  propList={
-                    [
-                      "stroke",
-                      "strokeWidth",
-                    ]
-                  }
-                  stroke={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
-                  }
-                  strokeWidth={1.5}
-                />
-              </RNSVGGroup>
-            </RNSVGSvgView>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
-        <View
-          style={
-            {
-              "position": "absolute",
-              "right": 0,
-              "top": 0,
-            }
-          }
-        />
       </View>
     </View>
     <View
@@ -389,108 +372,123 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
       }
     >
       <View
+        onLayout={[Function]}
         style={
-          {
-            "padding": undefined,
-          }
+          [
+            {
+              "borderRadius": 9999,
+            },
+            {
+              "backgroundColor": undefined,
+              "borderColor": "#d5dbe1",
+              "borderWidth": 1,
+              "height": 48,
+              "width": 48,
+            },
+          ]
         }
       >
         <View
-          onLayout={[Function]}
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             [
               {
-                "borderRadius": 9999,
+                "backgroundColor": "transparent",
               },
               {
-                "backgroundColor": undefined,
-                "borderColor": "#d5dbe1",
-                "borderWidth": 1,
-                "height": 48,
-                "width": 48,
+                "alignItems": "center",
+                "borderRadius": 9999,
+                "flex": 1,
+                "flexDirection": "row",
+                "gap": 8,
+                "justifyContent": "center",
+              },
+              {
+                "paddingHorizontal": 20,
               },
             ]
           }
+          testID="attach-button"
         >
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={20}
+            bbWidth={20}
+            focusable={false}
+            height={20}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            stroke="#1a1b25"
+            strokeWidth={1.5}
             style={
               [
                 {
                   "backgroundColor": "transparent",
+                  "borderWidth": 0,
                 },
                 {
-                  "alignItems": "center",
-                  "borderRadius": 9999,
-                  "flex": 1,
-                  "flexDirection": "row",
-                  "gap": 8,
-                  "justifyContent": "center",
-                },
-                {
-                  "paddingHorizontal": 20,
+                  "flex": 0,
+                  "height": 20,
+                  "width": 20,
                 },
               ]
             }
-            testID="attach-button"
+            vbHeight={20}
+            vbWidth={20}
+            width={20}
           >
-            <RNSVGSvgView
-              align="xMidYMid"
-              bbHeight={20}
-              bbWidth={20}
-              focusable={false}
-              height={20}
-              meetOrSlice={0}
-              minX={0}
-              minY={0}
-              stroke="#1a1b25"
-              strokeWidth={1.5}
-              style={
+            <RNSVGGroup
+              fill={
+                {
+                  "payload": 4278190080,
+                  "type": 0,
+                }
+              }
+              propList={
                 [
-                  {
-                    "backgroundColor": "transparent",
-                    "borderWidth": 0,
-                  },
-                  {
-                    "flex": 0,
-                    "height": 20,
-                    "width": 20,
-                  },
+                  "stroke",
+                  "strokeWidth",
                 ]
               }
-              vbHeight={20}
-              vbWidth={20}
-              width={20}
+              stroke={
+                {
+                  "payload": 4279900965,
+                  "type": 0,
+                }
+              }
+              strokeWidth={1.5}
             >
-              <RNSVGGroup
+              <RNSVGPath
+                d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
                 fill={
                   {
                     "payload": 4278190080,
@@ -510,42 +508,10 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                   }
                 }
                 strokeWidth={1.5}
-              >
-                <RNSVGPath
-                  d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
-                  fill={
-                    {
-                      "payload": 4278190080,
-                      "type": 0,
-                    }
-                  }
-                  propList={
-                    [
-                      "stroke",
-                      "strokeWidth",
-                    ]
-                  }
-                  stroke={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
-                  }
-                  strokeWidth={1.5}
-                />
-              </RNSVGGroup>
-            </RNSVGSvgView>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
-        <View
-          style={
-            {
-              "position": "absolute",
-              "right": 0,
-              "top": 0,
-            }
-          }
-        />
       </View>
     </View>
     <View
@@ -759,108 +725,123 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
       }
     >
       <View
+        onLayout={[Function]}
         style={
-          {
-            "padding": undefined,
-          }
+          [
+            {
+              "borderRadius": 9999,
+            },
+            {
+              "backgroundColor": undefined,
+              "borderColor": "#d5dbe1",
+              "borderWidth": 1,
+              "height": 48,
+              "width": 48,
+            },
+          ]
         }
       >
         <View
-          onLayout={[Function]}
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             [
               {
-                "borderRadius": 9999,
+                "backgroundColor": "transparent",
               },
               {
-                "backgroundColor": undefined,
-                "borderColor": "#d5dbe1",
-                "borderWidth": 1,
-                "height": 48,
-                "width": 48,
+                "alignItems": "center",
+                "borderRadius": 9999,
+                "flex": 1,
+                "flexDirection": "row",
+                "gap": 8,
+                "justifyContent": "center",
+              },
+              {
+                "paddingHorizontal": 20,
               },
             ]
           }
+          testID="attach-button"
         >
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={20}
+            bbWidth={20}
+            focusable={false}
+            height={20}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            stroke="#87909f"
+            strokeWidth={1.5}
             style={
               [
                 {
                   "backgroundColor": "transparent",
+                  "borderWidth": 0,
                 },
                 {
-                  "alignItems": "center",
-                  "borderRadius": 9999,
-                  "flex": 1,
-                  "flexDirection": "row",
-                  "gap": 8,
-                  "justifyContent": "center",
-                },
-                {
-                  "paddingHorizontal": 20,
+                  "flex": 0,
+                  "height": 20,
+                  "width": 20,
                 },
               ]
             }
-            testID="attach-button"
+            vbHeight={20}
+            vbWidth={20}
+            width={20}
           >
-            <RNSVGSvgView
-              align="xMidYMid"
-              bbHeight={20}
-              bbWidth={20}
-              focusable={false}
-              height={20}
-              meetOrSlice={0}
-              minX={0}
-              minY={0}
-              stroke="#87909f"
-              strokeWidth={1.5}
-              style={
+            <RNSVGGroup
+              fill={
+                {
+                  "payload": 4278190080,
+                  "type": 0,
+                }
+              }
+              propList={
                 [
-                  {
-                    "backgroundColor": "transparent",
-                    "borderWidth": 0,
-                  },
-                  {
-                    "flex": 0,
-                    "height": 20,
-                    "width": 20,
-                  },
+                  "stroke",
+                  "strokeWidth",
                 ]
               }
-              vbHeight={20}
-              vbWidth={20}
-              width={20}
+              stroke={
+                {
+                  "payload": 4287074463,
+                  "type": 0,
+                }
+              }
+              strokeWidth={1.5}
             >
-              <RNSVGGroup
+              <RNSVGPath
+                d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
                 fill={
                   {
                     "payload": 4278190080,
@@ -880,42 +861,10 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                   }
                 }
                 strokeWidth={1.5}
-              >
-                <RNSVGPath
-                  d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
-                  fill={
-                    {
-                      "payload": 4278190080,
-                      "type": 0,
-                    }
-                  }
-                  propList={
-                    [
-                      "stroke",
-                      "strokeWidth",
-                    ]
-                  }
-                  stroke={
-                    {
-                      "payload": 4287074463,
-                      "type": 0,
-                    }
-                  }
-                  strokeWidth={1.5}
-                />
-              </RNSVGGroup>
-            </RNSVGSvgView>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
-        <View
-          style={
-            {
-              "position": "absolute",
-              "right": 0,
-              "top": 0,
-            }
-          }
-        />
       </View>
     </View>
     <View

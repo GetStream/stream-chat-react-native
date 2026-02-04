@@ -20,112 +20,127 @@ exports[`SendButton should render a SendButton 1`] = `
     >
       <View
         style={
-          {
-            "padding": undefined,
-          }
+          [
+            {
+              "borderRadius": 9999,
+            },
+            {
+              "backgroundColor": "#005fff",
+              "borderColor": undefined,
+              "borderWidth": undefined,
+              "height": 32,
+              "width": 32,
+            },
+          ]
         }
       >
         <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             [
               {
-                "borderRadius": 9999,
+                "backgroundColor": "transparent",
               },
               {
-                "backgroundColor": "#005fff",
-                "borderColor": undefined,
-                "borderWidth": undefined,
-                "height": 32,
-                "width": 32,
+                "alignItems": "center",
+                "borderRadius": 9999,
+                "flex": 1,
+                "flexDirection": "row",
+                "gap": 8,
+                "justifyContent": "center",
+              },
+              {
+                "paddingHorizontal": 12,
               },
             ]
           }
+          testID="send-button"
         >
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={20}
+            bbWidth={20}
+            fill="none"
+            focusable={false}
+            height={20}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            stroke="#ffffff"
+            strokeWidth={1.5}
             style={
               [
                 {
                   "backgroundColor": "transparent",
+                  "borderWidth": 0,
                 },
                 {
-                  "alignItems": "center",
-                  "borderRadius": 9999,
-                  "flex": 1,
-                  "flexDirection": "row",
-                  "gap": 8,
-                  "justifyContent": "center",
-                },
-                {
-                  "paddingHorizontal": 12,
+                  "flex": 0,
+                  "height": 20,
+                  "width": 20,
                 },
               ]
             }
-            testID="send-button"
+            testID="send-right"
+            vbHeight={20}
+            vbWidth={20}
+            width={20}
           >
-            <RNSVGSvgView
-              align="xMidYMid"
-              bbHeight={20}
-              bbWidth={20}
-              fill="none"
-              focusable={false}
-              height={20}
-              meetOrSlice={0}
-              minX={0}
-              minY={0}
-              stroke="#ffffff"
-              strokeWidth={1.5}
-              style={
+            <RNSVGGroup
+              fill={null}
+              propList={
                 [
-                  {
-                    "backgroundColor": "transparent",
-                    "borderWidth": 0,
-                  },
-                  {
-                    "flex": 0,
-                    "height": 20,
-                    "width": 20,
-                  },
+                  "fill",
+                  "stroke",
+                  "strokeWidth",
                 ]
               }
-              testID="send-right"
-              vbHeight={20}
-              vbWidth={20}
-              width={20}
+              stroke={
+                {
+                  "payload": 4294967295,
+                  "type": 0,
+                }
+              }
+              strokeWidth={1.5}
             >
-              <RNSVGGroup
-                fill={null}
+              <RNSVGPath
+                d="M4.99998 9.99996H7.70832M4.99998 9.99996L2.81076 4.05778C2.54973 3.34929 3.29006 2.68668 3.96538 3.02433L16.4259 9.25463C17.0402 9.56171 17.0402 10.4382 16.4259 10.7453L3.96538 16.9756C3.29006 17.3133 2.54973 16.6506 2.81076 15.9421L4.99998 9.99996Z"
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
                 propList={
                   [
-                    "fill",
                     "stroke",
                     "strokeWidth",
                   ]
@@ -137,42 +152,10 @@ exports[`SendButton should render a SendButton 1`] = `
                   }
                 }
                 strokeWidth={1.5}
-              >
-                <RNSVGPath
-                  d="M4.99998 9.99996H7.70832M4.99998 9.99996L2.81076 4.05778C2.54973 3.34929 3.29006 2.68668 3.96538 3.02433L16.4259 9.25463C17.0402 9.56171 17.0402 10.4382 16.4259 10.7453L3.96538 16.9756C3.29006 17.3133 2.54973 16.6506 2.81076 15.9421L4.99998 9.99996Z"
-                  fill={
-                    {
-                      "payload": 4278190080,
-                      "type": 0,
-                    }
-                  }
-                  propList={
-                    [
-                      "stroke",
-                      "strokeWidth",
-                    ]
-                  }
-                  stroke={
-                    {
-                      "payload": 4294967295,
-                      "type": 0,
-                    }
-                  }
-                  strokeWidth={1.5}
-                />
-              </RNSVGGroup>
-            </RNSVGSvgView>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
-        <View
-          style={
-            {
-              "position": "absolute",
-              "right": 0,
-              "top": 0,
-            }
-          }
-        />
       </View>
     </View>
     <View
@@ -387,112 +370,127 @@ exports[`SendButton should render a disabled SendButton 1`] = `
     >
       <View
         style={
-          {
-            "padding": undefined,
-          }
+          [
+            {
+              "borderRadius": 9999,
+            },
+            {
+              "backgroundColor": "#ebeef1",
+              "borderColor": undefined,
+              "borderWidth": undefined,
+              "height": 32,
+              "width": 32,
+            },
+          ]
         }
       >
         <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             [
               {
-                "borderRadius": 9999,
+                "backgroundColor": "transparent",
               },
               {
-                "backgroundColor": "#ebeef1",
-                "borderColor": undefined,
-                "borderWidth": undefined,
-                "height": 32,
-                "width": 32,
+                "alignItems": "center",
+                "borderRadius": 9999,
+                "flex": 1,
+                "flexDirection": "row",
+                "gap": 8,
+                "justifyContent": "center",
+              },
+              {
+                "paddingHorizontal": 12,
               },
             ]
           }
+          testID="send-button"
         >
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={20}
+            bbWidth={20}
+            fill="none"
+            focusable={false}
+            height={20}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            stroke="#87909f"
+            strokeWidth={1.5}
             style={
               [
                 {
                   "backgroundColor": "transparent",
+                  "borderWidth": 0,
                 },
                 {
-                  "alignItems": "center",
-                  "borderRadius": 9999,
-                  "flex": 1,
-                  "flexDirection": "row",
-                  "gap": 8,
-                  "justifyContent": "center",
-                },
-                {
-                  "paddingHorizontal": 12,
+                  "flex": 0,
+                  "height": 20,
+                  "width": 20,
                 },
               ]
             }
-            testID="send-button"
+            testID="send-right"
+            vbHeight={20}
+            vbWidth={20}
+            width={20}
           >
-            <RNSVGSvgView
-              align="xMidYMid"
-              bbHeight={20}
-              bbWidth={20}
-              fill="none"
-              focusable={false}
-              height={20}
-              meetOrSlice={0}
-              minX={0}
-              minY={0}
-              stroke="#87909f"
-              strokeWidth={1.5}
-              style={
+            <RNSVGGroup
+              fill={null}
+              propList={
                 [
-                  {
-                    "backgroundColor": "transparent",
-                    "borderWidth": 0,
-                  },
-                  {
-                    "flex": 0,
-                    "height": 20,
-                    "width": 20,
-                  },
+                  "fill",
+                  "stroke",
+                  "strokeWidth",
                 ]
               }
-              testID="send-right"
-              vbHeight={20}
-              vbWidth={20}
-              width={20}
+              stroke={
+                {
+                  "payload": 4287074463,
+                  "type": 0,
+                }
+              }
+              strokeWidth={1.5}
             >
-              <RNSVGGroup
-                fill={null}
+              <RNSVGPath
+                d="M4.99998 9.99996H7.70832M4.99998 9.99996L2.81076 4.05778C2.54973 3.34929 3.29006 2.68668 3.96538 3.02433L16.4259 9.25463C17.0402 9.56171 17.0402 10.4382 16.4259 10.7453L3.96538 16.9756C3.29006 17.3133 2.54973 16.6506 2.81076 15.9421L4.99998 9.99996Z"
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
                 propList={
                   [
-                    "fill",
                     "stroke",
                     "strokeWidth",
                   ]
@@ -504,42 +502,10 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   }
                 }
                 strokeWidth={1.5}
-              >
-                <RNSVGPath
-                  d="M4.99998 9.99996H7.70832M4.99998 9.99996L2.81076 4.05778C2.54973 3.34929 3.29006 2.68668 3.96538 3.02433L16.4259 9.25463C17.0402 9.56171 17.0402 10.4382 16.4259 10.7453L3.96538 16.9756C3.29006 17.3133 2.54973 16.6506 2.81076 15.9421L4.99998 9.99996Z"
-                  fill={
-                    {
-                      "payload": 4278190080,
-                      "type": 0,
-                    }
-                  }
-                  propList={
-                    [
-                      "stroke",
-                      "strokeWidth",
-                    ]
-                  }
-                  stroke={
-                    {
-                      "payload": 4287074463,
-                      "type": 0,
-                    }
-                  }
-                  strokeWidth={1.5}
-                />
-              </RNSVGGroup>
-            </RNSVGSvgView>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
-        <View
-          style={
-            {
-              "position": "absolute",
-              "right": 0,
-              "top": 0,
-            }
-          }
-        />
       </View>
     </View>
     <View

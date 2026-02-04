@@ -4,12 +4,32 @@ exports[`ScrollToBottomButton should render the message notification and match s
 <View
   entering={BaseAnimationMock {}}
   exiting={BaseAnimationMock {}}
+  style={
+    {
+      "padding": 4,
+    }
+  }
 >
   <View
     style={
-      {
-        "padding": 4,
-      }
+      [
+        {
+          "borderRadius": 9999,
+        },
+        {
+          "elevation": 2,
+          "shadowColor": "rgba(0,0,0,0.12)",
+          "shadowOffset": {
+            "height": 1,
+            "width": 0,
+          },
+          "shadowOpacity": 0.12,
+          "shadowRadius": 3.0000000000000004,
+        },
+        {
+          "backgroundColor": "#ffffff",
+        },
+      ]
     }
   >
     <View
@@ -19,9 +39,9 @@ exports[`ScrollToBottomButton should render the message notification and match s
             "borderRadius": 9999,
           },
           {
-            "backgroundColor": "#ebeef1",
-            "borderColor": undefined,
-            "borderWidth": undefined,
+            "backgroundColor": undefined,
+            "borderColor": "#d5dbe1",
+            "borderWidth": 1,
             "height": 40,
             "width": 40,
           },
@@ -154,15 +174,15 @@ exports[`ScrollToBottomButton should render the message notification and match s
         </RNSVGSvgView>
       </View>
     </View>
-    <View
-      style={
-        {
-          "position": "absolute",
-          "right": 0,
-          "top": 0,
-        }
-      }
-    />
   </View>
+  <View
+    style={
+      {
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
 </View>
 `;
