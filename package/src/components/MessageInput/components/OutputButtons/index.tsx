@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
@@ -88,8 +88,43 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   const shouldDisplayStopAIGeneration =
     [AIStates.Thinking, AIStates.Generating].includes(aiState) && !!StopMessageStreamingButton;
 
-  const renderButton = useMemo(() => {
-    let button = (
+  if (shouldDisplayStopAIGeneration) {
+    return <StopMessageStreamingButton onPress={stopGenerating} />;
+  } else if (editing || command) {
+    return (
+      <Animated.View
+        entering={ZoomIn.duration(200)}
+        exiting={ZoomOut.duration(200)}
+        key='cooldown-timer'
+        style={editButtonContainer}
+      >
+        <EditButton disabled={messageComposer.compositionIsEmpty} />
+      </Animated.View>
+    );
+  } else if (cooldownIsActive) {
+    return (
+      <Animated.View
+        entering={ZoomIn.duration(200)}
+        exiting={ZoomOut.duration(200)}
+        key='cooldown-timer'
+        style={cooldownButtonContainer}
+      >
+        <CooldownTimer />
+      </Animated.View>
+    );
+  } else if (audioRecordingEnabled && compositionIsEmpty) {
+    return (
+      <Animated.View
+        entering={ZoomIn.duration(200)}
+        exiting={ZoomOut.duration(200)}
+        key='audio-recording-button'
+        style={audioRecordingButtonContainer}
+      >
+        <StartAudioRecordingButton micPositionX={micPositionX} micPositionY={micPositionY} />
+      </Animated.View>
+    );
+  } else {
+    return (
       <Animated.View
         entering={ZoomIn.duration(200)}
         exiting={ZoomOut.duration(200)}
@@ -99,69 +134,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
         <SendButton disabled={!hasSendableData || (!!command && !isOnline)} />
       </Animated.View>
     );
-
-    if (shouldDisplayStopAIGeneration) {
-      button = <StopMessageStreamingButton onPress={stopGenerating} />;
-    } else if (editing || command) {
-      button = (
-        <Animated.View
-          entering={ZoomIn.duration(200)}
-          exiting={ZoomOut.duration(200)}
-          key='cooldown-timer'
-          style={editButtonContainer}
-        >
-          <EditButton disabled={messageComposer.compositionIsEmpty} />
-        </Animated.View>
-      );
-    } else if (cooldownIsActive) {
-      button = (
-        <Animated.View
-          entering={ZoomIn.duration(200)}
-          exiting={ZoomOut.duration(200)}
-          key='cooldown-timer'
-          style={cooldownButtonContainer}
-        >
-          <CooldownTimer />
-        </Animated.View>
-      );
-    } else if (audioRecordingEnabled && compositionIsEmpty) {
-      button = (
-        <Animated.View
-          entering={ZoomIn.duration(200)}
-          exiting={ZoomOut.duration(200)}
-          key='audio-recording-button'
-          style={audioRecordingButtonContainer}
-        >
-          <StartAudioRecordingButton micPositionX={micPositionX} micPositionY={micPositionY} />
-        </Animated.View>
-      );
-    }
-
-    return button;
-  }, [
-    sendButtonContainer,
-    hasSendableData,
-    command,
-    isOnline,
-    shouldDisplayStopAIGeneration,
-    editing,
-    cooldownIsActive,
-    audioRecordingEnabled,
-    compositionIsEmpty,
-    stopGenerating,
-    editButtonContainer,
-    messageComposer.compositionIsEmpty,
-    cooldownButtonContainer,
-    audioRecordingButtonContainer,
-    StartAudioRecordingButton,
-    micPositionX,
-    micPositionY,
-    CooldownTimer,
-    SendButton,
-    StopMessageStreamingButton,
-  ]);
-
-  return renderButton;
+  }
 };
 
 const areEqual = (
