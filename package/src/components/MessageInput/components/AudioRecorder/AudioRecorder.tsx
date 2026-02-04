@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
 import dayjs from 'dayjs';
 
-import { IconButton } from '../../../../components/ui';
+import { Button } from '../../../../components/ui';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -19,6 +19,7 @@ import { NewMic } from '../../../../icons/NewMic';
 import { NewStop } from '../../../../icons/NewStop';
 import { NewTick } from '../../../../icons/NewTick';
 import { NewTrash } from '../../../../icons/NewTrash';
+import { IconProps } from '../../../../icons/utils/base';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
@@ -46,20 +47,24 @@ const StopRecording = ({
   const {
     theme: { semantics },
   } = useTheme();
-
   const onStopVoiceRecording = () => {
     NativeHandlers.triggerHaptic('impactMedium');
     stopVoiceRecordingHandler();
   };
 
+  const StopIcon = useCallback(
+    (props: IconProps) => <NewStop {...props} fill={semantics.buttonDestructiveBg} />,
+    [semantics.buttonDestructiveBg],
+  );
+
   return (
-    <IconButton
-      onPress={onStopVoiceRecording}
-      Icon={NewStop}
-      iconColor={semantics.accentError}
-      type='destructive'
+    <Button
+      variant='destructive'
+      type='outline'
       size='sm'
-      category='outline'
+      onPress={onStopVoiceRecording}
+      LeadingIcon={StopIcon}
+      iconOnly
     />
   );
 };
@@ -77,11 +82,12 @@ const UploadRecording = ({
   };
 
   return (
-    <IconButton
+    <Button
+      variant='primary'
+      type='solid'
       onPress={onUploadVoiceRecording}
-      Icon={NewTick}
-      iconColor='white'
-      type='primary'
+      LeadingIcon={NewTick}
+      iconOnly
       size='sm'
     />
   );
@@ -97,12 +103,13 @@ const DeleteRecording = ({
     deleteVoiceRecordingHandler();
   };
   return (
-    <IconButton
-      onPress={onDeleteVoiceRecording}
-      Icon={NewTrash}
-      type='secondary'
-      category='outline'
+    <Button
+      variant='secondary'
+      type='outline'
       size='sm'
+      iconOnly
+      onPress={onDeleteVoiceRecording}
+      LeadingIcon={NewTrash}
     />
   );
 };

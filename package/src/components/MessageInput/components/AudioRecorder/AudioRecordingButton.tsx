@@ -11,7 +11,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { IconButton } from '../../../../components/ui/IconButton';
 import { useActiveAudioPlayer } from '../../../../contexts/audioPlayerContext/AudioPlayerContext';
 import {
   MessageInputContextValue,
@@ -24,6 +23,7 @@ import { useStateStore } from '../../../../hooks/useStateStore';
 import { NewMic } from '../../../../icons/NewMic';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
+import { Button } from '../../../ui';
 
 export type AudioRecordingButtonPropsWithContext = Pick<
   MessageInputContextValue,
@@ -228,13 +228,17 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   return (
     <GestureDetector gesture={Gesture.Simultaneous(panGesture, tapGesture)}>
       <Animated.View style={[styles.container, animatedStyle, micButtonContainer]}>
-        <IconButton
-          disabled={true}
+        <Button
           accessibilityLabel='Start recording'
-          category='ghost'
-          Icon={NewMic}
+          variant='secondary'
+          type='ghost'
+          delayLongPress={asyncMessagesMinimumPressDuration}
+          LeadingIcon={NewMic}
+          onLongPress={onLongPressHandler}
+          onPress={onPressHandler}
           size='sm'
-          type='secondary'
+          iconOnly
+          disabled={true}
         />
       </Animated.View>
     </GestureDetector>

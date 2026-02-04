@@ -1,23 +1,13 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
+import { StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { NewDown } from '../../icons/NewDown';
-import { BadgeNotification } from '../ui/BadgeNotification';
-import { IconButton } from '../ui/IconButton';
-
-const styles = StyleSheet.create({
-  unreadCountNotificationContainer: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  container: {
-    padding: 4,
-  },
-});
+import { primitives } from '../../theme';
+import { BadgeNotification } from '../ui';
+import { Button } from '../ui/Button';
 
 export type ScrollToBottomButtonProps = {
   /** onPress handler */
@@ -29,13 +19,8 @@ export type ScrollToBottomButtonProps = {
 
 export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   const { onPress, showNotification = true, unreadCount } = props;
-
   const {
-    theme: {
-      messageList: {
-        scrollToBottomButton: { container },
-      },
-    },
+    theme: { semantics },
   } = useTheme();
 
   if (!showNotification) {
@@ -43,28 +28,51 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
-        key='scroll-to-bottom-button'
+    <Animated.View
+      entering={ZoomIn.duration(200)}
+      exiting={ZoomOut.duration(200)}
+      style={styles.container}
+      key='scroll-to-bottom-button'
+    >
+      <View
+        style={[
+          styles.floatingButtonContainer,
+          primitives.lightElevation1,
+          { backgroundColor: semantics.backgroundElevationElevation1 },
+        ]}
       >
-        <IconButton
-          Icon={NewDown}
+        <Button
+          variant='secondary'
+          type='outline'
+          LeadingIcon={NewDown}
           onPress={onPress}
           size='md'
-          style={container}
           testID='scroll-to-bottom-button'
-          type='secondary'
+          iconOnly
         />
-      </Animated.View>
+      </View>
+
       <View style={styles.unreadCountNotificationContainer}>
         {unreadCount ? (
           <BadgeNotification count={unreadCount} size='md' type='primary' testID='unread-count' />
         ) : null}
       </View>
-    </View>
+    </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  unreadCountNotificationContainer: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  floatingButtonContainer: {
+    borderRadius: primitives.radiusMax,
+  },
+  container: {
+    padding: primitives.spacingXxs,
+  },
+});
 
 ScrollToBottomButton.displayName = 'ScrollToBottomButton{messageList{scrollToBottomButton}}';
