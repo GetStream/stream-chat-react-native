@@ -23,7 +23,8 @@ import { useStateStore } from '../../../../hooks/useStateStore';
 import { NewMic } from '../../../../icons/NewMic';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
-import { Button } from '../../../ui';
+import { primitives } from '../../../../theme';
+import { ButtonStylesConfig, useButtonStyles } from '../../../ui/Button/hooks/useButtonStyles';
 
 export type AudioRecordingButtonPropsWithContext = Pick<
   MessageInputContextValue,
@@ -54,6 +55,11 @@ export type AudioRecordingButtonPropsWithContext = Pick<
     cancellableDuration: boolean;
   };
 
+const buttonStylesConfig: ButtonStylesConfig = {
+  variant: 'secondary',
+  type: 'ghost',
+};
+
 /**
  * Component to display the mic button on the Message Input.
  */
@@ -77,13 +83,16 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   } = props;
   const activeAudioPlayer = useActiveAudioPlayer();
   const scale = useSharedValue(1);
+  const pressed = useSharedValue(false);
 
   const { t } = useTranslationContext();
   const {
     theme: {
       messageInput: { micButtonContainer },
+      semantics,
     },
   } = useTheme();
+  const buttonStyles = useButtonStyles(buttonStylesConfig);
 
   const onPressHandler = useStableCallback(() => {
     if (handlePress) {
@@ -147,9 +156,9 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   const onTouchGestureEnd = useStableCallback(() => {
     if (status === 'recording') {
       if (cancellableDuration) {
-        runOnJS(onEarlyReleaseHandler)();
+        onEarlyReleaseHandler();
       } else {
-        runOnJS(uploadVoiceRecording)(asyncMessagesMultiSendEnabled);
+        uploadVoiceRecording(asyncMessagesMultiSendEnabled);
       }
     }
   });
@@ -160,17 +169,19 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
         .minDuration(asyncMessagesMinimumPressDuration)
         .onBegin(() => {
           scale.value = withSpring(0.8, { mass: 0.5 });
+          pressed.value = true;
         })
         .onStart(() => {
           runOnJS(onLongPressHandler)();
         })
         .onFinalize((e) => {
           scale.value = withSpring(1, { mass: 0.5 });
+          pressed.value = false;
           if (e.state === State.FAILED) {
             runOnJS(onPressHandler)();
           }
         }),
-    [asyncMessagesMinimumPressDuration, onLongPressHandler, onPressHandler, scale],
+    [asyncMessagesMinimumPressDuration, onLongPressHandler, onPressHandler, scale, pressed],
   );
 
   const panGesture = useMemo(
@@ -222,24 +233,14 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
+      backgroundColor: pressed.value ? semantics.backgroundCorePressed : 'transparent',
     };
   });
 
   return (
     <GestureDetector gesture={Gesture.Simultaneous(panGesture, tapGesture)}>
       <Animated.View style={[styles.container, animatedStyle, micButtonContainer]}>
-        <Button
-          accessibilityLabel='Start recording'
-          variant='secondary'
-          type='ghost'
-          delayLongPress={asyncMessagesMinimumPressDuration}
-          LeadingIcon={NewMic}
-          onLongPress={onLongPressHandler}
-          onPress={onPressHandler}
-          size='sm'
-          iconOnly
-          disabled={true}
-        />
+        <NewMic height={20} width={20} strokeWidth={1.5} stroke={buttonStyles.foregroundColor} />
       </Animated.View>
     </GestureDetector>
   );
@@ -300,5 +301,11 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
 AudioRecordingButton.displayName = 'AudioRecordingButton{messageInput}';
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    borderRadius: primitives.radiusMax,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 32,
+    width: 32,
+  },
 });
