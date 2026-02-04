@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
@@ -19,7 +19,6 @@ export type ScrollToBottomButtonProps = {
 
 export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   const { onPress, showNotification = true, unreadCount } = props;
-  const styles = useStyles();
   const {
     theme: { semantics },
   } = useTheme();
@@ -62,22 +61,18 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   );
 };
 
-const useStyles = () => {
-  return useMemo(() => {
-    return StyleSheet.create({
-      unreadCountNotificationContainer: {
-        position: 'absolute',
-        right: 0,
-        top: 0,
-      },
-      floatingButtonContainer: {
-        borderRadius: primitives.radiusMax,
-      },
-      container: {
-        padding: primitives.spacingXxs,
-      },
-    });
-  }, []);
-};
+const styles = StyleSheet.create({
+  unreadCountNotificationContainer: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  floatingButtonContainer: {
+    borderRadius: primitives.radiusMax,
+  },
+  container: {
+    padding: primitives.spacingXxs,
+  },
+});
 
 ScrollToBottomButton.displayName = 'ScrollToBottomButton{messageList{scrollToBottomButton}}';
