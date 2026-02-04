@@ -5,7 +5,7 @@ import Animated from 'react-native-reanimated';
 
 import dayjs from 'dayjs';
 
-import { IconButton } from '../../../../components/ui';
+import { Button } from '../../../../components/ui';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -46,20 +46,20 @@ const StopRecording = ({
   const {
     theme: { semantics },
   } = useTheme();
-
   const onStopVoiceRecording = () => {
     NativeHandlers.triggerHaptic('impactMedium');
     stopVoiceRecordingHandler();
   };
 
   return (
-    <IconButton
-      onPress={onStopVoiceRecording}
-      Icon={NewStop}
-      iconColor={semantics.accentError}
-      type='destructive'
+    <Button
+      buttonStyle='destructive'
+      type='outline'
       size='sm'
-      category='outline'
+      onPress={onStopVoiceRecording}
+      LeadingIcon={NewStop}
+      leadingIconProps={{ fill: semantics.buttonDestructiveBg }}
+      iconOnly
     />
   );
 };
@@ -77,11 +77,12 @@ const UploadRecording = ({
   };
 
   return (
-    <IconButton
+    <Button
+      buttonStyle='primary'
+      type='solid'
       onPress={onUploadVoiceRecording}
-      Icon={NewTick}
-      iconColor='white'
-      type='primary'
+      LeadingIcon={NewTick}
+      iconOnly
       size='sm'
     />
   );
@@ -97,12 +98,13 @@ const DeleteRecording = ({
     deleteVoiceRecordingHandler();
   };
   return (
-    <IconButton
-      onPress={onDeleteVoiceRecording}
-      Icon={NewTrash}
-      type='secondary'
-      category='outline'
+    <Button
+      buttonStyle='secondary'
+      type='outline'
       size='sm'
+      iconOnly
+      onPress={onDeleteVoiceRecording}
+      LeadingIcon={NewTrash}
     />
   );
 };

@@ -4,9 +4,8 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { SendRight } from '../../../../icons/SendRight';
-import { IconButton } from '../../../ui/IconButton';
+import { Button } from '../../../ui';
 
 export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {
   /** Disables the button */
@@ -18,12 +17,6 @@ export const SendButton = (props: SendButtonProps) => {
   const { sendMessage: sendMessageFromContext } = useMessageInputContext();
   const sendMessage = propsSendMessage || sendMessageFromContext;
 
-  const {
-    theme: {
-      messageInput: { sendButton },
-    },
-  } = useTheme();
-
   const onPressHandler = useCallback(() => {
     if (disabled) {
       return;
@@ -32,14 +25,15 @@ export const SendButton = (props: SendButtonProps) => {
   }, [disabled, sendMessage]);
 
   return (
-    <IconButton
-      disabled={disabled}
-      Icon={SendRight}
-      iconColor='white'
+    <Button
+      buttonStyle='primary'
+      type='solid'
+      state={disabled ? 'disabled' : 'default'}
+      LeadingIcon={SendRight}
       onPress={onPressHandler}
       size='sm'
-      style={sendButton}
       testID='send-button'
+      iconOnly
     />
   );
 };

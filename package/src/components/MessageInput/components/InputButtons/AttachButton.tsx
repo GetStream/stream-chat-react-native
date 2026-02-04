@@ -9,9 +9,8 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { NewPlus } from '../../../../icons/NewPlus';
-import { IconButton } from '../../../ui/IconButton';
+import { Button } from '../../../ui/';
 import { NativeAttachmentPicker } from '../NativeAttachmentPicker';
 
 type AttachButtonPropsWithContext = Pick<
@@ -35,11 +34,6 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
     selectedPicker,
     toggleAttachmentPicker,
   } = props;
-  const {
-    theme: {
-      messageInput: { attachButton },
-    },
-  } = useTheme();
 
   const onAttachButtonLayout = (event: LayoutChangeEvent) => {
     const layout = event.nativeEvent.layout;
@@ -82,15 +76,16 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
 
   return (
     <>
-      <IconButton
-        Icon={NewPlus}
+      <Button
+        buttonStyle='secondary'
+        type='outline'
+        size='lg'
+        iconOnly
+        LeadingIcon={NewPlus}
         onLayout={onAttachButtonLayout}
         onPress={onPressHandler}
-        size='lg'
-        status={selectedPicker === 'images' ? 'selected' : disabled ? 'disabled' : 'enabled'}
-        style={attachButton}
+        state={selectedPicker === 'images' ? 'selected' : disabled ? 'disabled' : 'default'}
         testID='attach-button'
-        type='secondary'
       />
       {showAttachButtonPicker ? (
         <NativeAttachmentPicker
