@@ -131,7 +131,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       : command
         ? commandPlaceHolders[command.name ?? '']
         : cooldownRemainingSeconds
-          ? `Slow mode, wait ${cooldownRemainingSeconds}s...`
+          ? t('Slow mode, wait {{seconds}}s...', { seconds: cooldownRemainingSeconds })
           : t('Send a message');
   }, [command, cooldownRemainingSeconds, t, placeholder]);
 

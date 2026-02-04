@@ -106,6 +106,7 @@
   "Show All": "모두 보기",
   "Slide to Cancel": "슬라이드하여 취소",
   "Slow mode ON": "슬로모드 켜짐",
+  "Slow mode, wait {{seconds}}s...": "슬로모드, {{seconds}}s 대기...",
   "Suggest an option": "옵션 제안",
   "The message has been reported to a moderator.": "메시지는 운영자에보고되었습니다.",
   "The source message was deleted": "원본 메시지가 삭제되었습니다",
