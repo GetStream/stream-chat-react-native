@@ -79,7 +79,7 @@ describe('ScrollToBottomButton', () => {
       </ThemeProvider>,
     );
     await waitFor(() => {
-      expect(getByTestId('unread-count')).toBeTruthy();
+      expect(getByTestId('badge')).toBeTruthy();
       expect(getByText('3')).toBeTruthy();
     });
   });
