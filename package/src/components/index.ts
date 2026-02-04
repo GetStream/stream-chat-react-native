@@ -123,6 +123,11 @@ export * from './MessageInput/components/AttachmentPreview/AttachmentUploadPrevi
 export * from './MessageInput/components/OutputButtons/CooldownTimer';
 export * from './MessageInput/components/InputButtons';
 export * from './MessageInput/MessageInput';
+export * from './MessageInput/MessageComposerLeadingView';
+export * from './MessageInput/MessageComposerTrailingView';
+export * from './MessageInput/MessageInputHeaderView';
+export * from './MessageInput/MessageInputLeadingView';
+export * from './MessageInput/MessageInputTrailingView';
 export * from './MessageInput/components/OutputButtons/SendButton';
 export * from './MessageInput/SendMessageDisallowedIndicator';
 export * from './MessageInput/ShowThreadMessageInChannelButton';

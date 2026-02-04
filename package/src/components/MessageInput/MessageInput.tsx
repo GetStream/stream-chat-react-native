@@ -14,14 +14,16 @@ import Animated, {
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
+import { type UserResponse } from 'stream-chat';
 
-import { InputButtons } from './components/InputButtons';
-import { LinkPreviewList } from './components/LinkPreviewList';
-import { OutputButtons } from './components/OutputButtons';
 import { MicPositionProvider } from './contexts/MicPositionContext';
+import { MessageComposerLeadingView } from './MessageComposerLeadingView';
+import { MessageComposerTrailingView } from './MessageComposerTrailingView';
+import { MessageInputHeaderView } from './MessageInputHeaderView';
+import { MessageInputLeadingView } from './MessageInputLeadingView';
+import { MessageInputTrailingView } from './MessageInputTrailingView';
 
-import { useHasLinkPreviews } from './hooks/useLinkPreviews';
+import { audioRecorderSelector } from './utils/audioRecorderSelectors';
 
 import { ChatContextValue, useChatContext, useOwnCapabilitiesContext } from '../../contexts';
 import {
@@ -36,7 +38,6 @@ import {
   MessageComposerAPIContextValue,
   useMessageComposerAPIContext,
 } from '../../contexts/messageComposerContext/MessageComposerAPIContext';
-import { useHasAttachments } from '../../contexts/messageInputContext/hooks/useHasAttachments';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
   MessageInputContextValue,
@@ -60,7 +61,6 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
-import { GiphyBadge } from '../ui/GiphyBadge';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
 const useStyles = () => {
@@ -198,14 +198,6 @@ type MessageInputPropsWithContext = Pick<
     isRecordingStateIdle?: boolean;
     recordingStatus?: string;
   };
-
-const textComposerStateSelector = (state: TextComposerState) => ({
-  command: state.command,
-});
-
-const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
-  quotedMessage: state.quotedMessage,
-});
 
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
@@ -510,154 +502,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   );
 };
 
-/**
- * PRAGMA: MessageComposerLeadingView
- * @param state
- */
-
-const idleRecordingStateSelector = (state: AudioRecorderManagerState) => ({
-  isRecordingStateIdle: state.status === 'idle',
-});
-
-export const MessageComposerLeadingView = () => {
-  const {
-    theme: {
-      messageInput: { inputButtonsContainer },
-    },
-  } = useTheme();
-  const styles = useStyles();
-
-  const { audioRecorderManager, messageInputFloating } = useMessageInputContext();
-  const { isRecordingStateIdle } = useStateStore(
-    audioRecorderManager.state,
-    idleRecordingStateSelector,
-  );
-
-  return isRecordingStateIdle ? (
-    <Animated.View
-      layout={LinearTransition.duration(200)}
-      style={[
-        styles.inputButtonsContainer,
-        messageInputFloating ? styles.shadow : null,
-        inputButtonsContainer,
-      ]}
-    >
-      <InputButtons />
-    </Animated.View>
-  ) : null;
-};
-
-/**
- * PRAGMA: MessageComposerTrailingView
- * @param state
- */
-
-export const MessageComposerTrailingView = () => {
-  return null;
-};
-
-/**
- * PRAGMA: MessageInputHeaderView
- * @param prevProps
- */
-
-export const MessageInputHeaderView = () => {
-  const {
-    theme: {
-      messageInput: { contentContainer },
-    },
-  } = useTheme();
-  const styles = useStyles();
-
-  const messageComposer = useMessageComposer();
-  const editing = !!messageComposer.editedMessage;
-  const { clearEditingState } = useMessageComposerAPIContext();
-  const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
-  const hasLinkPreviews = useHasLinkPreviews();
-  const { audioRecorderManager, AttachmentUploadPreviewList } = useMessageInputContext();
-  const { Reply } = useMessagesContext();
-  const { isRecordingStateIdle } = useStateStore(
-    audioRecorderManager.state,
-    idleRecordingStateSelector,
-  );
-  const hasAttachments = useHasAttachments();
-
-  return isRecordingStateIdle ? (
-    <Animated.View
-      layout={LinearTransition.duration(200)}
-      style={[
-        styles.contentContainer,
-        {
-          paddingTop:
-            hasAttachments || quotedMessage || editing || hasLinkPreviews
-              ? primitives.spacingXs
-              : 0,
-        },
-        contentContainer,
-      ]}
-    >
-      {editing ? (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
-          <Reply
-            mode='edit'
-            onDismiss={clearEditingState}
-            quotedMessage={messageComposer.editedMessage}
-          />
-        </Animated.View>
-      ) : null}
-      {quotedMessage ? (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
-          <Reply mode='reply' />
-        </Animated.View>
-      ) : null}
-      <AttachmentUploadPreviewList />
-      <LinkPreviewList />
-    </Animated.View>
-  ) : null;
-};
-
-/**
- * PRAGMA: MessageInputLeadingView
- * @param prevProps
- */
-
-export const MessageInputLeadingView = () => {
-  const styles = useStyles();
-  const messageComposer = useMessageComposer();
-  const { textComposer } = messageComposer;
-  const { command } = useStateStore(textComposer.state, textComposerStateSelector);
-
-  return command ? (
-    <View style={styles.giphyContainer}>
-      <GiphyBadge />
-    </View>
-  ) : null;
-};
-
-/**
- * MessageInputTrailingView
- * @param prevProps
- */
-
-export const MessageInputTrailingView = () => {
-  const styles = useStyles();
-  const {
-    theme: {
-      messageInput: { outputButtonsContainer },
-    },
-  } = useTheme();
-  const { audioRecorderManager } = useMessageInputContext();
-  const { micLocked, recordingStatus } = useStateStore(
-    audioRecorderManager.state,
-    audioRecorderSelector,
-  );
-  return (recordingStatus === 'idle' || recordingStatus === 'recording') && !micLocked ? (
-    <View style={[styles.outputButtonsContainer, outputButtonsContainer]}>
-      <OutputButtons />
-    </View>
-  ) : null;
-};
-
 const areEqual = (
   prevProps: MessageInputPropsWithContext,
   nextProps: MessageInputPropsWithContext,
@@ -799,12 +643,6 @@ const MemoizedMessageInput = React.memo(
 ) as typeof MessageInputWithContext;
 
 export type MessageInputProps = Partial<MessageInputPropsWithContext>;
-
-const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
-  micLocked: state.micLocked,
-  isRecordingStateIdle: state.status === 'idle',
-  recordingStatus: state.status,
-});
 
 /**
  * UI Component for message input
