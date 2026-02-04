@@ -53,7 +53,7 @@ const StopRecording = ({
 
   return (
     <Button
-      buttonStyle='destructive'
+      variant='destructive'
       type='outline'
       size='sm'
       onPress={onStopVoiceRecording}
@@ -78,7 +78,7 @@ const UploadRecording = ({
 
   return (
     <Button
-      buttonStyle='primary'
+      variant='primary'
       type='solid'
       onPress={onUploadVoiceRecording}
       LeadingIcon={NewTick}
@@ -99,7 +99,7 @@ const DeleteRecording = ({
   };
   return (
     <Button
-      buttonStyle='secondary'
+      variant='secondary'
       type='outline'
       size='sm'
       iconOnly

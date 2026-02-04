@@ -77,14 +77,15 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   return (
     <>
       <Button
-        buttonStyle='secondary'
+        variant='secondary'
         type='outline'
         size='lg'
         iconOnly
         LeadingIcon={NewPlus}
         onLayout={onAttachButtonLayout}
         onPress={onPressHandler}
-        state={selectedPicker === 'images' ? 'selected' : disabled ? 'disabled' : 'default'}
+        selected={selectedPicker === 'images'}
+        disabled={disabled}
         testID='attach-button'
       />
       {showAttachButtonPicker ? (

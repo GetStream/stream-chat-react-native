@@ -230,7 +230,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       <Animated.View style={[styles.container, animatedStyle, micButtonContainer]}>
         <Button
           accessibilityLabel='Start recording'
-          buttonStyle='secondary'
+          variant='secondary'
           type='ghost'
           delayLongPress={asyncMessagesMinimumPressDuration}
           LeadingIcon={NewMic}
@@ -238,7 +238,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
           onPress={onPressHandler}
           size='sm'
           iconOnly
-          state='disabled'
+          disabled={true}
         />
       </Animated.View>
     </GestureDetector>

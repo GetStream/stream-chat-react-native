@@ -30,15 +30,12 @@ export type ButtonStyle = {
  * @param type - The type of the button.
  * @returns The styles for the button.
  */
-export const useButtonStyles = ({
-  buttonStyle,
-  type,
-}: Pick<ButtonProps, 'buttonStyle' | 'type'>) => {
+export const useButtonStyles = ({ variant, type }: Pick<ButtonProps, 'variant' | 'type'>) => {
   const {
     theme: { semantics },
   } = useTheme();
 
-  const category = buttonStyle.concat(type[0].toUpperCase() + type.slice(1)) as ButtonStyleCategory;
+  const category = variant.concat(type[0].toUpperCase() + type.slice(1)) as ButtonStyleCategory;
 
   const defaultButtonStyles: Record<ButtonStyleCategory, ButtonStyle> = useMemo(() => {
     return {

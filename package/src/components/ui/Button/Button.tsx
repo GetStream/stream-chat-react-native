@@ -7,13 +7,12 @@ import { useButtonStyles } from './hooks/useButtonStyles';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
-import { BadgeNotification } from '../BadgeNotification';
 
 export type ButtonProps = PressableProps & {
   /**
    * The style of the button.
    */
-  buttonStyle: 'primary' | 'secondary' | 'destructive';
+  variant: 'primary' | 'secondary' | 'destructive';
   /**
    * The type of the button.
    */
@@ -23,13 +22,17 @@ export type ButtonProps = PressableProps & {
    */
   size?: 'sm' | 'md' | 'lg';
   /**
-   * The state in which the button is.
+   * Whether the button is selected.
    */
-  state?: 'default' | 'disabled' | 'pressed' | 'selected';
+  selected?: boolean;
   /**
    * The icon to display on the leading side of the button.
    */
   LeadingIcon?: React.FC<IconProps>;
+  /**
+   * The content to display on the center of the button.
+   */
+  label?: React.ReactNode;
   /**
    * The icon to display on the trailing side of the button.
    */
@@ -38,18 +41,6 @@ export type ButtonProps = PressableProps & {
    * Whether the button is only an icon.
    */
   iconOnly?: boolean;
-  /**
-   * The label to display on the button.
-   */
-  label?: string;
-  /**
-   * Whether the button has a badge.
-   */
-  badge?: boolean;
-  /**
-   * The count to display on the badge.
-   */
-  badgeCount?: number;
   /**
    * The props to pass to the trailing icon.
    */
@@ -61,111 +52,97 @@ export type ButtonProps = PressableProps & {
 };
 
 export const Button = ({
-  buttonStyle,
+  variant,
   type,
-  state = 'default',
+  selected = false,
   size = 'md',
   LeadingIcon,
   TrailingIcon,
   iconOnly = false,
   label,
+  leadingIconProps,
+  trailingIconProps,
   onLayout,
   disabled = false,
-  badge = false,
-  badgeCount = 0,
-  trailingIconProps,
-  leadingIconProps,
   ...rest
 }: ButtonProps) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const buttonStyles = useButtonStyles({ buttonStyle, type });
+  const buttonStyles = useButtonStyles({ variant, type });
   const styles = useStyles();
 
-  const buttonStatesColors = {
-    default: 'transparent',
-    pressed: semantics.backgroundCorePressed,
-    selected: semantics.backgroundCoreSelected,
-    disabled: 'transparent',
-  };
-
-  const isDisabled = disabled || state === 'disabled';
-
   return (
-    <View style={{ padding: badge ? primitives.spacingXxs : undefined }}>
-      <View
-        style={[
-          styles.wrapper,
+    <View
+      style={[
+        styles.wrapper,
+        {
+          backgroundColor: disabled
+            ? buttonStyles.disabledBackgroundColor
+            : buttonStyles.backgroundColor,
+          borderWidth: buttonStyles.borderColor ? 1 : undefined,
+          borderColor: disabled ? buttonStyles.disabledBorderColor : buttonStyles.borderColor,
+          height: buttonSizes[size].height,
+          width: iconOnly ? buttonSizes[size].width : undefined,
+        },
+      ]}
+      onLayout={onLayout}
+    >
+      <Pressable
+        style={({ pressed }) => [
           {
-            backgroundColor: isDisabled
-              ? buttonStyles.disabledBackgroundColor
-              : buttonStyles.backgroundColor,
-            borderWidth: buttonStyles.borderColor ? 1 : undefined,
-            borderColor: isDisabled ? buttonStyles.disabledBorderColor : buttonStyles.borderColor,
-            height: buttonSizes[size].height,
-            width: iconOnly ? buttonSizes[size].width : undefined,
+            backgroundColor: pressed
+              ? semantics.backgroundCorePressed
+              : selected
+                ? semantics.backgroundCoreSelected
+                : 'transparent',
           },
+          styles.container,
+          { paddingHorizontal: buttonPadding[size] },
         ]}
-        onLayout={onLayout}
+        {...rest}
       >
-        <Pressable
-          style={({ pressed }) => [
-            pressed
-              ? { backgroundColor: buttonStatesColors.pressed }
-              : { backgroundColor: buttonStatesColors[state] },
-            styles.container,
-            { paddingHorizontal: buttonPadding[size] },
-          ]}
-          {...rest}
-        >
-          {LeadingIcon ? (
-            <LeadingIcon
-              height={20}
-              width={20}
-              strokeWidth={1.5}
-              stroke={
-                isDisabled ? buttonStyles.disabledForegroundColor : buttonStyles.foregroundColor
-              }
-              {...leadingIconProps}
-            />
-          ) : null}
-          {!iconOnly ? (
-            <>
-              {label ? (
-                <Text
-                  style={[
-                    styles.label,
-                    {
-                      color: isDisabled
-                        ? buttonStyles.disabledForegroundColor
-                        : buttonStyles.foregroundColor,
-                    },
-                  ]}
-                >
-                  {label}
-                </Text>
-              ) : null}
-              {TrailingIcon ? (
-                <TrailingIcon
-                  height={20}
-                  width={20}
-                  strokeWidth={1.5}
-                  stroke={
-                    isDisabled ? buttonStyles.disabledForegroundColor : buttonStyles.foregroundColor
-                  }
-                  {...trailingIconProps}
-                />
-              ) : null}
-            </>
-          ) : null}
-        </Pressable>
-      </View>
-      <View style={styles.badgeContainer}>
-        {badge && badgeCount > 0 ? (
-          <BadgeNotification count={badgeCount} size='md' type='primary' testID='badge' />
+        {LeadingIcon ? (
+          <LeadingIcon
+            height={20}
+            width={20}
+            strokeWidth={1.5}
+            stroke={disabled ? buttonStyles.disabledForegroundColor : buttonStyles.foregroundColor}
+            {...leadingIconProps}
+          />
         ) : null}
-      </View>
+        {!iconOnly ? (
+          <>
+            {typeof label === 'string' ? (
+              <Text
+                style={[
+                  styles.label,
+                  {
+                    color: disabled
+                      ? buttonStyles.disabledForegroundColor
+                      : buttonStyles.foregroundColor,
+                  },
+                ]}
+              >
+                {label}
+              </Text>
+            ) : (
+              label
+            )}
+            {TrailingIcon ? (
+              <TrailingIcon
+                height={20}
+                width={20}
+                strokeWidth={1.5}
+                stroke={
+                  disabled ? buttonStyles.disabledForegroundColor : buttonStyles.foregroundColor
+                }
+                {...trailingIconProps}
+              />
+            ) : null}
+          </>
+        ) : null}
+      </Pressable>
     </View>
   );
 };

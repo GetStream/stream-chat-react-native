@@ -26,13 +26,13 @@ export const EditButton = (props: EditButtonProps) => {
 
   return (
     <Button
-      buttonStyle='primary'
+      variant='primary'
       type='solid'
       LeadingIcon={NewTick}
       iconOnly
       onPress={onPressHandler}
       size='sm'
-      state={disabled ? 'disabled' : 'default'}
+      disabled={disabled}
       testID='send-button'
     />
   );

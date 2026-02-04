@@ -26,9 +26,9 @@ export const SendButton = (props: SendButtonProps) => {
 
   return (
     <Button
-      buttonStyle='primary'
+      variant='primary'
       type='solid'
-      state={disabled ? 'disabled' : 'default'}
+      disabled={disabled}
       LeadingIcon={SendRight}
       onPress={onPressHandler}
       size='sm'

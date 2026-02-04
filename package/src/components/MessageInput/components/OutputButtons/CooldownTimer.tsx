@@ -11,9 +11,9 @@ export const CooldownTimer = () => {
 
   return (
     <Button
-      buttonStyle='primary'
+      variant='primary'
       type='solid'
-      state='disabled'
+      disabled={true}
       size='sm'
       label={seconds.toString()}
       testID='cooldown-timer'
