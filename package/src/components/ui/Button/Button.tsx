@@ -148,7 +148,6 @@ const useStyles = () => {
       StyleSheet.create({
         wrapper: {
           borderRadius: primitives.radiusMax,
-          color: 'red',
         },
         container: {
           borderRadius: primitives.radiusMax,
