@@ -1,4 +1,4 @@
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import { StateStore } from 'stream-chat';
 
@@ -9,7 +9,6 @@ export type RecordingStatusStates = 'idle' | 'recording' | 'stopped';
 
 export type AudioRecorderManagerState = {
   micLocked: boolean;
-  permissionsGranted: boolean;
   recording: AudioRecordingReturnType;
   waveformData: number[];
   duration: number;
@@ -18,7 +17,6 @@ export type AudioRecorderManagerState = {
 
 const INITIAL_STATE: AudioRecorderManagerState = {
   micLocked: false,
-  permissionsGranted: true,
   waveformData: [],
   recording: undefined,
   duration: 0,
@@ -56,28 +54,23 @@ export class AudioRecorderManager {
     if (!NativeHandlers.Audio) {
       return;
     }
-    this.state.partialNext({
-      status: 'recording',
-    });
     const recordingInfo = await NativeHandlers.Audio.startRecording(
       {
         isMeteringEnabled: true,
       },
       this.onRecordingStatusUpdate,
     );
-    const accessGranted = recordingInfo.accessGranted;
-    if (accessGranted) {
-      this.state.partialNext({ permissionsGranted: true });
-      const recording = recordingInfo.recording;
+    const { accessGranted, recording } = recordingInfo;
+    if (accessGranted && recording) {
       if (recording && typeof recording !== 'string' && recording.setProgressUpdateInterval) {
         recording.setProgressUpdateInterval(Platform.OS === 'android' ? 100 : 60);
       }
-      this.state.partialNext({ recording });
+      this.state.partialNext({ recording, status: 'recording' });
     } else {
       this.reset();
-      this.state.partialNext({ permissionsGranted: false });
-      Alert.alert('Please allow Audio permissions in settings.');
     }
+
+    return accessGranted;
   }
 
   async stopRecording() {
