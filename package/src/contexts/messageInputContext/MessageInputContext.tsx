@@ -97,7 +97,7 @@ export type LocalMessageInputContext = {
   toggleAttachmentPicker: () => void;
   uploadNewFile: (file: File) => Promise<void>;
   audioRecorderManager: AudioRecorderManager;
-  startVoiceRecording: () => Promise<void>;
+  startVoiceRecording: () => Promise<boolean | undefined>;
   deleteVoiceRecording: () => Promise<void>;
   uploadVoiceRecording: (multiSendEnabled: boolean) => Promise<void>;
   stopVoiceRecording: () => Promise<void>;
