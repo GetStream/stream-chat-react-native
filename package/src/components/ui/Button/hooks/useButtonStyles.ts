@@ -24,13 +24,15 @@ export type ButtonStyle = {
   disabledBorderColor?: ColorValue;
 };
 
+export type ButtonStylesConfig = Pick<ButtonProps, 'variant' | 'type'>;
+
 /**
  * Returns the styles for the button based on the button style and type.
  * @param buttonStyle - The style of the button.
  * @param type - The type of the button.
  * @returns The styles for the button.
  */
-export const useButtonStyles = ({ variant, type }: Pick<ButtonProps, 'variant' | 'type'>) => {
+export const useButtonStyles = ({ variant, type }: ButtonStylesConfig) => {
   const {
     theme: { semantics },
   } = useTheme();

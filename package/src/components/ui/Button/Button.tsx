@@ -97,6 +97,7 @@ export const Button = ({
           styles.container,
           { paddingHorizontal: buttonPadding[size] },
         ]}
+        disabled={disabled}
         {...rest}
       >
         {LeftIcon ? (

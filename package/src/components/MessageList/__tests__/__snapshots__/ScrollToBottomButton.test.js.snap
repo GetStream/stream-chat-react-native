@@ -53,7 +53,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
           {
             "busy": undefined,
             "checked": undefined,
-            "disabled": undefined,
+            "disabled": false,
             "expanded": undefined,
             "selected": undefined,
           }
