@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler, EmitterSubscription, Keyboard, Platform, StyleSheet } from 'react-native';
 
+import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+
 import BottomSheetOriginal from '@gorhom/bottom-sheet';
 import type { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 
@@ -14,6 +16,7 @@ import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { MessageInputContextValue } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStableCallback } from '../../hooks';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { NativeHandlers } from '../../native';
 import type { File } from '../../types/types';
@@ -68,6 +71,8 @@ export type AttachmentPickerProps = Pick<
   numberOfAttachmentPickerImageColumns?: number;
 };
 
+const keyExtractor = (item: File) => item.asset.uri;
+
 export const AttachmentPicker = React.forwardRef(
   (props: AttachmentPickerProps, ref: React.ForwardedRef<BottomSheetOriginal>) => {
     const {
@@ -96,24 +101,28 @@ export const AttachmentPicker = React.forwardRef(
 
     const fullScreenHeight = screenVh(100);
 
-    const [currentIndex, setCurrentIndex] = useState(-1);
+    const [currentIndex, setCurrentIndexInternal] = useState(-1);
+    const setCurrentIndex = useStableCallback((_: number, toIndex: number) =>
+      setCurrentIndexInternal(toIndex),
+    );
     const endCursorRef = useRef<string>(undefined);
     const [photoError, setPhotoError] = useState(false);
     const [iOSLimited, setIosLimited] = useState(false);
     const hasNextPageRef = useRef(true);
-    const [loadingPhotos, setLoadingPhotos] = useState(false);
+    const loadingPhotosRef = useRef(false);
     const [photos, setPhotos] = useState<File[]>([]);
-    const attemptedToLoadPhotosOnOpenRef = useRef(false);
+    const attemptedToLoadPhotosOnOpenRef = useRef<boolean>(false);
 
-    const getMorePhotos = useCallback(async () => {
+    const getMorePhotos = useStableCallback(async () => {
+      console.log('TRYING TO GET MORE PHOTOS: ');
       if (
         hasNextPageRef.current &&
-        !loadingPhotos &&
+        !loadingPhotosRef.current &&
         currentIndex > -1 &&
         selectedPicker === 'images'
       ) {
         setPhotoError(false);
-        setLoadingPhotos(true);
+        loadingPhotosRef.current = true;
         const endCursor = endCursorRef.current;
         try {
           if (!NativeHandlers.getPhotos) {
@@ -123,25 +132,20 @@ export const AttachmentPicker = React.forwardRef(
           }
           const results = await NativeHandlers.getPhotos({
             after: endCursor,
-            first: numberOfAttachmentImagesToLoadPerCall ?? 60,
+            first: numberOfAttachmentImagesToLoadPerCall ?? 25,
           });
           endCursorRef.current = results.endCursor;
-          setPhotos((prevPhotos) =>
-            endCursor ? [...prevPhotos, ...results.assets] : results.assets,
-          );
+          setPhotos((prevPhotos) => {
+            return endCursor ? [...prevPhotos, ...results.assets] : results.assets;
+          });
           setIosLimited(results.iOSLimited);
           hasNextPageRef.current = !!results.hasNextPage;
         } catch (error) {
           setPhotoError(true);
         }
-        setLoadingPhotos(false);
+        loadingPhotosRef.current = false;
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentIndex, selectedPicker, loadingPhotos]);
-
-    // we need to use ref here to avoid running effect when getMorePhotos changes
-    const getMorePhotosRef = useRef(getMorePhotos);
-    getMorePhotosRef.current = getMorePhotos;
+    });
 
     useEffect(() => {
       if (selectedPicker !== 'images') {
@@ -158,10 +162,10 @@ export const AttachmentPicker = React.forwardRef(
         hasNextPageRef.current = true;
         endCursorRef.current = undefined;
         // fetch the first page of photos again
-        getMorePhotosRef.current();
+        getMorePhotos();
       });
       return unsubscribe;
-    }, [selectedPicker]);
+    }, [getMorePhotos, selectedPicker]);
 
     useEffect(() => {
       const backAction = () => {
@@ -204,7 +208,7 @@ export const AttachmentPicker = React.forwardRef(
     useEffect(() => {
       if (currentIndex < 0) {
         setSelectedPicker(undefined);
-        if (!loadingPhotos) {
+        if (!loadingPhotosRef.current) {
           endCursorRef.current = undefined;
           hasNextPageRef.current = true;
           attemptedToLoadPhotosOnOpenRef.current = false;
@@ -212,7 +216,7 @@ export const AttachmentPicker = React.forwardRef(
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentIndex, loadingPhotos]);
+    }, [currentIndex]);
 
     useEffect(() => {
       if (
@@ -220,14 +224,14 @@ export const AttachmentPicker = React.forwardRef(
         selectedPicker === 'images' &&
         endCursorRef.current === undefined &&
         currentIndex > -1 &&
-        !loadingPhotos
+        !loadingPhotosRef.current
       ) {
         getMorePhotos();
         // we do this only once on open for avoiding to request permissions in rationale dialog again and again on
         // Android
         attemptedToLoadPhotosOnOpenRef.current = true;
       }
-    }, [currentIndex, selectedPicker, getMorePhotos, loadingPhotos]);
+    }, [currentIndex, selectedPicker, getMorePhotos]);
 
     const selectedPhotos = useMemo(
       () =>
@@ -249,7 +253,12 @@ export const AttachmentPicker = React.forwardRef(
      * Snap points changing cause a rerender of the position,
      * this is an issue if you are calling close on the bottom sheet.
      */
-    const snapPoints = [initialSnapPoint, finalSnapPoint];
+    const snapPoints = useMemo(
+      () => [initialSnapPoint, finalSnapPoint],
+      [initialSnapPoint, finalSnapPoint],
+    );
+
+    const numberOfColumns = numberOfAttachmentPickerImageColumns ?? 3;
 
     const MemoizedAttachmentPickerBottomSheetHandle = useCallback(
       (props: BottomSheetHandleProps) =>
@@ -263,6 +272,21 @@ export const AttachmentPicker = React.forwardRef(
       [AttachmentPickerBottomSheetHandle, photoError],
     );
 
+    const animatedIndex = useSharedValue(currentIndex);
+
+    // On some occasions, onAnimate does not fire whenever we pan to close the
+    // bottom sheet, likely due to physics giving the pan enough momentum for
+    // automatic animation to not be needed. To cover those cases, we react to
+    // the animatedIndex shared value to make sure we do proper cleanup.
+    useAnimatedReaction(
+      () => animatedIndex.value,
+      (currentIndex, previousIndex) => {
+        if (currentIndex !== previousIndex && currentIndex === -1) {
+          runOnJS(setSelectedPicker)(undefined);
+        }
+      },
+    );
+
     return (
       <>
         <BottomSheet
@@ -270,24 +294,26 @@ export const AttachmentPicker = React.forwardRef(
           handleComponent={MemoizedAttachmentPickerBottomSheetHandle}
           // @ts-ignore
           handleHeight={handleHeight}
-          index={-1}
-          onChange={setCurrentIndex}
+          index={currentIndex}
+          onAnimate={setCurrentIndex}
           ref={ref}
           snapPoints={snapPoints}
+          animatedIndex={animatedIndex}
         >
           {iOSLimited && <AttachmentPickerIOSSelectMorePhotos />}
           <BottomSheetFlatList
-            contentContainerStyle={StyleSheet.flatten([
+            contentContainerStyle={[
               styles.container,
               { backgroundColor: white, opacity: photoError ? 0 : 1 },
               bottomSheetContentContainer,
-            ])}
+            ]}
             data={selectedPhotos}
-            keyExtractor={(item) => item.asset.uri}
-            numColumns={numberOfAttachmentPickerImageColumns ?? 3}
+            keyExtractor={keyExtractor}
+            numColumns={numberOfColumns}
             onEndReached={photoError ? undefined : getMorePhotos}
             renderItem={renderAttachmentPickerItem}
             testID={'attachment-picker-list'}
+            updateCellsBatchingPeriod={16}
           />
         </BottomSheet>
         {selectedPicker === 'images' && photoError && (

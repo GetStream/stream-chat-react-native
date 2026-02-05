@@ -588,7 +588,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     attachmentPickerErrorButtonText,
     attachmentPickerErrorText,
-    numberOfAttachmentImagesToLoadPerCall = 60,
+    numberOfAttachmentImagesToLoadPerCall = 25,
     numberOfAttachmentPickerImageColumns = 3,
     giphyVersion = 'fixed_height',
     bottomInset = 0,

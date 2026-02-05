@@ -8,6 +8,8 @@ import Animated, {
   FadeOut,
   interpolate,
   LinearTransition,
+  SlideInDown,
+  SlideOutDown,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -378,7 +380,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   }));
   const { bottom } = useSafeAreaInsets();
 
-  const BOTTOM_OFFSET = isKeyboardVisible ? 16 : bottom ? bottom : 16;
+  const BOTTOM_OFFSET = isKeyboardVisible || selectedPicker ? 16 : bottom ? bottom : 16;
 
   return (
     <>
@@ -539,8 +541,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       </Animated.View>
       {!disableAttachmentPicker && selectedPicker ? (
         <Animated.View
-          entering={FadeIn.duration(200)}
-          exiting={FadeOut.duration(200)}
+          layout={LinearTransition.duration(200)}
+          entering={SlideInDown.duration(200)}
+          exiting={SlideOutDown.duration(200)}
           style={[
             {
               backgroundColor: semantics.composerBg,
