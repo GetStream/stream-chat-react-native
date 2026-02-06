@@ -456,31 +456,31 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
           <MessageComposerTrailingView />
         )}
 
-      <Animated.View
-        entering={FadeIn.duration(200)}
-        exiting={FadeOut.duration(200)}
-        layout={LinearTransition.duration(200)}
-        style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
-      >
-        <AutoCompleteSuggestionList />
-      </Animated.View>
-      {!disableAttachmentPicker && selectedPicker ? (
         <Animated.View
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
           layout={LinearTransition.duration(200)}
-          entering={SlideInDown.duration(200)}
-          exiting={SlideOutDown.duration(200)}
-          style={[
-            {
-              backgroundColor: semantics.composerBg,
-              height:
-                attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
-            },
-            attachmentSelectionBar,
-          ]}
+          style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
         >
-          <AttachmentPickerSelectionBar />
+          <AutoCompleteSuggestionList />
         </Animated.View>
-      ) : null}
+        {!disableAttachmentPicker && selectedPicker ? (
+          <Animated.View
+            layout={LinearTransition.duration(200)}
+            entering={SlideInDown.duration(200)}
+            exiting={SlideOutDown.duration(200)}
+            style={[
+              {
+                backgroundColor: semantics.composerBg,
+                height:
+                  attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
+              },
+              attachmentSelectionBar,
+            ]}
+          >
+            <AttachmentPickerSelectionBar />
+          </Animated.View>
+        ) : null}
 
         {showPollCreationDialog ? (
           <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
