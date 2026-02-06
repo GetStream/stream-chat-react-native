@@ -53,7 +53,6 @@ export const useCreateMessageInputContext = ({
   openPollCreationDialog,
   pickAndUploadImageFromNativePicker,
   pickFile,
-  selectedPicker,
   SendButton,
   sendMessage,
   SendMessageDisallowedIndicator,
@@ -128,7 +127,6 @@ export const useCreateMessageInputContext = ({
       openPollCreationDialog,
       pickAndUploadImageFromNativePicker,
       pickFile,
-      selectedPicker,
       SendButton,
       sendMessage,
       SendMessageDisallowedIndicator,
@@ -150,7 +148,7 @@ export const useCreateMessageInputContext = ({
       stopVoiceRecording,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [threadId, showPollCreationDialog, selectedPicker],
+    [threadId, showPollCreationDialog],
   );
 
   return messageInputContext;

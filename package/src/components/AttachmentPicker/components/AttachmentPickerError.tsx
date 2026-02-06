@@ -52,11 +52,11 @@ export const AttachmentPickerError = (props: AttachmentPickerErrorProps) => {
   } = useTheme();
   const { t } = useTranslationContext();
 
-  const { closePicker, setSelectedPicker } = useAttachmentPickerContext();
+  const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
 
   const openSettings = async () => {
     try {
-      setSelectedPicker(undefined);
+      attachmentPickerStore.setSelectedPicker(undefined);
       closePicker();
       await Linking.openSettings();
     } catch (error) {

@@ -84,7 +84,6 @@ export type LocalMessageInputContext = {
    */
   pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
-  selectedPicker?: 'images';
   sendMessage: () => Promise<void>;
   /**
    * Ref callback to set reference on input box
@@ -401,8 +400,7 @@ export const MessageInputProvider = ({
 }: PropsWithChildren<{
   value: InputMessageInputContextValue;
 }>) => {
-  const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
-    useAttachmentPickerContext();
+  const { closePicker, openPicker, attachmentPickerStore } = useAttachmentPickerContext();
   const { client } = useChatContext();
   const channelCapabilities = useOwnCapabilitiesContext();
   const [audioRecorderManager] = useState(new AudioRecorderManager());
@@ -546,28 +544,28 @@ export const MessageInputProvider = ({
    */
   const openAttachmentPicker = useCallback(() => {
     dismissKeyboard();
-    setSelectedPicker('images');
+    attachmentPickerStore.setSelectedPicker('images');
     openPicker();
-  }, [openPicker, setSelectedPicker]);
+  }, [openPicker, attachmentPickerStore]);
 
   /**
    * Function to close the attachment picker if the MediaLibrary is installed.
    */
   const closeAttachmentPicker = useCallback(() => {
-    setSelectedPicker(undefined);
+    attachmentPickerStore.setSelectedPicker(undefined);
     closePicker();
-  }, [closePicker, setSelectedPicker]);
+  }, [closePicker, attachmentPickerStore]);
 
   /**
    * Function to toggle the attachment picker if the MediaLibrary is installed.
    */
   const toggleAttachmentPicker = useCallback(() => {
-    if (selectedPicker) {
+    if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
       closeAttachmentPicker();
     } else {
       openAttachmentPicker();
     }
-  }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
+  }, [closeAttachmentPicker, openAttachmentPicker, attachmentPickerStore]);
 
   const sendMessage = useStableCallback(async () => {
     if (inputBoxRef.current) {
@@ -683,7 +681,6 @@ export const MessageInputProvider = ({
     ...value,
     closePollCreationDialog,
     openPollCreationDialog,
-    selectedPicker,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,
     audioRecorderManager,

@@ -7,6 +7,7 @@ import { useMessageInputContext } from '../../../contexts/messageInputContext/Me
 import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useAttachmentPickerState } from '../../../hooks/useAttachmentPickerState';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,7 +21,8 @@ const styles = StyleSheet.create({
 });
 
 export const AttachmentPickerSelectionBar = () => {
-  const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
+  const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
+  const { selectedPicker } = useAttachmentPickerState();
 
   const {
     attachmentSelectionBarHeight,
@@ -49,33 +51,33 @@ export const AttachmentPickerSelectionBar = () => {
 
   const setImagePicker = () => {
     if (selectedPicker === 'images') {
-      setSelectedPicker(undefined);
+      attachmentPickerStore.setSelectedPicker(undefined);
       closePicker();
     } else {
-      setSelectedPicker('images');
+      attachmentPickerStore.setSelectedPicker('images');
     }
   };
 
   const openFilePicker = () => {
-    setSelectedPicker(undefined);
+    attachmentPickerStore.setSelectedPicker(undefined);
     closePicker();
     pickFile();
   };
 
   const openPollCreationModal = () => {
-    setSelectedPicker(undefined);
+    attachmentPickerStore.setSelectedPicker(undefined);
     closePicker();
     openPollCreationDialog?.({ sendMessage });
   };
 
   const onCameraPickerPress = () => {
-    setSelectedPicker(undefined);
+    attachmentPickerStore.setSelectedPicker(undefined);
     closePicker();
     takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
   };
 
   const onVideoRecorderPickerPress = () => {
-    setSelectedPicker(undefined);
+    attachmentPickerStore.setSelectedPicker(undefined);
     closePicker();
     takeAndUploadImage('video');
   };

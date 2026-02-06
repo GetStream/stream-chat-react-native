@@ -3,11 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
-import {
-  AttachmentPickerContextValue,
-  OwnCapabilitiesContextValue,
-  useAttachmentPickerContext,
-} from '../../../../contexts';
+import { OwnCapabilitiesContextValue } from '../../../../contexts';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -26,7 +22,6 @@ export type InputButtonsWithContextProps = Pick<
   | 'hasImagePicker'
   | 'toggleAttachmentPicker'
 > &
-  Pick<AttachmentPickerContextValue, 'selectedPicker'> &
   Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
@@ -71,14 +66,12 @@ const areEqual = (
     hasCameraPicker: prevHasCameraPicker,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
-    selectedPicker: prevSelectedPicker,
   } = prevProps;
 
   const {
     hasCameraPicker: nextHasCameraPicker,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
-    selectedPicker: nextSelectedPicker,
   } = nextProps;
 
   if (prevHasCameraPicker !== nextHasCameraPicker) {
@@ -90,10 +83,6 @@ const areEqual = (
   }
 
   if (prevHasFilePicker !== nextHasFilePicker) {
-    return false;
-  }
-
-  if (prevSelectedPicker !== nextSelectedPicker) {
     return false;
   }
 
@@ -114,7 +103,6 @@ export const InputButtons = (props: InputButtonsProps) => {
     hasImagePicker,
     toggleAttachmentPicker,
   } = useMessageInputContext();
-  const { selectedPicker } = useAttachmentPickerContext();
   const { uploadFile } = useOwnCapabilitiesContext();
 
   return (
@@ -125,7 +113,6 @@ export const InputButtons = (props: InputButtonsProps) => {
         hasCommands,
         hasFilePicker,
         hasImagePicker,
-        selectedPicker,
         toggleAttachmentPicker,
         uploadFile,
       }}

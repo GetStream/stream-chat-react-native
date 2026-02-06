@@ -57,6 +57,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useAttachmentPickerState } from '../../hooks/useAttachmentPickerState';
 import { useKeyboardVisibility } from '../../hooks/useKeyboardVisibility';
 import { useStateStore } from '../../hooks/useStateStore';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
@@ -143,7 +144,7 @@ const useStyles = () => {
 
 type MessageInputPropsWithContext = Pick<
   AttachmentPickerContextValue,
-  'bottomInset' | 'disableAttachmentPicker' | 'selectedPicker'
+  'bottomInset' | 'disableAttachmentPicker'
 > &
   Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
@@ -224,7 +225,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
     bottomInset,
-    selectedPicker,
     additionalTextInputProps,
     asyncMessagesLockDistance,
     asyncMessagesSlideToCancelDistance,
@@ -260,6 +260,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   } = props;
 
   const styles = useStyles();
+  const { selectedPicker } = useAttachmentPickerState();
   const messageComposer = useMessageComposer();
   const { clearEditingState } = useMessageComposerAPIContext();
   const onDismissEditMessage = () => {
@@ -597,7 +598,6 @@ const areEqual = (
     isKeyboardVisible: prevIsKeyboardVisible,
     isOnline: prevIsOnline,
     openPollCreationDialog: prevOpenPollCreationDialog,
-    selectedPicker: prevSelectedPicker,
     showPollCreationDialog: prevShowPollCreationDialog,
     t: prevT,
     threadList: prevThreadList,
@@ -618,7 +618,6 @@ const areEqual = (
     isOnline: nextIsOnline,
     hasAttachments: nextHasAttachments,
     openPollCreationDialog: nextOpenPollCreationDialog,
-    selectedPicker: nextSelectedPicker,
     showPollCreationDialog: nextShowPollCreationDialog,
     t: nextT,
     threadList: nextThreadList,
@@ -696,11 +695,6 @@ const areEqual = (
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) {
-    return false;
-  }
-
-  const selectedPickerEqual = prevSelectedPicker === nextSelectedPicker;
-  if (!selectedPickerEqual) {
     return false;
   }
 
@@ -794,8 +788,7 @@ export const MessageInput = (props: MessageInputProps) => {
     uploadNewFile,
     VideoRecorderSelectorIcon,
   } = useMessageInputContext();
-  const { bottomInset, bottomSheetRef, disableAttachmentPicker, selectedPicker } =
-    useAttachmentPickerContext();
+  const { bottomInset, bottomSheetRef, disableAttachmentPicker } = useAttachmentPickerContext();
   const messageComposer = useMessageComposer();
   const editing = !!messageComposer.editedMessage;
   const { clearEditingState } = useMessageComposerAPIContext();
@@ -869,7 +862,6 @@ export const MessageInput = (props: MessageInputProps) => {
         messageInputHeightStore,
         openPollCreationDialog,
         Reply,
-        selectedPicker,
         SendButton,
         sendMessage,
         SendMessageDisallowedIndicator,

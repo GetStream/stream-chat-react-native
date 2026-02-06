@@ -135,7 +135,7 @@ const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageRe
 
 type MessageListPropsWithContext = Pick<
   AttachmentPickerContextValue,
-  'closePicker' | 'selectedPicker' | 'setSelectedPicker'
+  'closePicker' | 'attachmentPickerStore'
 > &
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
@@ -265,6 +265,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
+    attachmentPickerStore,
     additionalFlatListProps,
     channel,
     channelUnreadStateStore,
@@ -299,10 +300,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     readEvents,
     reloadChannel,
     ScrollToBottomButton,
-    selectedPicker,
     setChannelUnreadState,
     setFlatListRef,
-    setSelectedPicker,
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
@@ -481,7 +480,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       !viewableItems.length ||
       !readEvents ||
       lastReadMessageVisible ||
-      selectedPicker === 'images'
+      attachmentPickerStore.state.getLatestValue().selectedPicker === 'images'
     ) {
       setIsUnreadNotificationOpen(false);
       return;
@@ -1036,19 +1035,19 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   );
 
   const dismissImagePicker = useStableCallback(() => {
-    if (selectedPicker) {
-      setSelectedPicker(undefined);
+    if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
+      attachmentPickerStore.setSelectedPicker(undefined);
       closePicker();
     }
   });
 
   const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = useStableCallback((event) => {
-    !hasMoved && selectedPicker && setHasMoved(true);
+    !hasMoved && attachmentPickerStore.state.getLatestValue().selectedPicker && setHasMoved(true);
     onUserScrollEvent(event);
   });
 
   const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = useStableCallback((event) => {
-    hasMoved && selectedPicker && setHasMoved(false);
+    hasMoved && attachmentPickerStore.state.getLatestValue().selectedPicker && setHasMoved(false);
     onUserScrollEvent(event);
   });
 
@@ -1218,7 +1217,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 export type MessageListProps = Partial<MessageListPropsWithContext>;
 
 export const MessageList = (props: MessageListProps) => {
-  const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
+  const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
   const {
     channel,
     channelUnreadStateStore,
@@ -1266,6 +1265,7 @@ export const MessageList = (props: MessageListProps) => {
   return (
     <MessageListWithContext
       {...{
+        attachmentPickerStore,
         channel,
         channelUnreadStateStore,
         client,
@@ -1300,9 +1300,7 @@ export const MessageList = (props: MessageListProps) => {
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
-        selectedPicker,
         setChannelUnreadState,
-        setSelectedPicker,
         setTargetedMessage,
         shouldShowUnreadUnderlay,
         StickyHeader,

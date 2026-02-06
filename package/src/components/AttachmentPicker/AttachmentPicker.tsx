@@ -17,8 +17,10 @@ import { useAttachmentPickerContext } from '../../contexts/attachmentPickerConte
 import { MessageInputContextValue } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
+import { useAttachmentPickerState } from '../../hooks/useAttachmentPickerState';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { NativeHandlers } from '../../native';
+import { SelectedPickerType } from '../../state-store/attachment-picker-store';
 import type { File } from '../../types/types';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
 import { BottomSheetFlatList } from '../BottomSheetCompatibility/BottomSheetFlatList';
@@ -84,13 +86,9 @@ export const AttachmentPicker = React.forwardRef(
         colors: { white },
       },
     } = useTheme();
-    const {
-      closePicker,
-      selectedPicker,
-      setSelectedPicker,
-      topInset,
-      numberOfAttachmentPickerImageColumns,
-    } = useAttachmentPickerContext();
+    const { closePicker, attachmentPickerStore, topInset, numberOfAttachmentPickerImageColumns } =
+      useAttachmentPickerContext();
+    const { selectedPicker } = useAttachmentPickerState();
     const { vh: screenVh } = useScreenDimensions();
 
     const fullScreenHeight = screenVh(100);
@@ -178,8 +176,8 @@ export const AttachmentPicker = React.forwardRef(
 
     useEffect(() => {
       const backAction = () => {
-        if (selectedPicker) {
-          setSelectedPicker(undefined);
+        if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
+          attachmentPickerStore.setSelectedPicker(undefined);
           closePicker();
           return true;
         }
@@ -190,12 +188,12 @@ export const AttachmentPicker = React.forwardRef(
       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
       return () => backHandler.remove();
-    }, [selectedPicker, closePicker, setSelectedPicker]);
+    }, [attachmentPickerStore, closePicker]);
 
     useEffect(() => {
       const onKeyboardOpenHandler = () => {
-        if (selectedPicker) {
-          setSelectedPicker(undefined);
+        if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
+          attachmentPickerStore.setSelectedPicker(undefined);
         }
         closePicker();
       };
@@ -212,11 +210,11 @@ export const AttachmentPicker = React.forwardRef(
       return () => {
         keyboardSubscription?.remove();
       };
-    }, [closePicker, selectedPicker, setSelectedPicker]);
+    }, [attachmentPickerStore, closePicker]);
 
     useEffect(() => {
       if (currentIndex < 0) {
-        setSelectedPicker(undefined);
+        attachmentPickerStore.setSelectedPicker(undefined);
         if (!loadingPhotosRef.current) {
           endCursorRef.current = undefined;
           hasNextPageRef.current = true;
@@ -224,7 +222,7 @@ export const AttachmentPicker = React.forwardRef(
           setPhotoError(false);
         }
       }
-    }, [currentIndex, setSelectedPicker]);
+    }, [currentIndex, attachmentPickerStore]);
 
     useEffect(() => {
       if (
@@ -271,6 +269,9 @@ export const AttachmentPicker = React.forwardRef(
     );
 
     const animatedIndex = useSharedValue(currentIndex);
+    const setSelectedPickerWithDebounce = useStableCallback((value: SelectedPickerType) =>
+      attachmentPickerStore.setSelectedPicker(value, true),
+    );
 
     // On some occasions, onAnimate does not fire whenever we pan to close the
     // bottom sheet, likely due to physics giving the pan enough momentum for
@@ -280,7 +281,7 @@ export const AttachmentPicker = React.forwardRef(
       () => animatedIndex.value,
       (currentIndex, previousIndex) => {
         if (currentIndex !== previousIndex && currentIndex === -1) {
-          runOnJS(setSelectedPicker)(undefined, true);
+          runOnJS(setSelectedPickerWithDebounce)(undefined);
         }
       },
     );
