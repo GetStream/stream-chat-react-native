@@ -57,21 +57,12 @@ export type AttachmentPickerProps = Pick<
    * Custom UI Component to render select more photos for selected gallery access in iOS.
    */
   AttachmentPickerIOSSelectMorePhotos: React.ComponentType;
-  /**
-   * Custom UI component to render overlay component, that shows up on top of [selected
-   * image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
-   *
-   * **Default**
-   * [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
-   */
-  ImageOverlaySelectedComponent: React.ComponentType;
   attachmentPickerErrorButtonText?: string;
   attachmentPickerErrorText?: string;
   numberOfAttachmentImagesToLoadPerCall?: number;
-  numberOfAttachmentPickerImageColumns?: number;
 };
 
-const keyExtractor = (item: File) => item.asset.uri;
+const keyExtractor = (item: File) => item.uri;
 
 export const AttachmentPicker = React.forwardRef(
   (props: AttachmentPickerProps, ref: React.ForwardedRef<BottomSheetOriginal>) => {
@@ -84,9 +75,7 @@ export const AttachmentPicker = React.forwardRef(
       AttachmentPickerErrorImage,
       attachmentPickerErrorText,
       AttachmentPickerIOSSelectMorePhotos,
-      ImageOverlaySelectedComponent,
       numberOfAttachmentImagesToLoadPerCall,
-      numberOfAttachmentPickerImageColumns,
     } = props;
 
     const {
@@ -95,16 +84,23 @@ export const AttachmentPicker = React.forwardRef(
         colors: { white },
       },
     } = useTheme();
-    const { closePicker, selectedPicker, setSelectedPicker, topInset } =
-      useAttachmentPickerContext();
+    const {
+      closePicker,
+      selectedPicker,
+      setSelectedPicker,
+      topInset,
+      numberOfAttachmentPickerImageColumns,
+    } = useAttachmentPickerContext();
     const { vh: screenVh } = useScreenDimensions();
 
     const fullScreenHeight = screenVh(100);
 
     const [currentIndex, setCurrentIndexInternal] = useState(-1);
-    const setCurrentIndex = useStableCallback((_: number, toIndex: number) =>
-      setCurrentIndexInternal(toIndex),
-    );
+    const currentIndexRef = useRef<number>(currentIndex);
+    const setCurrentIndex = useStableCallback((_: number, toIndex: number) => {
+      setCurrentIndexInternal(toIndex);
+      currentIndexRef.current = toIndex;
+    });
     const endCursorRef = useRef<string>(undefined);
     const [photoError, setPhotoError] = useState(false);
     const [iOSLimited, setIosLimited] = useState(false);
@@ -114,7 +110,6 @@ export const AttachmentPicker = React.forwardRef(
     const attemptedToLoadPhotosOnOpenRef = useRef<boolean>(false);
 
     const getMorePhotos = useStableCallback(async () => {
-      console.log('TRYING TO GET MORE PHOTOS: ');
       if (
         hasNextPageRef.current &&
         !loadingPhotosRef.current &&
@@ -130,13 +125,27 @@ export const AttachmentPicker = React.forwardRef(
             setIosLimited(false);
             return;
           }
+
           const results = await NativeHandlers.getPhotos({
             after: endCursor,
             first: numberOfAttachmentImagesToLoadPerCall ?? 25,
           });
+
           endCursorRef.current = results.endCursor;
+          // skip updating if the sheet closed in the meantime, to avoid
+          // confusing the bottom sheet internals
           setPhotos((prevPhotos) => {
-            return endCursor ? [...prevPhotos, ...results.assets] : results.assets;
+            if (endCursor) {
+              return [...prevPhotos, ...results.assets];
+            }
+
+            for (let i = 0; i < results.assets.length; i++) {
+              if (results.assets[i].uri !== prevPhotos[i]?.uri) {
+                return results.assets;
+              }
+            }
+
+            return prevPhotos.slice(0, results.assets.length);
           });
           setIosLimited(results.iOSLimited);
           hasNextPageRef.current = !!results.hasNextPage;
@@ -215,8 +224,7 @@ export const AttachmentPicker = React.forwardRef(
           setPhotoError(false);
         }
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentIndex]);
+    }, [currentIndex, setSelectedPicker]);
 
     useEffect(() => {
       if (
@@ -232,16 +240,6 @@ export const AttachmentPicker = React.forwardRef(
         attemptedToLoadPhotosOnOpenRef.current = true;
       }
     }, [currentIndex, selectedPicker, getMorePhotos]);
-
-    const selectedPhotos = useMemo(
-      () =>
-        photos.map((asset) => ({
-          asset,
-          ImageOverlaySelectedComponent,
-          numberOfAttachmentPickerImageColumns,
-        })),
-      [photos, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns],
-    );
 
     const handleHeight = attachmentPickerBottomSheetHandleHeight;
 
@@ -282,7 +280,7 @@ export const AttachmentPicker = React.forwardRef(
       () => animatedIndex.value,
       (currentIndex, previousIndex) => {
         if (currentIndex !== previousIndex && currentIndex === -1) {
-          runOnJS(setSelectedPicker)(undefined);
+          runOnJS(setSelectedPicker)(undefined, true);
         }
       },
     );
@@ -307,7 +305,7 @@ export const AttachmentPicker = React.forwardRef(
               { backgroundColor: white, opacity: photoError ? 0 : 1 },
               bottomSheetContentContainer,
             ]}
-            data={selectedPhotos}
+            data={photos}
             keyExtractor={keyExtractor}
             numColumns={numberOfColumns}
             onEndReached={photoError ? undefined : getMorePhotos}

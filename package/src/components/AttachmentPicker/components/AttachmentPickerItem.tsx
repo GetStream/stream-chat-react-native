@@ -4,6 +4,7 @@ import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 'stream-chat';
 
+import { useAttachmentPickerContext } from '../../../contexts';
 import { useAttachmentManagerState } from '../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
@@ -17,12 +18,12 @@ import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/Bott
 
 type AttachmentPickerItemType = {
   asset: File;
-  ImageOverlaySelectedComponent: React.ComponentType;
-  numberOfAttachmentPickerImageColumns?: number;
 };
 
 const AttachmentVideo = (props: AttachmentPickerItemType) => {
-  const { asset, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns } = props;
+  const { asset } = props;
+  const { numberOfAttachmentPickerImageColumns, ImageOverlaySelectedComponent } =
+    useAttachmentPickerContext();
   const { vw } = useViewport();
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
@@ -97,7 +98,9 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
 };
 
 const AttachmentImage = (props: AttachmentPickerItemType) => {
-  const { asset, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns } = props;
+  const { asset } = props;
+  const { numberOfAttachmentPickerImageColumns, ImageOverlaySelectedComponent } =
+    useAttachmentPickerContext();
   const {
     theme: {
       attachmentPicker: { image, imageOverlay },
@@ -159,34 +162,20 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   );
 };
 
-export const renderAttachmentPickerItem = ({ item }: { item: AttachmentPickerItemType }) => {
-  const { asset, ImageOverlaySelectedComponent, numberOfAttachmentPickerImageColumns } = item;
-
+export const renderAttachmentPickerItem = ({ item }: { item: File }) => {
   /**
    * Expo Media Library - Result of asset type
    * Native Android - Gives mime type(Eg: image/jpeg, video/mp4, etc.)
    * Native iOS - Gives `image` or `video`
    * Expo Android/iOS - Gives `photo` or `video`
    **/
-  const isVideoType = asset.type.includes('video');
+  const isVideoType = item.type.includes('video');
 
   if (isVideoType) {
-    return (
-      <AttachmentVideo
-        asset={asset}
-        ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
-        numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      />
-    );
+    return <AttachmentVideo asset={item} />;
   }
 
-  return (
-    <AttachmentImage
-      asset={asset}
-      ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
-      numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-    />
-  );
+  return <AttachmentImage asset={item} />;
 };
 
 const styles = StyleSheet.create({

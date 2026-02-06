@@ -278,7 +278,14 @@ const debounceOptions = {
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   Partial<
-    Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset' | 'disableAttachmentPicker'>
+    Pick<
+      AttachmentPickerContextValue,
+      | 'bottomInset'
+      | 'topInset'
+      | 'disableAttachmentPicker'
+      | 'ImageOverlaySelectedComponent'
+      | 'numberOfAttachmentPickerImageColumns'
+    >
   > &
   Partial<
     Pick<
@@ -286,11 +293,9 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'AttachmentPickerError'
       | 'AttachmentPickerErrorImage'
       | 'AttachmentPickerIOSSelectMorePhotos'
-      | 'ImageOverlaySelectedComponent'
       | 'attachmentPickerErrorButtonText'
       | 'attachmentPickerErrorText'
       | 'numberOfAttachmentImagesToLoadPerCall'
-      | 'numberOfAttachmentPickerImageColumns'
     >
   > &
   Partial<
@@ -1743,9 +1748,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       attachmentPickerErrorText,
       AttachmentPickerIOSSelectMorePhotos,
       attachmentSelectionBarHeight,
-      ImageOverlaySelectedComponent,
       numberOfAttachmentImagesToLoadPerCall,
-      numberOfAttachmentPickerImageColumns,
     }),
     [
       AttachmentPickerBottomSheetHandle,
@@ -1757,22 +1760,34 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       attachmentPickerErrorText,
       AttachmentPickerIOSSelectMorePhotos,
       attachmentSelectionBarHeight,
-      ImageOverlaySelectedComponent,
       numberOfAttachmentImagesToLoadPerCall,
-      numberOfAttachmentPickerImageColumns,
     ],
   );
+
+  const handleClosePicker = useStableCallback(() => closePicker(bottomSheetRef));
+  const handleOpenPicker = useStableCallback(() => openPicker(bottomSheetRef));
 
   const attachmentPickerContext = useMemo(
     () => ({
       bottomInset,
       bottomSheetRef,
-      closePicker: () => closePicker(bottomSheetRef),
+      closePicker: handleClosePicker,
       disableAttachmentPicker,
-      openPicker: () => openPicker(bottomSheetRef),
+      openPicker: handleOpenPicker,
       topInset,
+      ImageOverlaySelectedComponent,
+      numberOfAttachmentPickerImageColumns,
     }),
-    [bottomInset, bottomSheetRef, closePicker, openPicker, topInset, disableAttachmentPicker],
+    [
+      bottomInset,
+      bottomSheetRef,
+      handleClosePicker,
+      disableAttachmentPicker,
+      handleOpenPicker,
+      topInset,
+      ImageOverlaySelectedComponent,
+      numberOfAttachmentPickerImageColumns,
+    ],
   );
 
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({

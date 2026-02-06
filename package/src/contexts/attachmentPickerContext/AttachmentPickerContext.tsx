@@ -1,7 +1,8 @@
-import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
+import { useStableCallback } from '../../hooks';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -24,12 +25,24 @@ export type AttachmentPickerContextValue = {
   closePicker: () => void;
   openPicker: () => void;
   setBottomInset: React.Dispatch<React.SetStateAction<number>>;
-  setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
+  setSelectedPicker: (
+    valueOrUpdater: React.SetStateAction<'images' | undefined>,
+    debounceClose?: boolean,
+  ) => void;
   setTopInset: React.Dispatch<React.SetStateAction<number>>;
   topInset: number;
 
   selectedPicker?: 'images';
   disableAttachmentPicker?: boolean;
+  /**
+   * Custom UI component to render overlay component, that shows up on top of [selected
+   * image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
+   *
+   * **Default**
+   * [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
+   */
+  ImageOverlaySelectedComponent: React.ComponentType;
+  numberOfAttachmentPickerImageColumns?: number;
 };
 
 export const AttachmentPickerContext = React.createContext(
@@ -47,8 +60,21 @@ export const AttachmentPickerProvider = ({
   const topInsetValue = value?.topInset;
 
   const [bottomInset, setBottomInset] = useState<number>(bottomInsetValue ?? 0);
-  const [selectedPicker, setSelectedPicker] = useState<'images'>();
+  const [selectedPicker, setSelectedPickerT] = useState<'images'>();
   const [topInset, setTopInset] = useState<number>(topInsetValue ?? 0);
+
+  const lastChangedRef = useRef(-1);
+
+  const setSelectedPicker = useStableCallback(
+    (value: React.SetStateAction<'images' | undefined>, debounceClose?: boolean) => {
+      const now = Date.now();
+      if (debounceClose && !value && now - lastChangedRef.current < 500) {
+        return;
+      }
+      lastChangedRef.current = now;
+      setSelectedPickerT(value);
+    },
+  );
 
   useEffect(() => {
     setBottomInset(bottomInsetValue ?? 0);
@@ -58,15 +84,18 @@ export const AttachmentPickerProvider = ({
     setTopInset(topInsetValue ?? 0);
   }, [topInsetValue]);
 
-  const combinedValue = {
-    selectedPicker,
-    setBottomInset,
-    setSelectedPicker,
-    setTopInset,
-    ...value,
-    bottomInset,
-    topInset,
-  };
+  const combinedValue = useMemo(
+    () => ({
+      selectedPicker,
+      setBottomInset,
+      setSelectedPicker,
+      setTopInset,
+      ...value,
+      bottomInset,
+      topInset,
+    }),
+    [bottomInset, selectedPicker, setSelectedPicker, topInset, value],
+  );
 
   return (
     <AttachmentPickerContext.Provider
