@@ -8,8 +8,6 @@ import Animated, {
   FadeOut,
   interpolate,
   LinearTransition,
-  SlideInDown,
-  SlideOutDown,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -27,11 +25,12 @@ import { MessageInputTrailingView } from './MessageInputTrailingView';
 
 import { audioRecorderSelector } from './utils/audioRecorderSelectors';
 
-import { ChatContextValue, useChatContext, useOwnCapabilitiesContext } from '../../contexts';
 import {
-  AttachmentPickerContextValue,
+  ChatContextValue,
   useAttachmentPickerContext,
-} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+  useChatContext,
+  useOwnCapabilitiesContext,
+} from '../../contexts';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -62,6 +61,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
+import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
@@ -140,11 +140,7 @@ const useStyles = () => {
   }, [semantics]);
 };
 
-type MessageInputPropsWithContext = Pick<
-  AttachmentPickerContextValue,
-  'bottomInset' | 'disableAttachmentPicker'
-> &
-  Pick<ChatContextValue, 'isOnline'> &
+type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
   Pick<
     MessageInputContextValue,
@@ -155,9 +151,6 @@ type MessageInputPropsWithContext = Pick<
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
     | 'asyncMessagesMultiSendEnabled'
-    | 'attachmentPickerBottomSheetHeight'
-    | 'AttachmentPickerSelectionBar'
-    | 'attachmentSelectionBarHeight'
     | 'AttachmentUploadPreviewList'
     | 'AudioRecorder'
     | 'AudioRecordingInProgress'
@@ -208,10 +201,6 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
 
 const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
-    AttachmentPickerSelectionBar,
-    attachmentPickerBottomSheetHeight,
-    attachmentSelectionBarHeight,
-    bottomInset,
     additionalTextInputProps,
     asyncMessagesLockDistance,
     asyncMessagesSlideToCancelDistance,
@@ -223,7 +212,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     closeAttachmentPicker,
     closePollCreationDialog,
     CreatePollContent,
-    disableAttachmentPicker,
     editing,
     messageInputFloating,
     messageInputHeightStore,
@@ -244,6 +232,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const styles = useStyles();
   const { selectedPicker } = useAttachmentPickerState();
+  const { bottomSheetRef } = useAttachmentPickerContext();
   const messageComposer = useMessageComposer();
 
   const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
@@ -252,7 +241,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     theme: {
       semantics,
       messageInput: {
-        attachmentSelectionBar,
         container,
         floatingWrapper,
         focusedInputBoxContainer,
@@ -464,23 +452,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         >
           <AutoCompleteSuggestionList />
         </Animated.View>
-        {!disableAttachmentPicker && selectedPicker ? (
-          <Animated.View
-            layout={LinearTransition.duration(200)}
-            entering={SlideInDown.duration(200)}
-            exiting={SlideOutDown.duration(200)}
-            style={[
-              {
-                backgroundColor: semantics.composerBg,
-                height:
-                  attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
-              },
-              attachmentSelectionBar,
-            ]}
-          >
-            <AttachmentPickerSelectionBar />
-          </Animated.View>
-        ) : null}
+
+        <AttachmentPicker ref={bottomSheetRef} />
 
         {showPollCreationDialog ? (
           <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
@@ -665,9 +638,6 @@ export const MessageInput = (props: MessageInputProps) => {
     asyncMessagesSlideToCancelDistance,
     AttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight,
-    attachmentPickerBottomSheetHeight,
-    AttachmentPickerSelectionBar,
-    attachmentSelectionBarHeight,
     AttachmentUploadPreviewList,
     AudioRecorder,
     audioRecordingEnabled,
@@ -700,7 +670,6 @@ export const MessageInput = (props: MessageInputProps) => {
     uploadNewFile,
     VideoRecorderSelectorIcon,
   } = useMessageInputContext();
-  const { bottomInset, bottomSheetRef, disableAttachmentPicker } = useAttachmentPickerContext();
   const messageComposer = useMessageComposer();
   const editing = !!messageComposer.editedMessage;
   const { clearEditingState } = useMessageComposerAPIContext();
@@ -737,9 +706,6 @@ export const MessageInput = (props: MessageInputProps) => {
         asyncMessagesSlideToCancelDistance,
         AttachmentPickerBottomSheetHandle,
         attachmentPickerBottomSheetHandleHeight,
-        attachmentPickerBottomSheetHeight,
-        AttachmentPickerSelectionBar,
-        attachmentSelectionBarHeight,
         AttachmentUploadPreviewList,
         AudioRecorder,
         audioRecordingEnabled,
@@ -748,8 +714,6 @@ export const MessageInput = (props: MessageInputProps) => {
         AudioRecordingPreview,
         AudioRecordingWaveform,
         AutoCompleteSuggestionList,
-        bottomInset,
-        bottomSheetRef,
         CameraSelectorIcon,
         channel,
         clearEditingState,
@@ -758,7 +722,6 @@ export const MessageInput = (props: MessageInputProps) => {
         compressImageQuality,
         CreatePollContent,
         CreatePollIcon,
-        disableAttachmentPicker,
         editing,
         FileSelectorIcon,
         ImageSelectorIcon,

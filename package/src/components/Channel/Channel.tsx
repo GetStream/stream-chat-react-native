@@ -135,7 +135,6 @@ import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } fro
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
-import { AttachmentPicker, AttachmentPickerProps } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
@@ -289,7 +288,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   > &
   Partial<
     Pick<
-      AttachmentPickerProps,
+      AttachmentPickerContextValue,
       | 'AttachmentPickerError'
       | 'AttachmentPickerErrorImage'
       | 'AttachmentPickerIOSSelectMorePhotos'
@@ -1737,33 +1736,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
   });
 
-  const attachmentPickerProps = useMemo(
-    () => ({
-      AttachmentPickerBottomSheetHandle,
-      attachmentPickerBottomSheetHandleHeight,
-      attachmentPickerBottomSheetHeight,
-      AttachmentPickerError,
-      attachmentPickerErrorButtonText,
-      AttachmentPickerErrorImage,
-      attachmentPickerErrorText,
-      AttachmentPickerIOSSelectMorePhotos,
-      attachmentSelectionBarHeight,
-      numberOfAttachmentImagesToLoadPerCall,
-    }),
-    [
-      AttachmentPickerBottomSheetHandle,
-      attachmentPickerBottomSheetHandleHeight,
-      attachmentPickerBottomSheetHeight,
-      AttachmentPickerError,
-      attachmentPickerErrorButtonText,
-      AttachmentPickerErrorImage,
-      attachmentPickerErrorText,
-      AttachmentPickerIOSSelectMorePhotos,
-      attachmentSelectionBarHeight,
-      numberOfAttachmentImagesToLoadPerCall,
-    ],
-  );
-
   const handleClosePicker = useStableCallback(() => closePicker(bottomSheetRef));
   const handleOpenPicker = useStableCallback(() => openPicker(bottomSheetRef));
 
@@ -1776,7 +1748,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       openPicker: handleOpenPicker,
       topInset,
       ImageOverlaySelectedComponent,
+      AttachmentPickerSelectionBar,
       numberOfAttachmentPickerImageColumns,
+      AttachmentPickerBottomSheetHandle,
+      attachmentPickerBottomSheetHandleHeight,
+      attachmentPickerBottomSheetHeight,
+      AttachmentPickerError,
+      attachmentPickerErrorButtonText,
+      AttachmentPickerErrorImage,
+      attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
+      attachmentSelectionBarHeight,
+      numberOfAttachmentImagesToLoadPerCall,
     }),
     [
       bottomInset,
@@ -1786,7 +1769,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       handleOpenPicker,
       topInset,
       ImageOverlaySelectedComponent,
+      AttachmentPickerSelectionBar,
       numberOfAttachmentPickerImageColumns,
+      AttachmentPickerBottomSheetHandle,
+      attachmentPickerBottomSheetHandleHeight,
+      attachmentPickerBottomSheetHeight,
+      AttachmentPickerError,
+      attachmentPickerErrorButtonText,
+      AttachmentPickerErrorImage,
+      attachmentPickerErrorText,
+      AttachmentPickerIOSSelectMorePhotos,
+      attachmentSelectionBarHeight,
+      numberOfAttachmentImagesToLoadPerCall,
     ],
   );
 
@@ -2090,9 +2084,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                       <MessageInputProvider value={inputMessageInputContext}>
                         <AudioPlayerProvider value={audioPlayerContext}>
                           <View style={{ height: '100%' }}>{children}</View>
-                          {!disableAttachmentPicker && (
-                            <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
-                          )}
                         </AudioPlayerProvider>
                       </MessageInputProvider>
                     </MessageComposerProvider>

@@ -2,7 +2,9 @@ import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
+import { AttachmentPickerErrorProps } from '../../components';
 import { AttachmentPickerStore } from '../../state-store/attachment-picker-store';
+import { MessageInputContextValue } from '../messageInputContext/MessageInputContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -12,7 +14,31 @@ export type AttachmentPickerIconProps = {
   selectedPicker?: 'images';
 };
 
-export type AttachmentPickerContextValue = {
+export type AttachmentPickerContextValue = Pick<
+  MessageInputContextValue,
+  | 'AttachmentPickerBottomSheetHandle'
+  | 'attachmentPickerBottomSheetHandleHeight'
+  | 'attachmentSelectionBarHeight'
+  | 'attachmentPickerBottomSheetHeight'
+> & {
+  /**
+   * Custom UI component to render error component while opening attachment picker.
+   *
+   * **Default**
+   * [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
+   */
+  AttachmentPickerError: React.ComponentType<AttachmentPickerErrorProps>;
+  /**
+   * Custom UI component to render error image for attachment picker
+   *
+   * **Default**
+   * [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
+   */
+  AttachmentPickerErrorImage: React.ComponentType;
+  /**
+   * Custom UI Component to render select more photos for selected gallery access in iOS.
+   */
+  AttachmentPickerIOSSelectMorePhotos: React.ComponentType;
   /**
    * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
    * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
@@ -35,8 +61,12 @@ export type AttachmentPickerContextValue = {
    * [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
    */
   ImageOverlaySelectedComponent: React.ComponentType;
+  AttachmentPickerSelectionBar: React.ComponentType;
   attachmentPickerStore: AttachmentPickerStore;
   numberOfAttachmentPickerImageColumns?: number;
+  attachmentPickerErrorButtonText?: string;
+  attachmentPickerErrorText?: string;
+  numberOfAttachmentImagesToLoadPerCall?: number;
 };
 
 export const AttachmentPickerContext = React.createContext(

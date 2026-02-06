@@ -1,7 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler, EmitterSubscription, Keyboard, Platform, StyleSheet } from 'react-native';
 
-import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  LinearTransition,
+  runOnJS,
+  SlideInDown,
+  SlideOutDown,
+  useAnimatedReaction,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import BottomSheetOriginal from '@gorhom/bottom-sheet';
 import type { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
@@ -9,12 +16,10 @@ import type { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
-import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
-
 import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { MessageInputContextValue } from '../../contexts/messageInputContext/MessageInputContext';
+import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { useAttachmentPickerState } from '../../hooks/useAttachmentPickerState';
@@ -34,41 +39,26 @@ const styles = StyleSheet.create({
   },
 });
 
-export type AttachmentPickerProps = Pick<
-  MessageInputContextValue,
-  | 'AttachmentPickerBottomSheetHandle'
-  | 'attachmentPickerBottomSheetHandleHeight'
-  | 'attachmentSelectionBarHeight'
-  | 'attachmentPickerBottomSheetHeight'
-> & {
-  /**
-   * Custom UI component to render error component while opening attachment picker.
-   *
-   * **Default**
-   * [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
-   */
-  AttachmentPickerError: React.ComponentType<AttachmentPickerErrorProps>;
-  /**
-   * Custom UI component to render error image for attachment picker
-   *
-   * **Default**
-   * [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
-   */
-  AttachmentPickerErrorImage: React.ComponentType;
-  /**
-   * Custom UI Component to render select more photos for selected gallery access in iOS.
-   */
-  AttachmentPickerIOSSelectMorePhotos: React.ComponentType;
-  attachmentPickerErrorButtonText?: string;
-  attachmentPickerErrorText?: string;
-  numberOfAttachmentImagesToLoadPerCall?: number;
-};
-
 const keyExtractor = (item: File) => item.uri;
 
 export const AttachmentPicker = React.forwardRef(
-  (props: AttachmentPickerProps, ref: React.ForwardedRef<BottomSheetOriginal>) => {
+  (_, ref: React.ForwardedRef<BottomSheetOriginal>) => {
     const {
+      theme: {
+        semantics,
+        attachmentPicker: { bottomSheetContentContainer },
+        messageInput: { attachmentSelectionBar },
+        colors: { white },
+      },
+    } = useTheme();
+    const {
+      closePicker,
+      attachmentPickerStore,
+      topInset,
+      bottomInset,
+      disableAttachmentPicker,
+      numberOfAttachmentPickerImageColumns,
+      AttachmentPickerSelectionBar,
       AttachmentPickerBottomSheetHandle,
       attachmentPickerBottomSheetHandleHeight,
       attachmentPickerBottomSheetHeight,
@@ -78,16 +68,8 @@ export const AttachmentPicker = React.forwardRef(
       attachmentPickerErrorText,
       AttachmentPickerIOSSelectMorePhotos,
       numberOfAttachmentImagesToLoadPerCall,
-    } = props;
-
-    const {
-      theme: {
-        attachmentPicker: { bottomSheetContentContainer },
-        colors: { white },
-      },
-    } = useTheme();
-    const { closePicker, attachmentPickerStore, topInset, numberOfAttachmentPickerImageColumns } =
-      useAttachmentPickerContext();
+    } = useAttachmentPickerContext();
+    const { attachmentSelectionBarHeight } = useMessageInputContext();
     const { selectedPicker } = useAttachmentPickerState();
     const { vh: screenVh } = useScreenDimensions();
 
@@ -288,6 +270,23 @@ export const AttachmentPicker = React.forwardRef(
 
     return (
       <>
+        {!disableAttachmentPicker && selectedPicker ? (
+          <Animated.View
+            layout={LinearTransition.duration(200)}
+            entering={SlideInDown.duration(200)}
+            exiting={SlideOutDown.duration(200)}
+            style={[
+              {
+                backgroundColor: semantics.composerBg,
+                height:
+                  attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
+              },
+              attachmentSelectionBar,
+            ]}
+          >
+            <AttachmentPickerSelectionBar />
+          </Animated.View>
+        ) : null}
         <BottomSheet
           enablePanDownToClose={true}
           handleComponent={MemoizedAttachmentPickerBottomSheetHandle}
