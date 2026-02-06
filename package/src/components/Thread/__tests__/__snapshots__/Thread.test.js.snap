@@ -2439,11 +2439,16 @@ exports[`Thread should match thread snapshot 1`] = `
     />
   </View>
   <View
+    animatedIndex={
+      {
+        "value": -1,
+      }
+    }
     enablePanDownToClose={true}
     handleComponent={[Function]}
     handleHeight={20}
     index={-1}
-    onChange={[Function]}
+    onAnimate={[Function]}
     snapPoints={
       [
         600.3000000000001,
@@ -2453,11 +2458,16 @@ exports[`Thread should match thread snapshot 1`] = `
   >
     <RCTScrollView
       contentContainerStyle={
-        {
-          "backgroundColor": "#FFFFFF",
-          "flexGrow": 1,
-          "opacity": 1,
-        }
+        [
+          {
+            "flexGrow": 1,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+            "opacity": 1,
+          },
+          {},
+        ]
       }
       data={[]}
       getItem={[Function]}
@@ -2476,6 +2486,7 @@ exports[`Thread should match thread snapshot 1`] = `
       scrollEventThrottle={0.0001}
       stickyHeaderIndices={[]}
       testID="attachment-picker-list"
+      updateCellsBatchingPeriod={16}
       viewabilityConfigCallbackPairs={[]}
     >
       <View />

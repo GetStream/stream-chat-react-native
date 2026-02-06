@@ -4,11 +4,14 @@ import { Alert } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
+import { StateStore } from 'stream-chat';
+
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 
+import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
@@ -20,19 +23,22 @@ import { MessageInput } from '../MessageInput';
 
 jest.spyOn(Alert, 'alert');
 jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
-  jest.fn(() => ({
-    AttachmentPickerSelectionBar,
-    CameraSelectorIcon,
-    closePicker: jest.fn(),
-    CreatePollIcon,
-    FileSelectorIcon,
-    ImageSelectorIcon,
-    openPicker: jest.fn(),
-    selectedPicker: 'images',
-    setBottomInset: jest.fn(),
-    setSelectedPicker: jest.fn(),
-    setTopInset: jest.fn(),
-  })),
+  jest.fn(() => {
+    const attachmentPickerStore = new AttachmentPickerStore();
+    attachmentPickerStore.setSelectedPicker('images');
+    return {
+      AttachmentPickerSelectionBar,
+      CameraSelectorIcon,
+      closePicker: jest.fn(),
+      CreatePollIcon,
+      FileSelectorIcon,
+      ImageSelectorIcon,
+      openPicker: jest.fn(),
+      setBottomInset: jest.fn(),
+      setTopInset: jest.fn(),
+      attachmentPickerStore,
+    };
+  }),
 );
 
 const renderComponent = ({ channelProps, client, props }) => {
