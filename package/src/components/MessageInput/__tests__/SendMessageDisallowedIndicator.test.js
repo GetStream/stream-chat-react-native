@@ -17,8 +17,13 @@ import { generateLocalFileUploadAttachmentData } from '../../../mock-builders/at
 import { generateMessage } from '../../../mock-builders/generator/message';
 
 import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
+import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
+import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
+import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
+import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
+import { CreatePollIcon } from '../../Poll';
 import { MessageInput } from '../MessageInput';
 
 jest.spyOn(Alert, 'alert');
@@ -27,6 +32,11 @@ jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementati
     const attachmentPickerStore = new AttachmentPickerStore();
     attachmentPickerStore.setSelectedPicker('images');
     return {
+      AttachmentPickerSelectionBar,
+      CameraSelectorIcon,
+      CreatePollIcon,
+      FileSelectorIcon,
+      ImageSelectorIcon,
       closePicker: jest.fn(),
       openPicker: jest.fn(),
       setBottomInset: jest.fn(),

@@ -1876,177 +1876,162 @@ exports[`Thread should match thread snapshot 1`] = `
       />
     </View>
     <View
-      layout={BaseAnimationMock {}}
-      onLayout={[Function]}
       style={
-        [
-          {
-            "paddingHorizontal": 16,
-            "paddingTop": 16,
-          },
-          {
-            "backgroundColor": "#ffffff",
-            "borderColor": "#d5dbe1",
-            "borderTopWidth": 1,
-            "paddingBottom": 16,
-          },
-          {},
-        ]
+        {
+          "paddingBottom": 0,
+        }
       }
     >
       <View
+        layout={BaseAnimationMock {}}
+        onLayout={[Function]}
         style={
           [
             {
-              "alignItems": "center",
-              "flexDirection": "row",
-              "gap": 8,
-              "justifyContent": "space-between",
+              "paddingHorizontal": 16,
+              "paddingTop": 16,
+            },
+            {
+              "backgroundColor": "#ffffff",
+              "borderColor": "#d5dbe1",
+              "borderTopWidth": 1,
+              "paddingBottom": 16,
             },
             {},
           ]
         }
       >
         <View
-          layout={BaseAnimationMock {}}
           style={
             [
               {
-                "alignSelf": "flex-end",
+                "alignItems": "center",
+                "flexDirection": "row",
+                "gap": 8,
+                "justifyContent": "space-between",
               },
-              null,
               {},
             ]
           }
         >
           <View
-            entering={BaseAnimationMock {}}
-            exiting={BaseAnimationMock {}}
+            layout={BaseAnimationMock {}}
             style={
               [
-                {},
+                {
+                  "alignSelf": "flex-end",
+                },
+                null,
                 {},
               ]
             }
           >
             <View
-              onLayout={[Function]}
+              entering={BaseAnimationMock {}}
+              exiting={BaseAnimationMock {}}
               style={
                 [
-                  {
-                    "borderRadius": 9999,
-                  },
-                  {
-                    "backgroundColor": undefined,
-                    "borderColor": "#d5dbe1",
-                    "borderWidth": 1,
-                    "height": 48,
-                    "width": 48,
-                  },
+                  {},
+                  {},
                 ]
               }
             >
               <View
-                accessibilityState={
-                  {
-                    "busy": undefined,
-                    "checked": undefined,
-                    "disabled": false,
-                    "expanded": undefined,
-                    "selected": undefined,
-                  }
-                }
-                accessibilityValue={
-                  {
-                    "max": undefined,
-                    "min": undefined,
-                    "now": undefined,
-                    "text": undefined,
-                  }
-                }
-                accessible={true}
-                collapsable={false}
-                focusable={true}
-                onBlur={[Function]}
-                onClick={[Function]}
-                onFocus={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
+                onLayout={[Function]}
                 style={
                   [
                     {
-                      "backgroundColor": "transparent",
-                    },
-                    {
-                      "alignItems": "center",
                       "borderRadius": 9999,
-                      "flex": 1,
-                      "flexDirection": "row",
-                      "gap": 8,
-                      "justifyContent": "center",
                     },
                     {
-                      "paddingHorizontal": 20,
+                      "backgroundColor": undefined,
+                      "borderColor": "#d5dbe1",
+                      "borderWidth": 1,
+                      "height": 48,
+                      "width": 48,
                     },
                   ]
                 }
-                testID="attach-button"
               >
-                <RNSVGSvgView
-                  align="xMidYMid"
-                  bbHeight={20}
-                  bbWidth={20}
-                  focusable={false}
-                  height={20}
-                  meetOrSlice={0}
-                  minX={0}
-                  minY={0}
-                  stroke="#1a1b25"
-                  strokeWidth={1.5}
+                <View
+                  accessibilityState={
+                    {
+                      "busy": undefined,
+                      "checked": undefined,
+                      "disabled": false,
+                      "expanded": undefined,
+                      "selected": undefined,
+                    }
+                  }
+                  accessibilityValue={
+                    {
+                      "max": undefined,
+                      "min": undefined,
+                      "now": undefined,
+                      "text": undefined,
+                    }
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onBlur={[Function]}
+                  onClick={[Function]}
+                  onFocus={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
                   style={
                     [
                       {
                         "backgroundColor": "transparent",
-                        "borderWidth": 0,
                       },
                       {
-                        "flex": 0,
-                        "height": 20,
-                        "width": 20,
+                        "alignItems": "center",
+                        "borderRadius": 9999,
+                        "flex": 1,
+                        "flexDirection": "row",
+                        "gap": 8,
+                        "justifyContent": "center",
+                      },
+                      {
+                        "paddingHorizontal": 20,
                       },
                     ]
                   }
-                  vbHeight={20}
-                  vbWidth={20}
-                  width={20}
+                  testID="attach-button"
                 >
-                  <RNSVGGroup
-                    fill={
-                      {
-                        "payload": 4278190080,
-                        "type": 0,
-                      }
-                    }
-                    propList={
+                  <RNSVGSvgView
+                    align="xMidYMid"
+                    bbHeight={20}
+                    bbWidth={20}
+                    focusable={false}
+                    height={20}
+                    meetOrSlice={0}
+                    minX={0}
+                    minY={0}
+                    stroke="#1a1b25"
+                    strokeWidth={1.5}
+                    style={
                       [
-                        "stroke",
-                        "strokeWidth",
+                        {
+                          "backgroundColor": "transparent",
+                          "borderWidth": 0,
+                        },
+                        {
+                          "flex": 0,
+                          "height": 20,
+                          "width": 20,
+                        },
                       ]
                     }
-                    stroke={
-                      {
-                        "payload": 4279900965,
-                        "type": 0,
-                      }
-                    }
-                    strokeWidth={1.5}
+                    vbHeight={20}
+                    vbWidth={20}
+                    width={20}
                   >
-                    <RNSVGPath
-                      d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
+                    <RNSVGGroup
                       fill={
                         {
                           "payload": 4278190080,
@@ -2066,242 +2051,242 @@ exports[`Thread should match thread snapshot 1`] = `
                         }
                       }
                       strokeWidth={1.5}
-                    />
-                  </RNSVGGroup>
-                </RNSVGSvgView>
+                    >
+                      <RNSVGPath
+                        d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
+                        fill={
+                          {
+                            "payload": 4278190080,
+                            "type": 0,
+                          }
+                        }
+                        propList={
+                          [
+                            "stroke",
+                            "strokeWidth",
+                          ]
+                        }
+                        stroke={
+                          {
+                            "payload": 4279900965,
+                            "type": 0,
+                          }
+                        }
+                        strokeWidth={1.5}
+                      />
+                    </RNSVGGroup>
+                  </RNSVGSvgView>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-        <View
-          layout={BaseAnimationMock {}}
-          style={
-            [
-              {
-                "backgroundColor": "#ffffff",
-                "borderColor": "#d5dbe1",
-                "borderRadius": 24,
-                "borderWidth": 1,
-                "flex": 1,
-                "flexDirection": "row",
-              },
-              null,
-              {},
-              null,
-            ]
-          }
-        >
           <View
+            layout={BaseAnimationMock {}}
             style={
               [
                 {
+                  "backgroundColor": "#ffffff",
+                  "borderColor": "#d5dbe1",
+                  "borderRadius": 24,
+                  "borderWidth": 1,
                   "flex": 1,
+                  "flexDirection": "row",
                 },
+                null,
                 {},
+                null,
               ]
             }
           >
             <View
-              layout={BaseAnimationMock {}}
               style={
                 [
                   {
-                    "gap": 4,
-                    "overflow": "hidden",
-                    "paddingHorizontal": 8,
-                  },
-                  {
-                    "paddingTop": 0,
-                  },
-                  {},
-                ]
-              }
-            />
-            <View
-              layout={BaseAnimationMock {}}
-              style={
-                [
-                  {
-                    "alignItems": "center",
-                    "flexDirection": "row",
-                    "justifyContent": "space-between",
+                    "flex": 1,
                   },
                   {},
                 ]
               }
             >
-              <TextInput
-                autoFocus={true}
-                editable={true}
-                maxLength={5000}
-                multiline={true}
-                onChangeText={[Function]}
-                onSelectionChange={[Function]}
-                placeholder="Send a message"
-                placeholderTextColor="#687385"
+              <View
+                layout={BaseAnimationMock {}}
                 style={
                   [
                     {
-                      "color": "#1a1b25",
-                      "flex": 1,
-                      "fontSize": 16,
-                      "includeFontPadding": false,
-                      "lineHeight": 20,
-                      "paddingLeft": 16,
-                      "paddingVertical": 12,
-                      "textAlignVertical": "center",
+                      "gap": 4,
+                      "overflow": "hidden",
+                      "paddingHorizontal": 8,
                     },
                     {
-                      "maxHeight": 124,
-                      "paddingLeft": 16,
-                      "paddingRight": 8,
-                      "textAlign": "left",
+                      "paddingTop": 0,
                     },
                     {},
                   ]
                 }
-                testID="auto-complete-text-input"
-                value=""
               />
               <View
+                layout={BaseAnimationMock {}}
                 style={
                   [
                     {
-                      "alignSelf": "flex-end",
-                      "padding": 8,
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                      "justifyContent": "space-between",
                     },
                     {},
                   ]
                 }
               >
+                <TextInput
+                  autoFocus={true}
+                  editable={true}
+                  maxLength={5000}
+                  multiline={true}
+                  onChangeText={[Function]}
+                  onSelectionChange={[Function]}
+                  placeholder="Send a message"
+                  placeholderTextColor="#687385"
+                  style={
+                    [
+                      {
+                        "color": "#1a1b25",
+                        "flex": 1,
+                        "fontSize": 16,
+                        "includeFontPadding": false,
+                        "lineHeight": 20,
+                        "paddingLeft": 16,
+                        "paddingVertical": 12,
+                        "textAlignVertical": "center",
+                      },
+                      {
+                        "maxHeight": 124,
+                        "paddingLeft": 16,
+                        "paddingRight": 8,
+                        "textAlign": "left",
+                      },
+                      {},
+                    ]
+                  }
+                  testID="auto-complete-text-input"
+                  value=""
+                />
                 <View
-                  entering={BaseAnimationMock {}}
-                  exiting={BaseAnimationMock {}}
-                  style={{}}
+                  style={
+                    [
+                      {
+                        "alignSelf": "flex-end",
+                        "padding": 8,
+                      },
+                      {},
+                    ]
+                  }
                 >
                   <View
-                    style={
-                      [
-                        {
-                          "borderRadius": 9999,
-                        },
-                        {
-                          "backgroundColor": "#ebeef1",
-                          "borderColor": undefined,
-                          "borderWidth": undefined,
-                          "height": 32,
-                          "width": 32,
-                        },
-                      ]
-                    }
+                    entering={BaseAnimationMock {}}
+                    exiting={BaseAnimationMock {}}
+                    style={{}}
                   >
                     <View
-                      accessibilityState={
-                        {
-                          "busy": undefined,
-                          "checked": undefined,
-                          "disabled": true,
-                          "expanded": undefined,
-                          "selected": undefined,
-                        }
-                      }
-                      accessibilityValue={
-                        {
-                          "max": undefined,
-                          "min": undefined,
-                          "now": undefined,
-                          "text": undefined,
-                        }
-                      }
-                      accessible={true}
-                      collapsable={false}
-                      focusable={true}
-                      onBlur={[Function]}
-                      onClick={[Function]}
-                      onFocus={[Function]}
-                      onResponderGrant={[Function]}
-                      onResponderMove={[Function]}
-                      onResponderRelease={[Function]}
-                      onResponderTerminate={[Function]}
-                      onResponderTerminationRequest={[Function]}
-                      onStartShouldSetResponder={[Function]}
                       style={
                         [
                           {
-                            "backgroundColor": "transparent",
-                          },
-                          {
-                            "alignItems": "center",
                             "borderRadius": 9999,
-                            "flex": 1,
-                            "flexDirection": "row",
-                            "gap": 8,
-                            "justifyContent": "center",
                           },
                           {
-                            "paddingHorizontal": 12,
+                            "backgroundColor": "#ebeef1",
+                            "borderColor": undefined,
+                            "borderWidth": undefined,
+                            "height": 32,
+                            "width": 32,
                           },
                         ]
                       }
-                      testID="send-button"
                     >
-                      <RNSVGSvgView
-                        align="xMidYMid"
-                        bbHeight={20}
-                        bbWidth={20}
-                        fill="none"
-                        focusable={false}
-                        height={20}
-                        meetOrSlice={0}
-                        minX={0}
-                        minY={0}
-                        stroke="#87909f"
-                        strokeWidth={1.5}
+                      <View
+                        accessibilityState={
+                          {
+                            "busy": undefined,
+                            "checked": undefined,
+                            "disabled": true,
+                            "expanded": undefined,
+                            "selected": undefined,
+                          }
+                        }
+                        accessibilityValue={
+                          {
+                            "max": undefined,
+                            "min": undefined,
+                            "now": undefined,
+                            "text": undefined,
+                          }
+                        }
+                        accessible={true}
+                        collapsable={false}
+                        focusable={true}
+                        onBlur={[Function]}
+                        onClick={[Function]}
+                        onFocus={[Function]}
+                        onResponderGrant={[Function]}
+                        onResponderMove={[Function]}
+                        onResponderRelease={[Function]}
+                        onResponderTerminate={[Function]}
+                        onResponderTerminationRequest={[Function]}
+                        onStartShouldSetResponder={[Function]}
                         style={
                           [
                             {
                               "backgroundColor": "transparent",
-                              "borderWidth": 0,
                             },
                             {
-                              "flex": 0,
-                              "height": 20,
-                              "width": 20,
+                              "alignItems": "center",
+                              "borderRadius": 9999,
+                              "flex": 1,
+                              "flexDirection": "row",
+                              "gap": 8,
+                              "justifyContent": "center",
+                            },
+                            {
+                              "paddingHorizontal": 12,
                             },
                           ]
                         }
-                        testID="send-right"
-                        vbHeight={20}
-                        vbWidth={20}
-                        width={20}
+                        testID="send-button"
                       >
-                        <RNSVGGroup
-                          fill={null}
-                          propList={
+                        <RNSVGSvgView
+                          align="xMidYMid"
+                          bbHeight={20}
+                          bbWidth={20}
+                          fill="none"
+                          focusable={false}
+                          height={20}
+                          meetOrSlice={0}
+                          minX={0}
+                          minY={0}
+                          stroke="#87909f"
+                          strokeWidth={1.5}
+                          style={
                             [
-                              "fill",
-                              "stroke",
-                              "strokeWidth",
+                              {
+                                "backgroundColor": "transparent",
+                                "borderWidth": 0,
+                              },
+                              {
+                                "flex": 0,
+                                "height": 20,
+                                "width": 20,
+                              },
                             ]
                           }
-                          stroke={
-                            {
-                              "payload": 4287074463,
-                              "type": 0,
-                            }
-                          }
-                          strokeWidth={1.5}
+                          testID="send-right"
+                          vbHeight={20}
+                          vbWidth={20}
+                          width={20}
                         >
-                          <RNSVGPath
-                            d="M4.99998 9.99996H7.70832M4.99998 9.99996L2.81076 4.05778C2.54973 3.34929 3.29006 2.68668 3.96538 3.02433L16.4259 9.25463C17.0402 9.56171 17.0402 10.4382 16.4259 10.7453L3.96538 16.9756C3.29006 17.3133 2.54973 16.6506 2.81076 15.9421L4.99998 9.99996Z"
-                            fill={
-                              {
-                                "payload": 4278190080,
-                                "type": 0,
-                              }
-                            }
+                          <RNSVGGroup
+                            fill={null}
                             propList={
                               [
+                                "fill",
                                 "stroke",
                                 "strokeWidth",
                               ]
@@ -2313,9 +2298,32 @@ exports[`Thread should match thread snapshot 1`] = `
                               }
                             }
                             strokeWidth={1.5}
-                          />
-                        </RNSVGGroup>
-                      </RNSVGSvgView>
+                          >
+                            <RNSVGPath
+                              d="M4.99998 9.99996H7.70832M4.99998 9.99996L2.81076 4.05778C2.54973 3.34929 3.29006 2.68668 3.96538 3.02433L16.4259 9.25463C17.0402 9.56171 17.0402 10.4382 16.4259 10.7453L3.96538 16.9756C3.29006 17.3133 2.54973 16.6506 2.81076 15.9421L4.99998 9.99996Z"
+                              fill={
+                                {
+                                  "payload": 4278190080,
+                                  "type": 0,
+                                }
+                              }
+                              propList={
+                                [
+                                  "stroke",
+                                  "strokeWidth",
+                                ]
+                              }
+                              stroke={
+                                {
+                                  "payload": 4287074463,
+                                  "type": 0,
+                                }
+                              }
+                              strokeWidth={1.5}
+                            />
+                          </RNSVGGroup>
+                        </RNSVGSvgView>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -2323,19 +2331,160 @@ exports[`Thread should match thread snapshot 1`] = `
             </View>
           </View>
         </View>
+        <View
+          style={
+            [
+              {
+                "flexDirection": "row",
+                "marginHorizontal": 2,
+                "marginTop": 8,
+              },
+              {},
+            ]
+          }
+          testID="show-thread-message-in-channel-button"
+        >
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+          >
+            <View
+              style={
+                [
+                  {
+                    "flexDirection": "row",
+                  },
+                  {},
+                ]
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "borderRadius": 3,
+                      "borderWidth": 2,
+                      "height": 16,
+                      "justifyContent": "center",
+                      "width": 16,
+                    },
+                    {
+                      "borderColor": "#7A7A7A",
+                    },
+                  ]
+                }
+              />
+              <Text
+                style={
+                  [
+                    {
+                      "fontSize": 13,
+                      "marginLeft": 12,
+                    },
+                    {
+                      "color": "#7A7A7A",
+                    },
+                    {},
+                  ]
+                }
+              >
+                Also send to channel
+              </Text>
+            </View>
+          </View>
+        </View>
       </View>
       <View
+        entering={BaseAnimationMock {}}
+        exiting={BaseAnimationMock {}}
+        layout={BaseAnimationMock {}}
         style={
           [
             {
-              "flexDirection": "row",
-              "marginHorizontal": 2,
-              "marginTop": 8,
+              "position": "absolute",
+              "width": "100%",
+            },
+            {
+              "bottom": 0,
             },
             {},
           ]
         }
-        testID="show-thread-message-in-channel-button"
+      />
+    </View>
+  </View>
+  <View
+    enableContentPanningGesture={false}
+    enableDynamicSizing={false}
+    enablePanDownToClose={false}
+    handleComponent={[Function]}
+    index={-1}
+    onAnimate={[Function]}
+    snapPoints={
+      [
+        333,
+        1334,
+      ]
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#ffffff",
+            "height": 52,
+          },
+          {},
+        ]
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "paddingHorizontal": 6,
+            },
+            {},
+            {
+              "height": 52,
+            },
+          ]
+        }
       >
         <View
           accessibilityState={
@@ -2358,9 +2507,13 @@ exports[`Thread should match thread snapshot 1`] = `
           accessible={true}
           collapsable={false}
           focusable={true}
-          onBlur={[Function]}
+          hitSlop={
+            {
+              "bottom": 15,
+              "top": 15,
+            }
+          }
           onClick={[Function]}
-          onFocus={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
           onResponderRelease={[Function]}
@@ -2372,90 +2525,307 @@ exports[`Thread should match thread snapshot 1`] = `
               "opacity": 1,
             }
           }
+          testID="upload-photo-touchable"
         >
           <View
             style={
               [
                 {
-                  "flexDirection": "row",
+                  "marginHorizontal": 12,
                 },
                 {},
               ]
             }
           >
-            <View
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={24}
+              bbWidth={24}
+              focusable={false}
+              height={24}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#7A7A7A"
               style={
                 [
                   {
-                    "alignItems": "center",
-                    "borderRadius": 3,
-                    "borderWidth": 2,
-                    "height": 16,
-                    "justifyContent": "center",
-                    "width": 16,
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
                   },
                   {
-                    "borderColor": "#7A7A7A",
+                    "flex": 0,
+                    "height": 24,
+                    "width": 24,
                   },
                 ]
               }
-            />
-            <Text
-              style={
-                [
-                  {
-                    "fontSize": 13,
-                    "marginLeft": 12,
-                  },
-                  {
-                    "color": "#7A7A7A",
-                  },
-                  {},
-                ]
-              }
+              vbHeight={24}
+              vbWidth={24}
+              width={24}
             >
-              Also send to channel
-            </Text>
+              <RNSVGGroup
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+              >
+                <RNSVGPath
+                  clipRule={0}
+                  d="M2 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H5a3 3 0 01-3-3V8zm3-1a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V8a1 1 0 00-1-1H5z"
+                  fill={
+                    {
+                      "payload": 4286216826,
+                      "type": 0,
+                    }
+                  }
+                  fillRule={0}
+                  propList={
+                    [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+                <RNSVGPath
+                  clipRule={0}
+                  d="M15.99 9a1 1 0 01.778.36l5 6a1 1 0 11-1.536 1.28l-4.216-5.059-3.235 4.044a1 1 0 01-1.381.175l-3.306-2.48-3.387 3.387a1 1 0 01-1.414-1.414l4-4A1 1 0 018.6 11.2l3.225 2.418 3.394-4.243A1 1 0 0115.99 9z"
+                  fill={
+                    {
+                      "payload": 4286216826,
+                      "type": 0,
+                    }
+                  }
+                  fillRule={0}
+                  propList={
+                    [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
+          </View>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          hitSlop={
+            {
+              "bottom": 15,
+              "top": 15,
+            }
+          }
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+          testID="upload-file-touchable"
+        >
+          <View
+            style={
+              [
+                {
+                  "marginHorizontal": 12,
+                },
+                {},
+              ]
+            }
+          >
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={24}
+              bbWidth={24}
+              focusable={false}
+              height={24}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#7A7A7A"
+              style={
+                [
+                  {
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
+                  },
+                  {
+                    "flex": 0,
+                    "height": 24,
+                    "width": 24,
+                  },
+                ]
+              }
+              vbHeight={24}
+              vbWidth={24}
+              width={24}
+            >
+              <RNSVGGroup
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+              >
+                <RNSVGPath
+                  clipRule={0}
+                  d="M21 5h-8.586l-2-2H3a1 1 0 00-1 1v16a1 1 0 001 1h18a1 1 0 001-1V6a1 1 0 00-1-1zM4 19V7h16v12H4z"
+                  fill={
+                    {
+                      "payload": 4286216826,
+                      "type": 0,
+                    }
+                  }
+                  fillRule={0}
+                  propList={
+                    [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
+          </View>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          hitSlop={
+            {
+              "bottom": 15,
+              "top": 15,
+            }
+          }
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+          testID="take-photo-touchable"
+        >
+          <View
+            style={
+              [
+                {
+                  "marginHorizontal": 12,
+                },
+                {},
+              ]
+            }
+          >
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={24}
+              bbWidth={24}
+              focusable={false}
+              height={24}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#7A7A7A"
+              style={
+                [
+                  {
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
+                  },
+                  {
+                    "flex": 0,
+                    "height": 24,
+                    "width": 24,
+                  },
+                ]
+              }
+              vbHeight={24}
+              vbWidth={24}
+              width={24}
+            >
+              <RNSVGGroup
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+              >
+                <RNSVGPath
+                  clipRule={0}
+                  d="M15 3H9L7 5H3a1 1 0 00-1 1v14a1 1 0 001 1h18a1 1 0 001-1V6a1 1 0 00-1-1h-4l-2-2zM7.828 7l2-2h4.344l2 2H20v12H4V7h3.828zM12 18a5.5 5.5 0 110-11 5.5 5.5 0 010 11zm3.5-5.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"
+                  fill={
+                    {
+                      "payload": 4286216826,
+                      "type": 0,
+                    }
+                  }
+                  fillRule={0}
+                  propList={
+                    [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
           </View>
         </View>
       </View>
     </View>
-    <View
-      entering={BaseAnimationMock {}}
-      exiting={BaseAnimationMock {}}
-      layout={BaseAnimationMock {}}
-      style={
-        [
-          {
-            "position": "absolute",
-            "width": "100%",
-          },
-          {
-            "bottom": 0,
-          },
-          {},
-        ]
-      }
-    />
-  </View>
-  <View
-    animatedIndex={
-      {
-        "value": -1,
-      }
-    }
-    enablePanDownToClose={true}
-    handleComponent={[Function]}
-    handleHeight={20}
-    index={-1}
-    onAnimate={[Function]}
-    snapPoints={
-      [
-        600.3000000000001,
-        1334,
-      ]
-    }
-  >
     <RCTScrollView
       contentContainerStyle={
         [

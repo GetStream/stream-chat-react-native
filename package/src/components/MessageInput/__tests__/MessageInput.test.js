@@ -4,8 +4,6 @@ import { Alert } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
-import { StateStore } from 'stream-chat';
-
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
@@ -29,10 +27,10 @@ jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementati
     return {
       AttachmentPickerSelectionBar,
       CameraSelectorIcon,
-      closePicker: jest.fn(),
       CreatePollIcon,
       FileSelectorIcon,
       ImageSelectorIcon,
+      closePicker: jest.fn(),
       openPicker: jest.fn(),
       setBottomInset: jest.fn(),
       setTopInset: jest.fn(),

@@ -123,23 +123,385 @@ exports[`MessageStatus should render message status with read by container 1`] =
     </View>
   </View>
   <View
-    animatedIndex={
-      {
-        "value": -1,
-      }
-    }
-    enablePanDownToClose={true}
+    enableContentPanningGesture={false}
+    enableDynamicSizing={false}
+    enablePanDownToClose={false}
     handleComponent={[Function]}
-    handleHeight={20}
     index={-1}
     onAnimate={[Function]}
     snapPoints={
       [
-        600.3000000000001,
+        333,
         1334,
       ]
     }
   >
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#ffffff",
+            "height": 52,
+          },
+          {},
+        ]
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "paddingHorizontal": 6,
+            },
+            {},
+            {
+              "height": 52,
+            },
+          ]
+        }
+      >
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          hitSlop={
+            {
+              "bottom": 15,
+              "top": 15,
+            }
+          }
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+          testID="upload-photo-touchable"
+        >
+          <View
+            style={
+              [
+                {
+                  "marginHorizontal": 12,
+                },
+                {},
+              ]
+            }
+          >
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={24}
+              bbWidth={24}
+              focusable={false}
+              height={24}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#7A7A7A"
+              style={
+                [
+                  {
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
+                  },
+                  {
+                    "flex": 0,
+                    "height": 24,
+                    "width": 24,
+                  },
+                ]
+              }
+              vbHeight={24}
+              vbWidth={24}
+              width={24}
+            >
+              <RNSVGGroup
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+              >
+                <RNSVGPath
+                  clipRule={0}
+                  d="M2 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H5a3 3 0 01-3-3V8zm3-1a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V8a1 1 0 00-1-1H5z"
+                  fill={
+                    {
+                      "payload": 4286216826,
+                      "type": 0,
+                    }
+                  }
+                  fillRule={0}
+                  propList={
+                    [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+                <RNSVGPath
+                  clipRule={0}
+                  d="M15.99 9a1 1 0 01.778.36l5 6a1 1 0 11-1.536 1.28l-4.216-5.059-3.235 4.044a1 1 0 01-1.381.175l-3.306-2.48-3.387 3.387a1 1 0 01-1.414-1.414l4-4A1 1 0 018.6 11.2l3.225 2.418 3.394-4.243A1 1 0 0115.99 9z"
+                  fill={
+                    {
+                      "payload": 4286216826,
+                      "type": 0,
+                    }
+                  }
+                  fillRule={0}
+                  propList={
+                    [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
+          </View>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          hitSlop={
+            {
+              "bottom": 15,
+              "top": 15,
+            }
+          }
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+          testID="upload-file-touchable"
+        >
+          <View
+            style={
+              [
+                {
+                  "marginHorizontal": 12,
+                },
+                {},
+              ]
+            }
+          >
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={24}
+              bbWidth={24}
+              focusable={false}
+              height={24}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#7A7A7A"
+              style={
+                [
+                  {
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
+                  },
+                  {
+                    "flex": 0,
+                    "height": 24,
+                    "width": 24,
+                  },
+                ]
+              }
+              vbHeight={24}
+              vbWidth={24}
+              width={24}
+            >
+              <RNSVGGroup
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+              >
+                <RNSVGPath
+                  clipRule={0}
+                  d="M21 5h-8.586l-2-2H3a1 1 0 00-1 1v16a1 1 0 001 1h18a1 1 0 001-1V6a1 1 0 00-1-1zM4 19V7h16v12H4z"
+                  fill={
+                    {
+                      "payload": 4286216826,
+                      "type": 0,
+                    }
+                  }
+                  fillRule={0}
+                  propList={
+                    [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
+          </View>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          hitSlop={
+            {
+              "bottom": 15,
+              "top": 15,
+            }
+          }
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+          testID="take-photo-touchable"
+        >
+          <View
+            style={
+              [
+                {
+                  "marginHorizontal": 12,
+                },
+                {},
+              ]
+            }
+          >
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={24}
+              bbWidth={24}
+              focusable={false}
+              height={24}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#7A7A7A"
+              style={
+                [
+                  {
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
+                  },
+                  {
+                    "flex": 0,
+                    "height": 24,
+                    "width": 24,
+                  },
+                ]
+              }
+              vbHeight={24}
+              vbWidth={24}
+              width={24}
+            >
+              <RNSVGGroup
+                fill={
+                  {
+                    "payload": 4278190080,
+                    "type": 0,
+                  }
+                }
+              >
+                <RNSVGPath
+                  clipRule={0}
+                  d="M15 3H9L7 5H3a1 1 0 00-1 1v14a1 1 0 001 1h18a1 1 0 001-1V6a1 1 0 00-1-1h-4l-2-2zM7.828 7l2-2h4.344l2 2H20v12H4V7h3.828zM12 18a5.5 5.5 0 110-11 5.5 5.5 0 010 11zm3.5-5.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"
+                  fill={
+                    {
+                      "payload": 4286216826,
+                      "type": 0,
+                    }
+                  }
+                  fillRule={0}
+                  propList={
+                    [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
+          </View>
+        </View>
+      </View>
+    </View>
     <RCTScrollView
       contentContainerStyle={
         [

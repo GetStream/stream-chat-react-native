@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Linking, TextInput, TextInputProps } from 'react-native';
+import { Alert, Linking, Platform, TextInput, TextInputProps } from 'react-native';
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
@@ -544,8 +544,18 @@ export const MessageInputProvider = ({
    */
   const openAttachmentPicker = useCallback(() => {
     dismissKeyboard();
-    attachmentPickerStore.setSelectedPicker('images');
-    openPicker();
+    const run = () => {
+      attachmentPickerStore.setSelectedPicker('images');
+      openPicker();
+    };
+
+    if (Platform.OS === 'android') {
+      setTimeout(() => {
+        run();
+      }, 100);
+    } else {
+      run();
+    }
   }, [openPicker, attachmentPickerStore]);
 
   /**

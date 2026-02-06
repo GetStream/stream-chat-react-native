@@ -88,7 +88,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { TypingProvider } from '../../contexts/typingContext/TypingContext';
-import { useStableCallback, useViewport } from '../../hooks';
+import { useStableCallback } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
@@ -135,6 +135,7 @@ import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } fro
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
+import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
@@ -554,8 +555,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   >;
 
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
-  const { vh } = useViewport();
-
   const {
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
@@ -571,7 +570,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AttachmentActions = AttachmentActionsDefault,
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight = 20,
-    attachmentPickerBottomSheetHeight = vh(45),
+    attachmentPickerBottomSheetHeight = 333,
     AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
     attachmentSelectionBarHeight = 52,
     AudioAttachment = AudioAttachmentDefault,
@@ -2084,6 +2083,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                       <MessageInputProvider value={inputMessageInputContext}>
                         <AudioPlayerProvider value={audioPlayerContext}>
                           <View style={{ height: '100%' }}>{children}</View>
+                          {!disableAttachmentPicker ? <AttachmentPicker /> : null}
                         </AudioPlayerProvider>
                       </MessageInputProvider>
                     </MessageComposerProvider>

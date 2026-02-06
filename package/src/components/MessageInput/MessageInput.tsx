@@ -61,7 +61,6 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
@@ -232,7 +231,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const styles = useStyles();
   const { selectedPicker } = useAttachmentPickerState();
-  const { bottomSheetRef } = useAttachmentPickerContext();
+  const { attachmentPickerBottomSheetHeight, bottomInset } = useAttachmentPickerContext();
   const messageComposer = useMessageComposer();
 
   const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
@@ -349,7 +348,15 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   return (
     <MicPositionProvider value={micPositionContextValue}>
-      <>
+      {/* TODO V9: Think of a better way to do this without so much re-layouting. */}
+      <View
+        style={{
+          paddingBottom:
+            selectedPicker && !isKeyboardVisible
+              ? attachmentPickerBottomSheetHeight - bottomInset
+              : 0,
+        }}
+      >
         <Animated.View
           layout={LinearTransition.duration(200)}
           onLayout={({
@@ -453,8 +460,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
           <AutoCompleteSuggestionList />
         </Animated.View>
 
-        <AttachmentPicker ref={bottomSheetRef} />
-
         {showPollCreationDialog ? (
           <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
             <Modal
@@ -474,7 +479,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             </Modal>
           </View>
         ) : null}
-      </>
+      </View>
     </MicPositionProvider>
   );
 };
