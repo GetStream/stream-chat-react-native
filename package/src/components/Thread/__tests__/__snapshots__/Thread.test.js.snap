@@ -1951,7 +1951,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   {
                     "busy": undefined,
                     "checked": undefined,
-                    "disabled": undefined,
+                    "disabled": false,
                     "expanded": undefined,
                     "selected": undefined,
                   }
@@ -2200,7 +2200,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         {
                           "busy": undefined,
                           "checked": undefined,
-                          "disabled": undefined,
+                          "disabled": true,
                           "expanded": undefined,
                           "selected": undefined,
                         }

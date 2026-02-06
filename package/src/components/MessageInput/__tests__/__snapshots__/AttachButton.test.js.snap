@@ -40,7 +40,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             {
               "busy": undefined,
               "checked": undefined,
-              "disabled": undefined,
+              "disabled": false,
               "expanded": undefined,
               "selected": undefined,
             }
@@ -404,7 +404,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             {
               "busy": undefined,
               "checked": undefined,
-              "disabled": undefined,
+              "disabled": false,
               "expanded": undefined,
               "selected": undefined,
             }
@@ -768,7 +768,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             {
               "busy": undefined,
               "checked": undefined,
-              "disabled": undefined,
+              "disabled": true,
               "expanded": undefined,
               "selected": undefined,
             }

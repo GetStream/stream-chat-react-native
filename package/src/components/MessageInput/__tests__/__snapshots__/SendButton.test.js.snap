@@ -39,7 +39,7 @@ exports[`SendButton should render a SendButton 1`] = `
             {
               "busy": undefined,
               "checked": undefined,
-              "disabled": undefined,
+              "disabled": false,
               "expanded": undefined,
               "selected": undefined,
             }
@@ -400,7 +400,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             {
               "busy": undefined,
               "checked": undefined,
-              "disabled": undefined,
+              "disabled": true,
               "expanded": undefined,
               "selected": undefined,
             }
