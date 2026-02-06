@@ -18,7 +18,6 @@ import { useMessageInputContext } from '../../contexts/messageInputContext/Messa
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { useAttachmentPickerState } from '../../hooks/useAttachmentPickerState';
-import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 import { NativeHandlers } from '../../native';
 import type { File } from '../../types/types';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
@@ -47,7 +46,6 @@ export const AttachmentPicker = () => {
   const {
     closePicker,
     attachmentPickerStore,
-    topInset,
     disableAttachmentPicker,
     numberOfAttachmentPickerImageColumns,
     AttachmentPickerSelectionBar,
@@ -62,9 +60,6 @@ export const AttachmentPicker = () => {
   } = useAttachmentPickerContext();
   const { attachmentSelectionBarHeight } = useMessageInputContext();
   const { selectedPicker } = useAttachmentPickerState();
-  const { vh: screenVh } = useScreenDimensions();
-
-  const fullScreenHeight = screenVh(100);
 
   const [currentIndex, setCurrentIndexInternal] = useState(-1);
   const currentIndexRef = useRef<number>(currentIndex);
@@ -214,16 +209,11 @@ export const AttachmentPicker = () => {
 
   const initialSnapPoint = attachmentPickerBottomSheetHeight;
 
-  const finalSnapPoint = fullScreenHeight - topInset;
-
   /**
    * Snap points changing cause a rerender of the position,
    * this is an issue if you are calling close on the bottom sheet.
    */
-  const snapPoints = useMemo(
-    () => [initialSnapPoint, finalSnapPoint],
-    [initialSnapPoint, finalSnapPoint],
-  );
+  const snapPoints = useMemo(() => [initialSnapPoint], [initialSnapPoint]);
 
   const numberOfColumns = numberOfAttachmentPickerImageColumns ?? 3;
 
