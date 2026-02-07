@@ -3,7 +3,10 @@ import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import { AttachmentPickerErrorProps } from '../../components';
-import { AttachmentPickerStore } from '../../state-store/attachment-picker-store';
+import {
+  AttachmentPickerStore,
+  SelectedPickerType,
+} from '../../state-store/attachment-picker-store';
 import { MessageInputContextValue } from '../messageInputContext/MessageInputContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -11,7 +14,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type AttachmentPickerIconProps = {
   numberOfImageUploads?: number;
-  selectedPicker?: 'images';
+  selectedPicker: SelectedPickerType;
 };
 
 export type AttachmentPickerContextValue = Pick<

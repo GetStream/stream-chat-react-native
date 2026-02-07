@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 });
 
 export const AttachmentPickerSelectionBar = () => {
-  const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
+  const { attachmentPickerStore } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const {
@@ -50,35 +50,26 @@ export const AttachmentPickerSelectionBar = () => {
   } = useTheme();
 
   const setImagePicker = () => {
-    if (selectedPicker === 'images') {
-      attachmentPickerStore.setSelectedPicker(undefined);
-      closePicker();
-    } else {
-      attachmentPickerStore.setSelectedPicker('images');
-    }
+    attachmentPickerStore.setSelectedPicker('images');
   };
 
   const openFilePicker = () => {
-    attachmentPickerStore.setSelectedPicker(undefined);
-    closePicker();
+    attachmentPickerStore.setSelectedPicker('files');
     pickFile();
   };
 
   const openPollCreationModal = () => {
-    attachmentPickerStore.setSelectedPicker(undefined);
-    closePicker();
+    attachmentPickerStore.setSelectedPicker('polls');
     openPollCreationDialog?.({ sendMessage });
   };
 
   const onCameraPickerPress = () => {
-    attachmentPickerStore.setSelectedPicker(undefined);
-    closePicker();
+    attachmentPickerStore.setSelectedPicker('camera-photo');
     takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
   };
 
   const onVideoRecorderPickerPress = () => {
-    attachmentPickerStore.setSelectedPicker(undefined);
-    closePicker();
+    attachmentPickerStore.setSelectedPicker('camera-video');
     takeAndUploadImage('video');
   };
 
@@ -135,7 +126,7 @@ export const AttachmentPickerSelectionBar = () => {
           testID='create-poll-touchable'
         >
           <View style={[styles.icon, icon]}>
-            <CreatePollIcon />
+            <CreatePollIcon selectedPicker={selectedPicker} />
           </View>
         </TouchableOpacity>
       ) : null}

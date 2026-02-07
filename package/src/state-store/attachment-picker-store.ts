@@ -1,6 +1,12 @@
 import { StateStore } from 'stream-chat';
 
-export type SelectedPickerType = 'images' | undefined;
+export type SelectedPickerType =
+  | 'images'
+  | 'files'
+  | 'camera-photo'
+  | 'camera-video'
+  | 'polls'
+  | undefined;
 
 export type AttachmentPickerState = {
   selectedPicker: SelectedPickerType;

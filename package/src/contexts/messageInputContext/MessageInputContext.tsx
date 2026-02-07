@@ -221,7 +221,7 @@ export type InputMessageInputContextValue = {
    * **Default: **
    * [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
    */
-  CreatePollIcon: React.ComponentType;
+  CreatePollIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
    * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *

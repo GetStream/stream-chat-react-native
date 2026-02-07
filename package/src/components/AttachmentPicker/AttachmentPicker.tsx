@@ -32,7 +32,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const keyExtractor = (item: File) => item.uri;
+export const IOS_LIMITED_DEEPLINK = '@getstream/ios-limited-button' as const;
+
+export type IosLimitedItemType = { uri: typeof IOS_LIMITED_DEEPLINK };
+
+export type PhotoContentItemType = File | IosLimitedItemType;
+
+export const isIosLimited = (item: PhotoContentItemType): item is IosLimitedItemType =>
+  'uri' in item && item.uri === '@getstream/ios-limited-button';
+
+const keyExtractor = (item: PhotoContentItemType) => item.uri;
 
 export const AttachmentPicker = () => {
   const {
@@ -46,7 +55,6 @@ export const AttachmentPicker = () => {
   const {
     closePicker,
     attachmentPickerStore,
-    disableAttachmentPicker,
     numberOfAttachmentPickerImageColumns,
     AttachmentPickerSelectionBar,
     attachmentPickerBottomSheetHeight,
@@ -54,7 +62,6 @@ export const AttachmentPicker = () => {
     attachmentPickerErrorButtonText,
     AttachmentPickerErrorImage,
     attachmentPickerErrorText,
-    AttachmentPickerIOSSelectMorePhotos,
     numberOfAttachmentImagesToLoadPerCall,
     bottomSheetRef: ref,
   } = useAttachmentPickerContext();
@@ -69,10 +76,9 @@ export const AttachmentPicker = () => {
   });
   const endCursorRef = useRef<string>(undefined);
   const [photoError, setPhotoError] = useState(false);
-  const [iOSLimited, setIosLimited] = useState(false);
   const hasNextPageRef = useRef(true);
   const loadingPhotosRef = useRef(false);
-  const [photos, setPhotos] = useState<File[]>([]);
+  const [photos, setPhotos] = useState<Array<PhotoContentItemType>>([]);
   const attemptedToLoadPhotosOnOpenRef = useRef<boolean>(false);
 
   const getMorePhotos = useStableCallback(async () => {
@@ -88,7 +94,6 @@ export const AttachmentPicker = () => {
       try {
         if (!NativeHandlers.getPhotos) {
           setPhotos([]);
-          setIosLimited(false);
           return;
         }
 
@@ -105,15 +110,20 @@ export const AttachmentPicker = () => {
             return [...prevPhotos, ...results.assets];
           }
 
+          let assets: PhotoContentItemType[] = results.assets;
+
+          if (results.iOSLimited) {
+            assets = [{ uri: IOS_LIMITED_DEEPLINK }, ...assets];
+          }
+
           for (let i = 0; i < results.assets.length; i++) {
-            if (results.assets[i].uri !== prevPhotos[i]?.uri) {
-              return results.assets;
+            if (assets[i].uri !== prevPhotos[i]?.uri) {
+              return assets;
             }
           }
 
-          return prevPhotos.slice(0, results.assets.length);
+          return prevPhotos.slice(0, assets.length);
         });
-        setIosLimited(results.iOSLimited);
         hasNextPageRef.current = !!results.hasNextPage;
       } catch (error) {
         setPhotoError(true);
@@ -230,34 +240,35 @@ export const AttachmentPicker = () => {
         ref={ref}
         snapPoints={snapPoints}
       >
-        {!disableAttachmentPicker ? (
-          <View
-            style={[
-              {
-                backgroundColor: semantics.composerBg,
-                height: attachmentSelectionBarHeight,
-              },
-              attachmentSelectionBar,
-            ]}
-          >
-            <AttachmentPickerSelectionBar />
-          </View>
-        ) : null}
-        {iOSLimited && <AttachmentPickerIOSSelectMorePhotos />}
-        <BottomSheetFlatList
-          contentContainerStyle={[
-            styles.container,
-            { backgroundColor: white, opacity: photoError ? 0 : 1 },
-            bottomSheetContentContainer,
+        <View
+          style={[
+            {
+              backgroundColor: semantics.composerBg,
+              height: attachmentSelectionBarHeight,
+            },
+            attachmentSelectionBar,
           ]}
-          data={photos}
-          keyExtractor={keyExtractor}
-          numColumns={numberOfColumns}
-          onEndReached={photoError ? undefined : getMorePhotos}
-          renderItem={renderAttachmentPickerItem}
-          testID={'attachment-picker-list'}
-          updateCellsBatchingPeriod={16}
-        />
+        >
+          <AttachmentPickerSelectionBar />
+        </View>
+        {selectedPicker === 'images' ? (
+          <>
+            <BottomSheetFlatList
+              contentContainerStyle={[
+                styles.container,
+                { backgroundColor: white, opacity: photoError ? 0 : 1 },
+                bottomSheetContentContainer,
+              ]}
+              data={photos}
+              keyExtractor={keyExtractor}
+              numColumns={numberOfColumns}
+              onEndReached={photoError ? undefined : getMorePhotos}
+              renderItem={renderAttachmentPickerItem}
+              testID={'attachment-picker-list'}
+              updateCellsBatchingPeriod={16}
+            />
+          </>
+        ) : null}
       </BottomSheet>
       {selectedPicker === 'images' && photoError && (
         <AttachmentPickerError
