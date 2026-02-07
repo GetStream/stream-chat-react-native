@@ -6,6 +6,7 @@ import {
   Platform,
   StyleSheet,
   View,
+  Text,
 } from 'react-native';
 
 import dayjs from 'dayjs';
@@ -227,6 +228,12 @@ export const AttachmentPicker = () => {
 
   const numberOfColumns = numberOfAttachmentPickerImageColumns ?? 3;
 
+  // TODO V9: Think of a better way to do this. This is just a temporary fix.
+  const lastSelectedPickerRef = useRef(selectedPicker);
+  if (selectedPicker) {
+    lastSelectedPickerRef.current = selectedPicker;
+  }
+
   return (
     <>
       <BottomSheet
@@ -251,24 +258,34 @@ export const AttachmentPicker = () => {
         >
           <AttachmentPickerSelectionBar />
         </View>
-        {selectedPicker === 'images' ? (
-          <>
-            <BottomSheetFlatList
-              contentContainerStyle={[
-                styles.container,
-                { backgroundColor: white, opacity: photoError ? 0 : 1 },
-                bottomSheetContentContainer,
-              ]}
-              data={photos}
-              keyExtractor={keyExtractor}
-              numColumns={numberOfColumns}
-              onEndReached={photoError ? undefined : getMorePhotos}
-              renderItem={renderAttachmentPickerItem}
-              testID={'attachment-picker-list'}
-              updateCellsBatchingPeriod={16}
-            />
-          </>
-        ) : null}
+        {lastSelectedPickerRef.current === 'images' ? (
+          <BottomSheetFlatList
+            contentContainerStyle={[
+              styles.container,
+              { backgroundColor: white, opacity: photoError ? 0 : 1 },
+              bottomSheetContentContainer,
+            ]}
+            data={photos}
+            keyExtractor={keyExtractor}
+            numColumns={numberOfColumns}
+            onEndReached={photoError ? undefined : getMorePhotos}
+            renderItem={renderAttachmentPickerItem}
+            testID={'attachment-picker-list'}
+            updateCellsBatchingPeriod={16}
+          />
+        ) : (
+          // TODO V9: Remove these inline styles
+          <View
+            style={{
+              width: '100%',
+              height: attachmentPickerBottomSheetHeight - attachmentSelectionBarHeight,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text>{lastSelectedPickerRef.current}</Text>
+          </View>
+        )}
       </BottomSheet>
       {selectedPicker === 'images' && photoError && (
         <AttachmentPickerError

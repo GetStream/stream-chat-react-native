@@ -139,7 +139,6 @@ import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
-import { AttachmentPickerIOSSelectMorePhotos as DefaultAttachmentPickerIOSSelectMorePhotos } from '../AttachmentPicker/components/AttachmentPickerIOSSelectMorePhotos';
 import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
@@ -586,7 +585,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
     AttachmentPickerError = DefaultAttachmentPickerError,
     AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
-    AttachmentPickerIOSSelectMorePhotos = DefaultAttachmentPickerIOSSelectMorePhotos,
     AttachmentUploadPreviewList = AttachmentUploadPreviewDefault,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     attachmentPickerErrorButtonText,
@@ -1756,7 +1754,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       attachmentPickerErrorButtonText,
       AttachmentPickerErrorImage,
       attachmentPickerErrorText,
-      AttachmentPickerIOSSelectMorePhotos,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
     }),
@@ -1777,7 +1774,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       attachmentPickerErrorButtonText,
       AttachmentPickerErrorImage,
       attachmentPickerErrorText,
-      AttachmentPickerIOSSelectMorePhotos,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
     ],
