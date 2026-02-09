@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BackHandler,
   EmitterSubscription,
@@ -9,6 +9,7 @@ import {
   Text,
 } from 'react-native';
 
+import { useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
@@ -43,6 +44,15 @@ export const isIosLimited = (item: PhotoContentItemType): item is IosLimitedItem
   'uri' in item && item.uri === '@getstream/ios-limited-button';
 
 const keyExtractor = (item: PhotoContentItemType) => item.uri;
+
+const SPRING_CONFIG = {
+  damping: 80,
+  overshootClamping: true,
+  restDisplacementThreshold: 0.1,
+  restSpeedThreshold: 0.1,
+  stiffness: 500,
+  duration: 200,
+};
 
 export const AttachmentPicker = () => {
   const {
@@ -228,11 +238,35 @@ export const AttachmentPicker = () => {
 
   const numberOfColumns = numberOfAttachmentPickerImageColumns ?? 3;
 
+  const Handle = useCallback(
+    () => (
+      <View
+        style={[
+          {
+            backgroundColor: semantics.composerBg,
+            height: attachmentSelectionBarHeight,
+          },
+          attachmentSelectionBar,
+        ]}
+      >
+        <AttachmentPickerSelectionBar />
+      </View>
+    ),
+    [
+      AttachmentPickerSelectionBar,
+      attachmentSelectionBar,
+      attachmentSelectionBarHeight,
+      semantics.composerBg,
+    ],
+  );
+
   // TODO V9: Think of a better way to do this. This is just a temporary fix.
   const lastSelectedPickerRef = useRef(selectedPicker);
   if (selectedPicker) {
     lastSelectedPickerRef.current = selectedPicker;
   }
+
+  const animationConfigs = useBottomSheetSpringConfigs(SPRING_CONFIG);
 
   return (
     <>
@@ -240,24 +274,14 @@ export const AttachmentPicker = () => {
         enablePanDownToClose={false}
         enableContentPanningGesture={false}
         enableDynamicSizing={false}
-        handleComponent={NoOp}
+        handleComponent={Handle}
         index={currentIndex}
         onAnimate={setCurrentIndex}
         // @ts-ignore
         ref={ref}
         snapPoints={snapPoints}
+        animationConfigs={animationConfigs}
       >
-        <View
-          style={[
-            {
-              backgroundColor: semantics.composerBg,
-              height: attachmentSelectionBarHeight,
-            },
-            attachmentSelectionBar,
-          ]}
-        >
-          <AttachmentPickerSelectionBar />
-        </View>
         {lastSelectedPickerRef.current === 'images' ? (
           <BottomSheetFlatList
             contentContainerStyle={[
@@ -298,7 +322,5 @@ export const AttachmentPicker = () => {
     </>
   );
 };
-
-const NoOp = () => null;
 
 AttachmentPicker.displayName = 'AttachmentPicker';
