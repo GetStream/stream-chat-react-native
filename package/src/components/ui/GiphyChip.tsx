@@ -7,14 +7,14 @@ import { useMessageComposer } from '../../contexts/messageInputContext/hooks/use
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { NewCross } from '../../icons/NewCross';
-import { NewGiphy } from '../../icons/NewGiphy';
+import { NewLightning } from '../../icons/NewLightning';
 import { primitives } from '../../theme';
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
 });
 
-export const GiphyBadge = () => {
+export const GiphyChip = () => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -32,7 +32,7 @@ export const GiphyBadge = () => {
 
   return (
     <View style={styles.container}>
-      <NewGiphy fill={semantics.badgeText} height={16} width={16} />
+      <NewLightning fill={semantics.textInverse} height={16} width={16} />
       <Text style={styles.text}>{commandName}</Text>
       <Pressable onPress={onPressHandler}>
         <NewCross stroke={semantics.textInverse} height={16} width={16} />

@@ -175,7 +175,6 @@ import { ReactionListBottom as ReactionListBottomDefault } from '../Message/Mess
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
-import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview as ImageAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
@@ -691,8 +690,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'files',
       'poll',
       'ai_text',
-      'text',
       'attachments',
+      'text',
       'location',
     ],
     MessageDeleted = MessageDeletedDefault,
@@ -757,7 +756,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
-    AttachmentUploadProgressIndicator = AttachmentUploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
     VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
@@ -1843,7 +1841,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AttachmentPickerSelectionBar,
     attachmentSelectionBarHeight,
     AttachmentUploadPreviewList,
-    AttachmentUploadProgressIndicator,
     AudioAttachmentUploadPreview,
     AudioRecorder,
     audioRecordingEnabled,

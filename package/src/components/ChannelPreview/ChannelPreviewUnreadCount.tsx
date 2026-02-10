@@ -3,7 +3,7 @@ import React from 'react';
 import { ChannelPreviewProps } from './ChannelPreview';
 
 import type { ChannelsContextValue } from '../../contexts/channelsContext/ChannelsContext';
-import { BadgeNotification } from '../ui/BadgeNotification';
+import { BadgeNotification } from '../ui/Badge';
 
 export type ChannelPreviewUnreadCountProps = Pick<ChannelsContextValue, 'maxUnreadCount'> &
   Pick<ChannelPreviewProps, 'channel'> & {

@@ -5,7 +5,8 @@ import type { IconProps } from '../../../icons/utils/base';
 import { semantics } from '../../../theme';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
-export const BASE_AVATAR_SIZE = 32;
+// TODO: Handle this better later depending on the size of the avatar used
+export const BASE_AVATAR_SIZE = 24;
 
 export const Colors = {
   accent_blue: '#005FFF',

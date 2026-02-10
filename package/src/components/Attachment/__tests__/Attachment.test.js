@@ -22,6 +22,7 @@ import { AttachmentActions } from '../AttachmentActions';
 
 jest.mock('../../../native.ts', () => ({
   isVideoPlayerAvailable: jest.fn(() => false),
+  isSoundPackageAvailable: jest.fn(() => false),
 }));
 
 const getAttachmentComponent = (props) => {

@@ -121,7 +121,6 @@ describe('AttachmentUploadPreviewList', () => {
 
     await waitFor(() => {
       expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(1);
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(1);
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
     });
   });
@@ -154,7 +153,6 @@ describe('AttachmentUploadPreviewList', () => {
 
       await waitFor(() => {
         expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
-        expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(2);
         expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(2);
       });
 
@@ -202,7 +200,6 @@ describe('AttachmentUploadPreviewList', () => {
 
       await waitFor(() => {
         expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
-        expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(2);
       });
     });
 
@@ -272,11 +269,11 @@ describe('AttachmentUploadPreviewList', () => {
 
       renderComponent({ channel, client, props });
 
-      const { queryAllByText, queryAllByTestId } = screen;
+      const { queryAllByTestId } = screen;
 
       await waitFor(() => {
         expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
-        expect(queryAllByText('Not supported')).toHaveLength(2);
+        expect(queryAllByTestId('inline-not-supported-indicator')).toHaveLength(2);
       });
     });
   });
@@ -303,7 +300,6 @@ describe('AttachmentUploadPreviewList', () => {
 
       await waitFor(() => {
         expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
-        expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(1);
         expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
       });
 
@@ -356,7 +352,6 @@ describe('AttachmentUploadPreviewList', () => {
 
       await waitFor(() => {
         expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
-        expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
       });
     });
 
@@ -421,7 +416,7 @@ describe('AttachmentUploadPreviewList', () => {
 
       renderComponent({ channel, client, props });
 
-      const { queryAllByText, queryAllByTestId } = screen;
+      const { queryAllByTestId } = screen;
 
       await waitFor(() => {
         const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
@@ -432,7 +427,7 @@ describe('AttachmentUploadPreviewList', () => {
 
       await waitFor(() => {
         expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
-        expect(queryAllByText('Not supported')).toHaveLength(1);
+        expect(queryAllByTestId('inline-not-supported-indicator')).toHaveLength(1);
       });
     });
 
@@ -471,7 +466,7 @@ describe('AttachmentUploadPreviewList', () => {
 
       renderComponent({ channel, client, props });
 
-      const { queryAllByTestId, queryAllByText } = screen;
+      const { queryAllByTestId } = screen;
 
       await waitFor(() => {
         const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
@@ -483,9 +478,8 @@ describe('AttachmentUploadPreviewList', () => {
       await waitFor(() => {
         expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(4);
         expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
-        expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
         expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
-        expect(queryAllByText('Not supported')).toHaveLength(1);
+        expect(queryAllByTestId('inline-not-supported-indicator')).toHaveLength(1);
       });
     });
   });

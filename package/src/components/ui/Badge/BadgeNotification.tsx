@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { primitives } from '../../theme';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../theme';
 
 export type BadgeNotificationProps = {
   type: 'primary' | 'error' | 'neutral';
@@ -64,23 +64,21 @@ const useStyles = () => {
     theme: { semantics },
   } = useTheme();
 
-  const { badgeText, badgeBorder } = semantics;
-
   return useMemo(
     () =>
       StyleSheet.create({
         container: {
           paddingHorizontal: primitives.spacingXxs,
-          borderColor: badgeBorder,
+          borderColor: semantics.badgeBorder,
           borderRadius: primitives.radiusMax,
           justifyContent: 'center',
         },
         text: {
-          color: badgeText,
+          color: semantics.badgeTextOnAccent,
           includeFontPadding: false,
           textAlign: 'center',
         },
       }),
-    [badgeText, badgeBorder],
+    [semantics],
   );
 };

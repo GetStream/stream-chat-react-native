@@ -1,145 +1,214 @@
-import React, { PropsWithChildren } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  PressableProps,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React, { useMemo } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { LocalAttachmentUploadMetadata } from 'stream-chat';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { Refresh } from '../../../../icons';
-import { Progress, ProgressIndicatorTypes } from '../../../../utils/utils';
+import { NewExclamationCircle } from '../../../../icons/NewExclamationCircle';
+import { NewWarning } from '../../../../icons/NewWarning';
+import { RotateCircle } from '../../../../icons/RotateCircle';
+import { primitives } from '../../../../theme';
 
-const REFRESH_ICON_SIZE = 18;
-
-export type AttachmentUploadProgressIndicatorProps = {
-  /** Action triggered when clicked indicator */
-  onPress?: PressableProps['onPress'];
-  /** style */
-  style?: StyleProp<ViewStyle>;
-  /** Type of active indicator */
-  type?: Progress;
-};
-
-export const AttachmentUploadProgressIndicator = (
-  props: PropsWithChildren<AttachmentUploadProgressIndicatorProps>,
-) => {
-  const { onPress, children, style, type } = props;
-
+export const FileUploadInProgressIndicator = () => {
   const {
-    theme: {
-      colors: { overlay: overlayColor },
-      messageInput: {
-        uploadProgressIndicator: { container },
-      },
-    },
-  } = useTheme();
-
-  return type === ProgressIndicatorTypes.INACTIVE ? (
-    <View style={[styles.overflowHidden, style]} testID='inactive-upload-progress-indicator'>
-      {children}
-    </View>
-  ) : (
-    <View style={[styles.overflowHidden, style]} testID='active-upload-progress-indicator'>
-      {children}
-      <View
-        style={[
-          type === ProgressIndicatorTypes.NOT_SUPPORTED ? styles.overflowHidden : styles.container,
-          { backgroundColor: overlayColor },
-          container,
-        ]}
-        testID='not-supported-upload-progress-indicator'
-      >
-        {type === ProgressIndicatorTypes.IN_PROGRESS && <InProgressIndicator />}
-        {type === ProgressIndicatorTypes.RETRY && <RetryIndicator onPress={onPress} />}
-      </View>
-    </View>
-  );
-};
-
-const InProgressIndicator = () => {
-  const {
-    theme: {
-      colors: { white_smoke },
-      messageInput: {
-        uploadProgressIndicator: { indicatorColor },
-      },
-    },
+    theme: { semantics },
   } = useTheme();
 
   return (
-    <View style={styles.activityIndicatorContainer}>
-      <ActivityIndicator color={indicatorColor || white_smoke} testID='upload-progress-indicator' />
+    <View style={styles.activityIndicatorContainer} testID='upload-progress-indicator'>
+      <ActivityIndicator color={semantics.accentPrimary} style={styles.activityIndicator} />
     </View>
   );
 };
 
-const RetryIndicator = ({ onPress }: Pick<AttachmentUploadProgressIndicatorProps, 'onPress'>) => {
+export const FileUploadRetryIndicator = ({ onPress }: { onPress: () => void }) => {
   const {
-    theme: {
-      colors: { white_smoke },
-      messageInput: {
-        uploadProgressIndicator: { indicatorColor },
-      },
-    },
+    theme: { semantics },
+  } = useTheme();
+  const styles = useFileUploadRetryStyles();
+
+  return (
+    <View style={styles.container} testID='inline-retry-indicator'>
+      <View style={styles.networkErrorContainer}>
+        <NewWarning
+          height={16}
+          fill={semantics.accentError}
+          testID='retry-upload-progress-indicator'
+          width={16}
+        />
+        <Text>Network error</Text>
+      </View>
+      <Pressable onPress={onPress} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+        <Text style={styles.retryText}>Retry Upload</Text>
+      </Pressable>
+    </View>
+  );
+};
+
+export const FileUploadNotSupportedIndicator = ({
+  localMetadata,
+}: {
+  localMetadata: LocalAttachmentUploadMetadata;
+}) => {
+  const styles = useFileUploadNotSupportedStyles();
+  const {
+    theme: { semantics },
   } = useTheme();
 
+  const reason = localMetadata.uploadPermissionCheck?.reason === 'size_limit';
+  const message = reason ? 'File too large' : 'Not supported';
+
+  return (
+    <View style={styles.container} testID='inline-not-supported-indicator'>
+      <NewExclamationCircle height={16} width={16} fill={semantics.accentError} />
+      <Text style={styles.notSupportedText}>{message}</Text>
+    </View>
+  );
+};
+
+export const ImageUploadInProgressIndicator = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const styles = useImageUploadInProgressIndicatorStyles();
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator
+        size='small'
+        color={semantics.accentPrimary}
+        testID='upload-progress-indicator'
+      />
+    </View>
+  );
+};
+
+export const ImageUploadRetryIndicator = ({ onRetryHandler }: { onRetryHandler: () => void }) => {
+  const styles = useImageUploadRetryIndicatorStyles();
+  const {
+    theme: { semantics },
+  } = useTheme();
   return (
     <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [styles.retryButtonContainer, { opacity: pressed ? 0.8 : 1 }]}
+      style={styles.container}
+      onPress={onRetryHandler}
+      testID='retry-upload-progress-indicator'
     >
-      <Refresh
-        height={REFRESH_ICON_SIZE}
-        pathFill={indicatorColor || white_smoke}
-        testID='retry-upload-progress-indicator'
-        width={REFRESH_ICON_SIZE}
-      />
+      <RotateCircle height={16} width={16} stroke={semantics.textOnAccent} />
     </Pressable>
   );
 };
 
+export const ImageUploadNotSupportedIndicator = () => {
+  const styles = useImageUploadNotSupportedIndicatorStyles();
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return (
+    <View style={styles.container} testID='inline-not-supported-indicator'>
+      <NewExclamationCircle height={20} width={20} fill={semantics.accentError} />
+    </View>
+  );
+};
+
+const useImageUploadInProgressIndicatorStyles = () => {
+  return StyleSheet.create({
+    container: {
+      position: 'absolute',
+      left: primitives.spacingXxs,
+      bottom: primitives.spacingXxs,
+    },
+  });
+};
+
+const useImageUploadRetryIndicatorStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return StyleSheet.create({
+    container: {
+      backgroundColor: semantics.accentError,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: primitives.radiusMax,
+      borderWidth: 2,
+      borderColor: semantics.textOnAccent,
+      alignSelf: 'center',
+      width: 32,
+      height: 32,
+    },
+  });
+};
+
+const useImageUploadNotSupportedIndicatorStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return StyleSheet.create({
+    container: {
+      backgroundColor: semantics.backgroundElevationElevation0,
+      borderRadius: primitives.radiusMax,
+      position: 'absolute',
+      left: primitives.spacingXxs,
+      bottom: primitives.spacingXxs,
+    },
+  });
+};
+
+const useFileUploadRetryStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        gap: primitives.spacingXxxs,
+      },
+      networkErrorContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXxs,
+      },
+      networkErrorText: {
+        color: semantics.textSecondary,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+      retryText: {
+        color: semantics.textLink,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+    });
+  }, [semantics]);
+};
+
+const useFileUploadNotSupportedStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXxxs,
+      },
+      notSupportedText: {
+        color: semantics.textSecondary,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+    });
+  }, [semantics]);
+};
+
 const styles = StyleSheet.create({
-  activityIndicatorContainer: {
-    alignItems: 'center',
-    bottom: 0,
-    justifyContent: 'center',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  container: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    position: 'absolute',
-    width: '100%',
-  },
-  overflowHidden: {
-    overflow: 'hidden',
-  },
-  overlay: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    opacity: 0,
-    position: 'absolute',
-    width: '100%',
-  },
-  retryButtonContainer: {
-    alignItems: 'center',
-    bottom: 0,
-    justifyContent: 'center',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
+  activityIndicatorContainer: {},
+  activityIndicator: {
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
 });
-
-AttachmentUploadProgressIndicator.displayName =
-  'AttachmentUploadProgressIndicator{messageInput{uploadProgressIndicator}}';

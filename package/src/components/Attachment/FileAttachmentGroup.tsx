@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-
-import { Attachment, isAudioAttachment, isVoiceRecordingAttachment } from 'stream-chat';
 
 import { Attachment as AttachmentDefault } from './Attachment';
 
@@ -15,34 +13,18 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { isSoundPackageAvailable } from '../../native';
+import { primitives } from '../../theme';
 
 export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'files' | 'message'> &
-  Pick<MessagesContextValue, 'Attachment' | 'AudioAttachment'> & {
+  Pick<MessagesContextValue, 'Attachment'> & {
     styles?: Partial<{
       attachmentContainer: StyleProp<ViewStyle>;
       container: StyleProp<ViewStyle>;
     }>;
   };
 
-type FilesToDisplayType = Attachment & {
-  duration: number;
-  paused: boolean;
-  progress: number;
-};
-
 const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithContext) => {
-  const { Attachment, AudioAttachment, files, message, styles: stylesProp = {} } = props;
-
-  const [filesToDisplay, setFilesToDisplay] = useState<FilesToDisplayType[]>(() =>
-    files.map((file) => ({ ...file, duration: file.duration || 0, paused: true, progress: 0 })),
-  );
-
-  useEffect(() => {
-    setFilesToDisplay(
-      files.map((file) => ({ ...file, duration: file.duration || 0, paused: true, progress: 0 })),
-    );
-  }, [files]);
+  const { Attachment, files, message, styles: stylesProp = {} } = props;
 
   const {
     theme: {
@@ -52,28 +34,27 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     },
   } = useTheme();
 
+  const showBottomPadding = files.length > 1 && !message.text && message.quoted_message;
+
   return (
-    <View style={[styles.container, container, stylesProp.container]}>
-      {filesToDisplay.map((file, index) => (
+    <View
+      style={[
+        styles.container,
+        {
+          paddingHorizontal: files.length > 1 ? primitives.spacingXs : 0,
+          paddingTop: files.length > 1 ? primitives.spacingXs : 0,
+          paddingBottom: showBottomPadding ? primitives.spacingXs : 0,
+        },
+        container,
+        stylesProp.container,
+      ]}
+    >
+      {files.map((file, index) => (
         <View
           key={`file-by-attachment-group-${message.id}-${index}`}
-          style={[
-            { paddingBottom: index !== files.length - 1 ? 4 : 0 },
-            stylesProp.attachmentContainer,
-            attachmentContainer,
-          ]}
+          style={[styles.item, stylesProp.attachmentContainer, attachmentContainer]}
         >
-          {(isAudioAttachment(file) || isVoiceRecordingAttachment(file)) &&
-          isSoundPackageAvailable() ? (
-            <AudioAttachment
-              item={{ ...file, id: index.toString(), type: file.type }}
-              message={message}
-              showSpeedSettings={true}
-              containerStyle={{ minWidth: 320, borderWidth: 0 }}
-            />
-          ) : (
-            <Attachment attachment={file} />
-          )}
+          <Attachment attachment={file} />
         </View>
       ))}
     </View>
@@ -129,7 +110,11 @@ export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 4,
+    gap: primitives.spacingXs,
+  },
+  item: {
+    borderRadius: primitives.radiusLg,
+    overflow: 'hidden',
   },
 });
 

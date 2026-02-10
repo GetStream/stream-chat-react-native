@@ -1,12 +1,16 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { Image, StyleSheet, View } from 'react-native';
+import { ImageBackground, StyleSheet, View } from 'react-native';
 
 import { LocalImageAttachment } from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
-import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
-import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
+
+import {
+  ImageUploadInProgressIndicator,
+  ImageUploadRetryIndicator,
+  ImageUploadNotSupportedIndicator,
+} from './AttachmentUploadProgressIndicator';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
@@ -33,7 +37,7 @@ export const ImageAttachmentUploadPreview = ({
   const {
     theme: {
       messageInput: {
-        imageAttachmentUploadPreview: { container, upload, wrapper },
+        imageAttachmentUploadPreview: { upload, wrapper },
       },
     },
   } = useTheme();
@@ -57,23 +61,21 @@ export const ImageAttachmentUploadPreview = ({
 
   return (
     <View style={[styles.wrapper, wrapper]} testID={'image-attachment-upload-preview'}>
-      <AttachmentUploadProgressIndicator
-        onPress={onRetryHandler}
-        style={[styles.container, container]}
-        type={indicatorType}
+      <ImageBackground
+        onError={onErrorHandler}
+        onLoadEnd={onLoadEndHandler}
+        source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
+        style={[styles.image, upload]}
+        testID={'image-attachment-upload-preview-image'}
       >
-        <Image
-          onError={onErrorHandler}
-          onLoadEnd={onLoadEndHandler}
-          resizeMode='cover'
-          source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
-          style={[styles.upload, upload]}
-          testID={'image-attachment-upload-preview-image'}
-        />
-        {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-          <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
-        ) : null}
-      </AttachmentUploadProgressIndicator>
+        {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && <ImageUploadInProgressIndicator />}
+        {indicatorType === ProgressIndicatorTypes.RETRY && (
+          <ImageUploadRetryIndicator onRetryHandler={onRetryHandler} />
+        )}
+        {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED && (
+          <ImageUploadNotSupportedIndicator />
+        )}
+      </ImageBackground>
 
       <View style={styles.dismissWrapper}>
         <AttachmentRemoveControl onPress={onDismissHandler} />
@@ -92,17 +94,16 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        container: {
-          borderColor: borderCoreOpacity10,
-          borderRadius: primitives.radiusLg,
-          borderWidth: 1,
-          flexDirection: 'row',
-          overflow: 'hidden',
-        },
         dismissWrapper: { position: 'absolute', right: 0, top: 0 },
-        upload: {
+        image: {
           height: IMAGE_PREVIEW_SIZE,
           width: IMAGE_PREVIEW_SIZE,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: primitives.radiusLg,
+          borderColor: borderCoreOpacity10,
+          borderWidth: 1,
+          overflow: 'hidden',
         },
         wrapper: {
           padding: primitives.spacingXxs,

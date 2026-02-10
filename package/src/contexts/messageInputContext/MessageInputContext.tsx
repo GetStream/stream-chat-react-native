@@ -35,7 +35,6 @@ import {
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
-import type { AttachmentUploadProgressIndicatorProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
@@ -301,10 +300,6 @@ export type InputMessageInputContextValue = {
    */
   StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps>;
   StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps> | null;
-  /**
-   * Custom UI component to render upload progress indicator on attachment preview.
-   */
-  AttachmentUploadProgressIndicator: React.ComponentType<AttachmentUploadProgressIndicatorProps>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *

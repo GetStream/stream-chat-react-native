@@ -62,7 +62,7 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
-import { GiphyBadge } from '../ui/GiphyBadge';
+import { GiphyChip } from '../ui/GiphyChip';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
 const useStyles = () => {
@@ -488,7 +488,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     <>
                       {command ? (
                         <View style={styles.giphyContainer}>
-                          <GiphyBadge />
+                          <GiphyChip />
                         </View>
                       ) : null}
 

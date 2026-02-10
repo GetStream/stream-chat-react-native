@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Image,
   ImageStyle,
@@ -26,126 +26,72 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Play } from '../../icons/Play';
+import { NewLink } from '../../icons/NewLink';
+import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
+import { VideoPlayIndicator } from '../ui';
 import { ImageBackground } from '../UIComponents/ImageBackground';
 
-const styles = StyleSheet.create({
-  authorName: { fontSize: 14.5, fontWeight: '600' },
-  authorNameContainer: {
-    borderTopRightRadius: 15,
-    paddingHorizontal: 8,
-    paddingTop: 8,
-  },
-  authorNameFooter: {
-    fontSize: 14.5,
-    fontWeight: '600',
-    padding: 8,
-  },
-  authorNameMask: {
-    bottom: 0,
-    left: 2,
-    position: 'absolute',
-  },
-  cardCover: {
-    alignItems: 'center',
-    borderRadius: 8,
-    height: 140,
-    justifyContent: 'center',
-    marginHorizontal: 2,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  container: {
-    overflow: 'hidden',
-    width: 256,
-  },
-  description: {
-    fontSize: 12,
-    marginHorizontal: 8,
-  },
-  playButtonStyle: {
-    alignItems: 'center',
-    borderRadius: 50,
-    elevation: 2,
-    height: 36,
-    justifyContent: 'center',
-    width: 36,
-  },
-  title: {
-    fontSize: 12,
-    marginHorizontal: 8,
-  },
-});
-
-export type CardPropsWithContext = Attachment &
-  Pick<ChatContextValue, 'ImageComponent'> &
+export type CardPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<
     MessagesContextValue,
-    'additionalPressableProps' | 'CardCover' | 'CardFooter' | 'CardHeader' | 'myMessageTheme'
+    | 'additionalPressableProps'
+    | 'CardCover'
+    | 'CardFooter'
+    | 'CardHeader'
+    | 'myMessageTheme'
+    | 'isAttachmentEqual'
   > & {
+    attachment: Attachment;
     channelId: string | undefined;
     messageId: string | undefined;
     styles?: Partial<{
-      authorName: StyleProp<TextStyle>;
-      authorNameContainer: StyleProp<ViewStyle>;
-      authorNameFooter: StyleProp<TextStyle>;
-      authorNameFooterContainer: StyleProp<ViewStyle>;
-      authorNameMask: StyleProp<ViewStyle>;
       cardCover: StyleProp<ImageStyle>;
       cardFooter: StyleProp<ViewStyle>;
       container: StyleProp<ViewStyle>;
       description: StyleProp<TextStyle>;
+      linkPreview: StyleProp<ViewStyle>;
+      linkPreviewText: StyleProp<TextStyle>;
       title: StyleProp<TextStyle>;
     }>;
   };
 
 const CardWithContext = (props: CardPropsWithContext) => {
   const {
+    attachment,
     additionalPressableProps,
-    author_name,
     CardCover,
     CardFooter,
     CardHeader,
-    image_url,
     ImageComponent = Image,
-    og_scrape_url,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
     styles: stylesProp = {},
-    text,
-    thumb_url,
-    title,
-    type,
   } = props;
 
   const {
+    theme: { semantics },
+  } = useTheme();
+
+  const { image_url, og_scrape_url, text, thumb_url, title, type } = attachment;
+
+  const {
     theme: {
-      colors: { accent_blue, black, blue_alice, static_black, static_white, transparent },
       messageSimple: {
         card: {
-          authorName,
-          authorNameContainer,
-          authorNameFooter,
-          authorNameFooterContainer,
-          authorNameMask,
           container,
           cover,
           footer: { description, title: titleStyle, ...footerStyle },
-          noURI,
-          playButtonStyle: { roundedView },
-          playIcon: { height, width },
         },
       },
     },
   } = useTheme();
+
+  const styles = useStyles();
 
   const uri = image_url || thumb_url;
 
@@ -154,45 +100,45 @@ const CardWithContext = (props: CardPropsWithContext) => {
   const isVideoCard = type === FileTypes.Video && og_scrape_url;
 
   return (
-    <Pressable
-      disabled={preventPress}
-      onLongPress={(event) => {
-        if (onLongPress) {
-          onLongPress({
-            additionalInfo: { url: og_scrape_url },
-            emitter: 'card',
-            event,
-          });
-        }
-      }}
-      onPress={(event) => {
-        if (onPress) {
-          onPress({
-            additionalInfo: { url: og_scrape_url },
-            defaultHandler: defaultOnPress,
-            emitter: 'card',
-            event,
-          });
-        }
-      }}
-      onPressIn={(event) => {
-        if (onPressIn) {
-          onPressIn({
-            additionalInfo: { url: og_scrape_url },
-            defaultHandler: defaultOnPress,
-            emitter: 'card',
-            event,
-          });
-        }
-      }}
-      style={[styles.container, container, stylesProp.container]}
-      testID='card-attachment'
-      {...additionalPressableProps}
-    >
-      {CardHeader && <CardHeader {...props} />}
-      {CardCover && <CardCover {...props} />}
-      {uri && !CardCover && (
-        <View>
+    <View style={styles.wrapper}>
+      <Pressable
+        disabled={preventPress}
+        onLongPress={(event) => {
+          if (onLongPress) {
+            onLongPress({
+              additionalInfo: { url: og_scrape_url },
+              emitter: 'card',
+              event,
+            });
+          }
+        }}
+        onPress={(event) => {
+          if (onPress) {
+            onPress({
+              additionalInfo: { url: og_scrape_url },
+              defaultHandler: defaultOnPress,
+              emitter: 'card',
+              event,
+            });
+          }
+        }}
+        onPressIn={(event) => {
+          if (onPressIn) {
+            onPressIn({
+              additionalInfo: { url: og_scrape_url },
+              defaultHandler: defaultOnPress,
+              emitter: 'card',
+              event,
+            });
+          }
+        }}
+        style={[styles.container, container, stylesProp.container]}
+        testID='card-attachment'
+        {...additionalPressableProps}
+      >
+        {CardHeader && <CardHeader {...props} />}
+        {CardCover && <CardCover {...props} />}
+        {uri && !CardCover && (
           <ImageBackground
             ImageComponent={ImageComponent}
             imageStyle={styles.cardCover}
@@ -200,89 +146,60 @@ const CardWithContext = (props: CardPropsWithContext) => {
             source={{ uri: makeImageCompatibleUrl(uri) }}
             style={[styles.cardCover, stylesProp.cardCover, cover]}
           >
-            {isVideoCard ? (
-              <View
-                style={[styles.playButtonStyle, roundedView, { backgroundColor: static_white }]}
-              >
-                <Play height={height} pathFill={static_black} width={width} />
-              </View>
-            ) : null}
+            {isVideoCard ? <VideoPlayIndicator size='lg' /> : null}
           </ImageBackground>
-          {author_name && (
-            <View style={[styles.authorNameMask, authorNameMask, stylesProp.authorNameMask]}>
-              <View
-                style={[
-                  styles.authorNameContainer,
-                  { backgroundColor: blue_alice },
-                  authorNameContainer,
-                  stylesProp.authorNameContainer,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.authorName,
-                    { color: accent_blue },
-                    authorName,
-                    stylesProp.authorName,
-                  ]}
-                >
-                  {author_name}
-                </Text>
-              </View>
-            </View>
-          )}
-        </View>
-      )}
-      {CardFooter ? (
-        <CardFooter {...props} />
-      ) : (
-        <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
-          <View
-            style={[
-              { backgroundColor: transparent },
-              !uri ? { borderLeftColor: accent_blue, ...noURI } : {},
-              authorNameFooterContainer,
-              stylesProp.authorNameFooterContainer,
-            ]}
-          >
-            {!uri && author_name && (
-              <Text
-                style={[
-                  styles.authorNameFooter,
-                  { color: accent_blue },
-                  authorNameFooter,
-                  stylesProp.authorNameFooter,
-                ]}
-              >
-                {author_name}
-              </Text>
-            )}
-            {title && (
-              <Text
-                numberOfLines={1}
-                style={[styles.title, { color: black }, titleStyle, stylesProp.title]}
-              >
+        )}
+        {CardFooter ? (
+          <CardFooter {...props} />
+        ) : (
+          <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
+            {title ? (
+              <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp.title]}>
                 {title}
               </Text>
-            )}
-            {text && (
+            ) : null}
+            {text ? (
               <Text
-                numberOfLines={3}
-                style={[styles.description, { color: black }, description, stylesProp.description]}
+                numberOfLines={2}
+                style={[styles.description, description, stylesProp.description]}
               >
                 {text}
               </Text>
-            )}
+            ) : null}
+            <View style={[styles.linkPreview, stylesProp.linkPreview]}>
+              <NewLink height={12} width={12} stroke={semantics.chatTextIncoming} />
+              <Text numberOfLines={1} style={[styles.linkPreviewText, stylesProp.linkPreviewText]}>
+                {og_scrape_url}
+              </Text>
+            </View>
           </View>
-        </View>
-      )}
-    </Pressable>
+        )}
+      </Pressable>
+    </View>
   );
 };
 
 const areEqual = (prevProps: CardPropsWithContext, nextProps: CardPropsWithContext) => {
-  const { myMessageTheme: prevMyMessageTheme } = prevProps;
-  const { myMessageTheme: nextMyMessageTheme } = nextProps;
+  const {
+    attachment: prevAttachment,
+    myMessageTheme: prevMyMessageTheme,
+    isAttachmentEqual,
+  } = prevProps;
+  const { attachment: nextAttachment, myMessageTheme: nextMyMessageTheme } = nextProps;
+  const attachmentEqual =
+    prevAttachment.image_url === nextAttachment.image_url &&
+    prevAttachment.thumb_url === nextAttachment.thumb_url &&
+    prevAttachment.type === nextAttachment.type &&
+    prevAttachment.og_scrape_url === nextAttachment.og_scrape_url &&
+    prevAttachment.text === nextAttachment.text &&
+    prevAttachment.title === nextAttachment.title;
+  if (!attachmentEqual) {
+    return false;
+  }
+
+  if (isAttachmentEqual) {
+    return isAttachmentEqual(prevAttachment, nextAttachment);
+  }
 
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
@@ -295,15 +212,16 @@ const areEqual = (prevProps: CardPropsWithContext, nextProps: CardPropsWithConte
 
 const MemoizedCard = React.memo(CardWithContext, areEqual) as typeof CardWithContext;
 
-export type CardProps = Attachment &
-  Partial<
-    Pick<ChatContextValue, 'ImageComponent'> &
-      Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'myMessageTheme'> &
-      Pick<
-        MessagesContextValue,
-        'additionalPressableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
-      >
-  >;
+export type CardProps = Partial<
+  Pick<ChatContextValue, 'ImageComponent'> &
+    Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'myMessageTheme'> &
+    Pick<
+      MessagesContextValue,
+      'additionalPressableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
+    >
+> & {
+  attachment: Attachment;
+};
 
 /**
  * UI component for card in attachments.
@@ -311,8 +229,14 @@ export type CardProps = Attachment &
 export const Card = (props: CardProps) => {
   const { ImageComponent } = useChatContext();
   const { message, onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
-  const { additionalPressableProps, CardCover, CardFooter, CardHeader, myMessageTheme } =
-    useMessagesContext();
+  const {
+    additionalPressableProps,
+    CardCover,
+    CardFooter,
+    CardHeader,
+    isAttachmentEqual,
+    myMessageTheme,
+  } = useMessagesContext();
 
   return (
     <MemoizedCard
@@ -324,6 +248,7 @@ export const Card = (props: CardProps) => {
         CardHeader,
         channelId: message.cid,
         ImageComponent,
+        isAttachmentEqual,
         messageId: message.id,
         myMessageTheme,
         onLongPress,
@@ -333,6 +258,67 @@ export const Card = (props: CardProps) => {
       }}
       {...props}
     />
+  );
+};
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const { isMyMessage } = useMessageContext();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        wrapper: {
+          paddingHorizontal: primitives.spacingXs,
+          paddingTop: primitives.spacingXs,
+        },
+        container: {
+          maxWidth: 256, // TODO: Fix this
+          borderRadius: primitives.radiusLg,
+          backgroundColor: isMyMessage
+            ? semantics.chatBgAttachmentOutgoing
+            : semantics.chatBgAttachmentIncoming,
+          overflow: 'hidden',
+        },
+        cardCover: {
+          alignItems: 'center',
+          justifyContent: 'center',
+          aspectRatio: 16 / 9,
+          alignSelf: 'stretch',
+        },
+        cardFooter: {
+          justifyContent: 'space-between',
+          gap: primitives.spacingXxs,
+          padding: primitives.spacingSm,
+        },
+        title: {
+          color: semantics.chatTextIncoming,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightTight,
+        },
+        description: {
+          color: semantics.chatTextIncoming,
+          fontSize: primitives.typographyFontSizeXs,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightTight,
+        },
+        linkPreview: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: primitives.spacingXxs,
+        },
+        linkPreviewText: {
+          color: semantics.chatTextIncoming,
+          fontSize: primitives.typographyFontSizeXs,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightTight,
+          flexShrink: 1,
+        },
+      }),
+    [isMyMessage, semantics],
   );
 };
 

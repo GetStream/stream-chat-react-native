@@ -687,6 +687,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const frozenMessage = useRef(message);
   const { active: overlayActive } = useIsOverlayActive(message.id);
 
+  const messageHasOnlySingleAttachment =
+    !message.text && !message.quoted_message && message.attachments?.length === 1;
+
   const messageContext = useCreateMessageContext({
     actionsEnabled,
     alignment,
@@ -708,6 +711,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     members,
     message: overlayActive ? frozenMessage.current : message,
     messageContentOrder,
+    messageHasOnlySingleAttachment,
     myMessageTheme: messagesContext.myMessageTheme,
     onLongPress: (payload) => {
       const onLongPressArgs = {

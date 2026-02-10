@@ -7,7 +7,7 @@ import { avatarSizes } from './constants';
 
 import { UserAvatar } from './UserAvatar';
 
-import { BadgeCount } from '../BadgeCount';
+import { BadgeCount } from '../Badge';
 
 export type AvatarStackProps = {
   avatarSize?: 'sm' | 'xs';

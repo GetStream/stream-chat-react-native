@@ -1,22 +1,22 @@
 import React, { RefObject, useEffect, useMemo } from 'react';
-import { I18nManager, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { I18nManager, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import {
+  isLocalVoiceRecordingAttachment,
   isVoiceRecordingAttachment,
   LocalMessage,
   AudioAttachment as StreamAudioAttachment,
   VoiceRecordingAttachment as StreamVoiceRecordingAttachment,
 } from 'stream-chat';
 
+import { PlayPauseButton } from './PlayPauseButton';
+
 import { useTheme } from '../../contexts';
 import { useStateStore } from '../../hooks';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
-import { Audio } from '../../icons';
-import { NewPause } from '../../icons/NewPause';
-import { NewPlay } from '../../icons/NewPlay';
 import {
   NativeHandlers,
   SoundReturnType,
@@ -25,10 +25,11 @@ import {
   VideoSeekResponse,
 } from '../../native';
 import { AudioPlayerState } from '../../state-store/audio-player';
+import { primitives } from '../../theme';
 import { AudioConfig } from '../../types/types';
-import { getTrimmedAttachmentTitle } from '../../utils/getTrimmedAttachmentTitle';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
+import { SpeedSettingsButton } from '../ui/SpeedSettingsButton';
 
 const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
 const ONE_SECOND_IN_MILLISECONDS = 1000;
@@ -47,8 +48,8 @@ export type AudioAttachmentType = AudioConfig &
 export type AudioAttachmentProps = {
   item: AudioAttachmentType;
   message?: LocalMessage;
-  titleMaxLength?: number;
   hideProgressBar?: boolean;
+  showTitle?: boolean;
   /**
    * If true, the speed settings button will be shown.
    */
@@ -59,7 +60,13 @@ export type AudioAttachmentProps = {
    */
   isPreview?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
-  maxAmplitudesCount?: number;
+  indicator?: React.ReactNode;
+  styles?: {
+    container?: StyleProp<ViewStyle>;
+    playPauseButton?: StyleProp<ViewStyle>;
+    speedSettingsButton?: StyleProp<ViewStyle>;
+    durationText?: StyleProp<TextStyle>;
+  };
 };
 
 const audioPlayerSelector = (state: AudioPlayerState) => ({
@@ -76,17 +83,18 @@ const audioPlayerSelector = (state: AudioPlayerState) => ({
  */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
   const soundRef = React.useRef<SoundReturnType | null>(null);
-
+  const styles = useStyles();
   const {
     hideProgressBar = false,
     item,
     message,
     showSpeedSettings = false,
+    showTitle = true,
     testID,
-    titleMaxLength,
     isPreview = false,
     containerStyle,
-    maxAmplitudesCount = 30,
+    styles: stylesProps,
+    indicator,
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
 
@@ -172,14 +180,10 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       audioAttachment: {
         container,
         leftContainer,
-        playPauseButton,
         progressControlContainer,
         progressDurationText,
         rightContainer,
-        speedChangeButton,
-        speedChangeButtonText,
       },
-      colors: { black, static_white, white },
       semantics,
       messageInput: {
         fileAttachmentUploadPreview: { filenameText },
@@ -200,84 +204,81 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   return (
     <View
       accessibilityLabel='audio-attachment-preview'
-      style={[
-        styles.container,
-        {
-          backgroundColor: white,
-          borderColor: semantics.borderCoreDefault,
-        },
-        container,
-        containerStyle,
-      ]}
+      style={[styles.container, container, containerStyle, stylesProps?.container]}
       testID={testID}
     >
       <View style={[styles.leftContainer, leftContainer]}>
-        <Pressable
+        <PlayPauseButton
+          isPlaying={isPlaying}
           accessibilityLabel='Play Pause Button'
           onPress={handlePlayPause}
-          style={[
-            styles.playPauseButton,
-            { backgroundColor: static_white, borderColor: semantics.borderCoreDefault },
-            playPauseButton,
-          ]}
-        >
-          {!isPlaying ? (
-            <NewPlay fill={semantics.textSecondary} height={20} width={20} />
-          ) : (
-            <NewPause fill={semantics.textSecondary} height={20} width={20} />
-          )}
-        </Pressable>
+          containerStyle={stylesProps?.playPauseButton}
+        />
       </View>
-      <View style={[styles.centerContainer]}>
-        <Text
-          accessibilityLabel='File Name'
-          numberOfLines={1}
-          style={[
-            styles.filenameText,
-            {
-              color: semantics.textPrimary,
-            },
-            I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
-            filenameText,
-          ]}
-        >
-          {isVoiceRecordingAttachment(item)
-            ? 'Voice Message'
-            : getTrimmedAttachmentTitle(item.title, titleMaxLength)}
-        </Text>
-        <View style={styles.audioInfo}>
+      <View
+        style={[
+          styles.centerContainer,
+          {
+            flexGrow: 1,
+            flexShrink: showTitle ? 1 : 0,
+          },
+        ]}
+      >
+        {showTitle ? (
           <Text
+            accessibilityLabel='File Name'
+            numberOfLines={1}
             style={[
-              styles.progressDurationText,
-              { color: isPlaying ? semantics.accentPrimary : semantics.textSecondary },
-              progressDurationText,
+              styles.filenameText,
+              I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
+              filenameText,
             ]}
           >
-            {progressDuration}
+            {isVoiceRecordingAttachment(item) || isLocalVoiceRecordingAttachment(item)
+              ? 'Voice Message'
+              : item.title}
           </Text>
-          {!hideProgressBar && (
-            <View style={[styles.progressControlContainer, progressControlContainer]}>
-              {item.waveform_data ? (
-                <WaveProgressBar
-                  amplitudesCount={maxAmplitudesCount}
-                  onEndDrag={dragEnd}
-                  onProgressDrag={dragProgress}
-                  onStartDrag={dragStart}
-                  progress={progress}
-                  waveformData={item.waveform_data}
-                />
-              ) : (
-                <ProgressControl
-                  filledColor={semantics.accentPrimary}
-                  onEndDrag={dragEnd}
-                  onStartDrag={dragStart}
-                  progress={progress}
-                  testID='progress-control'
-                />
-              )}
-            </View>
-          )}
-        </View>
+        ) : null}
+
+        {indicator ? (
+          indicator
+        ) : (
+          <View style={styles.audioInfo}>
+            <Text
+              style={[
+                styles.progressDurationText,
+                { color: isPlaying ? semantics.accentPrimary : semantics.textSecondary },
+                progressDurationText,
+                stylesProps?.durationText,
+              ]}
+            >
+              {progressDuration}
+            </Text>
+            {!hideProgressBar && (
+              <View style={[styles.progressControlContainer, progressControlContainer]}>
+                {item.waveform_data ? (
+                  <WaveProgressBar
+                    isPlaying={isPlaying}
+                    onEndDrag={dragEnd}
+                    onProgressDrag={dragProgress}
+                    onStartDrag={dragStart}
+                    progress={progress}
+                    waveformData={item.waveform_data}
+                  />
+                ) : (
+                  <ProgressControl
+                    isPlaying={isPlaying}
+                    filledColor={semantics.chatWaveformBarPlaying}
+                    onEndDrag={dragEnd}
+                    onStartDrag={dragStart}
+                    progress={progress}
+                    testID='progress-control'
+                  />
+                )}
+              </View>
+            )}
+          </View>
+        )}
         {NativeHandlers.Sound?.Player && (
           <NativeHandlers.Sound.Player
             onEnd={handleEnd}
@@ -292,93 +293,63 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           />
         )}
       </View>
-      {showSpeedSettings ? (
+      {showSpeedSettings && !indicator ? (
         <View style={[styles.rightContainer, rightContainer]}>
-          {!isPlaying ? (
-            <Audio fill={'#ffffff'} />
-          ) : (
-            <Pressable
-              onPress={onSpeedChangeHandler}
-              style={[
-                styles.speedChangeButton,
-                { backgroundColor: static_white, shadowColor: black },
-                speedChangeButton,
-              ]}
-            >
-              <Text
-                style={[styles.speedChangeButtonText, speedChangeButtonText]}
-              >{`x${currentPlaybackRate.toFixed(1)}`}</Text>
-            </Pressable>
-          )}
+          <SpeedSettingsButton
+            currentPlaybackRate={currentPlaybackRate}
+            onPress={onSpeedChangeHandler}
+            containerStyle={stylesProps?.speedSettingsButton}
+          />
         </View>
       ) : null}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  audioInfo: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  centerContainer: {
-    flexGrow: 1,
-  },
-  container: {
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    width: 224, // TODO: Not sure how to omit this
-    gap: 12,
-  },
-  filenameText: {
-    fontSize: 13,
-    fontWeight: '600',
-    lineHeight: 16,
-    marginBottom: 8,
-  },
-  leftContainer: {},
-  playPauseButton: {
-    alignItems: 'center',
-    borderRadius: 50,
-    justifyContent: 'center',
-    padding: 12,
-    borderWidth: 1,
-  },
-  progressControlContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  progressDurationText: {
-    fontSize: 12,
-    fontWeight: '400',
-    lineHeight: 16,
-    marginRight: 8,
-  },
-  rightContainer: {
-    marginLeft: 16,
-  },
-  speedChangeButton: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 50,
-    elevation: 4,
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    shadowOffset: {
-      height: 2,
-      width: 0,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-  },
-  speedChangeButtonText: {
-    fontSize: 12,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        padding: primitives.spacingSm,
+        gap: primitives.spacingXs,
+        minWidth: 256, // TODO: Fix this
+        borderColor: semantics.borderCoreDefault,
+        borderWidth: 1,
+      },
+      audioInfo: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXxs,
+      },
+      centerContainer: {
+        gap: primitives.spacingXxs,
+      },
+      filenameText: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeSm,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+      leftContainer: {
+        padding: primitives.spacingXxs,
+      },
+      progressControlContainer: {
+        flex: 1,
+      },
+      progressDurationText: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+      rightContainer: {},
+    });
+  }, [semantics]);
+};
 
 AudioAttachment.displayName = 'AudioAttachment{messageInput{audioAttachment}}';
