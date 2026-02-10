@@ -14,19 +14,18 @@ import Animated, {
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { type MessageComposerState, type TextComposerState, type UserResponse } from 'stream-chat';
+import { type UserResponse } from 'stream-chat';
 
-import { LinkPreviewList } from './components/LinkPreviewList';
-import { OutputButtons } from './components/OutputButtons';
+import { MicPositionProvider } from './contexts/MicPositionContext';
+import { MessageComposerLeadingView } from './MessageComposerLeadingView';
+import { MessageComposerTrailingView } from './MessageComposerTrailingView';
+import { MessageInputHeaderView } from './MessageInputHeaderView';
+import { MessageInputLeadingView } from './MessageInputLeadingView';
+import { MessageInputTrailingView } from './MessageInputTrailingView';
 
-import { useHasLinkPreviews } from './hooks/useLinkPreviews';
+import { audioRecorderSelector } from './utils/audioRecorderSelectors';
 
-import {
-  ChatContextValue,
-  useAttachmentManagerState,
-  useChatContext,
-  useOwnCapabilitiesContext,
-} from '../../contexts';
+import { ChatContextValue, useChatContext, useOwnCapabilitiesContext } from '../../contexts';
 import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
@@ -62,7 +61,6 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
-import { GiphyChip } from '../ui/GiphyChip';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
 const useStyles = () => {
@@ -191,7 +189,6 @@ type MessageInputPropsWithContext = Pick<
   Pick<MessageComposerAPIContextValue, 'clearEditingState'> &
   Pick<AudioRecorderManagerState, 'micLocked'> & {
     editing: boolean;
-    hasAttachments: boolean;
     isKeyboardVisible: boolean;
     TextInputComponent?: React.ComponentType<
       TextInputProps & {
@@ -201,16 +198,6 @@ type MessageInputPropsWithContext = Pick<
     isRecordingStateIdle?: boolean;
     recordingStatus?: string;
   };
-
-const textComposerStateSelector = (state: TextComposerState) => ({
-  command: state.command,
-  mentionedUsers: state.mentionedUsers,
-  suggestions: state.suggestions,
-});
-
-const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
-  quotedMessage: state.quotedMessage,
-});
 
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
@@ -226,7 +213,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     additionalTextInputProps,
     asyncMessagesLockDistance,
     asyncMessagesSlideToCancelDistance,
-    AttachmentUploadPreviewList,
     AudioRecorder,
     AudioRecordingInProgress,
     AudioRecordingLockIndicator,
@@ -237,15 +223,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     CreatePollContent,
     disableAttachmentPicker,
     editing,
-    hasAttachments,
     messageInputFloating,
     messageInputHeightStore,
     Input,
     inputBoxRef,
-    InputButtons,
     isKeyboardVisible,
     members,
-    Reply,
     threadList,
     sendMessage,
     showPollCreationDialog,
@@ -259,17 +242,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const styles = useStyles();
   const messageComposer = useMessageComposer();
-  const { clearEditingState } = useMessageComposerAPIContext();
-  const onDismissEditMessage = () => {
-    clearEditingState();
-  };
-  const { textComposer } = messageComposer;
-  const { command } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
 
   const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
-
-  const hasLinkPreviews = useHasLinkPreviews();
 
   const {
     theme: {
@@ -277,15 +251,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       messageInput: {
         attachmentSelectionBar,
         container,
-        contentContainer,
         floatingWrapper,
         focusedInputBoxContainer,
         inputBoxContainer,
         inputBoxWrapper,
         inputContainer,
-        inputButtonsContainer,
         inputFloatingContainer,
-        outputButtonsContainer,
         suggestionsListContainer: { container: suggestionListContainer },
         wrapper,
       },
@@ -380,200 +351,154 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 
   const BOTTOM_OFFSET = isKeyboardVisible ? 16 : bottom ? bottom : 16;
 
+  const micPositionContextValue = useMemo(
+    () => ({ micPositionX, micPositionY }),
+    [micPositionX, micPositionY],
+  );
+
   return (
-    <>
-      <Animated.View
-        layout={LinearTransition.duration(200)}
-        onLayout={({
-          nativeEvent: {
-            layout: { height: newHeight },
-          },
-        }) =>
-          messageInputHeightStore.setHeight(
-            messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
-          )
-        } // BOTTOM OFFSET is the position of the input from the bottom of the screen
-        style={
-          messageInputFloating
-            ? [styles.wrapper, styles.floatingWrapper, { bottom: BOTTOM_OFFSET }, floatingWrapper]
-            : [
-                styles.wrapper,
-                {
-                  borderTopWidth: 1,
-                  backgroundColor: semantics.composerBg,
-                  borderColor: semantics.borderCoreDefault,
-                  paddingBottom: BOTTOM_OFFSET,
-                },
-                wrapper,
-              ]
-        }
-      >
-        {Input ? (
-          <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
-        ) : (
-          <View style={[styles.container, container]}>
-            {isRecordingStateIdle ? (
+    <MicPositionProvider value={micPositionContextValue}>
+      <>
+        <Animated.View
+          layout={LinearTransition.duration(200)}
+          onLayout={({
+            nativeEvent: {
+              layout: { height: newHeight },
+            },
+          }) =>
+            messageInputHeightStore.setHeight(
+              messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
+            )
+          } // BOTTOM OFFSET is the position of the input from the bottom of the screen
+          style={
+            messageInputFloating
+              ? [styles.wrapper, styles.floatingWrapper, { bottom: BOTTOM_OFFSET }, floatingWrapper]
+              : [
+                  styles.wrapper,
+                  {
+                    borderTopWidth: 1,
+                    backgroundColor: semantics.composerBg,
+                    borderColor: semantics.borderCoreDefault,
+                    paddingBottom: BOTTOM_OFFSET,
+                  },
+                  wrapper,
+                ]
+          }
+        >
+          {Input ? (
+            <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
+          ) : (
+            <View style={[styles.container, container]}>
+              <MessageComposerLeadingView />
               <Animated.View
                 layout={LinearTransition.duration(200)}
                 style={[
-                  styles.inputButtonsContainer,
-                  messageInputFloating ? styles.shadow : null,
-                  inputButtonsContainer,
+                  styles.inputBoxWrapper,
+                  messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
+                  inputBoxWrapper,
+                  isFocused ? focusedInputBoxContainer : null,
                 ]}
               >
-                {InputButtons && <InputButtons />}
-              </Animated.View>
-            ) : null}
-            <Animated.View
-              layout={LinearTransition.duration(200)}
-              style={[
-                styles.inputBoxWrapper,
-                messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
-                inputBoxWrapper,
-                isFocused ? focusedInputBoxContainer : null,
-              ]}
-            >
-              <View style={[styles.inputBoxContainer, inputBoxContainer]}>
-                {recordingStatus === 'stopped' ? (
-                  <AudioRecordingPreview />
-                ) : micLocked ? (
-                  <AudioRecordingInProgress />
-                ) : null}
-                {isRecordingStateIdle ? (
-                  <Animated.View
-                    layout={LinearTransition.duration(200)}
-                    style={[
-                      styles.contentContainer,
-                      {
-                        paddingTop:
-                          hasAttachments || quotedMessage || editing || hasLinkPreviews
-                            ? primitives.spacingXs
-                            : 0,
-                      },
-                      contentContainer,
-                    ]}
-                  >
-                    {editing ? (
-                      <Animated.View
-                        entering={FadeIn.duration(200)}
-                        exiting={FadeOut.duration(200)}
-                      >
-                        <Reply
-                          mode='edit'
-                          onDismiss={onDismissEditMessage}
-                          quotedMessage={messageComposer.editedMessage}
-                        />
-                      </Animated.View>
-                    ) : null}
-                    {quotedMessage ? (
-                      <Animated.View
-                        entering={FadeIn.duration(200)}
-                        exiting={FadeOut.duration(200)}
-                      >
-                        <Reply mode='reply' />
-                      </Animated.View>
-                    ) : null}
-                    <AttachmentUploadPreviewList />
-                    <LinkPreviewList />
-                  </Animated.View>
-                ) : null}
-
-                <Animated.View
-                  style={[styles.inputContainer, inputContainer]}
-                  layout={LinearTransition.duration(200)}
-                >
-                  {!isRecordingStateIdle ? (
-                    <AudioRecorder slideToCancelStyle={slideToCancelAnimatedStyle} />
-                  ) : (
-                    <>
-                      {command ? (
-                        <View style={styles.giphyContainer}>
-                          <GiphyChip />
-                        </View>
-                      ) : null}
-
-                      <AutoCompleteInput
-                        TextInputComponent={TextInputComponent}
-                        {...additionalTextInputProps}
-                      />
-                    </>
-                  )}
-
-                  {(recordingStatus === 'idle' || recordingStatus === 'recording') && !micLocked ? (
-                    <View style={[styles.outputButtonsContainer, outputButtonsContainer]}>
-                      <OutputButtons micPositionX={micPositionX} micPositionY={micPositionY} />
-                    </View>
+                <View style={[styles.inputBoxContainer, inputBoxContainer]}>
+                  {recordingStatus === 'stopped' ? (
+                    <AudioRecordingPreview />
+                  ) : micLocked ? (
+                    <AudioRecordingInProgress />
                   ) : null}
-                </Animated.View>
-              </View>
-            </Animated.View>
+
+                  <MessageInputHeaderView />
+
+                  <Animated.View
+                    style={[styles.inputContainer, inputContainer]}
+                    layout={LinearTransition.duration(200)}
+                  >
+                    {!isRecordingStateIdle ? (
+                      <AudioRecorder slideToCancelStyle={slideToCancelAnimatedStyle} />
+                    ) : (
+                      <>
+                        <MessageInputLeadingView />
+
+                        <AutoCompleteInput
+                          TextInputComponent={TextInputComponent}
+                          {...additionalTextInputProps}
+                        />
+                      </>
+                    )}
+
+                    <MessageInputTrailingView />
+                  </Animated.View>
+                </View>
+              </Animated.View>
+            </View>
+          )}
+          <ShowThreadMessageInChannelButton threadList={threadList} />
+        </Animated.View>
+
+        {!isRecordingStateIdle ? (
+          <View
+            style={[
+              styles.audioLockIndicatorWrapper,
+              {
+                bottom: messageInputFloating ? 0 : 16,
+              },
+            ]}
+          >
+            <AudioRecordingLockIndicator
+              messageInputHeight={height}
+              micLocked={micLocked}
+              style={lockIndicatorAnimatedStyle}
+            />
           </View>
+        ) : (
+          <MessageComposerTrailingView />
         )}
-        <ShowThreadMessageInChannelButton threadList={threadList} />
-      </Animated.View>
 
-      {!isRecordingStateIdle ? (
-        <View
-          style={[
-            styles.audioLockIndicatorWrapper,
-            {
-              bottom: messageInputFloating ? 0 : 16,
-            },
-          ]}
-        >
-          <AudioRecordingLockIndicator
-            messageInputHeight={height}
-            micLocked={micLocked}
-            style={lockIndicatorAnimatedStyle}
-          />
-        </View>
-      ) : null}
-
-      <Animated.View
-        entering={FadeIn.duration(200)}
-        exiting={FadeOut.duration(200)}
-        layout={LinearTransition.duration(200)}
-        style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
-      >
-        <AutoCompleteSuggestionList />
-      </Animated.View>
-      {!disableAttachmentPicker && selectedPicker ? (
         <Animated.View
           entering={FadeIn.duration(200)}
           exiting={FadeOut.duration(200)}
-          style={[
-            {
-              backgroundColor: semantics.composerBg,
-              height:
-                attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
-            },
-            attachmentSelectionBar,
-          ]}
+          layout={LinearTransition.duration(200)}
+          style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
         >
-          <AttachmentPickerSelectionBar />
+          <AutoCompleteSuggestionList />
         </Animated.View>
-      ) : null}
-
-      {showPollCreationDialog ? (
-        <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-          <Modal
-            animationType='slide'
-            onRequestClose={closePollCreationDialog}
-            visible={showPollCreationDialog}
+        {!disableAttachmentPicker && selectedPicker ? (
+          <Animated.View
+            entering={FadeIn.duration(200)}
+            exiting={FadeOut.duration(200)}
+            style={[
+              {
+                backgroundColor: semantics.composerBg,
+                height:
+                  attachmentPickerBottomSheetHeight + attachmentSelectionBarHeight - bottomInset,
+              },
+              attachmentSelectionBar,
+            ]}
           >
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <SafeAreaViewWrapper style={{ flex: 1 }}>
-                <CreatePoll
-                  closePollCreationDialog={closePollCreationDialog}
-                  CreatePollContent={CreatePollContent}
-                  sendMessage={sendMessage}
-                />
-              </SafeAreaViewWrapper>
-            </GestureHandlerRootView>
-          </Modal>
-        </View>
-      ) : null}
-    </>
+            <AttachmentPickerSelectionBar />
+          </Animated.View>
+        ) : null}
+
+        {showPollCreationDialog ? (
+          <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+            <Modal
+              animationType='slide'
+              onRequestClose={closePollCreationDialog}
+              visible={showPollCreationDialog}
+            >
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <SafeAreaViewWrapper style={{ flex: 1 }}>
+                  <CreatePoll
+                    closePollCreationDialog={closePollCreationDialog}
+                    CreatePollContent={CreatePollContent}
+                    sendMessage={sendMessage}
+                  />
+                </SafeAreaViewWrapper>
+              </GestureHandlerRootView>
+            </Modal>
+          </View>
+        ) : null}
+      </>
+    </MicPositionProvider>
   );
 };
 
@@ -590,7 +515,6 @@ const areEqual = (
     channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
     editing: prevEditing,
-    hasAttachments: prevHasAttachments,
     isKeyboardVisible: prevIsKeyboardVisible,
     isOnline: prevIsOnline,
     openPollCreationDialog: prevOpenPollCreationDialog,
@@ -613,7 +537,6 @@ const areEqual = (
     editing: nextEditing,
     isKeyboardVisible: nextIsKeyboardVisible,
     isOnline: nextIsOnline,
-    hasAttachments: nextHasAttachments,
     openPollCreationDialog: nextOpenPollCreationDialog,
     selectedPicker: nextSelectedPicker,
     showPollCreationDialog: nextShowPollCreationDialog,
@@ -676,11 +599,6 @@ const areEqual = (
     return false;
   }
 
-  const hasAttachmentsEqual = prevHasAttachments === nextHasAttachments;
-  if (!hasAttachmentsEqual) {
-    return false;
-  }
-
   const isKeyboardVisibleEqual = prevIsKeyboardVisible === nextIsKeyboardVisible;
   if (!isKeyboardVisibleEqual) {
     return false;
@@ -725,12 +643,6 @@ const MemoizedMessageInput = React.memo(
 ) as typeof MessageInputWithContext;
 
 export type MessageInputProps = Partial<MessageInputPropsWithContext>;
-
-const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
-  micLocked: state.micLocked,
-  isRecordingStateIdle: state.status === 'idle',
-  recordingStatus: state.status,
-});
 
 /**
  * UI Component for message input
@@ -798,7 +710,6 @@ export const MessageInput = (props: MessageInputProps) => {
   const { clearEditingState } = useMessageComposerAPIContext();
 
   const { Reply } = useMessagesContext();
-  const { attachments } = useAttachmentManagerState();
   const isKeyboardVisible = useKeyboardVisibility();
 
   const { micLocked, isRecordingStateIdle, recordingStatus } = useStateStore(
@@ -854,7 +765,6 @@ export const MessageInput = (props: MessageInputProps) => {
         disableAttachmentPicker,
         editing,
         FileSelectorIcon,
-        hasAttachments: attachments.length > 0,
         ImageSelectorIcon,
         Input,
         inputBoxRef,
