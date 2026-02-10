@@ -4,21 +4,22 @@ import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 'stream-chat';
 
-import { useAttachmentPickerContext } from '../../../contexts';
-import { useAttachmentManagerState } from '../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
-import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useViewport } from '../../../hooks/useViewport';
-import { Recorder } from '../../../icons';
-import { NewPlus } from '../../../icons/NewPlus';
-import { NativeHandlers } from '../../../native';
-import { primitives } from '../../../theme';
-import type { File } from '../../../types/types';
-import { getDurationLabelFromDuration } from '../../../utils/utils';
-import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
-import { isIosLimited, PhotoContentItemType } from '../AttachmentPicker';
+import { isIosLimited, PhotoContentItemType } from './AttachmentMediaPicker';
+
+import { useAttachmentPickerContext } from '../../../../contexts';
+import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
+import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useViewport } from '../../../../hooks/useViewport';
+import { Recorder } from '../../../../icons';
+import { NewPlus } from '../../../../icons/NewPlus';
+import { NativeHandlers } from '../../../../native';
+import { primitives } from '../../../../theme';
+import type { File } from '../../../../types/types';
+import { getDurationLabelFromDuration } from '../../../../utils/utils';
+import { BottomSheetTouchableOpacity } from '../../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
 
 type AttachmentPickerItemType = {
   asset: File;

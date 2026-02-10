@@ -3,6 +3,9 @@ import React from 'react';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Picture } from '../../../icons';
 
+/**
+ * @deprecated
+ */
 export const AttachmentPickerErrorImage = () => {
   const {
     theme: { semantics },

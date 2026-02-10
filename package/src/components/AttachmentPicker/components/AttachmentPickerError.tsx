@@ -40,6 +40,9 @@ export type AttachmentPickerErrorProps = {
   attachmentPickerErrorText?: string;
 };
 
+/**
+ * @deprecated
+ */
 export const AttachmentPickerError = (props: AttachmentPickerErrorProps) => {
   const {
     attachmentPickerBottomSheetHeight,
@@ -51,7 +54,6 @@ export const AttachmentPickerError = (props: AttachmentPickerErrorProps) => {
 
   const {
     theme: {
-      attachmentPicker: { errorContainer, errorText },
       colors: { grey },
     },
   } = useTheme();
@@ -76,12 +78,11 @@ export const AttachmentPickerError = (props: AttachmentPickerErrorProps) => {
         {
           height: attachmentPickerBottomSheetHeight,
         },
-        errorContainer,
       ]}
     >
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <AttachmentPickerErrorImage />
-        <Text style={[styles.errorText, { color: grey }, errorText]}>
+        <Text style={[styles.errorText, { color: grey }]}>
           {attachmentPickerErrorText || t('You have not granted access to the photo library.')}
         </Text>
       </View>

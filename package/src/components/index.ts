@@ -13,6 +13,7 @@ export * from './Attachment/utils/buildGallery/buildGallery';
 
 export * from './AttachmentPicker/AttachmentPicker';
 export * from './AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
+export * from './AttachmentPicker/components/AttachmentPickerContent';
 export * from './AttachmentPicker/components/AttachmentPickerError';
 export * from './AttachmentPicker/components/AttachmentPickerErrorImage';
 export * from './AttachmentPicker/components/AttachmentPickerSelectionBar';
