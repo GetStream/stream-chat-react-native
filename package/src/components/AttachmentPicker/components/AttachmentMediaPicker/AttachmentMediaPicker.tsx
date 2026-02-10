@@ -12,7 +12,7 @@ import { NativeHandlers } from '../../../../native';
 import type { File } from '../../../../types/types';
 import { BottomSheetFlatList } from '../../../BottomSheetCompatibility/BottomSheetFlatList';
 import {
-  AttachmentPickerContent,
+  AttachmentPickerContentProps,
   AttachmentPickerGenericContent,
 } from '../AttachmentPickerContent';
 
@@ -47,7 +47,7 @@ export const AttachmentMediaPickerIcon = () => {
   return <Picture height={22} stroke={semantics.textTertiary} width={22} />;
 };
 
-export const AttachmentMediaPicker = (props: AttachmentPickerContent) => {
+export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
   const { t } = useTranslationContext();
   const { numberOfAttachmentImagesToLoadPerCall, numberOfAttachmentPickerImageColumns } =
     useAttachmentPickerContext();
