@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Platform } from 'react-native';
+import { Platform, PressableProps } from 'react-native';
 
 import {
   useAttachmentPickerContext,
@@ -23,20 +23,21 @@ import { Button, ButtonProps } from '../../ui';
 
 export type AttachmentTypePickerButtonProps = Pick<ButtonProps, 'selected' | 'onPress'> & {
   Icon: ButtonProps['LeadingIcon'];
-};
+} & Pick<PressableProps, 'testID'>;
 
 const hitSlop = { bottom: 15, top: 15 };
 
 export const AttachmentTypePickerButton = ({
+  testID,
   selected,
   onPress,
   Icon,
 }: AttachmentTypePickerButtonProps) => {
   return (
     <Button
+      testID={testID}
       hitSlop={hitSlop}
       onPress={onPress}
-      testID='upload-photo-touchable'
       LeadingIcon={Icon}
       type={'ghost'}
       size={'lg'}
@@ -58,6 +59,7 @@ export const MediaPickerButton = () => {
 
   return hasImagePicker ? (
     <AttachmentTypePickerButton
+      testID='upload-photo-touchable'
       Icon={Picture}
       selected={selectedPicker === 'images'}
       onPress={setImagePicker}
@@ -84,6 +86,7 @@ export const CameraPickerButton = () => {
   return hasCameraPicker ? (
     <>
       <AttachmentTypePickerButton
+        testID='take-photo-touchable'
         Icon={Camera}
         selected={selectedPicker === 'camera-photo'}
         onPress={onCameraPickerPress}
@@ -112,6 +115,7 @@ export const FilePickerButton = () => {
 
   return hasFilePicker ? (
     <AttachmentTypePickerButton
+      testID='upload-file-touchable'
       Icon={FilePickerIcon}
       selected={selectedPicker === 'files'}
       onPress={openFilePicker}
@@ -136,6 +140,7 @@ export const PollPickerButton = () => {
 
   return !threadList && hasCreatePoll && ownCapabilities.sendPoll ? ( // do not allow poll creation in threads
     <AttachmentTypePickerButton
+      testID='create-poll-touchable'
       Icon={PollThumbnail}
       selected={selectedPicker === 'polls'}
       onPress={openPollCreationModal}
@@ -154,6 +159,7 @@ export const CommandsPickerButton = () => {
 
   return hasCommands ? (
     <AttachmentTypePickerButton
+      testID='commands-touchable'
       Icon={CommandsIcon}
       selected={selectedPicker === 'commands'}
       onPress={setCommandsPicker}

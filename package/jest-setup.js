@@ -40,6 +40,13 @@ jest.mock('react-native-reanimated', () => {
 });
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);
+
+const BottomSheetMock = ({ handleComponent, children }) => (
+  <View>
+    {handleComponent()}
+    {children}
+  </View>
+);
 jest.mock('@gorhom/bottom-sheet', () => {
   const react = require('react-native');
   return {
@@ -48,8 +55,9 @@ jest.mock('@gorhom/bottom-sheet', () => {
     BottomSheetModal: react.View,
     BottomSheetModalProvider: react.View,
     BottomSheetScrollView: react.ScrollView,
-    default: react.View,
+    default: BottomSheetMock,
     TouchableOpacity: react.View,
+    useBottomSheetSpringConfigs: jest.fn(() => ({})),
   };
 });
 jest.mock('@op-engineering/op-sqlite', () => {
