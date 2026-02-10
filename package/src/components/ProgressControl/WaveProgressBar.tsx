@@ -32,10 +32,6 @@ export type WaveProgressBarProps = {
    */
   amplitudesCount?: number;
   /**
-   * The color of the filled waveform
-   */
-  filledColor?: string;
-  /**
    * The function to be called when the user ends dragging the waveform
    */
   onEndDrag?: (progress: number) => void;
@@ -62,7 +58,6 @@ export const WaveProgressBar = React.memo(
     const {
       amplitudesCount = Math.max(20, Math.floor(width / (WAVEFORM_WIDTH + WAVEFORM_GAP))),
       isPlaying = false,
-      filledColor,
       onEndDrag,
       onProgressDrag,
       onStartDrag,
@@ -156,7 +151,7 @@ export const WaveProgressBar = React.memo(
                 {
                   backgroundColor:
                     index < currentWaveformProgress
-                      ? filledColor || semantics.chatWaveformBarPlaying
+                      ? semantics.chatWaveformBarPlaying
                       : semantics.chatWaveformBar,
                   height:
                     waveform * WAVE_MAX_HEIGHT > WAVE_MIN_HEIGHT

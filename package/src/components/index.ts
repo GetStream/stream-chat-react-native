@@ -140,7 +140,7 @@ export * from './MessageInput/components/AudioRecorder/AudioRecordingPreview';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 export * from './MessageInput/contexts/MicPositionContext';
 
-export * from './MessageInput/components/AttachmentPreview/AttachmentUnsupportedIndicator';
+export * from './MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 export * from './MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';

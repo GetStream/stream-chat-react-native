@@ -66,7 +66,7 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryFooterVid
 
   const {
     theme: {
-      colors: { accent_blue, black, static_black, static_white },
+      colors: { black, static_black, static_white },
       imageGallery: {
         videoControl: { durationTextStyle, progressDurationText, roundedView, videoContainer },
       },
@@ -97,7 +97,6 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryFooterVid
       <View style={styles.progressContainer}>
         <ProgressControl
           isPlaying={isPlaying}
-          filledColor={accent_blue}
           progress={progress}
           testID={'progress-control'}
           width={180}

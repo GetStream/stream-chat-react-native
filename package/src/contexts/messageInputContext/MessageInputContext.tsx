@@ -29,6 +29,9 @@ import {
   AutoCompleteSuggestionHeaderProps,
   AutoCompleteSuggestionItemProps,
   AutoCompleteSuggestionListProps,
+  FileUploadNotSupportedIndicatorProps,
+  FileUploadRetryIndicatorProps,
+  ImageUploadRetryIndicatorProps,
   PollContentProps,
   StopMessageStreamingButtonProps,
 } from '../../components';
@@ -247,6 +250,13 @@ export type InputMessageInputContextValue = {
   ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
   FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
   VideoAttachmentUploadPreview: React.ComponentType<VideoAttachmentUploadPreviewProps>;
+
+  FileUploadInProgressIndicator: React.ComponentType;
+  FileUploadRetryIndicator: React.ComponentType<FileUploadRetryIndicatorProps>;
+  FileUploadNotSupportedIndicator: React.ComponentType<FileUploadNotSupportedIndicatorProps>;
+  ImageUploadInProgressIndicator: React.ComponentType;
+  ImageUploadRetryIndicator: React.ComponentType<ImageUploadRetryIndicatorProps>;
+  ImageUploadNotSupportedIndicator: React.ComponentType;
 
   /**
    * Custom UI component to display the remaining cooldown a user will have to wait before

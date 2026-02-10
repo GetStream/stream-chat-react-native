@@ -6,14 +6,9 @@ import { LocalAudioAttachment, LocalFileAttachment, LocalVideoAttachment } from 
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
-import {
-  FileUploadNotSupportedIndicator,
-  FileUploadRetryIndicator,
-  FileUploadInProgressIndicator,
-} from './AttachmentUploadProgressIndicator';
-
 import { FilePreview } from '../../../../components/Attachment/FilePreview';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
@@ -32,6 +27,11 @@ export const FileAttachmentUploadPreview = ({
   removeAttachments,
 }: FileAttachmentUploadPreviewProps) => {
   const styles = useStyles();
+  const {
+    FileUploadInProgressIndicator,
+    FileUploadRetryIndicator,
+    FileUploadNotSupportedIndicator,
+  } = useMessageInputContext();
   const { enableOfflineSupport } = useChatContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
@@ -65,7 +65,14 @@ export const FileAttachmentUploadPreview = ({
       return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
     }
     return null;
-  }, [attachment.localMetadata, indicatorType, onRetryHandler]);
+  }, [
+    FileUploadInProgressIndicator,
+    FileUploadNotSupportedIndicator,
+    FileUploadRetryIndicator,
+    attachment.localMetadata,
+    indicatorType,
+    onRetryHandler,
+  ]);
 
   return (
     <View style={[styles.wrapper, wrapper]} testID={'file-attachment-upload-preview'}>

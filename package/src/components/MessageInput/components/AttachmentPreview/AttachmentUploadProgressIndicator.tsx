@@ -21,7 +21,11 @@ export const FileUploadInProgressIndicator = () => {
   );
 };
 
-export const FileUploadRetryIndicator = ({ onPress }: { onPress: () => void }) => {
+export type FileUploadRetryIndicatorProps = {
+  onPress: () => void;
+};
+
+export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorProps) => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -45,11 +49,13 @@ export const FileUploadRetryIndicator = ({ onPress }: { onPress: () => void }) =
   );
 };
 
+export type FileUploadNotSupportedIndicatorProps = {
+  localMetadata: LocalAttachmentUploadMetadata;
+};
+
 export const FileUploadNotSupportedIndicator = ({
   localMetadata,
-}: {
-  localMetadata: LocalAttachmentUploadMetadata;
-}) => {
+}: FileUploadNotSupportedIndicatorProps) => {
   const styles = useFileUploadNotSupportedStyles();
   const {
     theme: { semantics },
@@ -82,7 +88,11 @@ export const ImageUploadInProgressIndicator = () => {
   );
 };
 
-export const ImageUploadRetryIndicator = ({ onRetryHandler }: { onRetryHandler: () => void }) => {
+export type ImageUploadRetryIndicatorProps = {
+  onRetryHandler: () => void;
+};
+
+export const ImageUploadRetryIndicator = ({ onRetryHandler }: ImageUploadRetryIndicatorProps) => {
   const styles = useImageUploadRetryIndicatorStyles();
   const {
     theme: { semantics },

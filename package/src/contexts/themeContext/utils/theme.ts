@@ -832,7 +832,6 @@ export type Theme = {
   };
   progressControl: {
     container: ViewStyle;
-    filledColor: ColorValue;
     filledStyles: ViewStyle;
     thumb: ViewStyle;
   };
@@ -1649,7 +1648,6 @@ export const defaultTheme: Theme = {
   },
   progressControl: {
     container: {},
-    filledColor: '',
     filledStyles: {},
     thumb: {},
   },

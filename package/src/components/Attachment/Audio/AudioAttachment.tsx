@@ -271,7 +271,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                 ) : (
                   <ProgressControl
                     isPlaying={isPlaying}
-                    filledColor={semantics.chatWaveformBarPlaying}
                     onEndDrag={dragEnd}
                     onStartDrag={dragStart}
                     progress={progress}

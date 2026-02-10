@@ -174,6 +174,12 @@ import { ReactionListBottom as ReactionListBottomDefault } from '../Message/Mess
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
+import { FileUploadInProgressIndicator as FileUploadInProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { FileUploadRetryIndicator as FileUploadRetryIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { FileUploadNotSupportedIndicator as FileUploadNotSupportedIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { ImageUploadInProgressIndicator as ImageUploadInProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { ImageUploadRetryIndicator as ImageUploadRetryIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { ImageUploadNotSupportedIndicator as ImageUploadNotSupportedIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview as ImageAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
@@ -617,6 +623,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
+    FileUploadInProgressIndicator = FileUploadInProgressIndicatorDefault,
+    FileUploadRetryIndicator = FileUploadRetryIndicatorDefault,
+    FileUploadNotSupportedIndicator = FileUploadNotSupportedIndicatorDefault,
+    ImageUploadInProgressIndicator = ImageUploadInProgressIndicatorDefault,
+    ImageUploadRetryIndicator = ImageUploadRetryIndicatorDefault,
+    ImageUploadNotSupportedIndicator = ImageUploadNotSupportedIndicatorDefault,
     FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
@@ -1850,6 +1862,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     editMessage,
     FileAttachmentUploadPreview,
     FileSelectorIcon,
+    FileUploadInProgressIndicator,
+    FileUploadRetryIndicator,
+    FileUploadNotSupportedIndicator,
+    ImageUploadInProgressIndicator,
+    ImageUploadRetryIndicator,
+    ImageUploadNotSupportedIndicator,
     handleAttachButtonPress,
     hasCameraPicker,
     hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,

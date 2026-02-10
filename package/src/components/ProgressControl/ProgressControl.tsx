@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ColorValue, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -12,16 +12,13 @@ import Animated, {
 import { ProgressControlThumb, PROGRESS_THUMB_WIDTH } from './ProgressThumb';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 
 export type ProgressControlProps = {
   /**
    * If true, the underlying attachment is playing.
    */
   isPlaying: boolean;
-  /**
-   * The color of the filled progress bar
-   */
-  filledColor: ColorValue;
   /**
    * The progress of the progress bar in percentage
    */
@@ -47,21 +44,14 @@ export type ProgressControlProps = {
 const TRACK_HEIGHT = 3;
 
 export const ProgressControl = (props: ProgressControlProps) => {
-  const {
-    filledColor: filledColorFromProp,
-    isPlaying,
-    onEndDrag,
-    onStartDrag,
-    progress,
-    testID,
-  } = props;
+  const { isPlaying, onEndDrag, onStartDrag, progress, testID } = props;
+  const styles = useStyles();
   const [widthInNumbers, setWidthInNumbers] = useState<number>(0);
 
   const state = useSharedValue(progress);
   const {
     theme: {
-      progressControl: { container, filledColor: filledColorFromTheme, filledStyles, thumb },
-      semantics,
+      progressControl: { container, filledStyles, thumb },
     },
   } = useTheme();
 
@@ -95,8 +85,6 @@ export const ProgressControl = (props: ProgressControlProps) => {
     [onEndDrag, onStartDrag, state, testID, widthInNumbers],
   );
 
-  const filledColor = filledColorFromProp || filledColorFromTheme;
-
   const thumbStyles = useAnimatedStyle(
     () => ({
       transform: [
@@ -126,18 +114,9 @@ export const ProgressControl = (props: ProgressControlProps) => {
         onLayout={({ nativeEvent }) => {
           setWidthInNumbers(nativeEvent.layout.width);
         }}
-        style={[styles.container, { backgroundColor: semantics.chatWaveformBar }, container]}
+        style={[styles.container, container]}
       >
-        <Animated.View
-          style={[
-            styles.filledStyle,
-            animatedFilledStyles,
-            {
-              backgroundColor: filledColor || semantics.chatWaveformBarPlaying,
-            },
-            filledStyles,
-          ]}
-        />
+        <Animated.View style={[styles.filledStyle, animatedFilledStyles, filledStyles]} />
         <Animated.View style={[thumbStyles, thumb]}>
           {onEndDrag ? <ProgressControlThumb isPlaying={isPlaying} /> : null}
         </Animated.View>
@@ -146,17 +125,27 @@ export const ProgressControl = (props: ProgressControlProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 2,
-    height: TRACK_HEIGHT,
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  filledStyle: {
-    alignSelf: 'center',
-    borderRadius: 2,
-    height: TRACK_HEIGHT,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        borderRadius: primitives.radiusXxs,
+        height: TRACK_HEIGHT,
+        alignItems: 'center',
+        flexDirection: 'row',
+        backgroundColor: semantics.chatWaveformBar,
+      },
+      filledStyle: {
+        alignSelf: 'center',
+        borderRadius: 2,
+        height: TRACK_HEIGHT,
+        backgroundColor: semantics.chatWaveformBarPlaying,
+      },
+    });
+  }, [semantics.chatWaveformBar, semantics.chatWaveformBarPlaying]);
+};
+
 ProgressControl.displayName = 'ProgressControl';
