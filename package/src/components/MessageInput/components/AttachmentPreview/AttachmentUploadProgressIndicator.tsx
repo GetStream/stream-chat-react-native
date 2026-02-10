@@ -11,12 +11,21 @@ import { primitives } from '../../../../theme';
 
 export const FileUploadInProgressIndicator = () => {
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      messageInput: { fileUploadInProgressIndicator },
+    },
   } = useTheme();
 
   return (
-    <View style={styles.activityIndicatorContainer} testID='upload-progress-indicator'>
-      <ActivityIndicator color={semantics.accentPrimary} style={styles.activityIndicator} />
+    <View
+      style={[styles.activityIndicatorContainer, fileUploadInProgressIndicator.container]}
+      testID='upload-progress-indicator'
+    >
+      <ActivityIndicator
+        color={semantics.accentPrimary}
+        style={[styles.activityIndicator, fileUploadInProgressIndicator.indicator]}
+      />
     </View>
   );
 };
@@ -27,23 +36,37 @@ export type FileUploadRetryIndicatorProps = {
 
 export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorProps) => {
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      messageInput: { fileUploadRetryIndicator },
+    },
   } = useTheme();
   const styles = useFileUploadRetryStyles();
 
   return (
-    <View style={styles.container} testID='inline-retry-indicator'>
-      <View style={styles.networkErrorContainer}>
+    <View
+      style={[styles.container, fileUploadRetryIndicator.container]}
+      testID='inline-retry-indicator'
+    >
+      <View style={[styles.networkErrorContainer, fileUploadRetryIndicator.networkErrorContainer]}>
         <NewWarning
           height={16}
           fill={semantics.accentError}
           testID='retry-upload-progress-indicator'
           width={16}
         />
-        <Text>Network error</Text>
+        <Text style={[styles.networkErrorText, fileUploadRetryIndicator.networkErrorText]}>
+          Network error
+        </Text>
       </View>
-      <Pressable onPress={onPress} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
-        <Text style={styles.retryText}>Retry Upload</Text>
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          { opacity: pressed ? 0.8 : 1 },
+          fileUploadRetryIndicator.retryButton,
+        ]}
+      >
+        <Text style={[styles.retryText, fileUploadRetryIndicator.retryText]}>Retry Upload</Text>
       </Pressable>
     </View>
   );
@@ -58,30 +81,42 @@ export const FileUploadNotSupportedIndicator = ({
 }: FileUploadNotSupportedIndicatorProps) => {
   const styles = useFileUploadNotSupportedStyles();
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      messageInput: { fileUploadNotSupportedIndicator },
+    },
   } = useTheme();
 
   const reason = localMetadata.uploadPermissionCheck?.reason === 'size_limit';
   const message = reason ? 'File too large' : 'Not supported';
 
   return (
-    <View style={styles.container} testID='inline-not-supported-indicator'>
+    <View
+      style={[styles.container, fileUploadNotSupportedIndicator.container]}
+      testID='inline-not-supported-indicator'
+    >
       <NewExclamationCircle height={16} width={16} fill={semantics.accentError} />
-      <Text style={styles.notSupportedText}>{message}</Text>
+      <Text style={[styles.notSupportedText, fileUploadNotSupportedIndicator.notSupportedText]}>
+        {message}
+      </Text>
     </View>
   );
 };
 
 export const ImageUploadInProgressIndicator = () => {
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      messageInput: { imageUploadInProgressIndicator },
+    },
   } = useTheme();
   const styles = useImageUploadInProgressIndicatorStyles();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, imageUploadInProgressIndicator.container]}>
       <ActivityIndicator
         size='small'
         color={semantics.accentPrimary}
+        style={imageUploadInProgressIndicator.indicator}
         testID='upload-progress-indicator'
       />
     </View>
@@ -95,11 +130,14 @@ export type ImageUploadRetryIndicatorProps = {
 export const ImageUploadRetryIndicator = ({ onRetryHandler }: ImageUploadRetryIndicatorProps) => {
   const styles = useImageUploadRetryIndicatorStyles();
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      messageInput: { imageUploadRetryIndicator },
+    },
   } = useTheme();
   return (
     <Pressable
-      style={styles.container}
+      style={[styles.container, imageUploadRetryIndicator.container]}
       onPress={onRetryHandler}
       testID='retry-upload-progress-indicator'
     >
@@ -111,10 +149,16 @@ export const ImageUploadRetryIndicator = ({ onRetryHandler }: ImageUploadRetryIn
 export const ImageUploadNotSupportedIndicator = () => {
   const styles = useImageUploadNotSupportedIndicatorStyles();
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      messageInput: { imageUploadNotSupportedIndicator },
+    },
   } = useTheme();
   return (
-    <View style={styles.container} testID='inline-not-supported-indicator'>
+    <View
+      style={[styles.container, imageUploadNotSupportedIndicator.container]}
+      testID='inline-not-supported-indicator'
+    >
       <NewExclamationCircle height={20} width={20} fill={semantics.accentError} />
     </View>
   );

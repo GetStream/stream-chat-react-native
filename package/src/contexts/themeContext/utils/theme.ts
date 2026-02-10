@@ -277,11 +277,6 @@ export type Theme = {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
-    attachmentUnsupportedIndicator: {
-      container: ViewStyle;
-      warningIcon: IconProps;
-      text: TextStyle;
-    };
     attachmentUploadPreviewList: {
       flatList: ViewStyle;
       itemSeparator: ViewStyle;
@@ -340,6 +335,31 @@ export type Theme = {
       fileTextContainer: ViewStyle;
       uploadProgressOverlay: ViewStyle;
       wrapper: ViewStyle;
+    };
+    fileUploadInProgressIndicator: {
+      container: ViewStyle;
+      indicator: ViewStyle;
+    };
+    fileUploadRetryIndicator: {
+      container: ViewStyle;
+      networkErrorContainer: ViewStyle;
+      networkErrorText: TextStyle;
+      retryButton: ViewStyle;
+      retryText: TextStyle;
+    };
+    fileUploadNotSupportedIndicator: {
+      container: ViewStyle;
+      notSupportedText: TextStyle;
+    };
+    imageUploadInProgressIndicator: {
+      container: ViewStyle;
+      indicator: ViewStyle;
+    };
+    imageUploadRetryIndicator: {
+      container: ViewStyle;
+    };
+    imageUploadNotSupportedIndicator: {
+      container: ViewStyle;
     };
     fileUploadPreview: {
       flatList: ViewStyle;
@@ -407,11 +427,6 @@ export type Theme = {
     suggestionsListContainer: {
       container: ViewStyle;
       flatlist: ViewStyle;
-    };
-    uploadProgressIndicator: {
-      container: ViewStyle;
-      indicatorColor: string;
-      overlay: ViewStyle;
     };
     videoAttachmentUploadPreview: {
       durationContainer: ViewStyle;
@@ -1096,11 +1111,6 @@ export const defaultTheme: Theme = {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},
-    attachmentUnsupportedIndicator: {
-      container: {},
-      text: {},
-      warningIcon: {},
-    },
     attachmentUploadPreviewList: {
       flatList: {},
       itemSeparator: {},
@@ -1149,6 +1159,31 @@ export const defaultTheme: Theme = {
       fileTextContainer: {},
       uploadProgressOverlay: {},
       wrapper: {},
+    },
+    fileUploadInProgressIndicator: {
+      container: {},
+      indicator: {},
+    },
+    fileUploadRetryIndicator: {
+      container: {},
+      networkErrorContainer: {},
+      networkErrorText: {},
+      retryButton: {},
+      retryText: {},
+    },
+    fileUploadNotSupportedIndicator: {
+      container: {},
+      notSupportedText: {},
+    },
+    imageUploadInProgressIndicator: {
+      container: {},
+      indicator: {},
+    },
+    imageUploadRetryIndicator: {
+      container: {},
+    },
+    imageUploadNotSupportedIndicator: {
+      container: {},
     },
     fileUploadPreview: {
       flatList: {},
@@ -1220,11 +1255,6 @@ export const defaultTheme: Theme = {
     suggestionsListContainer: {
       container: {},
       flatlist: {},
-    },
-    uploadProgressIndicator: {
-      container: {},
-      indicatorColor: '',
-      overlay: {},
     },
     wrapper: {},
     linkPreviewList: {
