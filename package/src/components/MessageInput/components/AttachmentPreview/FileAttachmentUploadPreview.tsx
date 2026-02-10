@@ -7,9 +7,9 @@ import { LocalAudioAttachment, LocalFileAttachment, LocalVideoAttachment } from 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
 import {
-  InlineNotSupportedIndicator,
-  InlineRetryIndicator,
-  InProgressIndicator,
+  FileUploadNotSupportedIndicator,
+  FileUploadRetryIndicator,
+  FileUploadInProgressIndicator,
 } from './AttachmentUploadProgressIndicator';
 
 import { FilePreview } from '../../../../components/Attachment/FilePreview';
@@ -56,13 +56,13 @@ export const FileAttachmentUploadPreview = ({
 
   const renderIndicator = useMemo(() => {
     if (indicatorType === ProgressIndicatorTypes.IN_PROGRESS) {
-      return <InProgressIndicator />;
+      return <FileUploadInProgressIndicator />;
     }
     if (indicatorType === ProgressIndicatorTypes.RETRY) {
-      return <InlineRetryIndicator onPress={onRetryHandler} />;
+      return <FileUploadRetryIndicator onPress={onRetryHandler} />;
     }
     if (indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED) {
-      return <InlineNotSupportedIndicator localMetadata={attachment.localMetadata} />;
+      return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
     }
     return null;
   }, [attachment.localMetadata, indicatorType, onRetryHandler]);
