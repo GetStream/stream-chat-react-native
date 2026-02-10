@@ -92,7 +92,6 @@ export type LocalMessageInputContext = {
    * Function for taking a photo and uploading it
    */
   takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
-  toggleAttachmentPicker: () => void;
   uploadNewFile: (file: File) => Promise<void>;
   audioRecorderManager: AudioRecorderManager;
   startVoiceRecording: () => Promise<boolean | undefined>;
@@ -203,6 +202,7 @@ export type InputMessageInputContextValue = {
    * Height of the attachment selection bar displayed on the attachment picker.
    * @type number
    * @default 52
+   * @deprecated Please remove this in scope of V9
    */
   attachmentSelectionBarHeight: number;
 
@@ -369,7 +369,6 @@ export type InputMessageInputContextValue = {
    * - closeAttachmentPicker
    * - openAttachmentPicker
    * - openCommandsPicker
-   * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps>;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
@@ -566,17 +565,6 @@ export const MessageInputProvider = ({
     closePicker();
   }, [closePicker, attachmentPickerStore]);
 
-  /**
-   * Function to toggle the attachment picker if the MediaLibrary is installed.
-   */
-  const toggleAttachmentPicker = useCallback(() => {
-    if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
-      closeAttachmentPicker();
-    } else {
-      openAttachmentPicker();
-    }
-  }, [closeAttachmentPicker, openAttachmentPicker, attachmentPickerStore]);
-
   const sendMessage = useStableCallback(async () => {
     if (inputBoxRef.current) {
       inputBoxRef.current.clear();
@@ -686,7 +674,6 @@ export const MessageInputProvider = ({
     setInputBoxRef,
     takeAndUploadImage,
     thread,
-    toggleAttachmentPicker,
     uploadNewFile,
     ...value,
     closePollCreationDialog,

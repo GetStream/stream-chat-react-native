@@ -9,23 +9,18 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { useAttachmentPickerState } from '../../../../hooks/useAttachmentPickerState';
+import { useStableCallback } from '../../../../hooks';
 import { NewPlus } from '../../../../icons/NewPlus';
 import { Button } from '../../../ui/';
 
-type AttachButtonPropsWithContext = Pick<
-  MessageInputContextValue,
-  'handleAttachButtonPress' | 'toggleAttachmentPicker'
-> &
+type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttachButtonPress'> &
   Pick<AttachmentPickerContextValue, 'disableAttachmentPicker'> & {
     disabled?: boolean;
     /** Function that opens attachment options bottom sheet */
     handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
-  };
+  } & { toggleAttachmentPicker: () => void };
 
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
-  // const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
-  // const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
   const {
     disableAttachmentPicker,
     disabled = false,
@@ -33,27 +28,6 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
     handleOnPress,
     toggleAttachmentPicker,
   } = props;
-  const { selectedPicker } = useAttachmentPickerState();
-
-  // const onAttachButtonLayout = (event: LayoutChangeEvent) => {
-  //   const layout = event.nativeEvent.layout;
-  //   setAttachButtonLayoutRectangle((prev) => {
-  //     if (
-  //       prev &&
-  //       prev.width === layout.width &&
-  //       prev.height === layout.height &&
-  //       prev.x === layout.x &&
-  //       prev.y === layout.y
-  //     ) {
-  //       return prev;
-  //     }
-  //     return layout;
-  //   });
-  // };
-
-  // const attachButtonHandler = () => {
-  //   setShowAttachButtonPicker((prevShowAttachButtonPicker) => !prevShowAttachButtonPicker);
-  // };
 
   const onPressHandler = () => {
     if (disabled) {
@@ -69,32 +43,20 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
     }
     if (!disableAttachmentPicker) {
       toggleAttachmentPicker();
-    } else {
-      // attachButtonHandler();
     }
   };
 
   return (
-    <>
-      <Button
-        variant='secondary'
-        type='outline'
-        size='lg'
-        iconOnly
-        LeadingIcon={NewPlus}
-        // onLayout={onAttachButtonLayout}
-        onPress={onPressHandler}
-        selected={selectedPicker !== undefined}
-        disabled={disabled}
-        testID='attach-button'
-      />
-      {/*{showAttachButtonPicker ? (*/}
-      {/*  <NativeAttachmentPicker*/}
-      {/*    attachButtonLayoutRectangle={attachButtonLayoutRectangle}*/}
-      {/*    onRequestedClose={() => setShowAttachButtonPicker(false)}*/}
-      {/*  />*/}
-      {/*) : null}*/}
-    </>
+    <Button
+      variant='secondary'
+      type='outline'
+      size='lg'
+      iconOnly
+      LeadingIcon={NewPlus}
+      onPress={onPressHandler}
+      disabled={disabled}
+      testID='attach-button'
+    />
   );
 };
 
@@ -125,7 +87,16 @@ export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
  */
 export const AttachButton = (props: AttachButtonProps) => {
   const { disableAttachmentPicker } = useAttachmentPickerContext();
-  const { handleAttachButtonPress, toggleAttachmentPicker } = useMessageInputContext();
+  const { inputBoxRef, handleAttachButtonPress, openAttachmentPicker } = useMessageInputContext();
+  const { attachmentPickerStore } = useAttachmentPickerContext();
+
+  const toggleAttachmentPicker = useStableCallback(() => {
+    if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
+      inputBoxRef.current?.focus();
+    } else {
+      openAttachmentPicker();
+    }
+  });
 
   return (
     <MemoizedAttachButton

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -9,31 +9,38 @@ import {
   PollPickerButton,
 } from './AttachmentTypePickerButton';
 
-import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../theme';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 6,
-  },
-  icon: {
-    marginHorizontal: 12,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          backgroundColor: semantics.composerBg,
+          paddingBottom: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingMd,
+          alignItems: 'center',
+          flexDirection: 'row',
+        },
+      }),
+    [semantics.composerBg],
+  );
+};
 
 export const AttachmentPickerSelectionBar = () => {
-  const { attachmentSelectionBarHeight } = useMessageInputContext();
-
   const {
     theme: {
       attachmentSelectionBar: { container },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, container, { height: attachmentSelectionBarHeight }]}>
+    <View style={[styles.container, container]}>
       <MediaPickerButton />
       <CameraPickerButton />
       <FilePickerButton />

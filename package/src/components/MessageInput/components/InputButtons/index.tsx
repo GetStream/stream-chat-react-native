@@ -22,12 +22,7 @@ export type InputButtonsProps = Partial<InputButtonsWithContextProps>;
 
 export type InputButtonsWithContextProps = Pick<
   MessageInputContextValue,
-  | 'AttachButton'
-  | 'hasCameraPicker'
-  | 'hasCommands'
-  | 'hasFilePicker'
-  | 'hasImagePicker'
-  | 'toggleAttachmentPicker'
+  'AttachButton' | 'hasCameraPicker' | 'hasCommands' | 'hasFilePicker' | 'hasImagePicker'
 > &
   Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
@@ -112,14 +107,8 @@ const MemoizedInputButtonsWithContext = React.memo(
 ) as typeof InputButtonsWithContext;
 
 export const InputButtons = (props: InputButtonsProps) => {
-  const {
-    AttachButton,
-    hasCameraPicker,
-    hasCommands,
-    hasFilePicker,
-    hasImagePicker,
-    toggleAttachmentPicker,
-  } = useMessageInputContext();
+  const { AttachButton, hasCameraPicker, hasCommands, hasFilePicker, hasImagePicker } =
+    useMessageInputContext();
   const { uploadFile } = useOwnCapabilitiesContext();
 
   return (
@@ -130,7 +119,6 @@ export const InputButtons = (props: InputButtonsProps) => {
         hasCommands,
         hasFilePicker,
         hasImagePicker,
-        toggleAttachmentPicker,
         uploadFile,
       }}
       {...props}

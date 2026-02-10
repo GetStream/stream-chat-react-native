@@ -6,7 +6,7 @@ import {
   Platform,
   StyleSheet,
   View,
-  Text,
+  LayoutChangeEvent,
 } from 'react-native';
 
 import { useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
@@ -16,7 +16,6 @@ import duration from 'dayjs/plugin/duration';
 import { renderAttachmentPickerItem } from './components/AttachmentPickerItem';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { useAttachmentPickerState } from '../../hooks/useAttachmentPickerState';
@@ -28,11 +27,17 @@ import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardCon
 
 dayjs.extend(duration);
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      backgroundColor: semantics.composerBg,
+    },
+  });
+};
 
 export const IOS_LIMITED_DEEPLINK = '@getstream/ios-limited-button' as const;
 
@@ -57,12 +62,10 @@ const SPRING_CONFIG = {
 export const AttachmentPicker = () => {
   const {
     theme: {
-      semantics,
       attachmentPicker: { bottomSheetContentContainer },
-      messageInput: { attachmentSelectionBar },
-      colors: { white },
     },
   } = useTheme();
+  const styles = useStyles();
   const {
     closePicker,
     attachmentPickerStore,
@@ -76,7 +79,6 @@ export const AttachmentPicker = () => {
     numberOfAttachmentImagesToLoadPerCall,
     bottomSheetRef: ref,
   } = useAttachmentPickerContext();
-  const { attachmentSelectionBarHeight } = useMessageInputContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const [currentIndex, setCurrentIndexInternal] = useState(-1);
@@ -238,26 +240,18 @@ export const AttachmentPicker = () => {
 
   const numberOfColumns = numberOfAttachmentPickerImageColumns ?? 3;
 
+  const selectionBarRef = useRef<number | null>(null);
+  const onAttachmentPickerSelectionBarLayout = useStableCallback((e: LayoutChangeEvent) => {
+    selectionBarRef.current = e.nativeEvent.layout.height;
+  });
+
   const Handle = useCallback(
     () => (
-      <View
-        style={[
-          {
-            backgroundColor: semantics.composerBg,
-            height: attachmentSelectionBarHeight,
-          },
-          attachmentSelectionBar,
-        ]}
-      >
+      <View onLayout={onAttachmentPickerSelectionBarLayout}>
         <AttachmentPickerSelectionBar />
       </View>
     ),
-    [
-      AttachmentPickerSelectionBar,
-      attachmentSelectionBar,
-      attachmentSelectionBarHeight,
-      semantics.composerBg,
-    ],
+    [AttachmentPickerSelectionBar, onAttachmentPickerSelectionBarLayout],
   );
 
   // TODO V9: Think of a better way to do this. This is just a temporary fix.
@@ -285,7 +279,7 @@ export const AttachmentPicker = () => {
         photoError ? (
           <AttachmentPickerError
             attachmentPickerBottomSheetHeight={
-              attachmentPickerBottomSheetHeight - attachmentSelectionBarHeight
+              attachmentPickerBottomSheetHeight - (selectionBarRef?.current ?? 0)
             }
             attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
             AttachmentPickerErrorImage={AttachmentPickerErrorImage}
@@ -293,11 +287,7 @@ export const AttachmentPicker = () => {
           />
         ) : (
           <BottomSheetFlatList
-            contentContainerStyle={[
-              styles.container,
-              { backgroundColor: white, opacity: photoError ? 0 : 1 },
-              bottomSheetContentContainer,
-            ]}
+            contentContainerStyle={[styles.container, bottomSheetContentContainer]}
             data={photos}
             keyExtractor={keyExtractor}
             numColumns={numberOfColumns}
@@ -308,17 +298,14 @@ export const AttachmentPicker = () => {
           />
         )
       ) : (
-        // TODO V9: Remove these inline styles
-        <View
-          style={{
-            width: '100%',
-            height: attachmentPickerBottomSheetHeight - attachmentSelectionBarHeight,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text>{lastSelectedPickerRef.current}</Text>
-        </View>
+        <AttachmentPickerError
+          attachmentPickerBottomSheetHeight={
+            attachmentPickerBottomSheetHeight - (selectionBarRef?.current ?? 0)
+          }
+          attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
+          AttachmentPickerErrorImage={AttachmentPickerErrorImage}
+          attachmentPickerErrorText={attachmentPickerErrorText}
+        />
       )}
     </BottomSheet>
   );
