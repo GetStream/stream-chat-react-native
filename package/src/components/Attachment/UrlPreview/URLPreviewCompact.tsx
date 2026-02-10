@@ -65,15 +65,20 @@ const URLPreviewCompactWithContext = (props: URLPreviewCompactPropsWithContext) 
     theme: { semantics },
   } = useTheme();
 
-  const { image_url, og_scrape_url, text, thumb_url, title, type } = attachment;
+  const { image_url, og_scrape_url, text, thumb_url, title: titleText, type } = attachment;
 
   const {
     theme: {
       messageSimple: {
-        card: {
+        compactUrlPreview: {
+          wrapper,
           container,
-          cover,
-          footer: { description, title: titleStyle, ...footerStyle },
+          cardCover,
+          cardFooter,
+          title,
+          description,
+          linkPreview,
+          linkPreviewText,
         },
       },
     },
@@ -88,7 +93,7 @@ const URLPreviewCompactWithContext = (props: URLPreviewCompactPropsWithContext) 
   const isVideoCard = type === FileTypes.Video && og_scrape_url;
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, wrapper]}>
       <Pressable
         disabled={preventPress}
         onLongPress={(event) => {
@@ -130,15 +135,15 @@ const URLPreviewCompactWithContext = (props: URLPreviewCompactPropsWithContext) 
             imageStyle={styles.cardCover}
             resizeMode='cover'
             source={{ uri: makeImageCompatibleUrl(uri) }}
-            style={[styles.cardCover, stylesProp.cardCover, cover]}
+            style={[styles.cardCover, stylesProp.cardCover, cardCover]}
           >
             {isVideoCard ? <VideoPlayIndicator size='lg' /> : null}
           </ImageBackground>
         )}
-        <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
+        <View style={[styles.cardFooter, cardFooter, stylesProp.cardFooter]}>
           {title ? (
-            <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp.title]}>
-              {title}
+            <Text numberOfLines={1} style={[styles.title, title, stylesProp.title]}>
+              {titleText}
             </Text>
           ) : null}
           {text ? (
@@ -149,9 +154,12 @@ const URLPreviewCompactWithContext = (props: URLPreviewCompactPropsWithContext) 
               {text}
             </Text>
           ) : null}
-          <View style={[styles.linkPreview, stylesProp.linkPreview]}>
+          <View style={[styles.linkPreview, linkPreview, stylesProp.linkPreview]}>
             <NewLink height={12} width={12} stroke={semantics.chatTextIncoming} />
-            <Text numberOfLines={1} style={[styles.linkPreviewText, stylesProp.linkPreviewText]}>
+            <Text
+              numberOfLines={1}
+              style={[styles.linkPreviewText, linkPreviewText, stylesProp.linkPreviewText]}
+            >
               {og_scrape_url}
             </Text>
           </View>
@@ -192,14 +200,7 @@ const MemoizedURLPreviewCompact = React.memo(
   areEqual,
 ) as typeof URLPreviewCompactWithContext;
 
-export type URLPreviewCompactProps = Partial<
-  Pick<ChatContextValue, 'ImageComponent'> &
-    Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'myMessageTheme'> &
-    Pick<
-      MessagesContextValue,
-      'additionalPressableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
-    >
-> & {
+export type URLPreviewCompactProps = Partial<URLPreviewCompactPropsWithContext> & {
   attachment: Attachment;
 };
 

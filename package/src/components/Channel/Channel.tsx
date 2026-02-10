@@ -123,9 +123,7 @@ import {
   ReactionData,
 } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
-import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
-import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/AudioAttachment';
-import { Card as CardDefault } from '../Attachment/Card';
+import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/Audio';
 import { FileAttachment as FileAttachmentDefault } from '../Attachment/FileAttachment';
 import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment/FileAttachmentGroup';
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
@@ -134,6 +132,7 @@ import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
+import { URLPreview as URLPreviewDefault } from '../Attachment/UrlPreview';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AttachmentPicker, AttachmentPickerProps } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
@@ -319,12 +318,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       MessagesContextValue,
       | 'additionalPressableProps'
       | 'Attachment'
-      | 'AttachmentActions'
       | 'AudioAttachment'
-      | 'Card'
-      | 'CardCover'
-      | 'CardFooter'
-      | 'CardHeader'
       | 'customMessageSwipeAction'
       | 'DateHeader'
       | 'deletedMessagesVisibilityType'
@@ -563,7 +557,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     asyncMessagesSlideToCancelDistance = 75,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
-    AttachmentActions = AttachmentActionsDefault,
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
     attachmentPickerBottomSheetHandleHeight = 20,
     attachmentPickerBottomSheetHeight = vh(45),
@@ -596,10 +589,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     CreatePollIcon = DefaultCreatePollIcon,
     ImageSelectorIcon = DefaultImageSelectorIcon,
     VideoRecorderSelectorIcon = DefaultVideoRecorderSelectorIcon,
-    Card = CardDefault,
-    CardCover,
-    CardFooter,
-    CardHeader,
     channel,
     children,
     client,
@@ -756,7 +745,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
-    UrlPreview = CardDefault,
+    UrlPreview = URLPreviewDefault,
     VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
@@ -1902,12 +1891,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const messagesContext = useCreateMessagesContext({
     additionalPressableProps,
     Attachment,
-    AttachmentActions,
     AudioAttachment,
-    Card,
-    CardCover,
-    CardFooter,
-    CardHeader,
     channelId,
     customMessageSwipeAction,
     DateHeader,

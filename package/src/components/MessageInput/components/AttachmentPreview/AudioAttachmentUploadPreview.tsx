@@ -11,7 +11,7 @@ import {
   FileUploadInProgressIndicator,
 } from './AttachmentUploadProgressIndicator';
 
-import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
+import { AudioAttachment } from '../../../../components/Attachment/Audio';
 import { useTheme } from '../../../../contexts';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';

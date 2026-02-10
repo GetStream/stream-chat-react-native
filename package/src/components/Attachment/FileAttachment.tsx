@@ -6,7 +6,6 @@ import type { Attachment } from 'stream-chat';
 import { FilePreview } from './FilePreview';
 import { openUrlSafely } from './utils/openUrlSafely';
 
-import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
 import {
   MessageContextValue,
@@ -22,7 +21,7 @@ export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
   'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
-  Pick<MessagesContextValue, 'additionalPressableProps' | 'AttachmentActions'> & {
+  Pick<MessagesContextValue, 'additionalPressableProps'> & {
     /** The attachment to render */
     attachment: Attachment;
     attachmentIconSize?: number;
@@ -41,7 +40,6 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
   const {
     additionalPressableProps,
     attachment,
-    AttachmentActions,
     attachmentIconSize,
     onLongPress,
     onPress,
@@ -92,7 +90,6 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
         attachmentIconSize={attachmentIconSize}
         styles={stylesProp}
       />
-      {attachment.actions?.length ? <AttachmentActions {...attachment} /> : null}
     </Pressable>
   );
 };
@@ -102,17 +99,12 @@ export type FileAttachmentProps = Partial<Omit<FileAttachmentPropsWithContext, '
 
 export const FileAttachment = (props: FileAttachmentProps) => {
   const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
-  const {
-    additionalPressableProps,
-    AttachmentActions = AttachmentActionsDefault,
-    FileAttachmentIcon = FileIconDefault,
-  } = useMessagesContext();
+  const { additionalPressableProps, FileAttachmentIcon = FileIconDefault } = useMessagesContext();
 
   return (
     <FileAttachmentWithContext
       {...{
         additionalPressableProps,
-        AttachmentActions,
         FileAttachmentIcon,
         onLongPress,
         onPress,

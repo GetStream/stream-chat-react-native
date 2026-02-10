@@ -13,40 +13,35 @@ import {
 
 import type { Attachment } from 'stream-chat';
 
-import { openUrlSafely } from './utils/openUrlSafely';
-
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import {
   MessageContextValue,
   useMessageContext,
-} from '../../contexts/messageContext/MessageContext';
+} from '../../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { NewLink } from '../../icons/NewLink';
-import { primitives } from '../../theme';
-import { FileTypes } from '../../types/types';
-import { makeImageCompatibleUrl } from '../../utils/utils';
-import { VideoPlayIndicator } from '../ui';
-import { ImageBackground } from '../UIComponents/ImageBackground';
+} from '../../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { NewLink } from '../../../icons/NewLink';
+import { primitives } from '../../../theme';
+import { FileTypes } from '../../../types/types';
+import { makeImageCompatibleUrl } from '../../../utils/utils';
+import { VideoPlayIndicator } from '../../ui';
+import { ImageBackground } from '../../UIComponents/ImageBackground';
+import { openUrlSafely } from '../utils/openUrlSafely';
 
-export type CardPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
+export type URLPreviewPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<
     MessagesContextValue,
-    | 'additionalPressableProps'
-    | 'CardCover'
-    | 'CardFooter'
-    | 'CardHeader'
-    | 'myMessageTheme'
-    | 'isAttachmentEqual'
+    'additionalPressableProps' | 'myMessageTheme' | 'isAttachmentEqual'
   > & {
     attachment: Attachment;
     channelId: string | undefined;
     messageId: string | undefined;
+    // TODO: Think of a better way to handle styles
     styles?: Partial<{
       cardCover: StyleProp<ImageStyle>;
       cardFooter: StyleProp<ViewStyle>;
@@ -58,13 +53,10 @@ export type CardPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
     }>;
   };
 
-const CardWithContext = (props: CardPropsWithContext) => {
+const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
   const {
     attachment,
     additionalPressableProps,
-    CardCover,
-    CardFooter,
-    CardHeader,
     ImageComponent = Image,
     onLongPress,
     onPress,
@@ -86,6 +78,9 @@ const CardWithContext = (props: CardPropsWithContext) => {
           container,
           cover,
           footer: { description, title: titleStyle, ...footerStyle },
+          linkPreview,
+          linkPreviewText,
+          wrapper,
         },
       },
     },
@@ -100,7 +95,7 @@ const CardWithContext = (props: CardPropsWithContext) => {
   const isVideoCard = type === FileTypes.Video && og_scrape_url;
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, wrapper]}>
       <Pressable
         disabled={preventPress}
         onLongPress={(event) => {
@@ -136,9 +131,7 @@ const CardWithContext = (props: CardPropsWithContext) => {
         testID='card-attachment'
         {...additionalPressableProps}
       >
-        {CardHeader && <CardHeader {...props} />}
-        {CardCover && <CardCover {...props} />}
-        {uri && !CardCover && (
+        {uri && (
           <ImageBackground
             ImageComponent={ImageComponent}
             imageStyle={styles.cardCover}
@@ -149,37 +142,37 @@ const CardWithContext = (props: CardPropsWithContext) => {
             {isVideoCard ? <VideoPlayIndicator size='lg' /> : null}
           </ImageBackground>
         )}
-        {CardFooter ? (
-          <CardFooter {...props} />
-        ) : (
-          <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
-            {title ? (
-              <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp.title]}>
-                {title}
-              </Text>
-            ) : null}
-            {text ? (
-              <Text
-                numberOfLines={2}
-                style={[styles.description, description, stylesProp.description]}
-              >
-                {text}
-              </Text>
-            ) : null}
-            <View style={[styles.linkPreview, stylesProp.linkPreview]}>
-              <NewLink height={12} width={12} stroke={semantics.chatTextIncoming} />
-              <Text numberOfLines={1} style={[styles.linkPreviewText, stylesProp.linkPreviewText]}>
-                {og_scrape_url}
-              </Text>
-            </View>
+
+        <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
+          {title ? (
+            <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp.title]}>
+              {title}
+            </Text>
+          ) : null}
+          {text ? (
+            <Text
+              numberOfLines={2}
+              style={[styles.description, description, stylesProp.description]}
+            >
+              {text}
+            </Text>
+          ) : null}
+          <View style={[styles.linkPreview, linkPreview, stylesProp.linkPreview]}>
+            <NewLink height={12} width={12} stroke={semantics.chatTextIncoming} />
+            <Text
+              numberOfLines={1}
+              style={[styles.linkPreviewText, linkPreviewText, stylesProp.linkPreviewText]}
+            >
+              {og_scrape_url}
+            </Text>
           </View>
-        )}
+        </View>
       </Pressable>
     </View>
   );
 };
 
-const areEqual = (prevProps: CardPropsWithContext, nextProps: CardPropsWithContext) => {
+const areEqual = (prevProps: URLPreviewPropsWithContext, nextProps: URLPreviewPropsWithContext) => {
   const {
     attachment: prevAttachment,
     myMessageTheme: prevMyMessageTheme,
@@ -210,42 +203,28 @@ const areEqual = (prevProps: CardPropsWithContext, nextProps: CardPropsWithConte
   return true;
 };
 
-const MemoizedCard = React.memo(CardWithContext, areEqual) as typeof CardWithContext;
+const MemoizedURLPreview = React.memo(
+  URLPreviewWithContext,
+  areEqual,
+) as typeof URLPreviewWithContext;
 
-export type CardProps = Partial<
-  Pick<ChatContextValue, 'ImageComponent'> &
-    Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'myMessageTheme'> &
-    Pick<
-      MessagesContextValue,
-      'additionalPressableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
-    >
-> & {
+export type URLPreviewProps = Partial<URLPreviewPropsWithContext> & {
   attachment: Attachment;
 };
 
 /**
  * UI component for card in attachments.
  */
-export const Card = (props: CardProps) => {
+export const URLPreview = (props: URLPreviewProps) => {
   const { ImageComponent } = useChatContext();
   const { message, onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
-  const {
-    additionalPressableProps,
-    CardCover,
-    CardFooter,
-    CardHeader,
-    isAttachmentEqual,
-    myMessageTheme,
-  } = useMessagesContext();
+  const { additionalPressableProps, isAttachmentEqual, myMessageTheme } = useMessagesContext();
 
   return (
-    <MemoizedCard
+    <MemoizedURLPreview
       key={`${message?.id}${message?.updated_at}`} // press listeners must change on message update, updating key ensures this
       {...{
         additionalPressableProps,
-        CardCover,
-        CardFooter,
-        CardHeader,
         channelId: message.cid,
         ImageComponent,
         isAttachmentEqual,
@@ -322,4 +301,4 @@ const useStyles = () => {
   );
 };
 
-Card.displayName = 'Card{messageSimple{card}}';
+URLPreview.displayName = 'URLPreview{messageSimple{card}}';

@@ -119,6 +119,8 @@ export type Theme = {
   };
   audioAttachment: {
     container: ViewStyle;
+    centerContainer: ViewStyle;
+    audioInfo: ViewStyle;
     leftContainer: ViewStyle;
     playPauseButton: ViewStyle;
     progressControlContainer: ViewStyle;
@@ -535,24 +537,15 @@ export type Theme = {
       spacer: ViewStyle;
     };
     card: {
-      authorName: TextStyle;
-      authorNameContainer: ViewStyle;
-      authorNameFooter: TextStyle;
-      authorNameFooterContainer: ViewStyle;
-      authorNameMask: ViewStyle;
       container: ViewStyle;
       cover: ImageStyle;
       footer: ViewStyle & {
         description: TextStyle;
         title: TextStyle;
       };
-      noURI: ViewStyle;
-      playButtonStyle: {
-        durationTextStyle: TextStyle;
-        roundedView: ViewStyle;
-        videoContainer: ViewStyle;
-      };
-      playIcon: IconProps;
+      wrapper: ViewStyle;
+      linkPreview: ViewStyle;
+      linkPreviewText: TextStyle;
     };
     container: ViewStyle;
     content: {
@@ -627,20 +620,27 @@ export type Theme = {
       };
     };
     giphy: {
-      buttonContainer: ViewStyle;
-      cancel: TextStyle;
+      actionButtonContainer: ViewStyle;
+      actionButton: ViewStyle;
+      actionButtonText: TextStyle;
       container: ViewStyle;
       giphy: ImageStyle;
       giphyContainer: ViewStyle;
       giphyHeaderText: TextStyle;
-      giphyHeaderTitle: TextStyle;
       giphyMask: ViewStyle;
       giphyMaskText: TextStyle;
       header: ViewStyle;
-      selectionContainer: ViewStyle;
-      send: TextStyle;
-      shuffle: TextStyle;
+      imageIndicatorContainer: ViewStyle;
+    };
+    compactUrlPreview: {
+      wrapper: ViewStyle;
+      container: ViewStyle;
+      cardCover: ImageStyle;
+      cardFooter: ViewStyle;
       title: TextStyle;
+      description: TextStyle;
+      linkPreview: ViewStyle;
+      linkPreviewText: TextStyle;
     };
     headerWrapper: ViewStyle;
     lastMessageContainer: ViewStyle;
@@ -922,6 +922,8 @@ export const defaultTheme: Theme = {
     icon: {},
   },
   audioAttachment: {
+    centerContainer: {},
+    audioInfo: {},
     container: {},
     leftContainer: {},
     playPauseButton: {},
@@ -1333,32 +1335,25 @@ export const defaultTheme: Theme = {
       },
     },
     card: {
-      authorName: {},
-      authorNameContainer: {},
-      authorNameFooter: {},
-      authorNameFooterContainer: {},
-      authorNameMask: {},
       container: {},
       cover: {},
       footer: {
         description: {},
-        title: {
-          fontWeight: '700',
-        },
+        title: {},
       },
-      noURI: {
-        borderLeftWidth: 2,
-        paddingLeft: 8,
-      },
-      playButtonStyle: {
-        durationTextStyle: {},
-        roundedView: {},
-        videoContainer: {},
-      },
-      playIcon: {
-        height: 32,
-        width: 32,
-      },
+      wrapper: {},
+      linkPreview: {},
+      linkPreviewText: {},
+    },
+    compactUrlPreview: {
+      wrapper: {},
+      container: {},
+      cardCover: {},
+      cardFooter: {},
+      title: {},
+      description: {},
+      linkPreview: {},
+      linkPreviewText: {},
     },
     container: {},
     content: {
@@ -1449,20 +1444,17 @@ export const defaultTheme: Theme = {
       thumbnail: {},
     },
     giphy: {
-      buttonContainer: {},
-      cancel: {},
+      actionButton: {},
+      actionButtonContainer: {},
+      actionButtonText: {},
       container: {},
       giphy: {},
       giphyContainer: {},
       giphyHeaderText: {},
-      giphyHeaderTitle: {},
       giphyMask: {},
       giphyMaskText: {},
       header: {},
-      selectionContainer: {},
-      send: {},
-      shuffle: {},
-      title: {},
+      imageIndicatorContainer: {},
     },
     headerWrapper: {},
     lastMessageContainer: {},

@@ -45,7 +45,7 @@ const GiphyImageWithContext = (props: GiphyImagePropsWithContext) => {
   const {
     theme: {
       messageSimple: {
-        giphy: { giphyMask },
+        giphy: { giphyMask, giphy, imageIndicatorContainer },
       },
     },
   } = useTheme();
@@ -89,15 +89,15 @@ const GiphyImageWithContext = (props: GiphyImagePropsWithContext) => {
         onLoadStart={onLoadStart}
         resizeMode='contain'
         source={{ uri: makeImageCompatibleUrl(uri) }}
-        style={[styles.giphy, giphyDimensions]}
+        style={[styles.giphy, giphyDimensions, giphy]}
       />
       {isLoadingImageError && (
-        <View style={styles.imageIndicatorContainer}>
+        <View style={[styles.imageIndicatorContainer, imageIndicatorContainer]}>
           <ImageLoadingFailedIndicator />
         </View>
       )}
       {isLoadingImage && (
-        <View style={styles.imageIndicatorContainer}>
+        <View style={[styles.imageIndicatorContainer, imageIndicatorContainer]}>
           <ImageLoadingIndicator />
         </View>
       )}

@@ -61,7 +61,14 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
   const {
     theme: {
       messageSimple: {
-        giphy: { buttonContainer, cancel, container, giphyHeaderText, header },
+        giphy: {
+          actionButtonContainer,
+          actionButton,
+          actionButtonText,
+          container,
+          giphyHeaderText,
+          header,
+        },
       },
       semantics,
     },
@@ -90,7 +97,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
         <Text style={[styles.headerText, giphyHeaderText]}>{t('Only visible to you')}</Text>
       </View>
       <GiphyImage attachment={attachment} giphyVersion={giphyVersion} preview />
-      <View style={styles.actionButtonContainer}>
+      <View style={[styles.actionButtonContainer, actionButtonContainer]}>
         {actions.map((action) => {
           return (
             <Pressable
@@ -100,7 +107,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
                   handleAction(action.name, action.value);
                 }
               }}
-              style={[styles.actionButton, buttonContainer]}
+              style={[styles.actionButton, actionButton]}
               testID={`${action.value}-action-button`}
             >
               <Text
@@ -113,7 +120,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
                         ? semantics.buttonPrimaryText
                         : semantics.buttonSecondaryText,
                   },
-                  cancel,
+                  actionButtonText,
                 ]}
               >
                 {action.text}

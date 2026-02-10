@@ -14,9 +14,7 @@ import type {
 
 import type { PollContentProps, StreamingMessageViewProps } from '../../components';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
-import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
-import type { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
-import type { CardProps } from '../../components/Attachment/Card';
+import type { AudioAttachmentProps } from '../../components/Attachment/Audio';
 import type { FileAttachmentProps } from '../../components/Attachment/FileAttachment';
 import type { FileAttachmentGroupProps } from '../../components/Attachment/FileAttachmentGroup';
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
@@ -25,6 +23,7 @@ import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachment/ImageLoadingFailedIndicator';
 import type { ImageLoadingIndicatorProps } from '../../components/Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicatorProps } from '../../components/Attachment/ImageReloadIndicator';
+import type { URLPreviewProps } from '../../components/Attachment/UrlPreview';
 import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
   MessagePressableHandlerPayload,
@@ -102,18 +101,8 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Attachment.tsx)
    */
   Attachment: React.ComponentType<AttachmentProps>;
-  /**
-   * UI component to display AttachmentActions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/AttachmentActions.tsx)
-   */
-  AttachmentActions: React.ComponentType<AttachmentActionsProps>;
   /** Custom UI component for AudioAttachment. */
   AudioAttachment: React.ComponentType<AudioAttachmentProps>;
-  /**
-   * UI component to display generic media type e.g. giphy, url preview etc
-   * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx)
-   */
-  Card: React.ComponentType<CardProps>;
   /**
    * UI component for DateHeader
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
@@ -349,9 +338,9 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   ) => void;
   /**
    * Custom UI component to display enriched url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/UrlPreview/URLPreview.tsx
    */
-  UrlPreview: React.ComponentType<CardProps>;
+  UrlPreview: React.ComponentType<URLPreviewProps>;
   VideoThumbnail: React.ComponentType<VideoThumbnailProps>;
   /**
    * Provide any additional props for `Pressable` which wraps inner MessageContent component here.
@@ -360,22 +349,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * @overrideType Object
    */
   additionalPressableProps?: Omit<PressableProps, 'style'>;
-  /**
-   * Custom UI component to override default cover (between Header and Footer) of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardCover?: React.ComponentType<CardProps>;
-  /**
-   * Custom UI component to override default Footer of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardFooter?: React.ComponentType<CardProps>;
-
-  /**
-   * Custom UI component to override default header of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardHeader?: React.ComponentType<CardProps>;
 
   /**
    * Custom handler to handle message swipe action.

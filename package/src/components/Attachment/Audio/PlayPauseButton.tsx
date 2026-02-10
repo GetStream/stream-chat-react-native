@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { Pressable, PressableProps, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import { useTheme } from '../../contexts';
-import { NewPause } from '../../icons/NewPause';
-import { NewPlay } from '../../icons/NewPlay';
-import { primitives } from '../../theme';
-import { buttonSizes } from '../ui/Button/constants';
+import { useTheme } from '../../../contexts';
+import { NewPause } from '../../../icons/NewPause';
+import { NewPlay } from '../../../icons/NewPlay';
+import { primitives } from '../../../theme';
+import { buttonSizes } from '../../ui/Button/constants';
 
 export type PlayPauseButtonProps = PressableProps & {
   /**

@@ -62,7 +62,7 @@ describe('isAttachmentEqualHandler', () => {
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel
-            Card={({ attachment: { customField, type } }) => {
+            UrlPreview={({ attachment: { customField, type } }) => {
               if (type === 'test') {
                 return <Text testID='attachment-custom-field'>{customField}</Text>;
               }
@@ -97,7 +97,7 @@ describe('isAttachmentEqualHandler', () => {
     });
 
     await waitFor(() => {
-      // expect(getByText('custom-field-2')).toBeTruthy();
+      expect(getByText('custom-field-2')).toBeTruthy();
     });
   });
 });

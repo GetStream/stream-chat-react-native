@@ -14,22 +14,22 @@ import {
 
 import { PlayPauseButton } from './PlayPauseButton';
 
-import { useTheme } from '../../contexts';
-import { useStateStore } from '../../hooks';
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useTheme } from '../../../contexts';
+import { useStateStore } from '../../../hooks';
+import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
 import {
   NativeHandlers,
   SoundReturnType,
   VideoPayloadData,
   VideoProgressData,
   VideoSeekResponse,
-} from '../../native';
-import { AudioPlayerState } from '../../state-store/audio-player';
-import { primitives } from '../../theme';
-import { AudioConfig } from '../../types/types';
-import { ProgressControl } from '../ProgressControl/ProgressControl';
-import { WaveProgressBar } from '../ProgressControl/WaveProgressBar';
-import { SpeedSettingsButton } from '../ui/SpeedSettingsButton';
+} from '../../../native';
+import { AudioPlayerState } from '../../../state-store/audio-player';
+import { primitives } from '../../../theme';
+import { AudioConfig } from '../../../types/types';
+import { ProgressControl } from '../../ProgressControl/ProgressControl';
+import { WaveProgressBar } from '../../ProgressControl/WaveProgressBar';
+import { SpeedSettingsButton } from '../../ui/SpeedSettingsButton';
 
 const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
 const ONE_SECOND_IN_MILLISECONDS = 1000;
@@ -179,6 +179,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     theme: {
       audioAttachment: {
         container,
+        centerContainer,
+        audioInfo,
         leftContainer,
         progressControlContainer,
         progressDurationText,
@@ -222,6 +224,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             flexGrow: 1,
             flexShrink: showTitle ? 1 : 0,
           },
+          centerContainer,
         ]}
       >
         {showTitle ? (
@@ -243,7 +246,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         {indicator ? (
           indicator
         ) : (
-          <View style={styles.audioInfo}>
+          <View style={[styles.audioInfo, audioInfo]}>
             <Text
               style={[
                 styles.progressDurationText,

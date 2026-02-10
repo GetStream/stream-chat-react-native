@@ -11,10 +11,10 @@ import {
   type Attachment as AttachmentType,
 } from 'stream-chat';
 
-import { AudioAttachment as AudioAttachmentDefault } from './AudioAttachment';
+import { AudioAttachment as AudioAttachmentDefault } from './Audio';
 
-import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
-import { Card as CardDefault } from '../../components/Attachment/Card';
+import { URLPreview as URLPreviewDefault } from './UrlPreview';
+
 import { FileAttachment as FileAttachmentDefault } from '../../components/Attachment/FileAttachment';
 import { Gallery as GalleryDefault } from '../../components/Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../../components/Attachment/Giphy';
@@ -38,8 +38,6 @@ export type ActionHandler = (name: string, value: string) => void;
 export type AttachmentPropsWithContext = Pick<
   MessagesContextValue,
   | 'AudioAttachment'
-  | 'AttachmentActions'
-  | 'Card'
   | 'FileAttachment'
   | 'Gallery'
   | 'Giphy'
@@ -62,8 +60,6 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
   const {
     attachment,
     AudioAttachment,
-    AttachmentActions,
-    Card,
     FileAttachment,
     Gallery,
     Giphy,
@@ -72,8 +68,6 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
     message,
   } = props;
   const audioAttachmentStyles = useAudioAttachmentStyles();
-
-  const hasAttachmentActions = !!attachment.actions?.length;
 
   if (attachment.type === FileTypes.Giphy || attachment.type === FileTypes.Imgur) {
     return <Giphy attachment={attachment} />;
@@ -84,25 +78,13 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
   }
 
   if (isImageAttachment(attachment)) {
-    return (
-      <>
-        <Gallery images={[attachment]} />
-        {hasAttachmentActions && (
-          <AttachmentActions key={`key-actions-${attachment.image_url}`} {...attachment} />
-        )}
-      </>
-    );
+    return <Gallery images={[attachment]} />;
   }
 
   // The `!attachment.og_scrape_url` is added for cases, where the url preview is not an image but a video.
   if (isVideoAttachment(attachment) && !attachment.og_scrape_url) {
     return isVideoPlayerAvailable() ? (
-      <>
-        <Gallery videos={[attachment]} />
-        {hasAttachmentActions && (
-          <AttachmentActions key={`key-actions-${attachment.thumb_url}`} {...attachment} />
-        )}
-      </>
+      <Gallery videos={[attachment]} />
     ) : (
       <FileAttachment attachment={attachment} />
     );
@@ -127,17 +109,8 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
     return <FileAttachment attachment={attachment} />;
   }
 
-  if (hasAttachmentActions) {
-    return (
-      <>
-        <Card attachment={attachment} />
-        {/** TODO: Please rethink this, the fix is temporary. */}
-        <AttachmentActions key={`key-actions-${attachment.image_url}`} {...attachment} />
-      </>
-    );
-  } else {
-    return <Card attachment={attachment} />;
-  }
+  // TODO: Handle custom attachments
+  return <UrlPreview attachment={attachment} />;
 };
 
 const areEqual = (prevProps: AttachmentPropsWithContext, nextProps: AttachmentPropsWithContext) => {
@@ -184,8 +157,6 @@ export const Attachment = (props: AttachmentProps) => {
   const {
     attachment,
     AudioAttachment: PropAudioAttachment,
-    AttachmentActions: PropAttachmentActions,
-    Card: PropCard,
     FileAttachment: PropFileAttachment,
     Gallery: PropGallery,
     Giphy: PropGiphy,
@@ -195,8 +166,6 @@ export const Attachment = (props: AttachmentProps) => {
 
   const {
     AudioAttachment: ContextAudioAttachment,
-    AttachmentActions: ContextAttachmentActions,
-    Card: ContextCard,
     FileAttachment: ContextFileAttachment,
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
@@ -212,13 +181,10 @@ export const Attachment = (props: AttachmentProps) => {
   }
 
   const AudioAttachment = PropAudioAttachment || ContextAudioAttachment || AudioAttachmentDefault;
-  const AttachmentActions =
-    PropAttachmentActions || ContextAttachmentActions || AttachmentActionsDefault;
-  const Card = PropCard || ContextCard || CardDefault;
   const FileAttachment = PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
-  const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
+  const UrlPreview = PropUrlPreview || ContextUrlPreview || URLPreviewDefault;
   const myMessageTheme = PropMyMessageTheme || ContextMyMessageTheme;
 
   return (
@@ -226,9 +192,7 @@ export const Attachment = (props: AttachmentProps) => {
       {...{
         attachment,
         message,
-        AttachmentActions,
         AudioAttachment,
-        Card,
         FileAttachment,
         Gallery,
         Giphy,
