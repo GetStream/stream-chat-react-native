@@ -108,9 +108,6 @@ const useStyles = () => {
           padding: primitives.spacingMd,
           paddingRight: primitives.spacingSm,
         },
-        overlay: {
-          borderRadius: primitives.radiusLg,
-        },
         wrapper: {
           padding: primitives.spacingXxs,
         },
