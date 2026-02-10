@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}} הצבעות",
   "{{count}} votes_one": "{{count}} הצבעה",
   "{{count}} votes_other": "{{count}} הצבעות",
-  "🏙 Attachment...": "🏙 קובץ מצורף..."
+  "🏙 Attachment...": "🏙 קובץ מצורף...",
+  "You have not granted access to the photo library.": "לא הענקת גישה לספריית התמונות.",
+  "Change in Settings": "שנה בהגדרות"
 }

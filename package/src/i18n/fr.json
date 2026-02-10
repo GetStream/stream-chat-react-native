@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}} votes",
   "{{count}} votes_one": "{{count}} vote",
   "{{count}} votes_other": "{{count}} votes",
-  "🏙 Attachment...": "🏙 Pièce jointe..."
+  "🏙 Attachment...": "🏙 Pièce jointe...",
+  "You have not granted access to the photo library.": "Vous n'avez pas accordé l'accès à la photothèque.",
+  "Change in Settings": "Changer dans Réglages"
 }

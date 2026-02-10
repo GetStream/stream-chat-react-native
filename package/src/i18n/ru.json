@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}} голосов",
   "{{count}} votes_one": "{{count}} голос",
   "{{count}} votes_other": "{{count}} голосов",
-  "🏙 Attachment...": "🏙 Вложение..."
+  "🏙 Attachment...": "🏙 Вложение...",
+  "You have not granted access to the photo library.": "Вы не предоставили доступ к фотобиблиотеке.",
+  "Change in Settings": "Изменить в настройках"
 }

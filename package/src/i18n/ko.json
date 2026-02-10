@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}} 표",
   "{{count}} votes_one": "{{count}} 표",
   "{{count}} votes_other": "{{count}} 표",
-  "🏙 Attachment...": "🏙 부착..."
+  "🏙 Attachment...": "🏙 부착...",
+  "You have not granted access to the photo library.": "사진 라이브러리에 대한 접근 권한이 없습니다.",
+  "Change in Settings": "설정에서 변경"
 }

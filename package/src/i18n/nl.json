@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}} stemmen",
   "{{count}} votes_one": "{{count}} stem",
   "{{count}} votes_other": "{{count}} stemmen",
-  "🏙 Attachment...": "🏙 Bijlage..."
+  "🏙 Attachment...": "🏙 Bijlage...",
+  "You have not granted access to the photo library.": "Je hebt geen toegang tot de fotobibliotheek verleend.",
+  "Change in Settings": "Wijzigen in Instellingen"
 }

@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}} voti",
   "{{count}} votes_one": "{{count}} voto",
   "{{count}} votes_other": "{{count}} voti",
-  "🏙 Attachment...": "🏙 Allegato..."
+  "🏙 Attachment...": "🏙 Allegato...",
+  "You have not granted access to the photo library.": "Non hai concesso l'accesso alla libreria foto.",
+  "Change in Settings": "Cambia in Impostazioni"
 }

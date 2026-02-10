@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}} वोट",
   "{{count}} votes_one": "{{count}} वोट",
   "{{count}} votes_other": "{{count}} वोट",
-  "🏙 Attachment...": "🏙 अटैचमेंट..."
+  "🏙 Attachment...": "🏙 अटैचमेंट...",
+  "You have not granted access to the photo library.": "आपने फोटो लाइब्रेरी के लिए अनुमति नहीं दी है।",
+  "Change in Settings": "सेटिंग्स में बदलें"
 }

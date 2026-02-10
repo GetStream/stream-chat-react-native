@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}} oy",
   "{{count}} votes_one": "{{count}} oy",
   "{{count}} votes_other": "{{count}} oy",
-  "🏙 Attachment...": "🏙 Ek..."
+  "🏙 Attachment...": "🏙 Ek...",
+  "You have not granted access to the photo library.": "Fotoğraf kitaplığına erişim izni vermediniz.",
+  "Change in Settings": "Ayarlar'da değiştir"
 }

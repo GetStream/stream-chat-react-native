@@ -152,5 +152,7 @@
   "{{count}} votes_many": "{{count}}票",
   "{{count}} votes_one": "{{count}} 票",
   "{{count}} votes_other": "{{count}} 票",
-  "🏙 Attachment...": "🏙 アタッチメント..."
+  "🏙 Attachment...": "🏙 アタッチメント...",
+  "You have not granted access to the photo library.": "写真ライブラリへのアクセスが許可されていません。",
+  "Change in Settings": "設定で変更"
 }
