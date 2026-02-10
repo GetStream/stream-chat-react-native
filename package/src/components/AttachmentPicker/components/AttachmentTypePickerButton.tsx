@@ -1,0 +1,162 @@
+import React from 'react';
+
+import { Platform } from 'react-native';
+
+import {
+  useAttachmentPickerContext,
+  useChannelContext,
+  useMessageInputContext,
+  useMessagesContext,
+  useOwnCapabilitiesContext,
+} from '../../../contexts';
+import { useStableCallback } from '../../../hooks';
+import { useAttachmentPickerState } from '../../../hooks/useAttachmentPickerState';
+import {
+  Camera,
+  Picture,
+  Recorder,
+  FilePickerIcon,
+  PollThumbnail,
+  CommandsIcon,
+} from '../../../icons';
+import { Button, ButtonProps } from '../../ui';
+
+export type AttachmentTypePickerButtonProps = Pick<ButtonProps, 'selected' | 'onPress'> & {
+  Icon: ButtonProps['LeadingIcon'];
+};
+
+const hitSlop = { bottom: 15, top: 15 };
+
+export const AttachmentTypePickerButton = ({
+  selected,
+  onPress,
+  Icon,
+}: AttachmentTypePickerButtonProps) => {
+  return (
+    <Button
+      hitSlop={hitSlop}
+      onPress={onPress}
+      testID='upload-photo-touchable'
+      LeadingIcon={Icon}
+      type={'ghost'}
+      size={'lg'}
+      variant={'secondary'}
+      iconOnly={true}
+      selected={selected}
+    />
+  );
+};
+
+export const MediaPickerButton = () => {
+  const { hasImagePicker } = useMessageInputContext();
+  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { selectedPicker } = useAttachmentPickerState();
+
+  const setImagePicker = useStableCallback(() => {
+    attachmentPickerStore.setSelectedPicker('images');
+  });
+
+  return hasImagePicker ? (
+    <AttachmentTypePickerButton
+      Icon={Picture}
+      selected={selectedPicker === 'images'}
+      onPress={setImagePicker}
+    />
+  ) : null;
+};
+
+export const CameraPickerButton = () => {
+  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { selectedPicker } = useAttachmentPickerState();
+
+  const { hasCameraPicker, takeAndUploadImage } = useMessageInputContext();
+
+  const onCameraPickerPress = useStableCallback(() => {
+    attachmentPickerStore.setSelectedPicker('camera-photo');
+    takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
+  });
+
+  const onVideoRecorderPickerPress = useStableCallback(() => {
+    attachmentPickerStore.setSelectedPicker('camera-video');
+    takeAndUploadImage('video');
+  });
+
+  return hasCameraPicker ? (
+    <>
+      <AttachmentTypePickerButton
+        Icon={Camera}
+        selected={selectedPicker === 'camera-photo'}
+        onPress={onCameraPickerPress}
+      />
+      {Platform.OS === 'android' ? (
+        <AttachmentTypePickerButton
+          Icon={Recorder}
+          selected={selectedPicker === 'camera-video'}
+          onPress={onVideoRecorderPickerPress}
+        />
+      ) : null}
+    </>
+  ) : null;
+};
+
+export const FilePickerButton = () => {
+  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { selectedPicker } = useAttachmentPickerState();
+
+  const { hasFilePicker, pickFile } = useMessageInputContext();
+
+  const openFilePicker = useStableCallback(() => {
+    attachmentPickerStore.setSelectedPicker('files');
+    pickFile();
+  });
+
+  return hasFilePicker ? (
+    <AttachmentTypePickerButton
+      Icon={FilePickerIcon}
+      selected={selectedPicker === 'files'}
+      onPress={openFilePicker}
+    />
+  ) : null;
+};
+
+export const PollPickerButton = () => {
+  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { selectedPicker } = useAttachmentPickerState();
+
+  const { threadList } = useChannelContext();
+  const { hasCreatePoll } = useMessagesContext();
+  const ownCapabilities = useOwnCapabilitiesContext();
+
+  const { openPollCreationDialog, sendMessage } = useMessageInputContext();
+
+  const openPollCreationModal = useStableCallback(() => {
+    attachmentPickerStore.setSelectedPicker('polls');
+    openPollCreationDialog?.({ sendMessage });
+  });
+
+  return !threadList && hasCreatePoll && ownCapabilities.sendPoll ? ( // do not allow poll creation in threads
+    <AttachmentTypePickerButton
+      Icon={PollThumbnail}
+      selected={selectedPicker === 'polls'}
+      onPress={openPollCreationModal}
+    />
+  ) : null;
+};
+
+export const CommandsPickerButton = () => {
+  const { hasCommands } = useMessageInputContext();
+  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { selectedPicker } = useAttachmentPickerState();
+
+  const setCommandsPicker = useStableCallback(() => {
+    attachmentPickerStore.setSelectedPicker('commands');
+  });
+
+  return hasCommands ? (
+    <AttachmentTypePickerButton
+      Icon={CommandsIcon}
+      selected={selectedPicker === 'commands'}
+      onPress={setCommandsPicker}
+    />
+  ) : null;
+};

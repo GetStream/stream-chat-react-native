@@ -5,10 +5,8 @@ import { Picture } from '../../../icons';
 
 export const AttachmentPickerErrorImage = () => {
   const {
-    theme: {
-      colors: { grey_gainsboro },
-    },
+    theme: { semantics },
   } = useTheme();
 
-  return <Picture height={140} pathFill={grey_gainsboro} width={140} />;
+  return <Picture height={22} stroke={semantics.textTertiary} width={22} />;
 };

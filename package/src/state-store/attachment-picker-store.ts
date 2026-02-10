@@ -6,6 +6,8 @@ export type SelectedPickerType =
   | 'camera-photo'
   | 'camera-video'
   | 'polls'
+  | 'commands'
+  | string
   | undefined;
 
 export type AttachmentPickerState = {

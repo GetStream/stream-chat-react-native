@@ -1007,8 +1007,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
 
     const changedBy = currentListHeightRef.current - height;
-    flashListRef.current?.scrollToOffset({
-      offset: currentScrollOffsetRef.current + changedBy,
+    flashListRef.current?.getNativeScrollRef()?.setNativeProps({
+      contentOffset: { x: 0, y: flashListRef.current?.getAbsoluteLastScrollOffset() + changedBy },
     });
     currentListHeightRef.current = height;
   });

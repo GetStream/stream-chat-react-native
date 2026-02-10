@@ -21,7 +21,6 @@ import {
   UserResponse,
 } from 'stream-chat';
 
-import { useAttachmentManagerState } from './hooks/useAttachmentManagerState';
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageComposer } from './hooks/useMessageComposer';
 
@@ -423,7 +422,6 @@ export const MessageInputProvider = ({
 
   const messageComposer = useMessageComposer();
   const { attachmentManager, editedMessage } = messageComposer;
-  const { availableUploadSlots } = useAttachmentManagerState();
 
   /**
    * These are the RN SDK specific middlewares that are added to the message composer to provide the default behaviour.
@@ -455,7 +453,7 @@ export const MessageInputProvider = ({
    * Function for capturing a photo and uploading it
    */
   const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
@@ -487,12 +485,14 @@ export const MessageInputProvider = ({
    * Function for picking a photo from native image picker and uploading it
    */
   const pickAndUploadImageFromNativePicker = useStableCallback(async () => {
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
 
-    const result = await NativeHandlers.pickImage({ maxNumberOfFiles: availableUploadSlots });
+    const result = await NativeHandlers.pickImage({
+      maxNumberOfFiles: attachmentManager.availableUploadSlots,
+    });
     if (result.askToOpenSettings) {
       Alert.alert(
         t('Allow access to your Gallery'),
@@ -521,13 +521,13 @@ export const MessageInputProvider = ({
       return;
     }
 
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
 
     const result = await NativeHandlers.pickDocument({
-      maxNumberOfFiles: availableUploadSlots,
+      maxNumberOfFiles: attachmentManager.availableUploadSlots,
     });
 
     if (result.cancelled || !result.assets?.length) {

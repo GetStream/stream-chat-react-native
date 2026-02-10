@@ -80,7 +80,7 @@ export const Button = ({
           borderWidth: buttonStyles.borderColor ? 1 : undefined,
           borderColor: disabled ? buttonStyles.disabledBorderColor : buttonStyles.borderColor,
           height: buttonSizes[size].height,
-          width: iconOnly ? buttonSizes[size].width : undefined,
+          width: iconOnly ? buttonSizes[size].width : '100%',
         },
       ]}
       onLayout={onLayout}
@@ -93,9 +93,9 @@ export const Button = ({
               : selected
                 ? semantics.backgroundCoreSelected
                 : 'transparent',
+            paddingHorizontal: buttonPadding[size],
           },
           styles.container,
-          { paddingHorizontal: buttonPadding[size] },
         ]}
         disabled={disabled}
         {...rest}

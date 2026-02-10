@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import type { GestureResponderEvent, LayoutChangeEvent, LayoutRectangle } from 'react-native';
+import React from 'react';
+import type { GestureResponderEvent } from 'react-native';
 
 import {
   AttachmentPickerContextValue,
@@ -12,7 +12,6 @@ import {
 import { useAttachmentPickerState } from '../../../../hooks/useAttachmentPickerState';
 import { NewPlus } from '../../../../icons/NewPlus';
 import { Button } from '../../../ui/';
-import { NativeAttachmentPicker } from '../NativeAttachmentPicker';
 
 type AttachButtonPropsWithContext = Pick<
   MessageInputContextValue,
@@ -25,8 +24,8 @@ type AttachButtonPropsWithContext = Pick<
   };
 
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
-  const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
-  const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
+  // const [showAttachButtonPicker, setShowAttachButtonPicker] = useState<boolean>(false);
+  // const [attachButtonLayoutRectangle, setAttachButtonLayoutRectangle] = useState<LayoutRectangle>();
   const {
     disableAttachmentPicker,
     disabled = false,
@@ -36,25 +35,25 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   } = props;
   const { selectedPicker } = useAttachmentPickerState();
 
-  const onAttachButtonLayout = (event: LayoutChangeEvent) => {
-    const layout = event.nativeEvent.layout;
-    setAttachButtonLayoutRectangle((prev) => {
-      if (
-        prev &&
-        prev.width === layout.width &&
-        prev.height === layout.height &&
-        prev.x === layout.x &&
-        prev.y === layout.y
-      ) {
-        return prev;
-      }
-      return layout;
-    });
-  };
+  // const onAttachButtonLayout = (event: LayoutChangeEvent) => {
+  //   const layout = event.nativeEvent.layout;
+  //   setAttachButtonLayoutRectangle((prev) => {
+  //     if (
+  //       prev &&
+  //       prev.width === layout.width &&
+  //       prev.height === layout.height &&
+  //       prev.x === layout.x &&
+  //       prev.y === layout.y
+  //     ) {
+  //       return prev;
+  //     }
+  //     return layout;
+  //   });
+  // };
 
-  const attachButtonHandler = () => {
-    setShowAttachButtonPicker((prevShowAttachButtonPicker) => !prevShowAttachButtonPicker);
-  };
+  // const attachButtonHandler = () => {
+  //   setShowAttachButtonPicker((prevShowAttachButtonPicker) => !prevShowAttachButtonPicker);
+  // };
 
   const onPressHandler = () => {
     if (disabled) {
@@ -71,7 +70,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
     if (!disableAttachmentPicker) {
       toggleAttachmentPicker();
     } else {
-      attachButtonHandler();
+      // attachButtonHandler();
     }
   };
 
@@ -83,18 +82,18 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
         size='lg'
         iconOnly
         LeadingIcon={NewPlus}
-        onLayout={onAttachButtonLayout}
+        // onLayout={onAttachButtonLayout}
         onPress={onPressHandler}
         selected={selectedPicker !== undefined}
         disabled={disabled}
         testID='attach-button'
       />
-      {showAttachButtonPicker ? (
-        <NativeAttachmentPicker
-          attachButtonLayoutRectangle={attachButtonLayoutRectangle}
-          onRequestedClose={() => setShowAttachButtonPicker(false)}
-        />
-      ) : null}
+      {/*{showAttachButtonPicker ? (*/}
+      {/*  <NativeAttachmentPicker*/}
+      {/*    attachButtonLayoutRectangle={attachButtonLayoutRectangle}*/}
+      {/*    onRequestedClose={() => setShowAttachButtonPicker(false)}*/}
+      {/*  />*/}
+      {/*) : null}*/}
     </>
   );
 };

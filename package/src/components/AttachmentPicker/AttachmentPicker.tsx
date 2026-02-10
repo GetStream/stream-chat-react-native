@@ -269,20 +269,29 @@ export const AttachmentPicker = () => {
   const animationConfigs = useBottomSheetSpringConfigs(SPRING_CONFIG);
 
   return (
-    <>
-      <BottomSheet
-        enablePanDownToClose={false}
-        enableContentPanningGesture={false}
-        enableDynamicSizing={false}
-        handleComponent={Handle}
-        index={currentIndex}
-        onAnimate={setCurrentIndex}
-        // @ts-ignore
-        ref={ref}
-        snapPoints={snapPoints}
-        animationConfigs={animationConfigs}
-      >
-        {lastSelectedPickerRef.current === 'images' ? (
+    <BottomSheet
+      enablePanDownToClose={false}
+      enableContentPanningGesture={false}
+      enableDynamicSizing={false}
+      handleComponent={Handle}
+      index={currentIndex}
+      onAnimate={setCurrentIndex}
+      // @ts-ignore
+      ref={ref}
+      snapPoints={snapPoints}
+      animationConfigs={animationConfigs}
+    >
+      {lastSelectedPickerRef.current === 'images' ? (
+        photoError ? (
+          <AttachmentPickerError
+            attachmentPickerBottomSheetHeight={
+              attachmentPickerBottomSheetHeight - attachmentSelectionBarHeight
+            }
+            attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
+            AttachmentPickerErrorImage={AttachmentPickerErrorImage}
+            attachmentPickerErrorText={attachmentPickerErrorText}
+          />
+        ) : (
           <BottomSheetFlatList
             contentContainerStyle={[
               styles.container,
@@ -297,29 +306,21 @@ export const AttachmentPicker = () => {
             testID={'attachment-picker-list'}
             updateCellsBatchingPeriod={16}
           />
-        ) : (
-          // TODO V9: Remove these inline styles
-          <View
-            style={{
-              width: '100%',
-              height: attachmentPickerBottomSheetHeight - attachmentSelectionBarHeight,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Text>{lastSelectedPickerRef.current}</Text>
-          </View>
-        )}
-      </BottomSheet>
-      {selectedPicker === 'images' && photoError && (
-        <AttachmentPickerError
-          attachmentPickerBottomSheetHeight={attachmentPickerBottomSheetHeight}
-          attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
-          AttachmentPickerErrorImage={AttachmentPickerErrorImage}
-          attachmentPickerErrorText={attachmentPickerErrorText}
-        />
+        )
+      ) : (
+        // TODO V9: Remove these inline styles
+        <View
+          style={{
+            width: '100%',
+            height: attachmentPickerBottomSheetHeight - attachmentSelectionBarHeight,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text>{lastSelectedPickerRef.current}</Text>
+        </View>
       )}
-    </>
+    </BottomSheet>
   );
 };
 

@@ -571,7 +571,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     attachmentPickerBottomSheetHandleHeight = 20,
     attachmentPickerBottomSheetHeight = 333,
     AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
-    attachmentSelectionBarHeight = 52,
+    attachmentSelectionBarHeight = 72,
     AudioAttachment = AudioAttachmentDefault,
     AudioAttachmentUploadPreview = AudioAttachmentUploadPreviewDefault,
     AudioRecorder = AudioRecorderDefault,

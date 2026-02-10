@@ -133,7 +133,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
 
   /**
    * UI component to display File type attachment.
-   * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachment.tsx)
+   * Defaults to: [FilePickerIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachment.tsx)
    */
   FileAttachment: React.ComponentType<FileAttachmentProps>;
   /**
