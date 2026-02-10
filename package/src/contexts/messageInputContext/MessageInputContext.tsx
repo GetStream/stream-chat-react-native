@@ -91,7 +91,9 @@ export type LocalMessageInputContext = {
   /**
    * Function for taking a photo and uploading it
    */
-  takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
+  takeAndUploadImage: (
+    mediaType?: MediaTypes,
+  ) => Promise<{ askToOpenSettings?: boolean; canceled?: boolean } | undefined>;
   uploadNewFile: (file: File) => Promise<void>;
   audioRecorderManager: AudioRecorderManager;
   startVoiceRecording: () => Promise<boolean | undefined>;
@@ -398,7 +400,8 @@ export const MessageInputProvider = ({
 }: PropsWithChildren<{
   value: InputMessageInputContextValue;
 }>) => {
-  const { closePicker, openPicker, attachmentPickerStore } = useAttachmentPickerContext();
+  const { closePicker, openPicker, attachmentPickerStore, disableAttachmentPicker } =
+    useAttachmentPickerContext();
   const { client } = useChatContext();
   const channelCapabilities = useOwnCapabilitiesContext();
   const [audioRecorderManager] = useState(new AudioRecorderManager());
@@ -462,7 +465,7 @@ export const MessageInputProvider = ({
       mediaType,
     });
 
-    if (file.askToOpenSettings) {
+    if (file.askToOpenSettings && disableAttachmentPicker) {
       Alert.alert(
         t('Allow camera access in device settings'),
         t('Device camera is used to take photos or videos.'),
@@ -473,11 +476,13 @@ export const MessageInputProvider = ({
       );
     }
 
-    if (file.cancelled) {
-      return;
+    if (file.askToOpenSettings || file.cancelled) {
+      return file;
     }
 
     await uploadNewFile(file);
+
+    return file;
   });
 
   /**

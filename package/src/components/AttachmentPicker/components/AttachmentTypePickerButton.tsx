@@ -71,16 +71,14 @@ export const CameraPickerButton = () => {
   const { attachmentPickerStore } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
-  const { hasCameraPicker, takeAndUploadImage } = useMessageInputContext();
+  const { hasCameraPicker } = useMessageInputContext();
 
   const onCameraPickerPress = useStableCallback(() => {
     attachmentPickerStore.setSelectedPicker('camera-photo');
-    takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
   });
 
   const onVideoRecorderPickerPress = useStableCallback(() => {
     attachmentPickerStore.setSelectedPicker('camera-video');
-    takeAndUploadImage('video');
   });
 
   return hasCameraPicker ? (

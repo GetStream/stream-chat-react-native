@@ -1,12 +1,12 @@
-import React, { useMemo, useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { AttachmentMediaPicker } from './AttachmentMediaPicker/AttachmentMediaPicker';
 
 import { useMessageInputContext, useTranslationContext } from '../../../contexts';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useAttachmentPickerState } from '../../../hooks';
-import { FilePickerIcon } from '../../../icons';
+import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
+import { Camera, FilePickerIcon, Recorder } from '../../../icons';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 
@@ -84,6 +84,70 @@ export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericCon
   );
 };
 
+const AttachmentCameraPickerIcon = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return <Camera height={22} stroke={semantics.textTertiary} width={22} />;
+};
+
+const AttachmentVideoPickerIcon = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return <Recorder height={22} stroke={semantics.textTertiary} width={22} />;
+};
+
+export const AttachmentCameraPicker = (
+  props: AttachmentPickerContentProps & { videoOnly?: boolean },
+) => {
+  const [permissionDenied, setPermissionDenied] = useState(false);
+  const { t } = useTranslationContext();
+  const { height, videoOnly } = props;
+  const { takeAndUploadImage } = useMessageInputContext();
+
+  const openCameraPicker = useStableCallback(async () => {
+    const result = await takeAndUploadImage(
+      videoOnly ? 'video' : Platform.OS === 'android' ? 'image' : 'mixed',
+    );
+    if (result?.askToOpenSettings) {
+      setPermissionDenied(true);
+    }
+  });
+
+  const openSettings = useStableCallback(async () => {
+    try {
+      await Linking.openSettings();
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  useEffect(() => {
+    openCameraPicker();
+  }, [openCameraPicker]);
+
+  return permissionDenied ? (
+    <AttachmentPickerGenericContent
+      Icon={AttachmentCameraPickerIcon}
+      onPress={openSettings}
+      height={height}
+      buttonText={t('Change in Settings')}
+      description={t('You have not granted access to your camera')}
+    />
+  ) : (
+    <AttachmentPickerGenericContent
+      Icon={videoOnly ? AttachmentVideoPickerIcon : AttachmentCameraPickerIcon}
+      onPress={openCameraPicker}
+      height={height}
+      buttonText={t('Open Camera')}
+      description={t('Take a video and share')}
+    />
+  );
+};
+
 const AttachmentFilePickerIcon = () => {
   const {
     theme: { semantics },
@@ -126,6 +190,14 @@ export const AttachmentPickerContent = (props: AttachmentPickerContentProps) => 
 
   if (lastSelectedPickerRef.current === 'files') {
     return <AttachmentFilePicker height={height} />;
+  }
+
+  if (lastSelectedPickerRef.current === 'camera-photo') {
+    return <AttachmentCameraPicker height={height} />;
+  }
+
+  if (lastSelectedPickerRef.current === 'camera-video') {
+    return <AttachmentCameraPicker height={height} videoOnly />;
   }
 
   return null;
