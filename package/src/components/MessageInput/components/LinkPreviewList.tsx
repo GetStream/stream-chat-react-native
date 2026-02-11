@@ -62,7 +62,7 @@ export const LinkPreviewCard = ({ linkPreview }: LinkPreviewProps) => {
         </View>
         <View style={styles.metadataContainer}>
           {title ? (
-            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.titleText}>
+            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.title}>
               {title}
             </Text>
           ) : null}
@@ -106,14 +106,19 @@ const useStyles = () => {
       StyleSheet.create({
         linkContainer: {
           flexDirection: 'row',
+          gap: primitives.spacingXxs,
           ...linkPreviewList.linkContainer,
         },
-        linkIcon: { alignSelf: 'center', marginRight: 4, ...linkPreviewList.linkIcon },
+        linkIcon: { alignSelf: 'center', ...linkPreviewList.linkIcon },
         container: {
+          alignItems: 'center',
           flexDirection: 'row',
           backgroundColor: semantics.chatBgOutgoing,
-          padding: primitives.spacingXs,
+          paddingVertical: primitives.spacingXs,
+          paddingLeft: primitives.spacingXs,
+          paddingRight: primitives.spacingSm,
           borderRadius: components.messageBubbleRadiusAttachment,
+          gap: primitives.spacingXs,
           ...linkPreviewList.container,
         },
         imageWrapper: {
@@ -128,7 +133,7 @@ const useStyles = () => {
           ...linkPreviewList.dismissWrapper,
         },
         thumbnail: {
-          borderRadius: components.messageBubbleRadiusAttachment,
+          borderRadius: primitives.radiusMd,
           height: 40,
           width: 40,
           ...linkPreviewList.thumbnail,
@@ -138,25 +143,25 @@ const useStyles = () => {
           ...linkPreviewList.wrapper,
         },
         metadataContainer: {
-          marginLeft: primitives.spacingXs,
-          flex: 1,
-          minWidth: 0,
+          flexShrink: 1,
           ...linkPreviewList.metadataContainer,
         },
         text: {
           fontSize: primitives.typographyFontSizeXs,
-          // TODO: Change this to a better semantic once chatTextOutgoing is available
-          color: semantics.brand900,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightTight,
+          color: semantics.chatTextOutgoing,
+          flexShrink: 1,
           ...linkPreviewList.text,
         },
-        titleText: {
-          fontWeight: primitives.typographyFontWeightBold,
+        title: {
+          fontWeight: primitives.typographyFontWeightSemiBold,
           fontSize: primitives.typographyFontSizeXs,
-          // TODO: Change this to a better semantic once chatTextOutgoing is available
-          color: semantics.brand900,
+          lineHeight: primitives.typographyLineHeightTight,
+          color: semantics.chatTextOutgoing,
           ...linkPreviewList.titleText,
         },
       }),
-    [linkPreviewList, semantics.brand900, semantics.chatBgOutgoing],
+    [linkPreviewList, semantics],
   );
 };

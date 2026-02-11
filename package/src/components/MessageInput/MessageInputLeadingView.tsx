@@ -6,7 +6,7 @@ import { textComposerStateSelector } from './utils/messageComposerSelectors';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
-import { GiphyBadge } from '../ui/GiphyBadge';
+import { GiphyChip } from '../ui/GiphyChip';
 
 export const MessageInputLeadingView = () => {
   const messageComposer = useMessageComposer();
@@ -15,7 +15,7 @@ export const MessageInputLeadingView = () => {
 
   return command ? (
     <View style={styles.giphyContainer}>
-      <GiphyBadge />
+      <GiphyChip />
     </View>
   ) : null;
 };

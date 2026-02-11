@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -8,11 +8,17 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
+import { ProgressControlThumb } from './ProgressThumb';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 import { resampleWaveformData } from '../MessageInput/utils/audioSampling';
 
 export type WaveProgressBarProps = {
+  /**
+   * If true, the underlying attachment is playing.
+   */
+  isPlaying?: boolean;
   /**
    * The progress of the waveform in percentage
    */
@@ -25,10 +31,6 @@ export type WaveProgressBarProps = {
    * The number of amplitudes to display
    */
   amplitudesCount?: number;
-  /**
-   * The color of the filled waveform
-   */
-  filledColor?: string;
   /**
    * The function to be called when the user ends dragging the waveform
    */
@@ -44,38 +46,28 @@ export type WaveProgressBarProps = {
 };
 
 const WAVEFORM_WIDTH = 2;
+const WAVEFORM_GAP = 2;
 const WAVE_MAX_HEIGHT = 20;
 const WAVE_MIN_HEIGHT = 2;
 
-const ProgressControlThumb = ({ style }: { style?: StyleProp<ViewStyle> }) => {
-  const styles = useStyles();
-  return (
-    <View
-      hitSlop={20}
-      style={[styles.progressControlThumbStyle, primitives.lightElevation4, style]}
-    />
-  );
-};
-
 export const WaveProgressBar = React.memo(
   (props: WaveProgressBarProps) => {
+    const [width, setWidth] = useState<number>(0);
     /* On Android, the seek doesn't work for AAC files, hence we disable progress drag for now */
     const showProgressDrag = Platform.OS === 'ios';
     const {
-      amplitudesCount = 70,
-      filledColor,
+      amplitudesCount = Math.max(20, Math.floor(width / (WAVEFORM_WIDTH + WAVEFORM_GAP))),
+      isPlaying = false,
       onEndDrag,
       onProgressDrag,
       onStartDrag,
       progress,
       waveformData,
     } = props;
-    const eachWaveformWidth = WAVEFORM_WIDTH * 2;
+    const eachWaveformWidth = WAVEFORM_WIDTH + WAVEFORM_GAP;
     const fullWidth = (amplitudesCount - 1) * eachWaveformWidth;
     const state = useSharedValue(progress);
     const [currentWaveformProgress, setCurrentWaveformProgress] = useState<number>(0);
-
-    const styles = useStyles();
 
     const waveFormNumberFromProgress = useCallback(
       (progress: number) => {
@@ -145,7 +137,12 @@ export const WaveProgressBar = React.memo(
 
     return (
       <GestureDetector gesture={pan}>
-        <View style={[styles.container, container]}>
+        <View
+          onLayout={({ nativeEvent }) => {
+            setWidth(nativeEvent.layout.width);
+          }}
+          style={[styles.container, container]}
+        >
           {resampledWaveformData.map((waveform, index) => (
             <Animated.View
               key={index}
@@ -154,7 +151,7 @@ export const WaveProgressBar = React.memo(
                 {
                   backgroundColor:
                     index < currentWaveformProgress
-                      ? filledColor || semantics.chatWaveformBarPlaying
+                      ? semantics.chatWaveformBarPlaying
                       : semantics.chatWaveformBar,
                   height:
                     waveform * WAVE_MAX_HEIGHT > WAVE_MIN_HEIGHT
@@ -167,7 +164,7 @@ export const WaveProgressBar = React.memo(
           ))}
           {showProgressDrag && (onEndDrag || onProgressDrag) && (
             <Animated.View style={[thumbStyles, thumb]}>
-              <ProgressControlThumb />
+              <ProgressControlThumb isPlaying={isPlaying} />
             </Animated.View>
           )}
         </View>
@@ -186,41 +183,17 @@ export const WaveProgressBar = React.memo(
   },
 );
 
-const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          alignItems: 'center',
-          flexDirection: 'row',
-        },
-        progressControlThumbStyle: {
-          backgroundColor: semantics.accentPrimary,
-          borderColor: semantics.borderCoreOnAccent,
-          height: 12,
-          width: 12,
-          borderRadius: primitives.radiusMax,
-          borderWidth: 2,
-          elevation: 6,
-          shadowOffset: {
-            height: 3,
-            width: 0,
-          },
-          shadowOpacity: 0.27,
-          shadowRadius: 4.65,
-        },
-        waveform: {
-          alignSelf: 'center',
-          borderRadius: primitives.radiusXxs,
-          marginRight: WAVEFORM_WIDTH,
-          width: WAVEFORM_WIDTH,
-        },
-      }),
-    [semantics],
-  );
-};
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: WAVEFORM_GAP,
+  },
+  waveform: {
+    alignSelf: 'center',
+    borderRadius: primitives.radiusXxs,
+    width: WAVEFORM_WIDTH,
+  },
+});
 
 WaveProgressBar.displayName = 'WaveProgressBar';

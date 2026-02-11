@@ -5,7 +5,8 @@ import type { IconProps } from '../../../icons/utils/base';
 import { semantics } from '../../../theme';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
-export const BASE_AVATAR_SIZE = 32;
+// TODO: Handle this better later depending on the size of the avatar used
+export const BASE_AVATAR_SIZE = 24;
 
 export const Colors = {
   accent_blue: '#005FFF',
@@ -118,6 +119,8 @@ export type Theme = {
   };
   audioAttachment: {
     container: ViewStyle;
+    centerContainer: ViewStyle;
+    audioInfo: ViewStyle;
     leftContainer: ViewStyle;
     playPauseButton: ViewStyle;
     progressControlContainer: ViewStyle;
@@ -274,11 +277,6 @@ export type Theme = {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
-    attachmentUnsupportedIndicator: {
-      container: ViewStyle;
-      warningIcon: IconProps;
-      text: TextStyle;
-    };
     attachmentUploadPreviewList: {
       flatList: ViewStyle;
       itemSeparator: ViewStyle;
@@ -337,6 +335,31 @@ export type Theme = {
       fileTextContainer: ViewStyle;
       uploadProgressOverlay: ViewStyle;
       wrapper: ViewStyle;
+    };
+    fileUploadInProgressIndicator: {
+      container: ViewStyle;
+      indicator: ViewStyle;
+    };
+    fileUploadRetryIndicator: {
+      container: ViewStyle;
+      networkErrorContainer: ViewStyle;
+      networkErrorText: TextStyle;
+      retryButton: ViewStyle;
+      retryText: TextStyle;
+    };
+    fileUploadNotSupportedIndicator: {
+      container: ViewStyle;
+      notSupportedText: TextStyle;
+    };
+    imageUploadInProgressIndicator: {
+      container: ViewStyle;
+      indicator: ViewStyle;
+    };
+    imageUploadRetryIndicator: {
+      container: ViewStyle;
+    };
+    imageUploadNotSupportedIndicator: {
+      container: ViewStyle;
     };
     fileUploadPreview: {
       flatList: ViewStyle;
@@ -404,11 +427,6 @@ export type Theme = {
     suggestionsListContainer: {
       container: ViewStyle;
       flatlist: ViewStyle;
-    };
-    uploadProgressIndicator: {
-      container: ViewStyle;
-      indicatorColor: string;
-      overlay: ViewStyle;
     };
     videoAttachmentUploadPreview: {
       durationContainer: ViewStyle;
@@ -534,24 +552,15 @@ export type Theme = {
       spacer: ViewStyle;
     };
     card: {
-      authorName: TextStyle;
-      authorNameContainer: ViewStyle;
-      authorNameFooter: TextStyle;
-      authorNameFooterContainer: ViewStyle;
-      authorNameMask: ViewStyle;
       container: ViewStyle;
       cover: ImageStyle;
       footer: ViewStyle & {
         description: TextStyle;
         title: TextStyle;
       };
-      noURI: ViewStyle;
-      playButtonStyle: {
-        durationTextStyle: TextStyle;
-        roundedView: ViewStyle;
-        videoContainer: ViewStyle;
-      };
-      playIcon: IconProps;
+      wrapper: ViewStyle;
+      linkPreview: ViewStyle;
+      linkPreviewText: TextStyle;
     };
     container: ViewStyle;
     content: {
@@ -626,20 +635,27 @@ export type Theme = {
       };
     };
     giphy: {
-      buttonContainer: ViewStyle;
-      cancel: TextStyle;
+      actionButtonContainer: ViewStyle;
+      actionButton: ViewStyle;
+      actionButtonText: TextStyle;
       container: ViewStyle;
       giphy: ImageStyle;
       giphyContainer: ViewStyle;
       giphyHeaderText: TextStyle;
-      giphyHeaderTitle: TextStyle;
       giphyMask: ViewStyle;
       giphyMaskText: TextStyle;
       header: ViewStyle;
-      selectionContainer: ViewStyle;
-      send: TextStyle;
-      shuffle: TextStyle;
+      imageIndicatorContainer: ViewStyle;
+    };
+    compactUrlPreview: {
+      wrapper: ViewStyle;
+      container: ViewStyle;
+      cardCover: ImageStyle;
+      cardFooter: ViewStyle;
       title: TextStyle;
+      description: TextStyle;
+      linkPreview: ViewStyle;
+      linkPreviewText: TextStyle;
     };
     headerWrapper: ViewStyle;
     lastMessageContainer: ViewStyle;
@@ -831,7 +847,6 @@ export type Theme = {
   };
   progressControl: {
     container: ViewStyle;
-    filledColor: ColorValue;
     filledStyles: ViewStyle;
     thumb: ViewStyle;
   };
@@ -921,6 +936,8 @@ export const defaultTheme: Theme = {
     icon: {},
   },
   audioAttachment: {
+    centerContainer: {},
+    audioInfo: {},
     container: {},
     leftContainer: {},
     playPauseButton: {},
@@ -1094,11 +1111,6 @@ export const defaultTheme: Theme = {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},
-    attachmentUnsupportedIndicator: {
-      container: {},
-      text: {},
-      warningIcon: {},
-    },
     attachmentUploadPreviewList: {
       flatList: {},
       itemSeparator: {},
@@ -1147,6 +1159,31 @@ export const defaultTheme: Theme = {
       fileTextContainer: {},
       uploadProgressOverlay: {},
       wrapper: {},
+    },
+    fileUploadInProgressIndicator: {
+      container: {},
+      indicator: {},
+    },
+    fileUploadRetryIndicator: {
+      container: {},
+      networkErrorContainer: {},
+      networkErrorText: {},
+      retryButton: {},
+      retryText: {},
+    },
+    fileUploadNotSupportedIndicator: {
+      container: {},
+      notSupportedText: {},
+    },
+    imageUploadInProgressIndicator: {
+      container: {},
+      indicator: {},
+    },
+    imageUploadRetryIndicator: {
+      container: {},
+    },
+    imageUploadNotSupportedIndicator: {
+      container: {},
     },
     fileUploadPreview: {
       flatList: {},
@@ -1218,11 +1255,6 @@ export const defaultTheme: Theme = {
     suggestionsListContainer: {
       container: {},
       flatlist: {},
-    },
-    uploadProgressIndicator: {
-      container: {},
-      indicatorColor: '',
-      overlay: {},
     },
     wrapper: {},
     linkPreviewList: {
@@ -1332,32 +1364,25 @@ export const defaultTheme: Theme = {
       },
     },
     card: {
-      authorName: {},
-      authorNameContainer: {},
-      authorNameFooter: {},
-      authorNameFooterContainer: {},
-      authorNameMask: {},
       container: {},
       cover: {},
       footer: {
         description: {},
-        title: {
-          fontWeight: '700',
-        },
+        title: {},
       },
-      noURI: {
-        borderLeftWidth: 2,
-        paddingLeft: 8,
-      },
-      playButtonStyle: {
-        durationTextStyle: {},
-        roundedView: {},
-        videoContainer: {},
-      },
-      playIcon: {
-        height: 32,
-        width: 32,
-      },
+      wrapper: {},
+      linkPreview: {},
+      linkPreviewText: {},
+    },
+    compactUrlPreview: {
+      wrapper: {},
+      container: {},
+      cardCover: {},
+      cardFooter: {},
+      title: {},
+      description: {},
+      linkPreview: {},
+      linkPreviewText: {},
     },
     container: {},
     content: {
@@ -1448,20 +1473,17 @@ export const defaultTheme: Theme = {
       thumbnail: {},
     },
     giphy: {
-      buttonContainer: {},
-      cancel: {},
+      actionButton: {},
+      actionButtonContainer: {},
+      actionButtonText: {},
       container: {},
       giphy: {},
       giphyContainer: {},
       giphyHeaderText: {},
-      giphyHeaderTitle: {},
       giphyMask: {},
       giphyMaskText: {},
       header: {},
-      selectionContainer: {},
-      send: {},
-      shuffle: {},
-      title: {},
+      imageIndicatorContainer: {},
     },
     headerWrapper: {},
     lastMessageContainer: {},
@@ -1656,7 +1678,6 @@ export const defaultTheme: Theme = {
   },
   progressControl: {
     container: {},
-    filledColor: '',
     filledStyles: {},
     thumb: {},
   },

@@ -123,7 +123,7 @@ export const AudioRecordingPreview = () => {
       </View>
       <View style={[styles.progressBar, progressBar]}>
         {/* Since the progress is in range 0-1 we convert it in terms of 100% */}
-        <WaveProgressBar amplitudesCount={60} progress={progress} waveformData={waveformData} />
+        <WaveProgressBar progress={progress} waveformData={waveformData} />
       </View>
     </View>
   );
@@ -140,6 +140,7 @@ const useStyles = () => {
           paddingVertical: primitives.spacingSm,
           paddingLeft: primitives.spacingSm,
           paddingRight: primitives.spacingMd,
+          gap: primitives.spacingMd,
         },
         durationText: {
           fontSize: primitives.typographyFontSizeMd,
@@ -151,7 +152,9 @@ const useStyles = () => {
           alignItems: 'center',
           gap: primitives.spacingSm,
         },
-        progressBar: {},
+        progressBar: {
+          flex: 1,
+        },
       }),
     [],
   );

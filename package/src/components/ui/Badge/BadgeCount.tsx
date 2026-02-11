@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { primitives } from '../../theme';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../theme';
 
 export type BadgeCountProps = {
   count: string | number;
@@ -61,7 +61,7 @@ const useStyles = () => {
     theme: { semantics },
   } = useTheme();
 
-  const { badgeBgDefault, badgeTextInverse, borderCoreSubtle } = semantics;
+  const { badgeBgDefault, badgeText, borderCoreSubtle } = semantics;
 
   return useMemo(
     () =>
@@ -74,11 +74,11 @@ const useStyles = () => {
           justifyContent: 'center',
         },
         text: {
-          color: badgeTextInverse,
+          color: badgeText,
           includeFontPadding: false,
           textAlign: 'center',
         },
       }),
-    [badgeBgDefault, badgeTextInverse, borderCoreSubtle],
+    [badgeBgDefault, badgeText, borderCoreSubtle],
   );
 };

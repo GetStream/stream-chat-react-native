@@ -2,7 +2,7 @@ import { TextStyle } from 'react-native';
 
 import { UserAvatarProps } from './UserAvatar';
 
-import { OnlineIndicatorProps } from '../OnlineIndicator';
+import { OnlineIndicatorProps } from '../Badge';
 
 const avatarSizes = {
   lg: {

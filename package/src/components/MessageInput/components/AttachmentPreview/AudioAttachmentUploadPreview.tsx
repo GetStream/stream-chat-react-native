@@ -5,10 +5,14 @@ import { StyleSheet, View } from 'react-native';
 import { FileReference, LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
-import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
-import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
+import {
+  FileUploadNotSupportedIndicator,
+  FileUploadRetryIndicator,
+  FileUploadInProgressIndicator,
+} from './AttachmentUploadProgressIndicator';
 
-import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
+import { AudioAttachment } from '../../../../components/Attachment/Audio';
+import { useTheme } from '../../../../contexts';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { primitives } from '../../../../theme';
@@ -57,32 +61,39 @@ export const AudioAttachmentUploadPreview = ({
     removeAttachments([attachment.localMetadata.id]);
   }, [attachment, removeAttachments]);
 
+  const renderIndicator = useMemo(() => {
+    if (indicatorType === ProgressIndicatorTypes.IN_PROGRESS) {
+      return <FileUploadInProgressIndicator />;
+    }
+    if (indicatorType === ProgressIndicatorTypes.RETRY) {
+      return <FileUploadRetryIndicator onPress={onRetryHandler} />;
+    }
+    if (indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED) {
+      return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
+    }
+    return null;
+  }, [attachment.localMetadata, indicatorType, onRetryHandler]);
+
   return (
     <View style={styles.wrapper} testID={'audio-attachment-upload-preview'}>
-      <AttachmentUploadProgressIndicator
-        onPress={onRetryHandler}
-        style={styles.overlay}
-        type={indicatorType}
-      >
-        <AudioAttachment
-          isPreview={true}
-          item={finalAttachment}
-          showSpeedSettings={false}
-          titleMaxLength={12}
-          maxAmplitudesCount={25}
-        />
-      </AttachmentUploadProgressIndicator>
+      <AudioAttachment
+        isPreview={true}
+        item={finalAttachment}
+        showSpeedSettings={true}
+        containerStyle={styles.audioAttachmentContainer}
+        indicator={renderIndicator}
+      />
       <View style={styles.dismissWrapper}>
         <AttachmentRemoveControl onPress={onDismissHandler} />
       </View>
-      {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-        <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
-      ) : null}
     </View>
   );
 };
 
 const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
@@ -91,13 +102,16 @@ const useStyles = () => {
           right: 0,
           top: 0,
         },
-        overlay: {
-          borderRadius: primitives.radiusLg,
-        },
         wrapper: {
           padding: primitives.spacingXxs,
         },
+        audioAttachmentContainer: {
+          borderRadius: primitives.radiusLg,
+          borderColor: semantics.borderCoreDefault,
+          borderWidth: 1,
+          maxWidth: 256, // TODO: Fix this
+        },
       }),
-    [],
+    [semantics.borderCoreDefault],
   );
 };

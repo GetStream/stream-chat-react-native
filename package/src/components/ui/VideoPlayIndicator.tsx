@@ -40,7 +40,7 @@ export const VideoPlayIndicator = (props: VideoPlayIndicatorProps) => {
   return (
     <View style={[styles.container, sizes[size]]}>
       <NewPlayIcon
-        fill={semantics.controlPlayControlIconInverse}
+        fill={semantics.controlPlayControlIcon}
         height={iconSizes[size]}
         width={iconSizes[size]}
       />
@@ -53,16 +53,16 @@ const useStyles = () => {
     theme: { semantics },
   } = useTheme();
 
-  const { controlPlayControlBgInverse } = semantics;
+  const { controlPlayControlBg } = semantics;
 
   return useMemo(() => {
     return StyleSheet.create({
       container: {
         alignItems: 'center',
-        backgroundColor: controlPlayControlBgInverse,
+        backgroundColor: controlPlayControlBg,
         borderRadius: primitives.radiusMax,
         justifyContent: 'center',
       },
     });
-  }, [controlPlayControlBgInverse]);
+  }, [controlPlayControlBg]);
 };
