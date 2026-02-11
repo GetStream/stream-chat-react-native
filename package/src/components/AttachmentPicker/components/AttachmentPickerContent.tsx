@@ -12,7 +12,7 @@ import {
 } from '../../../contexts';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
-import { Camera, FilePickerIcon, PollThumbnail, Recorder } from '../../../icons';
+import { Camera, FilePickerIcon, IconProps, PollThumbnail, Recorder } from '../../../icons';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { BottomSheetFlatList } from '../../BottomSheetCompatibility/BottomSheetFlatList';
@@ -48,7 +48,7 @@ const useStyles = () => {
 };
 
 export type AttachmentPickerGenericContentProps = {
-  Icon: React.ComponentType;
+  Icon: React.ComponentType<IconProps>;
   onPress: () => void;
   height?: number;
   buttonText?: string;
@@ -61,11 +61,17 @@ export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericCon
 
   const {
     theme: {
+      semantics,
       attachmentPicker: {
         content: { container, text, infoContainer },
       },
     },
   } = useTheme();
+
+  const ThemedIcon = useCallback(
+    () => <Icon width={22} height={22} stroke={semantics.textTertiary} />,
+    [Icon, semantics.textTertiary],
+  );
 
   return (
     <View
@@ -78,7 +84,7 @@ export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericCon
       ]}
     >
       <View style={[styles.infoContainer, infoContainer]}>
-        <Icon />
+        <ThemedIcon />
         <Text style={[styles.text, text]}>{description}</Text>
       </View>
       <Button
@@ -141,14 +147,6 @@ export const AttachmentCommandPicker = () => {
   );
 };
 
-const AttachmentPollPickerIcon = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
-  return <PollThumbnail height={22} stroke={semantics.textTertiary} width={22} />;
-};
-
 export const AttachmentPollPicker = (props: AttachmentPickerContentProps) => {
   const { t } = useTranslationContext();
   const { height } = props;
@@ -160,29 +158,13 @@ export const AttachmentPollPicker = (props: AttachmentPickerContentProps) => {
 
   return (
     <AttachmentPickerGenericContent
-      Icon={AttachmentPollPickerIcon}
+      Icon={PollThumbnail}
       onPress={openPollCreationModal}
       height={height}
       buttonText={t('Create Poll')}
       description={t('Create a poll and let everyone vote')}
     />
   );
-};
-
-const AttachmentCameraPickerIcon = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
-  return <Camera height={22} stroke={semantics.textTertiary} width={22} />;
-};
-
-const AttachmentVideoPickerIcon = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
-  return <Recorder height={22} stroke={semantics.textTertiary} width={22} />;
 };
 
 export const AttachmentCameraPicker = (
@@ -216,7 +198,7 @@ export const AttachmentCameraPicker = (
 
   return permissionDenied ? (
     <AttachmentPickerGenericContent
-      Icon={AttachmentCameraPickerIcon}
+      Icon={Camera}
       onPress={openSettings}
       height={height}
       buttonText={t('Change in Settings')}
@@ -224,21 +206,13 @@ export const AttachmentCameraPicker = (
     />
   ) : (
     <AttachmentPickerGenericContent
-      Icon={videoOnly ? AttachmentVideoPickerIcon : AttachmentCameraPickerIcon}
+      Icon={videoOnly ? Recorder : Camera}
       onPress={openCameraPicker}
       height={height}
       buttonText={t('Open Camera')}
       description={t('Take a video and share')}
     />
   );
-};
-
-const AttachmentFilePickerIcon = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
-  return <FilePickerIcon height={22} stroke={semantics.textTertiary} width={22} />;
 };
 
 export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
@@ -248,7 +222,7 @@ export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
 
   return (
     <AttachmentPickerGenericContent
-      Icon={AttachmentFilePickerIcon}
+      Icon={FilePickerIcon}
       onPress={pickFile}
       height={height}
       buttonText={t('Pick document')}
