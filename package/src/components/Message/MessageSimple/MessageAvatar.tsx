@@ -7,6 +7,7 @@ import {
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { AvatarProps, UserAvatar } from '../../ui';
+import { avatarSizes } from '../../ui/Avatar/constants';
 
 export type MessageAvatarPropsWithContext = Pick<
   MessageContextValue,
@@ -19,7 +20,7 @@ const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
   const {
     theme: {
       messageSimple: {
-        avatarWrapper: { container, leftAlign, rightAlign, spacer },
+        avatarWrapper: { container, leftAlign, rightAlign },
       },
     },
   } = useTheme();
@@ -34,7 +35,7 @@ const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
       {visible && message.user ? (
         <UserAvatar user={message.user} size={size ?? 'sm'} />
       ) : (
-        <View style={spacer} testID='spacer' />
+        <View style={avatarSizes[size ?? 'sm']} testID='spacer' />
       )}
     </View>
   );

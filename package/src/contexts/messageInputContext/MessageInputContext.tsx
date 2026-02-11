@@ -27,13 +27,15 @@ import {
   AutoCompleteSuggestionHeaderProps,
   AutoCompleteSuggestionItemProps,
   AutoCompleteSuggestionListProps,
+  FileUploadNotSupportedIndicatorProps,
+  FileUploadRetryIndicatorProps,
+  ImageUploadRetryIndicatorProps,
   PollContentProps,
   StopMessageStreamingButtonProps,
 } from '../../components';
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
-import type { AttachmentUploadProgressIndicatorProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
@@ -196,6 +198,13 @@ export type InputMessageInputContextValue = {
   FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
   VideoAttachmentUploadPreview: React.ComponentType<VideoAttachmentUploadPreviewProps>;
 
+  FileUploadInProgressIndicator: React.ComponentType;
+  FileUploadRetryIndicator: React.ComponentType<FileUploadRetryIndicatorProps>;
+  FileUploadNotSupportedIndicator: React.ComponentType<FileUploadNotSupportedIndicatorProps>;
+  ImageUploadInProgressIndicator: React.ComponentType;
+  ImageUploadRetryIndicator: React.ComponentType<ImageUploadRetryIndicatorProps>;
+  ImageUploadNotSupportedIndicator: React.ComponentType;
+
   /**
    * Custom UI component to display the remaining cooldown a user will have to wait before
    * being allowed to send another message. This component is displayed in place of the
@@ -248,10 +257,6 @@ export type InputMessageInputContextValue = {
    */
   StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps>;
   StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps> | null;
-  /**
-   * Custom UI component to render upload progress indicator on attachment preview.
-   */
-  AttachmentUploadProgressIndicator: React.ComponentType<AttachmentUploadProgressIndicatorProps>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *

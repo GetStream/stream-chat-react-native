@@ -130,7 +130,7 @@ describe('Giphy', () => {
         expect(imageProps.source.uri).toBe(specificSizedGiphyData.url);
       };
       checkImageProps(
-        screen.getByTestId('giphy-attachment-image').props,
+        screen.getByLabelText('Giphy Attachment Image').props,
         attachment.giphy.fixed_height,
       );
     });
@@ -146,7 +146,7 @@ describe('Giphy', () => {
         expect(imageProps.source.uri).toBe(specificSizedGiphyData.url);
       };
       checkImageProps(
-        screen.getByTestId('giphy-attachment-image').props,
+        screen.getByLabelText('Giphy Attachment Image').props,
         attachment.giphy.original,
       );
     });

@@ -118,9 +118,7 @@ import {
   ReactionData,
 } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
-import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
-import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/AudioAttachment';
-import { Card as CardDefault } from '../Attachment/Card';
+import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/Audio';
 import { FileAttachment as FileAttachmentDefault } from '../Attachment/FileAttachment';
 import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment/FileAttachmentGroup';
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
@@ -129,6 +127,7 @@ import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
+import { URLPreview as URLPreviewDefault } from '../Attachment/UrlPreview';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerContent as DefaultAttachmentPickerContent } from '../AttachmentPicker/components/AttachmentPickerContent';
@@ -167,7 +166,12 @@ import { ReactionListBottom as ReactionListBottomDefault } from '../Message/Mess
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
-import { AttachmentUploadProgressIndicator as AttachmentUploadProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { FileUploadInProgressIndicator as FileUploadInProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { FileUploadRetryIndicator as FileUploadRetryIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { FileUploadNotSupportedIndicator as FileUploadNotSupportedIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { ImageUploadInProgressIndicator as ImageUploadInProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { ImageUploadRetryIndicator as ImageUploadRetryIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
+import { ImageUploadNotSupportedIndicator as ImageUploadNotSupportedIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview as ImageAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
@@ -311,12 +315,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       MessagesContextValue,
       | 'additionalPressableProps'
       | 'Attachment'
-      | 'AttachmentActions'
       | 'AudioAttachment'
-      | 'Card'
-      | 'CardCover'
-      | 'CardFooter'
-      | 'CardHeader'
       | 'customMessageSwipeAction'
       | 'DateHeader'
       | 'deletedMessagesVisibilityType'
@@ -553,7 +552,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     asyncMessagesSlideToCancelDistance = 75,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
-    AttachmentActions = AttachmentActionsDefault,
     attachmentPickerBottomSheetHeight = 333,
     AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
     attachmentSelectionBarHeight = 72,
@@ -576,10 +574,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     numberOfAttachmentPickerImageColumns = 3,
     giphyVersion = 'fixed_height',
     bottomInset = 0,
-    Card = CardDefault,
-    CardCover,
-    CardFooter,
-    CardHeader,
     channel,
     children,
     client,
@@ -608,6 +602,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
+    FileUploadInProgressIndicator = FileUploadInProgressIndicatorDefault,
+    FileUploadRetryIndicator = FileUploadRetryIndicatorDefault,
+    FileUploadNotSupportedIndicator = FileUploadNotSupportedIndicatorDefault,
+    ImageUploadInProgressIndicator = ImageUploadInProgressIndicatorDefault,
+    ImageUploadRetryIndicator = ImageUploadRetryIndicatorDefault,
+    ImageUploadNotSupportedIndicator = ImageUploadNotSupportedIndicatorDefault,
     FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
     Gallery = GalleryDefault,
@@ -670,8 +670,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'files',
       'poll',
       'ai_text',
-      'text',
       'attachments',
+      'text',
       'location',
     ],
     MessageDeleted = MessageDeletedDefault,
@@ -736,8 +736,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
-    AttachmentUploadProgressIndicator = AttachmentUploadProgressIndicatorDefault,
-    UrlPreview = CardDefault,
+    UrlPreview = URLPreviewDefault,
     VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
@@ -1818,7 +1817,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AttachmentPickerSelectionBar,
     attachmentSelectionBarHeight,
     AttachmentUploadPreviewList,
-    AttachmentUploadProgressIndicator,
     AudioAttachmentUploadPreview,
     AudioRecorder,
     audioRecordingEnabled,
@@ -1836,6 +1834,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doFileUploadRequest,
     editMessage,
     FileAttachmentUploadPreview,
+    FileUploadInProgressIndicator,
+    FileUploadRetryIndicator,
+    FileUploadNotSupportedIndicator,
+    ImageUploadInProgressIndicator,
+    ImageUploadRetryIndicator,
+    ImageUploadNotSupportedIndicator,
     handleAttachButtonPress,
     hasCameraPicker,
     hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,
@@ -1875,12 +1879,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const messagesContext = useCreateMessagesContext({
     additionalPressableProps,
     Attachment,
-    AttachmentActions,
     AudioAttachment,
-    Card,
-    CardCover,
-    CardFooter,
-    CardHeader,
     channelId,
     customMessageSwipeAction,
     DateHeader,

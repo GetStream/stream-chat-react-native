@@ -1949,6 +1949,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "height": 48,
                     "width": 48,
                   },
+                  undefined,
                 ]
               }
             >
@@ -2196,6 +2197,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           "height": 32,
                           "width": 32,
                         },
+                        undefined,
                       ]
                     }
                   >

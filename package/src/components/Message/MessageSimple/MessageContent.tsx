@@ -27,10 +27,34 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import { useViewport } from '../../../hooks';
+import { primitives } from '../../../theme';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
 import { useMessageData } from '../hooks/useMessageData';
+
+const useReplyStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const { isMyMessage } = useMessageContext();
+
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        minWidth: 256, // TODO: Not sure how to fix this
+        backgroundColor: isMyMessage
+          ? semantics.chatBgAttachmentOutgoing
+          : semantics.chatBgAttachmentIncoming,
+        paddingLeft: primitives.spacingSm,
+      },
+      leftContainer: {
+        borderLeftColor: isMyMessage
+          ? semantics.chatReplyIndicatorOutgoing
+          : semantics.chatReplyIndicatorIncoming,
+      },
+    });
+  }, [semantics, isMyMessage]);
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -54,9 +78,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   replyContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 8,
-    paddingTop: 8,
+    paddingHorizontal: primitives.spacingXs,
+    paddingTop: primitives.spacingXs,
   },
   rightAlignContent: {
     justifyContent: 'flex-end',
@@ -152,7 +175,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   } = props;
   const { client } = useChatContext();
   const { PollContent: PollContentOverride } = useMessagesContext();
-  const { vw } = useViewport();
+  const replyStyles = useReplyStyles();
 
   const {
     theme: {
@@ -324,7 +347,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                       key={`quoted_reply_${messageContentOrderIndex}`}
                       style={[styles.replyContainer, replyContainer]}
                     >
-                      <Reply style={{ width: vw(60) }} />
+                      <Reply styles={replyStyles} />
                     </View>
                   )
                 );

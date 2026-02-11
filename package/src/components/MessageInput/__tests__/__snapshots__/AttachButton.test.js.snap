@@ -31,6 +31,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
               "height": 48,
               "width": 48,
             },
+            undefined,
           ]
         }
       >
@@ -947,6 +948,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
               "height": 48,
               "width": 48,
             },
+            undefined,
           ]
         }
       >
@@ -1863,6 +1865,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
               "height": 48,
               "width": 48,
             },
+            undefined,
           ]
         }
       >

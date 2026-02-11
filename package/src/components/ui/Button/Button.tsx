@@ -1,5 +1,14 @@
 import React, { useMemo } from 'react';
-import { I18nManager, Pressable, PressableProps, StyleSheet, Text, View } from 'react-native';
+import {
+  I18nManager,
+  Pressable,
+  PressableProps,
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
+  Text,
+  View,
+} from 'react-native';
 
 import { buttonPadding, buttonSizes } from './constants';
 import { useButtonStyles } from './hooks/useButtonStyles';
@@ -43,6 +52,11 @@ export type ButtonProps = PressableProps & {
    * Whether the button is only an icon.
    */
   iconOnly?: boolean;
+
+  /**
+   * The style of the button.
+   */
+  style?: StyleProp<ViewStyle>;
 };
 
 export const Button = ({
@@ -56,6 +70,7 @@ export const Button = ({
   label,
   onLayout,
   disabled = false,
+  style,
   ...rest
 }: ButtonProps) => {
   const {
@@ -82,6 +97,7 @@ export const Button = ({
           height: buttonSizes[size].height,
           width: iconOnly ? buttonSizes[size].width : '100%',
         },
+        style,
       ]}
       onLayout={onLayout}
     >

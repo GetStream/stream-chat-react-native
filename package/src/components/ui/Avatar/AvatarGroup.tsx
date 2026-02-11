@@ -12,8 +12,7 @@ import { UserAvatar } from './UserAvatar';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { PeopleIcon } from '../../../icons/PeopleIcon';
 import { primitives } from '../../../theme';
-import { BadgeCount } from '../BadgeCount';
-import { OnlineIndicator } from '../OnlineIndicator';
+import { BadgeCount, OnlineIndicator } from '../Badge';
 
 export type AvatarGroupProps = {
   /**

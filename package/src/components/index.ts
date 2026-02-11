@@ -1,7 +1,6 @@
 export * from './Attachment/Attachment';
-export * from './Attachment/AttachmentActions';
-export * from './Attachment/AudioAttachment';
-export * from './Attachment/Card';
+export * from './Attachment/Audio';
+export * from './Attachment/UrlPreview';
 export * from './Attachment/FileAttachment';
 export * from './Attachment/FileAttachmentGroup';
 export * from './Attachment/FileIcon';
@@ -9,6 +8,7 @@ export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
 export * from './Attachment/VideoThumbnail';
 export * from './Attachment/ImageReloadIndicator';
+export * from './Attachment/UrlPreview';
 export * from './Attachment/utils/buildGallery/buildGallery';
 
 export * from './AttachmentPicker/AttachmentPicker';
@@ -136,7 +136,6 @@ export * from './MessageInput/components/AudioRecorder/AudioRecordingPreview';
 export * from './MessageInput/components/AudioRecorder/AudioRecordingWaveform';
 export * from './MessageInput/contexts/MicPositionContext';
 
-export * from './MessageInput/components/AttachmentPreview/AttachmentUnsupportedIndicator';
 export * from './MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 export * from './MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 export * from './MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';

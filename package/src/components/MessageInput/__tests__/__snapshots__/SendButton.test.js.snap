@@ -31,6 +31,7 @@ exports[`SendButton should render a SendButton 1`] = `
               "height": 32,
               "width": 32,
             },
+            undefined,
           ]
         }
       >
@@ -945,6 +946,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               "height": 32,
               "width": 32,
             },
+            undefined,
           ]
         }
       >

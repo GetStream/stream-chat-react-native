@@ -396,3 +396,18 @@ export const hashStringToNumber = (str: string) => {
 
   return Math.abs(hash) ?? 0;
 };
+
+export const getFileSizeDisplayText = (size?: number | string) => {
+  if (!size) {
+    return;
+  }
+  if (typeof size === 'string') {
+    size = parseFloat(size);
+  }
+
+  if (size < 1000 * 1000) {
+    return `${Math.floor(Math.floor(size / 10) / 100)} KB`;
+  }
+
+  return `${Math.floor(Math.floor(size / 10000) / 100)} MB`;
+};

@@ -50,7 +50,8 @@ describe('isAttachmentEqualHandler', () => {
 
   const getMessageWithCustomFields = () => {
     const isAttachmentEqualHandler = (prevProps, nextProps) => {
-      const propsEqual = prevProps.customField === nextProps.customField;
+      const propsEqual =
+        prevProps.customField === nextProps.customField && prevProps.type === nextProps.type;
       if (!propsEqual) {
         return false;
       }
@@ -61,7 +62,7 @@ describe('isAttachmentEqualHandler', () => {
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel
-            Card={({ customField, type }) => {
+            UrlPreview={({ attachment: { customField, type } }) => {
               if (type === 'test') {
                 return <Text testID='attachment-custom-field'>{customField}</Text>;
               }

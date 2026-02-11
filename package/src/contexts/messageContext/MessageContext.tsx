@@ -42,6 +42,8 @@ export type MessageContextValue = {
   handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
+  /** Whether or not message has only a single attachment */
+  messageHasOnlySingleAttachment: boolean;
   /** The images attached to a message */
   images: Attachment[];
   /** Boolean that determines if the edited message is pressed. */

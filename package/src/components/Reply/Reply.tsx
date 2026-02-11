@@ -1,10 +1,17 @@
 import React, { useCallback, useMemo } from 'react';
-import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import dayjs from 'dayjs';
-import { LocalMessage, MessageComposerState, PollState } from 'stream-chat';
+import {
+  isFileAttachment,
+  isImageAttachment,
+  isVideoAttachment,
+  LocalMessage,
+  MessageComposerState,
+  PollState,
+} from 'stream-chat';
 
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -35,41 +42,49 @@ const selector = (nextValue: PollState) => ({
   name: nextValue.name,
 });
 
-const RightContent = React.memo((props: { message: LocalMessage }) => {
-  const { message } = props;
-  const attachments = message?.attachments;
-  const styles = useStyles();
+const RightContent = React.memo(
+  (props: Pick<ReplyPropsWithContext, 'ImageComponent' | 'message'>) => {
+    const { ImageComponent, message } = props;
+    const attachments = message?.attachments;
+    const styles = useStyles();
 
-  if (!attachments || attachments.length > 1) {
-    return null;
-  }
+    if (!attachments || attachments.length > 1) {
+      return null;
+    }
 
-  const attachment = attachments?.[0];
+    const attachment = attachments?.[0];
+    const uri = attachment?.image_url || attachment?.thumb_url;
 
-  if (attachment?.type === FileTypes.Image) {
-    return (
-      <View style={[styles.contentWrapper, styles.contentBorder]}>
-        <Image source={{ uri: attachment.image_url }} style={StyleSheet.absoluteFillObject} />
-      </View>
-    );
-  }
-  if (attachment?.type === FileTypes.Video) {
-    return (
-      <View style={[styles.contentWrapper, styles.contentBorder]}>
-        <View style={styles.attachmentContainer}>
-          <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFillObject} />
-          <VideoPlayIndicator size='sm' />
+    if (
+      attachment &&
+      (isImageAttachment(attachment) ||
+        attachment.type === FileTypes.Giphy ||
+        attachment.type === FileTypes.Imgur)
+    ) {
+      return (
+        <View style={[styles.contentWrapper, styles.contentBorder]}>
+          <ImageComponent source={{ uri }} style={StyleSheet.absoluteFillObject} />
         </View>
-      </View>
-    );
-  }
+      );
+    }
+    if (attachment && isVideoAttachment(attachment)) {
+      return (
+        <View style={[styles.contentWrapper, styles.contentBorder]}>
+          <View style={styles.attachmentContainer}>
+            <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFillObject} />
+            <VideoPlayIndicator size='sm' />
+          </View>
+        </View>
+      );
+    }
 
-  if (attachment?.type === FileTypes.File) {
-    return <FileIcon mimeType={attachment.mime_type} size={40} />;
-  }
+    if (attachment && isFileAttachment(attachment)) {
+      return <FileIcon mimeType={attachment.mime_type} size={40} />;
+    }
 
-  return null;
-});
+    return null;
+  },
+);
 
 const SubtitleText = React.memo(({ message }: { message?: LocalMessage | null }) => {
   const { client } = useChatContext();
@@ -297,17 +312,33 @@ const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
   return null;
 });
 
-export type ReplyPropsWithContext = Pick<MessageContextValue, 'message'> &
+export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
+  Pick<MessageContextValue, 'message'> &
   Pick<MessagesContextValue, 'quotedMessage'> & {
     isMyMessage: boolean;
     onDismiss: () => void;
     mode: 'reply' | 'edit';
     // This is temporary for the MessageContent Component to style the Reply component
-    style?: ViewStyle;
+    styles?: {
+      container?: ViewStyle;
+      leftContainer?: ViewStyle;
+      rightContainer?: ViewStyle;
+      title?: TextStyle;
+      subtitleContainer?: ViewStyle;
+      dismissWrapper?: ViewStyle;
+    };
   };
 
 export const ReplyWithContext = (props: ReplyPropsWithContext) => {
-  const { isMyMessage, message: messageFromContext, mode, onDismiss, quotedMessage, style } = props;
+  const {
+    isMyMessage,
+    ImageComponent,
+    message: messageFromContext,
+    mode,
+    onDismiss,
+    quotedMessage,
+    styles: stylesProp,
+  } = props;
   const {
     theme: {
       reply: {
@@ -319,7 +350,6 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         subtitleContainer,
         dismissWrapper,
       },
-      semantics,
     },
   } = useTheme();
   const styles = useStyles();
@@ -341,43 +371,28 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   }
 
   return (
-    <View style={[styles.wrapper, wrapper]}>
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: isMyMessage ? semantics.chatBgIncoming : semantics.chatBgOutgoing },
-          container,
-          style,
-        ]}
-      >
-        <View
-          style={[
-            styles.leftContainer,
-            {
-              borderLeftColor: isMyMessage
-                ? semantics.chatReplyIndicatorIncoming
-                : semantics.chatReplyIndicatorOutgoing,
-            },
-            leftContainer,
-          ]}
-        >
+    <View style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}>
+      <View style={[styles.container, container, stylesProp?.container]}>
+        <View style={[styles.leftContainer, leftContainer, stylesProp?.leftContainer]}>
           <View style={styles.titleContainer}>
-            <Text numberOfLines={1} style={[styles.title, titleStyle]}>
+            <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp?.title]}>
               {title}
             </Text>
           </View>
 
-          <View style={[styles.subtitleContainer, subtitleContainer]}>
+          <View
+            style={[styles.subtitleContainer, subtitleContainer, stylesProp?.subtitleContainer]}
+          >
             <SubtitleIcon message={quotedMessage} />
             <SubtitleText message={quotedMessage} />
           </View>
         </View>
-        <View style={[styles.rightContainer, rightContainer]}>
-          <RightContent message={quotedMessage} />
+        <View style={[styles.rightContainer, rightContainer, stylesProp?.rightContainer]}>
+          <RightContent ImageComponent={ImageComponent} message={quotedMessage} />
         </View>
       </View>
       {!messageFromContext?.quoted_message ? (
-        <View style={[styles.dismissWrapper, dismissWrapper]}>
+        <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
           <AttachmentRemoveControl onPress={onDismiss} />
         </View>
       ) : null}
@@ -425,7 +440,7 @@ export type ReplyProps = Partial<ReplyPropsWithContext>;
 
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();
-  const { client } = useChatContext();
+  const { client, ImageComponent } = useChatContext();
 
   const messageComposer = useMessageComposer();
   const { quotedMessage: quotedMessageFromComposer } = useStateStore(
@@ -447,7 +462,12 @@ export const Reply = (props: ReplyProps) => {
 
   return (
     <MemoizedReply
-      {...{ isMyMessage, message: messageFromContext, mode, onDismiss, quotedMessage }}
+      ImageComponent={ImageComponent}
+      isMyMessage={isMyMessage}
+      message={messageFromContext}
+      mode={mode}
+      onDismiss={onDismiss}
+      quotedMessage={quotedMessage}
       {...props}
     />
   );
@@ -457,6 +477,15 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const messageComposer = useMessageComposer();
+  const { quotedMessage: quotedMessageFromComposer } = useStateStore(
+    messageComposer.state,
+    messageComposerStateStoreSelector,
+  );
+  const { client } = useChatContext();
+
+  const isMyMessage = client.user?.id === quotedMessageFromComposer?.user?.id;
+
   return useMemo(
     () =>
       StyleSheet.create({
@@ -469,6 +498,7 @@ const useStyles = () => {
           borderRadius: primitives.radiusLg,
           flexDirection: 'row',
           padding: primitives.spacingXs,
+          backgroundColor: isMyMessage ? semantics.chatBgOutgoing : semantics.chatBgIncoming,
         },
         contentWrapper: {
           borderRadius: primitives.radiusMd,
@@ -491,6 +521,9 @@ const useStyles = () => {
           flex: 1,
           justifyContent: 'center',
           paddingHorizontal: primitives.spacingXs,
+          borderLeftColor: isMyMessage
+            ? semantics.chatReplyIndicatorOutgoing
+            : semantics.chatReplyIndicatorIncoming,
         },
         rightContainer: {},
         subtitle: {
@@ -523,6 +556,6 @@ const useStyles = () => {
           padding: primitives.spacingXxs,
         },
       }),
-    [semantics],
+    [isMyMessage, semantics],
   );
 };
