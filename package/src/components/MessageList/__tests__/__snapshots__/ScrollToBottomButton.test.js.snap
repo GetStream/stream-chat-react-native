@@ -45,6 +45,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
             "height": 40,
             "width": 40,
           },
+          undefined,
         ]
       }
     >

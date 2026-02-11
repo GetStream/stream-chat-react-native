@@ -132,7 +132,7 @@ const useStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       container: {
-        borderRadius: primitives.radiusXxs,
+        borderRadius: primitives.radiusMax,
         height: TRACK_HEIGHT,
         alignItems: 'center',
         flexDirection: 'row',
@@ -140,7 +140,7 @@ const useStyles = () => {
       },
       filledStyle: {
         alignSelf: 'center',
-        borderRadius: 2,
+        borderRadius: primitives.radiusMax,
         height: TRACK_HEIGHT,
         backgroundColor: semantics.chatWaveformBarPlaying,
       },

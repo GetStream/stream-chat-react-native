@@ -59,7 +59,7 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
       {ownCapabilities.queryPollVotes &&
       voteCountsByOption &&
       voteCountsByOption?.[option.id] > 5 ? (
-        <GenericPollButton onPress={onPressHandler} title={t('Show All')} />
+        <GenericPollButton onPress={onPressHandler} label={t('Show All')} />
       ) : null}
       {showAllVotes ? (
         <Modal

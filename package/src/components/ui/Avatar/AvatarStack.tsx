@@ -25,7 +25,7 @@ export const AvatarStack = (props: AvatarStackProps) => {
   const extraCount = items.length - visibleItems.length;
 
   if (extraCount > 0) {
-    visibleItems.push(<BadgeCount count={extraCount} size={avatarSize} />);
+    visibleItems.push(<BadgeCount count={extraCount} size={avatarSize === 'sm' ? 'md' : 'sm'} />);
   }
 
   const totalWidth = diameter + (visibleItems.length - 1) * visiblePortion;

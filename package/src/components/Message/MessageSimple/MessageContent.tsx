@@ -78,9 +78,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   replyContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 8,
-    paddingTop: 8,
+    paddingHorizontal: primitives.spacingXs,
+    paddingTop: primitives.spacingXs,
   },
   rightAlignContent: {
     justifyContent: 'flex-end',
