@@ -5,7 +5,7 @@ import { usePollState } from '../hooks/usePollState';
  * React hook to check if the poll was created by the logged in client.
  * @returns Whether the poll was created by the logged in client.
  */
-export const useIsPollCreatedByClient = () => {
+export const useIsPollCreatedByCurrentUser = () => {
   const { createdBy } = usePollState();
   const { client } = useChatContext();
 

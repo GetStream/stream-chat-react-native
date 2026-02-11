@@ -1,9 +1,9 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 
 import { LocalMessage, Poll, PollOption } from 'stream-chat';
 
-import { useTheme } from '../../../contexts';
+import { Button, ButtonProps } from '../../ui';
 
 export type PollButtonProps = {
   onPress?: ({ message, poll }: { message: LocalMessage; poll: Poll }) => void;
@@ -11,33 +11,29 @@ export type PollButtonProps = {
 
 export type PollVoteButtonProps = {
   option: PollOption;
+  style?: StyleProp<ViewStyle>;
 } & Pick<PollButtonProps, 'onPress'>;
 
-export const GenericPollButton = ({ onPress, title }: { onPress?: () => void; title?: string }) => {
-  const {
-    theme: {
-      colors: { accent_dark_blue },
-      poll: {
-        button: { container, text },
-      },
-    },
-  } = useTheme();
+export type GenericPollButtonProps = Partial<ButtonProps>;
 
+export const GenericPollButton = ({
+  variant = 'secondary',
+  type = 'ghost',
+  onPress,
+  label,
+  style,
+  size = 'sm',
+  ...rest
+}: GenericPollButtonProps) => {
   return (
-    <Pressable
+    <Button
+      variant={variant}
+      type={type}
+      label={label}
       onPress={onPress}
-      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.container, container]}
-    >
-      <Text style={[styles.text, { color: accent_dark_blue }, text]}>{title}</Text>
-    </Pressable>
+      size={size}
+      style={style}
+      {...rest}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    marginHorizontal: 16,
-    paddingVertical: 11,
-  },
-  text: { fontSize: 16 },
-});

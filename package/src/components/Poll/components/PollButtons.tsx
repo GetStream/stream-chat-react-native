@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 
-import { PollButtonProps } from './Button';
+import { GenericPollButton, PollButtonProps } from './Button';
 import { PollAnswersList } from './PollAnswersList';
 import { PollInputDialog } from './PollInputDialog';
 import { PollModalHeader } from './PollModalHeader';
@@ -10,9 +10,8 @@ import { PollResults } from './PollResults';
 
 import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
 import { primitives } from '../../../theme';
-import { Button } from '../../ui';
 import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
-import { useIsPollCreatedByClient } from '../hook/useIsPollCreatedByClient';
+import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
 
 export const ViewResultsButton = (props: PollButtonProps) => {
@@ -43,13 +42,11 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      <Button
-        variant='secondary'
-        type='outline'
+      <GenericPollButton
         label={t('View Results')}
         onPress={onPressHandler}
-        size='sm'
         style={styles.viewResultsButton}
+        type='outline'
       />
       {showResults ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showResults}>
@@ -92,12 +89,9 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
   return (
     <>
       {options && options.length > 10 ? (
-        <Button
-          variant='secondary'
-          type='ghost'
+        <GenericPollButton
           onPress={onPressHandler}
           label={t('See all {{count}} options', { count: options.length })}
-          size='sm'
         />
       ) : null}
       {showAllOptions ? (
@@ -141,12 +135,9 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
   return (
     <>
       {answersCount && answersCount > 0 ? (
-        <Button
-          variant='secondary'
-          type='ghost'
+        <GenericPollButton
           onPress={onPressHandler}
           label={t('View {{count}} comments', { count: answersCount })}
-          size='sm'
         />
       ) : null}
       {showAnswers ? (
@@ -184,13 +175,7 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
   return (
     <>
       {!isClosed && allowUserSuggestedOptions ? (
-        <Button
-          variant='secondary'
-          type='ghost'
-          onPress={onPressHandler}
-          label={t('Suggest an option')}
-          size='sm'
-        />
+        <GenericPollButton onPress={onPressHandler} label={t('Suggest an option')} />
       ) : null}
       {showAddOptionDialog ? (
         <PollInputDialog
@@ -227,13 +212,7 @@ export const AddCommentButton = (props: PollButtonProps) => {
   return (
     <>
       {!isClosed && allowAnswers ? (
-        <Button
-          variant='secondary'
-          type='ghost'
-          onPress={onPressHandler}
-          label={t('Add a comment')}
-          size='sm'
-        />
+        <GenericPollButton onPress={onPressHandler} label={t('Add a comment')} />
       ) : null}
       {showAddCommentDialog ? (
         <PollInputDialog
@@ -255,13 +234,11 @@ export const EndVoteButton = () => {
   const styles = useStyles();
 
   return !isClosed && createdBy?.id === client.userID ? (
-    <Button
-      variant='secondary'
-      type='outline'
+    <GenericPollButton
       label={t('End Vote')}
       onPress={endVote}
-      size='sm'
       style={styles.endVoteButton}
+      type='outline'
     />
   ) : null;
 };
@@ -284,7 +261,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  const isPollCreatedByClient = useIsPollCreatedByClient();
+  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
   return useMemo(() => {
     return StyleSheet.create({
       buttonsContainer: { gap: primitives.spacingXs },

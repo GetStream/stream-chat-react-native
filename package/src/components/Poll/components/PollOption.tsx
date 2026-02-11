@@ -20,7 +20,7 @@ import { Check } from '../../../icons';
 import { primitives } from '../../../theme';
 import { ProgressBar } from '../../ProgressControl/ProgressBar';
 import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
-import { useIsPollCreatedByClient } from '../hook/useIsPollCreatedByClient';
+import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
 
 export type PollOptionProps = {
@@ -107,7 +107,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
       semantics,
     },
   } = useTheme();
-  const isPollCreatedByClient = useIsPollCreatedByClient();
+  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
 
   const unFilledColor = isPollCreatedByClient
     ? semantics.chatPollProgressFillOutgoing
@@ -155,7 +155,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const isPollCreatedByClient = useIsPollCreatedByClient();
+  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
   const styles = useStyles();
 
   const {
