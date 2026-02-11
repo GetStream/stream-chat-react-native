@@ -240,7 +240,7 @@ export const formatMsToMinSec = (ms: number) => {
   const seconds = totalSeconds % 60;
 
   const mm = minutes; // no padding for minutes
-  const ss = String(seconds).padStart(2, '0');
+  const ss = minutes ? String(seconds).padStart(2, '0') : String(seconds);
 
   return `${mm}m ${ss}s`.replace(/^0m\s/, '');
 };

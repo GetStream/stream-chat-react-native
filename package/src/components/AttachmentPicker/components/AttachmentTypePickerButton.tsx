@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import { Platform, PressableProps } from 'react-native';
+import { Platform, PressableProps, GestureResponderEvent } from 'react-native';
 
 import {
   useAttachmentPickerContext,
@@ -31,12 +31,15 @@ const hitSlop = { bottom: 15, top: 15 };
 export const AttachmentTypePickerButton = ({
   testID,
   selected,
-  onPress,
+  onPress: onPressProp,
   Icon,
 }: AttachmentTypePickerButtonProps) => {
   const ButtonIcon = useCallback(
     (props: IconProps) => Icon && <Icon {...props} width={14} height={14} />,
     [Icon],
+  );
+  const onPress = useStableCallback((event: GestureResponderEvent) =>
+    !selected && onPressProp ? onPressProp(event) : null,
   );
   return (
     <Button

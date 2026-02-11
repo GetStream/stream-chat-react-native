@@ -79,6 +79,8 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
     },
   } = useTheme();
 
+  console.log('test', args, name);
+
   return (
     <View style={[styles.container, commandContainer]}>
       {name ? <AutoCompleteSuggestionCommandIcon name={name} /> : null}

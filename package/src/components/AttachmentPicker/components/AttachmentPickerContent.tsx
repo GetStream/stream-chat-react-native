@@ -1,13 +1,21 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { CommandSearchSource, CommandSuggestion } from 'stream-chat';
 
 import { AttachmentMediaPicker } from './AttachmentMediaPicker/AttachmentMediaPicker';
 
-import { useMessageInputContext, useTranslationContext } from '../../../contexts';
+import {
+  useMessageComposer,
+  useMessageInputContext,
+  useTranslationContext,
+} from '../../../contexts';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
-import { Camera, FilePickerIcon, Recorder } from '../../../icons';
+import { Camera, FilePickerIcon, PollThumbnail, Recorder } from '../../../icons';
 import { primitives } from '../../../theme';
+import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
+import { BottomSheetFlatList } from '../../BottomSheetCompatibility/BottomSheetFlatList';
 import { Button } from '../../ui';
 
 const useStyles = () => {
@@ -81,6 +89,83 @@ export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericCon
         onPress={onPress}
       />
     </View>
+  );
+};
+
+const keyExtractor = (item: { id: string }) => item.id;
+
+export const AttachmentCommantPickerItem = ({ item }: { item: CommandSuggestion }) => {
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+  const { inputBoxRef } = useMessageInputContext();
+
+  const handlePress = useCallback(() => {
+    textComposer.setCommand(item);
+    inputBoxRef.current?.focus();
+  }, [item, textComposer, inputBoxRef]);
+
+  return (
+    <Pressable onPress={handlePress}>
+      <CommandSuggestionItem {...item} />
+    </Pressable>
+  );
+};
+
+const renderItem = ({ item }: { item: CommandSuggestion }) => {
+  return <AttachmentCommantPickerItem item={item} />;
+};
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flexGrow: 1,
+    paddingBottom: primitives.spacing2xl,
+  },
+});
+
+export const AttachmentCommandPicker = () => {
+  const messageComposer = useMessageComposer();
+  const [commands] = useState(() => {
+    const commandsSearchSource = new CommandSearchSource(messageComposer.channel);
+    const result = commandsSearchSource.query('');
+
+    return result.items;
+  });
+
+  return (
+    <BottomSheetFlatList
+      contentContainerStyle={styles.contentContainer}
+      renderItem={renderItem}
+      data={commands}
+      keyExtractor={keyExtractor}
+    />
+  );
+};
+
+const AttachmentPollPickerIcon = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return <PollThumbnail height={22} stroke={semantics.textTertiary} width={22} />;
+};
+
+export const AttachmentPollPicker = (props: AttachmentPickerContentProps) => {
+  const { t } = useTranslationContext();
+  const { height } = props;
+  const { openPollCreationDialog, sendMessage } = useMessageInputContext();
+
+  const openPollCreationModal = useStableCallback(() => {
+    openPollCreationDialog?.({ sendMessage });
+  });
+
+  return (
+    <AttachmentPickerGenericContent
+      Icon={AttachmentPollPickerIcon}
+      onPress={openPollCreationModal}
+      height={height}
+      buttonText={t('Create Poll')}
+      description={t('Create a poll and let everyone vote')}
+    />
   );
 };
 
@@ -198,6 +283,14 @@ export const AttachmentPickerContent = (props: AttachmentPickerContentProps) => 
 
   if (lastSelectedPickerRef.current === 'camera-video') {
     return <AttachmentCameraPicker height={height} videoOnly />;
+  }
+
+  if (lastSelectedPickerRef.current === 'polls') {
+    return <AttachmentPollPicker height={height} />;
+  }
+
+  if (lastSelectedPickerRef.current === 'commands') {
+    return <AttachmentCommandPicker />;
   }
 
   return null;

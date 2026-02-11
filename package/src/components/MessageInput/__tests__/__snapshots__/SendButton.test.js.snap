@@ -246,11 +246,11 @@ exports[`SendButton should render a SendButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={20}
-                bbWidth={20}
+                bbHeight={14}
+                bbWidth={14}
                 fill="#1a1b25"
                 focusable={false}
-                height={20}
+                height={14}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -263,14 +263,14 @@ exports[`SendButton should render a SendButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 20,
-                      "width": 20,
+                      "height": 14,
+                      "width": 14,
                     },
                   ]
                 }
                 vbHeight={16}
                 vbWidth={16}
-                width={20}
+                width={14}
               >
                 <RNSVGGroup
                   fill={
@@ -379,11 +379,11 @@ exports[`SendButton should render a SendButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={20}
-                bbWidth={20}
+                bbHeight={14}
+                bbWidth={14}
                 fill="none"
                 focusable={false}
-                height={20}
+                height={14}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -398,14 +398,14 @@ exports[`SendButton should render a SendButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 20,
-                      "width": 20,
+                      "height": 14,
+                      "width": 14,
                     },
                   ]
                 }
                 vbHeight={16}
                 vbWidth={17}
-                width={20}
+                width={14}
               >
                 <RNSVGGroup
                   fill={null}
@@ -546,11 +546,11 @@ exports[`SendButton should render a SendButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={20}
-                bbWidth={20}
+                bbHeight={14}
+                bbWidth={14}
                 fill="none"
                 focusable={false}
-                height={20}
+                height={14}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -564,14 +564,14 @@ exports[`SendButton should render a SendButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 20,
-                      "width": 20,
+                      "height": 14,
+                      "width": 14,
                     },
                   ]
                 }
                 vbHeight={17}
                 vbWidth={14}
-                width={20}
+                width={14}
               >
                 <RNSVGGroup
                   fill={null}
@@ -690,11 +690,11 @@ exports[`SendButton should render a SendButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={20}
-                bbWidth={20}
+                bbHeight={14}
+                bbWidth={14}
                 fill="none"
                 focusable={false}
-                height={20}
+                height={14}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -708,14 +708,14 @@ exports[`SendButton should render a SendButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 20,
-                      "width": 20,
+                      "height": 14,
+                      "width": 14,
                     },
                   ]
                 }
                 vbHeight={16}
                 vbWidth={16}
-                width={20}
+                width={14}
               >
                 <RNSVGGroup
                   fill={null}
@@ -1160,11 +1160,11 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={20}
-                bbWidth={20}
+                bbHeight={14}
+                bbWidth={14}
                 fill="#1a1b25"
                 focusable={false}
-                height={20}
+                height={14}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -1177,14 +1177,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 20,
-                      "width": 20,
+                      "height": 14,
+                      "width": 14,
                     },
                   ]
                 }
                 vbHeight={16}
                 vbWidth={16}
-                width={20}
+                width={14}
               >
                 <RNSVGGroup
                   fill={
@@ -1293,11 +1293,11 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={20}
-                bbWidth={20}
+                bbHeight={14}
+                bbWidth={14}
                 fill="none"
                 focusable={false}
-                height={20}
+                height={14}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -1312,14 +1312,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 20,
-                      "width": 20,
+                      "height": 14,
+                      "width": 14,
                     },
                   ]
                 }
                 vbHeight={16}
                 vbWidth={17}
-                width={20}
+                width={14}
               >
                 <RNSVGGroup
                   fill={null}
@@ -1460,11 +1460,11 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={20}
-                bbWidth={20}
+                bbHeight={14}
+                bbWidth={14}
                 fill="none"
                 focusable={false}
-                height={20}
+                height={14}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -1478,14 +1478,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 20,
-                      "width": 20,
+                      "height": 14,
+                      "width": 14,
                     },
                   ]
                 }
                 vbHeight={17}
                 vbWidth={14}
-                width={20}
+                width={14}
               >
                 <RNSVGGroup
                   fill={null}
@@ -1604,11 +1604,11 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={20}
-                bbWidth={20}
+                bbHeight={14}
+                bbWidth={14}
                 fill="none"
                 focusable={false}
-                height={20}
+                height={14}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -1622,14 +1622,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 20,
-                      "width": 20,
+                      "height": 14,
+                      "width": 14,
                     },
                   ]
                 }
                 vbHeight={16}
                 vbWidth={16}
-                width={20}
+                width={14}
               >
                 <RNSVGGroup
                   fill={null}
