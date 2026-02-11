@@ -154,5 +154,11 @@
   "{{count}} votes_other": "{{count}} הצבעות",
   "🏙 Attachment...": "🏙 קובץ מצורף...",
   "You have not granted access to the photo library.": "לא הענקת גישה לספריית התמונות.",
-  "Change in Settings": "שנה בהגדרות"
+  "Change in Settings": "שנה בהגדרות",
+  "Create a poll and let everyone vote": "צור סקר ותן לכולם להצביע",
+  "Open Camera": "פתח מצלמה",
+  "Pick a document to share it with everyone": "בחר מסמך כדי לשתף אותו עם כולם",
+  "Pick document": "בחר מסמך",
+  "Take a video and share": "צלם וידאו ושתף",
+  "You have not granted access to your camera": "לא הענקת גישה למצלמה שלך"
 }

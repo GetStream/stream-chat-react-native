@@ -154,5 +154,11 @@
   "{{count}} votes_other": "{{count}} oy",
   "🏙 Attachment...": "🏙 Ek...",
   "You have not granted access to the photo library.": "Fotoğraf kitaplığına erişim izni vermediniz.",
-  "Change in Settings": "Ayarlar'da değiştir"
+  "Change in Settings": "Ayarlar'da değiştir",
+  "Create a poll and let everyone vote": "Bir anket oluşturun ve herkesin oy vermesine izin verin",
+  "Open Camera": "Kamerayı aç",
+  "Pick a document to share it with everyone": "Herkesle paylaşmak için bir belge seçin",
+  "Pick document": "Belge seç",
+  "Take a video and share": "Video çek ve paylaş",
+  "You have not granted access to your camera": "Kameranıza erişim izni vermediniz"
 }

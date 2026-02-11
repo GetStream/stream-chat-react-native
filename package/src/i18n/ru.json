@@ -154,5 +154,11 @@
   "{{count}} votes_other": "{{count}} голосов",
   "🏙 Attachment...": "🏙 Вложение...",
   "You have not granted access to the photo library.": "Вы не предоставили доступ к фотобиблиотеке.",
-  "Change in Settings": "Изменить в настройках"
+  "Change in Settings": "Изменить в настройках",
+  "Create a poll and let everyone vote": "Создайте опрос и дайте всем проголосовать",
+  "Open Camera": "Открыть камеру",
+  "Pick a document to share it with everyone": "Выберите документ, чтобы поделиться им со всеми",
+  "Pick document": "Выбрать документ",
+  "Take a video and share": "Снимите видео и поделитесь",
+  "You have not granted access to your camera": "Вы не предоставили доступ к вашей камере"
 }

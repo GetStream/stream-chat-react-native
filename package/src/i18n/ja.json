@@ -154,5 +154,11 @@
   "{{count}} votes_other": "{{count}} 票",
   "🏙 Attachment...": "🏙 アタッチメント...",
   "You have not granted access to the photo library.": "写真ライブラリへのアクセスが許可されていません。",
-  "Change in Settings": "設定で変更"
+  "Change in Settings": "設定で変更",
+  "Create a poll and let everyone vote": "投票を作成してみんなに投票してもらう",
+  "Open Camera": "カメラを開く",
+  "Pick a document to share it with everyone": "みんなと共有するドキュメントを選択",
+  "Pick document": "ドキュメントを選択",
+  "Take a video and share": "動画を撮影して共有",
+  "You have not granted access to your camera": "カメラへのアクセスが許可されていません"
 }

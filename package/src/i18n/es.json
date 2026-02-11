@@ -154,5 +154,11 @@
   "{{count}} votes_other": "{{count}} votos",
   "🏙 Attachment...": "🏙 Adjunto...",
   "You have not granted access to the photo library.": "No has concedido acceso a la biblioteca de fotos.",
-  "Change in Settings": "Cambiar en Ajustes"
+  "Change in Settings": "Cambiar en Ajustes",
+  "Create a poll and let everyone vote": "Crea una encuesta y deja que todos voten",
+  "Open Camera": "Abrir camara",
+  "Pick a document to share it with everyone": "Elige un documento para compartirlo con todos",
+  "Pick document": "Elegir documento",
+  "Take a video and share": "Graba un video y compártelo",
+  "You have not granted access to your camera": "No has concedido acceso a tu camara"
 }

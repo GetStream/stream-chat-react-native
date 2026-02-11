@@ -154,5 +154,11 @@
   "{{count}} votes_other": "{{count}} votes",
   "🏙 Attachment...": "🏙 Attachment...",
   "You have not granted access to the photo library.": "You have not granted access to the photo library.",
-  "Change in Settings": "Change in Settings"
+  "Change in Settings": "Change in Settings",
+  "Create a poll and let everyone vote": "Create a poll and let everyone vote",
+  "Open Camera": "Open Camera",
+  "Pick a document to share it with everyone": "Pick a document to share it with everyone",
+  "Pick document": "Pick document",
+  "Take a video and share": "Take a video and share",
+  "You have not granted access to your camera": "You have not granted access to your camera"
 }
