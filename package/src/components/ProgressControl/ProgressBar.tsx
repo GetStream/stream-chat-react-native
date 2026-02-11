@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { ColorValue, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts';
@@ -11,20 +11,26 @@ export type ProgressBarProps = {
   filledColor: ColorValue;
   emptyColor: ColorValue;
 };
-export const ProgressBar = (props: ProgressBarProps) => {
-  const [width, setWidth] = useState<number>(0);
-  const { progress, filledColor, emptyColor } = props;
+
+export const ProgressBar = ({ progress, filledColor, emptyColor }: ProgressBarProps) => {
   const styles = useStyles();
+
+  // clamp for safety
+  const value = Math.max(0, Math.min(progress, 1));
+  const unfilledValue = 1 - value;
+
   return (
-    <View
-      style={[styles.container, { backgroundColor: emptyColor }]}
-      onLayout={({ nativeEvent }) => {
-        setWidth(nativeEvent.layout.width);
-      }}
-    >
+    <View style={[styles.container, { backgroundColor: emptyColor }]}>
       <View
-        style={[styles.filledStyle, { backgroundColor: filledColor, width: progress * width }]}
+        style={[
+          styles.filledStyle,
+          {
+            backgroundColor: filledColor,
+            flex: value,
+          },
+        ]}
       />
+      <View style={{ flex: unfilledValue }} />
     </View>
   );
 };
