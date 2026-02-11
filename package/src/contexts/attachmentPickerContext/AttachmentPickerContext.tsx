@@ -63,7 +63,7 @@ export type AttachmentPickerContextValue = Pick<
    * **Default**
    * [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
    */
-  ImageOverlaySelectedComponent: React.ComponentType;
+  ImageOverlaySelectedComponent: React.ComponentType<{ index: number }>;
   AttachmentPickerSelectionBar: React.ComponentType;
   AttachmentPickerContent: React.ComponentType<AttachmentPickerContentProps>;
   attachmentPickerStore: AttachmentPickerStore;

@@ -11,7 +11,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
-import { formatMsToMinSec } from '../../../../utils/utils';
+import { formatMsToMinSec, getDurationLabelFromDuration } from '../../../../utils/utils';
 
 export type VideoAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<LocalVideoAttachment<CustomLocalMetadata>>;
@@ -21,13 +21,6 @@ export const VideoAttachmentUploadPreview = ({
   handleRetry,
   removeAttachments,
 }: VideoAttachmentUploadPreviewProps) => {
-  const styles = useStyles();
-
-  const durationLabel = useMemo(
-    () => (attachment.duration ? formatMsToMinSec(attachment.duration) : undefined),
-    [attachment.duration],
-  );
-
   return attachment.localMetadata.previewUri ? (
     <>
       <ImageAttachmentUploadPreview
@@ -35,12 +28,7 @@ export const VideoAttachmentUploadPreview = ({
         handleRetry={handleRetry}
         removeAttachments={removeAttachments}
       />
-      {durationLabel ? (
-        <View style={styles.durationContainer}>
-          <Recorder height={12} width={12} pathFill={styles.durationText.color} />
-          <Text style={styles.durationText}>{durationLabel}</Text>
-        </View>
-      ) : null}
+      <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
     </>
   ) : (
     <FileAttachmentUploadPreview
@@ -49,6 +37,38 @@ export const VideoAttachmentUploadPreview = ({
       removeAttachments={removeAttachments}
     />
   );
+};
+
+export const VideoAttachmentMetadataPill = ({
+  duration,
+  format = 'timer',
+}: {
+  duration?: number;
+  format?: 'descriptive' | 'timer';
+}) => {
+  const styles = useStyles();
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  const durationLabel = useMemo(() => {
+    if (!duration) {
+      return undefined;
+    }
+
+    if (format === 'timer') {
+      return getDurationLabelFromDuration(duration);
+    }
+
+    return formatMsToMinSec(duration);
+  }, [duration, format]);
+
+  return durationLabel ? (
+    <View style={styles.durationContainer}>
+      <Recorder height={12} width={12} pathFill={semantics.textInverse} />
+      <Text style={styles.durationText}>{durationLabel}</Text>
+    </View>
+  ) : null;
 };
 
 const useStyles = () => {

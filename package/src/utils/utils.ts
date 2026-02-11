@@ -225,7 +225,7 @@ export const getDurationLabelFromDuration = (duration: number) => {
   const ONE_HOUR_IN_MILLISECONDS = ONE_HOUR_IN_SECONDS * 1000;
   let durationLabel = '00:00';
   const isDurationLongerThanHour = duration / ONE_HOUR_IN_MILLISECONDS >= 1;
-  const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
+  const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'm:ss';
   const formattedVideoDuration = dayjs
     .duration(duration, 'milliseconds')
     .format(formattedDurationParam);
