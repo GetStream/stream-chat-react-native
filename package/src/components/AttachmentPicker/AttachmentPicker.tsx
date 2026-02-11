@@ -102,15 +102,6 @@ export const AttachmentPicker = () => {
     selectionBarRef.current = e.nativeEvent.layout.height;
   });
 
-  const Handle = useCallback(
-    () => (
-      <View onLayout={onAttachmentPickerSelectionBarLayout}>
-        <AttachmentPickerSelectionBar />
-      </View>
-    ),
-    [AttachmentPickerSelectionBar, onAttachmentPickerSelectionBarLayout],
-  );
-
   const animationConfigs = useBottomSheetSpringConfigs(SPRING_CONFIG);
 
   return (
@@ -118,7 +109,7 @@ export const AttachmentPicker = () => {
       enablePanDownToClose={false}
       enableContentPanningGesture={false}
       enableDynamicSizing={false}
-      handleComponent={Handle}
+      handleComponent={RenderNull}
       index={currentIndex}
       onAnimate={setCurrentIndex}
       // @ts-ignore
@@ -126,11 +117,16 @@ export const AttachmentPicker = () => {
       snapPoints={snapPoints}
       animationConfigs={animationConfigs}
     >
+      <View onLayout={onAttachmentPickerSelectionBarLayout}>
+        <AttachmentPickerSelectionBar />
+      </View>
       <AttachmentPickerContent
         height={attachmentPickerBottomSheetHeight - (selectionBarRef?.current ?? 0)}
       />
     </BottomSheet>
   );
 };
+
+const RenderNull = () => null;
 
 AttachmentPicker.displayName = 'AttachmentPicker';
