@@ -15,6 +15,8 @@ import {
   useTranslationContext,
 } from '../../contexts';
 
+import { primitives } from '../../theme';
+
 export type PollProps = Pick<PollContextValue, 'poll' | 'message'> &
   Pick<MessagesContextValue, 'PollContent'>;
 
@@ -24,8 +26,10 @@ export type PollContentProps = {
 };
 
 export const PollHeader = () => {
+  const styles = useStyles();
   const { t } = useTranslationContext();
   const { enforceUniqueVote, isClosed, maxVotesAllowed, name } = usePollState();
+
   const subtitle = useMemo(() => {
     if (isClosed) {
       return t('Vote ended');
@@ -41,7 +45,6 @@ export const PollHeader = () => {
 
   const {
     theme: {
-      colors: { text_high_emphasis, text_low_emphasis },
       poll: {
         message: { header },
       },
@@ -49,12 +52,10 @@ export const PollHeader = () => {
   } = useTheme();
 
   return (
-    <>
-      <Text style={[styles.headerTitle, { color: text_high_emphasis }, header.title]}>{name}</Text>
-      <Text style={[styles.headerSubtitle, { color: text_low_emphasis }, header.subtitle]}>
-        {subtitle}
-      </Text>
-    </>
+    <View style={styles.headerContainer}>
+      <Text style={[styles.headerTitle, header.title]}>{name}</Text>
+      <Text style={[styles.headerSubtitle, header.subtitle]}>{subtitle}</Text>
+    </View>
   );
 };
 
@@ -63,6 +64,7 @@ export const PollContent = ({
   PollHeader: PollHeaderOverride,
 }: PollContentProps) => {
   const { options } = usePollState();
+  const styles = useStyles();
 
   const {
     theme: {
@@ -98,9 +100,33 @@ export const Poll = ({ message, poll, PollContent: PollContentOverride }: PollPr
   </PollContextProvider>
 );
 
-const styles = StyleSheet.create({
-  container: { padding: 15, width: 270 },
-  headerSubtitle: { fontSize: 12, marginTop: 4 },
-  headerTitle: { fontSize: 16, fontWeight: '500' },
-  optionsWrapper: { marginTop: 12 },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        width: 256, // TODO: Fix this
+        padding: primitives.spacingMd,
+        gap: primitives.spacingLg,
+      },
+      headerContainer: { gap: primitives.spacingXxs },
+      headerSubtitle: {
+        color: semantics.chatTextIncoming,
+        fontSize: primitives.typographyFontSizeSm,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+      headerTitle: {
+        color: semantics.chatTextIncoming,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+      },
+      optionsWrapper: {
+        gap: primitives.spacingMd,
+      },
+    });
+  }, [semantics]);
+};

@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from 'react';
-import { Modal } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Modal, StyleSheet, View } from 'react-native';
 
-import { GenericPollButton, PollButtonProps } from './Button';
+import { PollButtonProps } from './Button';
 import { PollAnswersList } from './PollAnswersList';
 import { PollInputDialog } from './PollInputDialog';
 import { PollModalHeader } from './PollModalHeader';
@@ -9,7 +9,10 @@ import { PollAllOptions } from './PollOption';
 import { PollResults } from './PollResults';
 
 import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
+import { primitives } from '../../../theme';
+import { Button } from '../../ui';
 import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
+import { useIsPollCreatedByClient } from '../hook/useIsPollCreatedByClient';
 import { usePollState } from '../hooks/usePollState';
 
 export const ViewResultsButton = (props: PollButtonProps) => {
@@ -32,6 +35,7 @@ export const ViewResultsButton = (props: PollButtonProps) => {
       colors: { white },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onRequestClose = useCallback(() => {
     setShowResults(false);
@@ -39,7 +43,14 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      <GenericPollButton onPress={onPressHandler} title={t('View Results')} />
+      <Button
+        variant='secondary'
+        type='outline'
+        label={t('View Results')}
+        onPress={onPressHandler}
+        size='sm'
+        style={styles.viewResultsButton}
+      />
       {showResults ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showResults}>
           <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
@@ -81,9 +92,12 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
   return (
     <>
       {options && options.length > 10 ? (
-        <GenericPollButton
+        <Button
+          variant='secondary'
+          type='ghost'
           onPress={onPressHandler}
-          title={t('See all {{count}} options', { count: options.length })}
+          label={t('See all {{count}} options', { count: options.length })}
+          size='sm'
         />
       ) : null}
       {showAllOptions ? (
@@ -127,9 +141,12 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
   return (
     <>
       {answersCount && answersCount > 0 ? (
-        <GenericPollButton
+        <Button
+          variant='secondary'
+          type='ghost'
           onPress={onPressHandler}
-          title={t('View {{count}} comments', { count: answersCount })}
+          label={t('View {{count}} comments', { count: answersCount })}
+          size='sm'
         />
       ) : null}
       {showAnswers ? (
@@ -167,7 +184,13 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
   return (
     <>
       {!isClosed && allowUserSuggestedOptions ? (
-        <GenericPollButton onPress={onPressHandler} title={t('Suggest an option')} />
+        <Button
+          variant='secondary'
+          type='ghost'
+          onPress={onPressHandler}
+          label={t('Suggest an option')}
+          size='sm'
+        />
       ) : null}
       {showAddOptionDialog ? (
         <PollInputDialog
@@ -204,7 +227,13 @@ export const AddCommentButton = (props: PollButtonProps) => {
   return (
     <>
       {!isClosed && allowAnswers ? (
-        <GenericPollButton onPress={onPressHandler} title={t('Add a comment')} />
+        <Button
+          variant='secondary'
+          type='ghost'
+          onPress={onPressHandler}
+          label={t('Add a comment')}
+          size='sm'
+        />
       ) : null}
       {showAddCommentDialog ? (
         <PollInputDialog
@@ -223,19 +252,52 @@ export const EndVoteButton = () => {
   const { t } = useTranslationContext();
   const { createdBy, endVote, isClosed } = usePollState();
   const { client } = useChatContext();
+  const styles = useStyles();
 
   return !isClosed && createdBy?.id === client.userID ? (
-    <GenericPollButton onPress={endVote} title={t('End Vote')} />
+    <Button
+      variant='secondary'
+      type='outline'
+      label={t('End Vote')}
+      onPress={endVote}
+      size='sm'
+      style={styles.endVoteButton}
+    />
   ) : null;
 };
 
-export const PollButtons = () => (
-  <>
-    <ShowAllOptionsButton />
-    <ShowAllCommentsButton />
-    <SuggestOptionButton />
-    <AddCommentButton />
-    <ViewResultsButton />
-    <EndVoteButton />
-  </>
-);
+export const PollButtons = () => {
+  const styles = useStyles();
+  return (
+    <View style={styles.buttonsContainer}>
+      <ViewResultsButton />
+      <EndVoteButton />
+      <ShowAllOptionsButton />
+      <SuggestOptionButton />
+      <AddCommentButton />
+      <ShowAllCommentsButton />
+    </View>
+  );
+};
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const isPollCreatedByClient = useIsPollCreatedByClient();
+  return useMemo(() => {
+    return StyleSheet.create({
+      buttonsContainer: { gap: primitives.spacingXs },
+      endVoteButton: {
+        borderColor: isPollCreatedByClient
+          ? semantics.chatBorderOnChatOutgoing
+          : semantics.chatBorderOnChatIncoming,
+      },
+      viewResultsButton: {
+        borderColor: isPollCreatedByClient
+          ? semantics.chatBorderOnChatOutgoing
+          : semantics.chatBorderOnChatIncoming,
+      },
+    });
+  }, [semantics, isPollCreatedByClient]);
+};

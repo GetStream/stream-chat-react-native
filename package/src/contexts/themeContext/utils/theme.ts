@@ -815,14 +815,13 @@ export type Theme = {
       };
       option: {
         container: ViewStyle;
+        info: ViewStyle;
+        header: ViewStyle;
+        votesText: TextStyle;
+        progressBarContainer: ViewStyle;
         progressBar: ViewStyle;
-        progressBarEmptyFill: string;
-        progressBarVotedFill: string;
-        progressBarWinnerFill: string;
         text: TextStyle;
-        voteButtonActive: string;
         voteButtonContainer: ViewStyle;
-        voteButtonInactive: string;
         votesContainer: ViewStyle;
         wrapper: ViewStyle;
       };
@@ -1646,16 +1645,15 @@ export const defaultTheme: Theme = {
       },
       option: {
         container: {},
-        progressBar: {},
-        progressBarEmptyFill: '',
-        progressBarVotedFill: '',
-        progressBarWinnerFill: '',
+        info: {},
+        header: {},
         text: {},
-        voteButtonActive: '',
-        voteButtonContainer: {},
-        voteButtonInactive: '',
+        progressBarContainer: {},
+        progressBar: {},
         votesContainer: {},
+        votesText: {},
         wrapper: {},
+        voteButtonContainer: {},
       },
       optionsWrapper: {},
     },
