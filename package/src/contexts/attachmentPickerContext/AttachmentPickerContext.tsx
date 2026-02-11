@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import { AttachmentPickerErrorProps } from '../../components';
+import { AttachmentPickerContentProps, AttachmentPickerErrorProps } from '../../components';
 import {
   AttachmentPickerStore,
   SelectedPickerType,
@@ -65,6 +65,7 @@ export type AttachmentPickerContextValue = Pick<
    */
   ImageOverlaySelectedComponent: React.ComponentType;
   AttachmentPickerSelectionBar: React.ComponentType;
+  AttachmentPickerContent: React.ComponentType<AttachmentPickerContentProps>;
   attachmentPickerStore: AttachmentPickerStore;
   numberOfAttachmentPickerImageColumns?: number;
   attachmentPickerErrorButtonText?: string;

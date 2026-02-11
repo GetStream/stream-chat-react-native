@@ -33,6 +33,7 @@ import { MessageLocation } from '../components/LocationSharing/MessageLocation.t
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
+import { CustomAttachmentPickerContent } from '../components/AttachmentPickerContent.tsx';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
@@ -223,6 +224,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       <Channel
         audioRecordingEnabled={true}
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
+        AttachmentPickerContent={CustomAttachmentPickerContent}
         channel={channel}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}

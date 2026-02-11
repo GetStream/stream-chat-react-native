@@ -12,8 +12,6 @@ import { useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
-import { AttachmentPickerContent } from './components/AttachmentPickerContent';
-
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useStableCallback } from '../../hooks';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
@@ -35,6 +33,7 @@ export const AttachmentPicker = () => {
     closePicker,
     attachmentPickerStore,
     AttachmentPickerSelectionBar,
+    AttachmentPickerContent,
     attachmentPickerBottomSheetHeight,
     bottomSheetRef: ref,
   } = useAttachmentPickerContext();

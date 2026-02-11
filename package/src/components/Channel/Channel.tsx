@@ -137,6 +137,7 @@ import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachme
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
+import { AttachmentPickerContent as DefaultAttachmentPickerContent } from '../AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
 import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../AttachmentPicker/components/AttachmentPickerSelectionBar';
@@ -284,17 +285,13 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'disableAttachmentPicker'
       | 'ImageOverlaySelectedComponent'
       | 'numberOfAttachmentPickerImageColumns'
-    >
-  > &
-  Partial<
-    Pick<
-      AttachmentPickerContextValue,
       | 'AttachmentPickerError'
       | 'AttachmentPickerErrorImage'
       | 'AttachmentPickerIOSSelectMorePhotos'
       | 'attachmentPickerErrorButtonText'
       | 'attachmentPickerErrorText'
       | 'numberOfAttachmentImagesToLoadPerCall'
+      | 'AttachmentPickerContent'
     >
   > &
   Partial<
@@ -765,6 +762,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     isOnline,
     maximumMessageLimit,
     initializeOnMount = true,
+    AttachmentPickerContent = DefaultAttachmentPickerContent,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -1756,6 +1754,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       attachmentPickerErrorText,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
+      AttachmentPickerContent,
     }),
     [
       bottomInset,
@@ -1776,6 +1775,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       attachmentPickerErrorText,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
+      AttachmentPickerContent,
     ],
   );
 
