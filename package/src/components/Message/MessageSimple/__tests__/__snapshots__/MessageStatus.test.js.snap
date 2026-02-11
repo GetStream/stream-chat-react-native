@@ -153,6 +153,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
                 "height": 48,
                 "width": 48,
               },
+              undefined,
             ]
           }
         >
@@ -286,6 +287,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
                 "height": 48,
                 "width": 48,
               },
+              undefined,
             ]
           }
         >
@@ -453,6 +455,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
                 "height": 48,
                 "width": 48,
               },
+              undefined,
             ]
           }
         >

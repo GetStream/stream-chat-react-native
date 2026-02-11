@@ -188,6 +188,7 @@ exports[`SendButton should render a SendButton 1`] = `
                   "height": 48,
                   "width": 48,
                 },
+                undefined,
               ]
             }
           >
@@ -321,6 +322,7 @@ exports[`SendButton should render a SendButton 1`] = `
                   "height": 48,
                   "width": 48,
                 },
+                undefined,
               ]
             }
           >
@@ -488,6 +490,7 @@ exports[`SendButton should render a SendButton 1`] = `
                   "height": 48,
                   "width": 48,
                 },
+                undefined,
               ]
             }
           >
@@ -632,6 +635,7 @@ exports[`SendButton should render a SendButton 1`] = `
                   "height": 48,
                   "width": 48,
                 },
+                undefined,
               ]
             }
           >
@@ -1103,6 +1107,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   "height": 48,
                   "width": 48,
                 },
+                undefined,
               ]
             }
           >
@@ -1236,6 +1241,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   "height": 48,
                   "width": 48,
                 },
+                undefined,
               ]
             }
           >
@@ -1403,6 +1409,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   "height": 48,
                   "width": 48,
                 },
+                undefined,
               ]
             }
           >
@@ -1547,6 +1554,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   "height": 48,
                   "width": 48,
                 },
+                undefined,
               ]
             }
           >

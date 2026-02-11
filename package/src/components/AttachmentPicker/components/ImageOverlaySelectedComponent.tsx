@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { BadgeNotification } from '../../../../src/components/ui/BadgeNotification';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
+import { BadgeNotification } from '../../ui';
 
 const styles = StyleSheet.create({
   check: {
