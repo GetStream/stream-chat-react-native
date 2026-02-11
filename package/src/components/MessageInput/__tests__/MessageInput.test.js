@@ -10,6 +10,7 @@ import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvide
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 
 import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
+import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
 import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
@@ -26,6 +27,7 @@ jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementati
     attachmentPickerStore.setSelectedPicker('images');
     return {
       AttachmentPickerSelectionBar,
+      AttachmentPickerContent,
       CameraSelectorIcon,
       CreatePollIcon,
       FileSelectorIcon,
