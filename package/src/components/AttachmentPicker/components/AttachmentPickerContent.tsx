@@ -105,13 +105,23 @@ export const AttachmentCommantPickerItem = ({ item }: { item: CommandSuggestion 
   const { textComposer } = messageComposer;
   const { inputBoxRef } = useMessageInputContext();
 
+  const {
+    theme: { semantics },
+  } = useTheme();
+
   const handlePress = useCallback(() => {
     textComposer.setCommand(item);
     inputBoxRef.current?.focus();
   }, [item, textComposer, inputBoxRef]);
 
   return (
-    <Pressable onPress={handlePress}>
+    <Pressable
+      style={({ pressed }) => ({
+        backgroundColor: pressed ? semantics.backgroundCorePressed : undefined,
+        borderRadius: primitives.radiusSm,
+      })}
+      onPress={handlePress}
+    >
       <CommandSuggestionItem {...item} />
     </Pressable>
   );
@@ -121,14 +131,32 @@ const renderItem = ({ item }: { item: CommandSuggestion }) => {
   return <AttachmentCommantPickerItem item={item} />;
 };
 
-const styles = StyleSheet.create({
-  contentContainer: {
-    flexGrow: 1,
-    paddingBottom: primitives.spacing2xl,
-  },
-});
+const useCommandPickerStyle = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        contentContainer: {
+          flexGrow: 1,
+          paddingHorizontal: primitives.spacingXxs,
+          paddingBottom: primitives.spacing2xl,
+        },
+        title: {
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          fontSize: primitives.typographyFontSizeMd,
+          color: semantics.textPrimary,
+          paddingHorizontal: primitives.spacingMd,
+          paddingBottom: primitives.spacingMd,
+        },
+      }),
+    [semantics.textPrimary],
+  );
+};
 
 export const AttachmentCommandPicker = () => {
+  const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const [commands] = useState(() => {
     const commandsSearchSource = new CommandSearchSource(messageComposer.channel);
@@ -136,14 +164,18 @@ export const AttachmentCommandPicker = () => {
 
     return result.items;
   });
+  const styles = useCommandPickerStyle();
 
   return (
-    <BottomSheetFlatList
-      contentContainerStyle={styles.contentContainer}
-      renderItem={renderItem}
-      data={commands}
-      keyExtractor={keyExtractor}
-    />
+    <>
+      <Text style={styles.title}>{t('Instant Commands')}</Text>
+      <BottomSheetFlatList
+        contentContainerStyle={styles.contentContainer}
+        renderItem={renderItem}
+        data={commands}
+        keyExtractor={keyExtractor}
+      />
+    </>
   );
 };
 
