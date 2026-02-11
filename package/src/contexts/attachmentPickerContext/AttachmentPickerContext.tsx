@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import { AttachmentPickerContentProps, AttachmentPickerErrorProps } from '../../components';
+import { AttachmentPickerContentProps } from '../../components';
 import {
   AttachmentPickerStore,
   SelectedPickerType,
@@ -19,25 +19,8 @@ export type AttachmentPickerIconProps = {
 
 export type AttachmentPickerContextValue = Pick<
   MessageInputContextValue,
-  | 'AttachmentPickerBottomSheetHandle'
-  | 'attachmentPickerBottomSheetHandleHeight'
-  | 'attachmentSelectionBarHeight'
-  | 'attachmentPickerBottomSheetHeight'
+  'attachmentSelectionBarHeight' | 'attachmentPickerBottomSheetHeight'
 > & {
-  /**
-   * Custom UI component to render error component while opening attachment picker.
-   *
-   * **Default**
-   * [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
-   */
-  AttachmentPickerError: React.ComponentType<AttachmentPickerErrorProps>;
-  /**
-   * Custom UI component to render error image for attachment picker
-   *
-   * **Default**
-   * [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
-   */
-  AttachmentPickerErrorImage: React.ComponentType;
   /**
    * Custom UI Component to render select more photos for selected gallery access in iOS.
    */

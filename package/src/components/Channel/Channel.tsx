@@ -42,11 +42,6 @@ import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 import { useMessageListPagination } from './hooks/useMessageListPagination';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
-import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
-import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
-import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
-import { VideoRecorderSelectorIcon as DefaultVideoRecorderSelectorIcon } from '../../components/AttachmentPicker/components/VideoRecorderSelectorIcon';
-import { CreatePollIcon as DefaultCreatePollIcon } from '../../components/Poll/components/CreatePollIcon';
 import {
   AttachmentPickerContextValue,
   AttachmentPickerProvider,
@@ -136,7 +131,6 @@ import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attach
 import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
-import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerContent as DefaultAttachmentPickerContent } from '../AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../AttachmentPicker/components/ImageOverlaySelectedComponent';
@@ -283,8 +277,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'disableAttachmentPicker'
       | 'ImageOverlaySelectedComponent'
       | 'numberOfAttachmentPickerImageColumns'
-      | 'AttachmentPickerError'
-      | 'AttachmentPickerErrorImage'
       | 'AttachmentPickerIOSSelectMorePhotos'
       | 'attachmentPickerErrorButtonText'
       | 'attachmentPickerErrorText'
@@ -562,8 +554,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
-    AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
-    attachmentPickerBottomSheetHandleHeight = 20,
     attachmentPickerBottomSheetHeight = 333,
     AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
     attachmentSelectionBarHeight = 72,
@@ -586,11 +576,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     numberOfAttachmentPickerImageColumns = 3,
     giphyVersion = 'fixed_height',
     bottomInset = 0,
-    CameraSelectorIcon = DefaultCameraSelectorIcon,
-    FileSelectorIcon = DefaultFileSelectorIcon,
-    CreatePollIcon = DefaultCreatePollIcon,
-    ImageSelectorIcon = DefaultImageSelectorIcon,
-    VideoRecorderSelectorIcon = DefaultVideoRecorderSelectorIcon,
     Card = CardDefault,
     CardCover,
     CardFooter,
@@ -1741,8 +1726,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       ImageOverlaySelectedComponent,
       AttachmentPickerSelectionBar,
       numberOfAttachmentPickerImageColumns,
-      AttachmentPickerBottomSheetHandle,
-      attachmentPickerBottomSheetHandleHeight,
       attachmentPickerBottomSheetHeight,
       attachmentPickerErrorButtonText,
       attachmentPickerErrorText,
@@ -1760,8 +1743,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       ImageOverlaySelectedComponent,
       AttachmentPickerSelectionBar,
       numberOfAttachmentPickerImageColumns,
-      AttachmentPickerBottomSheetHandle,
-      attachmentPickerBottomSheetHandleHeight,
       attachmentPickerBottomSheetHeight,
       attachmentPickerErrorButtonText,
       attachmentPickerErrorText,
@@ -1833,8 +1814,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     AttachButton,
-    AttachmentPickerBottomSheetHandle,
-    attachmentPickerBottomSheetHandleHeight,
     attachmentPickerBottomSheetHeight,
     AttachmentPickerSelectionBar,
     attachmentSelectionBarHeight,
@@ -1850,23 +1829,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionHeader,
     AutoCompleteSuggestionItem,
     AutoCompleteSuggestionList,
-    CameraSelectorIcon,
     channelId,
     compressImageQuality,
     CooldownTimer,
     CreatePollContent,
-    CreatePollIcon,
     doFileUploadRequest,
     editMessage,
     FileAttachmentUploadPreview,
-    FileSelectorIcon,
     handleAttachButtonPress,
     hasCameraPicker,
     hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,
     hasFilePicker,
     hasImagePicker,
     ImageAttachmentUploadPreview,
-    ImageSelectorIcon,
     Input,
     InputButtons,
     messageInputFloating,
@@ -1880,7 +1855,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     VideoAttachmentUploadPreview,
-    VideoRecorderSelectorIcon,
   });
 
   const messageListContext = useCreatePaginatedMessageListContext({

@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { Alert, Linking, Platform, TextInput, TextInputProps } from 'react-native';
 
-import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
   LocalMessage,
   MessageComposer,
@@ -60,10 +59,7 @@ import { AudioRecorderManager } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
-import {
-  AttachmentPickerIconProps,
-  useAttachmentPickerContext,
-} from '../attachmentPickerContext/AttachmentPickerContext';
+import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
 import { useMessageComposerAPIContext } from '../messageComposerContext/MessageComposerAPIContext';
@@ -173,20 +169,6 @@ export type InputMessageInputContextValue = {
   AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
   AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps>;
   AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
-
-  /**
-   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachmentpicker.
-   *
-   * **Default**
-   * [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
-   */
-  AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
-  /**
-   * Height of the image picker bottom sheet handle.
-   * @type number
-   * @default 20
-   */
-  attachmentPickerBottomSheetHandleHeight: number;
   /**
    * Height of the image picker bottom sheet when opened.
    * @type number
@@ -209,41 +191,6 @@ export type InputMessageInputContextValue = {
   attachmentSelectionBarHeight: number;
 
   AttachmentUploadPreviewList: React.ComponentType<AttachmentUploadPreviewListProps>;
-  /**
-   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
-   */
-  CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for the poll creation icon.
-   *
-   * **Default: **
-   * [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
-   */
-  CreatePollIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
-   */
-  FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
-   */
-  ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for Android's video recorder selector icon.
-   *
-   * **Default: **
-   * [VideoRecorderSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/VideoRecorderSelectorIcon.tsx)
-   */
-  VideoRecorderSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentUploadPreviewProps>;
   ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
   FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;

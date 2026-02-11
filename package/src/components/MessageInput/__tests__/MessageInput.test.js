@@ -12,12 +12,8 @@ import { initiateClientWithChannels } from '../../../mock-builders/api/initiateC
 import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
 import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
-import { CameraSelectorIcon } from '../../AttachmentPicker/components/CameraSelectorIcon';
-import { FileSelectorIcon } from '../../AttachmentPicker/components/FileSelectorIcon';
-import { ImageSelectorIcon } from '../../AttachmentPicker/components/ImageSelectorIcon';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { CreatePollIcon } from '../../Poll';
 import { MessageInput } from '../MessageInput';
 
 jest.spyOn(Alert, 'alert');
@@ -28,10 +24,6 @@ jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementati
     return {
       AttachmentPickerSelectionBar,
       AttachmentPickerContent,
-      CameraSelectorIcon,
-      CreatePollIcon,
-      FileSelectorIcon,
-      ImageSelectorIcon,
       closePicker: jest.fn(),
       openPicker: jest.fn(),
       setBottomInset: jest.fn(),

@@ -161,13 +161,8 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
-    | 'CameraSelectorIcon'
-    | 'CreatePollIcon'
-    | 'FileSelectorIcon'
     | 'messageInputFloating'
     | 'messageInputHeightStore'
-    | 'ImageSelectorIcon'
-    | 'VideoRecorderSelectorIcon'
     | 'SendButton'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
@@ -636,8 +631,6 @@ export const MessageInput = (props: MessageInputProps) => {
     asyncMessagesMinimumPressDuration,
     asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
-    AttachmentPickerBottomSheetHandle,
-    attachmentPickerBottomSheetHandleHeight,
     AttachmentUploadPreviewList,
     AudioRecorder,
     audioRecordingEnabled,
@@ -646,14 +639,10 @@ export const MessageInput = (props: MessageInputProps) => {
     AudioRecordingPreview,
     AudioRecordingWaveform,
     AutoCompleteSuggestionList,
-    CameraSelectorIcon,
     closeAttachmentPicker,
     closePollCreationDialog,
     compressImageQuality,
     CreatePollContent,
-    CreatePollIcon,
-    FileSelectorIcon,
-    ImageSelectorIcon,
     Input,
     inputBoxRef,
     InputButtons,
@@ -668,7 +657,6 @@ export const MessageInput = (props: MessageInputProps) => {
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     uploadNewFile,
-    VideoRecorderSelectorIcon,
   } = useMessageInputContext();
   const messageComposer = useMessageComposer();
   const editing = !!messageComposer.editedMessage;
@@ -704,8 +692,6 @@ export const MessageInput = (props: MessageInputProps) => {
         asyncMessagesMinimumPressDuration,
         asyncMessagesMultiSendEnabled,
         asyncMessagesSlideToCancelDistance,
-        AttachmentPickerBottomSheetHandle,
-        attachmentPickerBottomSheetHandleHeight,
         AttachmentUploadPreviewList,
         AudioRecorder,
         audioRecordingEnabled,
@@ -714,17 +700,13 @@ export const MessageInput = (props: MessageInputProps) => {
         AudioRecordingPreview,
         AudioRecordingWaveform,
         AutoCompleteSuggestionList,
-        CameraSelectorIcon,
         channel,
         clearEditingState,
         closeAttachmentPicker,
         closePollCreationDialog,
         compressImageQuality,
         CreatePollContent,
-        CreatePollIcon,
         editing,
-        FileSelectorIcon,
-        ImageSelectorIcon,
         Input,
         inputBoxRef,
         InputButtons,
@@ -745,7 +727,6 @@ export const MessageInput = (props: MessageInputProps) => {
         t,
         threadList,
         uploadNewFile,
-        VideoRecorderSelectorIcon,
         watchers,
       }}
       {...props}

@@ -12,16 +12,11 @@ export * from './Attachment/ImageReloadIndicator';
 export * from './Attachment/utils/buildGallery/buildGallery';
 
 export * from './AttachmentPicker/AttachmentPicker';
-export * from './AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 export * from './AttachmentPicker/components/AttachmentPickerContent';
 export * from './AttachmentPicker/components/AttachmentMediaPicker';
 export * from './AttachmentPicker/components/AttachmentPickerSelectionBar';
 export * from './AttachmentPicker/components/AttachmentTypePickerButton';
-export * from './AttachmentPicker/components/CameraSelectorIcon';
-export * from './AttachmentPicker/components/FileSelectorIcon';
-export * from './AttachmentPicker/components/VideoRecorderSelectorIcon';
 export * from './AttachmentPicker/components/ImageOverlaySelectedComponent';
-export * from './AttachmentPicker/components/ImageSelectorIcon';
 
 export * from './AutoCompleteInput/AutoCompleteInput';
 export * from './AutoCompleteInput/AutoCompleteSuggestionHeader';
