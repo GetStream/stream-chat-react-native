@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Platform, PressableProps } from 'react-native';
 
@@ -18,6 +18,7 @@ import {
   FilePickerIcon,
   PollThumbnail,
   CommandsIcon,
+  IconProps,
 } from '../../../icons';
 import { Button, ButtonProps } from '../../ui';
 
@@ -33,12 +34,16 @@ export const AttachmentTypePickerButton = ({
   onPress,
   Icon,
 }: AttachmentTypePickerButtonProps) => {
+  const ButtonIcon = useCallback(
+    (props: IconProps) => Icon && <Icon {...props} width={14} height={14} />,
+    [Icon],
+  );
   return (
     <Button
       testID={testID}
       hitSlop={hitSlop}
       onPress={onPress}
-      LeadingIcon={Icon}
+      LeadingIcon={ButtonIcon}
       type={'ghost'}
       size={'lg'}
       variant={'secondary'}

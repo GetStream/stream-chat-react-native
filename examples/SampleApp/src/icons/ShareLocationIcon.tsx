@@ -4,7 +4,7 @@ import { ColorValue } from 'react-native';
 // Icon for "Share Location" button, next to input box.
 export const ShareLocationIcon = ({ stroke }: { stroke: ColorValue }) => {
   return (
-    <Svg width={24} height={24} viewBox='0 0 24 24' fill='none'>
+    <Svg width={20} height={20} viewBox='0 0 24 24' fill='none'>
       <Path
         d='M12 12c-1.654 0-3-1.345-3-3 0-1.654 1.346-3 3-3s3 1.346 3 3c0 1.655-1.346 3-3 3zm0-4a1.001 1.001 0 101 1c0-.551-.449-1-1-1z'
         fill={stroke}
