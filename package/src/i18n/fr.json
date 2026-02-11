@@ -152,5 +152,13 @@
   "{{count}} votes_many": "{{count}} votes",
   "{{count}} votes_one": "{{count}} vote",
   "{{count}} votes_other": "{{count}} votes",
-  "🏙 Attachment...": "🏙 Pièce jointe..."
+  "🏙 Attachment...": "🏙 Pièce jointe...",
+  "You have not granted access to the photo library.": "Vous n'avez pas accordé l'accès à la photothèque.",
+  "Change in Settings": "Changer dans Réglages",
+  "Create a poll and let everyone vote": "Créez un sondage et laissez tout le monde voter",
+  "Open Camera": "Ouvrir la caméra",
+  "Pick a document to share it with everyone": "Choisissez un document pour le partager avec tout le monde",
+  "Pick document": "Choisir un document",
+  "Take a video and share": "Prenez une vidéo et partagez-la",
+  "You have not granted access to your camera": "Vous n'avez pas accordé l'accès à votre caméra"
 }

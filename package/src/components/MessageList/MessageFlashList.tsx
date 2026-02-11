@@ -104,7 +104,7 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
 
 type MessageFlashListPropsWithContext = Pick<
   AttachmentPickerContextValue,
-  'closePicker' | 'selectedPicker' | 'setSelectedPicker'
+  'closePicker' | 'attachmentPickerStore'
 > &
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
@@ -262,6 +262,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
+    attachmentPickerStore,
     additionalFlashListProps,
     channel,
     channelUnreadStateStore,
@@ -295,10 +296,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     onThreadSelect,
     reloadChannel,
     ScrollToBottomButton,
-    selectedPicker,
     setChannelUnreadState,
     setFlatListRef,
-    setSelectedPicker,
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
@@ -667,7 +666,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       !viewableItems.length ||
       !readEvents ||
       lastReadMessageVisible ||
-      selectedPicker === 'images'
+      attachmentPickerStore.state.getLatestValue().selectedPicker === 'images'
     ) {
       setIsUnreadNotificationOpen(false);
       return;
@@ -938,19 +937,19 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   });
 
   const dismissImagePicker = useStableCallback(() => {
-    if (selectedPicker) {
-      setSelectedPicker(undefined);
+    if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
+      attachmentPickerStore.setSelectedPicker(undefined);
       closePicker();
     }
   });
 
   const onScrollBeginDrag: ScrollViewProps['onScrollBeginDrag'] = useStableCallback((event) => {
-    !hasMoved && selectedPicker && setHasMoved(true);
+    !hasMoved && attachmentPickerStore.state.getLatestValue().selectedPicker && setHasMoved(true);
     onUserScrollEvent(event);
   });
 
   const onScrollEndDrag: ScrollViewProps['onScrollEndDrag'] = useStableCallback((event) => {
-    hasMoved && selectedPicker && setHasMoved(false);
+    hasMoved && attachmentPickerStore.state.getLatestValue().selectedPicker && setHasMoved(false);
     onUserScrollEvent(event);
   });
 
@@ -1008,8 +1007,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
 
     const changedBy = currentListHeightRef.current - height;
-    flashListRef.current?.scrollToOffset({
-      offset: currentScrollOffsetRef.current + changedBy,
+    flashListRef.current?.getNativeScrollRef()?.setNativeProps({
+      contentOffset: { x: 0, y: flashListRef.current?.getAbsoluteLastScrollOffset() + changedBy },
     });
     currentListHeightRef.current = height;
   });
@@ -1116,7 +1115,7 @@ export type MessageFlashListProps = Partial<MessageFlashListPropsWithContext>;
  * Please feel free to report any issues or suggestions.
  */
 export const MessageFlashList = (props: MessageFlashListProps) => {
-  const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
+  const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
   const {
     channel,
     channelUnreadStateStore,
@@ -1165,6 +1164,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   return (
     <MessageFlashListWithContext
       {...{
+        attachmentPickerStore,
         channel,
         channelUnreadStateStore,
         client,
@@ -1200,9 +1200,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
-        selectedPicker,
         setChannelUnreadState,
-        setSelectedPicker,
         setTargetedMessage,
         shouldShowUnreadUnderlay,
         StickyHeader,

@@ -152,5 +152,13 @@
   "{{count}} votes_many": "{{count}} stemmen",
   "{{count}} votes_one": "{{count}} stem",
   "{{count}} votes_other": "{{count}} stemmen",
-  "🏙 Attachment...": "🏙 Bijlage..."
+  "🏙 Attachment...": "🏙 Bijlage...",
+  "You have not granted access to the photo library.": "Je hebt geen toegang tot de fotobibliotheek verleend.",
+  "Change in Settings": "Wijzigen in Instellingen",
+  "Create a poll and let everyone vote": "Maak een peiling en laat iedereen stemmen",
+  "Open Camera": "Camera openen",
+  "Pick a document to share it with everyone": "Kies een document om het met iedereen te delen",
+  "Pick document": "Document kiezen",
+  "Take a video and share": "Maak een video en deel deze",
+  "You have not granted access to your camera": "Je hebt geen toegang tot je camera verleend"
 }

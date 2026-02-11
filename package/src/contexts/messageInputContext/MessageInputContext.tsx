@@ -7,9 +7,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Linking, TextInput, TextInputProps } from 'react-native';
+import { Alert, Linking, Platform, TextInput, TextInputProps } from 'react-native';
 
-import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import {
   LocalMessage,
   MessageComposer,
@@ -21,7 +20,6 @@ import {
   UserResponse,
 } from 'stream-chat';
 
-import { useAttachmentManagerState } from './hooks/useAttachmentManagerState';
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageComposer } from './hooks/useMessageComposer';
 
@@ -63,10 +61,7 @@ import { AudioRecorderManager } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
-import {
-  AttachmentPickerIconProps,
-  useAttachmentPickerContext,
-} from '../attachmentPickerContext/AttachmentPickerContext';
+import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
 import { useMessageComposerAPIContext } from '../messageComposerContext/MessageComposerAPIContext';
@@ -86,7 +81,6 @@ export type LocalMessageInputContext = {
    */
   pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
-  selectedPicker?: 'images';
   sendMessage: () => Promise<void>;
   /**
    * Ref callback to set reference on input box
@@ -95,8 +89,9 @@ export type LocalMessageInputContext = {
   /**
    * Function for taking a photo and uploading it
    */
-  takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
-  toggleAttachmentPicker: () => void;
+  takeAndUploadImage: (
+    mediaType?: MediaTypes,
+  ) => Promise<{ askToOpenSettings?: boolean; canceled?: boolean } | undefined>;
   uploadNewFile: (file: File) => Promise<void>;
   audioRecorderManager: AudioRecorderManager;
   startVoiceRecording: () => Promise<boolean | undefined>;
@@ -176,20 +171,6 @@ export type InputMessageInputContextValue = {
   AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
   AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps>;
   AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
-
-  /**
-   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachmentpicker.
-   *
-   * **Default**
-   * [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
-   */
-  AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
-  /**
-   * Height of the image picker bottom sheet handle.
-   * @type number
-   * @default 20
-   */
-  attachmentPickerBottomSheetHandleHeight: number;
   /**
    * Height of the image picker bottom sheet when opened.
    * @type number
@@ -207,45 +188,11 @@ export type InputMessageInputContextValue = {
    * Height of the attachment selection bar displayed on the attachment picker.
    * @type number
    * @default 52
+   * @deprecated Please remove this in scope of V9
    */
   attachmentSelectionBarHeight: number;
 
   AttachmentUploadPreviewList: React.ComponentType<AttachmentUploadPreviewListProps>;
-  /**
-   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
-   */
-  CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for the poll creation icon.
-   *
-   * **Default: **
-   * [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
-   */
-  CreatePollIcon: React.ComponentType;
-  /**
-   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
-   */
-  FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
-   */
-  ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for Android's video recorder selector icon.
-   *
-   * **Default: **
-   * [VideoRecorderSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/VideoRecorderSelectorIcon.tsx)
-   */
-  VideoRecorderSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentUploadPreviewProps>;
   ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
   FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
@@ -376,7 +323,6 @@ export type InputMessageInputContextValue = {
    * - closeAttachmentPicker
    * - openAttachmentPicker
    * - openCommandsPicker
-   * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps>;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
@@ -406,7 +352,7 @@ export const MessageInputProvider = ({
 }: PropsWithChildren<{
   value: InputMessageInputContextValue;
 }>) => {
-  const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
+  const { closePicker, openPicker, attachmentPickerStore, disableAttachmentPicker } =
     useAttachmentPickerContext();
   const { client } = useChatContext();
   const channelCapabilities = useOwnCapabilitiesContext();
@@ -430,7 +376,6 @@ export const MessageInputProvider = ({
 
   const messageComposer = useMessageComposer();
   const { attachmentManager, editedMessage } = messageComposer;
-  const { availableUploadSlots } = useAttachmentManagerState();
 
   /**
    * These are the RN SDK specific middlewares that are added to the message composer to provide the default behaviour.
@@ -462,7 +407,7 @@ export const MessageInputProvider = ({
    * Function for capturing a photo and uploading it
    */
   const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
@@ -472,7 +417,7 @@ export const MessageInputProvider = ({
       mediaType,
     });
 
-    if (file.askToOpenSettings) {
+    if (file.askToOpenSettings && disableAttachmentPicker) {
       Alert.alert(
         t('Allow camera access in device settings'),
         t('Device camera is used to take photos or videos.'),
@@ -483,23 +428,27 @@ export const MessageInputProvider = ({
       );
     }
 
-    if (file.cancelled) {
-      return;
+    if (file.askToOpenSettings || file.cancelled) {
+      return file;
     }
 
     await uploadNewFile(file);
+
+    return file;
   });
 
   /**
    * Function for picking a photo from native image picker and uploading it
    */
   const pickAndUploadImageFromNativePicker = useStableCallback(async () => {
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
 
-    const result = await NativeHandlers.pickImage({ maxNumberOfFiles: availableUploadSlots });
+    const result = await NativeHandlers.pickImage({
+      maxNumberOfFiles: attachmentManager.availableUploadSlots,
+    });
     if (result.askToOpenSettings) {
       Alert.alert(
         t('Allow access to your Gallery'),
@@ -528,13 +477,13 @@ export const MessageInputProvider = ({
       return;
     }
 
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
 
     const result = await NativeHandlers.pickDocument({
-      maxNumberOfFiles: availableUploadSlots,
+      maxNumberOfFiles: attachmentManager.availableUploadSlots,
     });
 
     if (result.cancelled || !result.assets?.length) {
@@ -551,28 +500,27 @@ export const MessageInputProvider = ({
    */
   const openAttachmentPicker = useCallback(() => {
     dismissKeyboard();
-    setSelectedPicker('images');
-    openPicker();
-  }, [openPicker, setSelectedPicker]);
+    const run = () => {
+      attachmentPickerStore.setSelectedPicker('images');
+      openPicker();
+    };
+
+    if (Platform.OS === 'android') {
+      setTimeout(() => {
+        run();
+      }, 100);
+    } else {
+      run();
+    }
+  }, [openPicker, attachmentPickerStore]);
 
   /**
    * Function to close the attachment picker if the MediaLibrary is installed.
    */
   const closeAttachmentPicker = useCallback(() => {
-    setSelectedPicker(undefined);
+    attachmentPickerStore.setSelectedPicker(undefined);
     closePicker();
-  }, [closePicker, setSelectedPicker]);
-
-  /**
-   * Function to toggle the attachment picker if the MediaLibrary is installed.
-   */
-  const toggleAttachmentPicker = useCallback(() => {
-    if (selectedPicker) {
-      closeAttachmentPicker();
-    } else {
-      openAttachmentPicker();
-    }
-  }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
+  }, [closePicker, attachmentPickerStore]);
 
   const sendMessage = useStableCallback(async () => {
     if (inputBoxRef.current) {
@@ -683,12 +631,10 @@ export const MessageInputProvider = ({
     setInputBoxRef,
     takeAndUploadImage,
     thread,
-    toggleAttachmentPicker,
     uploadNewFile,
     ...value,
     closePollCreationDialog,
     openPollCreationDialog,
-    selectedPicker,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,
     audioRecorderManager,

@@ -1,32 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  ZoomIn,
+  ZoomOut,
+} from 'react-native-reanimated';
 
-import {
-  AttachmentPickerContextValue,
-  OwnCapabilitiesContextValue,
-  useAttachmentPickerContext,
-} from '../../../../contexts';
+import { OwnCapabilitiesContextValue } from '../../../../contexts';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useOwnCapabilitiesContext } from '../../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useAttachmentPickerState } from '../../../../hooks/useAttachmentPickerState';
 
 export type InputButtonsProps = Partial<InputButtonsWithContextProps>;
 
 export type InputButtonsWithContextProps = Pick<
   MessageInputContextValue,
-  | 'AttachButton'
-  | 'hasCameraPicker'
-  | 'hasCommands'
-  | 'hasFilePicker'
-  | 'hasImagePicker'
-  | 'toggleAttachmentPicker'
+  'AttachButton' | 'hasCameraPicker' | 'hasCommands' | 'hasFilePicker' | 'hasImagePicker'
 > &
-  Pick<AttachmentPickerContextValue, 'selectedPicker'> &
   Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
@@ -38,12 +35,22 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasImagePicker,
     uploadFile: ownCapabilitiesUploadFile,
   } = props;
+  const { selectedPicker } = useAttachmentPickerState();
+  const rotation = useSharedValue(0);
 
   const {
     theme: {
       messageInput: { attachButtonContainer },
     },
   } = useTheme();
+
+  useEffect(() => {
+    rotation.value = withTiming(selectedPicker !== undefined ? 45 : 0, { duration: 200 });
+  }, [selectedPicker, rotation]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
 
   const hasAttachmentUploadCapabilities =
     (hasCameraPicker || hasFilePicker || hasImagePicker) && ownCapabilitiesUploadFile;
@@ -56,7 +63,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     <Animated.View
       entering={ZoomIn.duration(200)}
       exiting={ZoomOut.duration(200)}
-      style={[styles.attachButtonContainer, attachButtonContainer]}
+      style={[styles.attachButtonContainer, attachButtonContainer, animatedStyle]}
     >
       <AttachButton />
     </Animated.View>
@@ -71,14 +78,12 @@ const areEqual = (
     hasCameraPicker: prevHasCameraPicker,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
-    selectedPicker: prevSelectedPicker,
   } = prevProps;
 
   const {
     hasCameraPicker: nextHasCameraPicker,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
-    selectedPicker: nextSelectedPicker,
   } = nextProps;
 
   if (prevHasCameraPicker !== nextHasCameraPicker) {
@@ -93,10 +98,6 @@ const areEqual = (
     return false;
   }
 
-  if (prevSelectedPicker !== nextSelectedPicker) {
-    return false;
-  }
-
   return true;
 };
 
@@ -106,15 +107,8 @@ const MemoizedInputButtonsWithContext = React.memo(
 ) as typeof InputButtonsWithContext;
 
 export const InputButtons = (props: InputButtonsProps) => {
-  const {
-    AttachButton,
-    hasCameraPicker,
-    hasCommands,
-    hasFilePicker,
-    hasImagePicker,
-    toggleAttachmentPicker,
-  } = useMessageInputContext();
-  const { selectedPicker } = useAttachmentPickerContext();
+  const { AttachButton, hasCameraPicker, hasCommands, hasFilePicker, hasImagePicker } =
+    useMessageInputContext();
   const { uploadFile } = useOwnCapabilitiesContext();
 
   return (
@@ -125,8 +119,6 @@ export const InputButtons = (props: InputButtonsProps) => {
         hasCommands,
         hasFilePicker,
         hasImagePicker,
-        selectedPicker,
-        toggleAttachmentPicker,
         uploadFile,
       }}
       {...props}

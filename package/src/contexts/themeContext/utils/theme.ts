@@ -100,9 +100,11 @@ export type Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: ViewStyle;
     durationText: TextStyle;
-    errorButtonText: TextStyle;
-    errorContainer: ViewStyle;
-    errorText: TextStyle;
+    content: {
+      container: ViewStyle;
+      infoContainer: ViewStyle;
+      text: TextStyle;
+    };
     image: ViewStyle;
     imageOverlay: ViewStyle;
     imageOverlaySelectedComponent: {
@@ -917,9 +919,11 @@ export const defaultTheme: Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: {},
     durationText: {},
-    errorButtonText: {},
-    errorContainer: {},
-    errorText: {},
+    content: {
+      container: {},
+      infoContainer: {},
+      text: {},
+    },
     handle: {
       container: {},
       indicator: {},

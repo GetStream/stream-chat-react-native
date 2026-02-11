@@ -102,3 +102,5 @@ export * from './DragHandle';
 export * from './Back';
 export * from './SendPoll';
 export * from './UnreadIndicator';
+export * from './FilePickerIcon';
+export * from './CommandsIcon';

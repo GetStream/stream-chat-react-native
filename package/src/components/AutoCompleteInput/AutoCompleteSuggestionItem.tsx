@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
@@ -8,6 +8,7 @@ import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionComma
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { AtMentions } from '../../icons/AtMentions';
+import { primitives } from '../../theme';
 import type { Emoji } from '../../types/types';
 
 import { UserAvatar } from '../ui/Avatar/UserAvatar';
@@ -29,6 +30,8 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
       },
     },
   } = useTheme();
+  const styles = useStyles();
+
   return (
     <View style={[styles.container, mentionContainer]}>
       <UserAvatar user={item} size='md' showOnlineIndicator={online} />
@@ -54,6 +57,8 @@ export const EmojiSuggestionItem = (item: Emoji) => {
       },
     },
   } = useTheme();
+  const styles = useStyles();
+
   return (
     <View style={[styles.container, emojiContainer]}>
       <Text style={[styles.text, { color: black }, text]} testID='emojis-item-unicode'>
@@ -78,9 +83,10 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, commandContainer]}>
+    <View style={[styles.commandContainer, commandContainer]}>
       {name ? <AutoCompleteSuggestionCommandIcon name={name} /> : null}
       <Text style={[styles.title, { color: black }, title]} testID='commands-item-title'>
         {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
@@ -167,36 +173,54 @@ export const AutoCompleteSuggestionItem = (props: AutoCompleteSuggestionItemProp
   <MemoizedAutoCompleteSuggestionItem {...props} />
 );
 
-const styles = StyleSheet.create({
-  args: {
-    fontSize: 14,
-  },
-  column: {
-    flex: 1,
-    justifyContent: 'space-evenly',
-    paddingLeft: 8,
-  },
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  name: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingBottom: 2,
-  },
-  tag: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  text: {
-    fontSize: 14,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingHorizontal: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        args: {
+          fontSize: primitives.typographyFontSizeMd,
+          color: semantics.textTertiary,
+        },
+        column: {
+          flex: 1,
+          justifyContent: 'space-evenly',
+          paddingLeft: 8,
+        },
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          paddingHorizontal: 16,
+          paddingVertical: 8,
+        },
+        commandContainer: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          paddingHorizontal: primitives.spacingSm,
+          paddingVertical: primitives.spacingXs,
+        },
+        name: {
+          fontSize: 14,
+          fontWeight: 'bold',
+          paddingBottom: 2,
+        },
+        tag: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
+        text: {
+          fontSize: 14,
+        },
+        title: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+          width: 80,
+        },
+      }),
+    [semantics.textPrimary, semantics.textTertiary],
+  );
+};

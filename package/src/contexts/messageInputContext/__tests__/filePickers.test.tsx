@@ -9,6 +9,7 @@ import { generateFileReference } from '../../../mock-builders/attachments';
 
 import { NativeHandlers } from '../../../native';
 
+import { AttachmentPickerProvider } from '../../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContextValue, ChannelProvider } from '../../channelContext/ChannelContext';
 import { MessageComposerProvider } from '../../messageComposerContext/MessageComposerContext';
 import {
@@ -31,17 +32,19 @@ const Wrapper = ({ channel, client, props }) => {
           } as ChannelContextValue
         }
       >
-        <MessageComposerProvider value={{ channel }}>
-          <MessageInputProvider
-            value={
-              {
-                ...props,
-              } as InputMessageInputContextValue
-            }
-          >
-            {props.children}
-          </MessageInputProvider>
-        </MessageComposerProvider>
+        <AttachmentPickerProvider value={{ disableAttachmentPicker: true }}>
+          <MessageComposerProvider value={{ channel }}>
+            <MessageInputProvider
+              value={
+                {
+                  ...props,
+                } as InputMessageInputContextValue
+              }
+            >
+              {props.children}
+            </MessageInputProvider>
+          </MessageComposerProvider>
+        </AttachmentPickerProvider>
       </ChannelProvider>
     </Chat>
   );

@@ -7,11 +7,16 @@ import { primitives } from '../../../theme';
 export type BadgeNotificationProps = {
   type: 'primary' | 'error' | 'neutral';
   count: number;
-  size: 'sm' | 'md';
+  size: 'sm' | 'md' | 'lg';
   testID?: string;
 };
 
 const sizes = {
+  lg: {
+    height: 24,
+    minWidth: 24,
+    borderWidth: 2,
+  },
   md: {
     height: 20,
     minWidth: 20,
@@ -25,6 +30,11 @@ const sizes = {
 };
 
 const textStyles = {
+  lg: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: primitives.typographyFontWeightBold,
+    lineHeight: 14,
+  },
   md: {
     fontSize: primitives.typographyFontSizeSm,
     fontWeight: primitives.typographyFontWeightBold,

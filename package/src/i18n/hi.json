@@ -152,5 +152,13 @@
   "{{count}} votes_many": "{{count}} वोट",
   "{{count}} votes_one": "{{count}} वोट",
   "{{count}} votes_other": "{{count}} वोट",
-  "🏙 Attachment...": "🏙 अटैचमेंट..."
+  "🏙 Attachment...": "🏙 अटैचमेंट...",
+  "You have not granted access to the photo library.": "आपने फोटो लाइब्रेरी के लिए अनुमति नहीं दी है।",
+  "Change in Settings": "सेटिंग्स में बदलें",
+  "Create a poll and let everyone vote": "पोल बनाएँ और सभी को वोट करने दें",
+  "Open Camera": "कैमरा खोलें",
+  "Pick a document to share it with everyone": "सभी के साथ साझा करने के लिए एक दस्तावेज़ चुनें",
+  "Pick document": "दस्तावेज़ चुनें",
+  "Take a video and share": "वीडियो लें और साझा करें",
+  "You have not granted access to your camera": "आपने अपने कैमरे के लिए अनुमति नहीं दी है"
 }

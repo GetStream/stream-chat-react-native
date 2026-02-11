@@ -16,20 +16,28 @@ import { generateLocalFileUploadAttachmentData } from '../../../mock-builders/at
 
 import { generateMessage } from '../../../mock-builders/generator/message';
 
+import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
+import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
+import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageInput } from '../MessageInput';
 
 jest.spyOn(Alert, 'alert');
 jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
-  jest.fn(() => ({
-    closePicker: jest.fn(),
-    openPicker: jest.fn(),
-    selectedPicker: 'images',
-    setBottomInset: jest.fn(),
-    setSelectedPicker: jest.fn(),
-    setTopInset: jest.fn(),
-  })),
+  jest.fn(() => {
+    const attachmentPickerStore = new AttachmentPickerStore();
+    attachmentPickerStore.setSelectedPicker('images');
+    return {
+      AttachmentPickerSelectionBar,
+      AttachmentPickerContent,
+      closePicker: jest.fn(),
+      openPicker: jest.fn(),
+      setBottomInset: jest.fn(),
+      setTopInset: jest.fn(),
+      attachmentPickerStore,
+    };
+  }),
 );
 
 const renderComponent = ({ channelProps, client, props }) => {

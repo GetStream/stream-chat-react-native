@@ -9,24 +9,25 @@ import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } f
 export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
     theme: {
+      semantics,
       colors: { white },
     },
   } = useTheme();
 
   if (name === 'ban') {
-    return <UserDelete height={16} pathFill={white} width={16} />;
+    return <UserDelete height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'flag') {
-    return <Flag pathFill={white} />;
+    return <Flag height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'giphy') {
-    return <GiphyIcon />;
+    return <GiphyIcon height={20} width={20} />;
   } else if (name === 'imgur') {
-    return <Imgur />;
+    return <Imgur height={20} width={20} />;
   } else if (name === 'mute') {
-    return <Mute height={16} pathFill={white} width={16} />;
+    return <Mute height={20} pathFill={semantics.textSecondary} width={20} />;
   } else if (name === 'unban') {
-    return <UserAdd height={16} pathFill={white} width={16} />;
+    return <UserAdd height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'unmute') {
-    return <Sound pathFill={white} />;
+    return <Sound height={20} stroke={semantics.textSecondary} width={20} />;
   } else {
     return <Lightning fill={white} size={16} />;
   }
@@ -35,7 +36,6 @@ export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
 export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
     theme: {
-      colors: { accent_blue },
       messageInput: {
         suggestions: {
           command: { iconContainer },
@@ -45,15 +45,7 @@ export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVaria
   } = useTheme();
 
   return (
-    <View
-      style={[
-        styles.iconContainer,
-        {
-          backgroundColor: accent_blue,
-        },
-        iconContainer,
-      ]}
-    >
+    <View style={[styles.iconContainer, iconContainer]}>
       <SuggestionCommandIcon name={name} />
     </View>
   );
