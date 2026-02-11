@@ -138,8 +138,6 @@ import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThum
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerContent as DefaultAttachmentPickerContent } from '../AttachmentPicker/components/AttachmentPickerContent';
-import { AttachmentPickerError as DefaultAttachmentPickerError } from '../AttachmentPicker/components/AttachmentPickerError';
-import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../AttachmentPicker/components/AttachmentPickerErrorImage';
 import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
@@ -580,8 +578,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
-    AttachmentPickerError = DefaultAttachmentPickerError,
-    AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
     AttachmentUploadPreviewList = AttachmentUploadPreviewDefault,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     attachmentPickerErrorButtonText,
@@ -1748,9 +1744,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       AttachmentPickerBottomSheetHandle,
       attachmentPickerBottomSheetHandleHeight,
       attachmentPickerBottomSheetHeight,
-      AttachmentPickerError,
       attachmentPickerErrorButtonText,
-      AttachmentPickerErrorImage,
       attachmentPickerErrorText,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
@@ -1769,9 +1763,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       AttachmentPickerBottomSheetHandle,
       attachmentPickerBottomSheetHandleHeight,
       attachmentPickerBottomSheetHeight,
-      AttachmentPickerError,
       attachmentPickerErrorButtonText,
-      AttachmentPickerErrorImage,
       attachmentPickerErrorText,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,

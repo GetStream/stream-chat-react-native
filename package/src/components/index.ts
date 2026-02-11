@@ -15,8 +15,6 @@ export * from './AttachmentPicker/AttachmentPicker';
 export * from './AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 export * from './AttachmentPicker/components/AttachmentPickerContent';
 export * from './AttachmentPicker/components/AttachmentMediaPicker';
-export * from './AttachmentPicker/components/AttachmentPickerError';
-export * from './AttachmentPicker/components/AttachmentPickerErrorImage';
 export * from './AttachmentPicker/components/AttachmentPickerSelectionBar';
 export * from './AttachmentPicker/components/AttachmentTypePickerButton';
 export * from './AttachmentPicker/components/CameraSelectorIcon';
