@@ -111,6 +111,7 @@ export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
 const styles = StyleSheet.create({
   container: {
     gap: primitives.spacingXs,
+    alignSelf: 'center',
   },
   item: {
     borderRadius: primitives.radiusLg,
