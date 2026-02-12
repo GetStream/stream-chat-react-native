@@ -65,6 +65,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     borderWidth: 1,
     overflow: 'hidden',
+    gap: primitives.spacingXs,
+    paddingVertical: primitives.spacingXs,
+    paddingHorizontal: primitives.spacingXs,
   },
   leftAlignContent: {
     justifyContent: 'flex-start',
@@ -78,13 +81,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   replyContainer: {
-    paddingHorizontal: primitives.spacingXs,
-    paddingTop: primitives.spacingXs,
+    alignSelf: 'center',
   },
-  galleryContainer: {
-    paddingHorizontal: primitives.spacingXs,
-    paddingVertical: primitives.spacingXs,
-  },
+  galleryContainer: {},
   rightAlignContent: {
     justifyContent: 'flex-end',
   },
@@ -109,7 +108,6 @@ export type MessageContentPropsWithContext = Pick<
   | 'preventPress'
   | 'threadList'
   | 'isMessageAIGenerated'
-  | 'images'
 > &
   Pick<
     MessagesContextValue,
@@ -159,7 +157,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     FileAttachmentGroup,
     Gallery,
     groupStyles,
-    images,
     isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
@@ -369,13 +366,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                 return (
                   <View
                     key={`gallery_${messageContentOrderIndex}`}
-                    style={[
-                      styles.galleryContainer,
-                      {
-                        paddingVertical: images.length === 1 ? 0 : primitives.spacingXs,
-                        paddingHorizontal: images.length === 1 ? 0 : primitives.spacingXs,
-                      },
-                    ]}
+                    style={[styles.galleryContainer]}
                   >
                     <Gallery />
                   </View>
@@ -600,7 +591,6 @@ export const MessageContent = (props: MessageContentProps) => {
     otherAttachments,
     preventPress,
     threadList,
-    images,
   } = useMessageContext();
   const {
     additionalPressableProps,
@@ -626,7 +616,6 @@ export const MessageContent = (props: MessageContentProps) => {
         enableMessageGroupingByUser,
         FileAttachmentGroup,
         Gallery,
-        images,
         goToMessage,
         groupStyles,
         isAttachmentEqual,

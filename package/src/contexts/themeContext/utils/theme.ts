@@ -560,7 +560,6 @@ export type Theme = {
         description: TextStyle;
         title: TextStyle;
       };
-      wrapper: ViewStyle;
       linkPreview: ViewStyle;
       linkPreviewText: TextStyle;
     };
@@ -1373,7 +1372,6 @@ export const defaultTheme: Theme = {
         description: {},
         title: {},
       },
-      wrapper: {},
       linkPreview: {},
       linkPreviewText: {},
     },
@@ -1469,8 +1467,8 @@ export const defaultTheme: Theme = {
       imageContainerStyle: {},
       maxHeight: 192,
       maxWidth: 256,
-      minHeight: 192,
-      minWidth: 192,
+      minHeight: 120,
+      minWidth: 120,
       moreImagesContainer: {},
       moreImagesText: {},
       thumbnail: {},

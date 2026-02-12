@@ -80,7 +80,6 @@ const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
           footer: { description, title: titleStyle, ...footerStyle },
           linkPreview,
           linkPreviewText,
-          wrapper,
         },
       },
     },
@@ -95,80 +94,75 @@ const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
   const isVideoCard = type === FileTypes.Video && og_scrape_url;
 
   return (
-    <View style={[styles.wrapper, wrapper]}>
-      <Pressable
-        disabled={preventPress}
-        onLongPress={(event) => {
-          if (onLongPress) {
-            onLongPress({
-              additionalInfo: { url: og_scrape_url },
-              emitter: 'card',
-              event,
-            });
-          }
-        }}
-        onPress={(event) => {
-          if (onPress) {
-            onPress({
-              additionalInfo: { url: og_scrape_url },
-              defaultHandler: defaultOnPress,
-              emitter: 'card',
-              event,
-            });
-          }
-        }}
-        onPressIn={(event) => {
-          if (onPressIn) {
-            onPressIn({
-              additionalInfo: { url: og_scrape_url },
-              defaultHandler: defaultOnPress,
-              emitter: 'card',
-              event,
-            });
-          }
-        }}
-        style={[styles.container, container, stylesProp.container]}
-        testID='card-attachment'
-        {...additionalPressableProps}
-      >
-        {uri && (
-          <ImageBackground
-            ImageComponent={ImageComponent}
-            imageStyle={styles.cardCover}
-            resizeMode='cover'
-            source={{ uri: makeImageCompatibleUrl(uri) }}
-            style={[styles.cardCover, stylesProp.cardCover, cover]}
-          >
-            {isVideoCard ? <VideoPlayIndicator size='lg' /> : null}
-          </ImageBackground>
-        )}
+    <Pressable
+      disabled={preventPress}
+      onLongPress={(event) => {
+        if (onLongPress) {
+          onLongPress({
+            additionalInfo: { url: og_scrape_url },
+            emitter: 'card',
+            event,
+          });
+        }
+      }}
+      onPress={(event) => {
+        if (onPress) {
+          onPress({
+            additionalInfo: { url: og_scrape_url },
+            defaultHandler: defaultOnPress,
+            emitter: 'card',
+            event,
+          });
+        }
+      }}
+      onPressIn={(event) => {
+        if (onPressIn) {
+          onPressIn({
+            additionalInfo: { url: og_scrape_url },
+            defaultHandler: defaultOnPress,
+            emitter: 'card',
+            event,
+          });
+        }
+      }}
+      style={[styles.container, container, stylesProp.container]}
+      testID='card-attachment'
+      {...additionalPressableProps}
+    >
+      {uri && (
+        <ImageBackground
+          ImageComponent={ImageComponent}
+          imageStyle={styles.cardCover}
+          resizeMode='cover'
+          source={{ uri: makeImageCompatibleUrl(uri) }}
+          style={[styles.cardCover, stylesProp.cardCover, cover]}
+        >
+          {isVideoCard ? <VideoPlayIndicator size='lg' /> : null}
+        </ImageBackground>
+      )}
 
-        <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
-          {title ? (
-            <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp.title]}>
-              {title}
-            </Text>
-          ) : null}
-          {text ? (
-            <Text
-              numberOfLines={2}
-              style={[styles.description, description, stylesProp.description]}
-            >
-              {text}
-            </Text>
-          ) : null}
-          <View style={[styles.linkPreview, linkPreview, stylesProp.linkPreview]}>
-            <NewLink height={12} width={12} stroke={semantics.chatTextIncoming} />
-            <Text
-              numberOfLines={1}
-              style={[styles.linkPreviewText, linkPreviewText, stylesProp.linkPreviewText]}
-            >
-              {og_scrape_url}
-            </Text>
-          </View>
+      <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
+        {title ? (
+          <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp.title]}>
+            {title}
+          </Text>
+        ) : null}
+        {text ? (
+          <Text numberOfLines={2} style={[styles.description, description, stylesProp.description]}>
+            {text}
+          </Text>
+        ) : null}
+        <View style={[styles.linkPreview, linkPreview, stylesProp.linkPreview]}>
+          <NewLink height={12} width={12} stroke={semantics.chatTextIncoming} />
+          <Text
+            numberOfLines={1}
+            style={[styles.linkPreviewText, linkPreviewText, stylesProp.linkPreviewText]}
+          >
+            {og_scrape_url}
+          </Text>
         </View>
-      </Pressable>
-    </View>
+      </View>
+    </Pressable>
   );
 };
 
@@ -249,10 +243,6 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        wrapper: {
-          paddingHorizontal: primitives.spacingXs,
-          paddingTop: primitives.spacingXs,
-        },
         container: {
           maxWidth: 256, // TODO: Fix this
           borderRadius: primitives.radiusLg,
@@ -262,9 +252,8 @@ const useStyles = () => {
           overflow: 'hidden',
         },
         cardCover: {
-          alignItems: 'center',
-          justifyContent: 'center',
-          aspectRatio: 16 / 9,
+          minWidth: 256,
+          minHeight: 144,
           alignSelf: 'stretch',
         },
         cardFooter: {

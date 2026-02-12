@@ -34,21 +34,8 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     },
   } = useTheme();
 
-  const showBottomPadding = files.length > 1 && !message.text && message.quoted_message;
-
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingHorizontal: files.length > 1 ? primitives.spacingXs : 0,
-          paddingTop: files.length > 1 ? primitives.spacingXs : 0,
-          paddingBottom: showBottomPadding ? primitives.spacingXs : 0,
-        },
-        container,
-        stylesProp.container,
-      ]}
-    >
+    <View style={[styles.container, {}, container, stylesProp.container]}>
       {files.map((file, index) => (
         <View
           key={`file-by-attachment-group-${message.id}-${index}`}
@@ -110,8 +97,8 @@ export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     gap: primitives.spacingXs,
-    alignSelf: 'center',
   },
   item: {
     borderRadius: primitives.radiusLg,
