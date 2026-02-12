@@ -1,11 +1,13 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import type { SharedValue } from 'react-native-reanimated';
+
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type BottomSheetContextValue = {
   close: (closeAnimationFinishedCallback?: () => void) => void;
-  snapIndex: number;
+  currentSnapIndex: SharedValue<number>;
 };
 
 export const BottomSheetContext = React.createContext(
