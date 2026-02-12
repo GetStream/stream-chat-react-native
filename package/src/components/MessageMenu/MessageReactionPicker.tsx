@@ -34,6 +34,8 @@ export type ReactionPickerItemType = ReactionData & {
   ownReactionTypes: string[];
 };
 
+const EMOJI_SIZE = 32;
+
 const keyExtractor = (item: ReactionPickerItemType) => item.type;
 
 const renderItem = ({ index, item }: { index: number; item: ReactionPickerItemType }) => (
@@ -125,8 +127,13 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   const renderEmoji = useCallback(
     ({ item }: { item: string }) => {
       return (
-        <Pressable onPress={() => selectEmoji(item)} style={styles.emojiContainer}>
-          <Text style={styles.emojiText}>{item}</Text>
+        <Pressable onPress={() => selectEmoji(item)} style={[styles.emojiContainer]}>
+          <Text
+            style={[styles.emojiText, { fontSize: EMOJI_SIZE, lineHeight: EMOJI_SIZE + 4 }]}
+            numberOfLines={1}
+          >
+            {item}
+          </Text>
         </Pressable>
       );
     },
@@ -161,7 +168,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
             contentContainerStyle={styles.bottomSheetContentContainer}
             data={emojis}
             keyExtractor={emojiKeyExtractor}
-            numColumns={6}
+            numColumns={7}
             removeClippedSubviews={false}
             // This is sort of needed, because when virtualization kicks in
             // it messes with the animations, as more native views get their
@@ -184,6 +191,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-evenly',
     width: '100%',
+    height: 54,
   },
   bottomSheetContentContainer: { paddingVertical: 16 },
   container: {
@@ -196,7 +204,12 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     paddingHorizontal: 5,
   },
-  emojiContainer: { height: 30 },
-  emojiText: { fontSize: 20, padding: 2 },
+  emojiContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emojiText: {
+    textAlign: 'center',
+  },
   emojiViewerButton: { alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: 4 },
 });
