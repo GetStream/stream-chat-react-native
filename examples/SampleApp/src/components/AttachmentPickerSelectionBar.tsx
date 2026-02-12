@@ -48,5 +48,10 @@ export const CustomAttachmentPickerSelectionBar = () => {
 };
 
 const styles = StyleSheet.create({
-  selectionBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 12, },
+  selectionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
 });

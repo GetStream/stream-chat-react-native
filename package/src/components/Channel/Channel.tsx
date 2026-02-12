@@ -541,6 +541,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
 
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
+    disableAttachmentPicker = true, // TODO: revert this later
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
     additionalTextInputProps,
@@ -552,7 +553,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     asyncMessagesSlideToCancelDistance = 75,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
-    attachmentPickerBottomSheetHeight = 333,
+    attachmentPickerBottomSheetHeight = disableAttachmentPicker ? 72 : 333,
     AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
     attachmentSelectionBarHeight = 72,
     AudioAttachment = AudioAttachmentDefault,
@@ -583,7 +584,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     customMessageSwipeAction,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
-    disableAttachmentPicker = !isImageMediaLibraryAvailable(),
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
@@ -2044,7 +2044,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                       <MessageInputProvider value={inputMessageInputContext}>
                         <AudioPlayerProvider value={audioPlayerContext}>
                           <View style={{ height: '100%' }}>{children}</View>
-                          {!disableAttachmentPicker ? <AttachmentPicker /> : null}
+                          <AttachmentPicker />
                         </AudioPlayerProvider>
                       </MessageInputProvider>
                     </MessageComposerProvider>

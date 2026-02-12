@@ -36,6 +36,7 @@ export const AttachmentPicker = () => {
     AttachmentPickerContent,
     attachmentPickerBottomSheetHeight,
     bottomSheetRef: ref,
+    disableAttachmentPicker,
   } = useAttachmentPickerContext();
 
   const [currentIndex, setCurrentIndexInternal] = useState(-1);
@@ -89,6 +90,8 @@ export const AttachmentPicker = () => {
     }
   }, [currentIndex, attachmentPickerStore]);
 
+  const selectionBarRef = useRef<number | null>(null);
+
   const initialSnapPoint = attachmentPickerBottomSheetHeight;
 
   /**
@@ -97,7 +100,6 @@ export const AttachmentPicker = () => {
    */
   const snapPoints = useMemo(() => [initialSnapPoint], [initialSnapPoint]);
 
-  const selectionBarRef = useRef<number | null>(null);
   const onAttachmentPickerSelectionBarLayout = useStableCallback((e: LayoutChangeEvent) => {
     selectionBarRef.current = e.nativeEvent.layout.height;
   });
@@ -120,9 +122,11 @@ export const AttachmentPicker = () => {
       <View onLayout={onAttachmentPickerSelectionBarLayout}>
         <AttachmentPickerSelectionBar />
       </View>
-      <AttachmentPickerContent
-        height={attachmentPickerBottomSheetHeight - (selectionBarRef?.current ?? 0)}
-      />
+      {!disableAttachmentPicker ? (
+        <AttachmentPickerContent
+          height={attachmentPickerBottomSheetHeight - (selectionBarRef?.current ?? 0)}
+        />
+      ) : null}
     </BottomSheet>
   );
 };
