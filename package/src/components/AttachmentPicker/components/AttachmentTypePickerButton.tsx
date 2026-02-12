@@ -66,7 +66,6 @@ export const MediaPickerButton = () => {
   const { selectedPicker } = useAttachmentPickerState();
 
   const setImagePicker = useStableCallback(() => {
-    console.log('INVOKED: ', disableAttachmentPicker);
     if (disableAttachmentPicker) {
       pickAndUploadImageFromNativePicker();
     } else {
@@ -209,7 +208,7 @@ export const CommandsPickerButton = () => {
           initialSnapIndex={0}
           lazy={true}
         >
-          <AttachmentCommandPicker onClose={onClose} />
+          <AttachmentCommandPicker />
         </BottomSheetModal>
       ) : null}
     </>
