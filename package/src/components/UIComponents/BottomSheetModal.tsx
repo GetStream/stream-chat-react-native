@@ -350,6 +350,8 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
   const onBackdropPress = useStableCallback(() => close());
 
+  const bottomSheetModalContextValue = useMemo(() => ({ close }), [close]);
+
   return (
     <Modal onRequestClose={onClose} transparent visible={visible}>
       <GestureHandlerRootView style={styles.sheetContentContainer}>
@@ -364,7 +366,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
               <View style={[styles.handle, handle]} />
               <View style={[styles.contentContainer, contentContainer]}>
                 {renderContent ? (
-                  <BottomSheetProvider value={{ close }}>
+                  <BottomSheetProvider value={bottomSheetModalContextValue}>
                     <Animated.View
                       entering={FadeIn.duration(250)}
                       style={styles.sheetContentContainer}
