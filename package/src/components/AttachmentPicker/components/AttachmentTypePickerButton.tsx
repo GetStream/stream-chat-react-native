@@ -190,7 +190,7 @@ export const CommandsPickerButton = () => {
 
   const onClose = useStableCallback(() => setShowCommandsSheet(false));
 
-  const snapPoints = useMemo(() => [400, 800], []);
+  const snapPoints = useMemo(() => [338, 800], []);
 
   return hasCommands ? (
     <>

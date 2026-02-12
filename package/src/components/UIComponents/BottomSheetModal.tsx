@@ -60,7 +60,7 @@ export type BottomSheetModalProps = {
 };
 
 export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
-  const { height: windowHeight, width: windowWidth } = useWindowDimensions();
+  const { height: windowHeight } = useWindowDimensions();
   const {
     children,
     height = windowHeight / 2,
@@ -74,9 +74,9 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   const {
     theme: {
       bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme },
-      colors: { grey, overlay, white_snow },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const resolvedSnapPoints = useMemo(() => {
     if (!snapPoints || snapPoints.length === 0) {
@@ -382,23 +382,13 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
       <GestureHandlerRootView style={styles.sheetContentContainer}>
         <GestureDetector gesture={gesture}>
           <View style={[styles.overlay, overlayTheme]}>
-            <Animated.View
-              pointerEvents='none'
-              style={[styles.backdrop, { backgroundColor: overlay }, overlayAnimatedStyle]}
-            />
+            <Animated.View pointerEvents='none' style={[styles.backdrop, overlayAnimatedStyle]} />
             <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFillObject} />
 
             <Animated.View
-              style={[
-                styles.container,
-                { backgroundColor: white_snow, height: maxHeight },
-                sheetAnimatedStyle,
-                container,
-              ]}
+              style={[styles.container, { height: maxHeight }, sheetAnimatedStyle, container]}
             >
-              <View
-                style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }, handle]}
-              />
+              <View style={[styles.handle, handle]} />
               <View style={[styles.contentContainer, contentContainer]}>
                 {renderContent ? (
                   <BottomSheetProvider value={{ close }}>
@@ -420,29 +410,42 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-  },
-  contentContainer: {
-    flex: 1,
-    marginTop: 8,
-  },
-  handle: {
-    alignSelf: 'center',
-    borderRadius: 4,
-    height: 4,
-    marginVertical: 8,
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  sheetContentContainer: {
-    flex: 1,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          backgroundColor: semantics.backgroundElevationElevation2,
+        },
+        contentContainer: {
+          flex: 1,
+          marginTop: 8,
+        },
+        handle: {
+          alignSelf: 'center',
+          borderRadius: 4,
+          height: 4,
+          marginVertical: 8,
+          backgroundColor: '#919191',
+          width: 32,
+        },
+        overlay: {
+          flex: 1,
+          justifyContent: 'flex-end',
+        },
+        backdrop: {
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: semantics.backgroundCoreScrim,
+        },
+        sheetContentContainer: {
+          flex: 1,
+        },
+      }),
+    [],
+  );
+};
