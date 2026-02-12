@@ -322,6 +322,10 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
                 nearestIndex = i;
               }
             }
+            // velocity-based snapping, fast upward swipe goes to top snap point
+            if (event.velocityY < -800) {
+              nearestIndex = snapPointsTranslateY.length - 1;
+            }
             currentSnapIndex.value = nearestIndex;
             translateY.value = withTiming(baseOffset + snapPointsTranslateY[nearestIndex], {
               duration: 250,

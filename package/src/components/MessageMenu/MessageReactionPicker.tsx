@@ -161,7 +161,14 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
             contentContainerStyle={styles.bottomSheetContentContainer}
             data={emojis}
             keyExtractor={emojiKeyExtractor}
-            numColumns={4}
+            numColumns={6}
+            removeClippedSubviews={false}
+            // This is sort of needed, because when virtualization kicks in
+            // it messes with the animations, as more native views get their
+            // bindings to JS. For the reactions specifically it does not really
+            // matter as they aren't too heavy - but we should anyway revisit
+            // this in the future.
+            initialNumToRender={emojis.length}
             renderItem={renderEmoji}
             style={styles.bottomSheet}
           />
