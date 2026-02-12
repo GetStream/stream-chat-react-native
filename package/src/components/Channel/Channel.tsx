@@ -541,7 +541,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
 
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
-    disableAttachmentPicker = true,
+    disableAttachmentPicker = !isImageMediaLibraryAvailable(),
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
     additionalTextInputProps,

@@ -418,6 +418,6 @@ const useStyles = () => {
           flex: 1,
         },
       }),
-    [],
+    [semantics.backgroundCoreScrim, semantics.backgroundElevationElevation2],
   );
 };
