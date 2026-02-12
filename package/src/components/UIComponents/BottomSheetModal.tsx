@@ -80,6 +80,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   const panStartY = useSharedValue(0);
 
   const [renderContent, setRenderContent] = useState(!lazy);
+  const [snapIndex, setSnapIndex] = useState(0);
 
   const showContent = useStableCallback(() => {
     if (lazy) {
@@ -127,6 +128,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
     isOpen.value = true;
     isOpening.value = true;
+    setSnapIndex(0);
 
     cancelAnimation(translateY);
 
@@ -182,6 +184,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     isOpen.value = false;
     isOpening.value = false;
     keyboardOffset.value = 0;
+    setSnapIndex(0);
 
     cancelAnimation(translateY);
     translateY.value = maxHeight;
@@ -276,7 +279,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     [maxHeight, snapPoints],
   );
 
-  const gesture = useMemo(
+  const panGesture = useMemo(
     () =>
       Gesture.Pan()
         // disable pan until content is rendered (prevents canceling the opening timing).
@@ -327,6 +330,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
               nearestIndex = snapPointsTranslateY.length - 1;
             }
             currentSnapIndex.value = nearestIndex;
+            runOnJS(setSnapIndex)(nearestIndex);
             translateY.value = withTiming(baseOffset + snapPointsTranslateY[nearestIndex], {
               duration: 250,
               easing: Easing.inOut(Easing.ease),
@@ -350,12 +354,18 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
   const onBackdropPress = useStableCallback(() => close());
 
-  const bottomSheetModalContextValue = useMemo(() => ({ close }), [close]);
+  const bottomSheetModalContextValue = useMemo(
+    () => ({
+      close,
+      snapIndex,
+    }),
+    [close, snapIndex],
+  );
 
   return (
     <Modal onRequestClose={onClose} transparent visible={visible}>
       <GestureHandlerRootView style={styles.sheetContentContainer}>
-        <GestureDetector gesture={gesture}>
+        <GestureDetector gesture={panGesture}>
           <View style={[styles.overlay, overlayTheme]}>
             <Animated.View pointerEvents='none' style={[styles.backdrop, overlayAnimatedStyle]} />
             <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFillObject} />

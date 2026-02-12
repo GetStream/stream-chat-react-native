@@ -5,6 +5,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type BottomSheetContextValue = {
   close: (closeAnimationFinishedCallback?: () => void) => void;
+  snapIndex: number;
 };
 
 export const BottomSheetContext = React.createContext(
