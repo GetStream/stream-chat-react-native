@@ -1,12 +1,11 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MessageTextContainer should render message text container 1`] = `
 <View
   style={
     [
       {
-        "maxWidth": 250,
-        "paddingHorizontal": 16,
+        "maxWidth": 256,
       },
       {},
       undefined,

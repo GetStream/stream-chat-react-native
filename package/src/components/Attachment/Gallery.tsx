@@ -136,10 +136,8 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
         images.length !== 1
           ? { width: gridWidth, height: gridHeight }
           : {
-              maxWidth,
-              maxHeight,
-              minWidth,
-              minHeight,
+              height,
+              width,
             },
         galleryContainer,
       ]}
@@ -255,10 +253,10 @@ const GalleryThumbnail = ({
 }: GalleryThumbnailProps) => {
   const {
     theme: {
-      colors: { overlay },
       messageSimple: {
         gallery: { image, imageBorderRadius, imageContainer, moreImagesContainer, moreImagesText },
       },
+      semantics,
     },
   } = useTheme();
   const { t } = useTranslationContext();
@@ -351,7 +349,7 @@ const GalleryThumbnail = ({
           style={[
             StyleSheet.absoluteFillObject,
             styles.moreImagesContainer,
-            { backgroundColor: overlay },
+            { backgroundColor: semantics.backgroundCoreOverlay },
             borderRadius,
             moreImagesContainer,
           ]}

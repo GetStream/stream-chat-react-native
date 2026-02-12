@@ -65,9 +65,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     borderWidth: 1,
     overflow: 'hidden',
-    gap: primitives.spacingXs,
-    paddingVertical: primitives.spacingXs,
-    paddingHorizontal: primitives.spacingXs,
   },
   leftAlignContent: {
     justifyContent: 'flex-start',
@@ -89,6 +86,9 @@ const styles = StyleSheet.create({
   },
   rightAlignItems: {
     alignItems: 'flex-end',
+  },
+  textContainer: {
+    paddingHorizontal: primitives.spacingXs,
   },
 });
 
@@ -141,6 +141,14 @@ export type MessageContentPropsWithContext = Pick<
      * If the message is grouped in a single or bottom container
      */
     messageGroupedSingleOrBottom?: boolean;
+
+    /**
+     * If the message has a single file
+     */
+    isSingleFile?: boolean;
+    showPaddingTop?: boolean;
+    showPaddingHorizontal?: boolean;
+    showPaddingBottom?: boolean;
   };
 
 /**
@@ -175,6 +183,9 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     setMessageContentWidth,
     StreamingMessageView,
     threadList,
+    showPaddingTop,
+    showPaddingHorizontal,
+    showPaddingBottom,
   } = props;
   const { client } = useChatContext();
   const { PollContent: PollContentOverride } = useMessagesContext();
@@ -341,71 +352,81 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           ]}
           testID='message-content-wrapper'
         >
-          {messageContentOrder.map((messageContentType, messageContentOrderIndex) => {
-            switch (messageContentType) {
-              case 'quoted_reply':
-                return (
-                  message.quoted_message && (
+          <View
+            style={{
+              gap: primitives.spacingXs,
+              paddingTop: showPaddingTop ? 0 : primitives.spacingXs,
+              paddingHorizontal: showPaddingHorizontal ? 0 : primitives.spacingXs,
+              paddingBottom: showPaddingBottom ? 0 : primitives.spacingXs,
+            }}
+          >
+            {messageContentOrder.map((messageContentType, messageContentOrderIndex) => {
+              switch (messageContentType) {
+                case 'quoted_reply':
+                  return (
+                    message.quoted_message && (
+                      <View
+                        key={`quoted_reply_${messageContentOrderIndex}`}
+                        style={[styles.replyContainer, replyContainer]}
+                      >
+                        <Reply styles={replyStyles} />
+                      </View>
+                    )
+                  );
+                case 'attachments':
+                  return otherAttachments.map((attachment, attachmentIndex) => (
+                    <Attachment attachment={attachment} key={`${message.id}-${attachmentIndex}`} />
+                  ));
+                case 'files':
+                  return (
+                    <FileAttachmentGroup
+                      key={`file_attachment_group_${messageContentOrderIndex}`}
+                    />
+                  );
+                case 'gallery':
+                  return (
                     <View
-                      key={`quoted_reply_${messageContentOrderIndex}`}
-                      style={[styles.replyContainer, replyContainer]}
+                      key={`gallery_${messageContentOrderIndex}`}
+                      style={[styles.galleryContainer]}
                     >
-                      <Reply styles={replyStyles} />
+                      <Gallery />
                     </View>
-                  )
-                );
-              case 'attachments':
-                return otherAttachments.map((attachment, attachmentIndex) => (
-                  <Attachment attachment={attachment} key={`${message.id}-${attachmentIndex}`} />
-                ));
-              case 'files':
-                return (
-                  <FileAttachmentGroup key={`file_attachment_group_${messageContentOrderIndex}`} />
-                );
-              case 'gallery':
-                return (
-                  <View
-                    key={`gallery_${messageContentOrderIndex}`}
-                    style={[styles.galleryContainer]}
-                  >
-                    <Gallery />
-                  </View>
-                );
-              case 'poll': {
-                const pollId = message.poll_id;
-                const poll = pollId && client.polls.fromState(pollId);
-                return pollId && poll ? (
-                  <Poll
-                    key={`poll_${message.poll_id}`}
-                    message={message}
-                    poll={poll}
-                    PollContent={PollContentOverride}
-                  />
-                ) : null;
+                  );
+                case 'poll': {
+                  const pollId = message.poll_id;
+                  const poll = pollId && client.polls.fromState(pollId);
+                  return pollId && poll ? (
+                    <Poll
+                      key={`poll_${message.poll_id}`}
+                      message={message}
+                      poll={poll}
+                      PollContent={PollContentOverride}
+                    />
+                  ) : null;
+                }
+                case 'location':
+                  return MessageLocation ? (
+                    <MessageLocation
+                      key={`message_location_${messageContentOrderIndex}`}
+                      message={message}
+                    />
+                  ) : null;
+                case 'ai_text':
+                  return isAIGenerated ? (
+                    <StreamingMessageView
+                      key={`ai_message_text_container_${messageContentOrderIndex}`}
+                    />
+                  ) : null;
+                default:
+                  return null;
               }
-              case 'location':
-                return MessageLocation ? (
-                  <MessageLocation
-                    key={`message_location_${messageContentOrderIndex}`}
-                    message={message}
-                  />
-                ) : null;
-              case 'ai_text':
-                return isAIGenerated ? (
-                  <StreamingMessageView
-                    key={`ai_message_text_container_${messageContentOrderIndex}`}
-                  />
-                ) : null;
-              case 'text':
-              default:
-                return (otherAttachments.length && otherAttachments[0].actions) ||
-                  isAIGenerated ? null : (
-                  <MessageTextContainer
-                    key={`message_text_container_${messageContentOrderIndex}`}
-                  />
-                );
-            }
-          })}
+            })}
+          </View>
+          <View style={styles.textContainer}>
+            {(otherAttachments.length && otherAttachments[0].actions) || isAIGenerated ? null : (
+              <MessageTextContainer />
+            )}
+          </View>
         </View>
         {isMessageErrorType && <MessageError />}
       </View>
@@ -591,6 +612,8 @@ export const MessageContent = (props: MessageContentProps) => {
     otherAttachments,
     preventPress,
     threadList,
+    files,
+    images,
   } = useMessageContext();
   const {
     additionalPressableProps,
@@ -606,6 +629,25 @@ export const MessageContent = (props: MessageContentProps) => {
     StreamingMessageView,
   } = useMessagesContext();
   const { t } = useTranslationContext();
+  const isSingleFile = files.length === 1;
+  const messageHasPoll = messageContentOrder.includes('poll');
+  const messageHasSingleImage = images.length === 1;
+  const messageHasSingleFile =
+    messageContentOrder.length === 1 && messageContentOrder[0] === 'files' && isSingleFile;
+  const messageHasOnlyText = messageContentOrder.length === 1 && messageContentOrder[0] === 'text';
+
+  const showPaddingTop =
+    messageHasPoll || messageHasSingleImage || messageHasSingleFile || messageHasOnlyText;
+
+  const showPaddingHorizontal = messageHasPoll || messageHasSingleImage || messageHasSingleFile;
+
+  const showPaddingBottom =
+    messageHasPoll ||
+    messageHasSingleImage ||
+    messageHasSingleFile ||
+    messageHasOnlyText ||
+    (messageContentOrder.length > 1 &&
+      messageContentOrder[messageContentOrder.length - 1] === 'text');
 
   return (
     <MemoizedMessageContent
@@ -636,6 +678,9 @@ export const MessageContent = (props: MessageContentProps) => {
         StreamingMessageView,
         t,
         threadList,
+        showPaddingTop,
+        showPaddingHorizontal,
+        showPaddingBottom,
       }}
       {...props}
     />
