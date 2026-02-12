@@ -81,7 +81,7 @@ const useStyles = () => {
     },
   } = useTheme();
 
-  const { badgeBgInverse, badgeText } = semantics;
+  const { badgeBgInverse, textInverse } = semantics;
 
   return useMemo(
     () =>
@@ -101,11 +101,11 @@ const useStyles = () => {
         durationText: {
           fontSize: primitives.typographyFontSizeXxs,
           fontWeight: primitives.typographyFontWeightBold,
-          color: badgeText,
+          color: textInverse,
           marginLeft: primitives.spacingXxs,
           ...durationText,
         },
       }),
-    [badgeBgInverse, badgeText, durationContainer, durationText],
+    [badgeBgInverse, textInverse, durationContainer, durationText],
   );
 };
