@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { FlatList } from 'react-native-gesture-handler';
+
 import { CommandSearchSource, CommandSuggestion } from 'stream-chat';
 
 import { AttachmentMediaPicker } from './AttachmentMediaPicker/AttachmentMediaPicker';
@@ -17,7 +19,6 @@ import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
 import { Camera, FilePickerIcon, IconProps, PollThumbnail, Recorder } from '../../../icons';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
-import { BottomSheetFlatList } from '../../BottomSheetCompatibility/BottomSheetFlatList';
 import { Button } from '../../ui';
 
 const useStyles = () => {
@@ -201,7 +202,7 @@ export const AttachmentCommandPicker = () => {
   return (
     <>
       <Text style={styles.title}>{t('Instant Commands')}</Text>
-      <BottomSheetFlatList
+      <FlatList
         contentContainerStyle={styles.contentContainer}
         renderItem={renderItem}
         data={commands}

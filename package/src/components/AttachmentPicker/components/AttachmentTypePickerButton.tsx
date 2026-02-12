@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Platform, PressableProps, GestureResponderEvent } from 'react-native';
 
@@ -190,8 +190,6 @@ export const CommandsPickerButton = () => {
 
   const onClose = useStableCallback(() => setShowCommandsSheet(false));
 
-  const snapPoints = useMemo(() => [338, 800], []);
-
   return hasCommands ? (
     <>
       <AttachmentTypePickerButton
@@ -201,13 +199,7 @@ export const CommandsPickerButton = () => {
         onPress={setCommandsPicker}
       />
       {showCommandsSheet ? (
-        <BottomSheetModal
-          onClose={onClose}
-          visible={showCommandsSheet}
-          snapPoints={snapPoints}
-          initialSnapIndex={0}
-          lazy={true}
-        >
+        <BottomSheetModal height={338} onClose={onClose} visible={showCommandsSheet} lazy={true}>
           <AttachmentCommandPicker />
         </BottomSheetModal>
       ) : null}
