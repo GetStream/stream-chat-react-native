@@ -229,7 +229,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         disableTypingIndicator
-        enforceUniqueReaction
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageActions={messageActions}
