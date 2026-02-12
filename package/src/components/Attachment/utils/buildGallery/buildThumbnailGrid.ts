@@ -164,6 +164,7 @@ export function buildThumbnailGrid({
 
       const currentImage = images[imageIndex];
       const thumbnail = buildThumbnail({
+        flex: flexValue,
         height: tHeight,
         image: currentImage,
         resizableCDNHosts,

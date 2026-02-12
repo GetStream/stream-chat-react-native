@@ -1,6 +1,13 @@
 import type { GallerySizeConfig } from './buildGallery/types';
 
-import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import { primitives } from '../../../theme';
+
+export type GalleryImageBorderRadius = {
+  borderBottomLeftRadius: number;
+  borderBottomRightRadius: number;
+  borderTopLeftRadius: number;
+  borderTopRightRadius: number;
+};
 
 type Params = {
   colIndex: number;
@@ -8,19 +15,14 @@ type Params = {
   numOfRows: number;
   rowIndex: number;
   sizeConfig: GallerySizeConfig;
-  hasThreadReplies?: boolean;
   height?: number;
   invertedDirections?: boolean;
   messageText?: string;
-  threadList?: boolean;
   width?: number;
-} & Pick<MessageContextValue, 'groupStyles' | 'alignment'>;
+};
 
 export function getGalleryImageBorderRadius({
-  alignment,
   colIndex,
-  groupStyles,
-  hasThreadReplies,
   height,
   invertedDirections,
   messageText,
@@ -28,10 +30,8 @@ export function getGalleryImageBorderRadius({
   numOfRows,
   rowIndex,
   sizeConfig,
-  threadList,
   width,
 }: Params) {
-  const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
   const isSingleImage = numOfColumns === 1 && numOfRows === 1;
   const isImageSmallerThanMinContainerSize =
     isSingleImage &&
@@ -46,26 +46,22 @@ export function getGalleryImageBorderRadius({
   const topRightEdgeExposed =
     (!invertedDirections && colIndex === numOfColumns - 1 && rowIndex === 0) ||
     (invertedDirections && colIndex === 0 && rowIndex === numOfRows - 1);
-  const bottomRightEdgeExposed = colIndex === numOfColumns && rowIndex === numOfRows - 1;
+  const bottomRightEdgeExposed = colIndex === numOfColumns - 1 && rowIndex === numOfRows - 1;
 
   return {
+    borderTopLeftRadius: !isImageSmallerThanMinContainerSize && topLeftEdgeExposed ? 12 : 8,
+    borderTopRightRadius: !isImageSmallerThanMinContainerSize && topRightEdgeExposed ? 12 : 8,
     borderBottomLeftRadius:
-      !isImageSmallerThanMinContainerSize &&
-      bottomLeftEdgeExposed &&
-      !messageText &&
-      ((groupStyle !== 'left_bottom' && groupStyle !== 'left_single') ||
-        (hasThreadReplies && !threadList))
-        ? 14
-        : 0,
+      isSingleImage && !messageText
+        ? primitives.radiusNone
+        : !isImageSmallerThanMinContainerSize && bottomLeftEdgeExposed
+          ? primitives.radiusLg
+          : primitives.radiusMd,
     borderBottomRightRadius:
-      !isImageSmallerThanMinContainerSize &&
-      bottomRightEdgeExposed &&
-      !messageText &&
-      ((groupStyle !== 'right_bottom' && groupStyle !== 'right_single') ||
-        (hasThreadReplies && !threadList))
-        ? 14
-        : 0,
-    borderTopLeftRadius: !isImageSmallerThanMinContainerSize && topLeftEdgeExposed ? 14 : 0,
-    borderTopRightRadius: !isImageSmallerThanMinContainerSize && topRightEdgeExposed ? 14 : 0,
+      isSingleImage && !messageText
+        ? primitives.radiusNone
+        : !isImageSmallerThanMinContainerSize && bottomRightEdgeExposed
+          ? primitives.radiusLg
+          : primitives.radiusMd,
   };
 }

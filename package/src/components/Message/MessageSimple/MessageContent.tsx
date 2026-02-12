@@ -81,6 +81,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: primitives.spacingXs,
     paddingTop: primitives.spacingXs,
   },
+  galleryContainer: {
+    paddingHorizontal: primitives.spacingXs,
+    paddingVertical: primitives.spacingXs,
+  },
   rightAlignContent: {
     justifyContent: 'flex-end',
   },
@@ -105,6 +109,7 @@ export type MessageContentPropsWithContext = Pick<
   | 'preventPress'
   | 'threadList'
   | 'isMessageAIGenerated'
+  | 'images'
 > &
   Pick<
     MessagesContextValue,
@@ -154,6 +159,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     FileAttachmentGroup,
     Gallery,
     groupStyles,
+    images,
     isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
@@ -360,7 +366,20 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                   <FileAttachmentGroup key={`file_attachment_group_${messageContentOrderIndex}`} />
                 );
               case 'gallery':
-                return <Gallery key={`gallery_${messageContentOrderIndex}`} />;
+                return (
+                  <View
+                    key={`gallery_${messageContentOrderIndex}`}
+                    style={[
+                      styles.galleryContainer,
+                      {
+                        paddingVertical: images.length === 1 ? 0 : primitives.spacingXs,
+                        paddingHorizontal: images.length === 1 ? 0 : primitives.spacingXs,
+                      },
+                    ]}
+                  >
+                    <Gallery />
+                  </View>
+                );
               case 'poll': {
                 const pollId = message.poll_id;
                 const poll = pollId && client.polls.fromState(pollId);
@@ -581,6 +600,7 @@ export const MessageContent = (props: MessageContentProps) => {
     otherAttachments,
     preventPress,
     threadList,
+    images,
   } = useMessageContext();
   const {
     additionalPressableProps,
@@ -606,6 +626,7 @@ export const MessageContent = (props: MessageContentProps) => {
         enableMessageGroupingByUser,
         FileAttachmentGroup,
         Gallery,
+        images,
         goToMessage,
         groupStyles,
         isAttachmentEqual,
