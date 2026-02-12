@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { FlatList } from 'react-native-gesture-handler';
+
 import { CommandSearchSource, CommandSuggestion } from 'stream-chat';
 
 import { AttachmentMediaPicker } from './AttachmentMediaPicker/AttachmentMediaPicker';
 
 import {
+  useAttachmentPickerContext,
+  useBottomSheetContext,
   useMessageComposer,
   useMessageInputContext,
   useTranslationContext,
@@ -15,7 +19,6 @@ import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
 import { Camera, FilePickerIcon, IconProps, PollThumbnail, Recorder } from '../../../icons';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
-import { BottomSheetFlatList } from '../../BottomSheetCompatibility/BottomSheetFlatList';
 import { Button } from '../../ui';
 
 const useStyles = () => {
@@ -100,19 +103,16 @@ export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericCon
 
 const keyExtractor = (item: { id: string }) => item.id;
 
-export const AttachmentCommantPickerItem = ({ item }: { item: CommandSuggestion }) => {
-  const messageComposer = useMessageComposer();
-  const { textComposer } = messageComposer;
-  const { inputBoxRef } = useMessageInputContext();
-
+const AttachmentCommandPickerItemUI = ({
+  item,
+  onPress,
+}: {
+  item: CommandSuggestion;
+  onPress: () => void;
+}) => {
   const {
     theme: { semantics },
   } = useTheme();
-
-  const handlePress = useCallback(() => {
-    textComposer.setCommand(item);
-    inputBoxRef.current?.focus();
-  }, [item, textComposer, inputBoxRef]);
 
   return (
     <Pressable
@@ -120,15 +120,48 @@ export const AttachmentCommantPickerItem = ({ item }: { item: CommandSuggestion 
         backgroundColor: pressed ? semantics.backgroundCorePressed : undefined,
         borderRadius: primitives.radiusSm,
       })}
-      onPress={handlePress}
+      onPress={onPress}
     >
       <CommandSuggestionItem {...item} />
     </Pressable>
   );
 };
 
+export const AttachmentCommandNativePickerItem = ({ item }: { item: CommandSuggestion }) => {
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+  const { inputBoxRef } = useMessageInputContext();
+  const { close } = useBottomSheetContext();
+
+  const handlePress = useCallback(() => {
+    textComposer.setCommand(item);
+    close(() => inputBoxRef.current?.focus());
+  }, [textComposer, item, close, inputBoxRef]);
+
+  return <AttachmentCommandPickerItemUI item={item} onPress={handlePress} />;
+};
+
+export const AttachmentCommandPickerItem = ({ item }: { item: CommandSuggestion }) => {
+  const { disableAttachmentPicker } = useAttachmentPickerContext();
+
+  const messageComposer = useMessageComposer();
+  const { textComposer } = messageComposer;
+  const { inputBoxRef } = useMessageInputContext();
+
+  const handlePress = useCallback(() => {
+    textComposer.setCommand(item);
+    inputBoxRef.current?.focus();
+  }, [textComposer, item, inputBoxRef]);
+
+  if (disableAttachmentPicker) {
+    return <AttachmentCommandNativePickerItem item={item} />;
+  }
+
+  return <AttachmentCommandPickerItemUI item={item} onPress={handlePress} />;
+};
+
 const renderItem = ({ item }: { item: CommandSuggestion }) => {
-  return <AttachmentCommantPickerItem item={item} />;
+  return <AttachmentCommandPickerItem item={item} />;
 };
 
 const useCommandPickerStyle = () => {
@@ -169,7 +202,7 @@ export const AttachmentCommandPicker = () => {
   return (
     <>
       <Text style={styles.title}>{t('Instant Commands')}</Text>
-      <BottomSheetFlatList
+      <FlatList
         contentContainerStyle={styles.contentContainer}
         renderItem={renderItem}
         data={commands}

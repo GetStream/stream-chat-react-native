@@ -1,6 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Platform, PressableProps, GestureResponderEvent } from 'react-native';
+
+import { AttachmentCommandPicker } from './AttachmentPickerContent';
 
 import {
   useAttachmentPickerContext,
@@ -21,6 +23,7 @@ import {
   IconProps,
 } from '../../../icons';
 import { Button, ButtonProps } from '../../ui';
+import { BottomSheetModal } from '../../UIComponents';
 
 export type AttachmentTypePickerButtonProps = Pick<ButtonProps, 'selected' | 'onPress'> & {
   Icon: ButtonProps['LeadingIcon'];
@@ -34,12 +37,13 @@ export const AttachmentTypePickerButton = ({
   onPress: onPressProp,
   Icon,
 }: AttachmentTypePickerButtonProps) => {
+  const { disableAttachmentPicker } = useAttachmentPickerContext();
   const ButtonIcon = useCallback(
     (props: IconProps) => Icon && <Icon {...props} width={14} height={14} />,
     [Icon],
   );
   const onPress = useStableCallback((event: GestureResponderEvent) =>
-    !selected && onPressProp ? onPressProp(event) : null,
+    (!selected || disableAttachmentPicker) && onPressProp ? onPressProp(event) : null,
   );
   return (
     <Button
@@ -51,18 +55,22 @@ export const AttachmentTypePickerButton = ({
       size={'lg'}
       variant={'secondary'}
       iconOnly={true}
-      selected={selected}
+      selected={selected && !disableAttachmentPicker}
     />
   );
 };
 
 export const MediaPickerButton = () => {
-  const { hasImagePicker } = useMessageInputContext();
-  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { hasImagePicker, pickAndUploadImageFromNativePicker } = useMessageInputContext();
+  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const setImagePicker = useStableCallback(() => {
-    attachmentPickerStore.setSelectedPicker('images');
+    if (disableAttachmentPicker) {
+      pickAndUploadImageFromNativePicker();
+    } else {
+      attachmentPickerStore.setSelectedPicker('images');
+    }
   });
 
   return hasImagePicker ? (
@@ -76,17 +84,25 @@ export const MediaPickerButton = () => {
 };
 
 export const CameraPickerButton = () => {
-  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
-  const { hasCameraPicker } = useMessageInputContext();
+  const { hasCameraPicker, takeAndUploadImage } = useMessageInputContext();
 
   const onCameraPickerPress = useStableCallback(() => {
-    attachmentPickerStore.setSelectedPicker('camera-photo');
+    if (disableAttachmentPicker) {
+      takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
+    } else {
+      attachmentPickerStore.setSelectedPicker('camera-photo');
+    }
   });
 
   const onVideoRecorderPickerPress = useStableCallback(() => {
-    attachmentPickerStore.setSelectedPicker('camera-video');
+    if (disableAttachmentPicker) {
+      takeAndUploadImage('video');
+    } else {
+      attachmentPickerStore.setSelectedPicker('camera-video');
+    }
   });
 
   return hasCameraPicker ? (
@@ -109,13 +125,15 @@ export const CameraPickerButton = () => {
 };
 
 export const FilePickerButton = () => {
-  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const { hasFilePicker, pickFile } = useMessageInputContext();
 
   const openFilePicker = useStableCallback(() => {
-    attachmentPickerStore.setSelectedPicker('files');
+    if (!disableAttachmentPicker) {
+      attachmentPickerStore.setSelectedPicker('files');
+    }
     pickFile();
   });
 
@@ -130,7 +148,7 @@ export const FilePickerButton = () => {
 };
 
 export const PollPickerButton = () => {
-  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const { threadList } = useChannelContext();
@@ -140,7 +158,9 @@ export const PollPickerButton = () => {
   const { openPollCreationDialog, sendMessage } = useMessageInputContext();
 
   const openPollCreationModal = useStableCallback(() => {
-    attachmentPickerStore.setSelectedPicker('polls');
+    if (!disableAttachmentPicker) {
+      attachmentPickerStore.setSelectedPicker('polls');
+    }
     openPollCreationDialog?.({ sendMessage });
   });
 
@@ -155,20 +175,34 @@ export const PollPickerButton = () => {
 };
 
 export const CommandsPickerButton = () => {
+  const [showCommandsSheet, setShowCommandsSheet] = useState(false);
   const { hasCommands } = useMessageInputContext();
-  const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const setCommandsPicker = useStableCallback(() => {
-    attachmentPickerStore.setSelectedPicker('commands');
+    if (disableAttachmentPicker) {
+      setShowCommandsSheet(true);
+    } else {
+      attachmentPickerStore.setSelectedPicker('commands');
+    }
   });
 
+  const onClose = useStableCallback(() => setShowCommandsSheet(false));
+
   return hasCommands ? (
-    <AttachmentTypePickerButton
-      testID='commands-touchable'
-      Icon={CommandsIcon}
-      selected={selectedPicker === 'commands'}
-      onPress={setCommandsPicker}
-    />
+    <>
+      <AttachmentTypePickerButton
+        testID='commands-touchable'
+        Icon={CommandsIcon}
+        selected={selectedPicker === 'commands'}
+        onPress={setCommandsPicker}
+      />
+      {showCommandsSheet ? (
+        <BottomSheetModal height={338} onClose={onClose} visible={showCommandsSheet} lazy={true}>
+          <AttachmentCommandPicker />
+        </BottomSheetModal>
+      ) : null}
+    </>
   ) : null;
 };

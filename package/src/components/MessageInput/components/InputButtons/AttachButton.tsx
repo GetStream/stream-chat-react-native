@@ -22,7 +22,6 @@ type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttach
 
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   const {
-    disableAttachmentPicker,
     disabled = false,
     handleAttachButtonPress,
     handleOnPress,
@@ -41,9 +40,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
       handleAttachButtonPress();
       return;
     }
-    if (!disableAttachmentPicker) {
-      toggleAttachmentPicker();
-    }
+    toggleAttachmentPicker();
   };
 
   return (

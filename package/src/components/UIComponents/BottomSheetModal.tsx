@@ -4,8 +4,9 @@ import {
   Keyboard,
   KeyboardEvent,
   Modal,
+  Platform,
+  Pressable,
   StyleSheet,
-  TouchableWithoutFeedback,
   useWindowDimensions,
   View,
 } from 'react-native';
@@ -20,7 +21,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
@@ -47,20 +50,29 @@ export type BottomSheetModalProps = {
   lazy?: boolean;
 };
 
-// TODO: V9: Animate the backdrop as well.
 export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
-  const { height: windowHeight, width: windowWidth } = useWindowDimensions();
+  const { height: windowHeight } = useWindowDimensions();
+  const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();
   const { children, height = windowHeight / 2, onClose, visible, lazy = false } = props;
 
   const {
     theme: {
-      bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme, wrapper },
-      colors: { grey, overlay, white_snow },
+      bottomSheetModal: { container, contentContainer, handle, overlay: overlayTheme },
     },
   } = useTheme();
+  const styles = useStyles();
 
-  const translateY = useSharedValue(height);
+  const maxHeight = Math.max(
+    0,
+    windowHeight - topInset - (Platform.OS === 'android' ? bottomInset + 16 : 0),
+  );
+
+  const baseHeight = Math.min(height, maxHeight);
+  const snapPoints = useMemo(() => [baseHeight, maxHeight], [baseHeight, maxHeight]);
+
+  const translateY = useSharedValue(maxHeight);
   const keyboardOffset = useSharedValue(0);
+  const currentSnapIndex = useSharedValue(0);
 
   const isOpen = useSharedValue(false);
   const isOpening = useSharedValue(false);
@@ -81,7 +93,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     }
   });
 
-  const close = useStableCallback(() => {
+  const close = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
     // hide content immediately
     hideContent();
 
@@ -90,11 +102,20 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
     cancelAnimation(translateY);
 
+    const closeCallback = () => {
+      onClose();
+      if (closeAnimationFinishedCallback) {
+        Platform.OS === 'ios'
+          ? closeAnimationFinishedCallback()
+          : setTimeout(() => closeAnimationFinishedCallback(), 100);
+      }
+    };
+
     translateY.value = withTiming(
-      height,
-      { duration: 180, easing: Easing.out(Easing.cubic) },
+      maxHeight,
+      { duration: 250, easing: Easing.out(Easing.cubic) },
       (finished) => {
-        if (finished) runOnJS(onClose)();
+        if (finished) runOnJS(closeCallback)();
       },
     );
   });
@@ -110,15 +131,15 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     cancelAnimation(translateY);
 
     // start from closed
-    translateY.value = height;
+    translateY.value = maxHeight;
 
     // Snapshot current keyboard offset as the open target.
     // If keyboard changes during opening, we’ll adjust after.
-    const initialTarget = keyboardOffset.value;
+    const initialTarget = keyboardOffset.value + (maxHeight - snapPoints[currentSnapIndex.value]);
 
     translateY.value = withTiming(
       initialTarget,
-      { duration: 220, easing: Easing.out(Easing.cubic) },
+      { duration: 250, easing: Easing.out(Easing.cubic) },
       (finished) => {
         if (!finished) return;
 
@@ -130,17 +151,29 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
         // if keyboard offset changed while we were opening, we do a
         // follow-up adjustment (we do not gate the content however)
-        const latestTarget = keyboardOffset.value;
+        const latestTarget =
+          keyboardOffset.value + (maxHeight - snapPoints[currentSnapIndex.value]);
         if (latestTarget !== initialTarget && isOpen.value) {
           cancelAnimation(translateY);
           translateY.value = withTiming(latestTarget, {
-            duration: 200,
+            duration: 250,
             easing: Easing.inOut(Easing.ease),
           });
         }
       },
     );
-  }, [visible, height, hideContent, isOpen, isOpening, keyboardOffset, showContent, translateY]);
+  }, [
+    visible,
+    hideContent,
+    isOpen,
+    isOpening,
+    keyboardOffset,
+    maxHeight,
+    snapPoints,
+    showContent,
+    translateY,
+    currentSnapIndex,
+  ]);
 
   // if `visible` gets hard changed, we force a cleanup
   useEffect(() => {
@@ -151,8 +184,8 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     keyboardOffset.value = 0;
 
     cancelAnimation(translateY);
-    translateY.value = height;
-  }, [visible, height, isOpen, isOpening, keyboardOffset, translateY]);
+    translateY.value = maxHeight;
+  }, [visible, maxHeight, isOpen, isOpening, keyboardOffset, translateY]);
 
   const keyboardDidShowRN = useStableCallback((event: KeyboardEvent) => {
     const offset = -event.endCoordinates.height;
@@ -164,7 +197,10 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     if (!isOpen.value || isOpening.value) return;
 
     cancelAnimation(translateY);
-    translateY.value = withTiming(offset, { duration: 250, easing: Easing.inOut(Easing.ease) });
+    translateY.value = withTiming(offset + (maxHeight - snapPoints[currentSnapIndex.value]), {
+      duration: 250,
+      easing: Easing.inOut(Easing.ease),
+    });
   });
 
   const keyboardDidHide = useStableCallback(() => {
@@ -173,7 +209,10 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     if (!isOpen.value || isOpening.value) return;
 
     cancelAnimation(translateY);
-    translateY.value = withTiming(0, { duration: 250, easing: Easing.inOut(Easing.ease) });
+    translateY.value = withTiming(maxHeight - snapPoints[currentSnapIndex.value], {
+      duration: 250,
+      easing: Easing.inOut(Easing.ease),
+    });
   });
 
   useEffect(() => {
@@ -189,7 +228,10 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
         if (!isOpen.value || isOpening.value) return;
 
         cancelAnimation(translateY);
-        translateY.value = withTiming(offset, { duration: 250, easing: Easing.inOut(Easing.ease) });
+        translateY.value = withTiming(offset + (maxHeight - snapPoints[currentSnapIndex.value]), {
+          duration: 250,
+          easing: Easing.inOut(Easing.ease),
+        });
       };
 
       listeners.push(
@@ -202,11 +244,37 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     }
 
     return () => listeners.forEach((l) => l.remove());
-  }, [visible, keyboardDidHide, keyboardDidShowRN, keyboardOffset, isOpen, isOpening, translateY]);
+  }, [
+    visible,
+    keyboardDidHide,
+    keyboardDidShowRN,
+    keyboardOffset,
+    isOpen,
+    isOpening,
+    translateY,
+    maxHeight,
+    snapPoints,
+    currentSnapIndex,
+  ]);
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    paddingBottom: translateY.value,
   }));
+
+  const backdropThreshold = baseHeight;
+
+  const overlayAnimatedStyle = useAnimatedStyle(() => {
+    const visibleHeight = Math.max(0, maxHeight - (translateY.value - keyboardOffset.value));
+    const threshold = Math.max(1, Math.min(backdropThreshold, maxHeight));
+    const progress = Math.min(1, visibleHeight / threshold);
+    return { opacity: progress };
+  });
+
+  const snapPointsTranslateY = useMemo(
+    () => snapPoints.map((point) => maxHeight - point),
+    [maxHeight, snapPoints],
+  );
 
   const gesture = useMemo(
     () =>
@@ -218,14 +286,14 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
           panStartY.value = translateY.value;
         })
         .onUpdate((event) => {
-          const minY = keyboardOffset.value;
+          const minY = keyboardOffset.value + (maxHeight - snapPoints[snapPoints.length - 1]);
           const next = panStartY.value + event.translationY;
           translateY.value = Math.max(next, minY);
         })
         .onEnd((event) => {
-          const openY = keyboardOffset.value;
+          const openY = keyboardOffset.value + (maxHeight - snapPoints[currentSnapIndex.value]);
           const draggedDown = Math.max(translateY.value - openY, 0);
-          const shouldClose = event.velocityY > 500 || draggedDown > height / 2;
+          const shouldClose = event.velocityY > 500 || draggedDown > maxHeight / 2;
 
           cancelAnimation(translateY);
 
@@ -234,88 +302,124 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
             isOpening.value = false;
 
             translateY.value = withTiming(
-              height,
-              { duration: 140, easing: Easing.out(Easing.cubic) },
+              maxHeight,
+              { duration: 250, easing: Easing.out(Easing.cubic) },
               (finished) => {
                 if (finished) runOnJS(onClose)();
               },
             );
           } else {
             isOpen.value = true;
-            translateY.value = withTiming(openY, {
-              duration: 200,
+            // snap to the nearest point
+            let nearestIndex = 0;
+            let minDistance = Number.POSITIVE_INFINITY;
+            const baseOffset = keyboardOffset.value;
+            for (let i = 0; i < snapPointsTranslateY.length; i += 1) {
+              const candidate = baseOffset + snapPointsTranslateY[i];
+              const distance = Math.abs(translateY.value - candidate);
+              if (distance < minDistance) {
+                minDistance = distance;
+                nearestIndex = i;
+              }
+            }
+            // velocity-based snapping, fast upward swipe goes to top snap point
+            if (event.velocityY < -800) {
+              nearestIndex = snapPointsTranslateY.length - 1;
+            }
+            currentSnapIndex.value = nearestIndex;
+            translateY.value = withTiming(baseOffset + snapPointsTranslateY[nearestIndex], {
+              duration: 250,
               easing: Easing.inOut(Easing.ease),
             });
           }
         }),
-    [height, isOpen, isOpening, keyboardOffset, onClose, panStartY, renderContent, translateY],
+    [
+      currentSnapIndex,
+      isOpen,
+      isOpening,
+      keyboardOffset,
+      maxHeight,
+      onClose,
+      panStartY,
+      renderContent,
+      snapPoints,
+      snapPointsTranslateY,
+      translateY,
+    ],
   );
 
-  return (
-    <View style={[styles.wrapper, wrapper]}>
-      <Modal onRequestClose={onClose} transparent visible={visible}>
-        <GestureHandlerRootView style={styles.sheetContentContainer}>
-          <GestureDetector gesture={gesture}>
-            <View style={[styles.overlay, { backgroundColor: overlay }, overlayTheme]}>
-              <TouchableWithoutFeedback onPress={close}>
-                <View style={{ flex: 1 }} />
-              </TouchableWithoutFeedback>
+  const onBackdropPress = useStableCallback(() => close());
 
-              <Animated.View
-                style={[
-                  styles.container,
-                  { backgroundColor: white_snow, height },
-                  sheetAnimatedStyle,
-                  container,
-                ]}
-              >
-                <View
-                  style={[styles.handle, { backgroundColor: grey, width: windowWidth / 4 }, handle]}
-                />
-                <View style={[styles.contentContainer, contentContainer]}>
-                  {renderContent ? (
+  const bottomSheetModalContextValue = useMemo(() => ({ close }), [close]);
+
+  return (
+    <Modal onRequestClose={onClose} transparent visible={visible}>
+      <GestureHandlerRootView style={styles.sheetContentContainer}>
+        <GestureDetector gesture={gesture}>
+          <View style={[styles.overlay, overlayTheme]}>
+            <Animated.View pointerEvents='none' style={[styles.backdrop, overlayAnimatedStyle]} />
+            <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFillObject} />
+
+            <Animated.View
+              style={[styles.container, { height: maxHeight }, sheetAnimatedStyle, container]}
+            >
+              <View style={[styles.handle, handle]} />
+              <View style={[styles.contentContainer, contentContainer]}>
+                {renderContent ? (
+                  <BottomSheetProvider value={bottomSheetModalContextValue}>
                     <Animated.View
                       entering={FadeIn.duration(250)}
                       style={styles.sheetContentContainer}
                     >
                       {children}
                     </Animated.View>
-                  ) : null}
-                </View>
-              </Animated.View>
-            </View>
-          </GestureDetector>
-        </GestureHandlerRootView>
-      </Modal>
-    </View>
+                  </BottomSheetProvider>
+                ) : null}
+              </View>
+            </Animated.View>
+          </View>
+        </GestureDetector>
+      </GestureHandlerRootView>
+    </Modal>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-  },
-  contentContainer: {
-    flex: 1,
-    marginTop: 8,
-  },
-  handle: {
-    alignSelf: 'center',
-    borderRadius: 4,
-    height: 4,
-    marginVertical: 8,
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  sheetContentContainer: {
-    flex: 1,
-  },
-  wrapper: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          backgroundColor: semantics.backgroundElevationElevation2,
+        },
+        contentContainer: {
+          flex: 1,
+          marginTop: 8,
+        },
+        handle: {
+          alignSelf: 'center',
+          borderRadius: 4,
+          height: 4,
+          marginVertical: 8,
+          backgroundColor: '#919191',
+          width: 32,
+        },
+        overlay: {
+          flex: 1,
+          justifyContent: 'flex-end',
+        },
+        backdrop: {
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: semantics.backgroundCoreScrim,
+        },
+        sheetContentContainer: {
+          flex: 1,
+        },
+      }),
+    [semantics.backgroundCoreScrim, semantics.backgroundElevationElevation2],
+  );
+};

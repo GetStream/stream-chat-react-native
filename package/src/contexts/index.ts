@@ -1,4 +1,5 @@
 export * from './attachmentPickerContext/AttachmentPickerContext';
+export * from './bottomSheetContext/BottomSheetContext';
 export * from './channelContext/ChannelContext';
 export * from './channelsContext/ChannelsContext';
 export * from './chatConfigContext/ChatConfigContext';
