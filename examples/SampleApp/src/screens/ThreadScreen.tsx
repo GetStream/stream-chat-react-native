@@ -111,7 +111,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         t,
       });
     },
-    [chatClient, t],
+    [chatClient, semantics, t],
   );
 
   const onThreadDismount = useCallback(() => {

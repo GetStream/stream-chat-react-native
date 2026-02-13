@@ -213,7 +213,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         handleMessageInfo,
       });
     },
-    [chatClient, colors, t, handleMessageInfo],
+    [chatClient, t, colors, semantics, handleMessageInfo],
   );
 
   if (!channel || !chatClient) {
