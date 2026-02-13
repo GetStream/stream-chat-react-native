@@ -47,6 +47,8 @@ export type MessageActionType = {
    * Styles for underlying Text component of action title.
    */
   titleStyle?: StyleProp<TextStyle>;
+
+  type: 'standard' | 'destructive';
 };
 
 /**

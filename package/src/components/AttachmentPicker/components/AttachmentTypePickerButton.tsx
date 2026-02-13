@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react';
 
-import { Platform, PressableProps, GestureResponderEvent } from 'react-native';
+import { Platform } from 'react-native';
+
+import { PressableProps } from 'react-native-gesture-handler';
 
 import { AttachmentCommandPicker } from './AttachmentPickerContent';
 
@@ -42,9 +44,12 @@ export const AttachmentTypePickerButton = ({
     (props: IconProps) => Icon && <Icon {...props} width={14} height={14} />,
     [Icon],
   );
-  const onPress = useStableCallback((event: GestureResponderEvent) =>
+
+  const onPress = useStableCallback((event) =>
+    // @ts-expect-error FIXME: RNGH does not seem to expose PressableEvent
     (!selected || disableAttachmentPicker) && onPressProp ? onPressProp(event) : null,
   );
+
   return (
     <Button
       testID={testID}

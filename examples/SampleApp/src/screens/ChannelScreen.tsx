@@ -129,7 +129,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     messageInputFloating,
   } = useAppContext();
   const {
-    theme: { colors },
+    theme: { semantics, colors },
   } = useTheme();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
@@ -209,6 +209,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         chatClient,
         t,
         colors,
+        semantics,
         handleMessageInfo,
       });
     },
