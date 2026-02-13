@@ -50,30 +50,42 @@ const renderItem = ({ index, item }: { index: number; item: ReactionPickerItemTy
 
 const emojiKeyExtractor = (item: string) => `unicode-${item}`;
 
-const EmojiPickerList = ({
-  data,
-  renderItem,
-}: {
-  data: string[];
-  renderItem: ({ item }: { item: string }) => React.JSX.Element;
-}) => (
-  <StreamBottomSheetModalFlatList
-    columnWrapperStyle={styles.bottomSheetColumnWrapper}
-    contentContainerStyle={styles.bottomSheetContentContainer}
-    data={data}
-    keyExtractor={emojiKeyExtractor}
-    numColumns={6}
-    removeClippedSubviews={false}
-    // This is sort of needed, because when virtualization kicks in
-    // it messes with the animations, as more native views get their
-    // bindings to JS. For the reactions specifically it does not really
-    // matter as they aren't too heavy - but we should anyway revisit
-    // this in the future.
-    initialNumToRender={data.length}
-    renderItem={renderItem}
-    style={styles.bottomSheet}
-  />
-);
+const EmojiPickerList = ({ onSelectEmoji }: { onSelectEmoji: (unicode: string) => void }) => {
+  const renderEmoji = useCallback(
+    ({ item }: { item: string }) => {
+      return (
+        <Pressable onPress={() => onSelectEmoji(item)} style={[styles.emojiContainer]}>
+          <Text
+            style={[styles.emojiText, { fontSize: EMOJI_SIZE, lineHeight: EMOJI_SIZE + 4 }]}
+            numberOfLines={1}
+          >
+            {item}
+          </Text>
+        </Pressable>
+      );
+    },
+    [onSelectEmoji],
+  );
+
+  return (
+    <StreamBottomSheetModalFlatList
+      columnWrapperStyle={styles.bottomSheetColumnWrapper}
+      contentContainerStyle={styles.bottomSheetContentContainer}
+      data={emojis}
+      keyExtractor={emojiKeyExtractor}
+      numColumns={6}
+      removeClippedSubviews={false}
+      // This is sort of needed, because when virtualization kicks in
+      // it messes with the animations, as more native views get their
+      // bindings to JS. For the reactions specifically it does not really
+      // matter as they aren't too heavy - but we should anyway revisit
+      // this in the future.
+      initialNumToRender={emojis.length}
+      renderItem={renderEmoji}
+      style={styles.bottomSheet}
+    />
+  );
+};
 
 // TODO: V9: Move this to utils and also clean it up a bit.
 //  This was done quickly and in a bit of a hurry.
@@ -142,28 +154,12 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
     [onSelectReaction, ownReactionTypes, supportedReactions],
   );
 
-  const selectEmoji = useStableCallback((emoji: string) => {
+  const onSelectEmoji = useStableCallback((emoji: string) => {
     const scalarString = toUnicodeScalarString(emoji);
     onSelectReaction(scalarString);
   });
 
   const closeModal = useStableCallback(() => setEmojiViewerOpened(false));
-
-  const renderEmoji = useCallback(
-    ({ item }: { item: string }) => {
-      return (
-        <Pressable onPress={() => selectEmoji(item)} style={[styles.emojiContainer]}>
-          <Text
-            style={[styles.emojiText, { fontSize: EMOJI_SIZE, lineHeight: EMOJI_SIZE + 4 }]}
-            numberOfLines={1}
-          >
-            {item}
-          </Text>
-        </Pressable>
-      );
-    },
-    [selectEmoji],
-  );
 
   if (!own_capabilities.sendReaction) {
     return null;
@@ -188,7 +184,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
       />
       {emojiViewerOpened ? (
         <BottomSheetModal height={300} lazy={true} onClose={closeModal} visible={true}>
-          <EmojiPickerList data={emojis} renderItem={renderEmoji} />
+          <EmojiPickerList onSelectEmoji={onSelectEmoji} />
         </BottomSheetModal>
       ) : null}
     </View>
