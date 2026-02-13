@@ -43,7 +43,14 @@ import { getUrlWithoutParams } from '../../utils/utils';
 export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<
     MessageContextValue,
-    'images' | 'videos' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress' | 'message'
+    | 'images'
+    | 'videos'
+    | 'onLongPress'
+    | 'onPress'
+    | 'onPressIn'
+    | 'preventPress'
+    | 'message'
+    | 'messageContentOrder'
   > &
   Pick<
     MessagesContextValue,
@@ -505,6 +512,7 @@ export const Gallery = (props: GalleryProps) => {
     setOverlay: propSetOverlay,
     videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
+    messageContentOrder: propMessageContentOrder,
   } = props;
 
   const { imageGalleryStateStore } = useImageGalleryContext();
@@ -516,7 +524,7 @@ export const Gallery = (props: GalleryProps) => {
     onPressIn: contextOnPressIn,
     preventPress: contextPreventPress,
     videos: contextVideos,
-    messageContentOrder,
+    messageContentOrder: contextMessageContentOrder,
   } = useMessageContext();
   const {
     additionalPressableProps: contextAdditionalPressableProps,
@@ -549,10 +557,11 @@ export const Gallery = (props: GalleryProps) => {
   const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
   const ImageReloadIndicator = PropImageReloadIndicator || ContextImageReloadIndicator;
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
+  const messageContentOrder = propMessageContentOrder || contextMessageContentOrder;
 
   const messageHasOnlyOneImage =
-    messageContentOrder.length === 1 &&
-    messageContentOrder.includes('gallery') &&
+    messageContentOrder?.length === 1 &&
+    messageContentOrder?.includes('gallery') &&
     images.length === 1;
 
   return (
@@ -575,6 +584,7 @@ export const Gallery = (props: GalleryProps) => {
         videos,
         VideoThumbnail,
         messageHasOnlyOneImage,
+        messageContentOrder,
       }}
     />
   );
