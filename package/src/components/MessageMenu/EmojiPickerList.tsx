@@ -10,6 +10,14 @@ const EMOJI_SIZE = 32;
 
 const emojiKeyExtractor = (item: string) => `unicode-${item}`;
 
+export const Emoji = ({ item, size }: { item: string; size: number }) => {
+  return (
+    <Text style={[styles.emojiText, { fontSize: size, lineHeight: size + 4 }]} numberOfLines={1}>
+      {item}
+    </Text>
+  );
+};
+
 export const EmojiPickerList = ({
   onSelectEmoji,
 }: {
@@ -19,12 +27,7 @@ export const EmojiPickerList = ({
     ({ item }: { item: string }) => {
       return (
         <Pressable onPress={() => onSelectEmoji(item)} style={styles.emojiContainer}>
-          <Text
-            style={[styles.emojiText, { fontSize: EMOJI_SIZE, lineHeight: EMOJI_SIZE + 4 }]}
-            numberOfLines={1}
-          >
-            {item}
-          </Text>
+          <Emoji item={item} size={EMOJI_SIZE} />
         </Pressable>
       );
     },

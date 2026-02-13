@@ -1,9 +1,9 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Pressable } from 'react-native-gesture-handler';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../icons';
+import { Button } from '../ui';
 
 type ReactionButtonProps = {
   /**
@@ -30,13 +30,12 @@ export const ReactionButton = (props: ReactionButtonProps) => {
   const { Icon, onPress, selected, type } = props;
   const {
     theme: {
-      colors: { accent_blue, grey },
       messageMenu: {
-        reactionButton: { filledColor = accent_blue, unfilledColor = grey },
-        reactionPicker: { buttonContainer, reactionIconSize },
+        reactionPicker: { reactionIconSize },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onPressHandler = () => {
     if (onPress) {
@@ -44,32 +43,48 @@ export const ReactionButton = (props: ReactionButtonProps) => {
     }
   };
 
+  const EmojiIcon = useCallback(
+    () => <Icon size={reactionIconSize ?? 24} />,
+    [Icon, reactionIconSize],
+  );
+
   return (
-    <Pressable
-      accessibilityLabel={`reaction-button-${type}-${selected ? 'selected' : 'unselected'}`}
-      onPress={onPressHandler}
-      style={({ pressed }) => [
-        styles.reactionButton,
-        { backgroundColor: 'transparent', opacity: pressed ? 0.5 : 1 },
-        buttonContainer,
-      ]}
-    >
-      <Icon
-        height={reactionIconSize}
-        pathFill={selected ? filledColor : unfilledColor}
-        width={reactionIconSize}
+    <View style={styles.reactionButton}>
+      <Button
+        variant={'secondary'}
+        type={'outline'}
+        iconOnly
+        size={'md'}
+        onPress={onPressHandler}
+        selected={selected}
+        style={styles.buttonContainer}
+        LeadingIcon={EmojiIcon}
       />
-    </Pressable>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  reactionButton: {
-    alignItems: 'center',
-    borderRadius: 8,
-    justifyContent: 'center',
-    overflow: 'hidden',
-    paddingHorizontal: 3,
-    paddingVertical: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      messageMenu: {
+        reactionPicker: { buttonContainer },
+      },
+    },
+  } = useTheme();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        reactionButton: {
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        buttonContainer: {
+          ...buttonContainer,
+          borderWidth: 0,
+        },
+      }),
+    [buttonContainer],
+  );
+};

@@ -89,13 +89,6 @@ import { useAppStateListener } from '../../hooks/useAppStateListener';
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
 import { usePrunableMessageList } from '../../hooks/usePrunableMessageList';
 import {
-  LOLReaction,
-  LoveReaction,
-  ThumbsDownReaction,
-  ThumbsUpReaction,
-  WutReaction,
-} from '../../icons';
-import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
   isImagePickerAvailable,
@@ -200,6 +193,7 @@ import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { UnreadMessagesNotification as UnreadMessagesNotificationDefault } from '../MessageList/UnreadMessagesNotification';
+import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
 import { MessageActionList as MessageActionListDefault } from '../MessageMenu/MessageActionList';
 import { MessageActionListItem as MessageActionListItemDefault } from '../MessageMenu/MessageActionListItem';
@@ -228,24 +222,24 @@ const styles = StyleSheet.create({
 
 export const reactionData: ReactionData[] = [
   {
-    Icon: LoveReaction,
-    type: 'love',
-  },
-  {
-    Icon: ThumbsUpReaction,
+    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'👍'} size={size} />,
     type: 'like',
   },
   {
-    Icon: ThumbsDownReaction,
-    type: 'sad',
-  },
-  {
-    Icon: LOLReaction,
+    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😂'} size={size} />,
     type: 'haha',
   },
   {
-    Icon: WutReaction,
+    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'❤️'} size={size} />,
+    type: 'love',
+  },
+  {
+    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😮'} size={size} />,
     type: 'wow',
+  },
+  {
+    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😢'} size={size} />,
+    type: 'sad',
   },
   ...emojis.map((emoji) => ({
     Icon: () => <Text style={{ fontSize: 12, padding: 2 }}>{emoji}</Text>,

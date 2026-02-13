@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { FlatList, Pressable } from 'react-native-gesture-handler';
+import { FlatList } from 'react-native-gesture-handler';
 
 import { EmojiPickerList } from './EmojiPickerList';
 import { ReactionButton } from './ReactionButton';
@@ -14,11 +14,13 @@ import {
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
-import { Attach } from '../../icons';
+import { NewPlus } from '../../icons/NewPlus';
 import { NativeHandlers } from '../../native';
 import { scheduleActionOnClose } from '../../state-store';
 
+import { primitives } from '../../theme';
 import { ReactionData } from '../../utils/utils';
+import { Button } from '../ui';
 import { BottomSheetModal } from '../UIComponents';
 
 export type MessageReactionPickerProps = Pick<MessagesContextValue, 'supportedReactions'> &
@@ -68,7 +70,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
   const {
     theme: {
-      colors: { white, grey },
+      colors: { white },
       messageMenu: {
         reactionPicker: { container, contentContainer },
       },
@@ -94,11 +96,19 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
 
   const EmojiViewerButton = useCallback(
     () => (
-      <Pressable onPress={onOpenEmojiViewer} style={styles.emojiViewerButton}>
-        <Attach fill={grey} size={32} />
-      </Pressable>
+      <View style={styles.emojiViewerButton}>
+        <Button
+          variant='secondary'
+          type='outline'
+          size='sm'
+          iconOnly
+          LeadingIcon={NewPlus}
+          onPress={onOpenEmojiViewer}
+          testID='attach-button'
+        />
+      </View>
     ),
-    [grey, onOpenEmojiViewer],
+    [onOpenEmojiViewer],
   );
 
   const reactions: ReactionPickerItemType[] = useMemo(
@@ -152,14 +162,17 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
     alignSelf: 'stretch',
   },
   contentContainer: {
-    borderRadius: 20,
+    borderRadius: primitives.radius4xl,
     flexGrow: 1,
     justifyContent: 'space-around',
     marginVertical: 8,
-    paddingHorizontal: 5,
+    gap: primitives.spacingXxxs,
+    paddingVertical: primitives.spacingXxs,
+    paddingLeft: primitives.spacingXxs,
   },
   emojiViewerButton: { alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: 4 },
 });

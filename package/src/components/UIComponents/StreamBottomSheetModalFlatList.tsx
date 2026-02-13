@@ -15,10 +15,9 @@ export const StreamBottomSheetModalFlatList = <ItemT,>({
   const { currentSnapIndex } = useBottomSheetContext();
   const listRef = useRef<FlatList<ItemT>>(null);
 
-  const setNativeScrollEnabled = useStableCallback((value: boolean) => {
-    listRef.current?.setNativeProps({ scrollEnabled: value });
-    console.log('SET NATIVE PROPS !', value);
-  });
+  const setNativeScrollEnabled = useStableCallback((value: boolean) =>
+    listRef.current?.setNativeProps({ scrollEnabled: value }),
+  );
 
   useAnimatedReaction(
     () => currentSnapIndex.value,
