@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -94,23 +94,6 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
     setEmojiViewerOpened(true);
   });
 
-  const EmojiViewerButton = useCallback(
-    () => (
-      <View style={styles.emojiViewerButton}>
-        <Button
-          variant='secondary'
-          type='outline'
-          size='sm'
-          iconOnly
-          LeadingIcon={NewPlus}
-          onPress={onOpenEmojiViewer}
-          testID='attach-button'
-        />
-      </View>
-    ),
-    [onOpenEmojiViewer],
-  );
-
   const reactions: ReactionPickerItemType[] = useMemo(
     () =>
       supportedReactions
@@ -137,20 +120,26 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   return (
     <View
       accessibilityLabel='Reaction Selector on long pressing message'
-      style={[styles.container, container]}
+      style={[styles.container, { backgroundColor: white }, container]}
     >
       <FlatList
-        contentContainerStyle={[
-          styles.contentContainer,
-          { backgroundColor: white },
-          contentContainer,
-        ]}
+        contentContainerStyle={[styles.reactionListContent, contentContainer]}
         data={reactions}
         horizontal
         keyExtractor={keyExtractor}
-        ListFooterComponent={EmojiViewerButton}
         renderItem={renderItem}
       />
+      <View style={styles.emojiViewerButton}>
+        <Button
+          variant='secondary'
+          type='outline'
+          size='sm'
+          iconOnly
+          LeadingIcon={NewPlus}
+          onPress={onOpenEmojiViewer}
+          testID='more-reactions-button'
+        />
+      </View>
       {emojiViewerOpened ? (
         <BottomSheetModal height={300} lazy={true} onClose={closeModal} visible={true}>
           <EmojiPickerList onSelectEmoji={onSelectEmoji} />
@@ -164,15 +153,20 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignSelf: 'stretch',
-  },
-  contentContainer: {
     borderRadius: primitives.radius4xl,
+    marginVertical: 8,
+  },
+  reactionListContent: {
     flexGrow: 1,
     justifyContent: 'space-around',
-    marginVertical: 8,
     gap: primitives.spacingXxxs,
     paddingVertical: primitives.spacingXxs,
     paddingLeft: primitives.spacingXxs,
   },
-  emojiViewerButton: { alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: 4 },
+  emojiViewerButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: primitives.spacingXs,
+    paddingLeft: primitives.spacingXs,
+  },
 });
