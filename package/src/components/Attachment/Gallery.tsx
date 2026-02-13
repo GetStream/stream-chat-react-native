@@ -358,7 +358,7 @@ const GalleryThumbnail = ({
           style={[
             StyleSheet.absoluteFillObject,
             styles.moreImagesContainer,
-            { backgroundColor: semantics.backgroundCoreOverlay },
+            { backgroundColor: semantics.backgroundCoreOverlayDark },
             borderRadius,
             moreImagesContainer,
           ]}
