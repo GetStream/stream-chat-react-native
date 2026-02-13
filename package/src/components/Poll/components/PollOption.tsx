@@ -110,12 +110,12 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
   const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
 
   const unFilledColor = isPollCreatedByClient
-    ? semantics.chatPollProgressFillOutgoing
-    : semantics.chatPollProgressFillIncoming;
-
-  const filledColor = isPollCreatedByClient
     ? semantics.chatPollProgressTrackOutgoing
     : semantics.chatPollProgressTrackIncoming;
+
+  const filledColor = isPollCreatedByClient
+    ? semantics.chatPollProgressFillOutgoing
+    : semantics.chatPollProgressFillIncoming;
 
   return (
     <View style={[styles.container, container]}>
@@ -203,7 +203,9 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
         voteButtonContainer,
       ]}
     >
-      {hasVote ? <Check height={15} pathFill='white' width={20} /> : null}
+      {hasVote ? (
+        <Check height={20} stroke={semantics.controlRadiocheckIconSelected} width={20} />
+      ) : null}
     </Pressable>
   ) : null;
 };

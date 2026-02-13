@@ -81,7 +81,7 @@ const useStyles = () => {
         flexDirection: 'row',
         padding: primitives.spacingSm,
         gap: primitives.spacingSm,
-        maxWidth: 256, // TODO: Fix this
+        width: 256, // TODO: Fix this
       },
       details: {
         flexShrink: 1,

@@ -463,6 +463,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                 acc.other = []; // remove other attachments if an image exists
               }
               // only add other attachments if there are no files/images
+            } else if (cur.type === FileTypes.Image && (cur.og_scrape_url || cur.title_link)) {
+              acc.files.push(cur);
             } else if (!acc.files.length && !acc.images.length && !acc.videos.length) {
               acc.other.push(cur);
             }

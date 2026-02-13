@@ -1012,7 +1012,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             meetOrSlice={0}
             minX={0}
             minY={0}
-            stroke="#87909f"
+            stroke="#a3acba"
             strokeWidth={1.5}
             style={
               [
@@ -1043,7 +1043,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               }
               stroke={
                 {
-                  "payload": 4287074463,
+                  "payload": 4288916666,
                   "type": 0,
                 }
               }
@@ -1065,7 +1065,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                 }
                 stroke={
                   {
-                    "payload": 4287074463,
+                    "payload": 4288916666,
                     "type": 0,
                   }
                 }
