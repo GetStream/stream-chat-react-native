@@ -6,6 +6,7 @@ import { Pressable } from 'react-native-gesture-handler';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { closeOverlay, scheduleActionOnClose } from '../../state-store';
+import { primitives } from '../../theme';
 
 export type ActionType =
   | 'banUser'
@@ -91,9 +92,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    paddingVertical: 8,
+    padding: primitives.spacingXs,
   },
   titleStyle: {
-    paddingLeft: 16,
+    paddingLeft: primitives.spacingXs,
   },
 });
