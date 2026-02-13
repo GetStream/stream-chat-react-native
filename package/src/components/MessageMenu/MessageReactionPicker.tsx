@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FlatList, Pressable } from 'react-native-gesture-handler';
 
-import { emojis } from './emojis';
+import { EmojiPickerList } from './EmojiPickerList';
 import { ReactionButton } from './ReactionButton';
 
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
@@ -19,7 +19,7 @@ import { NativeHandlers } from '../../native';
 import { scheduleActionOnClose } from '../../state-store';
 
 import { ReactionData } from '../../utils/utils';
-import { BottomSheetModal, StreamBottomSheetModalFlatList } from '../UIComponents';
+import { BottomSheetModal } from '../UIComponents';
 
 export type MessageReactionPickerProps = Pick<MessagesContextValue, 'supportedReactions'> &
   Pick<MessageContextValue, 'handleReaction' | 'dismissOverlay'> & {
@@ -34,8 +34,6 @@ export type ReactionPickerItemType = ReactionData & {
   ownReactionTypes: string[];
 };
 
-const EMOJI_SIZE = 32;
-
 const keyExtractor = (item: ReactionPickerItemType) => item.type;
 
 const renderItem = ({ index, item }: { index: number; item: ReactionPickerItemType }) => (
@@ -47,45 +45,6 @@ const renderItem = ({ index, item }: { index: number; item: ReactionPickerItemTy
     type={item.type}
   />
 );
-
-const emojiKeyExtractor = (item: string) => `unicode-${item}`;
-
-const EmojiPickerList = ({ onSelectEmoji }: { onSelectEmoji: (unicode: string) => void }) => {
-  const renderEmoji = useCallback(
-    ({ item }: { item: string }) => {
-      return (
-        <Pressable onPress={() => onSelectEmoji(item)} style={[styles.emojiContainer]}>
-          <Text
-            style={[styles.emojiText, { fontSize: EMOJI_SIZE, lineHeight: EMOJI_SIZE + 4 }]}
-            numberOfLines={1}
-          >
-            {item}
-          </Text>
-        </Pressable>
-      );
-    },
-    [onSelectEmoji],
-  );
-
-  return (
-    <StreamBottomSheetModalFlatList
-      columnWrapperStyle={styles.bottomSheetColumnWrapper}
-      contentContainerStyle={styles.bottomSheetContentContainer}
-      data={emojis}
-      keyExtractor={emojiKeyExtractor}
-      numColumns={6}
-      removeClippedSubviews={false}
-      // This is sort of needed, because when virtualization kicks in
-      // it messes with the animations, as more native views get their
-      // bindings to JS. For the reactions specifically it does not really
-      // matter as they aren't too heavy - but we should anyway revisit
-      // this in the future.
-      initialNumToRender={emojis.length}
-      renderItem={renderEmoji}
-      style={styles.bottomSheet}
-    />
-  );
-};
 
 // TODO: V9: Move this to utils and also clean it up a bit.
 //  This was done quickly and in a bit of a hurry.
@@ -192,14 +151,6 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
 };
 
 const styles = StyleSheet.create({
-  bottomSheet: { height: 300 },
-  bottomSheetColumnWrapper: {
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    width: '100%',
-    height: 54,
-  },
-  bottomSheetContentContainer: { paddingVertical: 16 },
   container: {
     alignSelf: 'stretch',
   },
@@ -209,13 +160,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginVertical: 8,
     paddingHorizontal: 5,
-  },
-  emojiContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emojiText: {
-    textAlign: 'center',
   },
   emojiViewerButton: { alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: 4 },
 });
