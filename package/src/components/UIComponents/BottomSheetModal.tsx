@@ -295,7 +295,18 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
         .onEnd((event) => {
           const openY = keyboardOffset.value + (maxHeight - snapPoints[currentSnapIndex.value]);
           const draggedDown = Math.max(translateY.value - openY, 0);
-          const shouldClose = event.velocityY > 500 || draggedDown > maxHeight / 2;
+          const topSnapIndex = snapPoints.length - 1;
+          const isAtTopSnap = currentSnapIndex.value === topSnapIndex;
+          const snap0Y = keyboardOffset.value + (maxHeight - snapPoints[0]);
+          const projectedY = translateY.value + event.velocityY * 0.2;
+
+          // From lower snaps, keep the previous close behavior.
+          const shouldCloseFromLowerSnap = event.velocityY > 500 || draggedDown > maxHeight / 2;
+          // From top snap, close only for clearly hard downward intent.
+          const shouldCloseFromTopSnap =
+            event.velocityY > 2200 || projectedY > snap0Y + (maxHeight - snap0Y) * 0.96;
+
+          const shouldClose = isAtTopSnap ? shouldCloseFromTopSnap : shouldCloseFromLowerSnap;
 
           cancelAnimation(translateY);
 
@@ -327,6 +338,11 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
             // velocity-based snapping, fast upward swipe goes to top snap point
             if (event.velocityY < -800) {
               nearestIndex = snapPointsTranslateY.length - 1;
+            }
+            // From top snap, a gentle downward flick should settle to snap 0
+            // without requiring a large drag distance.
+            if (isAtTopSnap && event.velocityY > 120) {
+              nearestIndex = 0;
             }
             currentSnapIndex.value = nearestIndex;
             translateY.value = withTiming(baseOffset + snapPointsTranslateY[nearestIndex], {
