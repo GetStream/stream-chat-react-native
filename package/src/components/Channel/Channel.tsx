@@ -224,26 +224,30 @@ export const reactionData: ReactionData[] = [
   {
     Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'👍'} size={size} />,
     type: 'like',
+    isMain: true,
   },
   {
     Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😂'} size={size} />,
     type: 'haha',
+    isMain: true,
   },
   {
     Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'❤️'} size={size} />,
     type: 'love',
+    isMain: true,
   },
   {
     Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😮'} size={size} />,
     type: 'wow',
+    isMain: true,
   },
   {
     Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😢'} size={size} />,
     type: 'sad',
+    isMain: true,
   },
   ...emojis.map((emoji) => ({
-    Icon: () => <Text style={{ fontSize: 12, padding: 2 }}>{emoji}</Text>,
-    isUnicode: true,
+    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={emoji} size={size} />,
     type: toUnicodeScalarString(emoji),
   })),
 ];

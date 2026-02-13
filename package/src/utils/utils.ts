@@ -15,7 +15,12 @@ import { ValueOf } from '../types/types';
 export type ReactionData = {
   Icon: React.ComponentType<IconProps>;
   type: string;
-  isUnicode?: boolean;
+  /**
+   * Whether the reaction should appear inside of the reaction picker in the
+   * context menu or not. If `true`, it will consequently not appear in the
+   * extra reactions bottom sheet.
+   */
+  isMain?: boolean;
 };
 
 export const FileState = Object.freeze({

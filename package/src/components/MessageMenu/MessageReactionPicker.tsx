@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 import { EmojiPickerList } from './EmojiPickerList';
+import { useMessageOwnReactions } from './hooks/useMessageOwnReactions';
 import { ReactionButton } from './ReactionButton';
 
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
@@ -24,12 +25,7 @@ import { Button } from '../ui';
 import { BottomSheetModal } from '../UIComponents';
 
 export type MessageReactionPickerProps = Pick<MessagesContextValue, 'supportedReactions'> &
-  Pick<MessageContextValue, 'handleReaction' | 'dismissOverlay'> & {
-    /**
-     * An array of reaction types that the current user has reacted with
-     */
-    ownReactionTypes: string[];
-  };
+  Pick<MessageContextValue, 'handleReaction' | 'dismissOverlay'>;
 
 export type ReactionPickerItemType = ReactionData & {
   onSelectReaction: (type: string) => void;
@@ -48,6 +44,98 @@ const renderItem = ({ index, item }: { index: number; item: ReactionPickerItemTy
   />
 );
 
+export const MessageReactionPickerList = ({
+  onSelectReaction,
+}: {
+  onSelectReaction: (type: string) => void;
+}) => {
+  const ownReactionTypes = useMessageOwnReactions();
+  const { supportedReactions } = useMessagesContext();
+  const {
+    theme: {
+      messageMenu: {
+        reactionPicker: { contentContainer },
+      },
+    },
+  } = useTheme();
+
+  const reactions: ReactionPickerItemType[] = useMemo(
+    () =>
+      supportedReactions
+        ?.filter((reaction) => reaction.isMain)
+        ?.map((reaction) => ({
+          ...reaction,
+          onSelectReaction,
+          ownReactionTypes,
+        })) ?? [],
+    [onSelectReaction, ownReactionTypes, supportedReactions],
+  );
+
+  return (
+    <FlatList
+      contentContainerStyle={[styles.reactionListContent, contentContainer]}
+      data={reactions}
+      horizontal
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+    />
+  );
+};
+
+export const EmojiViewerButton = ({
+  onSelectReaction,
+}: {
+  onSelectReaction: (type: string) => void;
+}) => {
+  const [emojiViewerOpened, setEmojiViewerOpened] = React.useState<boolean>(false);
+
+  const {
+    theme: {
+      messageMenu: {
+        reactionPicker: { emojiViewerButton },
+      },
+    },
+  } = useTheme();
+
+  const handleSelectReaction = useStableCallback((type: string) => {
+    setEmojiViewerOpened(false);
+    onSelectReaction(type);
+  });
+
+  const onSelectEmoji = useStableCallback((emoji: string) => {
+    const scalarString = toUnicodeScalarString(emoji);
+    handleSelectReaction(scalarString);
+  });
+
+  const onOpenEmojiViewer = useStableCallback(() => {
+    NativeHandlers.triggerHaptic('impactLight');
+    setEmojiViewerOpened(true);
+  });
+
+  const closeModal = useStableCallback(() => setEmojiViewerOpened(false));
+
+  return (
+    <>
+      <View style={[styles.emojiViewerButton, emojiViewerButton]}>
+        <Button
+          variant='secondary'
+          type='outline'
+          size='sm'
+          iconOnly
+          LeadingIcon={NewPlus}
+          onPress={onOpenEmojiViewer}
+          testID='more-reactions-button'
+        />
+      </View>
+      {emojiViewerOpened ? (
+        <BottomSheetModal height={424} lazy={true} onClose={closeModal} visible={true}>
+          <EmojiPickerList onSelectEmoji={onSelectEmoji} />
+        </BottomSheetModal>
+      ) : null}
+    </>
+  );
+};
+
 // TODO: V9: Move this to utils and also clean it up a bit.
 //  This was done quickly and in a bit of a hurry.
 export const toUnicodeScalarString = (emoji: string): string => {
@@ -60,58 +148,24 @@ export const toUnicodeScalarString = (emoji: string): string => {
  * MessageReactionPicker - A high level component which implements all the logic required for a message overlay reaction list
  */
 export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
-  const [emojiViewerOpened, setEmojiViewerOpened] = React.useState<boolean | null>(null);
-  const {
-    dismissOverlay,
-    handleReaction,
-    ownReactionTypes,
-    supportedReactions: propSupportedReactions,
-  } = props;
-  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+  const { dismissOverlay, handleReaction } = props;
   const {
     theme: {
       colors: { white },
       messageMenu: {
-        reactionPicker: { container, contentContainer },
+        reactionPicker: { container },
       },
     },
   } = useTheme();
   const own_capabilities = useOwnCapabilitiesContext();
 
-  const supportedReactions = propSupportedReactions || contextSupportedReactions;
-
   const onSelectReaction = useStableCallback((type: string) => {
     NativeHandlers.triggerHaptic('impactLight');
-    setEmojiViewerOpened(false);
     dismissOverlay();
     if (handleReaction) {
       scheduleActionOnClose(() => handleReaction(type));
     }
   });
-
-  const onOpenEmojiViewer = useStableCallback(() => {
-    NativeHandlers.triggerHaptic('impactLight');
-    setEmojiViewerOpened(true);
-  });
-
-  const reactions: ReactionPickerItemType[] = useMemo(
-    () =>
-      supportedReactions
-        ?.filter((reaction) => !reaction.isUnicode)
-        ?.map((reaction) => ({
-          ...reaction,
-          onSelectReaction,
-          ownReactionTypes,
-        })) ?? [],
-    [onSelectReaction, ownReactionTypes, supportedReactions],
-  );
-
-  const onSelectEmoji = useStableCallback((emoji: string) => {
-    const scalarString = toUnicodeScalarString(emoji);
-    onSelectReaction(scalarString);
-  });
-
-  const closeModal = useStableCallback(() => setEmojiViewerOpened(false));
 
   if (!own_capabilities.sendReaction) {
     return null;
@@ -122,29 +176,8 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
       accessibilityLabel='Reaction Selector on long pressing message'
       style={[styles.container, { backgroundColor: white }, container]}
     >
-      <FlatList
-        contentContainerStyle={[styles.reactionListContent, contentContainer]}
-        data={reactions}
-        horizontal
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-      />
-      <View style={styles.emojiViewerButton}>
-        <Button
-          variant='secondary'
-          type='outline'
-          size='sm'
-          iconOnly
-          LeadingIcon={NewPlus}
-          onPress={onOpenEmojiViewer}
-          testID='more-reactions-button'
-        />
-      </View>
-      {emojiViewerOpened ? (
-        <BottomSheetModal height={300} lazy={true} onClose={closeModal} visible={true}>
-          <EmojiPickerList onSelectEmoji={onSelectEmoji} />
-        </BottomSheetModal>
-      ) : null}
+      <MessageReactionPickerList onSelectReaction={onSelectReaction} />
+      <EmojiViewerButton onSelectReaction={onSelectReaction} />
     </View>
   );
 };
