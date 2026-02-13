@@ -146,9 +146,9 @@ export type MessageContentPropsWithContext = Pick<
      * If the message has a single file
      */
     isSingleFile?: boolean;
-    showPaddingTop?: boolean;
-    showPaddingHorizontal?: boolean;
-    showPaddingBottom?: boolean;
+    hidePaddingTop?: boolean;
+    hidePaddingHorizontal?: boolean;
+    hidePaddingBottom?: boolean;
   };
 
 /**
@@ -183,9 +183,9 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     setMessageContentWidth,
     StreamingMessageView,
     threadList,
-    showPaddingTop,
-    showPaddingHorizontal,
-    showPaddingBottom,
+    hidePaddingTop,
+    hidePaddingHorizontal,
+    hidePaddingBottom,
   } = props;
   const { client } = useChatContext();
   const { PollContent: PollContentOverride } = useMessagesContext();
@@ -355,9 +355,9 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           <View
             style={{
               gap: primitives.spacingXs,
-              paddingTop: showPaddingTop ? 0 : primitives.spacingXs,
-              paddingHorizontal: showPaddingHorizontal ? 0 : primitives.spacingXs,
-              paddingBottom: showPaddingBottom ? 0 : primitives.spacingXs,
+              paddingTop: hidePaddingTop ? 0 : primitives.spacingXs,
+              paddingHorizontal: hidePaddingHorizontal ? 0 : primitives.spacingXs,
+              paddingBottom: hidePaddingBottom ? 0 : primitives.spacingXs,
             }}
           >
             {messageContentOrder.map((messageContentType, messageContentOrderIndex) => {
@@ -631,17 +631,20 @@ export const MessageContent = (props: MessageContentProps) => {
   const { t } = useTranslationContext();
   const isSingleFile = files.length === 1;
   const messageHasPoll = messageContentOrder.includes('poll');
-  const messageHasSingleImage = images.length === 1;
+  const messageHasSingleImage =
+    messageContentOrder.length === 1 &&
+    messageContentOrder.includes('gallery') &&
+    images.length === 1;
   const messageHasSingleFile =
     messageContentOrder.length === 1 && messageContentOrder[0] === 'files' && isSingleFile;
   const messageHasOnlyText = messageContentOrder.length === 1 && messageContentOrder[0] === 'text';
 
-  const showPaddingTop =
+  const hidePaddingTop =
     messageHasPoll || messageHasSingleImage || messageHasSingleFile || messageHasOnlyText;
 
-  const showPaddingHorizontal = messageHasPoll || messageHasSingleImage || messageHasSingleFile;
+  const hidePaddingHorizontal = messageHasPoll || messageHasSingleImage || messageHasSingleFile;
 
-  const showPaddingBottom =
+  const hidePaddingBottom =
     messageHasPoll ||
     messageHasSingleImage ||
     messageHasSingleFile ||
@@ -678,9 +681,9 @@ export const MessageContent = (props: MessageContentProps) => {
         StreamingMessageView,
         t,
         threadList,
-        showPaddingTop,
-        showPaddingHorizontal,
-        showPaddingBottom,
+        hidePaddingTop,
+        hidePaddingHorizontal,
+        hidePaddingBottom,
       }}
       {...props}
     />

@@ -56,6 +56,7 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
+    messageHasOnlyOneImage: boolean;
   };
 
 const GalleryWithContext = (props: GalleryPropsWithContext) => {
@@ -74,6 +75,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     setOverlay,
     videos,
     VideoThumbnail,
+    messageHasOnlyOneImage = false,
   } = props;
 
   const { resizableCDNHosts } = useChatConfigContext();
@@ -162,12 +164,12 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                 colIndex,
                 height,
                 invertedDirections,
-                messageText: message?.text,
                 numOfColumns,
                 numOfRows,
                 rowIndex,
                 sizeConfig,
                 width,
+                messageHasOnlyOneImage,
               });
 
               if (!message) {
@@ -514,6 +516,7 @@ export const Gallery = (props: GalleryProps) => {
     onPressIn: contextOnPressIn,
     preventPress: contextPreventPress,
     videos: contextVideos,
+    messageContentOrder,
   } = useMessageContext();
   const {
     additionalPressableProps: contextAdditionalPressableProps,
@@ -547,6 +550,11 @@ export const Gallery = (props: GalleryProps) => {
   const ImageReloadIndicator = PropImageReloadIndicator || ContextImageReloadIndicator;
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
 
+  const messageHasOnlyOneImage =
+    messageContentOrder.length === 1 &&
+    messageContentOrder.includes('gallery') &&
+    images.length === 1;
+
   return (
     <MemoizedGallery
       {...{
@@ -566,6 +574,7 @@ export const Gallery = (props: GalleryProps) => {
         setOverlay,
         videos,
         VideoThumbnail,
+        messageHasOnlyOneImage,
       }}
     />
   );
