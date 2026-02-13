@@ -1,33 +1,15 @@
 import React from 'react';
-import { ImageBackground, ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { ImageBackground, ImageStyle, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Play } from '../../icons';
+import { VideoPlayIndicator } from '../ui';
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: 'black',
-    display: 'flex',
-    height: '100%',
     justifyContent: 'center',
-    width: '100%',
-  },
-  roundedView: {
-    alignItems: 'center',
-    borderRadius: 50,
-    display: 'flex',
-    elevation: 6,
-    height: 36,
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      height: 3,
-      width: 0,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    width: 36,
+    flex: 1,
+    overflow: 'hidden',
   },
 });
 
@@ -40,9 +22,8 @@ export type VideoThumbnailProps = {
 export const VideoThumbnail = (props: VideoThumbnailProps) => {
   const {
     theme: {
-      colors: { static_black, static_white },
       messageSimple: {
-        videoThumbnail: { container, roundedView },
+        videoThumbnail: { container },
       },
     },
   } = useTheme();
@@ -54,9 +35,7 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       source={{ uri: thumb_url }}
       style={[styles.container, container, style]}
     >
-      <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
-        <Play fill={static_black} height={32} width={32} />
-      </View>
+      <VideoPlayIndicator size='md' />
     </ImageBackground>
   );
 };

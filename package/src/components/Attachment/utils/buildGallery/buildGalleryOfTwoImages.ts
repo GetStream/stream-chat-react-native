@@ -41,6 +41,7 @@ export function buildGalleryOfTwoImages({
     });
   }
 
+  // Both the images are portrait
   if (!isLandscape1 && !isLandscape2) {
     /**
      * -----------
@@ -60,7 +61,7 @@ export function buildGalleryOfTwoImages({
   }
 
   return buildThumbnailGrid({
-    grid: [[2, 1]],
+    grid: [[1, 1]],
     images: isLandscape1 ? images : images.reverse(),
     invertedDirections: true,
     resizableCDNHosts,

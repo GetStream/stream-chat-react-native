@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ImageProps } from 'react-native';
+import { Image, ImageProps, StyleSheet } from 'react-native';
 
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
@@ -18,6 +18,7 @@ export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => 
       <ImageComponent
         {...rest}
         accessibilityLabel='Gallery Image'
+        style={[styles.image, rest.style]}
         source={{
           uri: makeImageCompatibleUrl(uri),
         }}
@@ -29,6 +30,7 @@ export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => 
     <Image
       {...rest}
       accessibilityLabel='Gallery Image'
+      style={[styles.image, rest.style]}
       source={{
         uri: makeImageCompatibleUrl(uri),
       }}
@@ -50,3 +52,9 @@ export const GalleryImage = (props: GalleryImageProps) => {
 
   return <MemoizedGalleryImage ImageComponent={ImageComponent} {...props} />;
 };
+
+const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+  },
+});

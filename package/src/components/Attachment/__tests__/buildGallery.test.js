@@ -1,16 +1,14 @@
-import { PixelRatio } from 'react-native';
-
 import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
 import { buildGallery } from '../utils/buildGallery/buildGallery';
 
 describe('buildGallery', () => {
   const defaultSizeConfig = {
-    gridHeight: 100,
-    gridWidth: 200,
-    maxHeight: 300,
-    maxWidth: 350,
-    minHeight: 10,
-    minWidth: 20,
+    gridHeight: 192,
+    gridWidth: 256,
+    maxHeight: 192,
+    maxWidth: 256,
+    minHeight: 120,
+    minWidth: 120,
   };
 
   it('gallery size should not exceed max sizes provided by size config', () => {
@@ -41,8 +39,7 @@ describe('buildGallery', () => {
         expect(width).toBeLessThanOrEqual(defaultSizeConfig.maxWidth);
         expect(width).toBeGreaterThanOrEqual(defaultSizeConfig.minWidth);
 
-        expect(thumbnailGrid[0][0].height).toBeLessThanOrEqual(height);
-        expect(thumbnailGrid[0][0].width).toBeLessThanOrEqual(width);
+        expect(thumbnailGrid[0][0].flex).toBe(1);
       }
     });
   });
@@ -107,9 +104,8 @@ describe('buildGallery', () => {
       sizeConfig: defaultSizeConfig,
     });
     const t1 = tg1[0][0];
-    expect(t1.url.includes(`&h=${PixelRatio.getPixelSizeForLayoutSize(t1.height)}`)).toBe(true);
-    expect(t1.url.includes(`&w=${PixelRatio.getPixelSizeForLayoutSize(t1.width)}`)).toBe(true);
     expect(t1.url.includes('&resize=clip')).toBe(true);
+    expect(t1.flex).toBe(1);
 
     const smallImage = generateImageAttachment({
       image_url:

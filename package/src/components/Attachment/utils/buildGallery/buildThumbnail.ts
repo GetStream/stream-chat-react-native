@@ -14,6 +14,7 @@ export type BuildThumbnailProps = Pick<ChatConfigContextValue, 'resizableCDNHost
   image: Attachment;
   width: number;
   resizeMode?: ImageResizeMode;
+  flex?: number;
 };
 
 export function buildThumbnail({
@@ -22,6 +23,7 @@ export function buildThumbnail({
   resizableCDNHosts,
   resizeMode,
   width,
+  flex,
 }: BuildThumbnailProps): Thumbnail {
   const { original_height: originalImageHeight, original_width: originalImageWidth } = image;
 
@@ -33,7 +35,7 @@ export function buildThumbnail({
   const imageUrl = getUrlOfImageAttachment(image) as string;
 
   return {
-    height,
+    flex,
     resizeMode: resizeMode
       ? resizeMode
       : ((image.original_height && image.original_width ? 'contain' : 'cover') as ImageResizeMode),
@@ -47,6 +49,5 @@ export function buildThumbnail({
           width,
         })
       : imageUrl,
-    width,
   };
 }

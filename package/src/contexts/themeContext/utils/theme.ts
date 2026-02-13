@@ -560,7 +560,6 @@ export type Theme = {
         description: TextStyle;
         title: TextStyle;
       };
-      wrapper: ViewStyle;
       linkPreview: ViewStyle;
       linkPreviewText: TextStyle;
     };
@@ -1373,7 +1372,6 @@ export const defaultTheme: Theme = {
         description: {},
         title: {},
       },
-      wrapper: {},
       linkPreview: {},
       linkPreviewText: {},
     },
@@ -1461,16 +1459,16 @@ export const defaultTheme: Theme = {
     gallery: {
       galleryContainer: {},
       galleryItemColumn: {},
-      gridHeight: 195,
+      gridHeight: 192,
       gridWidth: 256,
       image: {},
       imageBorderRadius: undefined,
       imageContainer: {},
       imageContainerStyle: {},
-      maxHeight: 300,
+      maxHeight: 192,
       maxWidth: 256,
-      minHeight: 100,
-      minWidth: 170,
+      minHeight: 120,
+      minWidth: 120,
       moreImagesContainer: {},
       moreImagesText: {},
       thumbnail: {},
