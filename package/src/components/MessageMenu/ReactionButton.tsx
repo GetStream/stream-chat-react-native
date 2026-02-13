@@ -51,6 +51,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
   return (
     <View style={styles.reactionButton}>
       <Button
+        accessibilityLabel={`reaction-button-${type}-${selected ? 'selected' : 'unselected'}`}
         variant={'secondary'}
         type={'outline'}
         iconOnly

@@ -197,7 +197,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
               [
                 {
                   "backgroundColor": "transparent",
-                  "paddingHorizontal": 20,
+                  "paddingHorizontal": 0,
                 },
                 {
                   "alignItems": "center",
@@ -331,7 +331,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
               [
                 {
                   "backgroundColor": "transparent",
-                  "paddingHorizontal": 20,
+                  "paddingHorizontal": 0,
                 },
                 {
                   "alignItems": "center",
@@ -499,7 +499,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
               [
                 {
                   "backgroundColor": "transparent",
-                  "paddingHorizontal": 20,
+                  "paddingHorizontal": 0,
                 },
                 {
                   "alignItems": "center",

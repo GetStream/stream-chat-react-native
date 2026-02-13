@@ -69,7 +69,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             [
               {
                 "backgroundColor": "transparent",
-                "paddingHorizontal": 20,
+                "paddingHorizontal": 0,
               },
               {
                 "alignItems": "center",
@@ -234,7 +234,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -368,7 +368,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -536,7 +536,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -681,7 +681,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -990,7 +990,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             [
               {
                 "backgroundColor": "transparent",
-                "paddingHorizontal": 20,
+                "paddingHorizontal": 0,
               },
               {
                 "alignItems": "center",
@@ -1155,7 +1155,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -1289,7 +1289,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -1457,7 +1457,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -1602,7 +1602,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -1911,7 +1911,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             [
               {
                 "backgroundColor": "transparent",
-                "paddingHorizontal": 20,
+                "paddingHorizontal": 0,
               },
               {
                 "alignItems": "center",
@@ -2076,7 +2076,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -2210,7 +2210,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -2378,7 +2378,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -2523,7 +2523,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",

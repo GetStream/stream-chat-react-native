@@ -187,7 +187,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
     cancelAnimation(translateY);
     translateY.value = maxHeight;
-  }, [visible, maxHeight, isOpen, isOpening, keyboardOffset, translateY]);
+  }, [visible, maxHeight, isOpen, isOpening, keyboardOffset, translateY, currentSnapIndex]);
 
   const keyboardDidShowRN = useStableCallback((event: KeyboardEvent) => {
     const offset = -event.endCoordinates.height;
