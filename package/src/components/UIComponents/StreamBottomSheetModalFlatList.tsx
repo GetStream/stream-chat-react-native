@@ -31,5 +31,5 @@ export const StreamBottomSheetModalFlatList = <ItemT,>({
     [currentSnapIndex],
   );
 
-  return <FlatList ref={listRef} {...props} />;
+  return <FlatList ref={listRef} {...props} scrollEnabled={false} />;
 };
