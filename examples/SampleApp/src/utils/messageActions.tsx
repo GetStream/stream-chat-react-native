@@ -16,7 +16,6 @@ import { Theme } from 'stream-chat-react-native';
 export function channelMessageActions({
   params,
   chatClient,
-  colors,
   t,
   handleMessageInfo,
   semantics,
