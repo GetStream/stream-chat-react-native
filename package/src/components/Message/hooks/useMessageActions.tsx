@@ -22,7 +22,7 @@ import {
   Pin,
   Resend,
   ThreadReply,
-  Unpin,
+  // Unpin,
   UnreadIndicator,
   UserDelete,
 } from '../../../icons';
@@ -96,9 +96,7 @@ export const useMessageActions = ({
   setQuotedMessage,
 }: MessageActionsHookProps) => {
   const {
-    theme: {
-      colors: { accent_red, grey },
-    },
+    theme: { semantics },
   } = useTheme();
   const {
     handleCopyMessage,
@@ -154,8 +152,9 @@ export const useMessageActions = ({
       }
     },
     actionType: 'banUser',
-    icon: <UserDelete pathFill={grey} />,
+    icon: <UserDelete width={20} height={20} stroke={semantics.textSecondary} />,
     title: message.user?.banned ? t('Unban User') : t('Ban User'),
+    type: 'destructive',
   };
 
   const copyMessage: MessageActionType = {
@@ -167,8 +166,9 @@ export const useMessageActions = ({
       handleCopyMessage();
     },
     actionType: 'copyMessage',
-    icon: <Copy pathFill={grey} />,
+    icon: <Copy width={20} height={20} stroke={semantics.textSecondary} />,
     title: t('Copy Message'),
+    type: 'standard',
   };
 
   const deleteMessage: MessageActionType = {
@@ -180,9 +180,10 @@ export const useMessageActions = ({
       handleDeleteMessage();
     },
     actionType: 'deleteMessage',
-    icon: <Delete fill={accent_red} size={24} />,
+    icon: <Delete stroke={semantics.accentError} width={20} height={20} />,
     title: t('Delete Message'),
-    titleStyle: { color: accent_red },
+    titleStyle: { color: semantics.accentError },
+    type: 'destructive',
   };
 
   const deleteForMeMessage: MessageActionType = {
@@ -194,8 +195,10 @@ export const useMessageActions = ({
       handleDeleteForMeMessage();
     },
     actionType: 'deleteForMeMessage',
-    icon: <Delete fill={accent_red} size={24} />,
+    icon: <Delete stroke={semantics.accentError} width={20} height={20} />,
     title: t('Delete for me'),
+    titleStyle: { color: semantics.accentError },
+    type: 'destructive',
   };
 
   const editMessage: MessageActionType = {
@@ -207,8 +210,9 @@ export const useMessageActions = ({
       handleEditMessage();
     },
     actionType: 'editMessage',
-    icon: <Edit pathFill={grey} />,
+    icon: <Edit width={20} height={20} stroke={semantics.textSecondary} />,
     title: t('Edit Message'),
+    type: 'standard',
   };
 
   const flagMessage: MessageActionType = {
@@ -220,8 +224,9 @@ export const useMessageActions = ({
       handleFlagMessage();
     },
     actionType: 'flagMessage',
-    icon: <MessageFlag pathFill={grey} />,
+    icon: <MessageFlag width={20} height={20} stroke={semantics.textSecondary} />,
     title: t('Flag Message'),
+    type: 'standard',
   };
 
   const markUnread: MessageActionType = {
@@ -233,8 +238,9 @@ export const useMessageActions = ({
       handleMarkUnreadMessage();
     },
     actionType: 'markUnread',
-    icon: <UnreadIndicator fill={grey} size={24} />,
+    icon: <UnreadIndicator width={20} height={20} stroke={semantics.textSecondary} />,
     title: t('Mark as Unread'),
+    type: 'standard',
   };
 
   const pinMessage: MessageActionType = {
@@ -246,8 +252,9 @@ export const useMessageActions = ({
       handleTogglePinMessage();
     },
     actionType: 'pinMessage',
-    icon: <Pin pathFill={grey} size={24} />,
+    icon: <Pin width={20} height={20} stroke={semantics.textSecondary} />,
     title: t('Pin to Conversation'),
+    type: 'standard',
   };
 
   const unpinMessage: MessageActionType = {
@@ -259,8 +266,10 @@ export const useMessageActions = ({
       handleTogglePinMessage();
     },
     actionType: 'unpinMessage',
-    icon: <Unpin pathFill={grey} />,
+    // TODO: V9: This icon does not exist yet, replace the old when when we get a new one
+    icon: <Pin width={20} height={20} stroke={semantics.textSecondary} />,
     title: t('Unpin from Conversation'),
+    type: 'standard',
   };
 
   const handleReaction = !error
@@ -287,8 +296,9 @@ export const useMessageActions = ({
       }
     },
     actionType: 'muteUser',
-    icon: <Mute pathFill={grey} />,
+    icon: <Mute pathFill={semantics.textSecondary} height={20} width={20} />,
     title: isMuted ? t('Unmute User') : t('Mute User'),
+    type: 'standard',
   };
 
   const quotedReply: MessageActionType = {
@@ -300,8 +310,9 @@ export const useMessageActions = ({
       handleQuotedReplyMessage();
     },
     actionType: 'quotedReply',
-    icon: <CurveLineLeftUp pathFill={grey} />,
+    icon: <CurveLineLeftUp stroke={semantics.textSecondary} height={20} width={20} />,
     title: t('Reply'),
+    type: 'standard',
   };
 
   const retry: MessageActionType = {
@@ -315,8 +326,9 @@ export const useMessageActions = ({
       await handleResendMessage();
     },
     actionType: 'retry',
-    icon: <Resend pathFill={grey} />,
+    icon: <Resend stroke={semantics.textSecondary} height={20} width={20} />,
     title: t('Resend'),
+    type: 'standard',
   };
 
   const threadReply: MessageActionType = {
@@ -328,8 +340,9 @@ export const useMessageActions = ({
       onOpenThread();
     },
     actionType: 'threadReply',
-    icon: <ThreadReply pathFill={grey} />,
+    icon: <ThreadReply stroke={semantics.textSecondary} height={20} width={20} />,
     title: t('Thread Reply'),
+    type: 'standard',
   };
 
   return {

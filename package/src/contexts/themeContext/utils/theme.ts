@@ -506,6 +506,7 @@ export type Theme = {
       container: ViewStyle;
       contentContainer: ViewStyle;
       reactionIconSize: number;
+      emojiViewerButton: ViewStyle;
     };
     userReactions: {
       avatarContainer: ViewStyle;
@@ -1323,6 +1324,7 @@ export const defaultTheme: Theme = {
       container: {},
       contentContainer: {},
       reactionIconSize: 24,
+      emojiViewerButton: {},
     },
     userReactions: {
       avatarContainer: {},

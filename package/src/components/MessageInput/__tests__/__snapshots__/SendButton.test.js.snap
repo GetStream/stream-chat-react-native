@@ -69,7 +69,7 @@ exports[`SendButton should render a SendButton 1`] = `
             [
               {
                 "backgroundColor": "transparent",
-                "paddingHorizontal": 12,
+                "paddingHorizontal": 0,
               },
               {
                 "alignItems": "center",
@@ -232,7 +232,7 @@ exports[`SendButton should render a SendButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -366,7 +366,7 @@ exports[`SendButton should render a SendButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -534,7 +534,7 @@ exports[`SendButton should render a SendButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -679,7 +679,7 @@ exports[`SendButton should render a SendButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -988,7 +988,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             [
               {
                 "backgroundColor": "transparent",
-                "paddingHorizontal": 12,
+                "paddingHorizontal": 0,
               },
               {
                 "alignItems": "center",
@@ -1151,7 +1151,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -1285,7 +1285,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -1453,7 +1453,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",
@@ -1598,7 +1598,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                 [
                   {
                     "backgroundColor": "transparent",
-                    "paddingHorizontal": 20,
+                    "paddingHorizontal": 0,
                   },
                   {
                     "alignItems": "center",

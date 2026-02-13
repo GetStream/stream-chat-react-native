@@ -83,7 +83,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
           [
             {
               "backgroundColor": "transparent",
-              "paddingHorizontal": 16,
+              "paddingHorizontal": 0,
             },
             {
               "alignItems": "center",

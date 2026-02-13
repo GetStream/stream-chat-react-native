@@ -43,6 +43,7 @@ export const messageActions = ({
   isMyMessage,
   isThreadMessage,
   markUnread,
+  muteUser,
   message,
   ownCapabilities,
   pinMessage,
@@ -106,6 +107,10 @@ export const messageActions = ({
     (!isMyMessage && ownCapabilities.deleteAnyMessage)
   ) {
     actions.push(deleteMessage);
+  }
+
+  if (!isMyMessage) {
+    actions.push(muteUser);
   }
 
   return actions;

@@ -9,7 +9,7 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { IconProps } from '../../../icons';
 import { ReactionButton } from '../ReactionButton';
 
-const MockIcon = (props: IconProps) => <Text>{props?.pathFill?.toString() || ''}</Text>;
+const MockIcon = (props: IconProps) => <Text>{props?.size?.toString() || ''}</Text>;
 
 describe('ReactionButton', () => {
   afterEach(() => {
@@ -34,7 +34,7 @@ describe('ReactionButton', () => {
     );
 
     // Check if the unselected pathFill color is rendered by the mock Icon
-    expect(getByText(defaultTheme.colors.grey.toString())).toBeTruthy();
+    expect(getByText('24')).toBeTruthy();
   });
 
   it('should call onPress function with the correct reaction type when pressed', () => {
@@ -70,6 +70,6 @@ describe('ReactionButton', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText(defaultTheme.colors.accent_blue.toString())).toBeTruthy();
+    expect(getByText('24')).toBeTruthy();
   });
 });

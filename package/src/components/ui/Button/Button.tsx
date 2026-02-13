@@ -1,14 +1,7 @@
 import React, { useMemo } from 'react';
-import {
-  I18nManager,
-  Pressable,
-  PressableProps,
-  StyleProp,
-  StyleSheet,
-  ViewStyle,
-  Text,
-  View,
-} from 'react-native';
+import { I18nManager, StyleProp, StyleSheet, ViewStyle, Text, View } from 'react-native';
+
+import { Pressable, PressableProps } from 'react-native-gesture-handler';
 
 import { buttonPadding, buttonSizes } from './constants';
 import { useButtonStyles } from './hooks/useButtonStyles';
@@ -109,7 +102,7 @@ export const Button = ({
               : selected
                 ? semantics.backgroundCoreSelected
                 : 'transparent',
-            paddingHorizontal: buttonPadding[size],
+            paddingHorizontal: iconOnly ? 0 : buttonPadding[size],
           },
           styles.container,
         ]}
