@@ -18,10 +18,11 @@ import { MessagesContextValue, useTheme } from '../../../contexts';
 
 import { useStableCallback } from '../../../hooks';
 import { NativeHandlers } from '../../../native';
+import { MessageStatusTypes } from '../../../utils/utils';
 
 export type MessageBubbleProps = Pick<
-  MessageSimplePropsWithContext,
-  'reactionListPosition' | 'MessageContent' | 'ReactionListTop'
+  MessagesContextValue,
+  'reactionListPosition' | 'MessageContent' | 'ReactionListTop' | 'MessageError'
 > &
   Pick<
     MessageContentProps,
@@ -30,6 +31,7 @@ export type MessageBubbleProps = Pick<
     | 'messageGroupedSingleOrBottom'
     | 'noBorder'
     | 'setMessageContentWidth'
+    | 'message'
   > &
   Pick<ReactionListTopProps, 'messageContentWidth'>;
 
@@ -44,12 +46,16 @@ export const MessageBubble = React.memo(
     isVeryLastMessage,
     messageGroupedSingleOrBottom,
     noBorder,
+    MessageError,
+    message,
   }: MessageBubbleProps) => {
     const {
       theme: {
         messageSimple: { contentContainer },
       },
     } = useTheme();
+    const isMessageErrorType =
+      message?.type === 'error' || message?.status === MessageStatusTypes.FAILED;
 
     return (
       <View style={[styles.contentContainer, contentContainer]}>
@@ -62,6 +68,11 @@ export const MessageBubble = React.memo(
         />
         {reactionListPosition === 'top' && ReactionListTop ? (
           <ReactionListTop messageContentWidth={messageContentWidth} />
+        ) : null}
+        {isMessageErrorType ? (
+          <View style={styles.errorContainer}>
+            <MessageError />
+          </View>
         ) : null}
       </View>
     );
@@ -210,11 +221,17 @@ const styles = StyleSheet.create({
   contentWrapper: {
     alignItems: 'center',
     flexDirection: 'row',
+    zIndex: 1, // To hide the stick inside the message content
   },
   contentContainer: {},
   swipeContentContainer: {
     flexShrink: 0,
     overflow: 'hidden',
     position: 'relative',
+  },
+  errorContainer: {
+    position: 'absolute',
+    top: 8,
+    right: -12,
   },
 });

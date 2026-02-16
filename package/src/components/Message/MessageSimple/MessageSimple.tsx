@@ -28,9 +28,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     gap: primitives.spacingXxs,
   },
-  bubbleContainer: {
-    zIndex: 1, // To hide the stick inside the message content
-  },
   repliesContainer: {
     marginTop: -primitives.spacingXxs, // Reducing the margin to account the gap added in the content container
   },
@@ -70,6 +67,7 @@ export type MessageSimplePropsWithContext = Pick<
     | 'MessageAvatar'
     | 'MessageContent'
     | 'MessageDeleted'
+    | 'MessageError'
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageReplies'
@@ -105,6 +103,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
     MessageAvatar,
     MessageContent,
     MessageDeleted,
+    MessageError,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -124,7 +123,6 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
       colors: { blue_alice, grey_gainsboro, light_blue, light_gray, transparent },
       messageSimple: {
         container,
-        bubbleContainer,
         repliesContainer,
         content: {
           container: contentContainer,
@@ -237,37 +235,39 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
             ) : (
               <MessageHeader />
             )}
-            <View style={[styles.bubbleContainer, bubbleContainer]}>
-              {enableSwipeToReply ? (
-                <SwipableMessageBubble
-                  backgroundColor={backgroundColor}
-                  isVeryLastMessage={isVeryLastMessage}
-                  MessageContent={MessageContent}
-                  messageContentWidth={messageContentWidth}
-                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-                  MessageSwipeContent={MessageSwipeContent}
-                  messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
-                  noBorder={noBorder}
-                  onSwipe={onSwipeActionHandler}
-                  reactionListPosition={reactionListPosition}
-                  ReactionListTop={ReactionListTop}
-                  setMessageContentWidth={setMessageContentWidth}
-                  shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
-                />
-              ) : (
-                <MessageBubble
-                  backgroundColor={backgroundColor}
-                  isVeryLastMessage={isVeryLastMessage}
-                  MessageContent={MessageContent}
-                  messageContentWidth={messageContentWidth}
-                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-                  noBorder={noBorder}
-                  reactionListPosition={reactionListPosition}
-                  ReactionListTop={ReactionListTop}
-                  setMessageContentWidth={setMessageContentWidth}
-                />
-              )}
-            </View>
+            {enableSwipeToReply ? (
+              <SwipableMessageBubble
+                backgroundColor={backgroundColor}
+                isVeryLastMessage={isVeryLastMessage}
+                MessageContent={MessageContent}
+                messageContentWidth={messageContentWidth}
+                messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+                MessageSwipeContent={MessageSwipeContent}
+                MessageError={MessageError}
+                messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
+                noBorder={noBorder}
+                onSwipe={onSwipeActionHandler}
+                reactionListPosition={reactionListPosition}
+                ReactionListTop={ReactionListTop}
+                setMessageContentWidth={setMessageContentWidth}
+                shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
+                message={message}
+              />
+            ) : (
+              <MessageBubble
+                backgroundColor={backgroundColor}
+                isVeryLastMessage={isVeryLastMessage}
+                MessageContent={MessageContent}
+                MessageError={MessageError}
+                messageContentWidth={messageContentWidth}
+                messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+                noBorder={noBorder}
+                reactionListPosition={reactionListPosition}
+                ReactionListTop={ReactionListTop}
+                setMessageContentWidth={setMessageContentWidth}
+                message={message}
+              />
+            )}
 
             <View style={[styles.repliesContainer, repliesContainer]}>
               <MessageReplies />
@@ -443,6 +443,7 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
     MessageAvatar,
     MessageContent,
     MessageDeleted,
+    MessageError,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -474,6 +475,7 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
         MessageAvatar,
         MessageContent,
         MessageDeleted,
+        MessageError,
         MessageFooter,
         MessageHeader,
         MessageReplies,

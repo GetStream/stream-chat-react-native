@@ -78,7 +78,6 @@ export type MessageContentPropsWithContext = Pick<
     | 'FileAttachmentGroup'
     | 'Gallery'
     | 'isAttachmentEqual'
-    | 'MessageError'
     | 'MessageLocation'
     | 'myMessageTheme'
     | 'Reply'
@@ -110,6 +109,7 @@ export type MessageContentPropsWithContext = Pick<
     hidePaddingTop?: boolean;
     hidePaddingHorizontal?: boolean;
     hidePaddingBottom?: boolean;
+    isMessageReceivedOrErrorType?: boolean;
   };
 
 /**
@@ -127,11 +127,11 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     groupStyles,
     isMessageAIGenerated,
     isMyMessage,
+    isMessageReceivedOrErrorType,
     isVeryLastMessage,
     message,
     messageContentOrder,
     messageGroupedSingleOrBottom = false,
-    MessageError,
     MessageLocation,
     noBorder,
     onLongPress,
@@ -188,8 +188,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     () => isMessageAIGenerated(message),
     [message, isMessageAIGenerated],
   );
-
-  const { isMessageErrorType, isMessageReceivedOrErrorType } = useMessageData({});
 
   const getBorderRadius = () => {
     // enum('top', 'middle', 'bottom', 'single')
@@ -373,7 +371,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
             )}
           </View>
         </View>
-        {isMessageErrorType && <MessageError />}
       </View>
     </Pressable>
   );
@@ -558,7 +555,6 @@ export const MessageContent = (props: MessageContentProps) => {
     FileAttachmentGroup,
     Gallery,
     isAttachmentEqual,
-    MessageError,
     MessageLocation,
     myMessageTheme,
     Reply,
@@ -588,12 +584,15 @@ export const MessageContent = (props: MessageContentProps) => {
     (messageContentOrder.length > 1 &&
       messageContentOrder[messageContentOrder.length - 1] === 'text');
 
+  const { isMessageReceivedOrErrorType } = useMessageData({});
+
   return (
     <MemoizedMessageContent
       {...{
         additionalPressableProps,
         Attachment,
         enableMessageGroupingByUser,
+        isMessageReceivedOrErrorType,
         FileAttachmentGroup,
         Gallery,
         goToMessage,
@@ -603,7 +602,6 @@ export const MessageContent = (props: MessageContentProps) => {
         isMyMessage,
         message,
         messageContentOrder,
-        MessageError,
         MessageLocation,
         myMessageTheme,
         onLongPress,

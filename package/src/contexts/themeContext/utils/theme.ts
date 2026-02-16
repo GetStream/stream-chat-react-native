@@ -563,7 +563,6 @@ export type Theme = {
       linkPreviewText: TextStyle;
     };
     container: ViewStyle;
-    bubbleContainer: ViewStyle;
     repliesContainer: ViewStyle;
     content: {
       container: ViewStyle;
@@ -1378,7 +1377,6 @@ export const defaultTheme: Theme = {
       linkPreviewText: {},
     },
     container: {},
-    bubbleContainer: {},
     repliesContainer: {},
     content: {
       container: {},
@@ -1668,7 +1666,7 @@ export const defaultTheme: Theme = {
     videoIcon: {},
     wrapper: {},
   },
-  screenPadding: 8,
+  screenPadding: 20,
   spinner: {},
   thread: {
     newThread: {
