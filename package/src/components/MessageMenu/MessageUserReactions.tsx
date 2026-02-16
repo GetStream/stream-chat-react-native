@@ -224,7 +224,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
         <MoreEmojis {...props} />
       </View>
     ),
-    [],
+    [styles.showMoreReactionsButton],
   );
 
   const ShowMoreReactionsButton = useCallback(

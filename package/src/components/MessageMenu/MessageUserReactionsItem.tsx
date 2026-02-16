@@ -122,6 +122,6 @@ const useStyles = () => {
           width: 24,
         },
       }),
-    [semantics.textPrimary],
+    [semantics.textPrimary, semantics.textTertiary],
   );
 };
