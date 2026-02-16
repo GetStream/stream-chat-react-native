@@ -15,6 +15,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { primitives } from '../../../theme';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -22,6 +23,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     borderWidth: 1,
     overflow: 'hidden',
+    paddingHorizontal: primitives.spacingXs,
   },
   leftAlignItems: {
     alignItems: 'flex-start',
