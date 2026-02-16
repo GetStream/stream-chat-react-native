@@ -5,7 +5,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../icons';
 import { Button } from '../ui';
 
-type ReactionButtonProps = {
+export type ReactionButtonProps = {
   /**
    * Icon to display for the reaction button
    */
@@ -56,7 +56,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
         variant={'secondary'}
         type={'outline'}
         iconOnly={!count}
-        size={'md'}
+        size={'sm'}
         label={count}
         onPress={onPressHandler}
         selected={selected}

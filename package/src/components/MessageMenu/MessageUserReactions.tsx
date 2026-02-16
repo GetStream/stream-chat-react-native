@@ -22,6 +22,8 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks';
+import { IconProps } from '../../icons';
+import { MoreEmojis } from '../../icons/MoreEmojis';
 import { primitives } from '../../theme';
 import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
@@ -55,12 +57,27 @@ export type ReactionSelectorItemType = ReactionData & {
   count: string;
 };
 
+export const MessageUserReactionsSelectorItem = (props: ReactionSelectorItemType) => {
+  const { Icon, type, onSelectReaction, selectedReaction, count } = props;
+  const SelectorIcon = useCallback(({ ...props }) => <Icon {...props} size={16} />, [Icon]);
+
+  return (
+    <ReactionButton
+      Icon={SelectorIcon}
+      onPress={onSelectReaction}
+      selected={selectedReaction === type}
+      type={type}
+      count={count}
+    />
+  );
+};
+
 const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSelectorItemType }) => (
-  <ReactionButton
+  <MessageUserReactionsSelectorItem
     Icon={item.Icon}
     key={`${item.type}_${index}`}
-    onPress={item.onSelectReaction}
-    selected={item.selectedReaction === item.type}
+    onSelectReaction={item.onSelectReaction}
+    selectedReaction={item.selectedReaction}
     type={item.type}
     count={item.count}
   />
@@ -199,18 +216,27 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   const onShowMoreReactionsPress = useStableCallback(() => setShowMoreReactions(true));
 
+  const MoreEmojisIcon = useCallback(
+    (props: IconProps) => (
+      <View style={styles.showMoreReactionsButton}>
+        <MoreEmojis {...props} />
+      </View>
+    ),
+    [],
+  );
+
   const ShowMoreReactionsButton = useCallback(
     () => (
       <Button
         accessibilityLabel={'more-reactions-button'}
         variant={'secondary'}
         type={'outline'}
-        size={'md'}
-        label={'more'}
-        onPress={() => onShowMoreReactionsPress()}
+        size={'sm'}
+        LeadingIcon={MoreEmojisIcon}
+        onPress={onShowMoreReactionsPress}
       />
     ),
-    [onShowMoreReactionsPress],
+    [onShowMoreReactionsPress, MoreEmojisIcon],
   );
 
   return (
@@ -283,4 +309,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  showMoreReactionsButton: { paddingHorizontal: primitives.spacingXs },
 });
