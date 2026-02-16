@@ -197,6 +197,22 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     close();
   });
 
+  const onShowMoreReactionsPress = useStableCallback(() => setShowMoreReactions(true));
+
+  const ShowMoreReactionsButton = useCallback(
+    () => (
+      <Button
+        accessibilityLabel={'more-reactions-button'}
+        variant={'secondary'}
+        type={'outline'}
+        size={'md'}
+        label={'more'}
+        onPress={() => onShowMoreReactionsPress()}
+      />
+    ),
+    [onShowMoreReactionsPress],
+  );
+
   return (
     <View
       accessibilityLabel='User Reactions on long press message'
@@ -225,16 +241,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
               data={selectorReactions}
               horizontal
               keyExtractor={reactionSelectorKeyExtractor}
-              ListHeaderComponent={() => (
-                <Button
-                  accessibilityLabel={'more-reactions-button'}
-                  variant={'secondary'}
-                  type={'outline'}
-                  size={'md'}
-                  label={'more'}
-                  onPress={() => setShowMoreReactions(true)}
-                />
-              )}
+              ListHeaderComponent={ShowMoreReactionsButton}
               renderItem={renderSelectorItem}
             />
           </View>
