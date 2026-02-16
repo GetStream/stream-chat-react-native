@@ -35,21 +35,8 @@ export const MessageUserReactionsItem = ({
   const { id, name, type } = reaction;
   const {
     theme: {
-      colors: { accent_blue, black, grey, grey_gainsboro, light_blue },
       messageMenu: {
-        userReactions: {
-          avatarContainer,
-          avatarInnerContainer,
-          avatarName,
-          avatarNameContainer,
-          filledBackgroundColor = light_blue,
-          iconFilledColor = accent_blue,
-          iconUnFilledColor = grey,
-          radius,
-          reactionBubbleBackground,
-          reactionBubbleBorderRadius,
-          unfilledBackgroundColor = grey_gainsboro,
-        },
+        userReactions: { avatarContainer, avatarName, avatarNameContainer },
       },
     },
   } = useTheme();

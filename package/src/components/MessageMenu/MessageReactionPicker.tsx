@@ -102,11 +102,6 @@ export const EmojiViewerButton = ({
     onSelectReaction(type);
   });
 
-  const onSelectEmoji = useStableCallback((emoji: string) => {
-    const scalarString = toUnicodeScalarString(emoji);
-    handleSelectReaction(scalarString);
-  });
-
   const onOpenEmojiViewer = useStableCallback(() => {
     NativeHandlers.triggerHaptic('impactLight');
     setEmojiViewerOpened(true);
@@ -129,7 +124,7 @@ export const EmojiViewerButton = ({
       </View>
       {emojiViewerOpened ? (
         <BottomSheetModal height={424} lazy={true} onClose={closeModal} visible={true}>
-          <EmojiPickerList onSelectEmoji={onSelectEmoji} />
+          <EmojiPickerList onSelectReaction={handleSelectReaction} />
         </BottomSheetModal>
       ) : null}
     </>

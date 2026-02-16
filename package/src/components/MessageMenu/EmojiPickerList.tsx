@@ -4,6 +4,9 @@ import { Pressable } from 'react-native-gesture-handler';
 
 import { emojis } from './emojis';
 
+import { toUnicodeScalarString } from './MessageReactionPicker';
+
+import { useStableCallback } from '../../hooks';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
 const EMOJI_SIZE = 32;
@@ -19,10 +22,18 @@ export const Emoji = ({ item, size }: { item: string; size: number }) => {
 };
 
 export const EmojiPickerList = ({
-  onSelectEmoji,
+  onSelectReaction,
+  renderFullInitially = true,
 }: {
-  onSelectEmoji: (unicode: string) => void;
+  onSelectReaction: (unicode: string) => void;
+  // whether all of the items should be rendered initially or not
+  renderFullInitially?: boolean;
 }) => {
+  const onSelectEmoji = useStableCallback((emoji: string) => {
+    const scalarString = toUnicodeScalarString(emoji);
+    onSelectReaction(scalarString);
+  });
+
   const renderEmoji = useCallback(
     ({ item }: { item: string }) => {
       return (
@@ -42,20 +53,18 @@ export const EmojiPickerList = ({
       keyExtractor={emojiKeyExtractor}
       numColumns={7}
       removeClippedSubviews={false}
-      // This is sort of needed, because when virtualization kicks in
-      // it messes with the animations, as more native views get their
+      // This is sort of needed in some instances, because when virtualization
+      // kicks in it messes with the animations, as more native views get their
       // bindings to JS. For the reactions specifically it does not really
       // matter as they aren't too heavy - but we should anyway revisit
       // this in the future.
-      initialNumToRender={emojis.length}
+      initialNumToRender={renderFullInitially ? emojis.length : undefined}
       renderItem={renderEmoji}
-      style={styles.bottomSheet}
     />
   );
 };
 
 const styles = StyleSheet.create({
-  bottomSheet: { height: 300 },
   bottomSheetColumnWrapper: {
     alignItems: 'center',
     justifyContent: 'space-evenly',

@@ -1,13 +1,20 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+
 import { ReactionSortBase } from 'stream-chat';
 
+import { EmojiPickerList } from './EmojiPickerList';
 import { useFetchReactions } from './hooks/useFetchReactions';
 import { ReactionButton } from './ReactionButton';
 
-import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
+import { useBottomSheetContext } from '../../contexts';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -18,6 +25,7 @@ import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
+import { Button } from '../ui';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
 export type MessageUserReactionsProps = Partial<
@@ -62,6 +70,7 @@ const reactionsKeyExtractor = (item: Reaction) => item.id;
 const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.type;
 
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
+  const [showMoreReactions, setShowMoreReactions] = useState(false);
   const {
     message,
     MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
@@ -70,11 +79,12 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
   } = props;
+  const { close } = useBottomSheetContext();
   const reactionTypes = useMemo(
     () => Object.keys(message?.reaction_groups ?? {}),
     [message?.reaction_groups],
   );
-  const [selectedReaction, setSelectedReaction] = React.useState<string | undefined>(
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(
     propSelectedReaction ?? reactionTypes[0],
   );
   const {
@@ -82,6 +92,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     MessageUserReactionsItem: contextMessageUserReactionsItem,
     supportedReactions: contextSupportedReactions,
   } = useMessagesContext();
+  const { handleReaction } = useMessageContext();
   const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
   const MessageUserReactionsAvatar =
     propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
@@ -179,32 +190,67 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
   );
 
+  const handleSelectReaction = useStableCallback((emoji: string) => {
+    if (handleReaction) {
+      handleReaction(emoji);
+    }
+    close();
+  });
+
   return (
     <View
       accessibilityLabel='User Reactions on long press message'
       style={[styles.container, container]}
     >
-      <Text style={[styles.reactionsText, reactionsText]}>{`${totalReactionCount} Reactions`}</Text>
-      <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
-        <FlatList
-          contentContainerStyle={[styles.contentContainer, contentContainer]}
-          data={selectorReactions}
-          horizontal
-          keyExtractor={reactionSelectorKeyExtractor}
-          renderItem={renderSelectorItem}
-        />
-      </View>
+      {showMoreReactions ? (
+        <Animated.View
+          key={'emoji-viewer'}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+        >
+          <EmojiPickerList onSelectReaction={handleSelectReaction} renderFullInitially={false} />
+        </Animated.View>
+      ) : (
+        <Animated.View
+          key={'reaction-details'}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+        >
+          <Text
+            style={[styles.reactionsText, reactionsText]}
+          >{`${totalReactionCount} Reactions`}</Text>
+          <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
+            <FlatList
+              contentContainerStyle={[styles.contentContainer, contentContainer]}
+              data={selectorReactions}
+              horizontal
+              keyExtractor={reactionSelectorKeyExtractor}
+              ListHeaderComponent={() => (
+                <Button
+                  accessibilityLabel={'more-reactions-button'}
+                  variant={'secondary'}
+                  type={'outline'}
+                  size={'md'}
+                  label={'more'}
+                  onPress={() => setShowMoreReactions(true)}
+                />
+              )}
+              renderItem={renderSelectorItem}
+            />
+          </View>
 
-      {!loading ? (
-        <StreamBottomSheetModalFlatList
-          accessibilityLabel='reaction-flat-list'
-          contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
-          data={reactions}
-          keyExtractor={reactionsKeyExtractor}
-          onEndReached={loadNextPage}
-          renderItem={renderItem}
-        />
-      ) : null}
+          {!loading ? (
+            <StreamBottomSheetModalFlatList
+              accessibilityLabel='reaction-flat-list'
+              contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
+              data={reactions}
+              keyExtractor={reactionsKeyExtractor}
+              onEndReached={loadNextPage}
+              renderItem={renderItem}
+            />
+          ) : null}
+        </Animated.View>
+      )}
     </View>
   );
 };
@@ -218,9 +264,6 @@ const styles = StyleSheet.create({
     gap: primitives.spacingXs,
     paddingHorizontal: primitives.spacingMd,
     paddingVertical: primitives.spacingXs,
-  },
-  flatListColumnContainer: {
-    justifyContent: 'space-evenly',
   },
   flatListContainer: {
     justifyContent: 'center',
