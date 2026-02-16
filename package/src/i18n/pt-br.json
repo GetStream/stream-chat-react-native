@@ -147,7 +147,6 @@
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} e mais {{ nonSelfUserLength }} pessoa(s) estão digitando",
   "{{ index }} of {{ photoLength }}": "{{ index }} de {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Respostas",
-  "{{ replyCount }} Thread Replies": "{{ replyCount }} Respostas de Thread",
   "{{ user }} is typing": "{{ user }} está digitando",
   "{{count}} votes_many": "{{count}} votos",
   "{{count}} votes_one": "{{count}} voto",

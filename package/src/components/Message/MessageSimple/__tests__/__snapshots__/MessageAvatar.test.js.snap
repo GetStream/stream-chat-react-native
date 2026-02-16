@@ -2,12 +2,7 @@
 
 exports[`MessageAvatar should render message avatar 1`] = `
 <View
-  style={
-    [
-      {},
-      {},
-    ]
-  }
+  style={{}}
   testID="message-avatar"
 >
   <View

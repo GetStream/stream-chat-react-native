@@ -29,11 +29,7 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
   }
 
   return (
-    <View
-      accessibilityLabel='Message Pinned Header'
-      style={styles.container}
-      testID='message-pinned'
-    >
+    <View accessibilityLabel='Message Pinned Header' style={styles.container}>
       <NewPin height={12} width={12} stroke={semantics.textPrimary} />
       <Text style={styles.label}>
         {t('Pinned by')}{' '}

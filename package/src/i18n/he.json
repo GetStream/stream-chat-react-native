@@ -147,7 +147,6 @@
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} ו-{{ nonSelfUserLength }} משתמש/ים אחר/ים מקלידים",
   "{{ index }} of {{ photoLength }}": "{{ index }} מתוך {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} תגובות",
-  "{{ replyCount }} Thread Replies": "{{ replyCount }} תגובות שרשור",
   "{{ user }} is typing": "{{ user }} מקליד/ה",
   "{{count}} votes_many": "{{count}} הצבעות",
   "{{count}} votes_one": "{{count}} הצבעה",

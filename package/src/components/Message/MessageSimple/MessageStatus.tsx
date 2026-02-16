@@ -68,10 +68,10 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     <View style={[styles.container, container]}>
       {read ? (
         <CheckAll
-          accessibilityLabel='Read'
           height={20}
           stroke={semantics.accentPrimary}
           width={20}
+          accessibilityLabel='Read'
           {...checkAllIcon}
         />
       ) : delivered ? (
@@ -83,13 +83,15 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
           {...checkAllIcon}
         />
       ) : sending ? (
-        <Time
-          pathFill={semantics.chatTextTimestamp}
-          height={12}
-          width={12}
-          accessibilityLabel='Sending'
-          {...timeIcon}
-        />
+        <View style={styles.sendingContainer}>
+          <Time
+            stroke={semantics.chatTextTimestamp}
+            height={12}
+            width={12}
+            accessibilityLabel='Sending'
+            {...timeIcon}
+          />
+        </View>
       ) : sent ? (
         <Check
           stroke={semantics.chatTextTimestamp}
@@ -207,6 +209,9 @@ const useStyles = () => {
       container: {
         alignItems: 'center',
         flexDirection: 'row',
+      },
+      sendingContainer: {
+        paddingRight: primitives.spacingXxs,
       },
     });
   }, [semantics]);

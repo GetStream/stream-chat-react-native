@@ -147,7 +147,6 @@
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} and {{ nonSelfUserLength }} more are typing",
   "{{ index }} of {{ photoLength }}": "{{ index }} of {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Replies",
-  "{{ replyCount }} Thread Replies": "{{ replyCount }} Thread Replies",
   "{{ user }} is typing": "{{ user }} is typing",
   "{{count}} votes_many": "{{count}} votes",
   "{{count}} votes_one": "{{count}} vote",

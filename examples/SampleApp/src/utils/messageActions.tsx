@@ -46,7 +46,7 @@ export function channelMessageActions({
     },
     actionType: reminder ? 'remove-from-later' : 'save-for-later',
     title: reminder ? 'Remove from Later' : 'Save for Later',
-    icon: <Time pathFill={colors?.grey} />,
+    icon: <Time stroke={colors?.grey} height={20} width={20} />,
   });
   actions.push({
     action: () => {
