@@ -656,6 +656,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   textWrapper: {
-    paddingHorizontal: primitives.spacingXs,
+    paddingHorizontal: primitives.spacingSm,
   },
 });

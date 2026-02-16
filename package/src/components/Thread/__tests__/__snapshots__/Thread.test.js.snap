@@ -468,7 +468,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           style={
                                             [
                                               {
-                                                "paddingHorizontal": 8,
+                                                "paddingHorizontal": 12,
                                               },
                                               {},
                                             ]
@@ -833,7 +833,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           style={
                                             [
                                               {
-                                                "paddingHorizontal": 8,
+                                                "paddingHorizontal": 12,
                                               },
                                               {},
                                             ]
@@ -1223,7 +1223,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           style={
                                             [
                                               {
-                                                "paddingHorizontal": 8,
+                                                "paddingHorizontal": 12,
                                               },
                                               {},
                                             ]
@@ -1594,7 +1594,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           style={
                                             [
                                               {
-                                                "paddingHorizontal": 8,
+                                                "paddingHorizontal": 12,
                                               },
                                               {},
                                             ]
