@@ -36,7 +36,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
       },
     },
   } = useTheme();
-  const styles = useStyles();
+  const styles = useStyles(!!count);
 
   const onPressHandler = () => {
     if (onPress) {
@@ -67,7 +67,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
   );
 };
 
-const useStyles = () => {
+const useStyles = (hasCount: boolean) => {
   const {
     theme: {
       messageMenu: {
@@ -83,11 +83,13 @@ const useStyles = () => {
           alignItems: 'center',
           justifyContent: 'center',
         },
-        buttonContainer: {
-          ...buttonContainer,
-          borderWidth: 0,
-        },
+        buttonContainer: hasCount
+          ? buttonContainer
+          : {
+              ...buttonContainer,
+              borderWidth: 0,
+            },
       }),
-    [buttonContainer],
+    [buttonContainer, hasCount],
   );
 };
