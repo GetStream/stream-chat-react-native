@@ -14,6 +14,8 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../hooks';
+import { primitives } from '../../theme';
 import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
@@ -42,6 +44,7 @@ const sort: ReactionSortBase = {
 export type ReactionSelectorItemType = ReactionData & {
   onSelectReaction: (type: string) => void;
   selectedReaction?: string;
+  count: string;
 };
 
 const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSelectorItemType }) => (
@@ -51,6 +54,7 @@ const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSele
     onPress={item.onSelectReaction}
     selected={item.selectedReaction === item.type}
     type={item.type}
+    count={item.count}
   />
 );
 
@@ -66,7 +70,10 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
   } = props;
-  const reactionTypes = Object.keys(message?.reaction_groups ?? {});
+  const reactionTypes = useMemo(
+    () => Object.keys(message?.reaction_groups ?? {}),
+    [message?.reaction_groups],
+  );
   const [selectedReaction, setSelectedReaction] = React.useState<string | undefined>(
     propSelectedReaction ?? reactionTypes[0],
   );
@@ -80,9 +87,9 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
   const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
 
-  const onSelectReaction = (reactionType: string) => {
+  const onSelectReaction = useStableCallback((reactionType: string) => {
     setSelectedReaction(reactionType);
-  };
+  });
 
   useEffect(() => {
     if (selectedReaction && reactionTypes.length > 0 && !reactionTypes.includes(selectedReaction)) {
@@ -90,18 +97,29 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     }
   }, [reactionTypes, selectedReaction]);
 
-  const messageReactions = useMemo(
+  const selectorReactions: ReactionSelectorItemType[] = useMemo(
     () =>
-      reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
+      reactionTypes.reduce<ReactionSelectorItemType[]>((acc, reaction) => {
         const reactionData = supportedReactions?.find(
           (supportedReaction) => supportedReaction.type === reaction,
         );
         if (reactionData) {
-          acc.push(reactionData);
+          acc.push({
+            ...reactionData,
+            onSelectReaction,
+            selectedReaction,
+            count: (message?.reaction_counts?.[reactionData.type] ?? 0).toString(),
+          });
         }
         return acc;
       }, []),
-    [reactionTypes, supportedReactions],
+    [
+      message?.reaction_counts,
+      onSelectReaction,
+      reactionTypes,
+      selectedReaction,
+      supportedReactions,
+    ],
   );
 
   const {
@@ -120,7 +138,6 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
         userReactions: {
           container,
           contentContainer,
-          flatlistColumnContainer,
           flatlistContainer,
           reactionSelectorContainer,
           reactionsText,
@@ -129,6 +146,15 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     },
   } = useTheme();
   const { t } = useTranslationContext();
+
+  const totalReactionCount = useMemo(
+    () =>
+      Object.values(message?.reaction_counts ?? {}).reduce(
+        (acc, reactionCount) => acc + reactionCount,
+        0,
+      ),
+    [message?.reaction_counts],
+  );
 
   const reactions = useMemo(
     () =>
@@ -153,22 +179,12 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
   );
 
-  const renderHeader = useCallback(
-    () => <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>,
-    [t, reactionsText],
-  );
-
-  const selectorReactions: ReactionSelectorItemType[] = messageReactions.map((reaction) => ({
-    ...reaction,
-    onSelectReaction,
-    selectedReaction,
-  }));
-
   return (
     <View
       accessibilityLabel='User Reactions on long press message'
       style={[styles.container, container]}
     >
+      <Text style={[styles.reactionsText, reactionsText]}>{`${totalReactionCount} Reactions`}</Text>
       <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
         <FlatList
           contentContainerStyle={[styles.contentContainer, contentContainer]}
@@ -182,12 +198,9 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
       {!loading ? (
         <StreamBottomSheetModalFlatList
           accessibilityLabel='reaction-flat-list'
-          columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
           contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
           data={reactions}
           keyExtractor={reactionsKeyExtractor}
-          ListHeaderComponent={renderHeader}
-          numColumns={4}
           onEndReached={loadNextPage}
           renderItem={renderItem}
         />
@@ -202,8 +215,9 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
-    justifyContent: 'space-around',
-    marginVertical: 16,
+    gap: primitives.spacingXs,
+    paddingHorizontal: primitives.spacingMd,
+    paddingVertical: primitives.spacingXs,
   },
   flatListColumnContainer: {
     justifyContent: 'space-evenly',
@@ -213,12 +227,10 @@ const styles = StyleSheet.create({
   },
   reactionSelectorContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
   },
   reactionsText: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginVertical: 16,
     textAlign: 'center',
   },
 });

@@ -24,10 +24,11 @@ type ReactionButtonProps = {
    * @returns
    */
   onPress?: (reactionType: string) => void;
+  count?: string;
 };
 
 export const ReactionButton = (props: ReactionButtonProps) => {
-  const { Icon, onPress, selected, type } = props;
+  const { Icon, onPress, selected, type, count } = props;
   const {
     theme: {
       messageMenu: {
@@ -54,8 +55,9 @@ export const ReactionButton = (props: ReactionButtonProps) => {
         accessibilityLabel={`reaction-button-${type}-${selected ? 'selected' : 'unselected'}`}
         variant={'secondary'}
         type={'outline'}
-        iconOnly
+        iconOnly={!count}
         size={'md'}
+        label={count}
         onPress={onPressHandler}
         selected={selected}
         style={styles.buttonContainer}
