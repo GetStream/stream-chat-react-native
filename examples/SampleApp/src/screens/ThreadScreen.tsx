@@ -79,6 +79,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
 }) => {
   const {
     theme: {
+      semantics,
       colors: { white },
     },
   } = useTheme();
@@ -106,10 +107,11 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       return channelMessageActions({
         params,
         chatClient,
+        semantics,
         t,
       });
     },
-    [chatClient, t],
+    [chatClient, semantics, t],
   );
 
   const onThreadDismount = useCallback(() => {

@@ -6,6 +6,7 @@ import { Pressable } from 'react-native-gesture-handler';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { closeOverlay, scheduleActionOnClose } from '../../state-store';
+import { primitives } from '../../theme';
 
 export type ActionType =
   | 'banUser'
@@ -47,6 +48,8 @@ export type MessageActionType = {
    * Styles for underlying Text component of action title.
    */
   titleStyle?: StyleProp<TextStyle>;
+
+  type: 'standard' | 'destructive';
 };
 
 /**
@@ -59,6 +62,7 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
 
   const {
     theme: {
+      semantics,
       colors: { black },
       messageMenu: {
         actionListItem: { container, icon: iconTheme, title: titleTheme },
@@ -72,7 +76,13 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
   });
 
   return (
-    <Pressable onPress={onActionPress} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
+    <Pressable
+      onPress={onActionPress}
+      style={({ pressed }) => [
+        styles.buttonContainer,
+        { backgroundColor: pressed ? semantics.backgroundCorePressed : 'transparent' },
+      ]}
+    >
       <View
         accessibilityLabel={`${actionType} action list item`}
         style={[styles.container, container]}
@@ -85,13 +95,16 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
 };
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    borderRadius: primitives.radiusLg,
+  },
   container: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    paddingVertical: 8,
+    padding: primitives.spacingXs,
   },
   titleStyle: {
-    paddingLeft: 16,
+    paddingLeft: primitives.spacingXs,
   },
 });

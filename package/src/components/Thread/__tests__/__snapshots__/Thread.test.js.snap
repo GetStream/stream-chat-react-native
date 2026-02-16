@@ -1944,7 +1944,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   [
                     {
                       "backgroundColor": "transparent",
-                      "paddingHorizontal": 20,
+                      "paddingHorizontal": 0,
                     },
                     {
                       "alignItems": "center",
@@ -2192,7 +2192,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         [
                           {
                             "backgroundColor": "transparent",
-                            "paddingHorizontal": 12,
+                            "paddingHorizontal": 0,
                           },
                           {
                             "alignItems": "center",
@@ -2474,7 +2474,7 @@ exports[`Thread should match thread snapshot 1`] = `
               [
                 {
                   "backgroundColor": "transparent",
-                  "paddingHorizontal": 20,
+                  "paddingHorizontal": 0,
                 },
                 {
                   "alignItems": "center",
@@ -2608,7 +2608,7 @@ exports[`Thread should match thread snapshot 1`] = `
               [
                 {
                   "backgroundColor": "transparent",
-                  "paddingHorizontal": 20,
+                  "paddingHorizontal": 0,
                 },
                 {
                   "alignItems": "center",
@@ -2776,7 +2776,7 @@ exports[`Thread should match thread snapshot 1`] = `
               [
                 {
                   "backgroundColor": "transparent",
-                  "paddingHorizontal": 20,
+                  "paddingHorizontal": 0,
                 },
                 {
                   "alignItems": "center",
@@ -2921,7 +2921,7 @@ exports[`Thread should match thread snapshot 1`] = `
               [
                 {
                   "backgroundColor": "transparent",
-                  "paddingHorizontal": 20,
+                  "paddingHorizontal": 0,
                 },
                 {
                   "alignItems": "center",

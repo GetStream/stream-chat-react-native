@@ -11,19 +11,21 @@ import {
   TranslationContextValue,
 } from 'stream-chat-react-native';
 import { Bell } from '../icons/Bell';
+import { Theme } from 'stream-chat-react-native';
 
 export function channelMessageActions({
   params,
   chatClient,
-  colors,
   t,
   handleMessageInfo,
+  semantics,
 }: {
   params: MessageActionsParams;
   chatClient: StreamChat;
   t: TranslationContextValue['t'];
   colors?: typeof Colors;
   handleMessageInfo: (message: LocalMessage) => void;
+  semantics: Theme['semantics'];
 }) {
   const { dismissOverlay, deleteForMeMessage } = params;
   const actions = messageActions(params);
@@ -46,7 +48,8 @@ export function channelMessageActions({
     },
     actionType: reminder ? 'remove-from-later' : 'save-for-later',
     title: reminder ? 'Remove from Later' : 'Save for Later',
-    icon: <Time stroke={colors?.grey} height={20} width={20} />,
+    icon: <Time width={20} height={20} pathFill={semantics.textSecondary} />,
+    type: 'standard',
   });
   actions.push({
     action: () => {
@@ -91,7 +94,8 @@ export function channelMessageActions({
     },
     actionType: reminder ? 'remove-reminder' : 'remind-me',
     title: reminder ? 'Remove Reminder' : 'Remind Me',
-    icon: <Bell height={24} width={24} />,
+    icon: <Bell height={20} width={20} pathFill={semantics.textSecondary} />,
+    type: 'standard',
   });
   actions.push({
     action: async () => {
@@ -111,8 +115,9 @@ export function channelMessageActions({
       ]);
     },
     actionType: 'deleteForMe',
-    icon: <Delete fill={colors?.accent_red} size={24} />,
+    icon: <Delete stroke={semantics.accentError} width={20} height={20} />,
     title: t('Delete for me'),
+    type: 'destructive',
   });
 
   actions.push({
@@ -121,8 +126,9 @@ export function channelMessageActions({
       handleMessageInfo(params.message);
     },
     actionType: 'messageInfo',
-    icon: <Eye height={24} width={24} pathFill={colors?.grey} />,
+    icon: <Eye height={20} width={20} pathFill={semantics.textSecondary} />,
     title: 'Message Info',
+    type: 'standard',
   });
 
   return actions;

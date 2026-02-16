@@ -2,12 +2,12 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { CurveLineLeftUp } from '../../../icons';
+import { CurveLineLeftUpReply } from '../../../icons';
 
 export const MessageSwipeContent = () => {
   const {
     theme: {
-      colors: { grey },
+      semantics,
       messageSimple: {
         swipeLeftContent: { container },
       },
@@ -15,7 +15,7 @@ export const MessageSwipeContent = () => {
   } = useTheme();
   return (
     <View style={[styles.container, container]}>
-      <CurveLineLeftUp pathFill={grey} />
+      <CurveLineLeftUpReply pathFill={semantics.textSecondary} />
     </View>
   );
 };

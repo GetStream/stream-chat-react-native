@@ -1111,7 +1111,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     ],
   );
 
-  if (!FlatList) {
+  const AnimatedList = useMemo(
+    () => (FlatList ? Animated.createAnimatedComponent(FlatList<LocalMessage>) : undefined),
+    [FlatList],
+  );
+
+  if (!AnimatedList) {
     return null;
   }
 
@@ -1136,7 +1141,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         </View>
       ) : (
         <MessageListItemProvider value={messageListItemContextValue}>
-          <Animated.FlatList<LocalMessage>
+          <AnimatedList
             // TODO: Consider hiding this behind a feature flag.
             layout={LinearTransition.duration(200)}
             contentContainerStyle={flatListContentContainerStyle}
@@ -1163,11 +1168,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             onScrollToIndexFailed={onScrollToIndexFailedRef.current}
             onTouchEnd={dismissImagePicker}
             onViewableItemsChanged={stableOnViewableItemsChanged}
-            // @ts-expect-error Safe to do for now
             ref={refCallback}
             renderItem={renderItem}
             scrollEventThrottle={isLiveStreaming ? 16 : undefined}
             showsVerticalScrollIndicator={false}
+            // @ts-expect-error Safe to do for now
             strictMode={isLiveStreaming}
             style={flatListStyle}
             testID='message-flat-list'

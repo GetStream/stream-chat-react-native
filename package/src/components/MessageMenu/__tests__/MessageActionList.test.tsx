@@ -16,8 +16,13 @@ const MockMessageActionListItem = (props: MessageActionListItemProps) => <Text>{
 const defaultProps = {
   MessageActionListItem: MockMessageActionListItem,
   messageActions: [
-    { action: jest.fn(), actionType: 'copyMessage', title: 'Copy Message' },
-    { action: jest.fn(), actionType: 'deleteMessage', title: 'Delete Message' },
+    { action: jest.fn(), actionType: 'copyMessage', type: 'standard', title: 'Copy Message' },
+    {
+      action: jest.fn(),
+      actionType: 'deleteMessage',
+      type: 'destructive',
+      title: 'Delete Message',
+    },
   ],
 };
 

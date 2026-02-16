@@ -854,7 +854,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                 <MessageReactionPicker
                   dismissOverlay={dismissOverlay}
                   handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-                  ownReactionTypes={message?.own_reactions?.map((reaction) => reaction.type) || []}
                 />
               </View>
             ) : null}

@@ -182,6 +182,7 @@ export * from './Reply/Reply';
 export * from './ui';
 
 export * from './UIComponents/BottomSheetModal';
+export * from './UIComponents/StreamBottomSheetModalFlatList';
 export * from './UIComponents/ImageBackground';
 export * from './UIComponents/Spinner';
 

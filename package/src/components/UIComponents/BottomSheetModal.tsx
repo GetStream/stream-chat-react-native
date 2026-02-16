@@ -127,6 +127,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
     isOpen.value = true;
     isOpening.value = true;
+    currentSnapIndex.value = 0;
 
     cancelAnimation(translateY);
 
@@ -182,10 +183,11 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     isOpen.value = false;
     isOpening.value = false;
     keyboardOffset.value = 0;
+    currentSnapIndex.value = 0;
 
     cancelAnimation(translateY);
     translateY.value = maxHeight;
-  }, [visible, maxHeight, isOpen, isOpening, keyboardOffset, translateY]);
+  }, [visible, maxHeight, isOpen, isOpening, keyboardOffset, translateY, currentSnapIndex]);
 
   const keyboardDidShowRN = useStableCallback((event: KeyboardEvent) => {
     const offset = -event.endCoordinates.height;
@@ -276,7 +278,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     [maxHeight, snapPoints],
   );
 
-  const gesture = useMemo(
+  const panGesture = useMemo(
     () =>
       Gesture.Pan()
         // disable pan until content is rendered (prevents canceling the opening timing).
@@ -293,7 +295,18 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
         .onEnd((event) => {
           const openY = keyboardOffset.value + (maxHeight - snapPoints[currentSnapIndex.value]);
           const draggedDown = Math.max(translateY.value - openY, 0);
-          const shouldClose = event.velocityY > 500 || draggedDown > maxHeight / 2;
+          const topSnapIndex = snapPoints.length - 1;
+          const isAtTopSnap = currentSnapIndex.value === topSnapIndex;
+          const snap0Y = keyboardOffset.value + (maxHeight - snapPoints[0]);
+          const projectedY = translateY.value + event.velocityY * 0.2;
+
+          // From lower snaps, keep the previous close behavior.
+          const shouldCloseFromLowerSnap = event.velocityY > 500 || draggedDown > maxHeight / 2;
+          // From top snap, close only for clearly hard downward intent.
+          const shouldCloseFromTopSnap =
+            event.velocityY > 2200 || projectedY > snap0Y + (maxHeight - snap0Y) * 0.96;
+
+          const shouldClose = isAtTopSnap ? shouldCloseFromTopSnap : shouldCloseFromLowerSnap;
 
           cancelAnimation(translateY);
 
@@ -326,6 +339,11 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
             if (event.velocityY < -800) {
               nearestIndex = snapPointsTranslateY.length - 1;
             }
+            // From top snap, a gentle downward flick should settle to snap 0
+            // without requiring a large drag distance.
+            if (isAtTopSnap && event.velocityY > 120) {
+              nearestIndex = 0;
+            }
             currentSnapIndex.value = nearestIndex;
             translateY.value = withTiming(baseOffset + snapPointsTranslateY[nearestIndex], {
               duration: 250,
@@ -350,12 +368,18 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
   const onBackdropPress = useStableCallback(() => close());
 
-  const bottomSheetModalContextValue = useMemo(() => ({ close }), [close]);
+  const bottomSheetModalContextValue = useMemo(
+    () => ({
+      close,
+      currentSnapIndex,
+    }),
+    [close, currentSnapIndex],
+  );
 
   return (
     <Modal onRequestClose={onClose} transparent visible={visible}>
       <GestureHandlerRootView style={styles.sheetContentContainer}>
-        <GestureDetector gesture={gesture}>
+        <GestureDetector gesture={panGesture}>
           <View style={[styles.overlay, overlayTheme]}>
             <Animated.View pointerEvents='none' style={[styles.backdrop, overlayAnimatedStyle]} />
             <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFillObject} />

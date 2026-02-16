@@ -7,6 +7,7 @@ export type IconProps = Partial<SvgProps> &
   Omit<RootPathProps, 'd'> & {
     height?: number;
     width?: number;
+    size?: number;
   };
 
 export const RootSvg = (props: IconProps) => {
