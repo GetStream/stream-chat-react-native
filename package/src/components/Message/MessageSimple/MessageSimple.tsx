@@ -220,12 +220,12 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
             ]}
             testID='message-components'
           >
+            {/* TODO: Find a better way to avoid Remounting here. */}
             {reactionListPosition === 'top' && hasReactions ? (
               <View
                 style={[
                   {
-                    paddingBottom:
-                      hasReactions && reactionListPosition === 'top' ? reactionPosition : 0,
+                    paddingBottom: reactionPosition,
                   },
                   headerWrapper,
                 ]}
