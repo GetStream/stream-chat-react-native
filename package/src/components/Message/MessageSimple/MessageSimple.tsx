@@ -15,6 +15,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { useStableCallback } from '../../../hooks/useStableCallback';
 
+import { primitives } from '../../../theme';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { useMessageData } from '../hooks/useMessageData';
 
@@ -22,17 +23,24 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'flex-end',
     flexDirection: 'row',
+    gap: primitives.spacingXs,
   },
-  contentContainer: {},
+  contentContainer: {
+    gap: primitives.spacingXxs,
+  },
+  bubbleContainer: {
+    zIndex: 1, // To hide the stick inside the message content
+  },
+  repliesContainer: {
+    marginTop: -primitives.spacingXxs, // Reducing the margin to account the gap added in the content container
+  },
   lastMessageContainer: {
     marginBottom: 12,
   },
   leftAlignItems: {
     alignItems: 'flex-start',
   },
-  messageGroupedSingleOrBottomContainer: {
-    marginBottom: 8,
-  },
+  messageGroupedSingleOrBottomContainer: {},
   messageGroupedTopContainer: {},
   rightAlignItems: {
     alignItems: 'flex-end',
@@ -46,12 +54,9 @@ export type MessageSimplePropsWithContext = Pick<
   | 'groupStyles'
   | 'hasReactions'
   | 'isMyMessage'
-  | 'lastGroupMessage'
-  | 'members'
   | 'message'
   | 'onlyEmojis'
   | 'otherAttachments'
-  | 'showMessageStatus'
   | 'setQuotedMessage'
 > &
   Pick<
@@ -65,9 +70,7 @@ export type MessageSimplePropsWithContext = Pick<
     | 'MessageDeleted'
     | 'MessageFooter'
     | 'MessageHeader'
-    | 'MessagePinnedHeader'
     | 'MessageReplies'
-    | 'MessageStatus'
     | 'MessageSwipeContent'
     | 'messageSwipeToReplyHitSlop'
     | 'ReactionListBottom'
@@ -96,17 +99,13 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
     groupStyles,
     hasReactions,
     isMyMessage,
-    lastGroupMessage,
-    members,
     message,
     MessageAvatar,
     MessageContent,
     MessageDeleted,
     MessageFooter,
     MessageHeader,
-    MessagePinnedHeader,
     MessageReplies,
-    MessageStatus,
     MessageSwipeContent,
     messageSwipeToReplyHitSlop = { left: width, right: width },
     onlyEmojis,
@@ -114,7 +113,6 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
     ReactionListBottom,
     reactionListPosition,
     ReactionListTop,
-    showMessageStatus,
     shouldRenderSwipeableWrapper,
     setQuotedMessage,
   } = props;
@@ -124,6 +122,8 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
       colors: { blue_alice, grey_gainsboro, light_blue, light_gray, transparent },
       messageSimple: {
         container,
+        bubbleContainer,
+        repliesContainer,
         content: {
           container: contentContainer,
           errorContainer,
@@ -189,8 +189,6 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
     backgroundColor = receiverMessageBackgroundColor ?? light_gray;
   }
 
-  const repliesCurveColor = isMessageReceivedOrErrorType ? grey_gainsboro : backgroundColor;
-
   const onSwipeActionHandler = useStableCallback(() => {
     if (customMessageSwipeAction) {
       customMessageSwipeAction({ channel, message });
@@ -211,7 +209,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
               : messageGroupedSingleOrBottomStyles
             : messageGroupedTopStyles,
           {
-            justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
+            flexDirection: alignment === 'left' ? 'row' : 'row-reverse',
           },
           container,
         ]}
@@ -235,63 +233,60 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
             ]}
             testID='message-components'
           >
-            <View
-              style={[
-                {
-                  paddingBottom:
-                    hasReactions && reactionListPosition === 'top' ? reactionPosition : 2,
-                },
-                headerWrapper,
-              ]}
-            >
-              {MessageHeader && (
-                <MessageHeader
-                  alignment={alignment}
-                  date={message.created_at}
-                  isDeleted={isMessageTypeDeleted}
-                  lastGroupMessage={lastGroupMessage}
-                  members={members}
-                  message={message}
-                  MessageStatus={MessageStatus}
-                  otherAttachments={otherAttachments}
-                  showMessageStatus={showMessageStatus}
+            {reactionListPosition === 'top' && hasReactions ? (
+              <View
+                style={[
+                  {
+                    paddingBottom:
+                      hasReactions && reactionListPosition === 'top' ? reactionPosition : 0,
+                  },
+                  headerWrapper,
+                ]}
+              >
+                <MessageHeader />
+              </View>
+            ) : (
+              <MessageHeader />
+            )}
+            <View style={[styles.bubbleContainer, bubbleContainer]}>
+              {enableSwipeToReply ? (
+                <SwipableMessageBubble
+                  backgroundColor={backgroundColor}
+                  isVeryLastMessage={isVeryLastMessage}
+                  MessageContent={MessageContent}
+                  messageContentWidth={messageContentWidth}
+                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+                  MessageSwipeContent={MessageSwipeContent}
+                  messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
+                  noBorder={noBorder}
+                  onSwipe={onSwipeActionHandler}
+                  reactionListPosition={reactionListPosition}
+                  ReactionListTop={ReactionListTop}
+                  setMessageContentWidth={setMessageContentWidth}
+                  shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
+                />
+              ) : (
+                <MessageBubble
+                  backgroundColor={backgroundColor}
+                  isVeryLastMessage={isVeryLastMessage}
+                  MessageContent={MessageContent}
+                  messageContentWidth={messageContentWidth}
+                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+                  noBorder={noBorder}
+                  reactionListPosition={reactionListPosition}
+                  ReactionListTop={ReactionListTop}
+                  setMessageContentWidth={setMessageContentWidth}
                 />
               )}
-              {message.pinned ? <MessagePinnedHeader /> : null}
             </View>
-            {enableSwipeToReply ? (
-              <SwipableMessageBubble
-                backgroundColor={backgroundColor}
-                isVeryLastMessage={isVeryLastMessage}
-                MessageContent={MessageContent}
-                messageContentWidth={messageContentWidth}
-                messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-                MessageSwipeContent={MessageSwipeContent}
-                messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
-                noBorder={noBorder}
-                onSwipe={onSwipeActionHandler}
-                reactionListPosition={reactionListPosition}
-                ReactionListTop={ReactionListTop}
-                setMessageContentWidth={setMessageContentWidth}
-                shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
-              />
-            ) : (
-              <MessageBubble
-                backgroundColor={backgroundColor}
-                isVeryLastMessage={isVeryLastMessage}
-                MessageContent={MessageContent}
-                messageContentWidth={messageContentWidth}
-                messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-                noBorder={noBorder}
-                reactionListPosition={reactionListPosition}
-                ReactionListTop={ReactionListTop}
-                setMessageContentWidth={setMessageContentWidth}
-              />
-            )}
+
+            <View style={[styles.repliesContainer, repliesContainer]}>
+              <MessageReplies />
+            </View>
+
             {reactionListPosition === 'bottom' && ReactionListBottom ? (
               <ReactionListBottom />
             ) : null}
-            <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
             <MessageFooter date={message.created_at} isDeleted={!!isMessageTypeDeleted} />
           </View>
         )}
@@ -308,8 +303,6 @@ const areEqual = (
     channel: prevChannel,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
-    lastGroupMessage: prevLastGroupMessage,
-    members: prevMembers,
     message: prevMessage,
     myMessageTheme: prevMyMessageTheme,
     onlyEmojis: prevOnlyEmojis,
@@ -319,8 +312,6 @@ const areEqual = (
     channel: nextChannel,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
-    lastGroupMessage: nextLastGroupMessage,
-    members: nextMembers,
     message: nextMessage,
     myMessageTheme: nextMyMessageTheme,
     onlyEmojis: nextOnlyEmojis,
@@ -334,16 +325,6 @@ const areEqual = (
 
   const groupStylesEqual = JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) {
-    return false;
-  }
-
-  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
-  if (!lastGroupMessageEqual) {
-    return false;
-  }
-
-  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) {
     return false;
   }
 
@@ -443,15 +424,13 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
     groupStyles,
     hasReactions,
     isMyMessage,
-    lastGroupMessage,
-    members,
     message,
     onlyEmojis,
     otherAttachments,
-    showMessageStatus,
     isMessageAIGenerated,
     setQuotedMessage,
   } = useMessageContext();
+
   const {
     customMessageSwipeAction,
     enableMessageGroupingByUser,
@@ -461,9 +440,7 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
     MessageDeleted,
     MessageFooter,
     MessageHeader,
-    MessagePinnedHeader,
     MessageReplies,
-    MessageStatus,
     MessageSwipeContent,
     messageSwipeToReplyHitSlop,
     myMessageTheme,
@@ -488,17 +465,13 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
         groupStyles,
         hasReactions,
         isMyMessage,
-        lastGroupMessage,
-        members,
         message,
         MessageAvatar,
         MessageContent,
         MessageDeleted,
         MessageFooter,
         MessageHeader,
-        MessagePinnedHeader,
         MessageReplies,
-        MessageStatus,
         MessageSwipeContent,
         messageSwipeToReplyHitSlop,
         myMessageTheme,
@@ -509,7 +482,6 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
         ReactionListTop,
         setQuotedMessage,
         shouldRenderSwipeableWrapper,
-        showMessageStatus,
       }}
       ref={ref}
       {...props}

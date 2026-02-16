@@ -47,12 +47,12 @@ export const MessageBubble = React.memo(
   }: MessageBubbleProps) => {
     const {
       theme: {
-        messageSimple: { contentWrapper },
+        messageSimple: { contentContainer },
       },
     } = useTheme();
 
     return (
-      <View style={[styles.contentWrapper, contentWrapper]}>
+      <View style={[styles.contentContainer, contentContainer]}>
         <MessageContent
           backgroundColor={backgroundColor}
           isVeryLastMessage={isVeryLastMessage}
@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  contentContainer: {},
   swipeContentContainer: {
     flexShrink: 0,
     overflow: 'hidden',

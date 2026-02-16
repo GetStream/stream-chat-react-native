@@ -1,5 +1,5 @@
-import React from 'react';
-import { ColorValue, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   MessageContextValue,
@@ -14,37 +14,9 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginTop: 8,
-  },
-  curveContainer: {
-    flexDirection: 'row',
-  },
-  leftMessageRepliesCurve: {
-    borderBottomLeftRadius: 16,
-    borderRightWidth: 0,
-  },
-  messageRepliesCurve: {
-    borderTopWidth: 0,
-    borderWidth: 2,
-    height: 16,
-    width: 16,
-  },
-  messageRepliesText: {
-    fontSize: 12,
-    fontWeight: '700',
-    paddingBottom: 5,
-    paddingHorizontal: 8,
-  },
-  rightMessageRepliesCurve: {
-    borderBottomRightRadius: 16,
-    borderLeftWidth: 0,
-  },
-});
+import { ReplyConnectorLeft } from '../../../icons/ReplyConnectorLeft';
+import { ReplyConnectorRight } from '../../../icons/ReplyConnectorRight';
+import { primitives } from '../../../theme';
 
 export type MessageRepliesPropsWithContext = Pick<
   MessageContextValue,
@@ -58,58 +30,42 @@ export type MessageRepliesPropsWithContext = Pick<
   | 'threadList'
 > &
   Pick<MessagesContextValue, 'MessageRepliesAvatars'> &
-  Pick<TranslationContextValue, 't'> & {
-    noBorder?: boolean;
-    repliesCurveColor?: ColorValue;
-  };
+  Pick<TranslationContextValue, 't'>;
 
 const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
   const {
     alignment,
     message,
     MessageRepliesAvatars,
-    noBorder,
     onLongPress,
     onOpenThread,
     onPress,
     onPressIn,
     preventPress,
-    repliesCurveColor,
     t,
     threadList,
   } = props;
 
   const {
     theme: {
-      colors: { accent_blue },
       messageSimple: {
-        replies: { container, leftCurve, messageRepliesText, rightCurve },
+        replies: { container, messageRepliesText, content },
       },
+      semantics,
     },
   } = useTheme();
+  const styles = useStyles();
 
   if (threadList || !message.reply_count) {
     return null;
   }
 
   return (
-    <View style={styles.curveContainer}>
+    <View style={[styles.container, container]}>
       {alignment === 'left' && (
-        <View style={styles.curveContainer} testID='message-replies-left'>
-          {!noBorder && (
-            <View
-              style={[
-                { borderColor: repliesCurveColor },
-                styles.messageRepliesCurve,
-                styles.leftMessageRepliesCurve,
-                leftCurve,
-              ]}
-            />
-          )}
-          <MessageRepliesAvatars alignment={alignment} message={message} />
-        </View>
+        <ReplyConnectorLeft height={48} width={16} stroke={semantics.chatThreadConnectorIncoming} />
       )}
-      <TouchableOpacity
+      <Pressable
         disabled={preventPress}
         onLongPress={(event) => {
           if (onLongPress) {
@@ -137,31 +93,28 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
             });
           }
         }}
-        style={[styles.container, container]}
+        style={[
+          styles.content,
+          { flexDirection: alignment === 'left' ? 'row' : 'row-reverse' },
+          content,
+        ]}
         testID='message-replies'
       >
-        <Text style={[styles.messageRepliesText, { color: accent_blue }, messageRepliesText]}>
+        <MessageRepliesAvatars />
+        <Text style={[styles.messageRepliesText, messageRepliesText]}>
           {message.reply_count === 1
-            ? t('1 Thread Reply')
-            : t('{{ replyCount }} Thread Replies', {
+            ? t('1 Reply')
+            : t('{{ replyCount }} Replies', {
                 replyCount: message.reply_count,
               })}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
       {alignment === 'right' && (
-        <View style={styles.curveContainer} testID='message-replies-right'>
-          <MessageRepliesAvatars alignment={alignment} message={message} />
-          {!noBorder && (
-            <View
-              style={[
-                { borderColor: repliesCurveColor },
-                styles.messageRepliesCurve,
-                styles.rightMessageRepliesCurve,
-                rightCurve,
-              ]}
-            />
-          )}
-        </View>
+        <ReplyConnectorRight
+          height={48}
+          width={16}
+          stroke={semantics.chatThreadConnectorOutgoing}
+        />
       )}
     </View>
   );
@@ -173,17 +126,13 @@ const areEqual = (
 ) => {
   const {
     message: prevMessage,
-    noBorder: prevNoBorder,
     onOpenThread: prevOnOpenThread,
-    repliesCurveColor: prevRepliesCurveColor,
     t: prevT,
     threadList: prevThreadList,
   } = prevProps;
   const {
     message: nextMessage,
-    noBorder: nextNoBorder,
     onOpenThread: nextOnOpenThread,
-    repliesCurveColor: nextRepliesCurveColor,
     t: nextT,
     threadList: nextThreadList,
   } = nextProps;
@@ -195,16 +144,6 @@ const areEqual = (
 
   const messageReplyCountEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!messageReplyCountEqual) {
-    return false;
-  }
-
-  const noBorderEqual = prevNoBorder === nextNoBorder;
-  if (!noBorderEqual) {
-    return false;
-  }
-
-  const repliesCurveColorEqual = prevRepliesCurveColor === nextRepliesCurveColor;
-  if (!repliesCurveColorEqual) {
     return false;
   }
 
@@ -262,3 +201,33 @@ export const MessageReplies = (props: MessageRepliesProps) => {
 };
 
 MessageReplies.displayName = 'MessageReplies{messageSimple{replies}}';
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: primitives.spacingXs,
+        marginTop: -primitives.spacingMd, // Pulling the replies container up to hide the stick in the message content
+      },
+      content: {
+        alignSelf: 'flex-end',
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXs,
+        paddingTop: primitives.spacingXs,
+        paddingBottom: primitives.spacingXxs,
+      },
+      messageRepliesText: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeSm,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+    });
+  }, [semantics]);
+};

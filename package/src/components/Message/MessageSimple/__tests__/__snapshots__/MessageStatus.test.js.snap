@@ -21,10 +21,9 @@ exports[`MessageStatus should render message status with read by container 1`] =
       style={
         [
           {
-            "alignItems": "flex-end",
+            "alignItems": "center",
             "flexDirection": "row",
             "justifyContent": "center",
-            "paddingRight": 3,
           },
           {},
         ]
@@ -35,9 +34,10 @@ exports[`MessageStatus should render message status with read by container 1`] =
         style={
           [
             {
-              "fontSize": 11,
-              "fontWeight": "700",
-              "paddingRight": 3,
+              "color": "#005fff",
+              "fontSize": 12,
+              "fontWeight": 400,
+              "lineHeight": 16,
             },
             {
               "color": "#005FFF",
@@ -53,12 +53,13 @@ exports[`MessageStatus should render message status with read by container 1`] =
         align="xMidYMid"
         bbHeight={16}
         bbWidth={16}
+        fill="none"
         focusable={false}
         height={16}
         meetOrSlice={0}
         minX={0}
         minY={0}
-        pathFill="#005FFF"
+        stroke="#005FFF"
         style={
           [
             {
@@ -72,51 +73,51 @@ exports[`MessageStatus should render message status with read by container 1`] =
             },
           ]
         }
-        vbHeight={24}
-        vbWidth={24}
+        vbHeight={20}
+        vbWidth={20}
         width={16}
       >
         <RNSVGGroup
-          fill={
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+            ]
+          }
+          stroke={
             {
-              "payload": 4278190080,
+              "payload": 4278214655,
               "type": 0,
             }
           }
         >
           <RNSVGPath
-            clipRule={0}
-            d="M2.293 11.293a1 1 0 011.414 0l4 4a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414zM9.293 12.293a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414z"
+            accessibilityLabel="Read"
+            d="M4.79167 10.8856L7.44792 13.5418L11.875 6.4585M10.7813 13.5418L15.2083 6.4585"
             fill={
+              {
+                "payload": 4278190080,
+                "type": 0,
+              }
+            }
+            propList={
+              [
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
+              ]
+            }
+            stroke={
               {
                 "payload": 4278214655,
                 "type": 0,
               }
             }
-            fillRule={0}
-            propList={
-              [
-                "fill",
-                "fillRule",
-              ]
-            }
-          />
-          <RNSVGPath
-            clipRule={0}
-            d="M15.707 7.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0zM21.707 7.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0z"
-            fill={
-              {
-                "payload": 4278214655,
-                "type": 0,
-              }
-            }
-            fillRule={0}
-            propList={
-              [
-                "fill",
-                "fillRule",
-              ]
-            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={1.5}
           />
         </RNSVGGroup>
       </RNSVGSvgView>

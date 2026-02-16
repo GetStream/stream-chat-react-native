@@ -53,6 +53,7 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 
 import { useStableCallback, useStateStore } from '../../hooks';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
+import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 let FlashList;
@@ -1245,7 +1246,7 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
     right: 0,
-    top: 0,
+    top: primitives.spacingXs,
   },
   unreadMessagesNotificationContainer: {
     alignSelf: 'center',

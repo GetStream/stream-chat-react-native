@@ -273,6 +273,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
+                                "gap": 8,
                               },
                               {
                                 "marginBottom": 8,
@@ -288,9 +289,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {
-                                  "marginRight": 8,
-                                },
+                                {},
                                 {},
                               ]
                             }
@@ -309,8 +308,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "height": 24,
-                                      "width": 24,
+                                      "height": 32,
+                                      "width": 32,
                                     },
                                     {
                                       "backgroundColor": "#fcedb9",
@@ -334,8 +333,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                     [
                                       {},
                                       {
-                                        "height": 24,
-                                        "width": 24,
+                                        "height": 32,
+                                        "width": 32,
                                       },
                                     ]
                                   }
@@ -346,7 +345,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {},
+                                {
+                                  "gap": 4,
+                                },
                                 {
                                   "alignItems": "flex-start",
                                 },
@@ -359,16 +360,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-components"
                           >
-                            <View
-                              style={
-                                [
-                                  {
-                                    "paddingBottom": 2,
-                                  },
-                                  {},
-                                ]
-                              }
-                            />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -391,10 +382,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               <View
                                 style={
                                   [
-                                    {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                    },
+                                    {},
                                     {},
                                   ]
                                 }
@@ -535,60 +523,57 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
+                                {
+                                  "marginTop": -4,
+                                }
+                              }
+                            />
+                            <View
+                              style={
                                 [
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "gap": 8,
                                     "justifyContent": "center",
-                                    "marginTop": 4,
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
                               }
                               testID="message-status-time"
                             >
-                              <Text
+                              <View
                                 style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                    },
-                                    {},
-                                  ]
+                                  {
+                                    "alignItems": "center",
+                                    "flexDirection": "row",
+                                    "gap": 8,
+                                    "justifyContent": "center",
+                                  }
                                 }
                               >
-                                2:50 PM
-                              </Text>
+                                <Text
+                                  style={
+                                    {
+                                      "color": "#687385",
+                                      "fontSize": 12,
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
+                                    }
+                                  }
+                                >
+                                  2:50 PM
+                                </Text>
+                              </View>
                               <Text
                                 style={
                                   [
                                     {
-                                      "paddingHorizontal": 4,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
+                                      "color": "#687385",
                                       "fontSize": 12,
-                                    },
-                                  ]
-                                }
-                              >
-                                ⦁
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
                                     },
                                     {},
                                   ]
@@ -666,6 +651,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
+                                "gap": 8,
                               },
                               {
                                 "marginBottom": 8,
@@ -681,9 +667,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {
-                                  "marginRight": 8,
-                                },
+                                {},
                                 {},
                               ]
                             }
@@ -702,8 +686,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "height": 24,
-                                      "width": 24,
+                                      "height": 32,
+                                      "width": 32,
                                     },
                                     {
                                       "backgroundColor": "#bdfcdb",
@@ -727,8 +711,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                     [
                                       {},
                                       {
-                                        "height": 24,
-                                        "width": 24,
+                                        "height": 32,
+                                        "width": 32,
                                       },
                                     ]
                                   }
@@ -739,7 +723,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {},
+                                {
+                                  "gap": 4,
+                                },
                                 {
                                   "alignItems": "flex-start",
                                 },
@@ -752,16 +738,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-components"
                           >
-                            <View
-                              style={
-                                [
-                                  {
-                                    "paddingBottom": 2,
-                                  },
-                                  {},
-                                ]
-                              }
-                            />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -784,10 +760,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               <View
                                 style={
                                   [
-                                    {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                    },
+                                    {},
                                     {},
                                   ]
                                 }
@@ -928,60 +901,57 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
+                                {
+                                  "marginTop": -4,
+                                }
+                              }
+                            />
+                            <View
+                              style={
                                 [
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "gap": 8,
                                     "justifyContent": "center",
-                                    "marginTop": 4,
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
                               }
                               testID="message-status-time"
                             >
-                              <Text
+                              <View
                                 style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                    },
-                                    {},
-                                  ]
+                                  {
+                                    "alignItems": "center",
+                                    "flexDirection": "row",
+                                    "gap": 8,
+                                    "justifyContent": "center",
+                                  }
                                 }
                               >
-                                2:50 PM
-                              </Text>
+                                <Text
+                                  style={
+                                    {
+                                      "color": "#687385",
+                                      "fontSize": 12,
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
+                                    }
+                                  }
+                                >
+                                  2:50 PM
+                                </Text>
+                              </View>
                               <Text
                                 style={
                                   [
                                     {
-                                      "paddingHorizontal": 4,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
+                                      "color": "#687385",
                                       "fontSize": 12,
-                                    },
-                                  ]
-                                }
-                              >
-                                ⦁
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
                                     },
                                     {},
                                   ]
@@ -1028,18 +998,12 @@ exports[`Thread should match thread snapshot 1`] = `
                   style={
                     [
                       {
-                        "alignItems": "center",
                         "alignSelf": "center",
-                        "borderRadius": 8,
-                        "height": 16,
-                        "justifyContent": "center",
-                        "marginVertical": 4,
-                        "paddingHorizontal": 8,
+                        "backgroundColor": "#f6f8fa",
+                        "borderRadius": 9999,
+                        "paddingHorizontal": 12,
+                        "paddingVertical": 4,
                       },
-                      {
-                        "backgroundColor": "#000000CC",
-                      },
-                      {},
                     ]
                   }
                   testID="date-separator"
@@ -1048,14 +1012,11 @@ exports[`Thread should match thread snapshot 1`] = `
                     style={
                       [
                         {
+                          "color": "#414552",
                           "fontSize": 12,
-                          "textAlign": "center",
-                          "textAlignVertical": "center",
+                          "fontWeight": 600,
+                          "lineHeight": 16,
                         },
-                        {
-                          "color": "#FFFFFF",
-                        },
-                        {},
                       ]
                     }
                   >
@@ -1097,6 +1058,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
+                                "gap": 8,
                               },
                               {
                                 "marginBottom": 8,
@@ -1112,9 +1074,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {
-                                  "marginRight": 8,
-                                },
+                                {},
                                 {},
                               ]
                             }
@@ -1133,8 +1093,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "height": 24,
-                                      "width": 24,
+                                      "height": 32,
+                                      "width": 32,
                                     },
                                     {
                                       "backgroundColor": "#fcedb9",
@@ -1158,8 +1118,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                     [
                                       {},
                                       {
-                                        "height": 24,
-                                        "width": 24,
+                                        "height": 32,
+                                        "width": 32,
                                       },
                                     ]
                                   }
@@ -1170,7 +1130,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {},
+                                {
+                                  "gap": 4,
+                                },
                                 {
                                   "alignItems": "flex-start",
                                 },
@@ -1183,16 +1145,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-components"
                           >
-                            <View
-                              style={
-                                [
-                                  {
-                                    "paddingBottom": 2,
-                                  },
-                                  {},
-                                ]
-                              }
-                            />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -1215,10 +1167,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               <View
                                 style={
                                   [
-                                    {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                    },
+                                    {},
                                     {},
                                   ]
                                 }
@@ -1359,60 +1308,57 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
+                                {
+                                  "marginTop": -4,
+                                }
+                              }
+                            />
+                            <View
+                              style={
                                 [
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "gap": 8,
                                     "justifyContent": "center",
-                                    "marginTop": 4,
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
                               }
                               testID="message-status-time"
                             >
-                              <Text
+                              <View
                                 style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                    },
-                                    {},
-                                  ]
+                                  {
+                                    "alignItems": "center",
+                                    "flexDirection": "row",
+                                    "gap": 8,
+                                    "justifyContent": "center",
+                                  }
                                 }
                               >
-                                2:50 PM
-                              </Text>
+                                <Text
+                                  style={
+                                    {
+                                      "color": "#687385",
+                                      "fontSize": 12,
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
+                                    }
+                                  }
+                                >
+                                  2:50 PM
+                                </Text>
+                              </View>
                               <Text
                                 style={
                                   [
                                     {
-                                      "paddingHorizontal": 4,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
+                                      "color": "#687385",
                                       "fontSize": 12,
-                                    },
-                                  ]
-                                }
-                              >
-                                ⦁
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
                                     },
                                     {},
                                   ]
@@ -1491,6 +1437,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
+                                "gap": 8,
                               },
                               [
                                 {
@@ -1509,9 +1456,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {
-                                  "marginRight": 8,
-                                },
+                                {},
                                 {},
                               ]
                             }
@@ -1530,8 +1475,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "height": 24,
-                                      "width": 24,
+                                      "height": 32,
+                                      "width": 32,
                                     },
                                     {
                                       "backgroundColor": "#bdfcdb",
@@ -1555,8 +1500,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                     [
                                       {},
                                       {
-                                        "height": 24,
-                                        "width": 24,
+                                        "height": 32,
+                                        "width": 32,
                                       },
                                     ]
                                   }
@@ -1567,7 +1512,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {},
+                                {
+                                  "gap": 4,
+                                },
                                 {
                                   "alignItems": "flex-start",
                                 },
@@ -1580,16 +1527,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-components"
                           >
-                            <View
-                              style={
-                                [
-                                  {
-                                    "paddingBottom": 2,
-                                  },
-                                  {},
-                                ]
-                              }
-                            />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -1612,10 +1549,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               <View
                                 style={
                                   [
-                                    {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                    },
+                                    {},
                                     {},
                                   ]
                                 }
@@ -1756,60 +1690,57 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
+                                {
+                                  "marginTop": -4,
+                                }
+                              }
+                            />
+                            <View
+                              style={
                                 [
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "gap": 8,
                                     "justifyContent": "center",
-                                    "marginTop": 4,
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
                               }
                               testID="message-status-time"
                             >
-                              <Text
+                              <View
                                 style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                    },
-                                    {},
-                                  ]
+                                  {
+                                    "alignItems": "center",
+                                    "flexDirection": "row",
+                                    "gap": 8,
+                                    "justifyContent": "center",
+                                  }
                                 }
                               >
-                                2:50 PM
-                              </Text>
+                                <Text
+                                  style={
+                                    {
+                                      "color": "#687385",
+                                      "fontSize": 12,
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
+                                    }
+                                  }
+                                >
+                                  2:50 PM
+                                </Text>
+                              </View>
                               <Text
                                 style={
                                   [
                                     {
-                                      "paddingHorizontal": 4,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
+                                      "color": "#687385",
                                       "fontSize": 12,
-                                    },
-                                  ]
-                                }
-                              >
-                                ⦁
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
                                     },
                                     {},
                                   ]
@@ -1936,7 +1867,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "left": 0,
               "position": "absolute",
               "right": 0,
-              "top": 0,
+              "top": 8,
             },
             {},
           ]

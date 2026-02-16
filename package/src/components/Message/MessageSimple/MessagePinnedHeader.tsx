@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -8,7 +8,8 @@ import {
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { PinHeader } from '../../../icons';
+import { NewPin } from '../../../icons/NewPin';
+import { primitives } from '../../../theme';
 
 export type MessagePinnedHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
 
@@ -17,22 +18,24 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
   const { message: contextMessage } = useMessageContext();
   const message = propMessage || contextMessage;
   const {
-    theme: {
-      colors: { grey },
-      messageSimple: { pinnedHeader },
-    },
+    theme: { semantics },
   } = useTheme();
-  const { container, label } = pinnedHeader;
+  const styles = useStyles();
   const { t } = useTranslationContext();
   const { client } = useChatContext();
+
+  if (!message?.pinned) {
+    return null;
+  }
+
   return (
     <View
       accessibilityLabel='Message Pinned Header'
-      style={[styles.container, container]}
+      style={styles.container}
       testID='message-pinned'
     >
-      <PinHeader fill={grey} size={16} />
-      <Text style={[{ color: grey }, styles.label, label]}>
+      <NewPin height={12} width={12} stroke={semantics.textPrimary} />
+      <Text style={styles.label}>
         {t('Pinned by')}{' '}
         {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}
       </Text>
@@ -40,14 +43,32 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  label: {
-    fontSize: 12,
-    marginLeft: 4,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      messageSimple: {
+        pinnedHeader: { container, label },
+      },
+    },
+  } = useTheme();
+
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXxs,
+        paddingVertical: primitives.spacingXxs,
+        ...container,
+      },
+      label: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+        ...label,
+      },
+    });
+  }, [semantics, container, label]);
+};

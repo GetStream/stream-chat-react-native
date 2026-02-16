@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import {
   AnimatableNumericValue,
   ColorValue,
-  DimensionValue,
   LayoutChangeEvent,
   Pressable,
   StyleSheet,
@@ -27,7 +26,7 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import { primitives } from '../../../theme';
+import { components, primitives } from '../../../theme';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
 import { useMessageData } from '../hooks/useMessageData';
@@ -56,48 +55,10 @@ const useReplyStyles = () => {
   }, [semantics, isMyMessage]);
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexShrink: 1,
-  },
-  containerInner: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  leftAlignContent: {
-    justifyContent: 'flex-start',
-  },
-  leftAlignItems: {
-    alignItems: 'flex-start',
-  },
-  replyBorder: {
-    borderLeftWidth: 1,
-    bottom: 0,
-    position: 'absolute',
-  },
-  replyContainer: {
-    alignSelf: 'center',
-  },
-  galleryContainer: {},
-  rightAlignContent: {
-    justifyContent: 'flex-end',
-  },
-  rightAlignItems: {
-    alignItems: 'flex-end',
-  },
-  textContainer: {
-    paddingHorizontal: primitives.spacingXs,
-  },
-});
-
 export type MessageContentPropsWithContext = Pick<
   MessageContextValue,
-  | 'alignment'
   | 'goToMessage'
   | 'groupStyles'
-  | 'isEditedMessageOpen'
   | 'isMyMessage'
   | 'message'
   | 'messageContentOrder'
@@ -158,7 +119,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   const [longPressFired, setLongPressFired] = useState(false);
   const {
     additionalPressableProps,
-    alignment,
     Attachment,
     backgroundColor,
     enableMessageGroupingByUser,
@@ -182,7 +142,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     Reply,
     setMessageContentWidth,
     StreamingMessageView,
-    threadList,
     hidePaddingTop,
     hidePaddingHorizontal,
     hidePaddingBottom,
@@ -193,7 +152,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   const {
     theme: {
-      colors: { grey_whisper, light_gray },
+      colors: { grey_whisper },
       messageSimple: {
         content: {
           container: {
@@ -207,11 +166,12 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
             ...container
           },
           containerInner,
+          contentContainer,
           lastMessageContainer,
           messageGroupedSingleOrBottomContainer,
           messageGroupedTopContainer,
-          replyBorder,
           replyContainer,
+          textWrapper,
           wrapper,
         },
       },
@@ -231,9 +191,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     [message, isMessageAIGenerated],
   );
 
-  const { hasThreadReplies, isMessageErrorType, isMessageReceivedOrErrorType } = useMessageData({});
-
-  const repliesCurveColor = !isMessageReceivedOrErrorType ? backgroundColor : light_gray;
+  const { isMessageErrorType, isMessageReceivedOrErrorType } = useMessageData({});
 
   const getBorderRadius = () => {
     // enum('top', 'middle', 'bottom', 'single')
@@ -243,7 +201,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     let borderBottomLeftRadius = borderRadiusL;
     let borderBottomRightRadius = borderRadiusL;
 
-    if (isBottomOrSingle && (!hasThreadReplies || threadList)) {
+    if (isBottomOrSingle) {
       // add relevant sharp corner
       if (isMyMessage) {
         borderBottomRightRadius = borderRadiusS;
@@ -319,20 +277,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       }}
     >
       <View onLayout={onLayout} style={wrapper}>
-        {hasThreadReplies && !threadList && !noBorder && (
-          <View
-            style={[
-              styles.replyBorder,
-              {
-                borderColor: repliesCurveColor,
-                height: borderRadiusL as DimensionValue | undefined,
-                left: alignment === 'left' ? 0 : undefined,
-                right: alignment === 'right' ? 0 : undefined,
-              },
-              replyBorder,
-            ]}
-          />
-        )}
         <View
           style={[
             styles.containerInner,
@@ -353,12 +297,15 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           testID='message-content-wrapper'
         >
           <View
-            style={{
-              gap: primitives.spacingXs,
-              paddingTop: hidePaddingTop ? 0 : primitives.spacingXs,
-              paddingHorizontal: hidePaddingHorizontal ? 0 : primitives.spacingXs,
-              paddingBottom: hidePaddingBottom ? 0 : primitives.spacingXs,
-            }}
+            style={[
+              {
+                gap: primitives.spacingXs,
+                paddingTop: hidePaddingTop ? 0 : primitives.spacingXs,
+                paddingHorizontal: hidePaddingHorizontal ? 0 : primitives.spacingXs,
+                paddingBottom: hidePaddingBottom ? 0 : primitives.spacingXs,
+              },
+              contentContainer,
+            ]}
           >
             {messageContentOrder.map((messageContentType, messageContentOrderIndex) => {
               switch (messageContentType) {
@@ -422,7 +369,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
               }
             })}
           </View>
-          <View style={styles.textContainer}>
+          <View style={[styles.textWrapper, textWrapper]}>
             {(otherAttachments.length && otherAttachments[0].actions) || isAIGenerated ? null : (
               <MessageTextContainer />
             )}
@@ -443,7 +390,6 @@ const areEqual = (
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
-    isEditedMessageOpen: prevIsEditedMessageOpen,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
     myMessageTheme: prevMyMessageTheme,
@@ -454,7 +400,6 @@ const areEqual = (
     preventPress: nextPreventPress,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
-    isEditedMessageOpen: nextIsEditedMessageOpen,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
     myMessageTheme: nextMyMessageTheme,
@@ -469,11 +414,6 @@ const areEqual = (
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
   if (goToMessageChangedAndMatters) {
-    return false;
-  }
-
-  const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
-  if (!isEditedMessageOpenEqual) {
     return false;
   }
 
@@ -598,10 +538,8 @@ export type MessageContentProps = Partial<
  */
 export const MessageContent = (props: MessageContentProps) => {
   const {
-    alignment,
     goToMessage,
     groupStyles,
-    isEditedMessageOpen,
     isMessageAIGenerated,
     isMyMessage,
     message,
@@ -656,7 +594,6 @@ export const MessageContent = (props: MessageContentProps) => {
     <MemoizedMessageContent
       {...{
         additionalPressableProps,
-        alignment,
         Attachment,
         enableMessageGroupingByUser,
         FileAttachmentGroup,
@@ -664,7 +601,6 @@ export const MessageContent = (props: MessageContentProps) => {
         goToMessage,
         groupStyles,
         isAttachmentEqual,
-        isEditedMessageOpen,
         isMessageAIGenerated,
         isMyMessage,
         message,
@@ -689,3 +625,39 @@ export const MessageContent = (props: MessageContentProps) => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexShrink: 1,
+  },
+  containerInner: {
+    borderTopLeftRadius: components.messageBubbleRadiusGroupTop,
+    borderTopRightRadius: components.messageBubbleRadiusGroupTop,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  leftAlignContent: {
+    justifyContent: 'flex-start',
+  },
+  leftAlignItems: {
+    alignItems: 'flex-start',
+  },
+  replyBorder: {
+    borderLeftWidth: 1,
+    bottom: 0,
+    position: 'absolute',
+  },
+  replyContainer: {
+    alignSelf: 'center',
+  },
+  galleryContainer: {},
+  rightAlignContent: {
+    justifyContent: 'flex-end',
+  },
+  rightAlignItems: {
+    alignItems: 'flex-end',
+  },
+  textWrapper: {
+    paddingHorizontal: primitives.spacingXs,
+  },
+});
