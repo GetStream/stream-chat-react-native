@@ -1666,7 +1666,7 @@ export const defaultTheme: Theme = {
     videoIcon: {},
     wrapper: {},
   },
-  screenPadding: 20,
+  screenPadding: 16,
   spinner: {},
   thread: {
     newThread: {

@@ -254,7 +254,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         {
                           "marginTop": 2,
-                          "paddingHorizontal": 20,
+                          "paddingHorizontal": 16,
                         },
                         {},
                         {},
@@ -609,7 +609,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         {
                           "marginTop": 2,
-                          "paddingHorizontal": 20,
+                          "paddingHorizontal": 16,
                         },
                         {},
                         {},
@@ -989,7 +989,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         {
                           "marginTop": 2,
-                          "paddingHorizontal": 20,
+                          "paddingHorizontal": 16,
                         },
                         {},
                         {},
@@ -1345,7 +1345,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         {
                           "marginTop": 2,
-                          "paddingHorizontal": 20,
+                          "paddingHorizontal": 16,
                         },
                         {},
                         {},
