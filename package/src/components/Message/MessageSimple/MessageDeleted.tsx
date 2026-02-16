@@ -1,9 +1,5 @@
-import React from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
-
-import merge from 'lodash/merge';
-
-import { MessageTextContainer } from './MessageTextContainer';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import {
   MessageContextValue,
@@ -15,28 +11,11 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { primitives } from '../../../theme';
-
-const styles = StyleSheet.create({
-  containerInner: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
-    paddingHorizontal: primitives.spacingXs,
-  },
-  leftAlignItems: {
-    alignItems: 'flex-start',
-  },
-  rightAlignItems: {
-    alignItems: 'flex-end',
-  },
-});
+import { CircleBan } from '../../../icons/CircleBan';
+import { components, primitives } from '../../../theme';
 
 type MessageDeletedComponentProps = {
   groupStyle: string;
-  noBorder: boolean;
-  onLayout: (event: LayoutChangeEvent) => void;
   date?: string | Date;
 };
 
@@ -45,55 +24,42 @@ type MessageDeletedPropsWithContext = Pick<MessageContextValue, 'alignment' | 'm
   MessageDeletedComponentProps;
 
 const MessageDeletedWithContext = (props: MessageDeletedPropsWithContext) => {
-  const { alignment, date, groupStyle, message, MessageFooter, noBorder, onLayout } = props;
+  const { alignment, date, groupStyle, MessageFooter } = props;
 
   const {
     theme: {
-      colors: { grey, grey_whisper },
       messageSimple: {
-        content: {
-          container: { borderRadiusL, borderRadiusS },
-          deletedContainer,
-          deletedContainerInner,
-          deletedText,
-        },
+        deleted: { containerInner, deletedText, container },
       },
+      semantics,
     },
   } = useTheme();
   const { t } = useTranslationContext();
+  const styles = useStyles();
 
   return (
     <View
-      onLayout={onLayout}
-      style={[
-        alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
-        deletedContainer,
-      ]}
+      style={[alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems, container]}
       testID='message-deleted'
     >
       <View
         style={[
           styles.containerInner,
           {
-            backgroundColor: grey_whisper,
             borderBottomLeftRadius:
               groupStyle === 'left_bottom' || groupStyle === 'left_single'
-                ? borderRadiusS
-                : borderRadiusL,
+                ? components.messageBubbleRadiusTail
+                : components.messageBubbleRadiusGroupBottom,
             borderBottomRightRadius:
               groupStyle === 'right_bottom' || groupStyle === 'right_single'
-                ? borderRadiusS
-                : borderRadiusL,
-            borderColor: grey_whisper,
+                ? components.messageBubbleRadiusTail
+                : components.messageBubbleRadiusGroupBottom,
           },
-          noBorder ? { borderWidth: 0 } : {},
-          deletedContainerInner,
+          containerInner,
         ]}
       >
-        <MessageTextContainer
-          markdownStyles={merge({ em: { color: grey } }, deletedText)}
-          message={{ ...message, text: `_${t('Message deleted')}_` }}
-        />
+        <CircleBan height={16} width={16} stroke={semantics.textSecondary} />
+        <Text style={[styles.deletedText, deletedText]}>{t('Message deleted')}</Text>
       </View>
       <MessageFooter date={date} isDeleted />
     </View>
@@ -140,8 +106,6 @@ const MemoizedMessageDeleted = React.memo(
 
 export type MessageDeletedProps = Partial<MessageDeletedPropsWithContext> & {
   groupStyle: string;
-  noBorder: boolean;
-  onLayout: (event: LayoutChangeEvent) => void;
 };
 
 export const MessageDeleted = (props: MessageDeletedProps) => {
@@ -162,3 +126,46 @@ export const MessageDeleted = (props: MessageDeletedProps) => {
 };
 
 MessageDeleted.displayName = 'MessageDeleted{messageSimple{content}}';
+
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      messageSimple: {
+        deleted: { containerInner, deletedText, container },
+      },
+    },
+  } = useTheme();
+  const { isMyMessage } = useMessageContext();
+
+  return useMemo(() => {
+    return StyleSheet.create({
+      containerInner: {
+        borderTopLeftRadius: components.messageBubbleRadiusGroupBottom,
+        borderTopRightRadius: components.messageBubbleRadiusGroupBottom,
+        paddingHorizontal: primitives.spacingSm,
+        paddingVertical: primitives.spacingXs,
+        backgroundColor: isMyMessage ? semantics.chatBgOutgoing : semantics.chatBgIncoming,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: primitives.spacingXxs,
+        ...containerInner,
+      },
+      deletedText: {
+        color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightNormal,
+        ...deletedText,
+      },
+      leftAlignItems: {
+        alignItems: 'flex-start',
+        ...container,
+      },
+      rightAlignItems: {
+        alignItems: 'flex-end',
+        ...container,
+      },
+    });
+  }, [isMyMessage, semantics, containerInner, deletedText, container]);
+};

@@ -72,15 +72,14 @@ export const MessageReminderHeader = ({ message }: MessageHeaderProps) => {
 export const MessageHeader = () => {
   const { message } = useMessageContext();
   return (
-    <View style={styles.container}>
+    <>
       <MessageReminderHeader message={message} />
       <MessagePinnedHeader />
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',

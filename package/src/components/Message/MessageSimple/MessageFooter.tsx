@@ -50,7 +50,7 @@ const OnlyVisibleToYouComponent = ({ alignment }: { alignment: Alignment }) => {
     theme: {
       colors: { grey_dark },
       messageSimple: {
-        content: { deletedMetaText, eyeIcon, metaText },
+        content: { eyeIcon, metaText },
       },
     },
   } = useTheme();
@@ -66,7 +66,6 @@ const OnlyVisibleToYouComponent = ({ alignment }: { alignment: Alignment }) => {
             textAlign: alignment,
           },
           metaText,
-          deletedMetaText,
         ]}
         testID='only-visible-to-you'
       >

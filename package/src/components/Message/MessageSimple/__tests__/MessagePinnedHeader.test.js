@@ -49,6 +49,7 @@ describe('MessagePinnedHeader', () => {
 
     await waitFor(() => {
       expect(screen.queryByLabelText('Message Pinned Header')).toBeNull();
+      expect(screen.toJSON()).toMatchSnapshot();
     });
   });
 });

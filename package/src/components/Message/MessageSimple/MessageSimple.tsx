@@ -1,5 +1,5 @@
 import React, { forwardRef, useMemo, useState } from 'react';
-import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 
 import { MessageBubble, SwipableMessageBubble } from './MessageBubble';
 
@@ -58,6 +58,8 @@ export type MessageSimplePropsWithContext = Pick<
   | 'onlyEmojis'
   | 'otherAttachments'
   | 'setQuotedMessage'
+  | 'lastGroupMessage'
+  | 'members'
 > &
   Pick<
     MessagesContextValue,
@@ -157,14 +159,6 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
     ...messageGroupedTopContainer,
   };
 
-  const onLayout: (event: LayoutChangeEvent) => void = ({
-    nativeEvent: {
-      layout: { width },
-    },
-  }) => {
-    setMessageContentWidth(width);
-  };
-
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 
   let noBorder = onlyEmojis && !message.quoted_message;
@@ -217,12 +211,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
       >
         {alignment === 'left' ? <MessageAvatar /> : null}
         {isMessageTypeDeleted ? (
-          <MessageDeleted
-            date={message.created_at}
-            groupStyle={groupStyle}
-            noBorder={noBorder}
-            onLayout={onLayout}
-          />
+          <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
         ) : (
           <View
             style={[
@@ -307,6 +296,8 @@ const areEqual = (
     myMessageTheme: prevMyMessageTheme,
     onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
+    lastGroupMessage: prevLastGroupMessage,
+    members: prevMembers,
   } = prevProps;
   const {
     channel: nextChannel,
@@ -316,6 +307,8 @@ const areEqual = (
     myMessageTheme: nextMyMessageTheme,
     onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
+    lastGroupMessage: nextLastGroupMessage,
+    members: nextMembers,
   } = nextProps;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
@@ -325,6 +318,16 @@ const areEqual = (
 
   const groupStylesEqual = JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) {
+    return false;
+  }
+
+  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
+  if (!lastGroupMessageEqual) {
+    return false;
+  }
+
+  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
+  if (!membersEqual) {
     return false;
   }
 
@@ -429,6 +432,8 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
     otherAttachments,
     isMessageAIGenerated,
     setQuotedMessage,
+    lastGroupMessage,
+    members,
   } = useMessageContext();
 
   const {
@@ -482,6 +487,8 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
         ReactionListTop,
         setQuotedMessage,
         shouldRenderSwipeableWrapper,
+        lastGroupMessage,
+        members,
       }}
       ref={ref}
       {...props}

@@ -159,8 +159,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
             borderBottomLeftRadius,
             borderBottomRightRadius,
             borderRadius,
-            borderRadiusL,
-            borderRadiusS,
             borderTopLeftRadius,
             borderTopRightRadius,
             ...container
@@ -198,15 +196,15 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     const groupPosition = groupStyles?.[0];
 
     const isBottomOrSingle = groupPosition === 'single' || groupPosition === 'bottom';
-    let borderBottomLeftRadius = borderRadiusL;
-    let borderBottomRightRadius = borderRadiusL;
+    let borderBottomLeftRadius = components.messageBubbleRadiusGroupBottom;
+    let borderBottomRightRadius = components.messageBubbleRadiusGroupBottom;
 
     if (isBottomOrSingle) {
       // add relevant sharp corner
       if (isMyMessage) {
-        borderBottomRightRadius = borderRadiusS;
+        borderBottomRightRadius = components.messageBubbleRadiusTail;
       } else {
-        borderBottomLeftRadius = borderRadiusS;
+        borderBottomLeftRadius = components.messageBubbleRadiusTail;
       }
     }
 
@@ -631,8 +629,8 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   containerInner: {
-    borderTopLeftRadius: components.messageBubbleRadiusGroupTop,
-    borderTopRightRadius: components.messageBubbleRadiusGroupTop,
+    borderTopLeftRadius: components.messageBubbleRadiusGroupBottom,
+    borderTopRightRadius: components.messageBubbleRadiusGroupBottom,
     borderWidth: 1,
     overflow: 'hidden',
   },

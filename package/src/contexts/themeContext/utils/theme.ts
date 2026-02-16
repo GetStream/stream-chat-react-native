@@ -566,17 +566,10 @@ export type Theme = {
     bubbleContainer: ViewStyle;
     repliesContainer: ViewStyle;
     content: {
-      container: ViewStyle & {
-        borderRadiusL: ViewStyle['borderBottomLeftRadius' | 'borderTopLeftRadius'];
-        borderRadiusS: ViewStyle['borderBottomRightRadius' | 'borderTopRightRadius'];
-      };
+      container: ViewStyle;
       containerInner: ViewStyle;
       contentContainer: ViewStyle;
       textWrapper: ViewStyle;
-      deletedContainer: ViewStyle;
-      deletedContainerInner: ViewStyle;
-      deletedMetaText: TextStyle;
-      deletedText: MarkdownStyle;
       editedTimestampContainer: ViewStyle;
       errorContainer: ViewStyle;
       errorIcon: IconProps;
@@ -600,6 +593,11 @@ export type Theme = {
       receiverMessageBackgroundColor?: ColorValue;
       senderMessageBackgroundColor?: ColorValue;
       timestampText?: TextStyle;
+    };
+    deleted: {
+      containerInner: ViewStyle;
+      deletedText: TextStyle;
+      container: ViewStyle;
     };
     footer: {
       container: ViewStyle;
@@ -1383,25 +1381,10 @@ export const defaultTheme: Theme = {
     bubbleContainer: {},
     repliesContainer: {},
     content: {
-      container: {
-        borderRadiusL: 16,
-        borderRadiusS: 0,
-      },
+      container: {},
       containerInner: {},
       contentContainer: {},
       textWrapper: {},
-      deletedContainer: {},
-      deletedContainerInner: {},
-      deletedMetaText: {
-        paddingHorizontal: 5,
-      },
-      deletedText: {
-        em: {
-          fontSize: 15,
-          fontStyle: 'italic',
-          fontWeight: '400',
-        },
-      },
       editedTimestampContainer: {},
       errorContainer: {
         paddingRight: 12,
@@ -1434,6 +1417,11 @@ export const defaultTheme: Theme = {
       },
       timestampText: {},
       wrapper: {},
+    },
+    deleted: {
+      containerInner: {},
+      deletedText: {},
+      container: {},
     },
     footer: {
       container: {},
