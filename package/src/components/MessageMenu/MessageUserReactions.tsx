@@ -216,9 +216,9 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
           entering={FadeIn.duration(200)}
           exiting={FadeOut.duration(200)}
         >
-          <Text
-            style={[styles.reactionsText, reactionsText]}
-          >{`${totalReactionCount} Reactions`}</Text>
+          <Text style={[styles.reactionsText, reactionsText]}>
+            {t('{{count}} Reactions', { count: totalReactionCount })}
+          </Text>
           <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
             <FlatList
               contentContainerStyle={[styles.contentContainer, contentContainer]}

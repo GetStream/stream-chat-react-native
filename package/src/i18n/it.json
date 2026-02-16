@@ -160,5 +160,9 @@
   "Pick a document to share it with everyone": "Scegli un documento da condividere con tutti",
   "Pick document": "Scegli documento",
   "Take a video and share": "Registra un video e condividilo",
-  "You have not granted access to your camera": "Non hai concesso l’accesso alla fotocamera"
+  "You have not granted access to your camera": "Non hai concesso l’accesso alla fotocamera",
+  "{{count}} Reactions_many": "{{count}} reazioni",
+  "{{count}} Reactions_one": "{{count}} reazione",
+  "{{count}} Reactions_other": "{{count}} reazioni",
+  "Tap to remove": "Tocca per rimuovere"
 }

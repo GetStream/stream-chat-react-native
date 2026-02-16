@@ -160,5 +160,9 @@
   "Pick a document to share it with everyone": "सभी के साथ साझा करने के लिए एक दस्तावेज़ चुनें",
   "Pick document": "दस्तावेज़ चुनें",
   "Take a video and share": "वीडियो लें और साझा करें",
-  "You have not granted access to your camera": "आपने अपने कैमरे के लिए अनुमति नहीं दी है"
+  "You have not granted access to your camera": "आपने अपने कैमरे के लिए अनुमति नहीं दी है",
+  "{{count}} Reactions_many": "{{count}} प्रतिक्रियाएँ",
+  "{{count}} Reactions_one": "{{count}} प्रतिक्रिया",
+  "{{count}} Reactions_other": "{{count}} प्रतिक्रियाएँ",
+  "Tap to remove": "हटाने के लिए टैप करें"
 }
