@@ -49,6 +49,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useStableCallback } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import { closeOverlay, openOverlay, useIsOverlayActive } from '../../state-store';
 import { FileTypes } from '../../types/types';
@@ -62,6 +63,7 @@ import {
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
 import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { BottomSheetModal } from '../UIComponents';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -241,7 +243,7 @@ export type MessagePropsWithContext = Pick<
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
-  const [showMessageReactions, setShowMessageReactions] = useState(true);
+  const [showMessageReactions, setShowMessageReactions] = useState(false);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
   const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
   // const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
@@ -339,18 +341,23 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   );
   const { width: screenW } = useWindowDimensions();
 
-  const showMessageOverlay = async (showMessageReactions = false) => {
+  const showMessageOverlay = useStableCallback(async () => {
     dismissKeyboard();
     try {
       const layout = await measureInWindow(messageWrapperRef, insets);
       setRect(layout);
-      setShowMessageReactions(showMessageReactions);
       messageH.value = layout;
       openOverlay(message.id, { bottomH, messageH, topH });
     } catch (e) {
       console.error(e);
     }
-  };
+  });
+
+  const showReactionsOverlay = useStableCallback(() => {
+    if (!showMessageReactions) {
+      setShowMessageReactions(true);
+    }
+  });
 
   const { setNativeScrollability } = useMessageListItemContext();
 
@@ -783,6 +790,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     setQuotedMessage,
     showAvatar,
     showMessageOverlay,
+    showReactionsOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
     videos: attachments.videos,
@@ -883,22 +891,27 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   };
                 }}
               >
-                {showMessageReactions ? (
-                  <MessageUserReactions
-                    message={message}
-                    MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-                    MessageUserReactionsItem={MessageUserReactionsItem}
-                  />
-                ) : (
-                  <MessageActionList
-                    dismissOverlay={dismissOverlay}
-                    MessageActionListItem={MessageActionListItem}
-                    messageActions={messageActions}
-                  />
-                )}
+                <MessageActionList
+                  dismissOverlay={dismissOverlay}
+                  MessageActionListItem={MessageActionListItem}
+                  messageActions={messageActions}
+                />
               </View>
             ) : null}
           </Portal>
+          {showMessageReactions ? (
+            <BottomSheetModal
+              onClose={() => setShowMessageReactions(false)}
+              visible={showMessageReactions}
+              height={424}
+            >
+              <MessageUserReactions
+                message={message}
+                MessageUserReactionsAvatar={MessageUserReactionsAvatar}
+                MessageUserReactionsItem={MessageUserReactionsItem}
+              />
+            </BottomSheetModal>
+          ) : null}
           {isBounceDialogOpen ? (
             <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
           ) : null}
