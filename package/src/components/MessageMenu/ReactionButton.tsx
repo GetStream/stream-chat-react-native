@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../icons';
-import { Button } from '../ui';
+import { Button, ButtonProps } from '../ui';
 
 export type ReactionButtonProps = {
   /**
@@ -25,10 +25,11 @@ export type ReactionButtonProps = {
    */
   onPress?: (reactionType: string) => void;
   count?: string;
+  size?: ButtonProps['size'];
 };
 
 export const ReactionButton = (props: ReactionButtonProps) => {
-  const { Icon, onPress, selected, type, count } = props;
+  const { Icon, onPress, selected, type, size, count } = props;
   const {
     theme: {
       messageMenu: {
@@ -56,7 +57,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
         variant={'secondary'}
         type={'outline'}
         iconOnly={!count}
-        size={'sm'}
+        size={size ?? 'md'}
         label={count}
         onPress={onPressHandler}
         selected={selected}

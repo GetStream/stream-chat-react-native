@@ -93,7 +93,7 @@ const useStyles = () => {
           alignItems: 'center',
           flexDirection: 'row',
           paddingVertical: primitives.spacingXs,
-          paddingHorizontal: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingMd,
         },
         avatarInnerContainer: {
           alignItems: 'center',

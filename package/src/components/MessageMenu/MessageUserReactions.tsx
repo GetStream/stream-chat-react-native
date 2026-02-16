@@ -68,6 +68,7 @@ export const MessageUserReactionsSelectorItem = (props: ReactionSelectorItemType
       selected={selectedReaction === type}
       type={type}
       count={count}
+      size={'sm'}
     />
   );
 };
@@ -87,6 +88,7 @@ const reactionsKeyExtractor = (item: Reaction) => item.id;
 const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.type;
 
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
+  const styles = useStyles();
   const [showMoreReactions, setShowMoreReactions] = useState(false);
   const {
     message,
@@ -288,26 +290,37 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    flexGrow: 1,
-    gap: primitives.spacingXs,
-    paddingHorizontal: primitives.spacingMd,
-    paddingVertical: primitives.spacingXs,
-  },
-  flatListContainer: {
-    justifyContent: 'center',
-  },
-  reactionSelectorContainer: {
-    flexDirection: 'row',
-  },
-  reactionsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  showMoreReactionsButton: { paddingHorizontal: primitives.spacingXs },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+        },
+        contentContainer: {
+          flexGrow: 1,
+          gap: primitives.spacingXs,
+          paddingHorizontal: primitives.spacingMd,
+          paddingVertical: primitives.spacingSm,
+        },
+        flatListContainer: {
+          justifyContent: 'center',
+        },
+        reactionSelectorContainer: {
+          flexDirection: 'row',
+        },
+        reactionsText: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+          paddingBottom: primitives.spacingXxs,
+          textAlign: 'center',
+        },
+        showMoreReactionsButton: { paddingHorizontal: primitives.spacingXs },
+      }),
+    [semantics.textPrimary],
+  );
+};

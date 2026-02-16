@@ -901,6 +901,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           </Portal>
           {showMessageReactions ? (
             <BottomSheetModal
+              lazy={true}
               onClose={() => setShowMessageReactions(false)}
               visible={showMessageReactions}
               height={424}

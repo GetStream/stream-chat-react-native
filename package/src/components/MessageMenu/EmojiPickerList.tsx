@@ -1,12 +1,15 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 
 import { emojis } from './emojis';
 
+import { useHasOwnReaction } from './hooks/useHasOwnReaction';
 import { toUnicodeScalarString } from './MessageReactionPicker';
 
+import { useTheme } from '../../contexts';
 import { useStableCallback } from '../../hooks';
+import { primitives } from '../../theme';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
 const EMOJI_SIZE = 32;
@@ -14,10 +17,31 @@ const EMOJI_SIZE = 32;
 const emojiKeyExtractor = (item: string) => `unicode-${item}`;
 
 export const Emoji = ({ item, size }: { item: string; size: number }) => {
+  const styles = useStyles();
   return (
     <Text style={[styles.emojiText, { fontSize: size, lineHeight: size + 4 }]} numberOfLines={1}>
       {item}
     </Text>
+  );
+};
+
+export const EmojiPickerListItem = ({
+  emoji,
+  onSelectEmoji,
+}: {
+  emoji: string;
+  onSelectEmoji: (emoji: string) => void;
+}) => {
+  const styles = useStyles();
+  const [emojiScalar] = useState(() => toUnicodeScalarString(emoji));
+  const hasOwnReaction = useHasOwnReaction(emojiScalar);
+  return (
+    <Pressable
+      onPress={() => onSelectEmoji(emoji)}
+      style={[styles.emojiContainer, hasOwnReaction ? styles.selectedEmoji : null]}
+    >
+      <Emoji item={emoji} size={EMOJI_SIZE} />
+    </Pressable>
   );
 };
 
@@ -29,6 +53,7 @@ export const EmojiPickerList = ({
   // whether all of the items should be rendered initially or not
   renderFullInitially?: boolean;
 }) => {
+  const styles = useStyles();
   const onSelectEmoji = useStableCallback((emoji: string) => {
     const scalarString = toUnicodeScalarString(emoji);
     onSelectReaction(scalarString);
@@ -36,11 +61,7 @@ export const EmojiPickerList = ({
 
   const renderEmoji = useCallback(
     ({ item }: { item: string }) => {
-      return (
-        <Pressable onPress={() => onSelectEmoji(item)} style={styles.emojiContainer}>
-          <Emoji item={item} size={EMOJI_SIZE} />
-        </Pressable>
-      );
+      return <EmojiPickerListItem onSelectEmoji={onSelectEmoji} emoji={item} />;
     },
     [onSelectEmoji],
   );
@@ -64,19 +85,34 @@ export const EmojiPickerList = ({
   );
 };
 
-const styles = StyleSheet.create({
-  bottomSheetColumnWrapper: {
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    width: '100%',
-    height: 54,
-  },
-  bottomSheetContentContainer: { paddingVertical: 16 },
-  emojiContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emojiText: {
-    textAlign: 'center',
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        bottomSheetColumnWrapper: {
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          width: '100%',
+          height: 54,
+          paddingHorizontal: primitives.spacingMd,
+        },
+        bottomSheetContentContainer: { paddingVertical: 16 },
+        emojiContainer: {
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: primitives.radiusMax,
+          padding: primitives.spacingXs,
+        },
+        emojiText: {
+          textAlign: 'center',
+        },
+        selectedEmoji: {
+          backgroundColor: semantics.backgroundCoreSelected,
+        },
+      }),
+    [semantics.backgroundCoreSelected],
+  );
+};
