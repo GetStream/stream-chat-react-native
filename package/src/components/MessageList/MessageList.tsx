@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  FlatList,
   FlatListProps,
   FlatList as FlatListType,
   ScrollViewProps,
@@ -246,6 +247,7 @@ type MessageListPropsWithContext = Pick<
      * @experimental
      */
     isLiveStreaming?: boolean;
+    animateLayout?: boolean;
   };
 
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
@@ -266,6 +268,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
+    animateLayout = true,
     attachmentPickerStore,
     additionalFlatListProps,
     channel,
@@ -1111,12 +1114,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     ],
   );
 
-  const AnimatedList = useMemo(
-    () => (FlatList ? Animated.createAnimatedComponent(FlatList<LocalMessage>) : undefined),
-    [FlatList],
-  );
+  const ListComponent = animateLayout ? AnimatedList : FlatList;
 
-  if (!AnimatedList) {
+  if (!ListComponent) {
     return null;
   }
 
@@ -1141,9 +1141,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         </View>
       ) : (
         <MessageListItemProvider value={messageListItemContextValue}>
-          <AnimatedList
+          <ListComponent
             // TODO: Consider hiding this behind a feature flag.
-            layout={LinearTransition.duration(200)}
+            layout={LayoutTransition}
             contentContainerStyle={flatListContentContainerStyle}
             /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
             data={processedMessageList}
@@ -1323,3 +1323,18 @@ export const MessageList = (props: MessageListProps) => {
     />
   );
 };
+
+// SOme notes about why we're relying on `createAnimatedComponent` instead of `Animated.FlatList`:
+// 1. `Animated.FlatList` is much less performant for what we need. We essentially need simple
+//    `layout` animations to account for the list's outer container switching layout. What we're
+//    getting however, is an animated `CellRenderer` component as well as scroll event throttling
+//    reduced to 1. Since we don't really want any of this, we stick to doing it ourselves.
+// 2. We need to memoize the output because of the fact that `createAnimatedComponent` changes the
+//    identity of the `style` prop on every render. It also seems to be an intended thing too,
+//    so not something that's going to change soon. This means that whenever our `MessageList`
+//    rerenders (but the list's props remain stable), it anyway rerenders internally as well (for
+//    about half of the milliseconds it takes for a full `data` rerender !). This affects performance
+//    significantly, especially in high ingress scenarios (i.e a livestream).
+const AnimatedList = React.memo(Animated.createAnimatedComponent(FlatList<LocalMessage>));
+
+const LayoutTransition = LinearTransition.duration(200);

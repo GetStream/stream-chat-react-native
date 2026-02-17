@@ -845,8 +845,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             />
           ) : null}
           {/*TODO: V9: Find a way to separate these in a dedicated file*/}
-          <Portal hostName={overlayActive ? 'top-item' : undefined}>
-            {overlayActive && rect ? (
+          {overlayActive && rect ? (
+            <Portal hostName='top-item'>
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
@@ -864,16 +864,16 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
                 />
               </View>
-            ) : null}
-          </Portal>
+            </Portal>
+          ) : null}
           <Portal
             hostName={overlayActive ? 'message-overlay' : undefined}
             style={overlayActive && rect ? { width: rect.w } : undefined}
           >
             <MessageSimple ref={messageWrapperRef} />
           </Portal>
-          <Portal hostName={overlayActive ? 'bottom-item' : undefined}>
-            {overlayActive && rect ? (
+          {overlayActive && rect ? (
+            <Portal hostName='bottom-item'>
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
@@ -891,8 +891,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   messageActions={messageActions}
                 />
               </View>
-            ) : null}
-          </Portal>
+            </Portal>
+          ) : null}
           {showMessageReactions ? (
             <BottomSheetModal
               lazy={true}
