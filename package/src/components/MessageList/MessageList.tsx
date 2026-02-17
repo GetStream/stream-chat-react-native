@@ -354,8 +354,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const renderItem = useCallback(
     ({ item: message, index }: { item: LocalMessage; index: number }) => {
-      const previousMessage = processedMessageListRef.current[index + 1];
-      const nextMessage = processedMessageListRef.current[index - 1];
+      const previousMessage = processedMessageList[index + 1];
+      const nextMessage = processedMessageList[index - 1];
       return (
         <MessageWrapper
           message={message}
@@ -364,7 +364,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         />
       );
     },
-    [processedMessageListRef],
+    [processedMessageList],
   );
 
   const messageListLengthBeforeUpdate = useRef(0);
