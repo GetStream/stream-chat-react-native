@@ -159,5 +159,9 @@
   "Pick a document to share it with everyone": "Pick a document to share it with everyone",
   "Pick document": "Pick document",
   "Take a video and share": "Take a video and share",
-  "You have not granted access to your camera": "You have not granted access to your camera"
+  "You have not granted access to your camera": "You have not granted access to your camera",
+  "{{count}} Reactions_many": "{{count}} Reactions",
+  "{{count}} Reactions_one": "{{count}} Reaction",
+  "{{count}} Reactions_other": "{{count}} Reactions",
+  "Tap to remove": "Tap to remove"
 }

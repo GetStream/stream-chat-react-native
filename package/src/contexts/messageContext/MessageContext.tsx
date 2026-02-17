@@ -97,7 +97,8 @@ export type MessageContextValue = {
    * @param showMessageReactions
    * @returns void
    */
-  showMessageOverlay: (showMessageReactions?: boolean, selectedReaction?: string) => void;
+  showMessageOverlay: () => void;
+  showReactionsOverlay: (selectedReaction?: string) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;

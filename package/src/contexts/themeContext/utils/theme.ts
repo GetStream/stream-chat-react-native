@@ -517,7 +517,6 @@ export type Theme = {
       container: ViewStyle;
       contentContainer: ViewStyle;
       filledBackgroundColor?: ColorValue;
-      flatlistColumnContainer: ViewStyle;
       flatlistContainer: ViewStyle;
       iconFilledColor?: ColorValue;
       iconUnFilledColor?: ColorValue;
@@ -1329,7 +1328,6 @@ export const defaultTheme: Theme = {
       avatarSize: 64,
       container: {},
       contentContainer: {},
-      flatlistColumnContainer: {},
       flatlistContainer: {},
       radius: 2,
       reactionBubble: {},

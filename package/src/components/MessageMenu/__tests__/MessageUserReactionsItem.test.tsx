@@ -1,16 +1,21 @@
 import React from 'react';
 
+import { Text } from 'react-native';
+
 import { render } from '@testing-library/react-native';
 
 import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
-import { Colors, defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { MessageUserReactionsItem } from '../MessageUserReactionsItem';
 
 jest.mock('../../../icons', () => ({
-  Unknown: () => null,
+  Unknown: () => {
+    const { Text } = require('react-native');
+    return <Text testID='unknown-icon'>unknown</Text>;
+  },
 }));
 
 const mockReaction = {
@@ -20,8 +25,8 @@ const mockReaction = {
 };
 
 const mockSupportedReactions = [
-  { Icon: () => null, type: 'like' },
-  { Icon: () => null, type: 'love' },
+  { Icon: () => <Text testID='like-icon'>like</Text>, type: 'like' },
+  { Icon: () => <Text testID='love-icon'>love</Text>, type: 'love' },
 ];
 
 const MockOverlayReactionsAvatar = () => null;
@@ -49,33 +54,27 @@ describe('MessageUserReactionsItem', () => {
     expect(getByText('John Doe')).toBeTruthy();
   });
 
-  it('aligns reaction bubble to the right for other users', async () => {
-    const { getByLabelText } = await renderComponent();
-    const container = getByLabelText('Individual User Reaction on long press message');
-    const reactionBubble = container.props.children[0].props.children[1];
-    expect(reactionBubble.props.style[1].borderColor).toBe(Colors.grey_gainsboro);
+  it("doesn't show remove hint for other users", async () => {
+    const { queryByText } = await renderComponent();
+    expect(queryByText('Tap to remove')).toBeNull();
   });
 
-  it('aligns reaction bubble to the left for the current user', async () => {
-    const { getByLabelText } = await renderComponent({}, 'user1');
-    const container = getByLabelText('Individual User Reaction on long press message');
-    const reactionBubble = container.props.children[0].props.children[1];
-    expect(reactionBubble.props.style[1].borderColor).toBe(Colors.white);
+  it('shows remove hint for current user', async () => {
+    const { getByText } = await renderComponent({}, 'user1');
+    expect(getByText('Tap to remove')).toBeTruthy();
   });
 
   it('uses Unknown icon for unsupported reaction types', async () => {
-    const { getByLabelText } = await renderComponent({
+    const { getByTestId, queryByTestId } = await renderComponent({
       reaction: { ...mockReaction, type: 'unsupported' },
     });
-    const container = getByLabelText('Individual User Reaction on long press message');
-    const reactionIcon = container.props.children[0].props.children[1].props.children;
-    expect(reactionIcon.type.name).toBe('Unknown');
+    expect(getByTestId('unknown-icon')).toBeTruthy();
+    expect(queryByTestId('like-icon')).toBeNull();
   });
 
   it('uses correct icon for supported reaction types', async () => {
-    const { getByLabelText } = await renderComponent();
-    const container = getByLabelText('Individual User Reaction on long press message');
-    const reactionIcon = container.props.children[0].props.children[1].props.children;
-    expect(reactionIcon.type).not.toBe('Unknown');
+    const { getByTestId, queryByTestId } = await renderComponent();
+    expect(getByTestId('like-icon')).toBeTruthy();
+    expect(queryByTestId('unknown-icon')).toBeNull();
   });
 });

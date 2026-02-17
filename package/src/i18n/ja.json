@@ -159,5 +159,9 @@
   "Pick a document to share it with everyone": "みんなと共有するドキュメントを選択",
   "Pick document": "ドキュメントを選択",
   "Take a video and share": "動画を撮影して共有",
-  "You have not granted access to your camera": "カメラへのアクセスが許可されていません"
+  "You have not granted access to your camera": "カメラへのアクセスが許可されていません",
+  "{{count}} Reactions_many": "{{count}}件のリアクション",
+  "{{count}} Reactions_one": "{{count}}件のリアクション",
+  "{{count}} Reactions_other": "{{count}}件のリアクション",
+  "Tap to remove": "タップして削除"
 }

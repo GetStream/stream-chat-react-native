@@ -159,5 +159,9 @@
   "Pick a document to share it with everyone": "Herkesle paylaşmak için bir belge seçin",
   "Pick document": "Belge seç",
   "Take a video and share": "Video çek ve paylaş",
-  "You have not granted access to your camera": "Kameranıza erişim izni vermediniz"
+  "You have not granted access to your camera": "Kameranıza erişim izni vermediniz",
+  "{{count}} Reactions_many": "{{count}} tepki",
+  "{{count}} Reactions_one": "{{count}} tepki",
+  "{{count}} Reactions_other": "{{count}} tepki",
+  "Tap to remove": "Kaldırmak için dokunun"
 }

@@ -159,5 +159,9 @@
   "Pick a document to share it with everyone": "Choisissez un document pour le partager avec tout le monde",
   "Pick document": "Choisir un document",
   "Take a video and share": "Prenez une vidéo et partagez-la",
-  "You have not granted access to your camera": "Vous n'avez pas accordé l'accès à votre caméra"
+  "You have not granted access to your camera": "Vous n'avez pas accordé l'accès à votre caméra",
+  "{{count}} Reactions_many": "{{count}} réactions",
+  "{{count}} Reactions_one": "{{count}} réaction",
+  "{{count}} Reactions_other": "{{count}} réactions",
+  "Tap to remove": "Appuyez pour retirer"
 }

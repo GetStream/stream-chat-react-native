@@ -159,5 +159,9 @@
   "Pick a document to share it with everyone": "בחר מסמך כדי לשתף אותו עם כולם",
   "Pick document": "בחר מסמך",
   "Take a video and share": "צלם וידאו ושתף",
-  "You have not granted access to your camera": "לא הענקת גישה למצלמה שלך"
+  "You have not granted access to your camera": "לא הענקת גישה למצלמה שלך",
+  "{{count}} Reactions_many": "{{count}} תגובות",
+  "{{count}} Reactions_one": "{{count}} תגובה",
+  "{{count}} Reactions_other": "{{count}} תגובות",
+  "Tap to remove": "הקש כדי להסיר"
 }

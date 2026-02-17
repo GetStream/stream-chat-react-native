@@ -3,7 +3,7 @@
   "+{{count}}_one": "+{{count}}",
   "+{{count}}_other": "+{{count}}",
   "1 Reply": "답장 1개",
-  "1 Thread Reply": "1개의 스레드\u3000답글",
+  "1 Thread Reply": "1개의 스레드　답글",
   "Add a comment": "댓글 추가",
   "Add an option": "옵션 추가",
   "Allow access to your Gallery": "갤러리에 대한 액세스를 허용",
@@ -112,7 +112,7 @@
   "The source message was deleted": "원본 메시지가 삭제되었습니다",
   "Thinking...": "생각 중...",
   "This reply was deleted": "이 답글은 삭제되었습니다",
-  "Thread Reply": "스레드\u3000답장",
+  "Thread Reply": "스레드　답장",
   "Type a number from 2 to 10": "2에서 10 사이의 숫자를 입력하세요",
   "Unban User": "사용자 차단 해제",
   "Unblock User": "사용자 차단 해제",
@@ -159,5 +159,9 @@
   "Pick a document to share it with everyone": "모두와 공유할 문서를 선택하세요",
   "Pick document": "문서 선택",
   "Take a video and share": "동영상을 촬영하고 공유",
-  "You have not granted access to your camera": "카메라 접근 권한이 없습니다"
+  "You have not granted access to your camera": "카메라 접근 권한이 없습니다",
+  "{{count}} Reactions_many": "{{count}}개의 반응",
+  "{{count}} Reactions_one": "{{count}}개의 반응",
+  "{{count}} Reactions_other": "{{count}}개의 반응",
+  "Tap to remove": "탭하여 제거"
 }

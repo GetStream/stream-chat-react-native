@@ -1,19 +1,34 @@
-import React, { useCallback, useMemo } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { ReactionSortBase } from 'stream-chat';
 
+import { EmojiPickerList } from './EmojiPickerList';
 import { useFetchReactions } from './hooks/useFetchReactions';
+import { ReactionButton } from './ReactionButton';
 
-import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
+import { useBottomSheetContext } from '../../contexts';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../hooks';
+import { IconProps } from '../../icons';
+import { MoreEmojis } from '../../icons/MoreEmojis';
+import { primitives } from '../../theme';
 import { Reaction } from '../../types/types';
+import { ReactionData } from '../../utils/utils';
+import { Button } from '../ui';
+import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
 export type MessageUserReactionsProps = Partial<
   Pick<
@@ -30,32 +45,112 @@ export type MessageUserReactionsProps = Partial<
      * The selected reaction
      */
     selectedReaction?: string;
-    reactionFilterEnabled?: boolean;
   };
 
 const sort: ReactionSortBase = {
   created_at: -1,
 };
 
-const keyExtractor = (item: Reaction) => item.id;
+export type ReactionSelectorItemType = ReactionData & {
+  onSelectReaction: (type: string) => void;
+  selectedReaction?: string;
+  count: string;
+};
+
+export const MessageUserReactionsSelectorItem = (props: ReactionSelectorItemType) => {
+  const { Icon, type, onSelectReaction, selectedReaction, count } = props;
+  const SelectorIcon = useCallback(({ ...props }) => <Icon {...props} size={16} />, [Icon]);
+
+  return (
+    <ReactionButton
+      Icon={SelectorIcon}
+      onPress={onSelectReaction}
+      selected={selectedReaction === type}
+      type={type}
+      count={count}
+      size={'sm'}
+    />
+  );
+};
+
+const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSelectorItemType }) => (
+  <MessageUserReactionsSelectorItem
+    Icon={item.Icon}
+    key={`${item.type}_${index}`}
+    onSelectReaction={item.onSelectReaction}
+    selectedReaction={item.selectedReaction}
+    type={item.type}
+    count={item.count}
+  />
+);
+
+const reactionsKeyExtractor = (item: Reaction) => item.id;
+const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.type;
 
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
+  const styles = useStyles();
+  const [showMoreReactions, setShowMoreReactions] = useState(false);
   const {
     message,
     MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
     MessageUserReactionsItem: propMessageUserReactionsItem,
     reactions: propReactions,
+    selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
   } = props;
+  const { close } = useBottomSheetContext();
+  const reactionTypes = useMemo(
+    () => Object.keys(message?.reaction_groups ?? {}),
+    [message?.reaction_groups],
+  );
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(
+    propSelectedReaction ?? reactionTypes[0],
+  );
   const {
     MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
     MessageUserReactionsItem: contextMessageUserReactionsItem,
     supportedReactions: contextSupportedReactions,
   } = useMessagesContext();
+  const { handleReaction } = useMessageContext();
   const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
   const MessageUserReactionsAvatar =
     propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
   const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
+
+  const onSelectReaction = useStableCallback((reactionType: string) => {
+    setSelectedReaction(reactionType);
+  });
+
+  useEffect(() => {
+    if (selectedReaction && reactionTypes.length > 0 && !reactionTypes.includes(selectedReaction)) {
+      setSelectedReaction(reactionTypes[0]);
+    }
+  }, [reactionTypes, selectedReaction]);
+
+  const selectorReactions: ReactionSelectorItemType[] = useMemo(
+    () =>
+      reactionTypes.reduce<ReactionSelectorItemType[]>((acc, reaction) => {
+        const reactionData = supportedReactions?.find(
+          (supportedReaction) => supportedReaction.type === reaction,
+        );
+        if (reactionData) {
+          acc.push({
+            ...reactionData,
+            onSelectReaction,
+            selectedReaction,
+            count: (message?.reaction_counts?.[reactionData.type] ?? 0).toString(),
+          });
+        }
+        return acc;
+      }, []),
+    [
+      message?.reaction_counts,
+      onSelectReaction,
+      reactionTypes,
+      selectedReaction,
+      supportedReactions,
+    ],
+  );
 
   const {
     loading,
@@ -63,19 +158,33 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     reactions: fetchedReactions,
   } = useFetchReactions({
     message,
-    reactionType: undefined,
+    reactionType: selectedReaction,
     sort,
   });
 
   const {
     theme: {
-      colors: { white },
       messageMenu: {
-        userReactions: { container, flatlistColumnContainer, flatlistContainer, reactionsText },
+        userReactions: {
+          container,
+          contentContainer,
+          flatlistContainer,
+          reactionSelectorContainer,
+          reactionsText,
+        },
       },
     },
   } = useTheme();
   const { t } = useTranslationContext();
+
+  const totalReactionCount = useMemo(
+    () =>
+      Object.values(message?.reaction_counts ?? {}).reduce(
+        (acc, reactionCount) => acc + reactionCount,
+        0,
+      ),
+    [message?.reaction_counts],
+  );
 
   const reactions = useMemo(
     () =>
@@ -100,56 +209,118 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
   );
 
-  return !loading ? (
+  const handleSelectReaction = useStableCallback((emoji: string) => {
+    if (handleReaction) {
+      handleReaction(emoji);
+    }
+    close();
+  });
+
+  const onShowMoreReactionsPress = useStableCallback(() => setShowMoreReactions(true));
+
+  const MoreEmojisIcon = useCallback(
+    (props: IconProps) => (
+      <View style={styles.showMoreReactionsButton}>
+        <MoreEmojis {...props} />
+      </View>
+    ),
+    [styles.showMoreReactionsButton],
+  );
+
+  const ShowMoreReactionsButton = useCallback(
+    () => (
+      <Button
+        accessibilityLabel={'more-reactions-button'}
+        variant={'secondary'}
+        type={'outline'}
+        size={'sm'}
+        LeadingIcon={MoreEmojisIcon}
+        onPress={onShowMoreReactionsPress}
+      />
+    ),
+    [onShowMoreReactionsPress, MoreEmojisIcon],
+  );
+
+  return (
     <View
       accessibilityLabel='User Reactions on long press message'
-      style={[styles.container, { backgroundColor: white }, container]}
+      style={[styles.container, container]}
     >
-      <>
-        <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>
-        <FlatList
-          accessibilityLabel='reaction-flat-list'
-          columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
-          contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
-          data={reactions}
-          keyExtractor={keyExtractor}
-          numColumns={4}
-          onEndReached={loadNextPage}
-          renderItem={renderItem}
-        />
-      </>
+      {showMoreReactions ? (
+        <Animated.View
+          key={'emoji-viewer'}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+        >
+          <EmojiPickerList onSelectReaction={handleSelectReaction} renderFullInitially={false} />
+        </Animated.View>
+      ) : (
+        <Animated.View
+          key={'reaction-details'}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+        >
+          <Text style={[styles.reactionsText, reactionsText]}>
+            {t('{{count}} Reactions', { count: totalReactionCount })}
+          </Text>
+          <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
+            <FlatList
+              contentContainerStyle={[styles.contentContainer, contentContainer]}
+              data={selectorReactions}
+              horizontal
+              keyExtractor={reactionSelectorKeyExtractor}
+              ListHeaderComponent={ShowMoreReactionsButton}
+              renderItem={renderSelectorItem}
+            />
+          </View>
+
+          {!loading ? (
+            <StreamBottomSheetModalFlatList
+              accessibilityLabel='reaction-flat-list'
+              contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
+              data={reactions}
+              keyExtractor={reactionsKeyExtractor}
+              onEndReached={loadNextPage}
+              renderItem={renderItem}
+            />
+          ) : null}
+        </Animated.View>
+      )}
     </View>
-  ) : null;
+  );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 16,
-    marginTop: 16,
-    maxHeight: 256,
-    width: Dimensions.get('window').width * 0.9,
-  },
-  contentContainer: {
-    flexGrow: 1,
-    justifyContent: 'space-around',
-    marginVertical: 16,
-  },
-  flatListColumnContainer: {
-    justifyContent: 'space-evenly',
-  },
-  flatListContainer: {
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-  },
-  reactionSelectorContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-  },
-  reactionsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginVertical: 16,
-    paddingHorizontal: 8,
-    textAlign: 'center',
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+        },
+        contentContainer: {
+          flexGrow: 1,
+          gap: primitives.spacingXs,
+          paddingHorizontal: primitives.spacingMd,
+          paddingVertical: primitives.spacingSm,
+        },
+        flatListContainer: {
+          justifyContent: 'center',
+        },
+        reactionSelectorContainer: {
+          flexDirection: 'row',
+        },
+        reactionsText: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+          paddingBottom: primitives.spacingXxs,
+          textAlign: 'center',
+        },
+        showMoreReactionsButton: { paddingHorizontal: primitives.spacingXs },
+      }),
+    [semantics.textPrimary],
+  );
+};

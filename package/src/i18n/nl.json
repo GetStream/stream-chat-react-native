@@ -159,5 +159,9 @@
   "Pick a document to share it with everyone": "Kies een document om het met iedereen te delen",
   "Pick document": "Document kiezen",
   "Take a video and share": "Maak een video en deel deze",
-  "You have not granted access to your camera": "Je hebt geen toegang tot je camera verleend"
+  "You have not granted access to your camera": "Je hebt geen toegang tot je camera verleend",
+  "{{count}} Reactions_many": "{{count}} reacties",
+  "{{count}} Reactions_one": "{{count}} reactie",
+  "{{count}} Reactions_other": "{{count}} reacties",
+  "Tap to remove": "Tik om te verwijderen"
 }

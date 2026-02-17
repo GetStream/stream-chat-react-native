@@ -39,7 +39,7 @@ export type ReactionListBottomItemProps = Partial<
     | 'onPress'
     | 'onPressIn'
     | 'preventPress'
-    | 'showMessageOverlay'
+    | 'showReactionsOverlay'
   >
 > &
   Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
@@ -54,7 +54,7 @@ export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
     onPressIn,
     preventPress,
     reaction,
-    showMessageOverlay,
+    showReactionsOverlay,
     supportedReactions,
   } = props;
   const scaleValue = useRef(new Animated.Value(1)).current;
@@ -101,8 +101,8 @@ export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
         if (onLongPress) {
           onLongPress({
             defaultHandler: () => {
-              if (showMessageOverlay) {
-                showMessageOverlay(true, reaction.type);
+              if (showReactionsOverlay) {
+                showReactionsOverlay(reaction.type);
               }
             },
             emitter: 'reactionList',
@@ -172,7 +172,7 @@ const renderItem = ({ index, item }: { index: number; item: ReactionListBottomIt
     onPressIn={item.onPressIn}
     preventPress={item.preventPress}
     reaction={item.reaction}
-    showMessageOverlay={item.showMessageOverlay}
+    showReactionsOverlay={item.showReactionsOverlay}
     supportedReactions={item.supportedReactions}
   />
 );
@@ -187,7 +187,7 @@ export type ReactionListBottomProps = Partial<
     | 'onPressIn'
     | 'preventPress'
     | 'reactions'
-    | 'showMessageOverlay'
+    | 'showReactionsOverlay'
   >
 > &
   Partial<Pick<MessagesContextValue, 'supportedReactions'>>;
@@ -201,7 +201,7 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     onPressIn: propOnPressIn,
     preventPress: propPreventPress,
     reactions: propReactions,
-    showMessageOverlay: propShowMessageOverlay,
+    showReactionsOverlay: propShowReactionsOverlay,
     supportedReactions: propSupportedReactions,
   } = props;
 
@@ -213,7 +213,7 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     onPressIn: contextOnPressIn,
     preventPress: contextPreventPress,
     reactions: contextReactions,
-    showMessageOverlay: contextShowMessageOverlay,
+    showReactionsOverlay: contextShowReactionsOverlay,
   } = useMessageContext();
 
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
@@ -225,7 +225,7 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const onPressIn = propOnPressIn || contextOnPressIn;
   const preventPress = propPreventPress || contextPreventPress;
   const reactions = propReactions || contextReactions;
-  const showMessageOverlay = propShowMessageOverlay || contextShowMessageOverlay;
+  const showMessageOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
   const {
     theme: {

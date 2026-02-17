@@ -159,5 +159,9 @@
   "Pick a document to share it with everyone": "Выберите документ, чтобы поделиться им со всеми",
   "Pick document": "Выбрать документ",
   "Take a video and share": "Снимите видео и поделитесь",
-  "You have not granted access to your camera": "Вы не предоставили доступ к вашей камере"
+  "You have not granted access to your camera": "Вы не предоставили доступ к вашей камере",
+  "{{count}} Reactions_many": "{{count}} реакций",
+  "{{count}} Reactions_one": "{{count}} реакция",
+  "{{count}} Reactions_other": "{{count}} реакций",
+  "Tap to remove": "Нажмите, чтобы удалить"
 }
