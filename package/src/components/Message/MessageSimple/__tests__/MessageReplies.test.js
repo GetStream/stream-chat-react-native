@@ -38,12 +38,10 @@ describe('MessageReplies', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('message-replies')).toBeTruthy();
-      expect(screen.getByTestId('message-replies-right')).toBeTruthy();
-      expect(screen.queryAllByTestId('message-replies-left')).toHaveLength(0);
-      expect(t).toHaveBeenCalledWith('{{ replyCount }} Thread Replies', {
+      expect(t).toHaveBeenCalledWith('{{ replyCount }} Replies', {
         replyCount: message.reply_count,
       });
-      expect(screen.getByText('{{ replyCount }} Thread Replies')).toBeTruthy();
+      expect(screen.getByText('{{ replyCount }} Replies')).toBeTruthy();
     });
 
     const message2 = generateMessage({
@@ -70,10 +68,8 @@ describe('MessageReplies', () => {
     await waitFor(() => {
       expect(onPressMock).toHaveBeenCalled();
       expect(screen.getByTestId('message-replies')).toBeTruthy();
-      expect(screen.getByTestId('message-replies-left')).toBeTruthy();
-      expect(screen.queryAllByTestId('message-replies-right')).toHaveLength(0);
-      expect(t).toHaveBeenCalledWith('1 Thread Reply');
-      expect(screen.getByText('1 Thread Reply')).toBeTruthy();
+      expect(t).toHaveBeenCalledWith('1 Reply');
+      expect(screen.getByText('1 Reply')).toBeTruthy();
     });
   });
 
@@ -98,8 +94,6 @@ describe('MessageReplies', () => {
 
     await waitFor(() => {
       expect(screen.queryAllByTestId('message-replies')).toHaveLength(0);
-      expect(screen.queryAllByTestId('message-replies-left')).toHaveLength(0);
-      expect(screen.queryAllByTestId('message-replies-right')).toHaveLength(0);
     });
 
     const message2 = generateMessage({
@@ -123,8 +117,6 @@ describe('MessageReplies', () => {
 
     await waitFor(() => {
       expect(screen.queryAllByTestId('message-replies')).toHaveLength(0);
-      expect(screen.queryAllByTestId('message-replies-left')).toHaveLength(0);
-      expect(screen.queryAllByTestId('message-replies-right')).toHaveLength(0);
     });
   });
 });

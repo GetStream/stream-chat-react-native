@@ -3,24 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { primitives } from '../../theme';
 import { getDateString } from '../../utils/i18n/getDateString';
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 8,
-    height: 16,
-    justifyContent: 'center',
-    marginVertical: 4,
-    paddingHorizontal: 8,
-  },
-  text: {
-    fontSize: 12,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-  },
-});
 
 /**
  * Props for the `InlineDateSeparator` component.
@@ -33,13 +17,8 @@ export type InlineDateSeparatorProps = {
 };
 
 export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
-  const {
-    theme: {
-      colors: { overlay, white },
-      inlineDateSeparator: { container, text },
-    },
-  } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
+  const styles = useStyles();
 
   const dateString = useMemo(
     () =>
@@ -53,11 +32,36 @@ export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
   );
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: overlay }, container]}
-      testID='date-separator'
-    >
-      <Text style={[styles.text, { color: white }, text]}>{dateString}</Text>
+    <View style={styles.container} testID='date-separator'>
+      <Text style={styles.text}>{dateString}</Text>
     </View>
   );
+};
+
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      inlineDateSeparator: { container, text },
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignSelf: 'center',
+        borderRadius: primitives.radiusMax,
+        paddingHorizontal: primitives.spacingSm,
+        paddingVertical: primitives.spacingXxs,
+        backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+        ...container,
+      },
+      text: {
+        color: semantics.chatTextSystem,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightTight,
+        ...text,
+      },
+    });
+  }, [semantics, container, text]);
 };

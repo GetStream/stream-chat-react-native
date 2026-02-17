@@ -1,74 +1,36 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
-import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
-import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import {
+  useMessageContext,
+  type MessageContextValue,
+} from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { UserAvatar } from '../../ui/Avatar/UserAvatar';
+import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
 
-const styles = StyleSheet.create({
-  avatarContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingTop: 2,
-  },
-  topAvatar: {
-    paddingTop: 2,
-    position: 'absolute',
-  },
-});
+export type MessageRepliesAvatarsProps = Partial<Pick<MessageContextValue, 'message'>>;
 
-export type MessageRepliesAvatarsProps = Pick<MessageContextValue, 'alignment' | 'message'>;
-
-export const MessageRepliesAvatarsWithContext = (
-  props: MessageRepliesAvatarsProps & Pick<ChatContextValue, 'ImageComponent'>,
-) => {
-  const { alignment, message } = props;
+export const MessageRepliesAvatarsWithContext = (props: MessageRepliesAvatarsProps) => {
+  const { message } = props;
 
   const {
     theme: {
       messageSimple: {
-        replies: {
-          avatarContainerMultiple,
-          avatarContainerSingle,
-          leftAvatarsContainer,
-          rightAvatarsContainer,
-        },
+        replies: { avatarStackContainer },
       },
     },
   } = useTheme();
 
-  const avatars = message.thread_participants?.slice(-2) || [];
-  const hasMoreThanOneReply = avatars.length > 1;
+  const avatars = message?.thread_participants || [];
 
   return (
-    <View
-      style={[
-        styles.avatarContainer,
-        alignment === 'right' ? rightAvatarsContainer : leftAvatarsContainer,
-      ]}
-    >
-      {avatars.map((user, i) => (
-        <View
-          key={user.id}
-          style={
-            i === 1
-              ? { ...styles.topAvatar, ...avatarContainerSingle }
-              : {
-                  paddingLeft: hasMoreThanOneReply ? 8 : 0,
-                  ...avatarContainerMultiple,
-                }
-          }
-        >
-          <UserAvatar user={user} size={'xs'} showBorder />
-        </View>
-      ))}
+    <View style={avatarStackContainer}>
+      <UserAvatarStack users={avatars} avatarSize='sm' maxVisible={3} overlap={0.4} />
     </View>
   );
 };
 
 export const MessageRepliesAvatars = (props: MessageRepliesAvatarsProps) => {
-  const { ImageComponent } = useChatContext();
-
-  return <MessageRepliesAvatarsWithContext {...props} ImageComponent={ImageComponent} />;
+  const { message } = useMessageContext();
+  return <MessageRepliesAvatarsWithContext message={message} {...props} />;
 };

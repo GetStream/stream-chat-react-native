@@ -11,16 +11,16 @@ import { avatarSizes } from '../../ui/Avatar/constants';
 
 export type MessageAvatarPropsWithContext = Pick<
   MessageContextValue,
-  'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
+  'lastGroupMessage' | 'message' | 'showAvatar'
 > &
   Partial<Pick<AvatarProps, 'size'>>;
 
 const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
-  const { alignment, lastGroupMessage, message, showAvatar, size } = props;
+  const { lastGroupMessage, message, showAvatar, size } = props;
   const {
     theme: {
       messageSimple: {
-        avatarWrapper: { container, leftAlign, rightAlign },
+        avatarWrapper: { container },
       },
     },
   } = useTheme();
@@ -28,14 +28,11 @@ const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
   const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
   return (
-    <View
-      style={[alignment === 'left' ? leftAlign : rightAlign, container]}
-      testID='message-avatar'
-    >
+    <View style={container} testID='message-avatar'>
       {visible && message.user ? (
-        <UserAvatar user={message.user} size={size ?? 'sm'} />
+        <UserAvatar user={message.user} size={size ?? 'md'} />
       ) : (
-        <View style={avatarSizes[size ?? 'sm']} testID='spacer' />
+        <View style={avatarSizes[size ?? 'md']} testID='spacer' />
       )}
     </View>
   );
@@ -72,12 +69,11 @@ const MemoizedMessageAvatar = React.memo(
 export type MessageAvatarProps = Partial<MessageAvatarPropsWithContext>;
 
 export const MessageAvatar = (props: MessageAvatarProps) => {
-  const { alignment, lastGroupMessage, message, showAvatar } = useMessageContext();
+  const { lastGroupMessage, message, showAvatar } = useMessageContext();
 
   return (
     <MemoizedMessageAvatar
       {...{
-        alignment,
         lastGroupMessage,
         message,
         showAvatar,

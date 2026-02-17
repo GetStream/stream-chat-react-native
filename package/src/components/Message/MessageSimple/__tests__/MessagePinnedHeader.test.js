@@ -18,35 +18,37 @@ describe('MessagePinnedHeader', () => {
     const staticUser = generateStaticUser(0);
     const message = generateMessage({
       user: { ...staticUser, image: undefined },
+      pinned: true,
     });
     render(
       <ThemeProvider style={defaultTheme}>
-        <MessagePinnedHeader alignment='right' message={message} />
+        <MessagePinnedHeader message={message} />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-pinned')).toBeTruthy();
+      expect(screen.getByLabelText('Message Pinned Header')).toBeTruthy();
     });
 
     screen.rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessagePinnedHeader alignment='right' message={message} />
+        <MessagePinnedHeader message={message} />
       </ThemeProvider>,
     );
 
     const staticMessage = generateStaticMessage('hi', {
       user: staticUser,
+      pinned: false,
     });
 
     screen.rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessagePinnedHeader alignment='left' message={staticMessage} />
+        <MessagePinnedHeader message={staticMessage} />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-pinned')).toBeTruthy();
+      expect(screen.queryByLabelText('Message Pinned Header')).toBeNull();
       expect(screen.toJSON()).toMatchSnapshot();
     });
   });

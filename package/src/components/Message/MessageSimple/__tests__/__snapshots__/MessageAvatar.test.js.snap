@@ -2,14 +2,7 @@
 
 exports[`MessageAvatar should render message avatar 1`] = `
 <View
-  style={
-    [
-      {
-        "marginRight": 8,
-      },
-      {},
-    ]
-  }
+  style={{}}
   testID="message-avatar"
 >
   <View
@@ -25,8 +18,8 @@ exports[`MessageAvatar should render message avatar 1`] = `
             "overflow": "hidden",
           },
           {
-            "height": 24,
-            "width": 24,
+            "height": 32,
+            "width": 32,
           },
           {
             "backgroundColor": "#d1f3f6",
@@ -50,8 +43,8 @@ exports[`MessageAvatar should render message avatar 1`] = `
           [
             {},
             {
-              "height": 24,
-              "width": 24,
+              "height": 32,
+              "width": 32,
             },
           ]
         }

@@ -57,7 +57,6 @@ import {
   hasOnlyEmojis,
   isBlockedMessage,
   isBouncedMessage,
-  isEditedMessage,
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
@@ -243,7 +242,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [showMessageReactions, setShowMessageReactions] = useState(true);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
-  const [isEditedMessageOpen, setIsEditedMessageOpen] = useState(false);
   // const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
 
   const {
@@ -319,9 +317,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const { client } = chatContext;
   const {
     theme: {
-      colors: { targetedMessageBackground, bg_gradient_start },
+      colors: { bg_gradient_start },
       messageSimple: { targetedMessageContainer, unreadUnderlayColor = bg_gradient_start, wrapper },
       screenPadding,
+      semantics,
     },
   } = useTheme();
 
@@ -390,9 +389,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       dismissKeyboard();
-    }
-    if (isEditedMessage(message)) {
-      setIsEditedMessageOpen((prevState) => !prevState);
     }
     const quotedMessage = message.quoted_message;
     if (error) {
@@ -706,7 +702,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleToggleReaction,
     hasReactions,
     images: attachments.images,
-    isEditedMessageOpen,
     isMessageAIGenerated,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
@@ -779,7 +774,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     preventPress: overlayActive ? true : preventPress,
     reactions,
     readBy,
-    setIsEditedMessageOpen,
     setQuotedMessage,
     showAvatar,
     showMessageOverlay,
@@ -827,7 +821,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             wrapper,
             (isTargetedMessage || message.pinned) && !isMessageTypeDeleted
               ? {
-                  backgroundColor: targetedMessageBackground,
+                  backgroundColor: semantics.backgroundCoreHighlight,
                   ...targetedMessageContainer,
                 }
               : {},

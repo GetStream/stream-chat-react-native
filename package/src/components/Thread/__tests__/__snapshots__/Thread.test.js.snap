@@ -35,7 +35,6 @@ exports[`Thread should match thread snapshot 1`] = `
       <RCTScrollView
         ListFooterComponent={null}
         ListHeaderComponent={[Function]}
-        collapsable={false}
         contentContainerStyle={
           [
             {
@@ -255,7 +254,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         {
                           "marginTop": 2,
-                          "paddingHorizontal": 8,
+                          "paddingHorizontal": 16,
                         },
                         {},
                         {},
@@ -273,12 +272,11 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
+                                "gap": 8,
                               },
+                              {},
                               {
-                                "marginBottom": 8,
-                              },
-                              {
-                                "justifyContent": "flex-start",
+                                "flexDirection": "row",
                               },
                               {},
                             ]
@@ -286,14 +284,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           testID="message-simple-wrapper"
                         >
                           <View
-                            style={
-                              [
-                                {
-                                  "marginRight": 8,
-                                },
-                                {},
-                              ]
-                            }
+                            style={{}}
                             testID="message-avatar"
                           >
                             <View
@@ -309,8 +300,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "height": 24,
-                                      "width": 24,
+                                      "height": 32,
+                                      "width": 32,
                                     },
                                     {
                                       "backgroundColor": "#fcedb9",
@@ -334,8 +325,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                     [
                                       {},
                                       {
-                                        "height": 24,
-                                        "width": 24,
+                                        "height": 32,
+                                        "width": 32,
                                       },
                                     ]
                                   }
@@ -346,29 +337,18 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {},
+                                {
+                                  "gap": 4,
+                                },
                                 {
                                   "alignItems": "flex-start",
                                 },
                                 {},
-                                {
-                                  "borderRadiusL": 16,
-                                  "borderRadiusS": 0,
-                                },
+                                {},
                               ]
                             }
                             testID="message-components"
                           >
-                            <View
-                              style={
-                                [
-                                  {
-                                    "paddingBottom": 2,
-                                  },
-                                  {},
-                                ]
-                              }
-                            />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -382,6 +362,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "zIndex": 1,
                                   },
                                   {},
                                   {},
@@ -391,10 +372,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               <View
                                 style={
                                   [
-                                    {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                    },
+                                    {},
                                     {},
                                   ]
                                 }
@@ -446,15 +424,15 @@ exports[`Thread should match thread snapshot 1`] = `
                                       style={
                                         [
                                           {
-                                            "borderTopLeftRadius": 16,
-                                            "borderTopRightRadius": 16,
+                                            "borderTopLeftRadius": 20,
+                                            "borderTopRightRadius": 20,
                                             "borderWidth": 1,
                                             "overflow": "hidden",
                                           },
                                           {
                                             "backgroundColor": "#E9EAED",
                                             "borderBottomLeftRadius": 0,
-                                            "borderBottomRightRadius": 16,
+                                            "borderBottomRightRadius": 20,
                                             "borderColor": "#ECEBEB",
                                           },
                                           {},
@@ -466,19 +444,25 @@ exports[`Thread should match thread snapshot 1`] = `
                                     >
                                       <View
                                         style={
-                                          {
-                                            "gap": 8,
-                                            "paddingBottom": 0,
-                                            "paddingHorizontal": 8,
-                                            "paddingTop": 0,
-                                          }
+                                          [
+                                            {
+                                              "gap": 8,
+                                              "paddingBottom": 0,
+                                              "paddingHorizontal": 8,
+                                              "paddingTop": 0,
+                                            },
+                                            {},
+                                          ]
                                         }
                                       />
                                       <View
                                         style={
-                                          {
-                                            "paddingHorizontal": 8,
-                                          }
+                                          [
+                                            {
+                                              "paddingHorizontal": 12,
+                                            },
+                                            {},
+                                          ]
                                         }
                                       >
                                         <View
@@ -537,10 +521,21 @@ exports[`Thread should match thread snapshot 1`] = `
                               style={
                                 [
                                   {
+                                    "marginTop": -4,
+                                  },
+                                  {},
+                                ]
+                              }
+                            />
+                            <View
+                              style={
+                                [
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "gap": 8,
                                     "justifyContent": "center",
-                                    "marginTop": 4,
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
@@ -551,44 +546,10 @@ exports[`Thread should match thread snapshot 1`] = `
                                 style={
                                   [
                                     {
+                                      "color": "#687385",
                                       "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                    },
-                                    {},
-                                  ]
-                                }
-                              >
-                                2:50 PM
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "paddingHorizontal": 4,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                  ]
-                                }
-                              >
-                                ⦁
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
                                     },
                                     {},
                                   ]
@@ -648,7 +609,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         {
                           "marginTop": 2,
-                          "paddingHorizontal": 8,
+                          "paddingHorizontal": 16,
                         },
                         {},
                         {},
@@ -666,12 +627,11 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
+                                "gap": 8,
                               },
+                              {},
                               {
-                                "marginBottom": 8,
-                              },
-                              {
-                                "justifyContent": "flex-start",
+                                "flexDirection": "row",
                               },
                               {},
                             ]
@@ -679,14 +639,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           testID="message-simple-wrapper"
                         >
                           <View
-                            style={
-                              [
-                                {
-                                  "marginRight": 8,
-                                },
-                                {},
-                              ]
-                            }
+                            style={{}}
                             testID="message-avatar"
                           >
                             <View
@@ -702,8 +655,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "height": 24,
-                                      "width": 24,
+                                      "height": 32,
+                                      "width": 32,
                                     },
                                     {
                                       "backgroundColor": "#bdfcdb",
@@ -727,8 +680,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                     [
                                       {},
                                       {
-                                        "height": 24,
-                                        "width": 24,
+                                        "height": 32,
+                                        "width": 32,
                                       },
                                     ]
                                   }
@@ -739,29 +692,18 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {},
+                                {
+                                  "gap": 4,
+                                },
                                 {
                                   "alignItems": "flex-start",
                                 },
                                 {},
-                                {
-                                  "borderRadiusL": 16,
-                                  "borderRadiusS": 0,
-                                },
+                                {},
                               ]
                             }
                             testID="message-components"
                           >
-                            <View
-                              style={
-                                [
-                                  {
-                                    "paddingBottom": 2,
-                                  },
-                                  {},
-                                ]
-                              }
-                            />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -775,6 +717,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "zIndex": 1,
                                   },
                                   {},
                                   {},
@@ -784,10 +727,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               <View
                                 style={
                                   [
-                                    {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                    },
+                                    {},
                                     {},
                                   ]
                                 }
@@ -839,15 +779,15 @@ exports[`Thread should match thread snapshot 1`] = `
                                       style={
                                         [
                                           {
-                                            "borderTopLeftRadius": 16,
-                                            "borderTopRightRadius": 16,
+                                            "borderTopLeftRadius": 20,
+                                            "borderTopRightRadius": 20,
                                             "borderWidth": 1,
                                             "overflow": "hidden",
                                           },
                                           {
                                             "backgroundColor": "#E9EAED",
                                             "borderBottomLeftRadius": 0,
-                                            "borderBottomRightRadius": 16,
+                                            "borderBottomRightRadius": 20,
                                             "borderColor": "#ECEBEB",
                                           },
                                           {},
@@ -859,19 +799,25 @@ exports[`Thread should match thread snapshot 1`] = `
                                     >
                                       <View
                                         style={
-                                          {
-                                            "gap": 8,
-                                            "paddingBottom": 0,
-                                            "paddingHorizontal": 8,
-                                            "paddingTop": 0,
-                                          }
+                                          [
+                                            {
+                                              "gap": 8,
+                                              "paddingBottom": 0,
+                                              "paddingHorizontal": 8,
+                                              "paddingTop": 0,
+                                            },
+                                            {},
+                                          ]
                                         }
                                       />
                                       <View
                                         style={
-                                          {
-                                            "paddingHorizontal": 8,
-                                          }
+                                          [
+                                            {
+                                              "paddingHorizontal": 12,
+                                            },
+                                            {},
+                                          ]
                                         }
                                       >
                                         <View
@@ -930,10 +876,21 @@ exports[`Thread should match thread snapshot 1`] = `
                               style={
                                 [
                                   {
+                                    "marginTop": -4,
+                                  },
+                                  {},
+                                ]
+                              }
+                            />
+                            <View
+                              style={
+                                [
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "gap": 8,
                                     "justifyContent": "center",
-                                    "marginTop": 4,
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
@@ -944,44 +901,10 @@ exports[`Thread should match thread snapshot 1`] = `
                                 style={
                                   [
                                     {
+                                      "color": "#687385",
                                       "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                    },
-                                    {},
-                                  ]
-                                }
-                              >
-                                2:50 PM
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "paddingHorizontal": 4,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                  ]
-                                }
-                              >
-                                ⦁
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
                                     },
                                     {},
                                   ]
@@ -1026,37 +949,24 @@ exports[`Thread should match thread snapshot 1`] = `
               >
                 <View
                   style={
-                    [
-                      {
-                        "alignItems": "center",
-                        "alignSelf": "center",
-                        "borderRadius": 8,
-                        "height": 16,
-                        "justifyContent": "center",
-                        "marginVertical": 4,
-                        "paddingHorizontal": 8,
-                      },
-                      {
-                        "backgroundColor": "#000000CC",
-                      },
-                      {},
-                    ]
+                    {
+                      "alignSelf": "center",
+                      "backgroundColor": "#f6f8fa",
+                      "borderRadius": 9999,
+                      "paddingHorizontal": 12,
+                      "paddingVertical": 4,
+                    }
                   }
                   testID="date-separator"
                 >
                   <Text
                     style={
-                      [
-                        {
-                          "fontSize": 12,
-                          "textAlign": "center",
-                          "textAlignVertical": "center",
-                        },
-                        {
-                          "color": "#FFFFFF",
-                        },
-                        {},
-                      ]
+                      {
+                        "color": "#414552",
+                        "fontSize": 12,
+                        "fontWeight": 600,
+                        "lineHeight": 16,
+                      }
                     }
                   >
                     05/05/2020
@@ -1079,7 +989,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         {
                           "marginTop": 2,
-                          "paddingHorizontal": 8,
+                          "paddingHorizontal": 16,
                         },
                         {},
                         {},
@@ -1097,12 +1007,11 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
+                                "gap": 8,
                               },
+                              {},
                               {
-                                "marginBottom": 8,
-                              },
-                              {
-                                "justifyContent": "flex-start",
+                                "flexDirection": "row",
                               },
                               {},
                             ]
@@ -1110,14 +1019,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           testID="message-simple-wrapper"
                         >
                           <View
-                            style={
-                              [
-                                {
-                                  "marginRight": 8,
-                                },
-                                {},
-                              ]
-                            }
+                            style={{}}
                             testID="message-avatar"
                           >
                             <View
@@ -1133,8 +1035,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "height": 24,
-                                      "width": 24,
+                                      "height": 32,
+                                      "width": 32,
                                     },
                                     {
                                       "backgroundColor": "#fcedb9",
@@ -1158,8 +1060,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                     [
                                       {},
                                       {
-                                        "height": 24,
-                                        "width": 24,
+                                        "height": 32,
+                                        "width": 32,
                                       },
                                     ]
                                   }
@@ -1170,29 +1072,18 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {},
+                                {
+                                  "gap": 4,
+                                },
                                 {
                                   "alignItems": "flex-start",
                                 },
                                 {},
-                                {
-                                  "borderRadiusL": 16,
-                                  "borderRadiusS": 0,
-                                },
+                                {},
                               ]
                             }
                             testID="message-components"
                           >
-                            <View
-                              style={
-                                [
-                                  {
-                                    "paddingBottom": 2,
-                                  },
-                                  {},
-                                ]
-                              }
-                            />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -1206,6 +1097,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "zIndex": 1,
                                   },
                                   {},
                                   {},
@@ -1215,10 +1107,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               <View
                                 style={
                                   [
-                                    {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                    },
+                                    {},
                                     {},
                                   ]
                                 }
@@ -1270,15 +1159,15 @@ exports[`Thread should match thread snapshot 1`] = `
                                       style={
                                         [
                                           {
-                                            "borderTopLeftRadius": 16,
-                                            "borderTopRightRadius": 16,
+                                            "borderTopLeftRadius": 20,
+                                            "borderTopRightRadius": 20,
                                             "borderWidth": 1,
                                             "overflow": "hidden",
                                           },
                                           {
                                             "backgroundColor": "#E9EAED",
                                             "borderBottomLeftRadius": 0,
-                                            "borderBottomRightRadius": 16,
+                                            "borderBottomRightRadius": 20,
                                             "borderColor": "#ECEBEB",
                                           },
                                           {},
@@ -1290,19 +1179,25 @@ exports[`Thread should match thread snapshot 1`] = `
                                     >
                                       <View
                                         style={
-                                          {
-                                            "gap": 8,
-                                            "paddingBottom": 0,
-                                            "paddingHorizontal": 8,
-                                            "paddingTop": 0,
-                                          }
+                                          [
+                                            {
+                                              "gap": 8,
+                                              "paddingBottom": 0,
+                                              "paddingHorizontal": 8,
+                                              "paddingTop": 0,
+                                            },
+                                            {},
+                                          ]
                                         }
                                       />
                                       <View
                                         style={
-                                          {
-                                            "paddingHorizontal": 8,
-                                          }
+                                          [
+                                            {
+                                              "paddingHorizontal": 12,
+                                            },
+                                            {},
+                                          ]
                                         }
                                       >
                                         <View
@@ -1361,10 +1256,21 @@ exports[`Thread should match thread snapshot 1`] = `
                               style={
                                 [
                                   {
+                                    "marginTop": -4,
+                                  },
+                                  {},
+                                ]
+                              }
+                            />
+                            <View
+                              style={
+                                [
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "gap": 8,
                                     "justifyContent": "center",
-                                    "marginTop": 4,
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
@@ -1375,44 +1281,10 @@ exports[`Thread should match thread snapshot 1`] = `
                                 style={
                                   [
                                     {
+                                      "color": "#687385",
                                       "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                    },
-                                    {},
-                                  ]
-                                }
-                              >
-                                2:50 PM
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "paddingHorizontal": 4,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                  ]
-                                }
-                              >
-                                ⦁
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
                                     },
                                     {},
                                   ]
@@ -1473,7 +1345,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         {
                           "marginTop": 2,
-                          "paddingHorizontal": 8,
+                          "paddingHorizontal": 16,
                         },
                         {},
                         {},
@@ -1491,6 +1363,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               {
                                 "alignItems": "flex-end",
                                 "flexDirection": "row",
+                                "gap": 8,
                               },
                               [
                                 {
@@ -1499,7 +1372,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {},
                               ],
                               {
-                                "justifyContent": "flex-start",
+                                "flexDirection": "row",
                               },
                               {},
                             ]
@@ -1507,14 +1380,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           testID="message-simple-wrapper"
                         >
                           <View
-                            style={
-                              [
-                                {
-                                  "marginRight": 8,
-                                },
-                                {},
-                              ]
-                            }
+                            style={{}}
                             testID="message-avatar"
                           >
                             <View
@@ -1530,8 +1396,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "overflow": "hidden",
                                     },
                                     {
-                                      "height": 24,
-                                      "width": 24,
+                                      "height": 32,
+                                      "width": 32,
                                     },
                                     {
                                       "backgroundColor": "#bdfcdb",
@@ -1555,8 +1421,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                     [
                                       {},
                                       {
-                                        "height": 24,
-                                        "width": 24,
+                                        "height": 32,
+                                        "width": 32,
                                       },
                                     ]
                                   }
@@ -1567,29 +1433,18 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             style={
                               [
-                                {},
+                                {
+                                  "gap": 4,
+                                },
                                 {
                                   "alignItems": "flex-start",
                                 },
                                 {},
-                                {
-                                  "borderRadiusL": 16,
-                                  "borderRadiusS": 0,
-                                },
+                                {},
                               ]
                             }
                             testID="message-components"
                           >
-                            <View
-                              style={
-                                [
-                                  {
-                                    "paddingBottom": 2,
-                                  },
-                                  {},
-                                ]
-                              }
-                            />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -1603,6 +1458,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "zIndex": 1,
                                   },
                                   {},
                                   {},
@@ -1612,10 +1468,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               <View
                                 style={
                                   [
-                                    {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                    },
+                                    {},
                                     {},
                                   ]
                                 }
@@ -1667,15 +1520,15 @@ exports[`Thread should match thread snapshot 1`] = `
                                       style={
                                         [
                                           {
-                                            "borderTopLeftRadius": 16,
-                                            "borderTopRightRadius": 16,
+                                            "borderTopLeftRadius": 20,
+                                            "borderTopRightRadius": 20,
                                             "borderWidth": 1,
                                             "overflow": "hidden",
                                           },
                                           {
                                             "backgroundColor": "#E9EAED",
                                             "borderBottomLeftRadius": 0,
-                                            "borderBottomRightRadius": 16,
+                                            "borderBottomRightRadius": 20,
                                             "borderColor": "#ECEBEB",
                                           },
                                           {},
@@ -1687,19 +1540,25 @@ exports[`Thread should match thread snapshot 1`] = `
                                     >
                                       <View
                                         style={
-                                          {
-                                            "gap": 8,
-                                            "paddingBottom": 0,
-                                            "paddingHorizontal": 8,
-                                            "paddingTop": 0,
-                                          }
+                                          [
+                                            {
+                                              "gap": 8,
+                                              "paddingBottom": 0,
+                                              "paddingHorizontal": 8,
+                                              "paddingTop": 0,
+                                            },
+                                            {},
+                                          ]
                                         }
                                       />
                                       <View
                                         style={
-                                          {
-                                            "paddingHorizontal": 8,
-                                          }
+                                          [
+                                            {
+                                              "paddingHorizontal": 12,
+                                            },
+                                            {},
+                                          ]
                                         }
                                       >
                                         <View
@@ -1758,10 +1617,21 @@ exports[`Thread should match thread snapshot 1`] = `
                               style={
                                 [
                                   {
+                                    "marginTop": -4,
+                                  },
+                                  {},
+                                ]
+                              }
+                            />
+                            <View
+                              style={
+                                [
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "gap": 8,
                                     "justifyContent": "center",
-                                    "marginTop": 4,
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
@@ -1772,44 +1642,10 @@ exports[`Thread should match thread snapshot 1`] = `
                                 style={
                                   [
                                     {
+                                      "color": "#687385",
                                       "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                    },
-                                    {},
-                                  ]
-                                }
-                              >
-                                2:50 PM
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "paddingHorizontal": 4,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
-                                    },
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                  ]
-                                }
-                              >
-                                ⦁
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "fontSize": 12,
-                                    },
-                                    {
-                                      "color": "#7A7A7A",
-                                      "textAlign": "left",
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
                                     },
                                     {},
                                   ]
@@ -1936,7 +1772,7 @@ exports[`Thread should match thread snapshot 1`] = `
               "left": 0,
               "position": "absolute",
               "right": 0,
-              "top": 0,
+              "top": 8,
             },
             {},
           ]

@@ -57,6 +57,7 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
+import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
     right: 0,
-    top: 0,
+    top: primitives.spacingXs,
   },
   unreadMessagesNotificationContainer: {
     alignSelf: 'center',
