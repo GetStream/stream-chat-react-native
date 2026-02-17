@@ -147,7 +147,6 @@
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }}と{{ nonSelfUserLength }}人がタイピングしています",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }}件の返信",
-  "{{ replyCount }} Thread Replies": "{{ replyCount }}件のスレッド返信",
   "{{ user }} is typing": "{{ user }}はタイピング中",
   "{{count}} votes_many": "{{count}}票",
   "{{count}} votes_one": "{{count}} 票",

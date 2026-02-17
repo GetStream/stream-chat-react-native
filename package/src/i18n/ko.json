@@ -147,7 +147,6 @@
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} 외 {{ nonSelfUserLength }}명이 입력 중입니다",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} 답글",
-  "{{ replyCount }} Thread Replies": "{{ replyCount }}　스레드　답글",
   "{{ user }} is typing": "{{ user }} 타이핑 중",
   "{{count}} votes_many": "{{count}} 표",
   "{{count}} votes_one": "{{count}} 표",

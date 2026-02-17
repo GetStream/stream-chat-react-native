@@ -147,7 +147,6 @@
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} en {{ nonSelfUserLength }} anderen zijn aan het typen",
   "{{ index }} of {{ photoLength }}": "{{ index }} van {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Antwoorden",
-  "{{ replyCount }} Thread Replies": "{{replyCount}} Discussiereacties",
   "{{ user }} is typing": "{{ user }} is aan het typen",
   "{{count}} votes_many": "{{count}} stemmen",
   "{{count}} votes_one": "{{count}} stem",

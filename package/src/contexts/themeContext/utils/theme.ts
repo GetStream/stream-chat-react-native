@@ -549,8 +549,6 @@ export type Theme = {
     };
     avatarWrapper: {
       container: ViewStyle;
-      leftAlign: ViewStyle;
-      rightAlign: ViewStyle;
       spacer: ViewStyle;
     };
     card: {
@@ -564,17 +562,12 @@ export type Theme = {
       linkPreviewText: TextStyle;
     };
     container: ViewStyle;
+    repliesContainer: ViewStyle;
     content: {
-      container: ViewStyle & {
-        borderRadiusL: ViewStyle['borderBottomLeftRadius' | 'borderTopLeftRadius'];
-        borderRadiusS: ViewStyle['borderBottomRightRadius' | 'borderTopRightRadius'];
-      };
+      container: ViewStyle;
       containerInner: ViewStyle;
-      deletedContainer: ViewStyle;
-      deletedContainerInner: ViewStyle;
-      deletedMetaText: TextStyle;
-      deletedText: MarkdownStyle;
-      editedLabel: TextStyle;
+      contentContainer: ViewStyle;
+      textWrapper: ViewStyle;
       editedTimestampContainer: ViewStyle;
       errorContainer: ViewStyle;
       errorIcon: IconProps;
@@ -588,8 +581,6 @@ export type Theme = {
       markdown: MarkdownStyle;
       messageGroupedSingleOrBottomContainer: ViewStyle;
       messageGroupedTopContainer: ViewStyle;
-      messageUser: TextStyle;
-      metaContainer: ViewStyle;
       metaText: TextStyle;
       replyBorder: ViewStyle;
       replyContainer: ViewStyle;
@@ -601,7 +592,18 @@ export type Theme = {
       senderMessageBackgroundColor?: ColorValue;
       timestampText?: TextStyle;
     };
+    deleted: {
+      containerInner: ViewStyle;
+      deletedText: TextStyle;
+      container: ViewStyle;
+    };
+    footer: {
+      container: ViewStyle;
+      name: TextStyle;
+      editedText: TextStyle;
+    };
     contentWrapper: ViewStyle;
+    contentContainer: ViewStyle;
     file: {
       container: ViewStyle;
       details: ViewStyle;
@@ -702,22 +704,15 @@ export type Theme = {
       position: number;
     };
     replies: {
-      avatar: ViewStyle;
-      avatarContainerMultiple: ViewStyle;
-      avatarContainerSingle: ViewStyle;
       container: ViewStyle;
-      leftAvatarsContainer: ViewStyle;
-      leftCurve: ViewStyle;
       messageRepliesText: TextStyle;
-      rightAvatarsContainer: ViewStyle;
-      rightCurve: ViewStyle;
-      avatarSize?: number;
+      content: ViewStyle;
+      avatarStackContainer: ViewStyle;
     };
     status: {
       checkAllIcon: IconProps;
       checkIcon: IconProps;
-      readByCount: TextStyle;
-      statusContainer: ViewStyle;
+      container: ViewStyle;
       timeIcon: IconProps;
     };
     swipeContentContainer: ViewStyle;
@@ -1354,12 +1349,6 @@ export const defaultTheme: Theme = {
     },
     avatarWrapper: {
       container: {},
-      leftAlign: {
-        marginRight: 8,
-      },
-      rightAlign: {
-        marginLeft: 8,
-      },
       spacer: {
         height: BASE_AVATAR_SIZE,
         width: BASE_AVATAR_SIZE, // same as BASE_AVATAR_SIZE
@@ -1386,25 +1375,12 @@ export const defaultTheme: Theme = {
       linkPreviewText: {},
     },
     container: {},
+    repliesContainer: {},
     content: {
-      container: {
-        borderRadiusL: 16,
-        borderRadiusS: 0,
-      },
+      container: {},
       containerInner: {},
-      deletedContainer: {},
-      deletedContainerInner: {},
-      deletedMetaText: {
-        paddingHorizontal: 5,
-      },
-      deletedText: {
-        em: {
-          fontSize: 15,
-          fontStyle: 'italic',
-          fontWeight: '400',
-        },
-      },
-      editedLabel: {},
+      contentContainer: {},
+      textWrapper: {},
       editedTimestampContainer: {},
       errorContainer: {
         paddingRight: 12,
@@ -1427,12 +1403,6 @@ export const defaultTheme: Theme = {
       markdown: {},
       messageGroupedSingleOrBottomContainer: {},
       messageGroupedTopContainer: {},
-      messageUser: {
-        fontSize: 12,
-        fontWeight: '700',
-        paddingRight: 6,
-      },
-      metaContainer: {},
       metaText: {
         fontSize: 12,
       },
@@ -1444,7 +1414,18 @@ export const defaultTheme: Theme = {
       timestampText: {},
       wrapper: {},
     },
+    deleted: {
+      containerInner: {},
+      deletedText: {},
+      container: {},
+    },
+    footer: {
+      container: {},
+      name: {},
+      editedText: {},
+    },
     contentWrapper: {},
+    contentContainer: {},
     file: {
       container: {},
       details: {},
@@ -1526,31 +1507,16 @@ export const defaultTheme: Theme = {
       position: 16,
     },
     replies: {
-      avatar: {},
-      avatarContainerMultiple: {},
-      avatarContainerSingle: {},
       container: {},
-      leftAvatarsContainer: {},
-      leftCurve: {},
+      content: {},
       messageRepliesText: {},
-      rightAvatarsContainer: {},
-      rightCurve: {},
+      avatarStackContainer: {},
     },
     status: {
-      checkAllIcon: {
-        height: DEFAULT_STATUS_ICON_SIZE,
-        width: DEFAULT_STATUS_ICON_SIZE,
-      },
-      checkIcon: {
-        height: DEFAULT_STATUS_ICON_SIZE,
-        width: DEFAULT_STATUS_ICON_SIZE,
-      },
-      readByCount: {},
-      statusContainer: {},
-      timeIcon: {
-        height: DEFAULT_STATUS_ICON_SIZE,
-        width: DEFAULT_STATUS_ICON_SIZE,
-      },
+      checkAllIcon: {},
+      checkIcon: {},
+      container: {},
+      timeIcon: {},
     },
     swipeContentContainer: {},
     swipeLeftContent: {
@@ -1698,7 +1664,7 @@ export const defaultTheme: Theme = {
     videoIcon: {},
     wrapper: {},
   },
-  screenPadding: 8,
+  screenPadding: 16,
   spinner: {},
   thread: {
     newThread: {

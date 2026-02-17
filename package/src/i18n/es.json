@@ -147,7 +147,6 @@
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} y {{ nonSelfUserLength }} más están escribiendo",
   "{{ index }} of {{ photoLength }}": "{{ index }} de {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Respuestas",
-  "{{ replyCount }} Thread Replies": "{{ replyCount }} respuestas de hilo",
   "{{ user }} is typing": "{{ user }} está escribiendo",
   "{{count}} votes_many": "{{count}} votos",
   "{{count}} votes_one": "{{count}} voto",

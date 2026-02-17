@@ -6,6 +6,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
+import { primitives } from '../../../theme';
 import { getDateString } from '../../../utils/i18n/getDateString';
 
 export type MessageTimestampProps = Partial<Pick<TranslationContextValue, 'tDateTimeParser'>> & {
@@ -32,15 +33,7 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
   } = props;
   const { t, tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
   const tDateTimeParser = propsTDateTimeParser || contextTDateTimeParser;
-
-  const {
-    theme: {
-      colors: { grey },
-      messageSimple: {
-        content: { timestampText },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   const dateString = useMemo(
     () =>
@@ -54,20 +47,34 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
   );
 
   if (formattedDate) {
-    return (
-      <Text style={[styles.text, { color: grey }, timestampText]}>{formattedDate.toString()}</Text>
-    );
+    return <Text style={styles.text}>{formattedDate.toString()}</Text>;
   }
 
   if (!dateString) {
     return null;
   }
 
-  return <Text style={[styles.text, { color: grey }, timestampText]}>{dateString.toString()}</Text>;
+  return <Text style={styles.text}>{dateString.toString()}</Text>;
 };
 
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 12,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      messageSimple: {
+        content: { timestampText },
+      },
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      text: {
+        color: semantics.chatTextTimestamp,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+        ...timestampText,
+      },
+    });
+  }, [semantics, timestampText]);
+};

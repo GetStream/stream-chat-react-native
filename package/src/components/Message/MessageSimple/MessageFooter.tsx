@@ -20,6 +20,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Eye } from '../../../icons';
 
+import { primitives } from '../../../theme';
 import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
 
 type MessageFooterComponentProps = {
@@ -31,7 +32,6 @@ type MessageFooterComponentProps = {
 type MessageFooterPropsWithContext = Pick<
   MessageContextValue,
   | 'alignment'
-  | 'isEditedMessageOpen'
   | 'members'
   | 'message'
   | 'otherAttachments'
@@ -41,10 +41,7 @@ type MessageFooterPropsWithContext = Pick<
 > &
   Pick<
     MessagesContextValue,
-    | 'deletedMessagesVisibilityType'
-    | 'MessageEditedTimestamp'
-    | 'MessageStatus'
-    | 'MessageTimestamp'
+    'deletedMessagesVisibilityType' | 'MessageStatus' | 'MessageTimestamp'
   > &
   MessageFooterComponentProps;
 
@@ -53,7 +50,7 @@ const OnlyVisibleToYouComponent = ({ alignment }: { alignment: Alignment }) => {
     theme: {
       colors: { grey_dark },
       messageSimple: {
-        content: { deletedMetaText, eyeIcon, metaText },
+        content: { eyeIcon, metaText },
       },
     },
   } = useTheme();
@@ -69,7 +66,6 @@ const OnlyVisibleToYouComponent = ({ alignment }: { alignment: Alignment }) => {
             textAlign: alignment,
           },
           metaText,
-          deletedMetaText,
         ]}
         testID='only-visible-to-you'
       >
@@ -86,23 +82,21 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
     deletedMessagesVisibilityType,
     formattedDate,
     isDeleted,
-    isEditedMessageOpen,
     isMessageAIGenerated,
     lastGroupMessage,
     members,
     message,
-    MessageEditedTimestamp,
     MessageStatus,
     MessageTimestamp,
     otherAttachments,
     showMessageStatus,
   } = props;
+  const styles = useStyles();
 
   const {
     theme: {
-      colors: { grey },
       messageSimple: {
-        content: { editedLabel, messageUser, metaContainer, metaText },
+        footer: { container, name, editedText },
       },
     },
   } = useTheme();
@@ -115,7 +109,7 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
 
   if (isDeleted) {
     return (
-      <View style={[styles.container, metaContainer]}>
+      <View style={[styles.container, container]}>
         {deletedMessagesVisibilityType === 'sender' && (
           <OnlyVisibleToYouComponent alignment={alignment} />
         )}
@@ -131,41 +125,16 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
   const isEdited = isEditedMessage(message) && !isAIGenerated;
 
   return (
-    <>
-      <View style={[styles.container, metaContainer]} testID='message-status-time'>
-        {otherAttachments.length && otherAttachments[0].actions ? (
-          <OnlyVisibleToYouComponent alignment={alignment} />
-        ) : null}
-        {Object.keys(members).length > 2 && alignment === 'left' && message.user?.name ? (
-          <Text style={[styles.text, { color: grey }, messageUser]}>{message.user.name}</Text>
-        ) : null}
-        {showMessageStatus && <MessageStatus />}
-        <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
-
-        {isEdited && !isEditedMessageOpen ? (
-          <>
-            <Text
-              style={[
-                styles.dotText,
-                {
-                  color: grey,
-                  textAlign: alignment,
-                },
-                metaText,
-              ]}
-            >
-              ⦁
-            </Text>
-            <Text style={[styles.text, { color: grey, textAlign: alignment }, editedLabel]}>
-              {t('Edited')}
-            </Text>
-          </>
-        ) : null}
-      </View>
-      {isEdited && isEditedMessageOpen ? (
-        <MessageEditedTimestamp message={message} MessageTimestamp={MessageTimestamp} />
+    <View style={[styles.container, container]} testID='message-status-time'>
+      {otherAttachments.length && otherAttachments[0].actions ? (
+        <OnlyVisibleToYouComponent alignment={alignment} />
       ) : null}
-    </>
+      {Object.keys(members).length > 2 && alignment === 'left' && message.user?.name ? (
+        <Text style={[styles.name, name]}>{message.user.name}</Text>
+      ) : null}
+      {showMessageStatus && <MessageStatus formattedDate={formattedDate} timestamp={date} />}
+      {isEdited ? <Text style={[styles.editedText, editedText]}>{t('Edited')}</Text> : null}
+    </View>
   );
 };
 
@@ -177,7 +146,6 @@ const areEqual = (
     alignment: prevAlignment,
     date: prevDate,
     formattedDate: prevFormattedDate,
-    isEditedMessageOpen: prevIsEditedMessageOpen,
     lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
     message: prevMessage,
@@ -188,7 +156,6 @@ const areEqual = (
     alignment: nextAlignment,
     date: nextDate,
     formattedDate: nextFormattedDate,
-    isEditedMessageOpen: nextIsEditedMessageOpen,
     lastGroupMessage: nextLastGroupMessage,
     members: nextMembers,
     message: nextMessage,
@@ -198,11 +165,6 @@ const areEqual = (
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) {
-    return false;
-  }
-
-  const isEditedMessageOpenEqual = prevIsEditedMessageOpen === nextIsEditedMessageOpen;
-  if (!isEditedMessageOpenEqual) {
     return false;
   }
 
@@ -279,7 +241,6 @@ export type MessageFooterProps = Partial<Pick<ChannelContextValue, 'members'>> &
 export const MessageFooter = (props: MessageFooterProps) => {
   const {
     alignment,
-    isEditedMessageOpen,
     isMessageAIGenerated,
     lastGroupMessage,
     members,
@@ -288,20 +249,17 @@ export const MessageFooter = (props: MessageFooterProps) => {
     showMessageStatus,
   } = useMessageContext();
 
-  const { deletedMessagesVisibilityType, MessageEditedTimestamp, MessageStatus, MessageTimestamp } =
-    useMessagesContext();
+  const { deletedMessagesVisibilityType, MessageStatus, MessageTimestamp } = useMessagesContext();
 
   return (
     <MemoizedMessageFooter
       {...{
         alignment,
         deletedMessagesVisibilityType,
-        isEditedMessageOpen,
         isMessageAIGenerated,
         lastGroupMessage,
         members,
         message,
-        MessageEditedTimestamp,
         MessageStatus,
         MessageTimestamp,
         otherAttachments,
@@ -312,17 +270,31 @@ export const MessageFooter = (props: MessageFooterProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  dotText: {
-    paddingHorizontal: 4,
-  },
-  text: {
-    fontSize: 12,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingVertical: primitives.spacingXxs,
+        gap: primitives.spacingXs,
+      },
+      name: {
+        color: semantics.chatTextUsername,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+      editedText: {
+        color: semantics.chatTextTimestamp,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+      },
+    });
+  }, [semantics]);
+};

@@ -46,8 +46,6 @@ export type MessageContextValue = {
   messageHasOnlySingleAttachment: boolean;
   /** The images attached to a message */
   images: Attachment[];
-  /** Boolean that determines if the edited message is pressed. */
-  isEditedMessageOpen: boolean;
   /**
    * A factory function that determines whether a message is AI generated or not.
    */
@@ -94,8 +92,6 @@ export type MessageContextValue = {
   readBy: number | boolean;
   /** Delivery count of the message */
   deliveredToCount: number;
-  /** React set state function to set the state of `isEditedMessageOpen` */
-  setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
   /**
    * Function to show the menu with all the message actions.
    * @param showMessageReactions

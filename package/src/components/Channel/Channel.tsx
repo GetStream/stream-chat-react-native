@@ -145,9 +145,9 @@ import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimpl
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
-import { MessageEditedTimestamp as MessageEditedTimestampDefault } from '../Message/MessageSimple/MessageEditedTimestamp';
 import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
+import { MessageHeader as MessageHeaderDefault } from '../Message/MessageSimple/MessageHeader';
 import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/MessagePinnedHeader';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
@@ -359,7 +359,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageDeleted'
-      | 'MessageEditedTimestamp'
       | 'MessageError'
       | 'MessageFooter'
       | 'MessageHeader'
@@ -673,11 +672,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'location',
     ],
     MessageDeleted = MessageDeletedDefault,
-    MessageEditedTimestamp = MessageEditedTimestampDefault,
     MessageError = MessageErrorDefault,
     messageInputFloating = false,
     MessageFooter = MessageFooterDefault,
-    MessageHeader,
+    MessageHeader = MessageHeaderDefault,
     messageId,
     MessageList = MessageListDefault,
     MessageLocation,
@@ -1931,7 +1929,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageContent,
     messageContentOrder,
     MessageDeleted,
-    MessageEditedTimestamp,
     MessageError,
     MessageFooter,
     MessageHeader,

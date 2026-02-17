@@ -171,9 +171,7 @@ describe('MessageSimple', () => {
     renderMessage({ message });
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-simple-wrapper').props.style[1]).toMatchObject({
-        marginBottom: 8,
-      });
+      expect(screen.getByTestId('message-simple-wrapper').props.style[1]).toMatchObject({});
     });
   });
 

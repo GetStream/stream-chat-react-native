@@ -34,9 +34,8 @@ import type { MessageBlockedProps } from '../../components/Message/MessageSimple
 import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
-import type { MessageEditedTimestampProps } from '../../components/Message/MessageSimple/MessageEditedTimestamp';
-import type { MessageErrorProps } from '../../components/Message/MessageSimple/MessageError';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
+import { MessageHeaderProps } from '../../components/Message/MessageSimple/MessageHeader';
 import type { MessagePinnedHeaderProps } from '../../components/Message/MessageSimple/MessagePinnedHeader';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
@@ -221,14 +220,9 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   MessageDeleted: React.ComponentType<MessageDeletedProps>;
   /**
-   * UI component for MessageEditedTimestamp
-   * Defaults to: [MessageEditedTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageEditedTimestamp.tsx)
-   */
-  MessageEditedTimestamp: React.ComponentType<MessageEditedTimestampProps>;
-  /**
    * UI component for the MessageError.
    */
-  MessageError: React.ComponentType<MessageErrorProps>;
+  MessageError: React.ComponentType;
   /**
    * Custom message footer component
    */
@@ -476,7 +470,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   /**
    * Custom message header component
    */
-  MessageHeader?: React.ComponentType<MessageFooterProps>;
+  MessageHeader: React.ComponentType<MessageHeaderProps>;
   MessageSwipeContent?: React.ComponentType;
   /**
    * HitSlop for the message swipe to reply gesture

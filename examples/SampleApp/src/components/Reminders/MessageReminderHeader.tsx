@@ -1,8 +1,11 @@
 import {
-  MessageFooterProps,
+  MessageHeaderProps,
+  MessagePinnedHeader,
   Time,
+  useMessageContext,
   useMessageReminder,
   useStateStore,
+  useTheme,
   useTranslationContext,
 } from 'stream-chat-react-native';
 import { ReminderState } from 'stream-chat';
@@ -12,11 +15,15 @@ const reminderStateSelector = (state: ReminderState) => ({
   timeLeftMs: state.timeLeftMs,
 });
 
-export const MessageReminderHeader = ({ message }: MessageFooterProps) => {
+export const MessageReminderHeader = ({ message }: MessageHeaderProps) => {
   const messageId = message?.id ?? '';
   const reminder = useMessageReminder(messageId);
   const { timeLeftMs } = useStateStore(reminder?.state, reminderStateSelector) ?? {};
   const { t } = useTranslationContext();
+
+  const {
+    theme: { semantics },
+  } = useTheme();
 
   const stopRefreshBoundaryMs = reminder?.timer.stopRefreshBoundaryMs;
   const stopRefreshTimeStamp =
@@ -43,8 +50,8 @@ export const MessageReminderHeader = ({ message }: MessageFooterProps) => {
   if (reminder.remindAt && timeLeftMs !== null) {
     return (
       <View style={styles.headerContainer}>
-        <Time height={16} width={16} />
-        <Text style={styles.headerTitle}>
+        <Time height={16} width={16} stroke={semantics.chatTextTimestamp} />
+        <Text style={[styles.headerTitle, { color: semantics.chatTextTimestamp }]}>
           {isBehindRefreshBoundary
             ? t('Due since {{ dueSince }}', {
                 dueSince: t('timestamp/ReminderNotification', {
@@ -60,6 +67,16 @@ export const MessageReminderHeader = ({ message }: MessageFooterProps) => {
       </View>
     );
   }
+};
+
+export const MessageHeader = () => {
+  const { message } = useMessageContext();
+  return (
+    <>
+      <MessageReminderHeader message={message} />
+      <MessagePinnedHeader />
+    </>
+  );
 };
 
 const styles = StyleSheet.create({

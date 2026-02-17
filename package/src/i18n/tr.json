@@ -147,7 +147,6 @@
   "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": "{{ firstUser }} ve {{ nonSelfUserLength }} kişi daha yazıyor",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Cevap",
-  "{{ replyCount }} Thread Replies": "{{responseCount}} Konu Cevapı",
   "{{ user }} is typing": "{{ user }} yazıyor",
   "{{count}} votes_many": "{{count}} oy",
   "{{count}} votes_one": "{{count}} oy",

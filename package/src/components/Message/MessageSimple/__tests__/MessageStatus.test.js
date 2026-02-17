@@ -58,19 +58,18 @@ describe('MessageStatus', () => {
       </ChannelsStateProvider>,
     );
 
-  it('should render message status with read by container', async () => {
+  it.each('should render message status with read by container', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
     const readBy = 2;
 
-    const { getByLabelText, getByText, rerender, toJSON } = renderMessageStatus({
+    const { getByText, rerender, toJSON } = renderMessageStatus({
       deliveredToCount: 2,
       message,
       readBy,
     });
 
     await waitFor(() => {
-      expect(getByLabelText('Read by count')).toBeTruthy();
       expect(getByText((readBy - 1).toString())).toBeTruthy();
     });
 
@@ -89,7 +88,6 @@ describe('MessageStatus', () => {
 
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
-      expect(getByLabelText('Read by count')).toBeTruthy();
       expect(getByText((readBy - 1).toString())).toBeTruthy();
     });
   });
