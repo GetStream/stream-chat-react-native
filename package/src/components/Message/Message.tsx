@@ -7,7 +7,6 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
@@ -51,7 +50,14 @@ import {
 
 import { useStableCallback } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
-import { closeOverlay, openOverlay, useIsOverlayActive } from '../../state-store';
+import {
+  closeOverlay,
+  openOverlay,
+  setOverlayBottomH,
+  setOverlayMessageH,
+  setOverlayTopH,
+  useIsOverlayActive,
+} from '../../state-store';
 import { FileTypes } from '../../types/types';
 import {
   checkMessageEquality,
@@ -326,15 +332,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     },
   } = useTheme();
 
-  const topH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
-  );
-  const bottomH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
-  );
-  const messageH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
-  );
   const [rect, setRect] = useState<{ w: number; h: number; x: number; y: number } | undefined>(
     undefined,
   );
@@ -345,8 +342,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     try {
       const layout = await measureInWindow(messageWrapperRef, insets);
       setRect(layout);
-      messageH.value = layout;
-      openOverlay(message.id, { bottomH, messageH, topH });
+      setOverlayMessageH(layout);
+      openOverlay(message.id);
     } catch (e) {
       console.error(e);
     }
@@ -851,12 +848,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
 
-                  topH.value = {
+                  setOverlayTopH({
                     h,
                     w,
                     x: isMyMessage ? screenW - rect.x - w : rect.x,
                     y: rect.y - h,
-                  };
+                  });
                 }}
               >
                 <MessageReactionPicker
@@ -877,12 +874,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
-                  bottomH.value = {
+                  setOverlayBottomH({
                     h,
                     w,
                     x: isMyMessage ? screenW - rect.x - w : rect.x,
                     y: rect.y + rect.h,
-                  };
+                  });
                 }}
               >
                 <MessageActionList
