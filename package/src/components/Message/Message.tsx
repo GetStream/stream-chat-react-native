@@ -7,7 +7,6 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
@@ -51,7 +50,14 @@ import {
 
 import { useStableCallback } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
-import { closeOverlay, openOverlay, useIsOverlayActive } from '../../state-store';
+import {
+  closeOverlay,
+  openOverlay,
+  setOverlayBottomH,
+  setOverlayMessageH,
+  setOverlayTopH,
+  useIsOverlayActive,
+} from '../../state-store';
 import { FileTypes } from '../../types/types';
 import {
   checkMessageEquality,
@@ -326,15 +332,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     },
   } = useTheme();
 
-  const topH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
-  );
-  const bottomH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
-  );
-  const messageH = useSharedValue<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
-  );
   const [rect, setRect] = useState<{ w: number; h: number; x: number; y: number } | undefined>(
     undefined,
   );
@@ -345,8 +342,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     try {
       const layout = await measureInWindow(messageWrapperRef, insets);
       setRect(layout);
-      messageH.value = layout;
-      openOverlay(message.id, { bottomH, messageH, topH });
+      setOverlayMessageH(layout);
+      openOverlay(message.id);
     } catch (e) {
       console.error(e);
     }
@@ -845,18 +842,18 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             />
           ) : null}
           {/*TODO: V9: Find a way to separate these in a dedicated file*/}
-          <Portal hostName={overlayActive ? 'top-item' : undefined}>
-            {overlayActive && rect ? (
+          {overlayActive && rect ? (
+            <Portal hostName='top-item'>
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
 
-                  topH.value = {
+                  setOverlayTopH({
                     h,
                     w,
                     x: isMyMessage ? screenW - rect.x - w : rect.x,
                     y: rect.y - h,
-                  };
+                  });
                 }}
               >
                 <MessageReactionPicker
@@ -864,25 +861,25 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
                 />
               </View>
-            ) : null}
-          </Portal>
+            </Portal>
+          ) : null}
           <Portal
             hostName={overlayActive ? 'message-overlay' : undefined}
             style={overlayActive && rect ? { width: rect.w } : undefined}
           >
             <MessageSimple ref={messageWrapperRef} />
           </Portal>
-          <Portal hostName={overlayActive ? 'bottom-item' : undefined}>
-            {overlayActive && rect ? (
+          {overlayActive && rect ? (
+            <Portal hostName='bottom-item'>
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
-                  bottomH.value = {
+                  setOverlayBottomH({
                     h,
                     w,
                     x: isMyMessage ? screenW - rect.x - w : rect.x,
                     y: rect.y + rect.h,
-                  };
+                  });
                 }}
               >
                 <MessageActionList
@@ -891,8 +888,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   messageActions={messageActions}
                 />
               </View>
-            ) : null}
-          </Portal>
+            </Portal>
+          ) : null}
           {showMessageReactions ? (
             <BottomSheetModal
               lazy={true}
