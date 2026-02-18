@@ -22,8 +22,6 @@ type Parameters = {
   sort: ChannelSort;
 };
 
-const DEFAULT_OPTIONS = {};
-
 const RETRY_INTERVAL_IN_MS = 5000;
 
 type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
@@ -42,7 +40,7 @@ export const usePaginatedChannels = ({
   channelManager,
   enableOfflineSupport,
   filters = {},
-  options = DEFAULT_OPTIONS,
+  options = {},
   sort = {},
 }: Parameters) => {
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
