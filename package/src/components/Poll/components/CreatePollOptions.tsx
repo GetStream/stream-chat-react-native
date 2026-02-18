@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { LayoutChangeEvent, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -110,7 +110,9 @@ const findClosestIndex = (
 ) => {
   'worklet';
 
-  const indices = Object.keys(inverseIndexCache).map((key) => Number(key));
+  const indices = Object.keys(inverseIndexCache)
+    .map((key) => Number(key))
+    .sort((a, b) => a - b);
 
   if (!indices.length) {
     return 0;
@@ -158,7 +160,10 @@ export const CreatePollOption = ({
     useCreatePollContentContext();
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
-  const top = useSharedValue(index * (createPollOptionHeight + normalizedCreatePollOptionGap));
+  const initialTop =
+    currentOptionPositions.value.positionCache[option.id]?.updatedTop ??
+    index * (createPollOptionHeight + normalizedCreatePollOptionGap);
+  const top = useSharedValue(initialTop);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 
   const draggedItemIdDerived = useDerivedValue(() => draggedItemId.value);
@@ -392,6 +397,8 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
     useCreatePollContentContext();
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   const updateOption = useCallback(
     (newText: string, index: number) => {
@@ -483,7 +490,8 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         return;
       }
 
-      const isKnownOption = options.some((option) => option.id === optionId);
+      const latestOptions = optionsRef.current;
+      const isKnownOption = latestOptions.some((option) => option.id === optionId);
       if (!isKnownOption) {
         return;
       }
@@ -491,12 +499,12 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
       // Keep cache indices aligned with composer options order. This avoids transient
       // overlap when an empty option is auto-inserted while typing.
       const nextInverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'] = {};
-      options.forEach((option, index) => {
+      latestOptions.forEach((option, index) => {
         nextInverseIndexCache[index] = option.id;
       });
 
       const nextPositionCache: CurrentOptionPositionsCache['positionCache'] = {};
-      options.forEach((option, index) => {
+      latestOptions.forEach((option, index) => {
         const cachedPosition = positionCache[option.id];
         nextPositionCache[option.id] = cachedPosition
           ? cachedPosition
@@ -525,7 +533,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         totalHeight: recalculated.totalHeight,
       };
     },
-    [createPollOptionHeight, currentOptionPositions, normalizedCreatePollOptionGap, options],
+    [createPollOptionHeight, currentOptionPositions, normalizedCreatePollOptionGap],
   );
 
   return (

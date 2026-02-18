@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -49,6 +49,9 @@ export const CreatePollContent = () => {
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
   const normalizedCreatePollOptionHeight = createPollOptionHeight ?? POLL_OPTION_HEIGHT;
+  const optionIdsKey = useMemo(() => options.map((option) => option.id).join('|'), [options]);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   // positions and index lookup map
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
@@ -69,6 +72,22 @@ export const CreatePollContent = () => {
   const styles = useStyles();
 
   useEffect(() => {
+    const latestOptions = optionsRef.current;
+    const currentPositions = currentOptionPositions.value;
+    const isCacheAlignedWithOptions =
+      latestOptions.length === Object.keys(currentPositions.inverseIndexCache).length &&
+      latestOptions.every(
+        (option, index) =>
+          currentPositions.inverseIndexCache[index] === option.id &&
+          currentPositions.positionCache[option.id] !== undefined,
+      );
+
+    // Avoid overwriting freshly measured heights/tops from CreatePollOptions onLayout.
+    // We only need this effect when options ids/order introduced missing cache entries.
+    if (isCacheAlignedWithOptions) {
+      return;
+    }
+
     const previousPositionCache = currentOptionPositions.value.positionCache;
     const newCurrentOptionPositions: CurrentOptionPositionsCache = {
       inverseIndexCache: {},
@@ -76,7 +95,7 @@ export const CreatePollContent = () => {
       totalHeight: 0,
     };
     let runningTop = 0;
-    options.forEach((option, index) => {
+    latestOptions.forEach((option, index) => {
       const preservedHeight =
         previousPositionCache[option.id]?.updatedHeight ?? normalizedCreatePollOptionHeight;
       newCurrentOptionPositions.inverseIndexCache[index] = option.id;
@@ -85,12 +104,17 @@ export const CreatePollContent = () => {
         updatedIndex: index,
         updatedTop: runningTop,
       };
-      const gap = index === options.length - 1 ? 0 : normalizedCreatePollOptionGap;
+      const gap = index === latestOptions.length - 1 ? 0 : normalizedCreatePollOptionGap;
       runningTop += preservedHeight + gap;
       newCurrentOptionPositions.totalHeight = runningTop;
     });
     currentOptionPositions.value = newCurrentOptionPositions;
-  }, [currentOptionPositions, normalizedCreatePollOptionGap, normalizedCreatePollOptionHeight, options]);
+  }, [
+    currentOptionPositions,
+    normalizedCreatePollOptionGap,
+    normalizedCreatePollOptionHeight,
+    optionIdsKey,
+  ]);
 
   const onBackPressHandler = useCallback(() => {
     pollComposer.initState();
