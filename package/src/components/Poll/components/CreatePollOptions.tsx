@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -164,6 +164,7 @@ export const CreatePollOption = ({
     currentOptionPositions.value.positionCache[option.id]?.updatedTop ??
     index * (createPollOptionHeight + normalizedCreatePollOptionGap);
   const top = useSharedValue(initialTop);
+  const optionContainerRef = useRef<View>(null);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 
   const draggedItemIdDerived = useDerivedValue(() => draggedItemId.value);
@@ -335,9 +336,29 @@ export const CreatePollOption = ({
     [onOptionLayout, option.id],
   );
 
+  const measureOptionHeight = useCallback(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        optionContainerRef.current?.measure((_x, _y, _width, height) => {
+          if (Number.isFinite(height) && height > 0) {
+            onOptionLayout(option.id, height);
+          }
+        });
+      });
+    });
+  }, [onOptionLayout, option.id]);
+  const onErrorLayoutHandler = useCallback(() => {
+    measureOptionHeight();
+  }, [measureOptionHeight]);
+
+  useEffect(() => {
+    measureOptionHeight();
+  }, [error, measureOptionHeight]);
+
   return (
     <Animated.View
       onLayout={onLayoutHandler}
+      ref={optionContainerRef}
       style={[
         styles.optionWrapper,
         optionStyle.wrapper,
@@ -366,7 +387,10 @@ export const CreatePollOption = ({
       </View>
 
       {error ? (
-        <View style={[styles.optionValidationErrorContainer, optionStyle.validationErrorContainer]}>
+        <View
+          onLayout={onErrorLayoutHandler}
+          style={[styles.optionValidationErrorContainer, optionStyle.validationErrorContainer]}
+        >
           <InfoTooltip height={20} width={20} fill={semantics.accentError} />
           <Text style={[styles.optionValidationError, optionStyle.validationErrorText]}>
             {t(error)}
