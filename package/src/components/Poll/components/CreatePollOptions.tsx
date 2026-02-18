@@ -495,16 +495,21 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         nextInverseIndexCache[index] = option.id;
       });
 
-      const nextPositionCache = {
-        ...positionCache,
-        [optionId]: {
-          ...(currentPosition ?? {
-            updatedHeight: height,
-            updatedIndex: 0,
-            updatedTop: 0,
-          }),
-          updatedHeight: height,
-        },
+      const nextPositionCache: CurrentOptionPositionsCache['positionCache'] = {};
+      options.forEach((option, index) => {
+        const cachedPosition = positionCache[option.id];
+        nextPositionCache[option.id] = cachedPosition
+          ? cachedPosition
+          : {
+              updatedHeight: createPollOptionHeight,
+              updatedIndex: index,
+              updatedTop: 0,
+            };
+      });
+
+      nextPositionCache[optionId] = {
+        ...nextPositionCache[optionId],
+        updatedHeight: height,
       };
 
       const recalculated = recalculatePositionCache(
