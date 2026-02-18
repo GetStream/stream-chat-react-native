@@ -59,6 +59,7 @@ export type CreatePollOptionType = {
   onRemoveOption: (index: number) => void;
 };
 
+// Run after two frames so nested layout (including error rows) has settled.
 const runAfterNextPaint = (cb: () => void) => {
   requestAnimationFrame(() => {
     requestAnimationFrame(cb);
@@ -178,14 +179,6 @@ const getSortedIndices = (inverseIndexCache: CurrentOptionPositionsCache['invers
     .map((key) => Number(key))
     .sort((a, b) => a - b);
 
-const findMissingOptionIds = (
-  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
-  latestOptionIds: string[],
-) => {
-  const existingIds = new Set(Object.values(inverseIndexCache));
-  return latestOptionIds.filter((id) => !existingIds.has(id));
-};
-
 const reconcileInverseIndexCacheWithOptionIds = (
   inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
   latestOptionIds: string[],
@@ -211,22 +204,6 @@ const reconcileInverseIndexCacheWithOptionIds = (
     nextInverse[i] = nextOrder[i];
   }
 
-  return nextInverse;
-};
-
-const appendMissingOptionsToInverseCache = (
-  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
-  missingOptionIds: string[],
-) => {
-  if (!missingOptionIds.length) {
-    return inverseIndexCache;
-  }
-  const nextInverse = { ...inverseIndexCache };
-  let nextIndex = getSortedIndices(inverseIndexCache).length;
-  for (let i = 0; i < missingOptionIds.length; i++) {
-    nextInverse[nextIndex] = missingOptionIds[i];
-    nextIndex += 1;
-  }
   return nextInverse;
 };
 
@@ -307,13 +284,13 @@ export const CreatePollOption = ({
     () => currentOptionPositions.value,
   );
 
-  // used for swapping with currentIndex
+  // Target index computed during drag.
   const newIndex = useSharedValue<number | null>(null);
 
-  // used for swapping with newIndex
+  // Current dragged item's index in the live reorder cache.
   const currentIndex = useSharedValue<number | null>(null);
 
-  // retains the original top from drag start so translation math stays stable across swaps
+  // Keep drag translation anchored to drag-start top.
   const dragStartTop = useSharedValue(0);
   const previousDragTop = useSharedValue(0);
 
@@ -339,7 +316,7 @@ export const CreatePollOption = ({
       // keep track of dragged item
       draggedItemId.value = option.id;
 
-      // store dragged item id for future swap
+      // capture drag start position/index
       currentIndex.value = currentPosition.updatedIndex;
       dragStartTop.value = currentPosition.updatedTop;
       previousDragTop.value = currentPosition.updatedTop;
@@ -379,7 +356,7 @@ export const CreatePollOption = ({
         frameDeltaY,
       );
 
-      // swap the items present at newIndex and currentIndex
+      // Reorder by inserting dragged item into target slot.
       if (newIndex.value !== currentIndex.value) {
         const nextInverseIndexCache = reorderInverseIndexCache(
           inverseIndexCache,
@@ -638,11 +615,10 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         return;
       }
 
-      const missingOptionIds = findMissingOptionIds(inverseIndexCache, latestOptionIds);
-      const nextInverseIndexCache =
-        isDragging.value === 1
-          ? appendMissingOptionsToInverseCache(inverseIndexCache, missingOptionIds)
-          : reconcileInverseIndexCacheWithOptionIds(inverseIndexCache, latestOptionIds);
+      const nextInverseIndexCache = reconcileInverseIndexCacheWithOptionIds(
+        inverseIndexCache,
+        latestOptionIds,
+      );
 
       const nextPositionCache: CurrentOptionPositionsCache['positionCache'] = {};
       const sortedIndices = getSortedIndices(nextInverseIndexCache);
