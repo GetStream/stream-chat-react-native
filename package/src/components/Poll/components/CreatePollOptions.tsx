@@ -48,7 +48,7 @@ export type CreatePollOptionType = {
   handleBlur: () => void;
   index: number;
   isDragging: SharedValue<1 | 0>;
-  option: PollComposerOption;
+  optionId: string;
   onOptionLayout: (optionId: string, height: number) => void;
   /**
    *
@@ -56,7 +56,7 @@ export type CreatePollOptionType = {
    * @returns
    */
   onNewOrder: (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => void;
-  onRemoveOption: (index: number) => void;
+  onRemoveOption: (optionId: string) => void;
 };
 
 // Run after two frames so nested layout (including error rows) has settled.
@@ -272,7 +272,7 @@ export const CreatePollOption = ({
   handleChangeText,
   index,
   isDragging,
-  option,
+  optionId,
   onOptionLayout,
   onNewOrder,
   onRemoveOption,
@@ -282,7 +282,7 @@ export const CreatePollOption = ({
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
   const initialTop =
-    currentOptionPositions.value.positionCache[option.id]?.updatedTop ??
+    currentOptionPositions.value.positionCache[optionId]?.updatedTop ??
     getFallbackTopForIndex(
       index,
       currentOptionPositions.value.positionCache,
@@ -290,12 +290,13 @@ export const CreatePollOption = ({
     );
   const top = useSharedValue(initialTop);
   const optionContainerRef = useRef<View>(null);
+  const isMeasurementScheduledRef = useRef(false);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 
   const draggedItemIdDerived = useDerivedValue(() => draggedItemId.value);
 
   const isCurrentDraggingItem = useDerivedValue(
-    () => isDraggingDerived.value && draggedItemIdDerived.value === option.id,
+    () => isDraggingDerived.value && draggedItemIdDerived.value === optionId,
   );
 
   const animatedStyles = useAnimatedStyle(() => ({
@@ -323,7 +324,7 @@ export const CreatePollOption = ({
   const previousDragTop = useSharedValue(0);
 
   useAnimatedReaction(
-    () => currentOptionPositionsDerived.value.positionCache[option.id]?.updatedTop ?? 0,
+    () => currentOptionPositionsDerived.value.positionCache[optionId]?.updatedTop ?? 0,
     (currentValue, previousValue) => {
       if (currentValue !== previousValue && !isCurrentDraggingItem.value) {
         top.value = withSpring(currentValue);
@@ -333,7 +334,7 @@ export const CreatePollOption = ({
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      const currentPosition = currentOptionPositionsDerived.value.positionCache[option.id];
+      const currentPosition = currentOptionPositionsDerived.value.positionCache[optionId];
       if (!currentPosition) {
         return;
       }
@@ -342,7 +343,7 @@ export const CreatePollOption = ({
       isDragging.value = withSpring(1);
 
       // keep track of dragged item
-      draggedItemId.value = option.id;
+      draggedItemId.value = optionId;
 
       // capture drag start position/index
       currentIndex.value = currentPosition.updatedIndex;
@@ -449,25 +450,35 @@ export const CreatePollOption = ({
   );
 
   const onRemoveOptionHandler = useCallback(() => {
-    onRemoveOption(index);
-  }, [onRemoveOption, index]);
+    onRemoveOption(optionId);
+  }, [onRemoveOption, optionId]);
 
   const onLayoutHandler = useCallback(
     (event: LayoutChangeEvent) => {
-      onOptionLayout(option.id, event.nativeEvent.layout.height);
+      onOptionLayout(optionId, event.nativeEvent.layout.height);
     },
-    [onOptionLayout, option.id],
+    [onOptionLayout, optionId],
   );
 
   const measureOptionHeight = useCallback(() => {
+    if (isMeasurementScheduledRef.current) {
+      return;
+    }
+    isMeasurementScheduledRef.current = true;
     runAfterNextPaint(() => {
-      optionContainerRef.current?.measure((_x, _y, _width, height) => {
+      const currentOptionContainer = optionContainerRef.current;
+      if (!currentOptionContainer) {
+        isMeasurementScheduledRef.current = false;
+        return;
+      }
+      currentOptionContainer.measure((_x, _y, _width, height) => {
+        isMeasurementScheduledRef.current = false;
         if (Number.isFinite(height) && height > 0) {
-          onOptionLayout(option.id, height);
+          onOptionLayout(optionId, height);
         }
       });
     });
-  }, [onOptionLayout, option.id]);
+  }, [onOptionLayout, optionId]);
   const onErrorLayoutHandler = useCallback(() => {
     measureOptionHeight();
   }, [measureOptionHeight]);
@@ -594,10 +605,19 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
 
   const onNewOrderChange = useCallback(
     async (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => {
-      const reorderedPollOptions = [];
+      const latestOptions = optionsRef.current;
+      const optionById: Record<string, PollComposerOption> = {};
+      for (let i = 0; i < latestOptions.length; i++) {
+        optionById[latestOptions[i].id] = latestOptions[i];
+      }
 
-      for (let i = 0; i < options.length; i++) {
-        const currentOption = options.find((option) => option.id === newOrder[i]);
+      const reorderedPollOptions: PollComposerOption[] = [];
+      for (let i = 0; i < latestOptions.length; i++) {
+        const optionId = newOrder[i];
+        if (!optionId) {
+          continue;
+        }
+        const currentOption = optionById[optionId];
         if (currentOption) {
           reorderedPollOptions.push(currentOption);
         }
@@ -607,19 +627,20 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         options: reorderedPollOptions,
       });
     },
-    [options, pollComposer],
+    [pollComposer],
   );
 
   const onRemoveOptionHandler = useCallback(
-    (index: number) => {
-      if (options.length === 1) {
+    (optionId: string) => {
+      const latestOptions = optionsRef.current;
+      if (latestOptions.length === 1) {
         return;
       }
       pollComposer.updateFields({
-        options: options.filter((_, i) => i !== index),
+        options: latestOptions.filter((option) => option.id !== optionId),
       });
     },
-    [options, pollComposer],
+    [pollComposer],
   );
 
   const onOptionLayout = useCallback(
@@ -701,7 +722,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
             isDragging={isDragging}
             key={option.id}
             onNewOrder={onNewOrderChange}
-            option={option}
+            optionId={option.id}
           />
         ))}
       </Animated.View>
