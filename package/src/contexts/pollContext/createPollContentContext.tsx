@@ -8,13 +8,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type CreatePollContentContextValue = {
   createAndSendPoll: () => Promise<void>;
   sendMessage: MessageInputContextValue['sendMessage'];
-  /**
-   * A property that defines the constant height of the options within the poll creation screen.
-   *
-   * **Default: ** 71
-   */
   closePollCreationDialog?: () => void;
-  createPollOptionHeight?: number;
   /**
    * Vertical gap between poll options in the poll creation screen.
    *

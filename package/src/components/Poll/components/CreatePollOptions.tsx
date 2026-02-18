@@ -23,7 +23,6 @@ import { CircleMinus } from '../../../icons/CircleMinus';
 import { DotGrid } from '../../../icons/DotGrid';
 import { InfoTooltip } from '../../../icons/InfoTooltip';
 import { primitives } from '../../../theme';
-import { POLL_OPTION_HEIGHT } from '../../../utils/constants';
 
 export type CurrentOptionPositionsCache = {
   inverseIndexCache: {
@@ -69,7 +68,6 @@ const runAfterNextPaint = (cb: () => void) => {
 const recalculatePositionCache = (
   inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
   positionCache: CurrentOptionPositionsCache['positionCache'],
-  fallbackHeight: number,
   gap: number,
 ) => {
   'worklet';
@@ -95,7 +93,7 @@ const recalculatePositionCache = (
       Number.isFinite(currentPosition.updatedHeight) &&
       currentPosition.updatedHeight > 0
         ? currentPosition.updatedHeight
-        : fallbackHeight;
+        : 0;
     updatedPositionCache[optionId] = {
       ...(currentPosition ?? {}),
       updatedHeight,
@@ -253,13 +251,10 @@ export const CreatePollOption = ({
   onRemoveOption,
 }: CreatePollOptionType) => {
   const { t } = useTranslationContext();
-  const { createPollOptionGap = 8, createPollOptionHeight = POLL_OPTION_HEIGHT } =
-    useCreatePollContentContext();
+  const { createPollOptionGap = 8 } = useCreatePollContentContext();
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
-  const initialTop =
-    currentOptionPositions.value.positionCache[option.id]?.updatedTop ??
-    index * (createPollOptionHeight + normalizedCreatePollOptionGap);
+  const initialTop = currentOptionPositions.value.positionCache[option.id]?.updatedTop ?? 0;
   const top = useSharedValue(initialTop);
   const optionContainerRef = useRef<View>(null);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
@@ -366,7 +361,6 @@ export const CreatePollOption = ({
         const recalculated = recalculatePositionCache(
           nextInverseIndexCache,
           positionCache,
-          createPollOptionHeight,
           normalizedCreatePollOptionGap,
         );
 
@@ -511,8 +505,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
   const { errors, options } = useStateStore(pollComposer.state, pollComposerStateSelector);
-  const { createPollOptionGap = 8, createPollOptionHeight = POLL_OPTION_HEIGHT } =
-    useCreatePollContentContext();
+  const { createPollOptionGap = 8 } = useCreatePollContentContext();
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
   const optionsRef = useRef(options);
@@ -631,7 +624,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         nextPositionCache[currentOptionId] = cachedPosition
           ? cachedPosition
           : {
-              updatedHeight: createPollOptionHeight,
+              updatedHeight: 0,
               updatedIndex: index,
               updatedTop: 0,
             };
@@ -645,7 +638,6 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
       const recalculated = recalculatePositionCache(
         nextInverseIndexCache,
         nextPositionCache,
-        createPollOptionHeight,
         normalizedCreatePollOptionGap,
       );
 
@@ -655,7 +647,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         totalHeight: recalculated.totalHeight,
       };
     },
-    [createPollOptionHeight, currentOptionPositions, normalizedCreatePollOptionGap],
+    [currentOptionPositions, normalizedCreatePollOptionGap],
   );
 
   return (

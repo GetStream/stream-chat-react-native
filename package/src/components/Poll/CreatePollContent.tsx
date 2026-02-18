@@ -23,7 +23,6 @@ import {
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
-import { POLL_OPTION_HEIGHT } from '../../utils/constants';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   options: state.data.options,
@@ -42,13 +41,11 @@ export const CreatePollContent = () => {
 
   const {
     createPollOptionGap = 8,
-    createPollOptionHeight,
     closePollCreationDialog,
     createAndSendPoll,
   } = useCreatePollContentContext();
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
-  const normalizedCreatePollOptionHeight = createPollOptionHeight ?? POLL_OPTION_HEIGHT;
   const optionIdsKey = useMemo(() => options.map((option) => option.id).join('|'), [options]);
   const optionsRef = useRef(options);
   optionsRef.current = options;
@@ -96,8 +93,7 @@ export const CreatePollContent = () => {
     };
     let runningTop = 0;
     latestOptions.forEach((option, index) => {
-      const preservedHeight =
-        previousPositionCache[option.id]?.updatedHeight ?? normalizedCreatePollOptionHeight;
+      const preservedHeight = previousPositionCache[option.id]?.updatedHeight ?? 0;
       newCurrentOptionPositions.inverseIndexCache[index] = option.id;
       newCurrentOptionPositions.positionCache[option.id] = {
         updatedHeight: preservedHeight,
@@ -112,7 +108,6 @@ export const CreatePollContent = () => {
   }, [
     currentOptionPositions,
     normalizedCreatePollOptionGap,
-    normalizedCreatePollOptionHeight,
     optionIdsKey,
   ]);
 
@@ -215,11 +210,10 @@ export const CreatePoll = ({
   closePollCreationDialog,
   CreatePollContent: CreatePollContentOverride,
   createPollOptionGap = 8,
-  createPollOptionHeight = POLL_OPTION_HEIGHT,
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
-  'createPollOptionGap' | 'createPollOptionHeight' | 'closePollCreationDialog' | 'sendMessage'
+  'createPollOptionGap' | 'closePollCreationDialog' | 'sendMessage'
 > &
   Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
   const messageComposer = useMessageComposer();
@@ -244,7 +238,6 @@ export const CreatePoll = ({
         closePollCreationDialog,
         createAndSendPoll,
         createPollOptionGap,
-        createPollOptionHeight,
         sendMessage,
       }}
     >
