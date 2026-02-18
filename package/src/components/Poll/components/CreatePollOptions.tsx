@@ -763,4 +763,4 @@ const useStyles = () => {
   }, [semantics]);
 };
 
-const LayoutTransition = LinearTransition.duration(100).springify();
+const LayoutTransition = LinearTransition.duration(200).springify();
