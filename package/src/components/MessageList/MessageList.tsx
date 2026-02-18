@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   FlatListProps,
   FlatList as FlatListType,
+  LayoutChangeEvent,
   ScrollViewProps,
   StyleSheet,
   View,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 
 import Animated, { LinearTransition } from 'react-native-reanimated';
+import debounce from 'lodash/debounce';
 
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
@@ -1116,6 +1118,44 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     [FlatList],
   );
 
+  const viewportHeightRef = useRef<number>(undefined);
+
+  /**
+   * This debounced callback makes sure that if the current number of messages do not
+   * fill our screen, we load more messages continuously until we cover enough ground.
+   */
+  const debouncedPrefillMessages = useMemo(
+    () =>
+      debounce(
+        (viewportHeight: number, contentHeight: number) => {
+          if (viewportHeight >= contentHeight) {
+            maybeCallOnEndReached();
+          }
+        },
+        500,
+        {
+          leading: false,
+          trailing: true,
+        },
+      ),
+    [maybeCallOnEndReached],
+  );
+
+  const onContentSizeChange = useStableCallback((width: number, height: number) => {
+    if (additionalFlatListProps?.onContentSizeChange) {
+      additionalFlatListProps.onContentSizeChange(width, height);
+    }
+
+    debouncedPrefillMessages(viewportHeightRef.current ?? 0, height);
+  });
+
+  const onLayout = useStableCallback((event: LayoutChangeEvent) => {
+    if (additionalFlatListProps?.onLayout) {
+      additionalFlatListProps.onLayout(event);
+    }
+    viewportHeightRef.current = event.nativeEvent.layout.height;
+  });
+
   if (!AnimatedList) {
     return null;
   }
@@ -1161,6 +1201,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           */
             maintainVisibleContentPosition={maintainVisibleContentPosition}
             maxToRenderPerBatch={30}
+            onContentSizeChange={onContentSizeChange}
+            onLayout={onLayout}
             onMomentumScrollEnd={onUserScrollEvent}
             onScroll={handleScroll}
             onScrollBeginDrag={onScrollBeginDrag}
