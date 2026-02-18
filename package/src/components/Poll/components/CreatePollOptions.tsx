@@ -40,6 +40,7 @@ export type CurrentOptionPositionsCache = {
 };
 
 export type CreatePollOptionType = {
+  optionsCount: number;
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   draggedItemId: SharedValue<string | null>;
   error?: string;
@@ -56,6 +57,12 @@ export type CreatePollOptionType = {
    */
   onNewOrder: (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => void;
   onRemoveOption: (index: number) => void;
+};
+
+const runAfterNextPaint = (cb: () => void) => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(cb);
+  });
 };
 
 const recalculatePositionCache = (
@@ -103,10 +110,13 @@ const recalculatePositionCache = (
   };
 };
 
-const findClosestIndex = (
+const findTargetIndex = (
   inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
   positionCache: CurrentOptionPositionsCache['positionCache'],
-  draggedCenter: number,
+  currentIndex: number,
+  draggedTop: number,
+  draggedBottom: number,
+  translationY: number,
 ) => {
   'worklet';
 
@@ -118,31 +128,141 @@ const findClosestIndex = (
     return 0;
   }
 
-  let closestIndex = indices[0];
-  let closestDistance = Number.MAX_VALUE;
+  let targetIndex = currentIndex;
 
-  for (let i = 0; i < indices.length; i++) {
-    const index = indices[i];
-    const optionId = inverseIndexCache[index];
-    if (!optionId) {
-      continue;
+  if (translationY > 0) {
+    // Moving down: cross next sibling center with dragged bottom edge.
+    while (targetIndex < indices.length - 1) {
+      const nextIndex = targetIndex + 1;
+      const nextOptionId = inverseIndexCache[nextIndex];
+      if (!nextOptionId) {
+        break;
+      }
+      const nextPosition = positionCache[nextOptionId];
+      if (!nextPosition) {
+        break;
+      }
+      const nextCenter = nextPosition.updatedTop + nextPosition.updatedHeight / 2;
+      if (draggedBottom > nextCenter) {
+        targetIndex = nextIndex;
+        continue;
+      }
+      break;
     }
-    const position = positionCache[optionId];
-    if (!position) {
-      continue;
-    }
-    const center = position.updatedTop + position.updatedHeight / 2;
-    const distance = Math.abs(center - draggedCenter);
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      closestIndex = index;
+  } else if (translationY < 0) {
+    // Moving up: cross previous sibling center with dragged top edge.
+    while (targetIndex > 0) {
+      const previousIndex = targetIndex - 1;
+      const previousOptionId = inverseIndexCache[previousIndex];
+      if (!previousOptionId) {
+        break;
+      }
+      const previousPosition = positionCache[previousOptionId];
+      if (!previousPosition) {
+        break;
+      }
+      const previousCenter = previousPosition.updatedTop + previousPosition.updatedHeight / 2;
+      if (draggedTop < previousCenter) {
+        targetIndex = previousIndex;
+        continue;
+      }
+      break;
     }
   }
 
-  return closestIndex;
+  return targetIndex;
+};
+
+const getSortedIndices = (inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache']) =>
+  Object.keys(inverseIndexCache)
+    .map((key) => Number(key))
+    .sort((a, b) => a - b);
+
+const findMissingOptionIds = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  latestOptionIds: string[],
+) => {
+  const existingIds = new Set(Object.values(inverseIndexCache));
+  return latestOptionIds.filter((id) => !existingIds.has(id));
+};
+
+const reconcileInverseIndexCacheWithOptionIds = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  latestOptionIds: string[],
+) => {
+  const existingOrder: string[] = [];
+  const latestIdSet = new Set(latestOptionIds);
+  const sortedIndices = getSortedIndices(inverseIndexCache);
+
+  for (let i = 0; i < sortedIndices.length; i++) {
+    const optionId = inverseIndexCache[sortedIndices[i]];
+    if (!optionId || !latestIdSet.has(optionId)) {
+      continue;
+    }
+    existingOrder.push(optionId);
+  }
+
+  const existingIdSet = new Set(existingOrder);
+  const missingOptionIds = latestOptionIds.filter((id) => !existingIdSet.has(id));
+  const nextOrder = [...existingOrder, ...missingOptionIds];
+
+  const nextInverse: CurrentOptionPositionsCache['inverseIndexCache'] = {};
+  for (let i = 0; i < nextOrder.length; i++) {
+    nextInverse[i] = nextOrder[i];
+  }
+
+  return nextInverse;
+};
+
+const appendMissingOptionsToInverseCache = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  missingOptionIds: string[],
+) => {
+  if (!missingOptionIds.length) {
+    return inverseIndexCache;
+  }
+  const nextInverse = { ...inverseIndexCache };
+  let nextIndex = getSortedIndices(inverseIndexCache).length;
+  for (let i = 0; i < missingOptionIds.length; i++) {
+    nextInverse[nextIndex] = missingOptionIds[i];
+    nextIndex += 1;
+  }
+  return nextInverse;
+};
+
+const reorderInverseIndexCache = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  draggedItemId: string,
+  targetIndex: number,
+) => {
+  'worklet';
+
+  const indices = Object.keys(inverseIndexCache)
+    .map((key) => Number(key))
+    .sort((a, b) => a - b);
+  const orderedIds: string[] = [];
+
+  for (let i = 0; i < indices.length; i++) {
+    const optionId = inverseIndexCache[indices[i]];
+    if (!optionId || optionId === draggedItemId) {
+      continue;
+    }
+    orderedIds.push(optionId);
+  }
+
+  const boundedIndex = Math.min(Math.max(targetIndex, 0), orderedIds.length);
+  orderedIds.splice(boundedIndex, 0, draggedItemId);
+
+  const nextInverse: CurrentOptionPositionsCache['inverseIndexCache'] = {};
+  for (let i = 0; i < orderedIds.length; i++) {
+    nextInverse[i] = orderedIds[i];
+  }
+
+  return nextInverse;
 };
 
 export const CreatePollOption = ({
+  optionsCount,
   currentOptionPositions,
   draggedItemId,
   error,
@@ -195,9 +315,8 @@ export const CreatePollOption = ({
 
   // retains the original top from drag start so translation math stays stable across swaps
   const dragStartTop = useSharedValue(0);
+  const previousDragTop = useSharedValue(0);
 
-  // The sanity check for position cache updated index, is added because after a poll is sent its been reset
-  // by the composer and it throws an undefined error. This can be removed in future.
   useAnimatedReaction(
     () => currentOptionPositionsDerived.value.positionCache[option.id]?.updatedTop ?? 0,
     (currentValue, previousValue) => {
@@ -223,6 +342,7 @@ export const CreatePollOption = ({
       // store dragged item id for future swap
       currentIndex.value = currentPosition.updatedIndex;
       dragStartTop.value = currentPosition.updatedTop;
+      previousDragTop.value = currentPosition.updatedTop;
     })
     .onUpdate((e) => {
       const { inverseIndexCache, positionCache, totalHeight } = currentOptionPositionsDerived.value;
@@ -237,6 +357,8 @@ export const CreatePollOption = ({
 
       const maxBound = Math.max(totalHeight - draggedItemPosition.updatedHeight, 0);
       const newTop = dragStartTop.value + e.translationY;
+      const frameDeltaY = newTop - previousDragTop.value;
+      previousDragTop.value = newTop;
 
       // we add a small leeway to account for sharp animations which tend to bug out otherwise
       if (newTop < -10 || newTop > maxBound + 10) {
@@ -246,41 +368,38 @@ export const CreatePollOption = ({
       top.value = newTop;
 
       // calculate the new index where drag is headed to
-      const draggedCenter = newTop + draggedItemPosition.updatedHeight / 2;
-      newIndex.value = findClosestIndex(inverseIndexCache, positionCache, draggedCenter);
+      const draggedTop = newTop;
+      const draggedBottom = newTop + draggedItemPosition.updatedHeight;
+      newIndex.value = findTargetIndex(
+        inverseIndexCache,
+        positionCache,
+        currentIndex.value,
+        draggedTop,
+        draggedBottom,
+        frameDeltaY,
+      );
 
       // swap the items present at newIndex and currentIndex
       if (newIndex.value !== currentIndex.value) {
-        // find id of the item that currently resides at newIndex
-        const newIndexItemKey = inverseIndexCache[newIndex.value];
+        const nextInverseIndexCache = reorderInverseIndexCache(
+          inverseIndexCache,
+          draggedItemIdDerived.value,
+          newIndex.value,
+        );
+        const recalculated = recalculatePositionCache(
+          nextInverseIndexCache,
+          positionCache,
+          createPollOptionHeight,
+          normalizedCreatePollOptionGap,
+        );
 
-        // find id of the item that currently resides at currentIndex
-        const currentDragIndexItemKey = inverseIndexCache[currentIndex.value];
+        currentOptionPositions.value = {
+          inverseIndexCache: nextInverseIndexCache,
+          positionCache: recalculated.positionCache,
+          totalHeight: recalculated.totalHeight,
+        };
 
-        if (newIndexItemKey !== undefined && currentDragIndexItemKey !== undefined) {
-          // if we indeed have a candidate for a new index, we update our cache so that
-          // it can be reflected through animations
-          const nextInverseIndexCache = {
-            ...inverseIndexCache,
-            [newIndex.value]: currentDragIndexItemKey,
-            [currentIndex.value]: newIndexItemKey,
-          };
-          const recalculated = recalculatePositionCache(
-            nextInverseIndexCache,
-            positionCache,
-            createPollOptionHeight,
-            normalizedCreatePollOptionGap,
-          );
-
-          currentOptionPositions.value = {
-            inverseIndexCache: nextInverseIndexCache,
-            positionCache: recalculated.positionCache,
-            totalHeight: recalculated.totalHeight,
-          };
-
-          // update new index as current index
-          currentIndex.value = newIndex.value;
-        }
+        currentIndex.value = newIndex.value;
       }
     })
     .onEnd(() => {
@@ -337,13 +456,11 @@ export const CreatePollOption = ({
   );
 
   const measureOptionHeight = useCallback(() => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        optionContainerRef.current?.measure((_x, _y, _width, height) => {
-          if (Number.isFinite(height) && height > 0) {
-            onOptionLayout(option.id, height);
-          }
-        });
+    runAfterNextPaint(() => {
+      optionContainerRef.current?.measure((_x, _y, _width, height) => {
+        if (Number.isFinite(height) && height > 0) {
+          onOptionLayout(option.id, height);
+        }
       });
     });
   }, [onOptionLayout, option.id]);
@@ -353,7 +470,7 @@ export const CreatePollOption = ({
 
   useEffect(() => {
     measureOptionHeight();
-  }, [error, measureOptionHeight]);
+  }, [error, measureOptionHeight, optionsCount]);
 
   return (
     <Animated.View
@@ -508,29 +625,34 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         return;
       }
 
-      const { positionCache } = currentOptionPositions.value;
+      const { inverseIndexCache, positionCache } = currentOptionPositions.value;
       const currentPosition = positionCache[optionId];
       if (currentPosition && Math.abs(currentPosition.updatedHeight - height) < 1) {
         return;
       }
 
       const latestOptions = optionsRef.current;
-      const isKnownOption = latestOptions.some((option) => option.id === optionId);
+      const latestOptionIds = latestOptions.map((option) => option.id);
+      const isKnownOption = latestOptionIds.includes(optionId);
       if (!isKnownOption) {
         return;
       }
 
-      // Keep cache indices aligned with composer options order. This avoids transient
-      // overlap when an empty option is auto-inserted while typing.
-      const nextInverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'] = {};
-      latestOptions.forEach((option, index) => {
-        nextInverseIndexCache[index] = option.id;
-      });
+      const missingOptionIds = findMissingOptionIds(inverseIndexCache, latestOptionIds);
+      const nextInverseIndexCache =
+        isDragging.value === 1
+          ? appendMissingOptionsToInverseCache(inverseIndexCache, missingOptionIds)
+          : reconcileInverseIndexCacheWithOptionIds(inverseIndexCache, latestOptionIds);
 
       const nextPositionCache: CurrentOptionPositionsCache['positionCache'] = {};
-      latestOptions.forEach((option, index) => {
-        const cachedPosition = positionCache[option.id];
-        nextPositionCache[option.id] = cachedPosition
+      const sortedIndices = getSortedIndices(nextInverseIndexCache);
+      sortedIndices.forEach((index) => {
+        const currentOptionId = nextInverseIndexCache[index];
+        if (!currentOptionId) {
+          return;
+        }
+        const cachedPosition = positionCache[currentOptionId];
+        nextPositionCache[currentOptionId] = cachedPosition
           ? cachedPosition
           : {
               updatedHeight: createPollOptionHeight,
@@ -566,6 +688,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
       <Animated.View style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption
+            optionsCount={options.length}
             currentOptionPositions={currentOptionPositions}
             draggedItemId={draggedItemId}
             error={errors?.[option.id]}
