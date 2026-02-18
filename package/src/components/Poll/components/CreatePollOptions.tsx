@@ -3,6 +3,7 @@ import { LayoutChangeEvent, Pressable, StyleSheet, Text, TextInput, View } from 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
+  LinearTransition,
   runOnJS,
   SharedValue,
   useAnimatedReaction,
@@ -488,7 +489,7 @@ export const CreatePollOption = ({
         animatedStyles,
       ]}
     >
-      <View style={[styles.optionContent, optionStyle.content]}>
+      <Animated.View layout={LayoutTransition} style={[styles.optionContent, optionStyle.content]}>
         <GestureDetector gesture={gesture}>
           <Animated.View>
             <DotGrid height={20} width={20} stroke={semantics.inputTextIcon} />
@@ -504,7 +505,7 @@ export const CreatePollOption = ({
         <Pressable onPress={onRemoveOptionHandler}>
           <CircleMinus height={20} width={20} stroke={semantics.inputTextIcon} />
         </Pressable>
-      </View>
+      </Animated.View>
 
       {error ? (
         <View
@@ -761,3 +762,5 @@ const useStyles = () => {
     });
   }, [semantics]);
 };
+
+const LayoutTransition = LinearTransition.duration(100).springify();
