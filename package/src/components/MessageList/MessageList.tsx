@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import Animated, { LinearTransition } from 'react-native-reanimated';
+
 import debounce from 'lodash/debounce';
 
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
