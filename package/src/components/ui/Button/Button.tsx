@@ -10,7 +10,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
 
-type IconRenderer = (props: IconProps) => React.ReactNode;
+export type IconRenderer = (props: IconProps) => React.ReactNode;
 
 export type ButtonProps = PressableProps & {
   /**
