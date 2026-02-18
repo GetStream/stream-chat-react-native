@@ -50,32 +50,13 @@ export const CreatePollContent = () => {
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
   const normalizedCreatePollOptionHeight = createPollOptionHeight ?? POLL_OPTION_HEIGHT;
 
-  const initialOptionPositions = useMemo<CurrentOptionPositionsCache>(() => {
-    const initialPositions: CurrentOptionPositionsCache = {
-      inverseIndexCache: {},
-      positionCache: {},
-      totalHeight: 0,
-    };
-
-    let runningTop = 0;
-    options.forEach((option, index) => {
-      initialPositions.inverseIndexCache[index] = option.id;
-      initialPositions.positionCache[option.id] = {
-        updatedHeight: normalizedCreatePollOptionHeight,
-        updatedIndex: index,
-        updatedTop: runningTop,
-      };
-      const gap = index === options.length - 1 ? 0 : normalizedCreatePollOptionGap;
-      runningTop += normalizedCreatePollOptionHeight + gap;
-      initialPositions.totalHeight = runningTop;
-    });
-
-    return initialPositions;
-  }, [normalizedCreatePollOptionGap, normalizedCreatePollOptionHeight, options]);
-
   // positions and index lookup map
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
-  const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>(initialOptionPositions);
+  const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
+    inverseIndexCache: {},
+    positionCache: {},
+    totalHeight: 0,
+  });
 
   const {
     theme: {

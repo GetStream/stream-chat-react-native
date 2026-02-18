@@ -483,8 +483,8 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         return;
       }
 
-      const fallbackIndex = options.findIndex((option) => option.id === optionId);
-      if (fallbackIndex < 0) {
+      const isKnownOption = options.some((option) => option.id === optionId);
+      if (!isKnownOption) {
         return;
       }
 
@@ -498,9 +498,12 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
       const nextPositionCache = {
         ...positionCache,
         [optionId]: {
+          ...(currentPosition ?? {
+            updatedHeight: height,
+            updatedIndex: 0,
+            updatedTop: 0,
+          }),
           updatedHeight: height,
-          updatedIndex: currentPosition?.updatedIndex ?? fallbackIndex,
-          updatedTop: currentPosition?.updatedTop ?? 0,
         },
       };
 
