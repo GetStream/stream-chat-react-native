@@ -14,15 +14,23 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PortalHost } from 'react-native-teleport';
 
-import { closeOverlay, useOverlayController } from '../../state-store';
-import { finalizeCloseOverlay } from '../../state-store';
+import {
+  closeOverlay,
+  finalizeCloseOverlay,
+  registerOverlaySharedValueController,
+  Rect,
+  useOverlayController,
+} from '../../state-store';
 
 const DURATION = 300;
 
 export const MessageOverlayHostLayer = () => {
-  const { messageH, topH, bottomH, id, closing } = useOverlayController();
+  const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
+  const messageH = useSharedValue<Rect>(undefined);
+  const topH = useSharedValue<Rect>(undefined);
+  const bottomH = useSharedValue<Rect>(undefined);
 
   const topInset = insets.top;
   // Due to edge-to-edge in combination with various libraries, Android sometimes reports
@@ -39,6 +47,27 @@ export const MessageOverlayHostLayer = () => {
 
   const backdrop = useSharedValue(0);
 
+  useEffect(
+    () =>
+      registerOverlaySharedValueController({
+        reset: () => {
+          messageH.value = undefined;
+          topH.value = undefined;
+          bottomH.value = undefined;
+        },
+        setBottomH: (rect) => {
+          bottomH.value = rect;
+        },
+        setMessageH: (rect) => {
+          messageH.value = rect;
+        },
+        setTopH: (rect) => {
+          topH.value = rect;
+        },
+      }),
+    [bottomH, messageH, topH],
+  );
+
   useEffect(() => {
     const target = isActive && !closing ? 1 : 0;
     backdrop.value = withSpring(target, { duration: DURATION + target * 100 }, (finished) => {
@@ -53,7 +82,7 @@ export const MessageOverlayHostLayer = () => {
   }));
 
   const shiftY = useDerivedValue(() => {
-    if (!messageH?.value || !topH?.value || !bottomH?.value) return 0;
+    if (!messageH.value || !topH.value || !bottomH.value) return 0;
 
     const anchorY = messageH.value.y;
     const msgH = messageH.value.h;
@@ -78,7 +107,7 @@ export const MessageOverlayHostLayer = () => {
   }, [isActive, scrollY]);
 
   const contentH = useDerivedValue(() =>
-    topH?.value && bottomH?.value && messageH?.value
+    topH.value && bottomH.value && messageH.value
       ? Math.max(
           screenH,
           topH.value.h + messageH.value.h + bottomH.value.h + topInset + bottomInset + 20,
@@ -123,7 +152,7 @@ export const MessageOverlayHostLayer = () => {
   }, [closing]);
 
   const topItemStyle = useAnimatedStyle(() => {
-    if (!topH?.value) return { height: 0 };
+    if (!topH.value) return { height: 0 };
     return {
       height: topH.value.h,
       left: topH.value.x,
@@ -144,7 +173,7 @@ export const MessageOverlayHostLayer = () => {
   }, [isActive, closing]);
 
   const bottomItemStyle = useAnimatedStyle(() => {
-    if (!bottomH?.value) return { height: 0 };
+    if (!bottomH.value) return { height: 0 };
     return {
       height: bottomH.value.h,
       left: bottomH.value.x,
@@ -165,7 +194,7 @@ export const MessageOverlayHostLayer = () => {
   }, [isActive, closing]);
 
   const hostStyle = useAnimatedStyle(() => {
-    if (!messageH?.value) return { height: 0 };
+    if (!messageH.value) return { height: 0 };
     return {
       height: messageH.value.h,
       left: messageH.value.x,
@@ -202,7 +231,7 @@ export const MessageOverlayHostLayer = () => {
       const yShift = shiftY.value; // overlay shift
       const yParent = scrollY.value; // parent content
 
-      const top = topH?.value;
+      const top = topH.value;
       if (top) {
         // top rectangle's final screen Y
         // base layout Y + overlay shift (shiftY) + parent scroll transform (scrollY)
@@ -213,7 +242,7 @@ export const MessageOverlayHostLayer = () => {
         }
       }
 
-      const bot = bottomH?.value;
+      const bot = bottomH.value;
       if (bot) {
         // bottom rectangle's final screen Y
         // base layout Y + overlay shift (shiftY) + parent scroll transform (scrollY)

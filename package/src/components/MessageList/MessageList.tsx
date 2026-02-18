@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  FlatList,
   FlatListProps,
   FlatList as FlatListType,
   LayoutChangeEvent,
@@ -22,6 +23,11 @@ import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollT
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
+
+import {
+  buildMessageListWithNeighbours,
+  MessageListItemWithNeighbours,
+} from './utils/buildMessageListWithNeighbours';
 
 import {
   AttachmentPickerContextValue,
@@ -103,7 +109,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const keyExtractor = (item: LocalMessage) => {
+const keyExtractor = (derivedItem: MessageListItemWithNeighbours) => {
+  const { message: item } = derivedItem;
   if (item.id) {
     return item.id;
   }
@@ -198,7 +205,7 @@ type MessageListPropsWithContext = Pick<
      *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
      * ```
      */
-    additionalFlatListProps?: Partial<FlatListProps<LocalMessage>>;
+    additionalFlatListProps?: Partial<FlatListProps<MessageListItemWithNeighbours>>;
     /**
      * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
      * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
@@ -239,7 +246,7 @@ type MessageListPropsWithContext = Pick<
      *  }}
      * ```
      */
-    setFlatListRef?: (ref: FlatListType<LocalMessage> | null) => void;
+    setFlatListRef?: (ref: FlatListType<MessageListItemWithNeighbours> | null) => void;
     /**
      * If true, the message list will be used in a live-streaming scenario.
      * This flag is used to make sure that the auto scroll behaves well, if multiple messages are received.
@@ -249,6 +256,7 @@ type MessageListPropsWithContext = Pick<
      * @experimental
      */
     isLiveStreaming?: boolean;
+    animateLayout?: boolean;
   };
 
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
@@ -269,6 +277,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
+    animateLayout = true,
     attachmentPickerStore,
     additionalFlatListProps,
     channel,
@@ -352,23 +361,32 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     threadList,
   });
 
-  const processedMessageListRef = useRef(processedMessageList);
-  processedMessageListRef.current = processedMessageList;
+  const previousDerivedItemsRef = useRef<Map<string, MessageListItemWithNeighbours>>(undefined);
 
-  const renderItem = useCallback(
-    ({ item: message, index }: { item: LocalMessage; index: number }) => {
-      const previousMessage = processedMessageList[index + 1];
-      const nextMessage = processedMessageList[index - 1];
-      return (
-        <MessageWrapper
-          message={message}
-          previousMessage={previousMessage}
-          nextMessage={nextMessage}
-        />
-      );
-    },
-    [processedMessageList],
-  );
+  const processedMessageListWithNeighbors = useMemo(() => {
+    if (!previousDerivedItemsRef.current) {
+      previousDerivedItemsRef.current = new Map();
+    }
+
+    const { items, nextDerivedItems } = buildMessageListWithNeighbours(
+      processedMessageList,
+      previousDerivedItemsRef.current,
+    );
+    previousDerivedItemsRef.current = nextDerivedItems;
+
+    return items;
+  }, [processedMessageList]);
+
+  const renderItem = useStableCallback(({ item }: { item: MessageListItemWithNeighbours }) => {
+    const { message, previousMessage, nextMessage } = item;
+    return (
+      <MessageWrapper
+        message={message}
+        previousMessage={previousMessage}
+        nextMessage={nextMessage}
+      />
+    );
+  });
 
   const messageListLengthBeforeUpdate = useRef(0);
   const messageListLengthAfterUpdate = processedMessageList.length;
@@ -410,7 +428,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const onStartReachedInPromise = useRef<Promise<void> | null>(null);
   const onEndReachedInPromise = useRef<Promise<void> | null>(null);
 
-  const flatListRef = useRef<FlatListType<LocalMessage> | null>(null);
+  const flatListRef = useRef<FlatListType<MessageListItemWithNeighbours> | null>(null);
 
   const channelResyncScrollSet = useRef<boolean>(true);
 
@@ -445,26 +463,26 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       return;
     }
 
-    const lastItem = viewableItems[viewableItems.length - 1];
+    const lastMessage = viewableItems[viewableItems.length - 1].item?.message;
 
-    if (lastItem) {
+    if (lastMessage) {
       if (
         !channel.state.messagePagination.hasPrev &&
-        processedMessageList[processedMessageList.length - 1].id === lastItem.item.id
+        processedMessageList[processedMessageList.length - 1].id === lastMessage.id
       ) {
         setStickyHeaderDate(undefined);
         return;
       }
-      const isMessageTypeDeleted = lastItem.item.type === 'deleted';
+      const isMessageTypeDeleted = lastMessage.type === 'deleted';
 
       if (
-        lastItem?.item?.created_at &&
+        lastMessage?.created_at &&
         !isMessageTypeDeleted &&
-        typeof lastItem.item.created_at !== 'string' &&
-        lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
+        typeof lastMessage.created_at !== 'string' &&
+        lastMessage.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
       ) {
-        stickyHeaderDateRef.current = lastItem.item.created_at;
-        setStickyHeaderDate(lastItem.item.created_at);
+        stickyHeaderDateRef.current = lastMessage.created_at;
+        setStickyHeaderDate(lastMessage.created_at);
       }
     }
   });
@@ -478,7 +496,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
     const lastReadMessageId = channelUnreadState?.last_read_message_id;
-    const lastReadMessageVisible = viewableItems.some((item) => item.item.id === lastReadMessageId);
+    const lastReadMessageVisible = viewableItems.some(
+      (item) => item.item.message.id === lastReadMessageId,
+    );
 
     if (
       !viewableItems.length ||
@@ -490,10 +510,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       return;
     }
 
-    const lastItem = viewableItems[viewableItems.length - 1];
+    const lastItem = viewableItems[viewableItems.length - 1].item;
 
     if (lastItem) {
-      const lastItemMessage = lastItem.item;
+      const lastItemMessage = lastItem.message;
       const lastItemCreatedAt = lastItemMessage.created_at;
 
       const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
@@ -994,49 +1014,49 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
   const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const onScrollToIndexFailedRef = useRef<FlatListProps<LocalMessage>['onScrollToIndexFailed']>(
-    (info) => {
-      // We got a failure as we tried to scroll to an item that was outside the render length
-      if (!flatListRef.current) {
-        return;
-      }
-      // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
-      // since we used only an average offset... we won't go to the center of the item yet
-      // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
-      failScrollTimeoutId.current = setTimeout(() => {
-        try {
-          flatListRef.current?.scrollToIndex({
-            animated: true,
-            index: info.index,
-            viewPosition: 0.5, // try to place message in the center of the screen
-          });
-          if (messageIdLastScrolledToRef.current) {
-            // in case the target message was cleared out
-            // the state being set again will trigger the highlight again
-            setTargetedMessage(messageIdLastScrolledToRef.current);
-          }
-          scrollToIndexFailedRetryCountRef.current = 0;
-        } catch (e) {
-          if (
-            !onScrollToIndexFailedRef.current ||
-            scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
-          ) {
-            scrollToIndexFailedRetryCountRef.current = 0;
-            return;
-          }
-          // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
-          // Scrolling to an index not in range of the Flatlist's data will result in a crash that
-          // won't call onScrollToIndexFailed.
-          // By catching this error we retry scrolling by calling onScrollToIndexFailedRef
-          scrollToIndexFailedRetryCountRef.current += 1;
-          onScrollToIndexFailedRef.current(info);
+  const onScrollToIndexFailedRef = useRef<
+    FlatListProps<MessageListItemWithNeighbours>['onScrollToIndexFailed']
+  >((info) => {
+    // We got a failure as we tried to scroll to an item that was outside the render length
+    if (!flatListRef.current) {
+      return;
+    }
+    // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
+    // since we used only an average offset... we won't go to the center of the item yet
+    // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
+    failScrollTimeoutId.current = setTimeout(() => {
+      try {
+        flatListRef.current?.scrollToIndex({
+          animated: true,
+          index: info.index,
+          viewPosition: 0.5, // try to place message in the center of the screen
+        });
+        if (messageIdLastScrolledToRef.current) {
+          // in case the target message was cleared out
+          // the state being set again will trigger the highlight again
+          setTargetedMessage(messageIdLastScrolledToRef.current);
         }
-      }, WAIT_FOR_SCROLL_TIMEOUT);
+        scrollToIndexFailedRetryCountRef.current = 0;
+      } catch (e) {
+        if (
+          !onScrollToIndexFailedRef.current ||
+          scrollToIndexFailedRetryCountRef.current > MAX_RETRIES_AFTER_SCROLL_FAILURE
+        ) {
+          scrollToIndexFailedRetryCountRef.current = 0;
+          return;
+        }
+        // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
+        // Scrolling to an index not in range of the Flatlist's data will result in a crash that
+        // won't call onScrollToIndexFailed.
+        // By catching this error we retry scrolling by calling onScrollToIndexFailedRef
+        scrollToIndexFailedRetryCountRef.current += 1;
+        onScrollToIndexFailedRef.current(info);
+      }
+    }, WAIT_FOR_SCROLL_TIMEOUT);
 
-      // Only when index is greater than 0 and in range of items in FlatList
-      // this onScrollToIndexFailed will be called again
-    },
-  );
+    // Only when index is greater than 0 and in range of items in FlatList
+    // this onScrollToIndexFailed will be called again
+  });
 
   const dismissImagePicker = useStableCallback(() => {
     if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
@@ -1055,7 +1075,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     onUserScrollEvent(event);
   });
 
-  const refCallback = useStableCallback((ref: FlatListType<LocalMessage>) => {
+  const refCallback = useStableCallback((ref: FlatListType<MessageListItemWithNeighbours>) => {
     flatListRef.current = ref;
 
     if (setFlatListRef) {
@@ -1114,10 +1134,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     ],
   );
 
-  const AnimatedList = useMemo(
-    () => (FlatList ? Animated.createAnimatedComponent(FlatList<LocalMessage>) : undefined),
-    [FlatList],
-  );
+  const ListComponent = animateLayout ? AnimatedList : FlatList;
 
   const viewportHeightRef = useRef<number>(undefined);
 
@@ -1157,7 +1174,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     viewportHeightRef.current = event.nativeEvent.layout.height;
   });
 
-  if (!AnimatedList) {
+  if (!ListComponent) {
     return null;
   }
 
@@ -1182,12 +1199,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         </View>
       ) : (
         <MessageListItemProvider value={messageListItemContextValue}>
-          <AnimatedList
+          <ListComponent
             // TODO: Consider hiding this behind a feature flag.
-            layout={LinearTransition.duration(200)}
+            layout={LayoutTransition}
             contentContainerStyle={flatListContentContainerStyle}
             /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-            data={processedMessageList}
+            data={processedMessageListWithNeighbors}
             extraData={disabled}
             inverted={inverted}
             keyboardShouldPersistTaps='handled'
@@ -1366,3 +1383,20 @@ export const MessageList = (props: MessageListProps) => {
     />
   );
 };
+
+// SOme notes about why we're relying on `createAnimatedComponent` instead of `Animated.FlatList`:
+// 1. `Animated.FlatList` is much less performant for what we need. We essentially need simple
+//    `layout` animations to account for the list's outer container switching layout. What we're
+//    getting however, is an animated `CellRenderer` component as well as scroll event throttling
+//    reduced to 1. Since we don't really want any of this, we stick to doing it ourselves.
+// 2. We need to memoize the output because of the fact that `createAnimatedComponent` changes the
+//    identity of the `style` prop on every render. It also seems to be an intended thing too,
+//    so not something that's going to change soon. This means that whenever our `MessageList`
+//    rerenders (but the list's props remain stable), it anyway rerenders internally as well (for
+//    about half of the milliseconds it takes for a full `data` rerender !). This affects performance
+//    significantly, especially in high ingress scenarios (i.e a livestream).
+const AnimatedList = React.memo(
+  Animated.createAnimatedComponent(FlatList<MessageListItemWithNeighbours>),
+);
+
+const LayoutTransition = LinearTransition.duration(200);
