@@ -40,16 +40,42 @@ export const CreatePollContent = () => {
   const { pollComposer } = messageComposer;
   const { options } = useStateStore(pollComposer.state, pollComposerStateSelector);
 
-  const { createPollOptionHeight, closePollCreationDialog, createAndSendPoll } =
-    useCreatePollContentContext();
+  const {
+    createPollOptionGap = 8,
+    createPollOptionHeight,
+    closePollCreationDialog,
+    createAndSendPoll,
+  } = useCreatePollContentContext();
+  const normalizedCreatePollOptionGap =
+    Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
+  const normalizedCreatePollOptionHeight = createPollOptionHeight ?? POLL_OPTION_HEIGHT;
+
+  const initialOptionPositions = useMemo<CurrentOptionPositionsCache>(() => {
+    const initialPositions: CurrentOptionPositionsCache = {
+      inverseIndexCache: {},
+      positionCache: {},
+      totalHeight: 0,
+    };
+
+    let runningTop = 0;
+    options.forEach((option, index) => {
+      initialPositions.inverseIndexCache[index] = option.id;
+      initialPositions.positionCache[option.id] = {
+        updatedHeight: normalizedCreatePollOptionHeight,
+        updatedIndex: index,
+        updatedTop: runningTop,
+      };
+      const gap = index === options.length - 1 ? 0 : normalizedCreatePollOptionGap;
+      runningTop += normalizedCreatePollOptionHeight + gap;
+      initialPositions.totalHeight = runningTop;
+    });
+
+    return initialPositions;
+  }, [normalizedCreatePollOptionGap, normalizedCreatePollOptionHeight, options]);
 
   // positions and index lookup map
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
-  const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
-    inverseIndexCache: {},
-    positionCache: {},
-    totalHeight: 0,
-  });
+  const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>(initialOptionPositions);
 
   const {
     theme: {
@@ -62,7 +88,6 @@ export const CreatePollContent = () => {
   const styles = useStyles();
 
   useEffect(() => {
-    if (!createPollOptionHeight) return;
     const previousPositionCache = currentOptionPositions.value.positionCache;
     const newCurrentOptionPositions: CurrentOptionPositionsCache = {
       inverseIndexCache: {},
@@ -72,18 +97,19 @@ export const CreatePollContent = () => {
     let runningTop = 0;
     options.forEach((option, index) => {
       const preservedHeight =
-        previousPositionCache[option.id]?.updatedHeight ?? createPollOptionHeight;
+        previousPositionCache[option.id]?.updatedHeight ?? normalizedCreatePollOptionHeight;
       newCurrentOptionPositions.inverseIndexCache[index] = option.id;
       newCurrentOptionPositions.positionCache[option.id] = {
         updatedHeight: preservedHeight,
         updatedIndex: index,
         updatedTop: runningTop,
       };
-      runningTop += preservedHeight;
+      const gap = index === options.length - 1 ? 0 : normalizedCreatePollOptionGap;
+      runningTop += preservedHeight + gap;
       newCurrentOptionPositions.totalHeight = runningTop;
     });
     currentOptionPositions.value = newCurrentOptionPositions;
-  }, [createPollOptionHeight, currentOptionPositions, options]);
+  }, [currentOptionPositions, normalizedCreatePollOptionGap, normalizedCreatePollOptionHeight, options]);
 
   const onBackPressHandler = useCallback(() => {
     pollComposer.initState();
@@ -183,11 +209,12 @@ export const CreatePollContent = () => {
 export const CreatePoll = ({
   closePollCreationDialog,
   CreatePollContent: CreatePollContentOverride,
+  createPollOptionGap = 8,
   createPollOptionHeight = POLL_OPTION_HEIGHT,
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
-  'createPollOptionHeight' | 'closePollCreationDialog' | 'sendMessage'
+  'createPollOptionGap' | 'createPollOptionHeight' | 'closePollCreationDialog' | 'sendMessage'
 > &
   Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
   const messageComposer = useMessageComposer();
@@ -208,7 +235,13 @@ export const CreatePoll = ({
 
   return (
     <CreatePollContentProvider
-      value={{ closePollCreationDialog, createAndSendPoll, createPollOptionHeight, sendMessage }}
+      value={{
+        closePollCreationDialog,
+        createAndSendPoll,
+        createPollOptionGap,
+        createPollOptionHeight,
+        sendMessage,
+      }}
     >
       {CreatePollContentOverride ? <CreatePollContentOverride /> : <CreatePollContent />}
     </CreatePollContentProvider>

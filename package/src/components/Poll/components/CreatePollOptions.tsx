@@ -62,6 +62,7 @@ const recalculatePositionCache = (
   inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
   positionCache: CurrentOptionPositionsCache['positionCache'],
   fallbackHeight: number,
+  gap: number,
 ) => {
   'worklet';
 
@@ -77,21 +78,23 @@ const recalculatePositionCache = (
     const optionId = inverseIndexCache[index];
     const currentPosition = optionId ? updatedPositionCache[optionId] : undefined;
 
-    if (!optionId || !currentPosition) {
+    if (!optionId) {
       continue;
     }
 
     const updatedHeight =
-      Number.isFinite(currentPosition.updatedHeight) && currentPosition.updatedHeight > 0
+      currentPosition &&
+      Number.isFinite(currentPosition.updatedHeight) &&
+      currentPosition.updatedHeight > 0
         ? currentPosition.updatedHeight
         : fallbackHeight;
     updatedPositionCache[optionId] = {
-      ...currentPosition,
+      ...(currentPosition ?? {}),
       updatedHeight,
       updatedIndex: index,
       updatedTop: runningTop,
     };
-    runningTop += updatedHeight;
+    runningTop += updatedHeight + (i === indices.length - 1 ? 0 : gap);
   }
 
   return {
@@ -151,8 +154,11 @@ export const CreatePollOption = ({
   onRemoveOption,
 }: CreatePollOptionType) => {
   const { t } = useTranslationContext();
-  const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
-  const top = useSharedValue(index * createPollOptionHeight);
+  const { createPollOptionGap = 8, createPollOptionHeight = POLL_OPTION_HEIGHT } =
+    useCreatePollContentContext();
+  const normalizedCreatePollOptionGap =
+    Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
+  const top = useSharedValue(index * (createPollOptionHeight + normalizedCreatePollOptionGap));
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 
   const draggedItemIdDerived = useDerivedValue(() => draggedItemId.value);
@@ -257,6 +263,7 @@ export const CreatePollOption = ({
             nextInverseIndexCache,
             positionCache,
             createPollOptionHeight,
+            normalizedCreatePollOptionGap,
           );
 
           currentOptionPositions.value = {
@@ -381,7 +388,10 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
   const { errors, options } = useStateStore(pollComposer.state, pollComposerStateSelector);
-  const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
+  const { createPollOptionGap = 8, createPollOptionHeight = POLL_OPTION_HEIGHT } =
+    useCreatePollContentContext();
+  const normalizedCreatePollOptionGap =
+    Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
 
   const updateOption = useCallback(
     (newText: string, index: number) => {
@@ -467,31 +477,47 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         return;
       }
 
-      const { inverseIndexCache, positionCache } = currentOptionPositions.value;
+      const { positionCache } = currentOptionPositions.value;
       const currentPosition = positionCache[optionId];
-      if (!currentPosition || Math.abs(currentPosition.updatedHeight - height) < 1) {
+      if (currentPosition && Math.abs(currentPosition.updatedHeight - height) < 1) {
         return;
       }
 
-      const recalculated = recalculatePositionCache(
-        inverseIndexCache,
-        {
-          ...positionCache,
-          [optionId]: {
-            ...currentPosition,
-            updatedHeight: height,
-          },
+      const fallbackIndex = options.findIndex((option) => option.id === optionId);
+      if (fallbackIndex < 0) {
+        return;
+      }
+
+      // Keep cache indices aligned with composer options order. This avoids transient
+      // overlap when an empty option is auto-inserted while typing.
+      const nextInverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'] = {};
+      options.forEach((option, index) => {
+        nextInverseIndexCache[index] = option.id;
+      });
+
+      const nextPositionCache = {
+        ...positionCache,
+        [optionId]: {
+          updatedHeight: height,
+          updatedIndex: currentPosition?.updatedIndex ?? fallbackIndex,
+          updatedTop: currentPosition?.updatedTop ?? 0,
         },
+      };
+
+      const recalculated = recalculatePositionCache(
+        nextInverseIndexCache,
+        nextPositionCache,
         createPollOptionHeight,
+        normalizedCreatePollOptionGap,
       );
 
       currentOptionPositions.value = {
-        inverseIndexCache,
+        inverseIndexCache: nextInverseIndexCache,
         positionCache: recalculated.positionCache,
         totalHeight: recalculated.totalHeight,
       };
     },
-    [createPollOptionHeight, currentOptionPositions],
+    [createPollOptionHeight, currentOptionPositions, normalizedCreatePollOptionGap, options],
   );
 
   return (

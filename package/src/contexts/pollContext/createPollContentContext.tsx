@@ -15,6 +15,12 @@ export type CreatePollContentContextValue = {
    */
   closePollCreationDialog?: () => void;
   createPollOptionHeight?: number;
+  /**
+   * Vertical gap between poll options in the poll creation screen.
+   *
+   * **Default: ** 8
+   */
+  createPollOptionGap?: number;
 };
 
 export const CreatePollContentContext = React.createContext(
