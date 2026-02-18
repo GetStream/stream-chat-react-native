@@ -236,6 +236,32 @@ const reorderInverseIndexCache = (
   return nextInverse;
 };
 
+const getFallbackTopForIndex = (
+  index: number,
+  positionCache: CurrentOptionPositionsCache['positionCache'],
+  gap: number,
+) => {
+  const knownPositions = Object.values(positionCache)
+    .filter(
+      (position) =>
+        Number.isFinite(position.updatedIndex) &&
+        position.updatedIndex >= 0 &&
+        Number.isFinite(position.updatedHeight) &&
+        position.updatedHeight >= 0,
+    )
+    .sort((a, b) => a.updatedIndex - b.updatedIndex);
+
+  let runningTop = 0;
+  for (let i = 0; i < knownPositions.length; i++) {
+    if (knownPositions[i].updatedIndex >= index) {
+      break;
+    }
+    runningTop += knownPositions[i].updatedHeight + gap;
+  }
+
+  return runningTop;
+};
+
 export const CreatePollOption = ({
   optionsCount,
   currentOptionPositions,
@@ -254,7 +280,13 @@ export const CreatePollOption = ({
   const { createPollOptionGap = 8 } = useCreatePollContentContext();
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
-  const initialTop = currentOptionPositions.value.positionCache[option.id]?.updatedTop ?? 0;
+  const initialTop =
+    currentOptionPositions.value.positionCache[option.id]?.updatedTop ??
+    getFallbackTopForIndex(
+      index,
+      currentOptionPositions.value.positionCache,
+      normalizedCreatePollOptionGap,
+    );
   const top = useSharedValue(initialTop);
   const optionContainerRef = useRef<View>(null);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
