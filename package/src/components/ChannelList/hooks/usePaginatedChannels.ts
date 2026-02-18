@@ -13,8 +13,6 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
-
 type Parameters = {
   channelManager: ChannelManager;
   enableOfflineSupport: boolean;
@@ -22,10 +20,6 @@ type Parameters = {
   options: ChannelOptions;
   setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
   sort: ChannelSort;
-};
-
-const DEFAULT_OPTIONS = {
-  message_limit: 10,
 };
 
 const RETRY_INTERVAL_IN_MS = 5000;
@@ -46,7 +40,7 @@ export const usePaginatedChannels = ({
   channelManager,
   enableOfflineSupport,
   filters = {},
-  options = DEFAULT_OPTIONS,
+  options = {},
   sort = {},
 }: Parameters) => {
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
@@ -99,7 +93,6 @@ export const usePaginatedChannels = ({
     setActiveQueryType(queryType);
 
     const newOptions = {
-      limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
       offset: 0,
       ...options,
     };

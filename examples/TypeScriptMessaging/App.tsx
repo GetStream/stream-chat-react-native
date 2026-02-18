@@ -37,7 +37,6 @@ const options = {
   presence: true,
   state: true,
   watch: true,
-  limit: 30,
 };
 
 I18nManager.forceRTL(false);
