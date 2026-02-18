@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { LayoutChangeEvent, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -31,14 +31,15 @@ export type CurrentOptionPositionsCache = {
   };
   positionCache: {
     [key: string]: {
+      updatedHeight: number;
       updatedIndex: number;
       updatedTop: number;
     };
   };
+  totalHeight: number;
 };
 
 export type CreatePollOptionType = {
-  boundaries: { maxBound: number; minBound: number };
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   draggedItemId: SharedValue<string | null>;
   error?: string;
@@ -47,6 +48,7 @@ export type CreatePollOptionType = {
   index: number;
   isDragging: SharedValue<1 | 0>;
   option: PollComposerOption;
+  onOptionLayout: (optionId: string, height: number) => void;
   /**
    *
    * @param newOrder The inverse index object of the new options position after re-ordering.
@@ -56,8 +58,86 @@ export type CreatePollOptionType = {
   onRemoveOption: (index: number) => void;
 };
 
+const recalculatePositionCache = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  positionCache: CurrentOptionPositionsCache['positionCache'],
+  fallbackHeight: number,
+) => {
+  'worklet';
+
+  const updatedPositionCache = { ...positionCache };
+  const indices = Object.keys(inverseIndexCache)
+    .map((key) => Number(key))
+    .sort((a, b) => a - b);
+
+  let runningTop = 0;
+
+  for (let i = 0; i < indices.length; i++) {
+    const index = indices[i];
+    const optionId = inverseIndexCache[index];
+    const currentPosition = optionId ? updatedPositionCache[optionId] : undefined;
+
+    if (!optionId || !currentPosition) {
+      continue;
+    }
+
+    const updatedHeight =
+      Number.isFinite(currentPosition.updatedHeight) && currentPosition.updatedHeight > 0
+        ? currentPosition.updatedHeight
+        : fallbackHeight;
+    updatedPositionCache[optionId] = {
+      ...currentPosition,
+      updatedHeight,
+      updatedIndex: index,
+      updatedTop: runningTop,
+    };
+    runningTop += updatedHeight;
+  }
+
+  return {
+    positionCache: updatedPositionCache,
+    totalHeight: runningTop,
+  };
+};
+
+const findClosestIndex = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  positionCache: CurrentOptionPositionsCache['positionCache'],
+  draggedCenter: number,
+) => {
+  'worklet';
+
+  const indices = Object.keys(inverseIndexCache).map((key) => Number(key));
+
+  if (!indices.length) {
+    return 0;
+  }
+
+  let closestIndex = indices[0];
+  let closestDistance = Number.MAX_VALUE;
+
+  for (let i = 0; i < indices.length; i++) {
+    const index = indices[i];
+    const optionId = inverseIndexCache[index];
+    if (!optionId) {
+      continue;
+    }
+    const position = positionCache[optionId];
+    if (!position) {
+      continue;
+    }
+    const center = position.updatedTop + position.updatedHeight / 2;
+    const distance = Math.abs(center - draggedCenter);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = index;
+    }
+  }
+
+  return closestIndex;
+};
+
 export const CreatePollOption = ({
-  boundaries,
   currentOptionPositions,
   draggedItemId,
   error,
@@ -66,6 +146,7 @@ export const CreatePollOption = ({
   index,
   isDragging,
   option,
+  onOptionLayout,
   onNewOrder,
   onRemoveOption,
 }: CreatePollOptionType) => {
@@ -100,21 +181,27 @@ export const CreatePollOption = ({
   // used for swapping with newIndex
   const currentIndex = useSharedValue<number | null>(null);
 
+  // retains the original top from drag start so translation math stays stable across swaps
+  const dragStartTop = useSharedValue(0);
+
   // The sanity check for position cache updated index, is added because after a poll is sent its been reset
   // by the composer and it throws an undefined error. This can be removed in future.
   useAnimatedReaction(
-    () => currentOptionPositionsDerived.value.positionCache[option.id]?.updatedIndex ?? 0,
+    () => currentOptionPositionsDerived.value.positionCache[option.id]?.updatedTop ?? 0,
     (currentValue, previousValue) => {
-      if (currentValue !== previousValue) {
-        const updatedIndex =
-          currentOptionPositionsDerived.value.positionCache[option.id]?.updatedIndex ?? 0;
-        top.value = withSpring(updatedIndex * createPollOptionHeight);
+      if (currentValue !== previousValue && !isCurrentDraggingItem.value) {
+        top.value = withSpring(currentValue);
       }
     },
   );
 
   const gesture = Gesture.Pan()
     .onStart(() => {
+      const currentPosition = currentOptionPositionsDerived.value.positionCache[option.id];
+      if (!currentPosition) {
+        return;
+      }
+
       // start dragging
       isDragging.value = withSpring(1);
 
@@ -122,24 +209,33 @@ export const CreatePollOption = ({
       draggedItemId.value = option.id;
 
       // store dragged item id for future swap
-      currentIndex.value =
-        currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex;
+      currentIndex.value = currentPosition.updatedIndex;
+      dragStartTop.value = currentPosition.updatedTop;
     })
     .onUpdate((e) => {
-      const { inverseIndexCache, positionCache } = currentOptionPositionsDerived.value;
+      const { inverseIndexCache, positionCache, totalHeight } = currentOptionPositionsDerived.value;
       if (draggedItemIdDerived.value === null || currentIndex.value === null) {
         return;
       }
-      const newTop = positionCache[draggedItemIdDerived.value].updatedTop + e.translationY;
+
+      const draggedItemPosition = positionCache[draggedItemIdDerived.value];
+      if (!draggedItemPosition) {
+        return;
+      }
+
+      const maxBound = Math.max(totalHeight - draggedItemPosition.updatedHeight, 0);
+      const newTop = dragStartTop.value + e.translationY;
+
       // we add a small leeway to account for sharp animations which tend to bug out otherwise
-      if (newTop < boundaries.minBound - 10 || newTop > boundaries.maxBound + 10) {
+      if (newTop < -10 || newTop > maxBound + 10) {
         // out of bounds, exit out of the animation early
         return;
       }
       top.value = newTop;
 
       // calculate the new index where drag is headed to
-      newIndex.value = Math.floor((newTop + createPollOptionHeight / 2) / createPollOptionHeight);
+      const draggedCenter = newTop + draggedItemPosition.updatedHeight / 2;
+      newIndex.value = findClosestIndex(inverseIndexCache, positionCache, draggedCenter);
 
       // swap the items present at newIndex and currentIndex
       if (newIndex.value !== currentIndex.value) {
@@ -152,24 +248,21 @@ export const CreatePollOption = ({
         if (newIndexItemKey !== undefined && currentDragIndexItemKey !== undefined) {
           // if we indeed have a candidate for a new index, we update our cache so that
           // it can be reflected through animations
+          const nextInverseIndexCache = {
+            ...inverseIndexCache,
+            [newIndex.value]: currentDragIndexItemKey,
+            [currentIndex.value]: newIndexItemKey,
+          };
+          const recalculated = recalculatePositionCache(
+            nextInverseIndexCache,
+            positionCache,
+            createPollOptionHeight,
+          );
+
           currentOptionPositions.value = {
-            inverseIndexCache: {
-              ...inverseIndexCache,
-              [newIndex.value]: currentDragIndexItemKey,
-              [currentIndex.value]: newIndexItemKey,
-            },
-            positionCache: {
-              ...positionCache,
-              [currentDragIndexItemKey]: {
-                ...positionCache[currentDragIndexItemKey],
-                updatedIndex: newIndex.value,
-              },
-              [newIndexItemKey]: {
-                ...positionCache[newIndexItemKey],
-                updatedIndex: currentIndex.value,
-                updatedTop: currentIndex.value * createPollOptionHeight,
-              },
-            },
+            inverseIndexCache: nextInverseIndexCache,
+            positionCache: recalculated.positionCache,
+            totalHeight: recalculated.totalHeight,
           };
 
           // update new index as current index
@@ -179,30 +272,24 @@ export const CreatePollOption = ({
     })
     .onEnd(() => {
       const { inverseIndexCache, positionCache } = currentOptionPositionsDerived.value;
-      if (currentIndex.value === null || newIndex.value === null) {
+      if (currentIndex.value === null) {
+        isDragging.value = withDelay(200, withSpring(0));
+        draggedItemId.value = null;
         return;
       }
 
-      top.value = withSpring(newIndex.value * createPollOptionHeight);
-
-      // find original id of the item that currently resides at currentIndex
       const currentDragIndexItemKey = inverseIndexCache[currentIndex.value];
+      const currentDragTop =
+        currentDragIndexItemKey !== undefined
+          ? positionCache[currentDragIndexItemKey]?.updatedTop
+          : undefined;
+      top.value = withSpring(currentDragTop ?? top.value);
 
-      if (currentDragIndexItemKey !== undefined) {
-        // update the values for item whose drag we just stopped
-        currentOptionPositions.value = {
-          ...currentOptionPositionsDerived.value,
-          positionCache: {
-            ...positionCache,
-            [currentDragIndexItemKey]: {
-              ...positionCache[currentDragIndexItemKey],
-              updatedTop: newIndex.value * createPollOptionHeight,
-            },
-          },
-        };
-      }
       // stop dragging
       isDragging.value = withDelay(200, withSpring(0));
+      draggedItemId.value = null;
+      currentIndex.value = null;
+      newIndex.value = null;
       runOnJS(onNewOrder)(currentOptionPositionsDerived.value.inverseIndexCache);
     });
 
@@ -229,8 +316,16 @@ export const CreatePollOption = ({
     onRemoveOption(index);
   }, [onRemoveOption, index]);
 
+  const onLayoutHandler = useCallback(
+    (event: LayoutChangeEvent) => {
+      onOptionLayout(option.id, event.nativeEvent.layout.height);
+    },
+    [onOptionLayout, option.id],
+  );
+
   return (
     <Animated.View
+      onLayout={onLayoutHandler}
       style={[
         styles.optionWrapper,
         optionStyle.wrapper,
@@ -308,22 +403,22 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   const draggedItemId = useSharedValue<string | null>(null);
 
   // holds the animated height of the option container
-  const animatedOptionsContainerHeight = useSharedValue(createPollOptionHeight * options.length);
+  const animatedOptionsContainerHeight = useSharedValue(currentOptionPositions.value.totalHeight);
 
-  useEffect(() => {
-    animatedOptionsContainerHeight.value = withTiming(createPollOptionHeight * options.length, {
-      duration: 200,
-    });
-  }, [animatedOptionsContainerHeight, createPollOptionHeight, options.length]);
+  useAnimatedReaction(
+    () => currentOptionPositions.value.totalHeight,
+    (currentValue, previousValue) => {
+      if (currentValue !== previousValue) {
+        animatedOptionsContainerHeight.value = withTiming(currentValue, {
+          duration: 200,
+        });
+      }
+    },
+  );
 
   const animatedOptionsContainerStyle = useAnimatedStyle(() => ({
     height: animatedOptionsContainerHeight.value,
   }));
-
-  const boundaries = useMemo(
-    () => ({ maxBound: (options.length - 1) * createPollOptionHeight, minBound: 0 }),
-    [createPollOptionHeight, options.length],
-  );
 
   const {
     theme: {
@@ -366,18 +461,51 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
     [options, pollComposer],
   );
 
+  const onOptionLayout = useCallback(
+    (optionId: string, height: number) => {
+      if (!Number.isFinite(height) || height <= 0) {
+        return;
+      }
+
+      const { inverseIndexCache, positionCache } = currentOptionPositions.value;
+      const currentPosition = positionCache[optionId];
+      if (!currentPosition || Math.abs(currentPosition.updatedHeight - height) < 1) {
+        return;
+      }
+
+      const recalculated = recalculatePositionCache(
+        inverseIndexCache,
+        {
+          ...positionCache,
+          [optionId]: {
+            ...currentPosition,
+            updatedHeight: height,
+          },
+        },
+        createPollOptionHeight,
+      );
+
+      currentOptionPositions.value = {
+        inverseIndexCache,
+        positionCache: recalculated.positionCache,
+        totalHeight: recalculated.totalHeight,
+      };
+    },
+    [createPollOptionHeight, currentOptionPositions],
+  );
+
   return (
     <View style={[styles.container, container]}>
       <Text style={[styles.title, title]}>{t('Options')}</Text>
       <Animated.View style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption
-            boundaries={boundaries}
             currentOptionPositions={currentOptionPositions}
             draggedItemId={draggedItemId}
             error={errors?.[option.id]}
             handleBlur={handleBlur}
             handleChangeText={updateOption}
+            onOptionLayout={onOptionLayout}
             onRemoveOption={onRemoveOptionHandler}
             index={index}
             isDragging={isDragging}

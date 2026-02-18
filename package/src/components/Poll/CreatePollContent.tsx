@@ -48,6 +48,7 @@ export const CreatePollContent = () => {
   const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
     inverseIndexCache: {},
     positionCache: {},
+    totalHeight: 0,
   });
 
   const {
@@ -62,16 +63,24 @@ export const CreatePollContent = () => {
 
   useEffect(() => {
     if (!createPollOptionHeight) return;
+    const previousPositionCache = currentOptionPositions.value.positionCache;
     const newCurrentOptionPositions: CurrentOptionPositionsCache = {
       inverseIndexCache: {},
       positionCache: {},
+      totalHeight: 0,
     };
+    let runningTop = 0;
     options.forEach((option, index) => {
+      const preservedHeight =
+        previousPositionCache[option.id]?.updatedHeight ?? createPollOptionHeight;
       newCurrentOptionPositions.inverseIndexCache[index] = option.id;
       newCurrentOptionPositions.positionCache[option.id] = {
+        updatedHeight: preservedHeight,
         updatedIndex: index,
-        updatedTop: index * createPollOptionHeight,
+        updatedTop: runningTop,
       };
+      runningTop += preservedHeight;
+      newCurrentOptionPositions.totalHeight = runningTop;
     });
     currentOptionPositions.value = newCurrentOptionPositions;
   }, [createPollOptionHeight, currentOptionPositions, options]);
