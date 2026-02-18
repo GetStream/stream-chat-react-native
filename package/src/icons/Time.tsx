@@ -5,9 +5,9 @@ import Svg, { Path } from 'react-native-svg';
 import { IconProps } from './utils/base';
 
 export const Time = ({ height, width, ...rest }: IconProps) => (
-  <Svg viewBox='0 0 12 12' fill='none' height={height} width={width}>
+  <Svg viewBox='0 0 16 16' fill='none' height={height} width={width}>
     <Path
-      d='M6 3.875V6L7.375 7.375M10.625 6C10.625 8.5543 8.5543 10.625 6 10.625C3.44568 10.625 1.375 8.5543 1.375 6C1.375 3.44568 3.44568 1.375 6 1.375C8.5543 1.375 10.625 3.44568 10.625 6Z'
+      d='M8.00001 5.16659V7.99992L9.83334 9.83325M14.1667 7.99992C14.1667 11.4057 11.4057 14.1666 8.00001 14.1666C4.59426 14.1666 1.83334 11.4057 1.83334 7.99992C1.83334 4.59417 4.59426 1.83325 8.00001 1.83325C11.4057 1.83325 14.1667 4.59417 14.1667 7.99992Z'
       strokeWidth={1.5}
       strokeLinecap='round'
       strokeLinejoin='round'
