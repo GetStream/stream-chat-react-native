@@ -103,7 +103,7 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
   /**
    * This function loads more messages after the most recent message in current channel state.
    */
-  const loadMoreRecent = useStableCallback(async (limit: number) => {
+  const loadMoreRecent = useStableCallback(async (limit?: number) => {
     if (!channel.state.messagePagination.hasNext) {
       return;
     }
