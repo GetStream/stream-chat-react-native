@@ -65,6 +65,7 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
+import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
@@ -1171,7 +1172,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     if (additionalFlatListProps?.onLayout) {
       additionalFlatListProps.onLayout(event);
     }
-    viewportHeightRef.current = event.nativeEvent.layout.height;
+    const nextViewportHeight = event.nativeEvent.layout.height;
+    if (viewportHeightRef.current !== nextViewportHeight) {
+      const previousViewportHeight = viewportHeightRef.current ?? nextViewportHeight;
+      const closeCorrectionDeltaY = nextViewportHeight - previousViewportHeight;
+      bumpOverlayLayoutRevision(closeCorrectionDeltaY);
+    }
+    viewportHeightRef.current = nextViewportHeight;
   });
 
   if (!ListComponent) {
