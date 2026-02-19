@@ -17,6 +17,8 @@ const DefaultState = {
 };
 
 type OverlaySharedValueController = {
+  incrementCloseCorrectionY: (deltaY: number) => void;
+  resetCloseCorrectionY: () => void;
   reset: () => void;
   setBottomH: (rect: Rect) => void;
   setMessageH: (rect: Rect) => void;
@@ -46,10 +48,19 @@ export const setOverlayBottomH = (bottomH: Rect) => {
   sharedValueController?.setBottomH(bottomH);
 };
 
-export const openOverlay = (id: string) => overlayStore.partialNext({ closing: false, id });
+export const bumpOverlayLayoutRevision = (closeCorrectionDeltaY = 0) => {
+  sharedValueController?.incrementCloseCorrectionY(closeCorrectionDeltaY);
+};
+
+export const openOverlay = (id: string) => {
+  sharedValueController?.resetCloseCorrectionY();
+  overlayStore.partialNext({ closing: false, id });
+};
 
 export const closeOverlay = () => {
-  requestAnimationFrame(() => overlayStore.partialNext({ closing: true }));
+  requestAnimationFrame(() => {
+    overlayStore.partialNext({ closing: true });
+  });
 };
 
 let actionQueue: Array<() => void | Promise<void>> = [];
@@ -64,8 +75,8 @@ export const scheduleActionOnClose = (action: () => void | Promise<void>) => {
 };
 
 export const finalizeCloseOverlay = () => {
-  sharedValueController?.reset();
   overlayStore.partialNext(DefaultState);
+  sharedValueController?.reset();
 };
 
 export const overlayStore = new StateStore<OverlayState>(DefaultState);

@@ -31,6 +31,7 @@ export const MessageOverlayHostLayer = () => {
   const messageH = useSharedValue<Rect>(undefined);
   const topH = useSharedValue<Rect>(undefined);
   const bottomH = useSharedValue<Rect>(undefined);
+  const closeCorrectionY = useSharedValue(0);
 
   const topInset = insets.top;
   // Due to edge-to-edge in combination with various libraries, Android sometimes reports
@@ -50,10 +51,17 @@ export const MessageOverlayHostLayer = () => {
   useEffect(
     () =>
       registerOverlaySharedValueController({
+        incrementCloseCorrectionY: (deltaY) => {
+          closeCorrectionY.value += deltaY;
+        },
+        resetCloseCorrectionY: () => {
+          closeCorrectionY.value = 0;
+        },
         reset: () => {
           messageH.value = undefined;
           topH.value = undefined;
           bottomH.value = undefined;
+          closeCorrectionY.value = 0;
         },
         setBottomH: (rect) => {
           bottomH.value = rect;
@@ -65,7 +73,7 @@ export const MessageOverlayHostLayer = () => {
           topH.value = rect;
         },
       }),
-    [bottomH, messageH, topH],
+    [bottomH, closeCorrectionY, messageH, topH],
   );
 
   useEffect(() => {
@@ -163,7 +171,7 @@ export const MessageOverlayHostLayer = () => {
   });
 
   const topItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? 0 : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
     return {
       transform: [
         { scale: backdrop.value },
@@ -184,7 +192,7 @@ export const MessageOverlayHostLayer = () => {
   });
 
   const bottomItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? 0 : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
     return {
       transform: [
         { scale: backdrop.value },
@@ -205,7 +213,7 @@ export const MessageOverlayHostLayer = () => {
   });
 
   const hostTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? 0 : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
 
     return {
       transform: [
