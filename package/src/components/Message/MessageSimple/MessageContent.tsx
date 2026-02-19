@@ -27,6 +27,7 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 
 import { components, primitives } from '../../../theme';
+import { FileTypes } from '../../../types/types';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
 import { useMessageData } from '../hooks/useMessageData';
@@ -570,17 +571,27 @@ export const MessageContent = (props: MessageContentProps) => {
   const messageHasSingleFile =
     messageContentOrder.length === 1 && messageContentOrder[0] === 'files' && isSingleFile;
   const messageHasOnlyText = messageContentOrder.length === 1 && messageContentOrder[0] === 'text';
+  const messageHasGiphyOrImgur =
+    otherAttachments.filter(
+      (file) => file.type === FileTypes.Giphy || file.type === FileTypes.Imgur,
+    ).length > 0;
 
   const hidePaddingTop =
-    messageHasPoll || messageHasSingleImage || messageHasSingleFile || messageHasOnlyText;
+    messageHasPoll ||
+    messageHasSingleImage ||
+    messageHasSingleFile ||
+    messageHasOnlyText ||
+    messageHasGiphyOrImgur;
 
-  const hidePaddingHorizontal = messageHasPoll || messageHasSingleImage || messageHasSingleFile;
+  const hidePaddingHorizontal =
+    messageHasPoll || messageHasSingleImage || messageHasSingleFile || messageHasGiphyOrImgur;
 
   const hidePaddingBottom =
     messageHasPoll ||
     messageHasSingleImage ||
     messageHasSingleFile ||
     messageHasOnlyText ||
+    messageHasGiphyOrImgur ||
     (messageContentOrder.length > 1 &&
       messageContentOrder[messageContentOrder.length - 1] === 'text');
 
