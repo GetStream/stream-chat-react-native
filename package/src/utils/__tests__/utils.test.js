@@ -1,4 +1,4 @@
-import { getUrlWithoutParams } from '../utils';
+import { formatMsToMinSec, getUrlWithoutParams } from '../utils';
 
 describe('getUrlWithoutParams', () => {
   const testUrlMap = {
@@ -15,5 +15,25 @@ describe('getUrlWithoutParams', () => {
     urls.forEach((url) => {
       expect(getUrlWithoutParams(url)).toBe(testUrlMap[url]);
     });
+  });
+});
+
+describe('formatMsToMinSec', () => {
+  it('should format values below 1 minute as seconds', () => {
+    expect(formatMsToMinSec(0)).toBe('0s');
+    expect(formatMsToMinSec(999)).toBe('0s');
+    expect(formatMsToMinSec(59_999)).toBe('59s');
+  });
+
+  it('should format values from 1 minute to below 1 hour as minutes', () => {
+    expect(formatMsToMinSec(60_000)).toBe('1m');
+    expect(formatMsToMinSec(61_000)).toBe('1m');
+    expect(formatMsToMinSec(3_599_999)).toBe('59m');
+  });
+
+  it('should format values from 1 hour and above as hours', () => {
+    expect(formatMsToMinSec(3_600_000)).toBe('1h');
+    expect(formatMsToMinSec(3_661_000)).toBe('1h');
+    expect(formatMsToMinSec(7_200_000)).toBe('2h');
   });
 });
