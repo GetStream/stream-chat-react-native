@@ -105,11 +105,7 @@ export const CreatePollContent = () => {
       newCurrentOptionPositions.totalHeight = runningTop;
     });
     currentOptionPositions.value = newCurrentOptionPositions;
-  }, [
-    currentOptionPositions,
-    normalizedCreatePollOptionGap,
-    optionIdsKey,
-  ]);
+  }, [currentOptionPositions, normalizedCreatePollOptionGap, optionIdsKey]);
 
   const onBackPressHandler = useCallback(() => {
     pollComposer.initState();
