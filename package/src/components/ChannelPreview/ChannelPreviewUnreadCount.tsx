@@ -22,7 +22,7 @@ export const ChannelPreviewUnreadCount = (props: ChannelPreviewUnreadCountProps)
   return (
     <BadgeNotification
       count={unread > maxUnreadCount ? maxUnreadCount : unread}
-      size='md'
+      size='sm'
       type='primary'
     />
   );

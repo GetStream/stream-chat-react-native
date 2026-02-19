@@ -7,7 +7,7 @@ import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
-import type { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
+import { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
 import type { ChannelPreviewStatusProps } from '../../components/ChannelPreview/ChannelPreviewStatus';
 import type { ChannelPreviewTitleProps } from '../../components/ChannelPreview/ChannelPreviewTitle';
@@ -206,6 +206,8 @@ export type ChannelsContextValue = {
    * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
+
+  mutedStatusPosition?: 'trailingBottom' | 'inlineTitle';
 };
 
 export const ChannelsContext = React.createContext(

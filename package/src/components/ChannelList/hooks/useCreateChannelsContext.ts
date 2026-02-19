@@ -35,6 +35,7 @@ export const useCreateChannelsContext = ({
   reloadList,
   setFlatListRef,
   Skeleton,
+  mutedStatusPosition,
 }: ChannelsContextValue) => {
   const channelValueString = channels
     ?.map(
@@ -80,6 +81,7 @@ export const useCreateChannelsContext = ({
       reloadList,
       setFlatListRef,
       Skeleton,
+      mutedStatusPosition,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -91,6 +93,7 @@ export const useCreateChannelsContext = ({
       loadingNextPage,
       channelListInitialized,
       refreshing,
+      mutedStatusPosition,
     ],
   );
 

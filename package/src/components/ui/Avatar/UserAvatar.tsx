@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { UserResponse } from 'stream-chat';
 
-import { Avatar } from './Avatar';
+import { Avatar, AvatarProps } from './Avatar';
 import { fontSizes, iconSizes, indicatorSizes, numberOfInitials } from './constants';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -15,12 +15,13 @@ import { OnlineIndicator } from '../Badge';
 export type UserAvatarProps = {
   user: UserResponse;
   showOnlineIndicator?: boolean;
-  size: 'xs' | 'sm' | 'md' | 'lg';
+  size: AvatarProps['size'];
   showBorder?: boolean;
+  style?: StyleProp<ViewStyle>;
 };
 
 export const UserAvatar = (props: UserAvatarProps) => {
-  const { user, size, showBorder = !!user.image, showOnlineIndicator } = props;
+  const { user, size, showBorder = !!user.image, showOnlineIndicator, style } = props;
   const {
     theme: { semantics },
   } = useTheme();
@@ -52,6 +53,7 @@ export const UserAvatar = (props: UserAvatarProps) => {
         placeholder={placeholder}
         showBorder={showBorder}
         size={size}
+        style={style}
       />
       {showOnlineIndicator ? (
         <View style={styles.onlineIndicatorWrapper}>

@@ -6,18 +6,22 @@ import { Avatar } from './Avatar';
 
 import { UserAvatarGroup } from './AvatarGroup';
 
+import { UserAvatar } from './UserAvatar';
+
 import { useChannelPreviewDisplayPresence } from '../../../components/ChannelPreview/hooks/useChannelPreviewDisplayPresence';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { hashStringToNumber } from '../../../utils/utils';
 
 export type ChannelAvatarProps = {
   channel: Channel;
   showOnlineIndicator?: boolean;
-  size: 'xs' | 'sm' | 'md' | 'lg';
+  size: 'lg' | 'xl' | '2xl';
   showBorder?: boolean;
 };
 
 export const ChannelAvatar = (props: ChannelAvatarProps) => {
+  const { client } = useChatContext();
   const { channel } = props;
   const online = useChannelPreviewDisplayPresence(channel);
   const { showOnlineIndicator = online, size, showBorder = true } = props;
@@ -36,19 +40,34 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
     () => Object.values(channel.state.members).map((member) => member.user as UserResponse),
     [channel.state.members],
   );
+  const usersWithoutSelf = useMemo(
+    () => usersForGroup.filter((user) => user.id !== client.user?.id),
+    [usersForGroup, client.user?.id],
+  );
 
-  if (!channelImage) {
+  if (channelImage) {
     return (
-      <UserAvatarGroup size='lg' users={usersForGroup} showOnlineIndicator={showOnlineIndicator} />
+      <Avatar
+        backgroundColor={avatarBackgroundColor}
+        imageUrl={channelImage}
+        showBorder={showBorder}
+        size={size}
+      />
     );
   }
 
-  return (
-    <Avatar
-      backgroundColor={avatarBackgroundColor}
-      imageUrl={channelImage}
-      showBorder={showBorder}
-      size={size}
-    />
-  );
+  if (usersWithoutSelf.length > 1) {
+    return (
+      <UserAvatarGroup size='xl' users={usersForGroup} showOnlineIndicator={showOnlineIndicator} />
+    );
+  } else {
+    return (
+      <UserAvatar
+        user={usersWithoutSelf[0]}
+        size={size}
+        showBorder={showBorder}
+        showOnlineIndicator={showOnlineIndicator}
+      />
+    );
+  }
 };

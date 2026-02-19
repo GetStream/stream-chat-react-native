@@ -3,36 +3,41 @@ import { StyleSheet, View } from 'react-native';
 
 import { UserResponse } from 'stream-chat';
 
-import { Avatar } from './Avatar';
+import { Avatar, AvatarProps } from './Avatar';
 
 import { iconSizes } from './constants';
 
-import { UserAvatar } from './UserAvatar';
+import { UserAvatar, UserAvatarProps } from './UserAvatar';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { PeopleIcon } from '../../../icons/PeopleIcon';
 import { primitives } from '../../../theme';
-import { BadgeCount, OnlineIndicator } from '../Badge';
+import { BadgeCount, BadgeCountProps, OnlineIndicator, OnlineIndicatorProps } from '../Badge';
 
 export type AvatarGroupProps = {
   /**
    * The size of the avatar group.
    */
-  size: 'lg' | 'xl';
+  size: 'lg' | 'xl' | '2xl';
   /**
    * The items to display in the avatar group.
    */
   items: React.ReactNode[];
 };
 
+// Sizes accounts for the border width as well
 const sizes = {
-  lg: {
-    width: 40,
-    height: 40,
-  },
-  xl: {
+  '2xl': {
     width: 64,
     height: 64,
+  },
+  xl: {
+    width: 48,
+    height: 48,
+  },
+  lg: {
+    width: 44,
+    height: 44,
   },
 };
 
@@ -66,33 +71,46 @@ const buildForFour = (items: React.ReactNode[]) => {
   );
 };
 
+const avatarSize: Record<AvatarGroupProps['size'], AvatarProps['size']> = {
+  '2xl': 'lg',
+  xl: 'md',
+  lg: 'sm',
+};
+
+const badgeCountSize: Record<AvatarGroupProps['size'], BadgeCountProps['size']> = {
+  '2xl': 'lg',
+  xl: 'md',
+  lg: 'sm',
+};
+
 export const AvatarGroup = (props: AvatarGroupProps) => {
   const { size, items = [] } = props;
   const {
     theme: { semantics },
   } = useTheme();
-
-  const avatarSize = size === 'lg' ? 'sm' : 'lg';
-  const badgeCountSize = size === 'lg' ? 'xs' : 'md';
+  const avatarGroupStyles = useUserAvatarGroupStyles();
 
   const buildForOne = useCallback(
     (item: React.ReactNode) => {
       return buildForTwo([
+        item,
         <Avatar
+          style={avatarGroupStyles.userAvatarWrapper}
           key={'people-icon'}
+          backgroundColor={semantics.avatarBgPlaceholder}
+          showBorder={true}
           placeholder={
             <PeopleIcon
-              stroke={semantics.avatarTextDefault}
-              height={iconSizes[avatarSize]}
-              width={iconSizes[avatarSize]}
+              stroke={semantics.avatarTextPlaceholder}
+              height={iconSizes[avatarSize[size]]}
+              width={iconSizes[avatarSize[size]]}
             />
           }
-          size={avatarSize}
+          size={avatarSize[size]}
         />,
-        item,
       ]);
     },
-    [semantics.avatarTextDefault, avatarSize],
+    [avatarGroupStyles.userAvatarWrapper, semantics, size],
   );
 
   const buildForMore = useCallback(
@@ -103,12 +121,12 @@ export const AvatarGroup = (props: AvatarGroupProps) => {
           <View style={styles.topStart}>{items[0]}</View>
           <View style={styles.topEnd}>{items[1]}</View>
           <View style={styles.bottomCenter}>
-            <BadgeCount size={badgeCountSize} count={`+${remainingItems}`} />
+            <BadgeCount size={badgeCountSize[size]} count={`+${remainingItems}`} />
           </View>
         </>
       );
     },
-    [badgeCountSize],
+    [size],
   );
 
   const renderItems = useMemo(() => {
@@ -146,27 +164,42 @@ export type UserAvatarGroupProps = Pick<AvatarGroupProps, 'size'> & {
   showOnlineIndicator?: boolean;
 };
 
+const userAvatarSize: Record<UserAvatarGroupProps['size'], UserAvatarProps['size']> = {
+  '2xl': 'lg',
+  xl: 'md',
+  lg: 'sm',
+};
+
+const onlineIndicatorSize: Record<UserAvatarGroupProps['size'], OnlineIndicatorProps['size']> = {
+  '2xl': 'xl',
+  xl: 'xl',
+  lg: 'lg',
+};
+
 export const UserAvatarGroup = ({
   users,
   showOnlineIndicator = true,
   size,
 }: UserAvatarGroupProps) => {
   const styles = useUserAvatarGroupStyles();
-  const userAvatarSize = size === 'lg' ? 'sm' : 'lg';
-  const onlineIndicatorSize = size === 'xl' ? 'xl' : 'lg';
+
   return (
     <View testID='user-avatar-group'>
       <AvatarGroup
         size={size}
         items={users.map((user) => (
-          <View key={user.id} style={styles.userAvatarWrapper}>
-            <UserAvatar user={user} size={userAvatarSize} showBorder={true} />
-          </View>
+          <UserAvatar
+            key={user.id}
+            style={styles.userAvatarWrapper}
+            user={user}
+            size={userAvatarSize[size]}
+            showBorder={true}
+          />
         ))}
       />
       {showOnlineIndicator ? (
         <View style={styles.onlineIndicatorWrapper}>
-          <OnlineIndicator online={true} size={onlineIndicatorSize} />
+          <OnlineIndicator online={true} size={onlineIndicatorSize[size]} />
         </View>
       ) : null}
     </View>
@@ -183,7 +216,7 @@ const useUserAvatarGroupStyles = () => {
       StyleSheet.create({
         userAvatarWrapper: {
           borderWidth: 2,
-          borderColor: semantics.borderCoreOnAccent,
+          borderColor: semantics.borderCoreOnDark,
           borderRadius: primitives.radiusMax,
         },
         onlineIndicatorWrapper: {
@@ -196,11 +229,8 @@ const useUserAvatarGroupStyles = () => {
   );
 };
 
-// TODO V9: Add theming support here.
 const styles = StyleSheet.create({
-  container: {
-    padding: 2,
-  },
+  container: {},
   topStart: {
     position: 'absolute',
     top: 0,

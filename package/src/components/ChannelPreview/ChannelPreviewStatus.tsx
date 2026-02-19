@@ -1,45 +1,27 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import { ChannelPreviewProps } from './ChannelPreview';
 import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
 
-import { MessageDeliveryStatus } from './hooks/useMessageDeliveryStatus';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Check, CheckAll } from '../../icons';
 
+import { primitives } from '../../theme';
 import { getDateString } from '../../utils/i18n/getDateString';
-
-const styles = StyleSheet.create({
-  date: {
-    fontSize: 12,
-    marginLeft: 2,
-    textAlign: 'right',
-  },
-  flexRow: {
-    flexDirection: 'row',
-  },
-});
 
 export type ChannelPreviewStatusProps = Pick<
   ChannelPreviewMessengerPropsWithContext,
-  'latestMessagePreview' | 'formatLatestMessageDate'
+  'formatLatestMessageDate' | 'lastMessage'
 > &
   Pick<ChannelPreviewProps, 'channel'>;
 
 export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
-  const { formatLatestMessageDate, latestMessagePreview } = props;
+  const { formatLatestMessageDate, lastMessage } = props;
   const { t, tDateTimeParser } = useTranslationContext();
-  const {
-    theme: {
-      channelPreview: { checkAllIcon, checkIcon, date },
-      colors: { accent_blue, grey },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
-  const created_at = latestMessagePreview?.created_at;
+  const created_at = lastMessage?.created_at;
   const latestMessageDate = created_at ? new Date(created_at) : new Date();
 
   const formattedDate = useMemo(
@@ -52,22 +34,36 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
       }),
     [created_at, t, tDateTimeParser],
   );
-  const status = latestMessagePreview.status;
 
   return (
-    <View style={styles.flexRow}>
-      {status === MessageDeliveryStatus.READ ? (
-        <CheckAll pathFill={accent_blue} {...checkAllIcon} />
-      ) : status === MessageDeliveryStatus.DELIVERED ? (
-        <CheckAll pathFill={grey} {...checkAllIcon} />
-      ) : status === MessageDeliveryStatus.SENT ? (
-        <Check pathFill={grey} {...checkIcon} />
-      ) : null}
-      <Text style={[styles.date, { color: grey }, date]}>
-        {formatLatestMessageDate && latestMessageDate
-          ? formatLatestMessageDate(latestMessageDate).toString()
-          : formattedDate}
-      </Text>
-    </View>
+    <Text style={styles.date}>
+      {formatLatestMessageDate && latestMessageDate
+        ? formatLatestMessageDate(latestMessageDate).toString()
+        : formattedDate}
+    </Text>
   );
+};
+
+const useStyles = () => {
+  const {
+    theme: {
+      channelPreview: { date },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      date: {
+        color: semantics.textTertiary,
+        fontSize: primitives.typographyFontSizeSm,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightNormal,
+        ...date,
+      },
+      container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+    });
+  }, [semantics, date]);
 };

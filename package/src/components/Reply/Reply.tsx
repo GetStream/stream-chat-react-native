@@ -1,14 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
-import dayjs from 'dayjs';
 import {
   isFileAttachment,
   isImageAttachment,
   isVideoAttachment,
-  LocalMessage,
   MessageComposerState,
-  PollState,
 } from 'stream-chat';
 
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -20,26 +17,16 @@ import { useMessageComposer } from '../../contexts/messageInputContext/hooks/use
 import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks';
-import { NewFile } from '../../icons/NewFile';
-import { NewLink } from '../../icons/NewLink';
-import { NewMapPin } from '../../icons/NewMapPin';
-import { NewMic } from '../../icons/NewMic';
-import { NewPhoto } from '../../icons/NewPhoto';
-import { NewPoll } from '../../icons/NewPoll';
-import { NewVideo } from '../../icons/NewVideo';
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { checkQuotedMessageEquality } from '../../utils/utils';
 import { FileIcon } from '../Attachment/FileIcon';
 import { AttachmentRemoveControl } from '../MessageInput/components/AttachmentPreview/AttachmentRemoveControl';
+import { MessagePreview } from '../MessagePreview/MessagePreview';
 import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
   quotedMessage: state.quotedMessage,
-});
-
-const selector = (nextValue: PollState) => ({
-  name: nextValue.name,
 });
 
 const RightContent = React.memo(
@@ -86,232 +73,6 @@ const RightContent = React.memo(
   },
 );
 
-const SubtitleText = React.memo(({ message }: { message?: LocalMessage | null }) => {
-  const { client } = useChatContext();
-  const poll = client.polls.fromState(message?.poll_id ?? '');
-  const { name: pollName } = useStateStore(poll?.state, selector) ?? {};
-  const {
-    theme: {
-      reply: { subtitle: subtitleStyle },
-    },
-  } = useTheme();
-  const styles = useStyles();
-
-  const subtitle = useMemo(() => {
-    const attachments = message?.attachments;
-    const audioAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.Audio,
-    );
-    const imageAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.Image,
-    );
-    const videoAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.Video,
-    );
-    const fileAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.File);
-    const voiceRecordingAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.VoiceRecording,
-    );
-    const onlyImages = imageAttachments?.length && imageAttachments?.length === attachments?.length;
-    const onlyVideos = videoAttachments?.length && videoAttachments?.length === attachments?.length;
-    const onlyFiles = fileAttachments?.length && fileAttachments?.length === attachments?.length;
-    const onlyAudio = audioAttachments?.length === attachments?.length;
-    const onlyVoiceRecordings =
-      voiceRecordingAttachments?.length &&
-      voiceRecordingAttachments?.length === attachments?.length;
-
-    if (pollName) {
-      return pollName;
-    }
-
-    if (message?.shared_location) {
-      if (
-        message?.shared_location?.end_at &&
-        new Date(message?.shared_location?.end_at) > new Date()
-      ) {
-        return 'Live Location';
-      }
-      return 'Location';
-    }
-
-    if (message?.text) {
-      return message?.text;
-    }
-
-    if (onlyImages) {
-      if (imageAttachments?.length === 1) {
-        return 'Photo';
-      } else {
-        return `${imageAttachments?.length} Photos`;
-      }
-    }
-
-    if (onlyVideos) {
-      if (videoAttachments?.length === 1) {
-        return 'Video';
-      } else {
-        return `${videoAttachments?.length} Videos`;
-      }
-    }
-
-    if (onlyAudio) {
-      if (audioAttachments?.length === 1) {
-        return 'Audio';
-      } else {
-        return `${audioAttachments?.length} Audios`;
-      }
-    }
-
-    if (onlyVoiceRecordings) {
-      if (voiceRecordingAttachments?.length === 1) {
-        return `Voice message (${dayjs.duration(voiceRecordingAttachments?.[0]?.duration ?? 0, 'seconds').format('m:ss')})`;
-      } else {
-        return `${voiceRecordingAttachments?.length} Voice messages`;
-      }
-    }
-
-    if (onlyFiles && fileAttachments?.length === 1) {
-      return fileAttachments?.[0]?.title;
-    }
-
-    return `${attachments?.length} Files`;
-  }, [message?.attachments, message?.shared_location, message?.text, pollName]);
-
-  if (!subtitle) {
-    return null;
-  }
-
-  return (
-    <Text numberOfLines={1} style={[styles.subtitle, subtitleStyle]}>
-      {subtitle}
-    </Text>
-  );
-});
-
-const SubtitleIcon = React.memo((props: { message?: LocalMessage | null }) => {
-  const { message } = props;
-  const {
-    theme: {
-      semantics,
-      reply: { pollIcon, locationIcon, linkIcon, audioIcon, fileIcon, videoIcon, photoIcon },
-    },
-  } = useTheme();
-  const styles = useStyles();
-
-  if (!message) {
-    return null;
-  }
-
-  const attachments = message?.attachments;
-  const audioAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.Audio);
-  const imageAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.Image);
-  const videoAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.Video);
-  const voiceRecordingAttachments = attachments?.filter(
-    (attachment) => attachment.type === FileTypes.VoiceRecording,
-  );
-  const fileAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.File);
-  const onlyImages = imageAttachments?.length && imageAttachments?.length === attachments?.length;
-  const onlyAudio = audioAttachments?.length && audioAttachments?.length === attachments?.length;
-  const onlyVideos = videoAttachments?.length && videoAttachments?.length === attachments?.length;
-  const onlyVoiceRecordings =
-    voiceRecordingAttachments?.length && voiceRecordingAttachments?.length === attachments?.length;
-  const hasLink = attachments?.some(
-    (attachment) => attachment.type === FileTypes.Image && attachment.og_scrape_url,
-  );
-
-  if (message.poll_id) {
-    return (
-      <NewPoll
-        height={12}
-        stroke={semantics.textPrimary}
-        style={styles.iconStyle}
-        width={12}
-        {...pollIcon}
-      />
-    );
-  }
-
-  if (message.shared_location) {
-    return (
-      <NewMapPin
-        height={12}
-        stroke={semantics.textPrimary}
-        style={styles.iconStyle}
-        width={12}
-        {...locationIcon}
-      />
-    );
-  }
-
-  if (hasLink) {
-    return (
-      <NewLink
-        height={12}
-        stroke={semantics.textPrimary}
-        style={styles.iconStyle}
-        width={12}
-        {...linkIcon}
-      />
-    );
-  }
-
-  if (onlyAudio || onlyVoiceRecordings) {
-    return (
-      <NewMic
-        height={12}
-        stroke={semantics.textPrimary}
-        strokeWidth={1.2}
-        style={styles.iconStyle}
-        width={12}
-        {...audioIcon}
-      />
-    );
-  }
-
-  if (onlyVideos) {
-    return (
-      <NewVideo
-        height={12}
-        stroke={semantics.textPrimary}
-        style={styles.iconStyle}
-        width={12}
-        {...videoIcon}
-      />
-    );
-  }
-
-  if (onlyImages) {
-    return (
-      <NewPhoto
-        height={12}
-        stroke={semantics.textPrimary}
-        style={styles.iconStyle}
-        width={12}
-        {...photoIcon}
-      />
-    );
-  }
-
-  if (
-    fileAttachments?.length ||
-    imageAttachments?.length ||
-    videoAttachments?.length ||
-    audioAttachments?.length
-  ) {
-    return (
-      <NewFile
-        height={12}
-        stroke={semantics.textPrimary}
-        style={styles.iconStyle}
-        width={12}
-        {...fileIcon}
-      />
-    );
-  }
-
-  return null;
-});
-
 export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
   Pick<MessageContextValue, 'message'> &
   Pick<MessagesContextValue, 'quotedMessage'> & {
@@ -347,7 +108,6 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         leftContainer,
         rightContainer,
         title: titleStyle,
-        subtitleContainer,
         dismissWrapper,
       },
     },
@@ -380,12 +140,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
             </Text>
           </View>
 
-          <View
-            style={[styles.subtitleContainer, subtitleContainer, stylesProp?.subtitleContainer]}
-          >
-            <SubtitleIcon message={quotedMessage} />
-            <SubtitleText message={quotedMessage} />
-          </View>
+          <MessagePreview message={quotedMessage} textStyle={styles.subtitle} />
         </View>
         <View style={[styles.rightContainer, rightContainer, stylesProp?.rightContainer]}>
           <RightContent ImageComponent={ImageComponent} message={quotedMessage} />
@@ -524,21 +279,16 @@ const useStyles = () => {
           borderLeftColor: isMyMessage
             ? semantics.chatReplyIndicatorOutgoing
             : semantics.chatReplyIndicatorIncoming,
+          gap: primitives.spacingXxxs,
         },
         rightContainer: {},
         subtitle: {
-          color: semantics.textPrimary,
+          color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
           flexShrink: 1,
           fontSize: primitives.typographyFontSizeXs,
           fontWeight: primitives.typographyFontWeightRegular,
           includeFontPadding: false,
-          lineHeight: 16,
-        },
-        subtitleContainer: {
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: primitives.spacingXxs,
-          paddingTop: primitives.spacingXxs,
+          lineHeight: primitives.typographyLineHeightTight,
         },
         titleContainer: {
           alignItems: 'center',

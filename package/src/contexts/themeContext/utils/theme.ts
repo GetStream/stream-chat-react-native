@@ -178,14 +178,11 @@ export type Theme = {
     };
     checkAllIcon: IconProps;
     checkIcon: IconProps;
+    timeIcon: IconProps;
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
-    mutedStatus: {
-      height: number;
-      iconStyle: ViewStyle;
-      width: number;
-    };
+    mutedStatus: IconProps;
     message: {
       container: ViewStyle;
     };
@@ -1000,25 +997,16 @@ export const defaultTheme: Theme = {
     avatar: {
       size: 40,
     },
-    checkAllIcon: {
-      height: DEFAULT_STATUS_ICON_SIZE,
-      width: DEFAULT_STATUS_ICON_SIZE,
-    },
-    checkIcon: {
-      height: DEFAULT_STATUS_ICON_SIZE,
-      width: DEFAULT_STATUS_ICON_SIZE,
-    },
+    checkAllIcon: {},
+    checkIcon: {},
+    timeIcon: {},
     container: {},
     contentContainer: {},
     date: {},
     message: {
       container: {},
     },
-    mutedStatus: {
-      height: 20,
-      iconStyle: {},
-      width: 20,
-    },
+    mutedStatus: {},
     row: {},
     title: {},
     unreadContainer: {},

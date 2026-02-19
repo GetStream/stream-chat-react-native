@@ -48,14 +48,12 @@ export * from './ChannelList/Skeleton';
 
 export * from './ChannelPreview/ChannelPreview';
 export * from './ChannelPreview/ChannelPreviewMessenger';
-export * from './ChannelPreview/ChannelPreviewMessage';
 export * from './ChannelPreview/ChannelPreviewStatus';
 export * from './ChannelPreview/ChannelPreviewTitle';
 export * from './ChannelPreview/ChannelPreviewUnreadCount';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayAvatar';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayName';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayPresence';
-export * from './ChannelPreview/hooks/useLatestMessagePreview';
 export * from './ChannelPreview/hooks/useChannelPreviewData';
 export * from './ChannelPreview/hooks/useIsChannelMuted';
 export * from './ChannelPreview/hooks/useMessageDeliveryStatus';

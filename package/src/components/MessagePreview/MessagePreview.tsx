@@ -1,67 +1,342 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+
+import dayjs from 'dayjs';
+import {
+  DraftMessage,
+  LiveLocationPayload,
+  LocalMessage,
+  MessageResponse,
+  PollState,
+} from 'stream-chat';
 
 import { useTheme } from '../../contexts';
 
-export type MessagePreviewSkeletonProps = {
-  /**
-   * Whether the message text should be bold.
-   */
-  bold: boolean;
-  /**
-   * The text of the message preview.
-   */
-  text: string;
-  /**
-   * Whether the message is a draft.
-   */
-  draft?: boolean;
-};
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useStateStore } from '../../hooks';
+import { NewFile } from '../../icons/NewFile';
+import { NewLink } from '../../icons/NewLink';
+import { NewMapPin } from '../../icons/NewMapPin';
+import { NewMic } from '../../icons/NewMic';
+import { NewPhoto } from '../../icons/NewPhoto';
+import { NewPoll } from '../../icons/NewPoll';
+import { NewVideo } from '../../icons/NewVideo';
+import { IconProps } from '../../icons/utils/base';
+import { primitives } from '../../theme';
+import { FileTypes } from '../../types/types';
+
+const selector = (nextValue: PollState) => ({
+  name: nextValue.name,
+});
+
+const MessagePreviewText = React.memo(
+  ({
+    message,
+    style,
+  }: {
+    message?: LocalMessage | MessageResponse | DraftMessage | null;
+    style?: StyleProp<TextStyle>;
+  }) => {
+    const { client } = useChatContext();
+    const poll = client.polls.fromState(message?.poll_id ?? '');
+    const { name: pollName } = useStateStore(poll?.state, selector) ?? {};
+    const styles = useStyles();
+
+    const subtitle = useMemo(() => {
+      const attachments = message?.attachments;
+      const giphyAttachments = attachments?.filter(
+        (attachment) => attachment.type === FileTypes.Giphy,
+      );
+      const audioAttachments = attachments?.filter(
+        (attachment) => attachment.type === FileTypes.Audio,
+      );
+      const imageAttachments = attachments?.filter(
+        (attachment) => attachment.type === FileTypes.Image,
+      );
+      const videoAttachments = attachments?.filter(
+        (attachment) => attachment.type === FileTypes.Video,
+      );
+      const fileAttachments = attachments?.filter(
+        (attachment) => attachment.type === FileTypes.File,
+      );
+      const voiceRecordingAttachments = attachments?.filter(
+        (attachment) => attachment.type === FileTypes.VoiceRecording,
+      );
+      const onlyImages =
+        imageAttachments?.length && imageAttachments?.length === attachments?.length;
+      const onlyVideos =
+        videoAttachments?.length && videoAttachments?.length === attachments?.length;
+      const onlyFiles = fileAttachments?.length && fileAttachments?.length === attachments?.length;
+      const onlyAudio = audioAttachments?.length === attachments?.length;
+      const onlyVoiceRecordings =
+        voiceRecordingAttachments?.length &&
+        voiceRecordingAttachments?.length === attachments?.length;
+
+      if (pollName) {
+        return pollName;
+      }
+
+      if (message?.shared_location) {
+        if (
+          // There is a problem with types in Draft Message, and its not able to infer the type of `end_at` correctly, so the `as` is used.
+          (message?.shared_location as LiveLocationPayload)?.end_at &&
+          new Date((message?.shared_location as LiveLocationPayload)?.end_at) > new Date()
+        ) {
+          return 'Live Location';
+        }
+        return 'Location';
+      }
+
+      if (message?.text) {
+        return message?.text;
+      }
+
+      if (onlyImages) {
+        if (imageAttachments?.length === 1) {
+          return 'Photo';
+        } else {
+          return `${imageAttachments?.length} Photos`;
+        }
+      }
+
+      if (onlyVideos) {
+        if (videoAttachments?.length === 1) {
+          return 'Video';
+        } else {
+          return `${videoAttachments?.length} Videos`;
+        }
+      }
+
+      if (onlyAudio) {
+        if (audioAttachments?.length === 1) {
+          return 'Audio';
+        } else {
+          return `${audioAttachments?.length} Audios`;
+        }
+      }
+
+      if (onlyVoiceRecordings) {
+        if (voiceRecordingAttachments?.length === 1) {
+          return `Voice message (${dayjs.duration(voiceRecordingAttachments?.[0]?.duration ?? 0, 'seconds').format('m:ss')})`;
+        } else {
+          return `${voiceRecordingAttachments?.length} Voice messages`;
+        }
+      }
+
+      if (giphyAttachments?.length) {
+        return 'Giphy';
+      }
+
+      if (onlyFiles && fileAttachments?.length === 1) {
+        return fileAttachments?.[0]?.title;
+      }
+
+      return `${attachments?.length} Files`;
+    }, [message?.attachments, message?.shared_location, message?.text, pollName]);
+
+    if (!subtitle) {
+      return null;
+    }
+
+    return (
+      <Text numberOfLines={1} style={[styles.subtitle, style]}>
+        {subtitle}
+      </Text>
+    );
+  },
+);
+
+const MessagePreviewIcon = React.memo(
+  (props: {
+    message?: LocalMessage | MessageResponse | DraftMessage | null;
+    iconProps?: IconProps;
+  }) => {
+    const { message, iconProps } = props;
+    const {
+      theme: { semantics },
+    } = useTheme();
+    const styles = useStyles();
+
+    if (!message) {
+      return null;
+    }
+
+    const attachments = message?.attachments;
+    const giphyAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.Giphy,
+    );
+    const audioAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.Audio,
+    );
+    const imageAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.Image,
+    );
+    const videoAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.Video,
+    );
+    const voiceRecordingAttachments = attachments?.filter(
+      (attachment) => attachment.type === FileTypes.VoiceRecording,
+    );
+    const fileAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.File);
+    const onlyImages = imageAttachments?.length && imageAttachments?.length === attachments?.length;
+    const onlyAudio = audioAttachments?.length && audioAttachments?.length === attachments?.length;
+    const onlyVideos = videoAttachments?.length && videoAttachments?.length === attachments?.length;
+    const onlyVoiceRecordings =
+      voiceRecordingAttachments?.length &&
+      voiceRecordingAttachments?.length === attachments?.length;
+    const hasLink = attachments?.some(
+      (attachment) => attachment.type === FileTypes.Image && attachment.og_scrape_url,
+    );
+
+    if (message.poll_id) {
+      return (
+        <NewPoll
+          height={12}
+          stroke={semantics.textPrimary}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
+
+    if (message.shared_location) {
+      return (
+        <NewMapPin
+          height={12}
+          stroke={semantics.textPrimary}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
+
+    if (hasLink) {
+      return (
+        <NewLink
+          height={12}
+          stroke={semantics.textPrimary}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
+
+    if (onlyAudio || onlyVoiceRecordings) {
+      return (
+        <NewMic
+          height={12}
+          stroke={semantics.textPrimary}
+          strokeWidth={1.2}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
+
+    if (onlyVideos) {
+      return (
+        <NewVideo
+          height={12}
+          stroke={semantics.textPrimary}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
+
+    if (onlyImages) {
+      return (
+        <NewPhoto
+          height={12}
+          stroke={semantics.textPrimary}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
+
+    if (giphyAttachments?.length) {
+      return (
+        <NewFile
+          height={12}
+          stroke={semantics.textPrimary}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
+
+    if (
+      fileAttachments?.length ||
+      imageAttachments?.length ||
+      videoAttachments?.length ||
+      audioAttachments?.length
+    ) {
+      return (
+        <NewFile
+          height={12}
+          stroke={semantics.textPrimary}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
+
+    return null;
+  },
+);
 
 export type MessagePreviewProps = {
-  previews: MessagePreviewSkeletonProps[];
+  message: LocalMessage | MessageResponse | DraftMessage;
+  iconProps?: IconProps;
+  textStyle?: StyleProp<TextStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
 };
 
-export const MessagePreview = ({ previews }: MessagePreviewProps) => {
-  const {
-    theme: {
-      messagePreview: { message },
-      colors: { accent_blue, grey },
-    },
-  } = useTheme();
+export const MessagePreview = ({
+  message,
+  iconProps,
+  textStyle,
+  containerStyle,
+}: MessagePreviewProps) => {
+  const styles = useStyles();
 
   return (
-    <View style={styles.container}>
-      {previews?.map((preview, index) =>
-        preview.text ? (
-          <Text
-            key={`${preview.text}_${index}`}
-            numberOfLines={1}
-            style={[
-              styles.message,
-              {
-                color: preview?.draft ? accent_blue : grey,
-              },
-              preview.bold ? styles.bold : {},
-              message,
-            ]}
-          >
-            {preview.text}
-          </Text>
-        ) : null,
-      )}
+    <View style={[styles.container, containerStyle]}>
+      <MessagePreviewIcon message={message} iconProps={iconProps} />
+      <MessagePreviewText message={message} style={textStyle} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  bold: { fontWeight: '500' },
-  container: {
-    flexDirection: 'row',
-    flexShrink: 1,
-  },
-  message: {
-    flexShrink: 1,
-    marginRight: 2,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      subtitle: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+        includeFontPadding: false,
+      },
+      container: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXxs,
+        flexShrink: 1,
+      },
+      iconStyle: {},
+    });
+  }, [semantics]);
+};

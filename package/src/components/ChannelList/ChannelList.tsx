@@ -55,6 +55,7 @@ export type ChannelListProps = Partial<
     | 'Skeleton'
     | 'maxUnreadCount'
     | 'numberOfSkeletons'
+    | 'mutedStatusPosition'
   >
 > & {
   /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
@@ -285,6 +286,7 @@ export const ChannelList = (props: ChannelListProps) => {
     Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
     queryChannelsOverride,
+    mutedStatusPosition = 'trailingBottom',
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -416,6 +418,7 @@ export const ChannelList = (props: ChannelListProps) => {
       }
     },
     Skeleton,
+    mutedStatusPosition,
   });
 
   return (

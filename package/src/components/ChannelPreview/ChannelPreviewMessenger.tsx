@@ -1,46 +1,22 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import type { ChannelPreviewProps } from './ChannelPreview';
+import { ChannelPreviewProps } from './ChannelPreview';
 import { ChannelPreviewMessage } from './ChannelPreviewMessage';
 import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewStatus } from './ChannelPreviewStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
-import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 
-import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
+import { LastMessageType } from './hooks/useChannelPreviewData';
 
 import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useViewport } from '../../hooks/useViewport';
+import { primitives } from '../../theme';
 import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
-
-const styles = StyleSheet.create({
-  container: {
-    borderBottomWidth: 1,
-    flex: 1,
-    flexDirection: 'row',
-    paddingHorizontal: 8,
-    paddingVertical: 12,
-  },
-  contentContainer: { flex: 1 },
-  row: {
-    alignItems: 'center',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 8,
-  },
-  statusContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  title: { fontSize: 14, fontWeight: '700' },
-});
 
 export type ChannelPreviewMessengerPropsWithContext = Pick<ChannelPreviewProps, 'channel'> &
   Pick<
@@ -53,33 +29,8 @@ export type ChannelPreviewMessengerPropsWithContext = Pick<ChannelPreviewProps, 
     | 'PreviewStatus'
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
+    | 'mutedStatusPosition'
   > & {
-    /**
-     * Latest message on a channel, formatted for preview
-     *
-     * e.g.,
-     *
-     * ```json
-     * {
-     *  created_at: '' ,
-     *  messageObject: { ... },
-     *  previews: {
-     *    bold: true,
-     *    text: 'This is the message preview text'
-     *  },
-     *  status: 0 | 1 | 2 // read states of the latest message.
-     * }
-     * ```
-     *
-     * The read status is either of the following:
-     *
-     * 0: The message was not sent by the current user
-     * 1: The message was sent by the current user and is unread
-     * 2: The message was sent by the current user and is read
-     *
-     * @overrideType object
-     */
-    latestMessagePreview: LatestMessagePreview;
     /**
      * Formatter function for date of latest message.
      * @param date Message date
@@ -94,13 +45,13 @@ export type ChannelPreviewMessengerPropsWithContext = Pick<ChannelPreviewProps, 
     muted?: boolean;
     /** Number of unread messages on the channel */
     unread?: number;
+    lastMessage?: LastMessageType;
   };
 
 const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsWithContext) => {
   const {
     channel,
     formatLatestMessageDate,
-    latestMessagePreview,
     maxUnreadCount,
     muted,
     onSelect,
@@ -111,23 +62,16 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
     PreviewTitle = ChannelPreviewTitle,
     PreviewUnreadCount = ChannelPreviewUnreadCount,
     unread,
+    mutedStatusPosition,
+    lastMessage,
   } = props;
-  const { vw } = useViewport();
-
-  const maxWidth = vw(80) - 16 - 40;
 
   const {
     theme: {
-      channelPreview: { container, contentContainer, row, title },
-      colors: { white_snow },
-      semantics,
+      channelPreview: { container, contentContainer, row },
     },
   } = useTheme();
-
-  const displayName = useChannelPreviewDisplayName(
-    channel,
-    Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
-  );
+  const styles = useStyles();
 
   return (
     <TouchableOpacity
@@ -139,30 +83,34 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
       style={[
         // { opacity: pressed ? 0.5 : 1 },
         styles.container,
-        { backgroundColor: white_snow, borderBottomColor: semantics.borderCoreDefault },
         container,
       ]}
       testID='channel-preview-button'
     >
-      <PreviewAvatar channel={channel} size='lg' />
+      <PreviewAvatar channel={channel} size='xl' />
       <View
         style={[styles.contentContainer, contentContainer]}
         testID={`channel-preview-content-${channel.id}`}
       >
-        <View style={[styles.row, row]}>
-          <PreviewTitle channel={channel} displayName={displayName} />
+        <View style={[styles.upperRow, row]}>
+          <View style={styles.titleContainer}>
+            <PreviewTitle channel={channel} />
+            {muted && mutedStatusPosition === 'inlineTitle' ? <PreviewMutedStatus /> : null}
+          </View>
+
           <View style={[styles.statusContainer, row]}>
-            {muted && <PreviewMutedStatus />}
+            <PreviewStatus
+              channel={channel}
+              formatLatestMessageDate={formatLatestMessageDate}
+              lastMessage={lastMessage}
+            />
             <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
           </View>
         </View>
-        <View style={[styles.row, row]}>
-          <PreviewMessage latestMessagePreview={latestMessagePreview} />
-          <PreviewStatus
-            channel={channel}
-            formatLatestMessageDate={formatLatestMessageDate}
-            latestMessagePreview={latestMessagePreview}
-          />
+
+        <View style={[styles.lowerRow, row]}>
+          <PreviewMessage channel={channel} lastMessage={lastMessage} />
+          {muted && mutedStatusPosition === 'trailingBottom' ? <PreviewMutedStatus /> : null}
         </View>
       </View>
     </TouchableOpacity>
@@ -170,9 +118,9 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
 };
 
 export type ChannelPreviewMessengerProps = Partial<
-  Omit<ChannelPreviewMessengerPropsWithContext, 'channel' | 'latestMessagePreview'>
+  Omit<ChannelPreviewMessengerPropsWithContext, 'channel'>
 > &
-  Pick<ChannelPreviewMessengerPropsWithContext, 'channel' | 'latestMessagePreview'>;
+  Pick<ChannelPreviewMessengerPropsWithContext, 'channel'>;
 
 const MemoizedChannelPreviewMessengerWithContext = React.memo(
   ChannelPreviewMessengerWithContext,
@@ -192,6 +140,7 @@ export const ChannelPreviewMessenger = (props: ChannelPreviewMessengerProps) => 
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    mutedStatusPosition,
   } = useChannelsContext();
   return (
     <MemoizedChannelPreviewMessengerWithContext
@@ -204,6 +153,7 @@ export const ChannelPreviewMessenger = (props: ChannelPreviewMessengerProps) => 
         PreviewStatus,
         PreviewTitle,
         PreviewUnreadCount,
+        mutedStatusPosition,
       }}
       {...props}
     />
@@ -211,3 +161,49 @@ export const ChannelPreviewMessenger = (props: ChannelPreviewMessengerProps) => 
 };
 
 ChannelPreviewMessenger.displayName = 'ChannelPreviewMessenger{channelPreview}';
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        flexDirection: 'row',
+        padding: primitives.spacingMd,
+        borderBottomColor: semantics.borderCoreSubtle,
+        gap: primitives.spacingMd,
+      },
+      contentContainer: { flex: 1, gap: primitives.spacingXxs },
+      upperRow: {
+        alignItems: 'center',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      },
+      lowerRow: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      },
+      innerRow: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXxs,
+      },
+      statusContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXs,
+      },
+      titleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: primitives.spacingXxs,
+        flexShrink: 1,
+      },
+    });
+  }, [semantics]);
+};

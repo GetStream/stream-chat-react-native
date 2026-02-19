@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ColorValue, StyleSheet, View } from 'react-native';
+import { ColorValue, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { avatarSizes } from './constants';
 
@@ -8,11 +8,12 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
 
 export type AvatarProps = {
-  size: 'xs' | 'sm' | 'md' | 'lg';
+  size: '2xl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
   imageUrl?: string;
   placeholder?: React.ReactNode;
   showBorder?: boolean;
   backgroundColor?: ColorValue;
+  style?: StyleProp<ViewStyle>;
 };
 
 export const Avatar = (props: AvatarProps) => {
@@ -22,7 +23,14 @@ export const Avatar = (props: AvatarProps) => {
   } = useTheme();
   const { ImageComponent } = useChatContext();
   const defaultAvatarBg = semantics.avatarPaletteBg1;
-  const { backgroundColor = defaultAvatarBg, size, imageUrl, placeholder, showBorder } = props;
+  const {
+    backgroundColor = defaultAvatarBg,
+    size,
+    imageUrl,
+    placeholder,
+    showBorder,
+    style,
+  } = props;
   const styles = useStyles();
 
   const onHandleError = useCallback(() => {
@@ -36,6 +44,7 @@ export const Avatar = (props: AvatarProps) => {
         avatarSizes[size],
         { backgroundColor },
         showBorder ? styles.border : undefined,
+        style,
       ]}
       testID='avatar-image'
     >

@@ -27,18 +27,7 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
   const client = propClient || contextClient;
   const Preview = propPreview || contextPreview;
 
-  const { latestMessagePreview, muted, unread } = useChannelPreviewData(
-    channel,
-    client,
-    propForceUpdate,
-  );
+  const { muted, unread, lastMessage } = useChannelPreviewData(channel, client, propForceUpdate);
 
-  return (
-    <Preview
-      channel={channel}
-      latestMessagePreview={latestMessagePreview}
-      muted={muted}
-      unread={unread}
-    />
-  );
+  return <Preview channel={channel} muted={muted} unread={unread} lastMessage={lastMessage} />;
 };
