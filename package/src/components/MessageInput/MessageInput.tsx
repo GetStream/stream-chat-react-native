@@ -172,6 +172,7 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
     | 'showPollCreationDialog'
     | 'sendMessage'
     | 'CreatePollContent'
+    | 'createPollOptionGap'
     | 'StopMessageStreamingButton'
   > &
   Pick<MessagesContextValue, 'Reply'> &
@@ -206,6 +207,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     closeAttachmentPicker,
     closePollCreationDialog,
     CreatePollContent,
+    createPollOptionGap,
     editing,
     messageInputFloating,
     messageInputHeightStore,
@@ -463,6 +465,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 <CreatePoll
                   closePollCreationDialog={closePollCreationDialog}
                   CreatePollContent={CreatePollContent}
+                  createPollOptionGap={createPollOptionGap}
                   sendMessage={sendMessage}
                 />
               </SafeAreaViewWrapper>
@@ -486,6 +489,7 @@ const areEqual = (
     audioRecordingEnabled: prevAsyncMessagesEnabled,
     channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
+    createPollOptionGap: prevCreatePollOptionGap,
     editing: prevEditing,
     isKeyboardVisible: prevIsKeyboardVisible,
     isOnline: prevIsOnline,
@@ -505,6 +509,7 @@ const areEqual = (
     audioRecordingEnabled: nextAsyncMessagesEnabled,
     channel: nextChannel,
     closePollCreationDialog: nextClosePollCreationDialog,
+    createPollOptionGap: nextCreatePollOptionGap,
     editing: nextEditing,
     isKeyboardVisible: nextIsKeyboardVisible,
     isOnline: nextIsOnline,
@@ -525,6 +530,7 @@ const areEqual = (
   const pollCreationInputPropsEqual =
     prevOpenPollCreationDialog === nextOpenPollCreationDialog &&
     prevClosePollCreationDialog === nextClosePollCreationDialog &&
+    prevCreatePollOptionGap === nextCreatePollOptionGap &&
     prevShowPollCreationDialog === nextShowPollCreationDialog;
   if (!pollCreationInputPropsEqual) {
     return false;

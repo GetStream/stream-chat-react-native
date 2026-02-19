@@ -277,6 +277,10 @@ export type InputMessageInputContextValue = {
    * Override the entire content of the CreatePoll component. The component has full access to the useCreatePollContext() hook.
    * */
   CreatePollContent?: React.ComponentType<PollContentProps>;
+  /**
+   * Vertical gap between poll options in poll creation dialog.
+   */
+  createPollOptionGap?: number;
 
   /**
    * Override file upload request
