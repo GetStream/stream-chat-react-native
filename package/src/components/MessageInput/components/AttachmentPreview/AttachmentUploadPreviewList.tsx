@@ -48,6 +48,16 @@ export type AttachmentUploadListPreviewPropsWithContext = Pick<
   | 'VideoAttachmentUploadPreview'
 >;
 
+const AttachmentPreviewCell = ({ children }: { children: React.ReactNode }) => (
+  <Animated.View
+    entering={ZoomIn.duration(200)}
+    exiting={ZoomOut.duration(200)}
+    layout={LinearTransition.duration(200)}
+  >
+    {children}
+  </Animated.View>
+);
+
 const ItemSeparatorComponent = () => {
   const {
     theme: {
@@ -93,89 +103,65 @@ const UnMemoizedAttachmentUploadPreviewList = (
     ({ item }: { item: LocalAttachment }) => {
       if (isLocalImageAttachment(item)) {
         return (
-          <Animated.View
-            entering={ZoomIn.duration(200)}
-            exiting={ZoomOut.duration(200)}
-            layout={LinearTransition.duration(200)}
-          >
+          <AttachmentPreviewCell>
             <ImageAttachmentUploadPreview
               attachment={item}
               handleRetry={attachmentManager.uploadAttachment}
               removeAttachments={attachmentManager.removeAttachments}
             />
-          </Animated.View>
+          </AttachmentPreviewCell>
         );
       } else if (isLocalVoiceRecordingAttachment(item)) {
         return (
-          <Animated.View
-            entering={ZoomIn.duration(200)}
-            exiting={ZoomOut.duration(200)}
-            layout={LinearTransition.duration(200)}
-          >
+          <AttachmentPreviewCell>
             <AudioAttachmentUploadPreview
               attachment={item}
               handleRetry={attachmentManager.uploadAttachment}
               removeAttachments={attachmentManager.removeAttachments}
             />
-          </Animated.View>
+          </AttachmentPreviewCell>
         );
       } else if (isLocalAudioAttachment(item)) {
         if (isSoundPackageAvailable()) {
           return (
-            <Animated.View
-              entering={ZoomIn.duration(200)}
-              exiting={ZoomOut.duration(200)}
-              layout={LinearTransition.duration(200)}
-            >
+            <AttachmentPreviewCell>
               <AudioAttachmentUploadPreview
                 attachment={item}
                 handleRetry={attachmentManager.uploadAttachment}
                 removeAttachments={attachmentManager.removeAttachments}
               />
-            </Animated.View>
+            </AttachmentPreviewCell>
           );
         } else {
           return (
-            <Animated.View
-              entering={ZoomIn.duration(200)}
-              exiting={ZoomOut.duration(200)}
-              layout={LinearTransition.duration(200)}
-            >
+            <AttachmentPreviewCell>
               <FileAttachmentUploadPreview
                 attachment={item}
                 handleRetry={attachmentManager.uploadAttachment}
                 removeAttachments={attachmentManager.removeAttachments}
               />
-            </Animated.View>
+            </AttachmentPreviewCell>
           );
         }
       } else if (isVideoAttachment(item)) {
         return (
-          <Animated.View
-            entering={ZoomIn.duration(200)}
-            exiting={ZoomOut.duration(200)}
-            layout={LinearTransition.duration(200)}
-          >
+          <AttachmentPreviewCell>
             <VideoAttachmentUploadPreview
               attachment={item}
               handleRetry={attachmentManager.uploadAttachment}
               removeAttachments={attachmentManager.removeAttachments}
             />
-          </Animated.View>
+          </AttachmentPreviewCell>
         );
       } else if (isLocalFileAttachment(item)) {
         return (
-          <Animated.View
-            entering={ZoomIn.duration(200)}
-            exiting={ZoomOut.duration(200)}
-            layout={LinearTransition.duration(200)}
-          >
+          <AttachmentPreviewCell>
             <FileAttachmentUploadPreview
               attachment={item}
               handleRetry={attachmentManager.uploadAttachment}
               removeAttachments={attachmentManager.removeAttachments}
             />
-          </Animated.View>
+          </AttachmentPreviewCell>
         );
       } else return null;
     },
