@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -75,6 +75,8 @@ const UnMemoizedAttachmentUploadPreviewList = (
   } = props;
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
+  const attachmentListRef = useRef<FlatList<LocalAttachment>>(null);
+  const previousAttachmentsLengthRef = useRef(attachments.length);
 
   const {
     theme: {
@@ -184,6 +186,21 @@ const UnMemoizedAttachmentUploadPreviewList = (
     ],
   );
 
+  useEffect(() => {
+    const previousLength = previousAttachmentsLengthRef.current;
+    const nextLength = attachments.length;
+    const didAddAttachment = nextLength > previousLength;
+    previousAttachmentsLengthRef.current = nextLength;
+
+    if (!didAddAttachment) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      attachmentListRef.current?.scrollToEnd({ animated: true });
+    });
+  }, [attachments.length]);
+
   if (!attachments.length) {
     return null;
   }
@@ -195,6 +212,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
       horizontal
       ItemSeparatorComponent={ItemSeparatorComponent}
       keyExtractor={(item) => item.localMetadata.id}
+      ref={attachmentListRef}
       renderItem={renderItem}
       showsHorizontalScrollIndicator={false}
       style={[styles.flatList, flatList]}
