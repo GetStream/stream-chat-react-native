@@ -241,13 +241,18 @@ export const getDurationLabelFromDuration = (duration: number) => {
 
 export const formatMsToMinSec = (ms: number) => {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const totalHours = Math.floor(totalMinutes / 60);
 
-  const mm = minutes; // no padding for minutes
-  const ss = minutes ? String(seconds).padStart(2, '0') : String(seconds);
+  if (totalHours >= 1) {
+    return `${totalHours}h`;
+  }
 
-  return `${mm}m ${ss}s`.replace(/^0m\s/, '');
+  if (totalMinutes >= 1) {
+    return `${totalMinutes}m`;
+  }
+
+  return `${totalSeconds}s`;
 };
 
 /**
