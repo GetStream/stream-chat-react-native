@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -22,6 +22,7 @@ import {
 } from '../../contexts';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
+import { primitives } from '../../theme';
 import { POLL_OPTION_HEIGHT } from '../../utils/constants';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
@@ -51,12 +52,13 @@ export const CreatePollContent = () => {
 
   const {
     theme: {
-      colors: { bg_user, black, white },
+      colors: { white },
       poll: {
-        createContent: { addComment, anonymousPoll, scrollView, suggestOption },
+        createContent: { addComment, anonymousPoll, optionCardWrapper, scrollView, suggestOption },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   useEffect(() => {
     if (!createPollOptionHeight) return;
@@ -116,36 +118,53 @@ export const CreatePollContent = () => {
         onCreatePollPressHandler={onCreatePollPressHandler}
       />
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 70 }}
+        contentContainerStyle={styles.contentContainerStyle}
         style={[styles.scrollView, { backgroundColor: white }, scrollView]}
       >
         <NameField />
         <CreatePollOptions currentOptionPositions={currentOptionPositions} />
-        <MultipleAnswersField />
-        <View
-          style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
-        >
-          <Text style={[styles.text, { color: black }, anonymousPoll.title]}>
-            {t('Anonymous poll')}
-          </Text>
-          <Switch onValueChange={onAnonymousPollChangeHandler} value={isAnonymousPoll} />
-        </View>
-        <View
-          style={[styles.textInputWrapper, { backgroundColor: bg_user }, suggestOption.wrapper]}
-        >
-          <Text style={[styles.text, { color: black }, suggestOption.title]}>
-            {t('Suggest an option')}
-          </Text>
-          <Switch
-            onValueChange={onAllowUserSuggestedOptionsChangeHandler}
-            value={allowUserSuggestedOptions}
-          />
-        </View>
-        <View style={[styles.textInputWrapper, { backgroundColor: bg_user }, addComment.wrapper]}>
-          <Text style={[styles.text, { color: black }, addComment.title]}>
-            {t('Add a comment')}
-          </Text>
-          <Switch onValueChange={onAllowAnswersChangeHandler} value={allowAnswers} />
+        <View style={[styles.optionCardWrapper, optionCardWrapper]}>
+          <MultipleAnswersField />
+          <View style={[styles.optionCard, anonymousPoll.wrapper]}>
+            <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
+              <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous poll')}</Text>
+              <Text style={[styles.description, anonymousPoll.description]}>Hide who voted</Text>
+            </View>
+
+            <Switch
+              onValueChange={onAnonymousPollChangeHandler}
+              value={isAnonymousPoll}
+              style={[styles.optionCardSwitch, anonymousPoll.optionCardSwitch]}
+            />
+          </View>
+          <View style={[styles.optionCard, suggestOption.wrapper]}>
+            <View style={[styles.optionCardContent, suggestOption.optionCardContent]}>
+              <Text style={[styles.title, suggestOption.title]}>{t('Suggest an option')}</Text>
+              <Text style={[styles.description, suggestOption.description]}>
+                Let others add options
+              </Text>
+            </View>
+
+            <Switch
+              onValueChange={onAllowUserSuggestedOptionsChangeHandler}
+              value={allowUserSuggestedOptions}
+              style={[styles.optionCardSwitch, suggestOption.optionCardSwitch]}
+            />
+          </View>
+          <View style={[styles.optionCard, addComment.wrapper]}>
+            <View style={[styles.optionCardContent, addComment.optionCardContent]}>
+              <Text style={[styles.title, addComment.title]}>{t('Add a comment')}</Text>
+              <Text style={[styles.description, addComment.description]}>
+                Add a comment to the poll
+              </Text>
+            </View>
+
+            <Switch
+              onValueChange={onAllowAnswersChangeHandler}
+              value={allowAnswers}
+              style={[styles.optionCardSwitch, addComment.optionCardSwitch]}
+            />
+          </View>
         </View>
       </ScrollView>
     </>
@@ -187,16 +206,44 @@ export const CreatePoll = ({
   );
 };
 
-const styles = StyleSheet.create({
-  scrollView: { flex: 1, padding: 16 },
-  text: { fontSize: 16 },
-  textInputWrapper: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      scrollView: { flex: 1, padding: primitives.spacingMd },
+      contentContainerStyle: { paddingBottom: 70 },
+      title: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+      },
+      description: {
+        color: semantics.textTertiary,
+        fontSize: primitives.typographyFontSizeSm,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightNormal,
+      },
+      optionCardContent: {
+        gap: primitives.spacingXxs,
+      },
+      optionCard: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        backgroundColor: semantics.inputOptionCardBg,
+        padding: primitives.spacingMd,
+        borderRadius: primitives.radiusLg,
+      },
+      optionCardWrapper: {
+        gap: primitives.spacingMd,
+      },
+      optionCardSwitch: {
+        marginRight: primitives.spacingMd,
+      },
+    });
+  }, [semantics]);
+};

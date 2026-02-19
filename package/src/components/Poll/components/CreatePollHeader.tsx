@@ -1,10 +1,12 @@
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { SendPoll } from '../../../icons';
-import { PollModalHeader } from '../components';
+import { IconProps, SendPoll } from '../../../icons';
+import { NewCross } from '../../../icons/NewCross';
+import { primitives } from '../../../theme';
+import { Button } from '../../ui';
 import { useCanCreatePoll } from '../hooks/useCanCreatePoll';
 
 export type CreatePollHeaderProps = {
@@ -30,33 +32,73 @@ export const CreatePollHeader = ({
 
   const {
     theme: {
-      colors: { white },
       poll: {
         createContent: { headerContainer, sendButton },
+        modalHeader: { title: titleStyle },
       },
+      semantics,
     },
   } = useTheme();
+  const styles = useStyles();
+
+  const renderSendPollIcon = (props: IconProps) => {
+    return (
+      <SendPoll
+        {...props}
+        height={18}
+        fill={semantics.textOnAccent}
+        width={18}
+        stroke={'none'}
+        strokeWidth={0}
+      />
+    );
+  };
 
   return (
-    <View style={[styles.headerContainer, { backgroundColor: white }, headerContainer]}>
-      <PollModalHeader onPress={onBackPressHandler} title={t('Create Poll')} />
-      <Pressable
-        disabled={!canCreatePoll}
+    <View style={[styles.headerContainer, headerContainer]}>
+      <Button
+        variant='secondary'
+        onPress={onBackPressHandler}
+        type='solid'
+        LeadingIcon={NewCross}
+        iconOnly
+      />
+
+      <Text numberOfLines={1} style={[styles.title, titleStyle]}>
+        {t('Create Poll')}
+      </Text>
+
+      <Button
+        variant='primary'
         onPress={onCreatePollPressHandler}
-        style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.sendButton, sendButton]}
-      >
-        <SendPoll
-          height={24}
-          pathFill={canCreatePoll ? '#005DFF' : '#B4BBBA'}
-          viewBox='0 0 24 24'
-          width={24}
-        />
-      </Pressable>
+        type='solid'
+        LeadingIcon={renderSendPollIcon}
+        iconOnly
+        disabled={!canCreatePoll}
+        style={sendButton}
+      />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  headerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
-  sendButton: { paddingHorizontal: 16, paddingVertical: 18 },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: primitives.spacingMd,
+      },
+      title: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+      },
+    });
+  }, [semantics]);
+};

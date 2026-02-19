@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -19,7 +19,10 @@ import { PollComposerOption, PollComposerState } from 'stream-chat';
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { DragHandle } from '../../../icons';
+import { CircleMinus } from '../../../icons/CircleMinus';
+import { DotGrid } from '../../../icons/DotGrid';
+import { InfoTooltip } from '../../../icons/InfoTooltip';
+import { primitives } from '../../../theme';
 import { POLL_OPTION_HEIGHT } from '../../../utils/constants';
 
 export type CurrentOptionPositionsCache = {
@@ -50,6 +53,7 @@ export type CreatePollOptionType = {
    * @returns
    */
   onNewOrder: (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => void;
+  onRemoveOption: (index: number) => void;
 };
 
 export const CreatePollOption = ({
@@ -63,6 +67,7 @@ export const CreatePollOption = ({
   isDragging,
   option,
   onNewOrder,
+  onRemoveOption,
 }: CreatePollOptionType) => {
   const { t } = useTranslationContext();
   const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
@@ -203,14 +208,15 @@ export const CreatePollOption = ({
 
   const {
     theme: {
-      colors: { accent_error, bg_user, black, text_low_emphasis },
       poll: {
         createContent: {
           pollOptions: { optionStyle },
         },
       },
+      semantics,
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onChangeTextHandler = useCallback(
     (newText: string) => {
@@ -219,42 +225,47 @@ export const CreatePollOption = ({
     [handleChangeText, index],
   );
 
+  const onRemoveOptionHandler = useCallback(() => {
+    onRemoveOption(index);
+  }, [onRemoveOption, index]);
+
   return (
     <Animated.View
       style={[
         styles.optionWrapper,
         optionStyle.wrapper,
         {
-          backgroundColor: bg_user,
-          borderColor: error ? accent_error : bg_user,
           position: 'absolute',
-          width: '100%',
         },
         animatedStyles,
       ]}
     >
+      <View style={[styles.optionContent, optionStyle.content]}>
+        <GestureDetector gesture={gesture}>
+          <Animated.View>
+            <DotGrid height={20} width={20} stroke={semantics.inputTextIcon} />
+          </Animated.View>
+        </GestureDetector>
+        <TextInput
+          onBlur={handleBlur}
+          onChangeText={onChangeTextHandler}
+          placeholder={t('Add an option')}
+          placeholderTextColor={semantics.inputTextPlaceholder}
+          style={[styles.optionInput, optionStyle.input]}
+        />
+        <Pressable onPress={onRemoveOptionHandler}>
+          <CircleMinus height={20} width={20} stroke={semantics.inputTextIcon} />
+        </Pressable>
+      </View>
+
       {error ? (
-        <Text
-          style={[
-            styles.optionValidationError,
-            { color: accent_error },
-            optionStyle.validationErrorText,
-          ]}
-        >
-          {t(error)}
-        </Text>
+        <View style={[styles.optionValidationErrorContainer, optionStyle.validationErrorContainer]}>
+          <InfoTooltip height={20} width={20} fill={semantics.accentError} />
+          <Text style={[styles.optionValidationError, optionStyle.validationErrorText]}>
+            {t(error)}
+          </Text>
+        </View>
       ) : null}
-      <TextInput
-        onBlur={handleBlur}
-        onChangeText={onChangeTextHandler}
-        placeholder={t('Add an option')}
-        style={[styles.optionInput, { color: black }, optionStyle.input]}
-      />
-      <GestureDetector gesture={gesture}>
-        <Animated.View>
-          <DragHandle pathFill={text_low_emphasis} />
-        </Animated.View>
-      </GestureDetector>
     </Animated.View>
   );
 };
@@ -316,7 +327,6 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
 
   const {
     theme: {
-      colors: { black },
       poll: {
         createContent: {
           pollOptions: { container, title },
@@ -324,6 +334,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onNewOrderChange = useCallback(
     async (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => {
@@ -343,9 +354,21 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
     [options, pollComposer],
   );
 
+  const onRemoveOptionHandler = useCallback(
+    (index: number) => {
+      if (options.length === 1) {
+        return;
+      }
+      pollComposer.updateFields({
+        options: options.filter((_, i) => i !== index),
+      });
+    },
+    [options, pollComposer],
+  );
+
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.text, { color: black }, title]}>{t('Options')}</Text>
+      <Text style={[styles.title, title]}>{t('Options')}</Text>
       <Animated.View style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption
@@ -355,6 +378,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
             error={errors?.[option.id]}
             handleBlur={handleBlur}
             handleChangeText={updateOption}
+            onRemoveOption={onRemoveOptionHandler}
             index={index}
             isDragging={isDragging}
             key={option.id}
@@ -367,30 +391,56 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   );
 };
 
-const styles = StyleSheet.create({
-  addOptionWrapper: {
-    borderRadius: 12,
-    marginTop: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  container: { marginVertical: 16 },
-  optionInput: {
-    flex: 1,
-    fontSize: 16,
-    paddingRight: 4,
-    paddingVertical: 0, // android is adding extra padding so we remove it
-  },
-  optionValidationError: { fontSize: 12, left: 16, position: 'absolute', top: 4 },
-  optionWrapper: {
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  text: { fontSize: 16 },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        paddingVertical: primitives.spacingXl,
+        gap: primitives.spacingXs,
+      },
+      optionInput: {
+        flex: 1,
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightRegular,
+        color: semantics.inputTextDefault,
+        paddingVertical: 0, // android is adding extra padding so we remove it
+      },
+      optionValidationErrorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: primitives.spacingXs,
+        paddingHorizontal: primitives.spacingMd,
+        paddingBottom: primitives.spacingSm,
+      },
+      optionValidationError: {
+        color: semantics.accentError,
+        fontSize: primitives.typographyFontSizeSm,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightRegular,
+      },
+      optionWrapper: {
+        width: '100%',
+        borderWidth: 1,
+        borderColor: semantics.inputBorderDefault,
+        borderRadius: primitives.radiusLg,
+      },
+      optionContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: primitives.spacingXs,
+        paddingHorizontal: primitives.spacingMd,
+        paddingVertical: primitives.spacingSm,
+      },
+      title: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+      },
+    });
+  }, [semantics]);
+};
