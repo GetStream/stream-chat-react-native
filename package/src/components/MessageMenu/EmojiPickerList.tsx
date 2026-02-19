@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Platform, StyleSheet, Text } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 
 import { emojis } from './emojis';
@@ -12,7 +12,7 @@ import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
-const EMOJI_SIZE = 32;
+const EMOJI_SIZE = Platform.OS === 'ios' ? 32 : 28;
 
 const emojiKeyExtractor = (item: string) => `unicode-${item}`;
 
@@ -94,10 +94,9 @@ const useStyles = () => {
       StyleSheet.create({
         bottomSheetColumnWrapper: {
           alignItems: 'center',
-          justifyContent: 'space-evenly',
+          justifyContent: 'center',
           width: '100%',
           height: 54,
-          paddingHorizontal: primitives.spacingMd,
         },
         bottomSheetContentContainer: { paddingVertical: 16 },
         emojiContainer: {
