@@ -136,9 +136,17 @@ const areEqual = (
   prevProps: OutputButtonsWithContextProps,
   nextProps: OutputButtonsWithContextProps,
 ) => {
-  const { channel: prevChannel, cooldownIsActive: prevCooldownIsActive } = prevProps;
+  const {
+    channel: prevChannel,
+    cooldownIsActive: prevCooldownIsActive,
+    hasAttachments: prevHasAttachments,
+  } = prevProps;
 
-  const { channel: nextChannel, cooldownIsActive: nextCooldownIsActive } = nextProps;
+  const {
+    channel: nextChannel,
+    cooldownIsActive: nextCooldownIsActive,
+    hasAttachments: nextHasAttachments,
+  } = nextProps;
 
   if (prevChannel?.cid !== nextChannel?.cid) {
     return false;
@@ -146,6 +154,11 @@ const areEqual = (
 
   const cooldownIsActiveEqual = prevCooldownIsActive === nextCooldownIsActive;
   if (!cooldownIsActiveEqual) {
+    return false;
+  }
+
+  const hasAttachmentsEqual = prevHasAttachments === nextHasAttachments;
+  if (!hasAttachmentsEqual) {
     return false;
   }
 
