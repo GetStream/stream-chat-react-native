@@ -67,6 +67,7 @@ const options = {
   presence: true,
   state: true,
   watch: true,
+  message_limit: 25,
 };
 
 const HeaderNetworkDownIndicator = () => null;

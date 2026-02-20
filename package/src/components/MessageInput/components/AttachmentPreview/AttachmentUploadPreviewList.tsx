@@ -1,7 +1,22 @@
-import React, { useCallback } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import {
+  FlatList,
+  LayoutChangeEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+  View,
+} from 'react-native';
 
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  ZoomIn,
+  ZoomOut,
+  LinearTransition,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 import {
   isLocalAudioAttachment,
@@ -22,8 +37,8 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { isSoundPackageAvailable } from '../../../../native';
 import { primitives } from '../../../../theme';
 
-const IMAGE_PREVIEW_SIZE = 72;
-const FILE_PREVIEW_HEIGHT = 224;
+const END_ANCHOR_THRESHOLD = 16;
+const END_SHRINK_COMPENSATION_DURATION = 200;
 
 export type AttachmentUploadListPreviewPropsWithContext = Pick<
   MessageInputContextValue,
@@ -32,6 +47,16 @@ export type AttachmentUploadListPreviewPropsWithContext = Pick<
   | 'ImageAttachmentUploadPreview'
   | 'VideoAttachmentUploadPreview'
 >;
+
+const AttachmentPreviewCell = ({ children }: { children: React.ReactNode }) => (
+  <Animated.View
+    entering={ZoomIn.duration(200)}
+    exiting={ZoomOut.duration(200)}
+    layout={LinearTransition.duration(200)}
+  >
+    {children}
+  </Animated.View>
+);
 
 const ItemSeparatorComponent = () => {
   const {
@@ -42,22 +67,6 @@ const ItemSeparatorComponent = () => {
     },
   } = useTheme();
   return <View style={[styles.itemSeparator, itemSeparator]} />;
-};
-
-const getItemLayout = (data: ArrayLike<LocalAttachment> | null | undefined, index: number) => {
-  const item = data?.[index];
-  if (item && isLocalImageAttachment(item as LocalAttachment)) {
-    return {
-      index,
-      length: IMAGE_PREVIEW_SIZE + 8,
-      offset: (IMAGE_PREVIEW_SIZE + 8) * index,
-    };
-  }
-  return {
-    index,
-    length: FILE_PREVIEW_HEIGHT + 8,
-    offset: (FILE_PREVIEW_HEIGHT + 8) * index,
-  };
 };
 
 /**
@@ -75,6 +84,12 @@ const UnMemoizedAttachmentUploadPreviewList = (
   } = props;
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
+  const attachmentListRef = useRef<FlatList<LocalAttachment>>(null);
+  const previousAttachmentsLengthRef = useRef(attachments.length);
+  const contentWidthRef = useRef(0);
+  const viewportWidthRef = useRef(0);
+  const scrollOffsetXRef = useRef(0);
+  const endShrinkCompensationX = useSharedValue(0);
 
   const {
     theme: {
@@ -88,89 +103,65 @@ const UnMemoizedAttachmentUploadPreviewList = (
     ({ item }: { item: LocalAttachment }) => {
       if (isLocalImageAttachment(item)) {
         return (
-          <Animated.View
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(200)}
-            layout={LinearTransition.duration(200)}
-          >
+          <AttachmentPreviewCell>
             <ImageAttachmentUploadPreview
               attachment={item}
               handleRetry={attachmentManager.uploadAttachment}
               removeAttachments={attachmentManager.removeAttachments}
             />
-          </Animated.View>
+          </AttachmentPreviewCell>
         );
       } else if (isLocalVoiceRecordingAttachment(item)) {
         return (
-          <Animated.View
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(200)}
-            layout={LinearTransition.duration(200)}
-          >
+          <AttachmentPreviewCell>
             <AudioAttachmentUploadPreview
               attachment={item}
               handleRetry={attachmentManager.uploadAttachment}
               removeAttachments={attachmentManager.removeAttachments}
             />
-          </Animated.View>
+          </AttachmentPreviewCell>
         );
       } else if (isLocalAudioAttachment(item)) {
         if (isSoundPackageAvailable()) {
           return (
-            <Animated.View
-              entering={FadeIn.duration(200)}
-              exiting={FadeOut.duration(200)}
-              layout={LinearTransition.duration(200)}
-            >
+            <AttachmentPreviewCell>
               <AudioAttachmentUploadPreview
                 attachment={item}
                 handleRetry={attachmentManager.uploadAttachment}
                 removeAttachments={attachmentManager.removeAttachments}
               />
-            </Animated.View>
+            </AttachmentPreviewCell>
           );
         } else {
           return (
-            <Animated.View
-              entering={FadeIn.duration(200)}
-              exiting={FadeOut.duration(200)}
-              layout={LinearTransition.duration(200)}
-            >
+            <AttachmentPreviewCell>
               <FileAttachmentUploadPreview
                 attachment={item}
                 handleRetry={attachmentManager.uploadAttachment}
                 removeAttachments={attachmentManager.removeAttachments}
               />
-            </Animated.View>
+            </AttachmentPreviewCell>
           );
         }
       } else if (isVideoAttachment(item)) {
         return (
-          <Animated.View
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(200)}
-            layout={LinearTransition.duration(200)}
-          >
+          <AttachmentPreviewCell>
             <VideoAttachmentUploadPreview
               attachment={item}
               handleRetry={attachmentManager.uploadAttachment}
               removeAttachments={attachmentManager.removeAttachments}
             />
-          </Animated.View>
+          </AttachmentPreviewCell>
         );
       } else if (isLocalFileAttachment(item)) {
         return (
-          <Animated.View
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(200)}
-            layout={LinearTransition.duration(200)}
-          >
+          <AttachmentPreviewCell>
             <FileAttachmentUploadPreview
               attachment={item}
               handleRetry={attachmentManager.uploadAttachment}
               removeAttachments={attachmentManager.removeAttachments}
             />
-          </Animated.View>
+          </AttachmentPreviewCell>
         );
       } else return null;
     },
@@ -184,22 +175,98 @@ const UnMemoizedAttachmentUploadPreviewList = (
     ],
   );
 
+  const onScrollHandler = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    scrollOffsetXRef.current = event.nativeEvent.contentOffset.x;
+  }, []);
+
+  const onLayoutHandler = useCallback((event: LayoutChangeEvent) => {
+    viewportWidthRef.current = event.nativeEvent.layout.width;
+  }, []);
+
+  const onContentSizeChangeHandler = useCallback(
+    (width: number) => {
+      const previousContentWidth = contentWidthRef.current;
+      contentWidthRef.current = width;
+
+      if (!previousContentWidth || width >= previousContentWidth) {
+        return;
+      }
+
+      const oldMaxOffset = Math.max(0, previousContentWidth - viewportWidthRef.current);
+      const newMaxOffset = Math.max(0, width - viewportWidthRef.current);
+      const offsetBefore = scrollOffsetXRef.current;
+      const wasNearEnd = oldMaxOffset - offsetBefore <= END_ANCHOR_THRESHOLD;
+      const overshoot = Math.max(0, offsetBefore - newMaxOffset);
+      const shouldAnchorEnd = wasNearEnd || overshoot > 0;
+
+      if (!shouldAnchorEnd) {
+        return;
+      }
+
+      if (overshoot > 0) {
+        attachmentListRef.current?.scrollToOffset({
+          animated: false,
+          offset: newMaxOffset,
+        });
+        scrollOffsetXRef.current = newMaxOffset;
+      }
+
+      const compensation = newMaxOffset - oldMaxOffset;
+      if (compensation !== 0) {
+        cancelAnimation(endShrinkCompensationX);
+        endShrinkCompensationX.value = compensation;
+        endShrinkCompensationX.value = withSpring(0, {
+          duration: END_SHRINK_COMPENSATION_DURATION,
+        });
+      }
+    },
+    [endShrinkCompensationX],
+  );
+
+  useEffect(() => {
+    const previousLength = previousAttachmentsLengthRef.current;
+    const nextLength = attachments.length;
+    const didAddAttachment = nextLength > previousLength;
+    previousAttachmentsLengthRef.current = nextLength;
+
+    if (!didAddAttachment) {
+      return;
+    }
+
+    cancelAnimation(endShrinkCompensationX);
+    endShrinkCompensationX.value = 0;
+    requestAnimationFrame(() => {
+      attachmentListRef.current?.scrollToEnd({ animated: true });
+    });
+  }, [attachments.length, endShrinkCompensationX]);
+
+  const animatedListWrapperStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: endShrinkCompensationX.value }],
+  }));
+
   if (!attachments.length) {
     return null;
   }
 
   return (
-    <FlatList
-      data={attachments}
-      getItemLayout={getItemLayout}
-      horizontal
-      ItemSeparatorComponent={ItemSeparatorComponent}
-      keyExtractor={(item) => item.localMetadata.id}
-      renderItem={renderItem}
-      showsHorizontalScrollIndicator={false}
-      style={[styles.flatList, flatList]}
-      testID={'attachment-upload-preview-list'}
-    />
+    <Animated.View style={animatedListWrapperStyle}>
+      <FlatList
+        data={attachments}
+        horizontal
+        ItemSeparatorComponent={ItemSeparatorComponent}
+        keyExtractor={(item) => item.localMetadata.id}
+        onContentSizeChange={onContentSizeChangeHandler}
+        onLayout={onLayoutHandler}
+        onScroll={onScrollHandler}
+        removeClippedSubviews={false}
+        ref={attachmentListRef}
+        renderItem={renderItem}
+        scrollEventThrottle={16}
+        showsHorizontalScrollIndicator={false}
+        style={[styles.flatList, flatList]}
+        testID={'attachment-upload-preview-list'}
+      />
+    </Animated.View>
   );
 };
 
@@ -240,7 +307,6 @@ const styles = StyleSheet.create({
   itemSeparator: {
     width: primitives.spacingXs,
   },
-  wrapper: {},
 });
 
 AttachmentUploadPreviewList.displayName =

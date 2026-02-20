@@ -47,88 +47,208 @@ exports[`Thread should match thread snapshot 1`] = `
         data={
           [
             {
-              "attachments": [],
-              "cid": "messaging:test-channel",
-              "created_at": 2020-05-05T14:50:00.000Z,
-              "deleted_at": null,
-              "error": null,
-              "html": "<p>regular</p>",
-              "id": "38ef6f7c-3090-5759-a37f-ab0053aadb96",
-              "message_text_updated_at": "2020-05-05T14:50:00.000Z",
-              "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
-              "pinned_at": null,
-              "quoted_message": null,
-              "reaction_groups": null,
-              "status": "received",
-              "text": "Message6",
-              "type": "regular",
-              "updated_at": 2020-05-05T14:50:00.000Z,
-              "user": {
-                "banned": false,
-                "created_at": "2020-04-27T13:39:49.331742Z",
-                "id": "arthur",
-                "image": "https://i.imgur.com/LuuGvh0.png",
-                "name": "Arthur",
-                "online": false,
-                "role": "user",
-                "updated_at": "2020-04-27T13:39:49.332087Z",
+              "message": {
+                "attachments": [],
+                "cid": "messaging:test-channel",
+                "created_at": 2020-05-05T14:50:00.000Z,
+                "deleted_at": null,
+                "error": null,
+                "html": "<p>regular</p>",
+                "id": "38ef6f7c-3090-5759-a37f-ab0053aadb96",
+                "message_text_updated_at": "2020-05-05T14:50:00.000Z",
+                "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
+                "pinned_at": null,
+                "quoted_message": null,
+                "reaction_groups": null,
+                "status": "received",
+                "text": "Message6",
+                "type": "regular",
+                "updated_at": 2020-05-05T14:50:00.000Z,
+                "user": {
+                  "banned": false,
+                  "created_at": "2020-04-27T13:39:49.331742Z",
+                  "id": "arthur",
+                  "image": "https://i.imgur.com/LuuGvh0.png",
+                  "name": "Arthur",
+                  "online": false,
+                  "role": "user",
+                  "updated_at": "2020-04-27T13:39:49.332087Z",
+                },
+              },
+              "nextMessage": undefined,
+              "previousMessage": {
+                "attachments": [],
+                "cid": "messaging:test-channel",
+                "created_at": 2020-05-05T14:50:00.000Z,
+                "deleted_at": null,
+                "error": null,
+                "html": "<p>regular</p>",
+                "id": "516efa25-5d29-5c9a-ad2d-4cc183e785bd",
+                "message_text_updated_at": "2020-05-05T14:50:00.000Z",
+                "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
+                "pinned_at": null,
+                "quoted_message": null,
+                "reaction_groups": null,
+                "status": "received",
+                "text": "Message5",
+                "type": "regular",
+                "updated_at": 2020-05-05T14:50:00.000Z,
+                "user": {
+                  "banned": false,
+                  "created_at": "2020-04-27T13:39:49.331742Z",
+                  "id": "finn",
+                  "image": "https://i.imgur.com/spueyAP.png",
+                  "name": "Finn",
+                  "online": false,
+                  "role": "user",
+                  "updated_at": "2020-04-27T13:39:49.332087Z",
+                },
               },
             },
             {
-              "attachments": [],
-              "cid": "messaging:test-channel",
-              "created_at": 2020-05-05T14:50:00.000Z,
-              "deleted_at": null,
-              "error": null,
-              "html": "<p>regular</p>",
-              "id": "516efa25-5d29-5c9a-ad2d-4cc183e785bd",
-              "message_text_updated_at": "2020-05-05T14:50:00.000Z",
-              "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
-              "pinned_at": null,
-              "quoted_message": null,
-              "reaction_groups": null,
-              "status": "received",
-              "text": "Message5",
-              "type": "regular",
-              "updated_at": 2020-05-05T14:50:00.000Z,
-              "user": {
-                "banned": false,
-                "created_at": "2020-04-27T13:39:49.331742Z",
-                "id": "finn",
-                "image": "https://i.imgur.com/spueyAP.png",
-                "name": "Finn",
-                "online": false,
-                "role": "user",
-                "updated_at": "2020-04-27T13:39:49.332087Z",
+              "message": {
+                "attachments": [],
+                "cid": "messaging:test-channel",
+                "created_at": 2020-05-05T14:50:00.000Z,
+                "deleted_at": null,
+                "error": null,
+                "html": "<p>regular</p>",
+                "id": "516efa25-5d29-5c9a-ad2d-4cc183e785bd",
+                "message_text_updated_at": "2020-05-05T14:50:00.000Z",
+                "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
+                "pinned_at": null,
+                "quoted_message": null,
+                "reaction_groups": null,
+                "status": "received",
+                "text": "Message5",
+                "type": "regular",
+                "updated_at": 2020-05-05T14:50:00.000Z,
+                "user": {
+                  "banned": false,
+                  "created_at": "2020-04-27T13:39:49.331742Z",
+                  "id": "finn",
+                  "image": "https://i.imgur.com/spueyAP.png",
+                  "name": "Finn",
+                  "online": false,
+                  "role": "user",
+                  "updated_at": "2020-04-27T13:39:49.332087Z",
+                },
+              },
+              "nextMessage": {
+                "attachments": [],
+                "cid": "messaging:test-channel",
+                "created_at": 2020-05-05T14:50:00.000Z,
+                "deleted_at": null,
+                "error": null,
+                "html": "<p>regular</p>",
+                "id": "38ef6f7c-3090-5759-a37f-ab0053aadb96",
+                "message_text_updated_at": "2020-05-05T14:50:00.000Z",
+                "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
+                "pinned_at": null,
+                "quoted_message": null,
+                "reaction_groups": null,
+                "status": "received",
+                "text": "Message6",
+                "type": "regular",
+                "updated_at": 2020-05-05T14:50:00.000Z,
+                "user": {
+                  "banned": false,
+                  "created_at": "2020-04-27T13:39:49.331742Z",
+                  "id": "arthur",
+                  "image": "https://i.imgur.com/LuuGvh0.png",
+                  "name": "Arthur",
+                  "online": false,
+                  "role": "user",
+                  "updated_at": "2020-04-27T13:39:49.332087Z",
+                },
+              },
+              "previousMessage": {
+                "attachments": [],
+                "cid": "messaging:test-channel",
+                "created_at": 2020-05-05T14:50:00.000Z,
+                "deleted_at": null,
+                "error": null,
+                "html": "<p>regular</p>",
+                "id": "82a83b16-b611-527c-b3ac-765ef6220490",
+                "message_text_updated_at": "2020-05-05T14:50:00.000Z",
+                "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
+                "pinned_at": null,
+                "quoted_message": null,
+                "reaction_groups": null,
+                "status": "received",
+                "text": "Message4",
+                "type": "regular",
+                "updated_at": 2020-05-05T14:50:00.000Z,
+                "user": {
+                  "banned": false,
+                  "created_at": "2020-04-27T13:39:49.331742Z",
+                  "id": "arthur",
+                  "image": "https://i.imgur.com/LuuGvh0.png",
+                  "name": "Arthur",
+                  "online": false,
+                  "role": "user",
+                  "updated_at": "2020-04-27T13:39:49.332087Z",
+                },
               },
             },
             {
-              "attachments": [],
-              "cid": "messaging:test-channel",
-              "created_at": 2020-05-05T14:50:00.000Z,
-              "deleted_at": null,
-              "error": null,
-              "html": "<p>regular</p>",
-              "id": "82a83b16-b611-527c-b3ac-765ef6220490",
-              "message_text_updated_at": "2020-05-05T14:50:00.000Z",
-              "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
-              "pinned_at": null,
-              "quoted_message": null,
-              "reaction_groups": null,
-              "status": "received",
-              "text": "Message4",
-              "type": "regular",
-              "updated_at": 2020-05-05T14:50:00.000Z,
-              "user": {
-                "banned": false,
-                "created_at": "2020-04-27T13:39:49.331742Z",
-                "id": "arthur",
-                "image": "https://i.imgur.com/LuuGvh0.png",
-                "name": "Arthur",
-                "online": false,
-                "role": "user",
-                "updated_at": "2020-04-27T13:39:49.332087Z",
+              "message": {
+                "attachments": [],
+                "cid": "messaging:test-channel",
+                "created_at": 2020-05-05T14:50:00.000Z,
+                "deleted_at": null,
+                "error": null,
+                "html": "<p>regular</p>",
+                "id": "82a83b16-b611-527c-b3ac-765ef6220490",
+                "message_text_updated_at": "2020-05-05T14:50:00.000Z",
+                "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
+                "pinned_at": null,
+                "quoted_message": null,
+                "reaction_groups": null,
+                "status": "received",
+                "text": "Message4",
+                "type": "regular",
+                "updated_at": 2020-05-05T14:50:00.000Z,
+                "user": {
+                  "banned": false,
+                  "created_at": "2020-04-27T13:39:49.331742Z",
+                  "id": "arthur",
+                  "image": "https://i.imgur.com/LuuGvh0.png",
+                  "name": "Arthur",
+                  "online": false,
+                  "role": "user",
+                  "updated_at": "2020-04-27T13:39:49.332087Z",
+                },
               },
+              "nextMessage": {
+                "attachments": [],
+                "cid": "messaging:test-channel",
+                "created_at": 2020-05-05T14:50:00.000Z,
+                "deleted_at": null,
+                "error": null,
+                "html": "<p>regular</p>",
+                "id": "516efa25-5d29-5c9a-ad2d-4cc183e785bd",
+                "message_text_updated_at": "2020-05-05T14:50:00.000Z",
+                "parent_id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
+                "pinned_at": null,
+                "quoted_message": null,
+                "reaction_groups": null,
+                "status": "received",
+                "text": "Message5",
+                "type": "regular",
+                "updated_at": 2020-05-05T14:50:00.000Z,
+                "user": {
+                  "banned": false,
+                  "created_at": "2020-04-27T13:39:49.331742Z",
+                  "id": "finn",
+                  "image": "https://i.imgur.com/spueyAP.png",
+                  "name": "Finn",
+                  "online": false,
+                  "role": "user",
+                  "updated_at": "2020-04-27T13:39:49.332087Z",
+                },
+              },
+              "previousMessage": undefined,
             },
           ]
         }
@@ -262,7 +382,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     testID="message-wrapper"
                   >
-                    <View />
                     <View>
                       <View>
                         <View
@@ -563,7 +682,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                     </View>
-                    <View />
                   </View>
                 </View>
               </View>
@@ -618,7 +736,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     testID="message-wrapper"
                   >
-                    <View />
                     <View>
                       <View>
                         <View
@@ -919,7 +1036,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                     </View>
-                    <View />
                   </View>
                 </View>
               </View>
@@ -999,7 +1115,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     testID="message-wrapper"
                   >
-                    <View />
                     <View>
                       <View>
                         <View
@@ -1300,7 +1415,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                     </View>
-                    <View />
                   </View>
                 </View>
               </View>
@@ -1356,7 +1470,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     testID="message-wrapper"
                   >
-                    <View />
                     <View>
                       <View>
                         <View
@@ -1662,7 +1775,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                     </View>
-                    <View />
                   </View>
                 </View>
               </View>

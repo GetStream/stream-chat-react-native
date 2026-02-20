@@ -1,33 +1,66 @@
 import { useCallback } from 'react';
-import Animated from 'react-native-reanimated';
 
 import { StateStore } from 'stream-chat';
 
 import { useStateStore } from '../hooks';
 
 type OverlayState = {
-  topH: Animated.SharedValue<Rect> | undefined;
-  bottomH: Animated.SharedValue<Rect> | undefined;
-  messageH: Animated.SharedValue<Rect> | undefined;
   id: string | undefined;
   closing: boolean;
 };
 
-type Rect = { x: number; y: number; w: number; h: number } | undefined;
+export type Rect = { x: number; y: number; w: number; h: number } | undefined;
 
 const DefaultState = {
-  bottomH: undefined,
   closing: false,
   id: undefined,
-  messageH: undefined,
-  topH: undefined,
 };
 
-export const openOverlay = (id: string, { messageH, topH, bottomH }: Partial<OverlayState>) =>
-  overlayStore.partialNext({ bottomH, closing: false, id, messageH, topH });
+type OverlaySharedValueController = {
+  incrementCloseCorrectionY: (deltaY: number) => void;
+  resetCloseCorrectionY: () => void;
+  reset: () => void;
+  setBottomH: (rect: Rect) => void;
+  setMessageH: (rect: Rect) => void;
+  setTopH: (rect: Rect) => void;
+};
+
+let sharedValueController: OverlaySharedValueController | undefined;
+
+export const registerOverlaySharedValueController = (controller: OverlaySharedValueController) => {
+  sharedValueController = controller;
+  return () => {
+    if (sharedValueController === controller) {
+      sharedValueController = undefined;
+    }
+  };
+};
+
+export const setOverlayMessageH = (messageH: Rect) => {
+  sharedValueController?.setMessageH(messageH);
+};
+
+export const setOverlayTopH = (topH: Rect) => {
+  sharedValueController?.setTopH(topH);
+};
+
+export const setOverlayBottomH = (bottomH: Rect) => {
+  sharedValueController?.setBottomH(bottomH);
+};
+
+export const bumpOverlayLayoutRevision = (closeCorrectionDeltaY = 0) => {
+  sharedValueController?.incrementCloseCorrectionY(closeCorrectionDeltaY);
+};
+
+export const openOverlay = (id: string) => {
+  sharedValueController?.resetCloseCorrectionY();
+  overlayStore.partialNext({ closing: false, id });
+};
 
 export const closeOverlay = () => {
-  requestAnimationFrame(() => overlayStore.partialNext({ closing: true }));
+  requestAnimationFrame(() => {
+    overlayStore.partialNext({ closing: true });
+  });
 };
 
 let actionQueue: Array<() => void | Promise<void>> = [];
@@ -41,7 +74,10 @@ export const scheduleActionOnClose = (action: () => void | Promise<void>) => {
   action();
 };
 
-export const finalizeCloseOverlay = () => overlayStore.partialNext(DefaultState);
+export const finalizeCloseOverlay = () => {
+  overlayStore.partialNext(DefaultState);
+  sharedValueController?.reset();
+};
 
 export const overlayStore = new StateStore<OverlayState>(DefaultState);
 
@@ -61,11 +97,8 @@ overlayStore.subscribeWithSelector(actionQueueSelector, async ({ active }) => {
 });
 
 const selector = (nextState: OverlayState) => ({
-  bottomH: nextState.bottomH,
   closing: nextState.closing,
   id: nextState.id,
-  messageH: nextState.messageH,
-  topH: nextState.topH,
 });
 
 export const useOverlayController = () => {

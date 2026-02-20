@@ -1,11 +1,13 @@
-import React, { useCallback, useState } from 'react';
-import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { PollComposerState } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
+import { primitives } from '../../../theme';
+import { Input } from '../../ui/Input/Input';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   error: state.errors.max_votes_allowed,
@@ -22,12 +24,13 @@ export const MultipleAnswersField = () => {
 
   const {
     theme: {
-      colors: { accent_error, bg_user, black },
       poll: {
-        createContent: { maxVotes, multipleAnswers },
+        createContent: { multipleAnswers },
       },
     },
   } = useTheme();
+
+  const styles = useStyles();
 
   const onEnforceUniqueVoteHandler = useCallback(
     async (value: boolean) => {
@@ -49,74 +52,77 @@ export const MultipleAnswersField = () => {
   }, [handleFieldBlur]);
 
   return (
-    <View
-      style={[styles.multipleAnswersWrapper, { backgroundColor: bg_user }, multipleAnswers.wrapper]}
-    >
-      <View style={[styles.multipleAnswersRow, multipleAnswers.row]}>
-        <Text style={[styles.text, { color: black }, multipleAnswers.title]}>
-          {t('Multiple answers')}
-        </Text>
-        <Switch onValueChange={onEnforceUniqueVoteHandler} value={allowMultipleVotes} />
+    <View style={[styles.multipleAnswersWrapper, multipleAnswers.wrapper]}>
+      <View style={[styles.optionCard, multipleAnswers.optionCard]}>
+        <View style={[styles.optionCardContent, multipleAnswers.optionCardContent]}>
+          <Text style={[styles.title, multipleAnswers.title]}>{t('Multiple answers')}</Text>
+          <Text style={[styles.description, multipleAnswers.description]}>
+            Select more than one option
+          </Text>
+        </View>
+        <Switch
+          onValueChange={onEnforceUniqueVoteHandler}
+          value={allowMultipleVotes}
+          style={[styles.optionCardSwitch, multipleAnswers.optionCardSwitch]}
+        />
       </View>
       {allowMultipleVotes ? (
-        <View style={[styles.maxVotesWrapper, maxVotes.wrapper]}>
-          {max_votes_allowed && error ? (
-            <Text
-              style={[
-                styles.maxVotesValidationText,
-                { color: accent_error },
-                maxVotes.validationText,
-              ]}
-            >
-              {t(error)}
-            </Text>
-          ) : null}
-          <View style={{ flexDirection: 'row' }}>
-            <TextInput
-              inputMode='numeric'
-              onBlur={onBlurHandler}
-              onChangeText={onChangeTextHandler}
-              placeholder={t('Maximum votes per person')}
-              style={[styles.maxVotesInput, { color: black }, maxVotes.input]}
-            />
-          </View>
-        </View>
+        <Input
+          inputMode='numeric'
+          placeholder={t('Maximum votes per person')}
+          variant='ghost'
+          state={max_votes_allowed && error ? 'error' : 'default'}
+          onChangeText={onChangeTextHandler}
+          onBlur={onBlurHandler}
+          helperText={true}
+          infoText={t('Type a number from 2 to 10')}
+          errorMessage={error ? t(error) : undefined}
+          containerStyle={styles.maxVotesInput}
+        />
       ) : null}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  maxVotesInput: { flex: 1, fontSize: 16 },
-  maxVotesValidationText: {
-    fontSize: 12,
-    left: 16,
-    position: 'absolute',
-    top: 0,
-  },
-  maxVotesWrapper: {
-    alignItems: 'flex-start',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  multipleAnswersRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  multipleAnswersWrapper: { borderRadius: 12, marginTop: 16 },
-  text: { fontSize: 16 },
-  textInputWrapper: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      maxVotesInput: {
+        paddingLeft: 0,
+      },
+      multipleAnswersWrapper: {
+        backgroundColor: semantics.inputOptionCardBg,
+        padding: primitives.spacingMd,
+        borderRadius: primitives.radiusLg,
+        gap: primitives.spacingSm,
+      },
+      title: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+      },
+      description: {
+        color: semantics.textTertiary,
+        fontSize: primitives.typographyFontSizeSm,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightNormal,
+      },
+      optionCardContent: {
+        gap: primitives.spacingXxs,
+      },
+      optionCard: {
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+      },
+      optionCardWrapper: {
+        gap: primitives.spacingMd,
+      },
+      optionCardSwitch: {},
+    });
+  }, [semantics]);
+};

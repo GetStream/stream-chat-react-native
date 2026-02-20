@@ -578,6 +578,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
     CreatePollContent,
+    createPollOptionGap,
     customMessageSwipeAction,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
@@ -1124,7 +1125,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (channelMessagesState?.messages) {
         await channel?.watch({
           messages: {
-            limit: channelMessagesState.messages.length + 30,
+            // Do we want to reduce this to the default as well ?
+            limit: channelMessagesState.messages.length,
           },
         });
         channel.offlineMode = false;
@@ -1827,6 +1829,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     compressImageQuality,
     CooldownTimer,
     CreatePollContent,
+    createPollOptionGap,
     doFileUploadRequest,
     editMessage,
     FileAttachmentUploadPreview,

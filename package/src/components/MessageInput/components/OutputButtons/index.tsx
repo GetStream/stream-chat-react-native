@@ -14,8 +14,8 @@ import {
   useMessageComposerHasSendableData,
   useTheme,
 } from '../../../../contexts';
+import { useHasAttachments } from '../../../../contexts/messageInputContext/hooks/useHasAttachments';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { useMessageCompositionIsEmpty } from '../../../../contexts/messageInputContext/hooks/useMessageCompositionIsEmpty';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -41,10 +41,12 @@ export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
     | 'StartAudioRecordingButton'
   > & {
     cooldownIsActive: boolean;
+    hasAttachments: boolean;
   };
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   command: state.command,
+  textIsEmpty: !state.text,
 });
 
 export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) => {
@@ -57,6 +59,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
     SendButton,
     StopMessageStreamingButton,
     StartAudioRecordingButton,
+    hasAttachments,
   } = props;
   const {
     theme: {
@@ -72,9 +75,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   const messageComposer = useMessageComposer();
   const editing = !!messageComposer.editedMessage;
   const { textComposer } = messageComposer;
-  const { command } = useStateStore(textComposer.state, textComposerStateSelector);
+  const { command, textIsEmpty } = useStateStore(textComposer.state, textComposerStateSelector);
   const hasSendableData = useMessageComposerHasSendableData();
-  const compositionIsEmpty = useMessageCompositionIsEmpty();
 
   const { aiState } = useAIState(channel);
   const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
@@ -105,7 +107,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
         <CooldownTimer />
       </Animated.View>
     );
-  } else if (audioRecordingEnabled && compositionIsEmpty) {
+  } else if (audioRecordingEnabled && textIsEmpty && !hasAttachments) {
     return (
       <Animated.View
         entering={ZoomIn.duration(200)}
@@ -134,9 +136,17 @@ const areEqual = (
   prevProps: OutputButtonsWithContextProps,
   nextProps: OutputButtonsWithContextProps,
 ) => {
-  const { channel: prevChannel, cooldownIsActive: prevCooldownIsActive } = prevProps;
+  const {
+    channel: prevChannel,
+    cooldownIsActive: prevCooldownIsActive,
+    hasAttachments: prevHasAttachments,
+  } = prevProps;
 
-  const { channel: nextChannel, cooldownIsActive: nextCooldownIsActive } = nextProps;
+  const {
+    channel: nextChannel,
+    cooldownIsActive: nextCooldownIsActive,
+    hasAttachments: nextHasAttachments,
+  } = nextProps;
 
   if (prevChannel?.cid !== nextChannel?.cid) {
     return false;
@@ -144,6 +154,11 @@ const areEqual = (
 
   const cooldownIsActiveEqual = prevCooldownIsActive === nextCooldownIsActive;
   if (!cooldownIsActiveEqual) {
+    return false;
+  }
+
+  const hasAttachmentsEqual = prevHasAttachments === nextHasAttachments;
+  if (!hasAttachmentsEqual) {
     return false;
   }
 
@@ -170,6 +185,7 @@ export const OutputButtons = (props: OutputButtonsProps) => {
     StartAudioRecordingButton,
   } = useMessageInputContext();
   const cooldownIsActive = useIsCooldownActive();
+  const hasAttachments = useHasAttachments();
 
   return (
     <MemoizedOutputButtonsWithContext
@@ -186,6 +202,7 @@ export const OutputButtons = (props: OutputButtonsProps) => {
         SendButton,
         StartAudioRecordingButton,
         StopMessageStreamingButton,
+        hasAttachments,
       }}
       {...props}
     />

@@ -745,11 +745,17 @@ export type Theme = {
     createContent: {
       addComment: {
         title: TextStyle;
+        description: TextStyle;
         wrapper: ViewStyle;
+        optionCardContent: ViewStyle;
+        optionCardSwitch: ViewStyle;
       };
       anonymousPoll: {
         title: TextStyle;
+        description: TextStyle;
         wrapper: ViewStyle;
+        optionCardContent: ViewStyle;
+        optionCardSwitch: ViewStyle;
       };
       headerContainer: ViewStyle;
       maxVotes: {
@@ -758,14 +764,19 @@ export type Theme = {
         wrapper: ViewStyle;
       };
       multipleAnswers: {
+        description: TextStyle;
         row: ViewStyle;
         title: TextStyle;
+        optionCard: ViewStyle;
+        optionCardContent: ViewStyle;
+        optionCardSwitch: ViewStyle;
         wrapper: ViewStyle;
       };
       name: {
         input: TextStyle;
         title: TextStyle;
       };
+      optionCardWrapper: ViewStyle;
       pollOptions: {
         addOption: {
           text: TextStyle;
@@ -773,9 +784,11 @@ export type Theme = {
         };
         container: ViewStyle;
         optionStyle: {
+          content: ViewStyle;
           input: TextStyle;
           validationErrorText: TextStyle;
           wrapper: ViewStyle;
+          validationErrorContainer: ViewStyle;
         };
         title: TextStyle;
       };
@@ -783,7 +796,10 @@ export type Theme = {
       sendButton: ViewStyle;
       suggestOption: {
         title: TextStyle;
+        description: TextStyle;
         wrapper: ViewStyle;
+        optionCardContent: ViewStyle;
+        optionCardSwitch: ViewStyle;
       };
     };
     fullResults: {
@@ -1538,11 +1554,17 @@ export const defaultTheme: Theme = {
     createContent: {
       addComment: {
         title: {},
+        description: {},
         wrapper: {},
+        optionCardContent: {},
+        optionCardSwitch: {},
       },
       anonymousPoll: {
         title: {},
+        description: {},
         wrapper: {},
+        optionCardContent: {},
+        optionCardSwitch: {},
       },
       headerContainer: {},
       maxVotes: {
@@ -1552,13 +1574,18 @@ export const defaultTheme: Theme = {
       },
       multipleAnswers: {
         row: {},
+        description: {},
+        optionCardContent: {},
+        optionCardSwitch: {},
         title: {},
+        optionCard: {},
         wrapper: {},
       },
       name: {
         input: {},
         title: {},
       },
+      optionCardWrapper: {},
       pollOptions: {
         addOption: {
           text: {},
@@ -1566,6 +1593,8 @@ export const defaultTheme: Theme = {
         },
         container: {},
         optionStyle: {
+          content: {},
+          validationErrorContainer: {},
           input: {},
           validationErrorText: {},
           wrapper: {},
@@ -1576,7 +1605,10 @@ export const defaultTheme: Theme = {
       sendButton: {},
       suggestOption: {
         title: {},
+        description: {},
         wrapper: {},
+        optionCardContent: {},
+        optionCardSwitch: {},
       },
     },
     fullResults: {
