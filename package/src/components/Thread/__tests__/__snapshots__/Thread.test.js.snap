@@ -382,6 +382,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     testID="message-wrapper"
                   >
+                    <View />
                     <View>
                       <View>
                         <View
@@ -681,6 +682,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                     </View>
+                    <View />
                   </View>
                 </View>
               </View>
@@ -735,6 +737,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     testID="message-wrapper"
                   >
+                    <View />
                     <View>
                       <View>
                         <View
@@ -1034,6 +1037,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                     </View>
+                    <View />
                   </View>
                 </View>
               </View>
@@ -1113,6 +1117,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     testID="message-wrapper"
                   >
+                    <View />
                     <View>
                       <View>
                         <View
@@ -1412,6 +1417,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                     </View>
+                    <View />
                   </View>
                 </View>
               </View>
@@ -1467,6 +1473,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     }
                     testID="message-wrapper"
                   >
+                    <View />
                     <View>
                       <View>
                         <View
@@ -1771,6 +1778,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         </View>
                       </View>
                     </View>
+                    <View />
                   </View>
                 </View>
               </View>
