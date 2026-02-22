@@ -842,8 +842,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             />
           ) : null}
           {/*TODO: V9: Find a way to separate these in a dedicated file*/}
-          {overlayActive && rect ? (
-            <Portal hostName='top-item'>
+          <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
+            {overlayActive && rect ? (
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
@@ -861,16 +861,30 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
                 />
               </View>
-            </Portal>
-          ) : null}
+            ) : null}
+          </Portal>
           <Portal
             hostName={overlayActive ? 'message-overlay' : undefined}
             style={overlayActive && rect ? { width: rect.w } : undefined}
           >
             <MessageSimple ref={messageWrapperRef} />
           </Portal>
-          {overlayActive && rect ? (
-            <Portal hostName='bottom-item'>
+          {showMessageReactions ? (
+            <BottomSheetModal
+              lazy={true}
+              onClose={() => setShowMessageReactions(false)}
+              visible={showMessageReactions}
+              height={424}
+            >
+              <MessageUserReactions
+                message={message}
+                MessageUserReactionsAvatar={MessageUserReactionsAvatar}
+                MessageUserReactionsItem={MessageUserReactionsItem}
+              />
+            </BottomSheetModal>
+          ) : null}
+          <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
+            {overlayActive && rect ? (
               <View
                 onLayout={(e) => {
                   const { width: w, height: h } = e.nativeEvent.layout;
@@ -888,22 +902,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   messageActions={messageActions}
                 />
               </View>
-            </Portal>
-          ) : null}
-          {showMessageReactions ? (
-            <BottomSheetModal
-              lazy={true}
-              onClose={() => setShowMessageReactions(false)}
-              visible={showMessageReactions}
-              height={424}
-            >
-              <MessageUserReactions
-                message={message}
-                MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-                MessageUserReactionsItem={MessageUserReactionsItem}
-              />
-            </BottomSheetModal>
-          ) : null}
+            ) : null}
+          </Portal>
           {isBounceDialogOpen ? (
             <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
           ) : null}
