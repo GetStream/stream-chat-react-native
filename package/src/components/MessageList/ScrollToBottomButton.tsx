@@ -54,7 +54,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
 
       <View style={styles.unreadCountNotificationContainer}>
         {unreadCount ? (
-          <BadgeNotification count={unreadCount} size='md' type='primary' testID='unread-count' />
+          <BadgeNotification count={unreadCount} size='xs' type='primary' testID='unread-count' />
         ) : null}
       </View>
     </Animated.View>
