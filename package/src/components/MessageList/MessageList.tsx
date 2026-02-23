@@ -150,7 +150,7 @@ type MessageListPropsWithContext = Pick<
   > &
   Pick<ChatContextValue, 'client'> &
   Pick<ImageGalleryContextValue, 'setMessages'> &
-  Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
+  Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent' | 'hasMore'> &
   Pick<
     MessagesContextValue,
     | 'DateHeader'
@@ -165,7 +165,7 @@ type MessageListPropsWithContext = Pick<
   > &
   Pick<
     ThreadContextValue,
-    'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadInstance'
+    'loadMoreRecentThread' | 'loadMoreThread' | 'threadHasMore' | 'thread' | 'threadInstance'
   > & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
@@ -297,6 +297,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     TypingIndicator,
     TypingIndicatorContainer,
     UnreadMessagesNotification,
+    hasMore,
+    threadHasMore,
   } = props;
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
@@ -858,8 +860,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
    */
   const maybeCallOnEndReached = useStableCallback(async () => {
+    const shouldQuery = (threadList && threadHasMore) || (!threadList && hasMore);
     // If onEndReached has already been called for given messageList length, then ignore.
-    if (processedMessageList?.length && onEndReachedTracker.current[processedMessageList.length]) {
+    if (
+      (processedMessageList?.length && onEndReachedTracker.current[processedMessageList.length]) ||
+      !shouldQuery
+    ) {
       return;
     }
 
@@ -1301,8 +1307,9 @@ export const MessageList = (props: MessageListProps) => {
     TypingIndicatorContainer,
     UnreadMessagesNotification,
   } = useMessagesContext();
-  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
-  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
+  const { loadMore, loadMoreRecent, hasMore } = usePaginatedMessageListContext();
+  const { loadMoreRecentThread, loadMoreThread, threadHasMore, thread, threadInstance } =
+    useThreadContext();
 
   return (
     <MessageListWithContext
@@ -1319,6 +1326,7 @@ export const MessageList = (props: MessageListProps) => {
         enableMessageGroupingByUser,
         error,
         FlatList,
+        hasMore,
         hideStickyDateHeader,
         highlightedMessageId,
         InlineDateSeparator,
@@ -1351,6 +1359,7 @@ export const MessageList = (props: MessageListProps) => {
         StickyHeader,
         targetedMessage,
         thread,
+        threadHasMore,
         threadInstance,
         threadList,
         TypingIndicator,
