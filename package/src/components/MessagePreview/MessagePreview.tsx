@@ -10,6 +10,8 @@ import {
   PollState,
 } from 'stream-chat';
 
+import { useGroupedAttachments } from './hook/useGroupedAttachments';
+
 import { useTheme } from '../../contexts';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -42,36 +44,18 @@ const MessagePreviewText = React.memo(
     const poll = client.polls.fromState(message?.poll_id ?? '');
     const { name: pollName } = useStateStore(poll?.state, selector) ?? {};
     const styles = useStyles();
+    const { giphys, audios, images, videos, files, voiceRecordings } = useGroupedAttachments(
+      message?.attachments,
+    );
+    const attachmentsLength = message?.attachments?.length;
 
     const subtitle = useMemo(() => {
-      const attachments = message?.attachments;
-      const giphyAttachments = attachments?.filter(
-        (attachment) => attachment.type === FileTypes.Giphy,
-      );
-      const audioAttachments = attachments?.filter(
-        (attachment) => attachment.type === FileTypes.Audio,
-      );
-      const imageAttachments = attachments?.filter(
-        (attachment) => attachment.type === FileTypes.Image,
-      );
-      const videoAttachments = attachments?.filter(
-        (attachment) => attachment.type === FileTypes.Video,
-      );
-      const fileAttachments = attachments?.filter(
-        (attachment) => attachment.type === FileTypes.File,
-      );
-      const voiceRecordingAttachments = attachments?.filter(
-        (attachment) => attachment.type === FileTypes.VoiceRecording,
-      );
-      const onlyImages =
-        imageAttachments?.length && imageAttachments?.length === attachments?.length;
-      const onlyVideos =
-        videoAttachments?.length && videoAttachments?.length === attachments?.length;
-      const onlyFiles = fileAttachments?.length && fileAttachments?.length === attachments?.length;
-      const onlyAudio = audioAttachments?.length === attachments?.length;
+      const onlyImages = images?.length && images?.length === attachmentsLength;
+      const onlyVideos = videos?.length && videos?.length === attachmentsLength;
+      const onlyFiles = files?.length && files?.length === attachmentsLength;
+      const onlyAudio = audios?.length === attachmentsLength;
       const onlyVoiceRecordings =
-        voiceRecordingAttachments?.length &&
-        voiceRecordingAttachments?.length === attachments?.length;
+        voiceRecordings?.length && voiceRecordings?.length === attachmentsLength;
 
       if (message?.type === 'deleted') {
         return 'Message deleted';
@@ -97,47 +81,59 @@ const MessagePreviewText = React.memo(
       }
 
       if (onlyImages) {
-        if (imageAttachments?.length === 1) {
+        if (images?.length === 1) {
           return 'Photo';
         } else {
-          return `${imageAttachments?.length} Photos`;
+          return `${images?.length} Photos`;
         }
       }
 
       if (onlyVideos) {
-        if (videoAttachments?.length === 1) {
+        if (videos?.length === 1) {
           return 'Video';
         } else {
-          return `${videoAttachments?.length} Videos`;
+          return `${videos?.length} Videos`;
         }
       }
 
       if (onlyAudio) {
-        if (audioAttachments?.length === 1) {
+        if (audios?.length === 1) {
           return 'Audio';
         } else {
-          return `${audioAttachments?.length} Audios`;
+          return `${audios?.length} Audios`;
         }
       }
 
       if (onlyVoiceRecordings) {
-        if (voiceRecordingAttachments?.length === 1) {
-          return `Voice message (${dayjs.duration(voiceRecordingAttachments?.[0]?.duration ?? 0, 'seconds').format('m:ss')})`;
+        if (voiceRecordings?.length === 1) {
+          return `Voice message (${dayjs.duration(voiceRecordings?.[0]?.duration ?? 0, 'seconds').format('m:ss')})`;
         } else {
-          return `${voiceRecordingAttachments?.length} Voice messages`;
+          return `${voiceRecordings?.length} Voice messages`;
         }
       }
 
-      if (giphyAttachments?.length) {
+      if (giphys?.length) {
         return 'Giphy';
       }
 
-      if (onlyFiles && fileAttachments?.length === 1) {
-        return fileAttachments?.[0]?.title;
+      if (onlyFiles && files?.length === 1) {
+        return files?.[0]?.title;
       }
 
-      return `${attachments?.length} Files`;
-    }, [message?.attachments, message?.shared_location, message?.text, message?.type, pollName]);
+      return `${attachmentsLength} Files`;
+    }, [
+      attachmentsLength,
+      audios?.length,
+      files,
+      giphys?.length,
+      images?.length,
+      message?.shared_location,
+      message?.text,
+      message?.type,
+      pollName,
+      videos?.length,
+      voiceRecordings,
+    ]);
 
     if (!subtitle) {
       return null;
@@ -161,35 +157,20 @@ const MessagePreviewIcon = React.memo(
       theme: { semantics },
     } = useTheme();
     const styles = useStyles();
-
+    const { giphys, audios, images, videos, files, voiceRecordings } = useGroupedAttachments(
+      message?.attachments,
+    );
+    const attachmentsLength = message?.attachments?.length;
     if (!message) {
       return null;
     }
 
-    const attachments = message?.attachments;
-    const giphyAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.Giphy,
-    );
-    const audioAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.Audio,
-    );
-    const imageAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.Image,
-    );
-    const videoAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.Video,
-    );
-    const voiceRecordingAttachments = attachments?.filter(
-      (attachment) => attachment.type === FileTypes.VoiceRecording,
-    );
-    const fileAttachments = attachments?.filter((attachment) => attachment.type === FileTypes.File);
-    const onlyImages = imageAttachments?.length && imageAttachments?.length === attachments?.length;
-    const onlyAudio = audioAttachments?.length && audioAttachments?.length === attachments?.length;
-    const onlyVideos = videoAttachments?.length && videoAttachments?.length === attachments?.length;
+    const onlyImages = images?.length && images?.length === attachmentsLength;
+    const onlyAudio = audios?.length && audios?.length === attachmentsLength;
+    const onlyVideos = videos?.length && videos?.length === attachmentsLength;
     const onlyVoiceRecordings =
-      voiceRecordingAttachments?.length &&
-      voiceRecordingAttachments?.length === attachments?.length;
-    const hasLink = attachments?.some(
+      voiceRecordings?.length && voiceRecordings?.length === attachmentsLength;
+    const hasLink = message?.attachments?.some(
       (attachment) => attachment.type === FileTypes.Image && attachment.og_scrape_url,
     );
 
@@ -278,7 +259,7 @@ const MessagePreviewIcon = React.memo(
       );
     }
 
-    if (giphyAttachments?.length) {
+    if (giphys?.length) {
       return (
         <NewFile
           height={12}
@@ -290,12 +271,7 @@ const MessagePreviewIcon = React.memo(
       );
     }
 
-    if (
-      fileAttachments?.length ||
-      imageAttachments?.length ||
-      videoAttachments?.length ||
-      audioAttachments?.length
-    ) {
+    if (files?.length || images?.length || videos?.length || audios?.length) {
       return (
         <NewFile
           height={12}

@@ -1,19 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import {
-  AttachmentManagerState,
-  DraftMessage,
-  LocalMessage,
-  MessageResponse,
-  TextComposerState,
-} from 'stream-chat';
+import { DraftMessage, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { ChannelPreviewProps } from './ChannelPreview';
 
 import { ChannelTypingIndicatorPreview } from './ChannelTypingIndicatorPreview';
 import { LastMessageType } from './hooks/useChannelPreviewData';
 
+import { useChannelPreviewDraftMessage } from './hooks/useChannelPreviewDraftMessage';
 import { useChannelPreviewPollLabel } from './hooks/useChannelPreviewPollLabel';
 
 import { useChannelTypingState } from './hooks/useChannelTypingState';
@@ -22,7 +17,6 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import { useStateStore } from '../../hooks/useStateStore';
 import { NewPoll } from '../../icons/NewPoll';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
@@ -33,14 +27,6 @@ import { ErrorBadge } from '../ui';
 export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> & {
   lastMessage?: LastMessageType;
 };
-
-const textComposerStateSelector = (state: TextComposerState) => ({
-  text: state.text,
-});
-
-const stateSelector = (state: AttachmentManagerState) => ({
-  attachments: state.attachments,
-});
 
 export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const { channel, lastMessage } = props;
@@ -53,31 +39,9 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
 
   const { usersTyping } = useChannelTypingState({ channel });
 
-  const { text: draftText } = useStateStore(
-    channel.messageComposer.textComposer.state,
-    textComposerStateSelector,
-  );
-
-  const { attachments } = useStateStore(
-    channel.messageComposer.attachmentManager.state,
-    stateSelector,
-  );
+  const draftMessage = useChannelPreviewDraftMessage({ channel });
 
   const pollLabel = useChannelPreviewPollLabel({ pollId: lastMessage?.poll_id ?? '' });
-
-  const draftMessage: DraftMessage | undefined = useMemo(
-    () =>
-      !channel.messageComposer.compositionIsEmpty
-        ? attachments && draftText
-          ? {
-              attachments,
-              id: channel.messageComposer.id,
-              text: draftText,
-            }
-          : undefined
-        : undefined,
-    [channel.messageComposer, attachments, draftText],
-  );
 
   const membersWithoutSelf = useMemo(() => {
     return Object.values(channel.state.members).filter(
@@ -88,22 +52,28 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const isFailedMessage =
     lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
 
-  const renderMessagePreview = (message: LocalMessage | MessageResponse | DraftMessage) => {
-    return (
-      <MessagePreview
-        message={message}
-        textStyle={[
-          styles.subtitle,
-          { color: message?.type === 'deleted' ? semantics.textTertiary : semantics.textSecondary },
-        ]}
-        iconProps={{
-          width: 16,
-          height: 16,
-          stroke: message?.type === 'deleted' ? semantics.textTertiary : semantics.textSecondary,
-        }}
-      />
-    );
-  };
+  const color = useMemo(() => {
+    return lastMessage?.type === 'deleted' ? semantics.textTertiary : semantics.textSecondary;
+  }, [semantics.textTertiary, semantics.textSecondary, lastMessage?.type]);
+
+  const textStyle = useMemo(() => {
+    return [styles.subtitle, { color }];
+  }, [styles.subtitle, color]);
+
+  const iconProps = useMemo(() => {
+    return {
+      width: 16,
+      height: 16,
+      stroke: color,
+    };
+  }, [color]);
+
+  const renderMessagePreview = useCallback(
+    (message: LocalMessage | MessageResponse | DraftMessage) => {
+      return <MessagePreview message={message} textStyle={textStyle} iconProps={iconProps} />;
+    },
+    [textStyle, iconProps],
+  );
 
   if (usersTyping.length > 0) {
     return <ChannelTypingIndicatorPreview channel={channel} usersTyping={usersTyping} />;

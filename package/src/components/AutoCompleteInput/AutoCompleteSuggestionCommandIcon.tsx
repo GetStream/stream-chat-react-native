@@ -23,7 +23,7 @@ export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   } else if (name === 'imgur') {
     return <Imgur height={20} width={20} />;
   } else if (name === 'mute') {
-    return <Mute height={20} pathFill={semantics.textSecondary} width={20} />;
+    return <Mute height={20} fill={semantics.textSecondary} width={20} />;
   } else if (name === 'unban') {
     return <UserAdd height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'unmute') {
