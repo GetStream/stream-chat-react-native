@@ -33,7 +33,8 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const styles = useStyles();
+  const isMessageDeleted = lastMessage?.type === 'deleted';
+  const styles = useStyles({ isMessageDeleted });
   const { client } = useChatContext();
   const { t } = useTranslationContext();
 
@@ -52,21 +53,17 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const isFailedMessage =
     lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
 
-  const color = useMemo(() => {
-    return lastMessage?.type === 'deleted' ? semantics.textTertiary : semantics.textSecondary;
-  }, [semantics.textTertiary, semantics.textSecondary, lastMessage?.type]);
-
   const textStyle = useMemo(() => {
-    return [styles.subtitle, { color }];
-  }, [styles.subtitle, color]);
+    return [styles.subtitle];
+  }, [styles.subtitle]);
 
   const iconProps = useMemo(() => {
     return {
       width: 16,
       height: 16,
-      stroke: color,
+      stroke: isMessageDeleted ? semantics.textTertiary : semantics.textSecondary,
     };
-  }, [color]);
+  }, [isMessageDeleted, semantics.textTertiary, semantics.textSecondary]);
 
   const renderMessagePreview = useCallback(
     (message: LocalMessage | MessageResponse | DraftMessage) => {
@@ -132,7 +129,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   }
 };
 
-const useStyles = () => {
+const useStyles = ({ isMessageDeleted = false }: { isMessageDeleted?: boolean }) => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -152,7 +149,7 @@ const useStyles = () => {
         flexShrink: 1,
       },
       subtitle: {
-        color: semantics.textSecondary,
+        color: isMessageDeleted ? semantics.textTertiary : semantics.textSecondary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         includeFontPadding: false,
@@ -172,5 +169,5 @@ const useStyles = () => {
         lineHeight: primitives.typographyLineHeightNormal,
       },
     });
-  }, [semantics]);
+  }, [semantics, isMessageDeleted]);
 };
