@@ -1,5 +1,5 @@
 import { type ColorValue, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
-import type { CircleProps, StopProps } from 'react-native-svg';
+import type { CircleProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 import { primitives, semantics } from '../../../theme';
@@ -164,12 +164,8 @@ export type Theme = {
   };
   channelListSkeleton: {
     animationTime: number;
-    background: ViewStyle;
     container: ViewStyle;
-    gradientStart: StopProps;
-    gradientStop: StopProps;
     height: number;
-    maskFillColor?: ColorValue;
   };
   colors: typeof Colors;
   channelPreview: {
@@ -1007,16 +1003,9 @@ export const defaultTheme: Theme = {
     flatListContent: {},
   },
   channelListSkeleton: {
-    animationTime: 1800, // in milliseconds
-    background: {},
+    animationTime: 1500, // in milliseconds
     container: {},
-    gradientStart: {
-      stopOpacity: 0,
-    },
-    gradientStop: {
-      stopOpacity: 0.5,
-    },
-    height: 64,
+    height: 80,
   },
   channelPreview: {
     container: {},

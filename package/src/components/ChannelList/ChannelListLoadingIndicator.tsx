@@ -14,16 +14,12 @@ export const ChannelListLoadingIndicator = () => {
   const {
     theme: {
       channelListLoadingIndicator: { container },
-      colors: { white_snow },
     },
   } = useTheme();
   const { numberOfSkeletons, Skeleton } = useChannelsContext();
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: white_snow }, container]}
-      testID='channel-list-loading-indicator'
-    >
+    <View style={[styles.container, container]} testID='channel-list-loading-indicator'>
       {Array.from(Array(numberOfSkeletons)).map((_, index) => (
         <Skeleton key={`skeleton_${index}`} />
       ))}

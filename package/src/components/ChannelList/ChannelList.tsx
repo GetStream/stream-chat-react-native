@@ -262,7 +262,7 @@ export const ChannelList = (props: ChannelListProps) => {
     loadMoreThreshold = 0.1,
     lockChannelOrder = false,
     maxUnreadCount = 255,
-    numberOfSkeletons = 6,
+    numberOfSkeletons = 8,
     onAddedToChannel,
     onChannelDeleted,
     onChannelHidden,
