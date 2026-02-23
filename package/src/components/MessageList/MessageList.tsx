@@ -1308,7 +1308,8 @@ export const MessageList = (props: MessageListProps) => {
     UnreadMessagesNotification,
   } = useMessagesContext();
   const { loadMore, loadMoreRecent, hasMore } = usePaginatedMessageListContext();
-  const { loadMoreRecentThread, loadMoreThread, threadHasMore, thread, threadInstance } = useThreadContext();
+  const { loadMoreRecentThread, loadMoreThread, threadHasMore, thread, threadInstance } =
+    useThreadContext();
 
   return (
     <MessageListWithContext
@@ -1325,6 +1326,7 @@ export const MessageList = (props: MessageListProps) => {
         enableMessageGroupingByUser,
         error,
         FlatList,
+        hasMore,
         hideStickyDateHeader,
         highlightedMessageId,
         InlineDateSeparator,
@@ -1357,13 +1359,12 @@ export const MessageList = (props: MessageListProps) => {
         StickyHeader,
         targetedMessage,
         thread,
+        threadHasMore,
         threadInstance,
         threadList,
         TypingIndicator,
         TypingIndicatorContainer,
         UnreadMessagesNotification,
-        hasMore,
-        threadHasMore,
       }}
       {...props}
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}
