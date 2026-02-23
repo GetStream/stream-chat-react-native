@@ -12,14 +12,19 @@ import {
 import { ChannelListMessageDeliveryStatus } from './ChannelListMessageDeliveryStatus';
 import { ChannelPreviewProps } from './ChannelPreview';
 
+import { ChannelTypingIndicatorPreview } from './ChannelTypingIndicatorPreview';
 import { LastMessageType } from './hooks/useChannelPreviewData';
+
+import { useChannelPreviewPollLabel } from './hooks/useChannelPreviewPollLabel';
+
+import { useChannelTypingState } from './hooks/useChannelTypingState';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import { useStateStore } from '../../hooks/useStateStore';
-import { CircleBan } from '../../icons/CircleBan';
+import { NewPoll } from '../../icons/NewPoll';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { MessagePreview } from '../MessagePreview/MessagePreview';
@@ -46,6 +51,8 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
 
+  const { usersTyping } = useChannelTypingState({ channel });
+
   const { text: draftText } = useStateStore(
     channel.messageComposer.textComposer.state,
     textComposerStateSelector,
@@ -55,6 +62,8 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     channel.messageComposer.attachmentManager.state,
     stateSelector,
   );
+
+  const pollLabel = useChannelPreviewPollLabel({ pollId: lastMessage?.poll_id ?? '' });
 
   const draftMessage: DraftMessage | undefined = useMemo(
     () =>
@@ -80,33 +89,25 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
 
   const renderMessagePreview = (message: LocalMessage | MessageResponse | DraftMessage) => {
-    // If the last message is deleted, show a message saying "Message deleted"
-    if (lastMessage?.type === 'deleted') {
-      return (
-        <View style={styles.container}>
-          <CircleBan height={16} width={16} stroke={semantics.textTertiary} />
-          <Text style={styles.message}>Message deleted</Text>
-        </View>
-      );
-    }
-
-    if (isFailedMessage) {
-      return (
-        <View style={styles.container}>
-          <ErrorBadge size='xs' />
-          <Text style={styles.errorText}>Message failed to send</Text>
-        </View>
-      );
-    }
-
     return (
       <MessagePreview
         message={message}
-        textStyle={styles.subtitle}
-        iconProps={{ width: 16, height: 16, stroke: semantics.textSecondary }}
+        textStyle={[
+          styles.subtitle,
+          { color: message?.type === 'deleted' ? semantics.textTertiary : semantics.textSecondary },
+        ]}
+        iconProps={{
+          width: 16,
+          height: 16,
+          stroke: message?.type === 'deleted' ? semantics.textTertiary : semantics.textSecondary,
+        }}
       />
     );
   };
+
+  if (usersTyping.length > 0) {
+    return <ChannelTypingIndicatorPreview channel={channel} usersTyping={usersTyping} />;
+  }
 
   if (draftMessage) {
     return (
@@ -119,10 +120,32 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
 
   // If there are no messages yet, show a message saying "No messages yet"
   if (!lastMessage) {
-    return <Text style={styles.message}>No messages yet</Text>;
+    return (
+      <Text style={[styles.subtitle, { color: semantics.textTertiary }]}>
+        {t('No messages yet')}
+      </Text>
+    );
   }
 
-  if (channel.data?.name) {
+  if (pollLabel) {
+    return (
+      <View style={styles.container}>
+        <NewPoll height={16} width={16} stroke={semantics.textSecondary} />
+        <Text style={styles.subtitle}>{pollLabel}</Text>
+      </View>
+    );
+  }
+
+  if (isFailedMessage) {
+    return (
+      <View style={styles.messagePreviewContainer}>
+        <ErrorBadge size='xs' />
+        <Text style={styles.errorText}>{t('Message failed to send')}</Text>
+      </View>
+    );
+  }
+
+  if (channel.data?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
         {lastMessage?.user?.id === client.user?.id ? (
@@ -134,35 +157,14 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
       </View>
     );
   } else {
-    if (membersWithoutSelf.length === 0) {
-      return (
-        <View style={styles.container}>
+    return (
+      <View style={styles.container}>
+        {lastMessage?.user?.id === client.user?.id ? (
           <ChannelListMessageDeliveryStatus channel={channel} lastMessage={lastMessage} />
-          {renderMessagePreview(lastMessage)}
-        </View>
-      );
-    } else if (membersWithoutSelf.length === 1) {
-      return (
-        <View style={styles.container}>
-          {lastMessage?.user?.id === client.user?.id ? (
-            <ChannelListMessageDeliveryStatus channel={channel} lastMessage={lastMessage} />
-          ) : null}
-
-          {renderMessagePreview(lastMessage)}
-        </View>
-      );
-    } else {
-      return (
-        <View style={styles.container}>
-          {lastMessage?.user?.id === client.user?.id ? (
-            <ChannelListMessageDeliveryStatus channel={channel} lastMessage={lastMessage} />
-          ) : (
-            <Text style={styles.username}>{lastMessage?.user?.name || lastMessage?.user?.id}:</Text>
-          )}
-          {renderMessagePreview(lastMessage)}
-        </View>
-      );
-    }
+        ) : null}
+        {renderMessagePreview(lastMessage)}
+      </View>
+    );
   }
 };
 
@@ -179,18 +181,19 @@ const useStyles = () => {
         gap: primitives.spacingXxs,
         flexShrink: 1,
       },
+      messagePreviewContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: primitives.spacingXxs,
+        flexShrink: 1,
+      },
       username: {
         color: semantics.textTertiary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
       },
-      message: {
-        color: semantics.textTertiary,
-        fontSize: primitives.typographyFontSizeSm,
-        fontWeight: primitives.typographyFontWeightRegular,
-        lineHeight: primitives.typographyLineHeightNormal,
-      },
+
       subtitle: {
         color: semantics.textSecondary,
         fontSize: primitives.typographyFontSizeSm,

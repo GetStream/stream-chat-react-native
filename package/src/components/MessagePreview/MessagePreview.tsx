@@ -14,6 +14,7 @@ import { useTheme } from '../../contexts';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../hooks';
+import { CircleBan } from '../../icons/CircleBan';
 import { NewFile } from '../../icons/NewFile';
 import { NewLink } from '../../icons/NewLink';
 import { NewMapPin } from '../../icons/NewMapPin';
@@ -71,6 +72,10 @@ const MessagePreviewText = React.memo(
       const onlyVoiceRecordings =
         voiceRecordingAttachments?.length &&
         voiceRecordingAttachments?.length === attachments?.length;
+
+      if (message?.type === 'deleted') {
+        return 'Message deleted';
+      }
 
       if (pollName) {
         return pollName;
@@ -132,7 +137,7 @@ const MessagePreviewText = React.memo(
       }
 
       return `${attachments?.length} Files`;
-    }, [message?.attachments, message?.shared_location, message?.text, pollName]);
+    }, [message?.attachments, message?.shared_location, message?.text, message?.type, pollName]);
 
     if (!subtitle) {
       return null;
@@ -187,6 +192,18 @@ const MessagePreviewIcon = React.memo(
     const hasLink = attachments?.some(
       (attachment) => attachment.type === FileTypes.Image && attachment.og_scrape_url,
     );
+
+    if (message.type === 'deleted') {
+      return (
+        <CircleBan
+          height={12}
+          stroke={semantics.textPrimary}
+          style={styles.iconStyle}
+          width={12}
+          {...iconProps}
+        />
+      );
+    }
 
     if (message.poll_id) {
       return (
@@ -318,13 +335,9 @@ export const MessagePreview = ({
 };
 
 const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
       subtitle: {
-        color: semantics.textPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
@@ -338,5 +351,5 @@ const useStyles = () => {
       },
       iconStyle: {},
     });
-  }, [semantics]);
+  }, []);
 };

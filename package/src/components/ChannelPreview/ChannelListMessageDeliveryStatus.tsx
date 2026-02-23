@@ -29,13 +29,12 @@ export const ChannelListMessageDeliveryStatus = ({
   const styles = useStyles();
   const {
     theme: {
-      channelPreview: { checkAllIcon, checkIcon, timeIcon },
+      channelPreview: {
+        messageDeliveryStatus: { checkAllIcon, checkIcon, timeIcon },
+      },
       semantics,
     },
   } = useTheme();
-
-  const isFailedMessage =
-    lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
 
   const isLastMessageByCurrentUser = useMemo(() => {
     return lastMessage?.user?.id === client.user?.id;
@@ -58,7 +57,7 @@ export const ChannelListMessageDeliveryStatus = ({
     isReadEventsEnabled: readEvents,
   });
 
-  if (!isLastMessageByCurrentUser || isFailedMessage) {
+  if (!isLastMessageByCurrentUser) {
     return null;
   }
 
@@ -81,7 +80,12 @@ export const ChannelListMessageDeliveryStatus = ({
 
 const useStyles = () => {
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      channelPreview: {
+        messageDeliveryStatus: { container, text },
+      },
+    },
   } = useTheme();
 
   return useMemo(() => {
@@ -90,13 +94,15 @@ const useStyles = () => {
         flexDirection: 'row',
         alignItems: 'center',
         gap: primitives.spacingXxs,
+        ...container,
       },
       text: {
         color: semantics.textTertiary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        ...text,
       },
     });
-  }, [semantics]);
+  }, [semantics, text, container]);
 };

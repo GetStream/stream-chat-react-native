@@ -26,13 +26,13 @@ export const UserAvatar = (props: UserAvatarProps) => {
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
-  const hashedValue = hashStringToNumber(user.id);
+  const hashedValue = hashStringToNumber(user?.id || '');
   const index = ((hashedValue % 5) + 1) as 1 | 2 | 3 | 4 | 5;
   const avatarBackgroundColor = semantics[`avatarPaletteBg${index}`];
   const avatarTextColor = semantics[`avatarPaletteText${index}`];
 
   const placeholder = useMemo(() => {
-    if (user.name) {
+    if (user?.name) {
       return (
         <Text style={[fontSizes[size], { color: avatarTextColor }]}>
           {getInitialsFromName(user.name, numberOfInitials[size])}
@@ -43,13 +43,13 @@ export const UserAvatar = (props: UserAvatarProps) => {
         <PeopleIcon height={iconSizes[size]} stroke={avatarTextColor} width={iconSizes[size]} />
       );
     }
-  }, [user.name, size, avatarTextColor]);
+  }, [user?.name, size, avatarTextColor]);
 
   return (
     <View testID='user-avatar'>
       <Avatar
         backgroundColor={avatarBackgroundColor}
-        imageUrl={user.image}
+        imageUrl={user?.image}
         placeholder={placeholder}
         showBorder={showBorder}
         size={size}

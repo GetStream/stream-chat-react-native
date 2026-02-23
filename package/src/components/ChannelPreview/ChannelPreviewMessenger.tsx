@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ChannelPreviewProps } from './ChannelPreview';
 import { ChannelPreviewMessage } from './ChannelPreviewMessage';
@@ -68,52 +68,67 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
 
   const {
     theme: {
-      channelPreview: { container, contentContainer, row },
+      channelPreview: {
+        container,
+        contentContainer,
+        lowerRow,
+        statusContainer,
+        upperRow,
+        titleContainer,
+        wrapper,
+      },
+      semantics,
     },
   } = useTheme();
   const styles = useStyles();
 
   return (
-    <TouchableOpacity
-      onPress={() => {
-        if (onSelect) {
-          onSelect(channel);
-        }
-      }}
-      style={[
-        // { opacity: pressed ? 0.5 : 1 },
-        styles.container,
-        container,
-      ]}
-      testID='channel-preview-button'
-    >
-      <PreviewAvatar channel={channel} size='xl' />
-      <View
-        style={[styles.contentContainer, contentContainer]}
-        testID={`channel-preview-content-${channel.id}`}
+    <View style={[styles.wrapper, wrapper]}>
+      <Pressable
+        onPress={() => {
+          if (onSelect) {
+            onSelect(channel);
+          }
+        }}
+        style={({ pressed }) => [
+          styles.container,
+          { backgroundColor: pressed ? semantics.backgroundCorePressed : 'transparent' },
+          container,
+        ]}
+        testID='channel-preview-button'
       >
-        <View style={[styles.upperRow, row]}>
-          <View style={styles.titleContainer}>
-            <PreviewTitle channel={channel} />
-            {muted && mutedStatusPosition === 'inlineTitle' ? <PreviewMutedStatus /> : null}
+        <PreviewAvatar channel={channel} size='xl' />
+        <View
+          style={[styles.contentContainer, contentContainer]}
+          testID={`channel-preview-content-${channel.id}`}
+        >
+          <View style={[styles.upperRow, upperRow]}>
+            <View style={[styles.titleContainer, titleContainer]}>
+              <PreviewTitle channel={channel} />
+              {muted && mutedStatusPosition === 'inlineTitle' ? <PreviewMutedStatus /> : null}
+            </View>
+
+            <View style={[styles.statusContainer, statusContainer]}>
+              <PreviewStatus
+                channel={channel}
+                formatLatestMessageDate={formatLatestMessageDate}
+                lastMessage={lastMessage}
+              />
+              <PreviewUnreadCount
+                channel={channel}
+                maxUnreadCount={maxUnreadCount}
+                unread={unread}
+              />
+            </View>
           </View>
 
-          <View style={[styles.statusContainer, row]}>
-            <PreviewStatus
-              channel={channel}
-              formatLatestMessageDate={formatLatestMessageDate}
-              lastMessage={lastMessage}
-            />
-            <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
+          <View style={[styles.lowerRow, lowerRow]}>
+            <PreviewMessage channel={channel} lastMessage={lastMessage} />
+            {muted && mutedStatusPosition === 'trailingBottom' ? <PreviewMutedStatus /> : null}
           </View>
         </View>
-
-        <View style={[styles.lowerRow, row]}>
-          <PreviewMessage channel={channel} lastMessage={lastMessage} />
-          {muted && mutedStatusPosition === 'trailingBottom' ? <PreviewMutedStatus /> : null}
-        </View>
-      </View>
-    </TouchableOpacity>
+      </Pressable>
+    </View>
   );
 };
 
@@ -170,10 +185,9 @@ const useStyles = () => {
     return StyleSheet.create({
       container: {
         alignItems: 'center',
-        borderBottomWidth: 1,
         flexDirection: 'row',
-        padding: primitives.spacingMd,
-        borderBottomColor: semantics.borderCoreSubtle,
+        padding: primitives.spacingSm,
+        borderRadius: primitives.radiusLg,
         gap: primitives.spacingMd,
       },
       contentContainer: { flex: 1, gap: primitives.spacingXxs },
@@ -203,6 +217,12 @@ const useStyles = () => {
         alignItems: 'center',
         gap: primitives.spacingXxs,
         flexShrink: 1,
+      },
+      wrapper: {
+        flex: 1,
+        padding: primitives.spacingXxs,
+        borderBottomWidth: 1,
+        borderBottomColor: semantics.borderCoreSubtle,
       },
     });
   }, [semantics]);

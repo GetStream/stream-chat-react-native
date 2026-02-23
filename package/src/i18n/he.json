@@ -163,5 +163,14 @@
   "{{count}} Reactions_many": "{{count}} תגובות",
   "{{count}} Reactions_one": "{{count}} תגובה",
   "{{count}} Reactions_other": "{{count}} תגובות",
-  "Tap to remove": "הקש כדי להסיר"
+  "Tap to remove": "הקש כדי להסיר",
+  "You voted: {{ option }}": "הצבעת: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} ו-{{ secondUser }} מקלידים",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }} משתמש/ים מקלידים",
+  "Typing": "מקליד/ה",
+  "No messages yet": "אין הודעות עדיין",
+  "Message failed to send": "ההודעה לא נשלחה",
+  "and {{ count }} others": "ועוד {{ count }} משתמש/ים",
+  "{{ user }} voted: {{ option }}": "{{ user }} הצבע: {{ option }}",
+  "Draft": "טיוטה"
 }

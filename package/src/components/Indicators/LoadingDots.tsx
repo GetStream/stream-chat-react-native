@@ -14,13 +14,18 @@ type Props = {
 };
 
 export const LoadingDots = (props: Props) => {
-  const { diameter = 4, duration = 1500, numberOfDots = 3, spacing: spacingProp, style } = props;
-
   const {
     theme: {
       loadingDots: { container, spacing },
     },
   } = useTheme();
+  const {
+    diameter = 5,
+    duration = 1500,
+    numberOfDots = 3,
+    spacing: spacingProp = spacing,
+    style,
+  } = props;
 
   const halfSpacing = spacingProp ? spacingProp / 2 : spacing / 2;
   const offsetLength = duration / numberOfDots;

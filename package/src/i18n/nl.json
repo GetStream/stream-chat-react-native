@@ -163,5 +163,14 @@
   "{{count}} Reactions_many": "{{count}} reacties",
   "{{count}} Reactions_one": "{{count}} reactie",
   "{{count}} Reactions_other": "{{count}} reacties",
-  "Tap to remove": "Tik om te verwijderen"
+  "Tap to remove": "Tik om te verwijderen",
+  "You voted: {{ option }}": "Je hebt gestemd: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} en {{ secondUser }} zijn aan het typen",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }} mensen zijn aan het typen",
+  "Typing": "Typen",
+  "No messages yet": "Nog geen berichten",
+  "Message failed to send": "Bericht niet verzonden",
+  "and {{ count }} others": "{{ count }} anderen",
+  "{{ user }} voted: {{ option }}": "{{ user }} heeft gestemd: {{ option }}",
+  "Draft": "Ontwerp"
 }

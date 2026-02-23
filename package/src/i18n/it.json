@@ -163,5 +163,14 @@
   "{{count}} Reactions_many": "{{count}} reazioni",
   "{{count}} Reactions_one": "{{count}} reazione",
   "{{count}} Reactions_other": "{{count}} reazioni",
-  "Tap to remove": "Tocca per rimuovere"
+  "Tap to remove": "Tocca per rimuovere",
+  "You voted: {{ option }}": "Hai votato: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} e {{ secondUser }} stanno scrivendo",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }} persone stanno scrivendo",
+  "Typing": "Scrivendo",
+  "No messages yet": "Ancora nessun messaggio",
+  "Message failed to send": "Il messaggio non è stato inviato",
+  "and {{ count }} others": "e {{ count }} altri",
+  "{{ user }} voted: {{ option }}": "{{ user }} ha votato: {{ option }}",
+  "Draft": "Borrador"
 }

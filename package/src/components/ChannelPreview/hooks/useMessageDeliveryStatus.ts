@@ -53,9 +53,6 @@ export const useMessageDeliveryStatus = ({
     const readerOfMessage = channel.messageReceiptsTracker.readersForMessage(msgRef);
     const deliveredForMessage = channel.messageReceiptsTracker.deliveredForMessage(msgRef);
 
-    console.log('readerOfMessage', readerOfMessage);
-    console.log('deliveredForMessage', deliveredForMessage);
-
     setStatus(
       readerOfMessage.length > 1 ||
         (readerOfMessage.length === 1 && readerOfMessage[0].id !== client.user?.id)

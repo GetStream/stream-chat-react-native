@@ -60,10 +60,6 @@ const useStyles = () => {
         lineHeight: primitives.typographyLineHeightNormal,
         ...date,
       },
-      container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-      },
     });
   }, [semantics, date]);
 };

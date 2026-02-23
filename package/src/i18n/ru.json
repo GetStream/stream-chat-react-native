@@ -163,5 +163,14 @@
   "{{count}} Reactions_many": "{{count}} реакций",
   "{{count}} Reactions_one": "{{count}} реакция",
   "{{count}} Reactions_other": "{{count}} реакций",
-  "Tap to remove": "Нажмите, чтобы удалить"
+  "Tap to remove": "Нажмите, чтобы удалить",
+  "You voted: {{ option }}": "Вы проголосовали: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} и {{ secondUser }} пишут",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }} людей пишут",
+  "Typing": "Пишет",
+  "No messages yet": "Нет сообщений",
+  "Message failed to send": "Сообщение не отправлено",
+  "and {{ count }} others": "{{ count }} других",
+  "{{ user }} voted: {{ option }}": "{{ user }} проголосовал: {{ option }}",
+  "Draft": "Черновик"
 }

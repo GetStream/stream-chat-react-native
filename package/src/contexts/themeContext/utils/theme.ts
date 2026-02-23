@@ -2,7 +2,7 @@ import { type ColorValue, type ImageStyle, type TextStyle, type ViewStyle } from
 import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
-import { semantics } from '../../../theme';
+import { primitives, semantics } from '../../../theme';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 // TODO: Handle this better later depending on the size of the avatar used
@@ -173,12 +173,6 @@ export type Theme = {
   };
   colors: typeof Colors;
   channelPreview: {
-    avatar: {
-      size: number;
-    };
-    checkAllIcon: IconProps;
-    checkIcon: IconProps;
-    timeIcon: IconProps;
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
@@ -186,10 +180,25 @@ export type Theme = {
     message: {
       container: ViewStyle;
     };
-    row: ViewStyle;
+    messageDeliveryStatus: {
+      container: ViewStyle;
+      text: TextStyle;
+      checkAllIcon: IconProps;
+      checkIcon: IconProps;
+      timeIcon: IconProps;
+    };
+    lowerRow: ViewStyle;
     title: TextStyle;
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
+    typingIndicatorPreview: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
+    upperRow: ViewStyle;
+    statusContainer: ViewStyle;
+    titleContainer: ViewStyle;
+    wrapper: ViewStyle;
   };
   dateHeader: {
     container: ViewStyle;
@@ -1010,23 +1019,32 @@ export const defaultTheme: Theme = {
     height: 64,
   },
   channelPreview: {
-    avatar: {
-      size: 40,
-    },
-    checkAllIcon: {},
-    checkIcon: {},
-    timeIcon: {},
     container: {},
     contentContainer: {},
     date: {},
     message: {
       container: {},
     },
+    messageDeliveryStatus: {
+      container: {},
+      text: {},
+      checkAllIcon: {},
+      checkIcon: {},
+      timeIcon: {},
+    },
     mutedStatus: {},
-    row: {},
+    lowerRow: {},
     title: {},
     unreadContainer: {},
     unreadText: {},
+    typingIndicatorPreview: {
+      container: {},
+      text: {},
+    },
+    upperRow: {},
+    statusContainer: {},
+    titleContainer: {},
+    wrapper: {},
   },
   colors: Colors,
   dateHeader: {
@@ -1097,7 +1115,7 @@ export const defaultTheme: Theme = {
   loadingDots: {
     container: {},
     loadingDot: {},
-    spacing: 4,
+    spacing: primitives.spacingXxs,
   },
   loadingErrorIndicator: {
     container: {},

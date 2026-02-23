@@ -163,5 +163,14 @@
   "{{count}} Reactions_many": "{{count}} प्रतिक्रियाएँ",
   "{{count}} Reactions_one": "{{count}} प्रतिक्रिया",
   "{{count}} Reactions_other": "{{count}} प्रतिक्रियाएँ",
-  "Tap to remove": "हटाने के लिए टैप करें"
+  "Tap to remove": "हटाने के लिए टैप करें",
+  "You voted: {{ option }}": "आपने वोट दिया: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} और {{ secondUser }} लिख रहे हैं",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }} लोग लिख रहे हैं",
+  "Typing": "लिख रहा है",
+  "No messages yet": "अभी तक कोई मैसेज नहीं है",
+  "Message failed to send": "मैसेज भेजने में विफल",
+  "and {{ count }} others": "और {{ count }} अन्य",
+  "{{ user }} voted: {{ option }}": "{{ user }} वोट दिया: {{ option }}",
+  "Draft": "ड्राफ्ट"
 }

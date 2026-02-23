@@ -51,7 +51,6 @@ export * from './ChannelPreview/ChannelPreviewMessenger';
 export * from './ChannelPreview/ChannelPreviewStatus';
 export * from './ChannelPreview/ChannelPreviewTitle';
 export * from './ChannelPreview/ChannelPreviewUnreadCount';
-export * from './ChannelPreview/hooks/useChannelPreviewDisplayAvatar';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayName';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayPresence';
 export * from './ChannelPreview/hooks/useChannelPreviewData';
