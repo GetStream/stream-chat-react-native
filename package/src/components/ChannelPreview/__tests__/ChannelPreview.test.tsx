@@ -1,4 +1,4 @@
-import React, { ComponentType } from 'react';
+import React from 'react';
 import { Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
@@ -19,33 +19,30 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelPreview } from '../ChannelPreview';
-import type { ChannelPreviewMessengerProps } from '../ChannelPreviewMessenger';
 
 import '@testing-library/jest-native/extend-expect';
+import { LastMessageType } from '../hooks/useChannelPreviewData';
 
 type ChannelPreviewUIComponentProps = {
   channel: {
     id: string;
   };
-  latestMessagePreview: {
-    messageObject: {
-      text: string;
-    };
-  };
+  lastMessage: LastMessageType;
   unread: number;
+  muted: boolean;
 };
 
-const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => (
-  <>
-    <Text testID='channel-id'>{props.channel.id}</Text>
-    <Text testID='unread-count'>{props.unread}</Text>
-    <Text testID='latest-message'>
-      {props.latestMessagePreview &&
-        props.latestMessagePreview.messageObject &&
-        props.latestMessagePreview.messageObject.text}
-    </Text>
-  </>
-);
+const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+
+const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => {
+  return (
+    <>
+      <Text testID='channel-id'>{props.channel.id}</Text>
+      <Text testID='unread-count'>{props.unread}</Text>
+      <Text testID='latest-message'>{props.lastMessage?.text}</Text>
+    </>
+  );
+};
 
 const initChannelFromData = async (
   chatClient: StreamChat,
@@ -60,6 +57,7 @@ const initChannelFromData = async (
   channel.initialized = true;
   channel.lastMessage = jest.fn().mockReturnValue(generateMessage());
   channel.muteStatus = jest.fn().mockReturnValue({ muted: false });
+  channel.state.messages = [generateMessage()];
 
   return channel;
 };
@@ -80,7 +78,7 @@ describe('ChannelPreview', () => {
           {...props}
           channel={channel}
           client={chatClient}
-          Preview={ChannelPreviewUIComponent as ComponentType<ChannelPreviewMessengerProps>}
+          Preview={ChannelPreviewUIComponent}
         />
       </Chat>
     );
@@ -113,8 +111,6 @@ describe('ChannelPreview', () => {
 
   describe('notification.mark_read event', () => {
     it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
-      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
-
       channel = await initChannelFromData(chatClient);
 
       channel.countUnread = jest.fn().mockReturnValue(10);
@@ -342,7 +338,7 @@ describe('ChannelPreview', () => {
     });
   });
 
-  it('should update the lastest message on "message.new" event', async () => {
+  it('should update the latest message on "message.new" event', async () => {
     const c = generateChannelResponse();
     await useInitializeChannel(c);
 

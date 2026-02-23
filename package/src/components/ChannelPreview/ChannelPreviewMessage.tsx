@@ -9,7 +9,6 @@ import {
   TextComposerState,
 } from 'stream-chat';
 
-import { ChannelListMessageDeliveryStatus } from './ChannelListMessageDeliveryStatus';
 import { ChannelPreviewProps } from './ChannelPreview';
 
 import { ChannelTypingIndicatorPreview } from './ChannelTypingIndicatorPreview';
@@ -28,6 +27,7 @@ import { NewPoll } from '../../icons/NewPoll';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { MessagePreview } from '../MessagePreview/MessagePreview';
+import { MessagePreviewUserDetails } from '../MessagePreview/MessagePreviewUserDetails';
 import { ErrorBadge } from '../ui';
 
 export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> & {
@@ -148,20 +148,14 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (channel.data?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
-        {lastMessage?.user?.id === client.user?.id ? (
-          <ChannelListMessageDeliveryStatus channel={channel} lastMessage={lastMessage} />
-        ) : (
-          <Text style={styles.username}>{lastMessage?.user?.name || lastMessage?.user?.id}:</Text>
-        )}
+        <MessagePreviewUserDetails channel={channel} message={lastMessage} />
         {renderMessagePreview(lastMessage)}
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
-        {lastMessage?.user?.id === client.user?.id ? (
-          <ChannelListMessageDeliveryStatus channel={channel} lastMessage={lastMessage} />
-        ) : null}
+        <MessagePreviewUserDetails channel={channel} message={lastMessage} />
         {renderMessagePreview(lastMessage)}
       </View>
     );
@@ -187,13 +181,6 @@ const useStyles = () => {
         gap: primitives.spacingXxs,
         flexShrink: 1,
       },
-      username: {
-        color: semantics.textTertiary,
-        fontSize: primitives.typographyFontSizeSm,
-        fontWeight: primitives.typographyFontWeightSemiBold,
-        lineHeight: primitives.typographyLineHeightNormal,
-      },
-
       subtitle: {
         color: semantics.textSecondary,
         fontSize: primitives.typographyFontSizeSm,

@@ -27,7 +27,7 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import type { ChannelListEventListenerOptions } from '../../types/types';
-import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
+import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 
@@ -275,7 +275,7 @@ export const ChannelList = (props: ChannelListProps) => {
     onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
-    Preview = ChannelPreviewMessenger,
+    Preview = ChannelPreview,
     PreviewAvatar,
     PreviewMessage,
     PreviewMutedStatus,
