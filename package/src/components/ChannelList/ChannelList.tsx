@@ -286,7 +286,7 @@ export const ChannelList = (props: ChannelListProps) => {
     Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
     queryChannelsOverride,
-    mutedStatusPosition = 'trailingBottom',
+    mutedStatusPosition = 'inlineTitle',
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
