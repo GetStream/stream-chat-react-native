@@ -173,9 +173,6 @@ export type Theme = {
     contentContainer: ViewStyle;
     date: TextStyle;
     mutedStatus: IconProps;
-    message: {
-      container: ViewStyle;
-    };
     messageDeliveryStatus: {
       container: ViewStyle;
       text: TextStyle;
@@ -195,6 +192,12 @@ export type Theme = {
     statusContainer: ViewStyle;
     titleContainer: ViewStyle;
     wrapper: ViewStyle;
+    message: {
+      container: ViewStyle;
+      subtitle: TextStyle;
+      errorText: TextStyle;
+      draftText: TextStyle;
+    };
   };
   dateHeader: {
     container: ViewStyle;
@@ -1010,6 +1013,9 @@ export const defaultTheme: Theme = {
     date: {},
     message: {
       container: {},
+      subtitle: {},
+      errorText: {},
+      draftText: {},
     },
     messageDeliveryStatus: {
       container: {},

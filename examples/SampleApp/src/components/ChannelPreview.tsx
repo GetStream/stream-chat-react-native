@@ -58,13 +58,16 @@ const CustomChannelPreviewStatus = (
   props: ChannelPreviewStatusProps & { membership: ChannelState['membership'] },
 ) => {
   const { membership } = props;
+  const {
+    theme: { semantics },
+  } = useTheme();
 
   return (
     <View style={styles.statusContainer}>
       <ChannelPreviewStatus {...props} />
       {membership.pinned_at && (
         <View style={styles.pinIconContainer}>
-          <Pin size={24} />
+          <Pin height={24} width={24} stroke={semantics.textSecondary} />
         </View>
       )}
     </View>
@@ -128,7 +131,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps> = (props) =>
             }}
             style={[styles.rightSwipeableButton]}
           >
-            <Delete size={32} fill={accent_red} />
+            <Delete height={20} width={20} stroke={accent_red} />
           </RectButton>
         </View>
       )}

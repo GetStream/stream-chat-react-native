@@ -33,6 +33,7 @@ import { generateMarkdownText } from './generateMarkdownText';
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 
+import { primitives } from '../../../../theme';
 import { escapeRegExp } from '../../../../utils/utils';
 
 type ReactNodeOutput = NodeOutput<React.ReactNode>;
@@ -95,11 +96,14 @@ const defaultMarkdownStyles: MarkdownStyle = {
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
     fontWeight: '500',
     marginVertical: 8,
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyLineHeightNormal,
   },
   inlineCode: {
-    fontSize: 13,
     padding: 3,
     paddingHorizontal: 5,
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyLineHeightNormal,
   },
   list: {
     marginBottom: 8,
@@ -116,13 +120,19 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
   mentions: {
     fontWeight: '700',
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyLineHeightNormal,
   },
   paragraph: {
     marginBottom: 8,
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyLineHeightNormal,
     marginTop: 8,
   },
   paragraphCenter: {
     marginBottom: 8,
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyLineHeightNormal,
     marginTop: 8,
   },
   paragraphWithImage: {
@@ -192,6 +202,8 @@ export const renderText = (params: RenderTextParams) => {
     ...defaultMarkdownStyles,
     ...markdownStyles,
     autolink: {
+      fontSize: primitives.typographyFontSizeMd,
+      lineHeight: primitives.typographyLineHeightNormal,
       ...defaultMarkdownStyles.autolink,
       color: colors.accent_blue,
       ...markdownStyles?.autolink,
@@ -210,6 +222,8 @@ export const renderText = (params: RenderTextParams) => {
       ...markdownStyles?.blockQuoteSectionBar,
     },
     blockQuoteText: {
+      fontSize: primitives.typographyFontSizeMd,
+      lineHeight: primitives.typographyLineHeightNormal,
       ...defaultMarkdownStyles.blockQuoteText,
       ...markdownStyles?.blockQuoteText,
     },
@@ -244,6 +258,8 @@ export const renderText = (params: RenderTextParams) => {
       ...markdownStyles?.tableHeader,
     },
     tableHeaderCell: {
+      fontSize: primitives.typographyFontSizeMd,
+      lineHeight: primitives.typographyLineHeightNormal,
       ...defaultMarkdownStyles.tableHeaderCell,
       padding: 5,
       ...markdownStyles?.tableHeaderCell,
@@ -262,6 +278,8 @@ export const renderText = (params: RenderTextParams) => {
       ...markdownStyles?.tableRowLast,
     },
     text: {
+      fontSize: primitives.typographyFontSizeMd,
+      lineHeight: primitives.typographyLineHeightNormal,
       ...defaultMarkdownStyles.text,
       color: colors.black,
       ...markdownStyles?.text,

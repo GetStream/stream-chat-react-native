@@ -9,6 +9,7 @@ import {
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 
 export const DEFAULT_LIST_HEIGHT = 200;
@@ -82,6 +83,8 @@ export const AutoCompleteSuggestionList = ({
     ) : null;
   }, [AutoCompleteSuggestionHeader, queryText, triggerType]);
 
+  const loadMore = useStableCallback(() => suggestions?.searchSource.search());
+
   if (!showList || !triggerType) {
     return null;
   }
@@ -93,6 +96,8 @@ export const AutoCompleteSuggestionList = ({
         keyboardShouldPersistTaps='always'
         keyExtractor={(item) => item.id}
         ListHeaderComponent={renderHeader}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.1}
         renderItem={renderItem}
         style={[
           styles.flatlist,
