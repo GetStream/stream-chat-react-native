@@ -1151,7 +1151,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const flatListStyle = useMemo(
     () => [styles.listContainer, additionalFlatListProps?.style],
-    [additionalFlatListProps?.style],
+    [additionalFlatListProps?.style, styles.listContainer],
   );
 
   const flatListContentContainerStyle = useMemo(

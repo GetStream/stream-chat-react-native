@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Switch, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';

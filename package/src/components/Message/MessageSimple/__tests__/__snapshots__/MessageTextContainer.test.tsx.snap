@@ -29,9 +29,7 @@ exports[`MessageTextContainer should render message text container 1`] = `
           "alignItems": "flex-start",
           "flexDirection": "row",
           "flexWrap": "wrap",
-          "fontSize": 15,
           "justifyContent": "flex-start",
-          "lineHeight": 20,
           "marginBottom": 8,
           "marginTop": 8,
         }
