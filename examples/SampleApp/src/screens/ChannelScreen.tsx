@@ -239,6 +239,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         NetworkDownIndicator={() => null}
         thread={selectedThread}
         maximumMessageLimit={messageListPruning}
+        reactionListPosition='bottom'
       >
         <ChannelHeader channel={channel} />
         {messageListImplementation === 'flashlist' ? (

@@ -386,6 +386,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'MessageUserReactionsItem'
       | 'ReactionListBottom'
       | 'reactionListPosition'
+      | 'reactionListType'
       | 'ReactionListTop'
       | 'Reply'
       | 'shouldShowUnreadUnderlay'
@@ -708,6 +709,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     PollContent,
     ReactionListBottom = ReactionListBottomDefault,
     reactionListPosition = 'top',
+    reactionListType = 'segmented',
     ReactionListTop = ReactionListTopDefault,
     Reply = ReplyDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
@@ -1960,6 +1962,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     PollContent,
     ReactionListBottom,
     reactionListPosition,
+    reactionListType,
     ReactionListTop,
     removeMessage,
     Reply,

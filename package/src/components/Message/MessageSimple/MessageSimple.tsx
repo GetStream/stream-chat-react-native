@@ -75,6 +75,7 @@ export type MessageSimplePropsWithContext = Pick<
     | 'messageSwipeToReplyHitSlop'
     | 'ReactionListBottom'
     | 'reactionListPosition'
+    | 'reactionListType'
     | 'ReactionListTop'
   > & {
     /**
@@ -113,6 +114,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
     otherAttachments,
     ReactionListBottom,
     reactionListPosition,
+    reactionListType,
     ReactionListTop,
     shouldRenderSwipeableWrapper,
     setQuotedMessage,
@@ -274,7 +276,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
             </View>
 
             {reactionListPosition === 'bottom' && ReactionListBottom ? (
-              <ReactionListBottom />
+              <ReactionListBottom type={reactionListType} />
             ) : null}
             <MessageFooter date={message.created_at} isDeleted={!!isMessageTypeDeleted} />
           </View>
@@ -452,6 +454,7 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
     myMessageTheme,
     ReactionListBottom,
     reactionListPosition,
+    reactionListType,
     ReactionListTop,
   } = useMessagesContext();
   const isAIGenerated = useMemo(
@@ -486,6 +489,7 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
         otherAttachments,
         ReactionListBottom,
         reactionListPosition,
+        reactionListType,
         ReactionListTop,
         setQuotedMessage,
         shouldRenderSwipeableWrapper,

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -29,6 +29,15 @@ import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 import { Button } from '../ui';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
+
+const ITEM_WIDTH = 60;
+
+// @ts-ignore
+const getItemLayout = (_, index: number) => ({
+  length: ITEM_WIDTH,
+  offset: ITEM_WIDTH * index,
+  index,
+});
 
 export type MessageUserReactionsProps = Partial<
   Pick<
@@ -98,6 +107,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
   } = props;
+  const selectorListRef = useRef<FlatList>(null);
   const { close } = useBottomSheetContext();
   const reactionTypes = useMemo(
     () => Object.keys(message?.reaction_groups ?? {}),
@@ -151,6 +161,19 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
       supportedReactions,
     ],
   );
+
+  const selectedIndex = useMemo(() => {
+    return selectorReactions.findIndex((reaction) => reaction.type === selectedReaction);
+  }, [selectorReactions, selectedReaction]);
+
+  useEffect(() => {
+    if (selectedIndex !== -1 && selectorListRef.current) {
+      selectorListRef.current?.scrollToIndex({
+        index: selectedIndex + 1, // +1 to account for the show more reactions button
+        animated: true,
+      });
+    }
+  }, [selectedIndex]);
 
   const {
     loading,
@@ -267,10 +290,12 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
             <FlatList
               contentContainerStyle={[styles.contentContainer, contentContainer]}
               data={selectorReactions}
+              getItemLayout={getItemLayout}
               horizontal
               keyExtractor={reactionSelectorKeyExtractor}
               ListHeaderComponent={ShowMoreReactionsButton}
               renderItem={renderSelectorItem}
+              ref={selectorListRef}
             />
           </View>
 

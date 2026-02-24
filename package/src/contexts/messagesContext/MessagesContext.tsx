@@ -584,6 +584,11 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   reactionListPosition?: 'top' | 'bottom';
 
   /**
+   * The alignment of the reaction list
+   */
+  reactionListType?: 'clustered' | 'segmented';
+
+  /**
    * UI component for ReactionListTop
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
    */
