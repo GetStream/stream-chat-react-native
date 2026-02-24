@@ -128,19 +128,19 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     }
     showScreen.value = show
       ? withTiming(1, {
-        duration: 150,
-        easing: Easing.in(Easing.ease),
-      })
-      : withTiming(
-        0,
-        {
           duration: 150,
-          easing: Easing.out(Easing.ease),
-        },
-        () => {
-          runOnJS(reset)();
-        },
-      );
+          easing: Easing.in(Easing.ease),
+        })
+      : withTiming(
+          0,
+          {
+            duration: 150,
+            easing: Easing.out(Easing.ease),
+          },
+          () => {
+            runOnJS(reset)();
+          },
+        );
   };
 
   useEffect(() => {
@@ -186,12 +186,12 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
         translateY.value =
           evt.velocityY > 1000
             ? withDecay({
-              velocity: evt.velocityY,
-            })
+                velocity: evt.velocityY,
+              })
             : withTiming(screenHeight, {
-              duration: 200,
-              easing: Easing.out(Easing.ease),
-            });
+                duration: 200,
+                easing: Easing.out(Easing.ease),
+              });
       } else {
         translateY.value = withTiming(0);
         overlayOpacity.value = withTiming(1);
@@ -226,31 +226,31 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     : 0;
   const channelName = channel
     ? channel.data?.name ||
-    Object.values<ChannelMemberResponse>(channel.state.members)
-      .slice(0)
-      .reduce<string>((returnString, currentMember, index, originalArray) => {
-        const returnStringLength = returnString.length;
-        const currentMemberName =
-          currentMember.user?.name || currentMember.user?.id || 'Unknown User';
-        // a rough approximation of when the +Number shows up
-        if (returnStringLength + (currentMemberName.length + 2) < maxWidth) {
-          if (returnStringLength) {
-            returnString += `, ${currentMemberName}`;
+      Object.values<ChannelMemberResponse>(channel.state.members)
+        .slice(0)
+        .reduce<string>((returnString, currentMember, index, originalArray) => {
+          const returnStringLength = returnString.length;
+          const currentMemberName =
+            currentMember.user?.name || currentMember.user?.id || 'Unknown User';
+          // a rough approximation of when the +Number shows up
+          if (returnStringLength + (currentMemberName.length + 2) < maxWidth) {
+            if (returnStringLength) {
+              returnString += `, ${currentMemberName}`;
+            } else {
+              returnString = currentMemberName;
+            }
           } else {
-            returnString = currentMemberName;
+            const remainingMembers = originalArray.length - index;
+            returnString += `, +${remainingMembers}`;
+            originalArray.splice(1); // exit early
           }
-        } else {
-          const remainingMembers = originalArray.length - index;
-          returnString += `, +${remainingMembers}`;
-          originalArray.splice(1); // exit early
-        }
-        return returnString;
-      }, '')
+          return returnString;
+        }, '')
     : '';
   const otherMembers = channel
     ? Object.values<ChannelMemberResponse>(channel.state.members).filter(
-      (member) => member.user?.id !== clientId,
-    )
+        (member) => member.user?.id !== clientId,
+      )
     : [];
 
   const { viewInfo, pinUnpin, archiveUnarchive, leaveGroup, deleteConversation, cancel } =
@@ -286,10 +286,11 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             ? otherMembers[0].user?.online
                               ? 'Online'
                               : `Last Seen ${dayjs(otherMembers[0].user?.last_active).fromNow()}`
-                            : `${Object.keys(channel.state.members).length} Members, ${Object.values<ChannelMemberResponse>(channel.state.members).filter(
-                              (member) => !!member.user?.online,
-                            ).length
-                            } Online`}
+                            : `${Object.keys(channel.state.members).length} Members, ${
+                                Object.values<ChannelMemberResponse>(channel.state.members).filter(
+                                  (member) => !!member.user?.online,
+                                ).length
+                              } Online`}
                         </Text>
                         <FlatList
                           contentContainerStyle={styles.flatListContent}
@@ -376,7 +377,9 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
 
                       {otherMembers.length > 1 && (
                         <Pressable onPress={leaveGroup}>
-                          <View style={[styles.row, { borderTopColor: semantics.borderCoreDefault }]}>
+                          <View
+                            style={[styles.row, { borderTopColor: semantics.borderCoreDefault }]}
+                          >
                             <View style={styles.rowInner}>
                               <UserMinus pathFill={grey} />
                             </View>
@@ -394,7 +397,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           ]}
                         >
                           <View style={styles.rowInner}>
-                            <Delete size={24} fill={accent_red} />
+                            <Delete height={24} width={24} stroke={accent_red} />
                           </View>
                           <Text style={[styles.rowText, { color: accent_red }]}>
                             Delete conversation

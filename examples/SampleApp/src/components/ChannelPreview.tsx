@@ -128,7 +128,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps> = (props) =>
             }}
             style={[styles.rightSwipeableButton]}
           >
-            <Delete size={32} fill={accent_red} />
+            <Delete height={20} width={20} stroke={accent_red} />
           </RectButton>
         </View>
       )}
