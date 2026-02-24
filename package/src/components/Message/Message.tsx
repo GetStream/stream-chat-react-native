@@ -251,7 +251,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const [showMessageReactions, setShowMessageReactions] = useState<boolean>(false);
   const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
-  // const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
 
   const {
     channel,
@@ -350,9 +349,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     }
   });
 
-  const showReactionsOverlay = useStableCallback((selectedReaction?: string) => {
+  const showReactionsOverlay = useStableCallback((reactionType?: string) => {
     setShowMessageReactions(true);
-    setSelectedReaction(selectedReaction);
+    setSelectedReaction(reactionType);
   });
 
   const { setNativeScrollability } = useMessageListItemContext();

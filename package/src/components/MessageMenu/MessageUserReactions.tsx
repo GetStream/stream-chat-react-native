@@ -163,8 +163,11 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   );
 
   const selectedIndex = useMemo(() => {
-    return selectorReactions.findIndex((reaction) => reaction.type === selectedReaction);
-  }, [selectorReactions, selectedReaction]);
+    if (!propSelectedReaction) {
+      return -1;
+    }
+    return selectorReactions.findIndex((reaction) => reaction.type === propSelectedReaction);
+  }, [propSelectedReaction, selectorReactions]);
 
   useEffect(() => {
     if (selectedIndex !== -1 && selectorListRef.current) {
