@@ -58,13 +58,16 @@ const CustomChannelPreviewStatus = (
   props: ChannelPreviewStatusProps & { membership: ChannelState['membership'] },
 ) => {
   const { membership } = props;
+  const {
+    theme: { semantics },
+  } = useTheme();
 
   return (
     <View style={styles.statusContainer}>
       <ChannelPreviewStatus {...props} />
       {membership.pinned_at && (
         <View style={styles.pinIconContainer}>
-          <Pin size={24} />
+          <Pin height={24} width={24} stroke={semantics.textSecondary} />
         </View>
       )}
     </View>

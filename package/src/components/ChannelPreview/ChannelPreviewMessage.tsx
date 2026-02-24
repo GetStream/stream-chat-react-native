@@ -105,7 +105,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
 
   if (isFailedMessage) {
     return (
-      <View style={styles.messagePreviewContainer}>
+      <View style={styles.container}>
         <ErrorBadge size='xs' />
         <Text style={styles.errorText}>{t('Message failed to send')}</Text>
       </View>
@@ -131,7 +131,10 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
 
 const useStyles = ({ isMessageDeleted = false }: { isMessageDeleted?: boolean }) => {
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      channelPreview: { message },
+    },
   } = useTheme();
 
   return useMemo(() => {
@@ -141,12 +144,7 @@ const useStyles = ({ isMessageDeleted = false }: { isMessageDeleted?: boolean })
         alignItems: 'center',
         gap: primitives.spacingXxs,
         flexShrink: 1,
-      },
-      messagePreviewContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: primitives.spacingXxs,
-        flexShrink: 1,
+        ...message.container,
       },
       subtitle: {
         color: isMessageDeleted ? semantics.textTertiary : semantics.textSecondary,
@@ -154,12 +152,16 @@ const useStyles = ({ isMessageDeleted = false }: { isMessageDeleted?: boolean })
         fontWeight: primitives.typographyFontWeightRegular,
         includeFontPadding: false,
         lineHeight: primitives.typographyLineHeightNormal,
+        flexShrink: 1,
+        ...message.subtitle,
       },
       draftText: {
         color: semantics.accentPrimary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        includeFontPadding: false,
+        ...message.draftText,
       },
       errorText: {
         color: semantics.accentError,
@@ -167,7 +169,8 @@ const useStyles = ({ isMessageDeleted = false }: { isMessageDeleted?: boolean })
         fontWeight: primitives.typographyFontWeightRegular,
         includeFontPadding: false,
         lineHeight: primitives.typographyLineHeightNormal,
+        ...message.errorText,
       },
     });
-  }, [semantics, isMessageDeleted]);
+  }, [semantics, isMessageDeleted, message]);
 };
