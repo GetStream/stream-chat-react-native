@@ -596,8 +596,6 @@ export type Theme = {
         onlyEmojiMarkdown: MarkdownStyle;
       };
       wrapper: ViewStyle;
-      receiverMessageBackgroundColor?: ColorValue;
-      senderMessageBackgroundColor?: ColorValue;
       timestampText?: TextStyle;
     };
     deleted: {

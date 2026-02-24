@@ -120,16 +120,12 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
 
   const {
     theme: {
-      colors: { blue_alice, grey_gainsboro, light_blue, light_gray, transparent },
+      semantics,
+      colors: { blue_alice, grey_gainsboro, transparent },
       messageSimple: {
         container,
         repliesContainer,
-        content: {
-          container: contentContainer,
-          errorContainer,
-          receiverMessageBackgroundColor,
-          senderMessageBackgroundColor,
-        },
+        content: { container: contentContainer, errorContainer },
         headerWrapper,
         lastMessageContainer,
         messageGroupedSingleOrBottomContainer,
@@ -168,7 +164,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
     }
   }
 
-  let backgroundColor = senderMessageBackgroundColor ?? light_blue;
+  let backgroundColor = semantics.chatBgOutgoing;
   if (onlyEmojis && !message.quoted_message) {
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
@@ -178,7 +174,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
       backgroundColor = blue_alice;
     }
   } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = receiverMessageBackgroundColor ?? light_gray;
+    backgroundColor = semantics.chatBgIncoming;
   }
 
   const onSwipeActionHandler = useStableCallback(() => {
