@@ -34,7 +34,7 @@ import type { MessageContextValue } from '../../../../contexts/messageContext/Me
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 
 import { primitives } from '../../../../theme';
-import { escapeRegExp } from '../../../../utils/utils';
+import { escapeRegExp, hasOnlyEmojis } from '../../../../utils/utils';
 
 type ReactNodeOutput = NodeOutput<React.ReactNode>;
 type ReactOutput = Output<React.ReactNode>;
@@ -125,14 +125,14 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
   paragraph: {
     marginBottom: 8,
-    fontSize: primitives.typographyFontSizeMd,
-    lineHeight: primitives.typographyLineHeightNormal,
+    // fontSize: primitives.typographyFontSizeMd,
+    // lineHeight: primitives.typographyLineHeightNormal,
     marginTop: 8,
   },
   paragraphCenter: {
     marginBottom: 8,
-    fontSize: primitives.typographyFontSizeMd,
-    lineHeight: primitives.typographyLineHeightNormal,
+    // fontSize: primitives.typographyFontSizeMd,
+    // lineHeight: primitives.typographyLineHeightNormal,
     marginTop: 8,
   },
   paragraphWithImage: {
@@ -279,7 +279,9 @@ export const renderText = (params: RenderTextParams) => {
     },
     text: {
       fontSize: primitives.typographyFontSizeMd,
-      lineHeight: primitives.typographyLineHeightNormal,
+      ...(markdownText && hasOnlyEmojis(markdownText)
+        ? {}
+        : { lineHeight: primitives.typographyLineHeightNormal }),
       ...defaultMarkdownStyles.text,
       color: colors.black,
       ...markdownStyles?.text,

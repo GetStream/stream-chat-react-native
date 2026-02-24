@@ -340,18 +340,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const channelResyncScrollSet = useRef<boolean>(true);
   const { theme } = useTheme();
-
-  const {
-    colors: { white_snow },
-    messageList: {
-      container,
-      contentContainer,
-      listContainer,
-      scrollToBottomButtonContainer,
-      stickyHeaderContainer,
-      unreadMessagesNotificationContainer,
-    },
-  } = theme;
+  const styles = useStyles();
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
@@ -979,20 +968,19 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }
 
   const flatListStyle = useMemo(
-    () => [styles.listContainer, listContainer, additionalFlashListProps?.style],
-    [additionalFlashListProps?.style, listContainer],
+    () => [styles.listContainer, additionalFlashListProps?.style],
+    [additionalFlashListProps?.style, styles.listContainer],
   );
 
   const flatListContentContainerStyle = useMemo(
     () => [
       styles.contentContainer,
       { paddingBottom: messageInputFloating ? messageInputHeight : 0 },
-      contentContainer,
       additionalFlashListProps?.contentContainerStyle,
     ],
     [
       additionalFlashListProps?.contentContainerStyle,
-      contentContainer,
+      styles.contentContainer,
       messageInputFloating,
       messageInputHeight,
     ],
@@ -1016,7 +1004,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   if (loading) {
     return (
-      <View style={[styles.container, { backgroundColor: white_snow }, container]}>
+      <View style={styles.container}>
         <LoadingIndicator listType='message' />
       </View>
     );
@@ -1029,13 +1017,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }
 
   return (
-    <View
-      onLayout={onLayout}
-      style={[styles.container, { backgroundColor: white_snow }, container]}
-      testID='message-flat-list-wrapper'
-    >
+    <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
       {processedMessageList.length === 0 && !thread ? (
-        <View style={[styles.flex, { backgroundColor: white_snow }]} testID='empty-state'>
+        <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
       ) : (
@@ -1071,7 +1055,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           />
         </MessageListItemProvider>
       )}
-      <View style={[styles.stickyHeaderContainer, stickyHeaderContainer]}>
+      <View style={styles.stickyHeaderContainer}>
         {messageListLengthAfterUpdate && StickyHeader ? (
           <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
         ) : null}
@@ -1086,7 +1070,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         style={[
           styles.scrollToBottomButtonContainer,
           { bottom: messageInputFloating ? messageInputHeight : 16 },
-          scrollToBottomButtonContainer,
         ]}
       >
         <ScrollToBottomButton
@@ -1097,9 +1080,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       </Animated.View>
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
-        <View
-          style={[styles.unreadMessagesNotificationContainer, unreadMessagesNotificationContainer]}
-        >
+        <View style={styles.unreadMessagesNotificationContainer}>
           <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
         </View>
       ) : null}
@@ -1219,38 +1200,75 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-  },
-  contentContainer: {
-    /**
-     * paddingBottom is set to 4 to account for the default date
-     * header and inline indicator alignment. The top margin is 8
-     * on the header but 4 on the inline date, this adjusts the spacing
-     * to allow the "first" inline date to align with the date header.
-     */
-    paddingBottom: 4,
-  },
-  flex: { flex: 1 },
-  listContainer: {
-    flex: 1,
-    width: '100%',
-  },
-  scrollToBottomButtonContainer: {
-    position: 'absolute',
-    right: 16,
-  },
-  stickyHeaderContainer: {
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: primitives.spacingXs,
-  },
-  unreadMessagesNotificationContainer: {
-    alignSelf: 'center',
-    position: 'absolute',
-    top: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      messageList: {
+        container,
+        contentContainer,
+        listContainer,
+        stickyHeaderContainer,
+        scrollToBottomButtonContainer,
+        unreadMessagesNotificationContainer,
+      },
+    },
+  } = useTheme();
+
+  const { backgroundCoreApp } = semantics;
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          width: '100%',
+          backgroundColor: backgroundCoreApp,
+          ...container,
+        },
+        contentContainer: {
+          /**
+           * paddingBottom is set to 4 to account for the default date
+           * header and inline indicator alignment. The top margin is 8
+           * on the header but 4 on the inline date, this adjusts the spacing
+           * to allow the "first" inline date to align with the date header.
+           */
+          paddingBottom: 4,
+          ...contentContainer,
+        },
+        flex: { flex: 1, backgroundColor: backgroundCoreApp },
+        listContainer: {
+          flex: 1,
+          width: '100%',
+          ...listContainer,
+        },
+        scrollToBottomButtonContainer: {
+          position: 'absolute',
+          right: 16,
+          ...scrollToBottomButtonContainer,
+        },
+        stickyHeaderContainer: {
+          left: 0,
+          position: 'absolute',
+          right: 0,
+          top: primitives.spacingXs,
+          ...stickyHeaderContainer,
+        },
+        unreadMessagesNotificationContainer: {
+          alignSelf: 'center',
+          position: 'absolute',
+          top: 8,
+          ...unreadMessagesNotificationContainer,
+        },
+      }),
+    [
+      backgroundCoreApp,
+      container,
+      contentContainer,
+      listContainer,
+      scrollToBottomButtonContainer,
+      stickyHeaderContainer,
+      unreadMessagesNotificationContainer,
+    ],
+  );
+};

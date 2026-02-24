@@ -61,16 +61,6 @@ const getChatStyle = (colorScheme: ColorSchemeName): DeepPartial<Theme> => ({
           white_smoke: '#F2F2F2',
           white_snow: '#FCFCFC',
         },
-  ...(colorScheme === 'dark'
-    ? {
-        messageSimple: {
-          content: {
-            receiverMessageBackgroundColor: '#2D2F2F',
-            senderMessageBackgroundColor: '#101418',
-          },
-        },
-      }
-    : {}),
 });
 
 export const useStreamChatTheme = () => {
