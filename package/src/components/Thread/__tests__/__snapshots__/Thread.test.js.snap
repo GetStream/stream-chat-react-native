@@ -614,7 +614,9 @@ exports[`Thread should match thread snapshot 1`] = `
                                                   "alignItems": "flex-start",
                                                   "flexDirection": "row",
                                                   "flexWrap": "wrap",
+                                                  "fontSize": 15,
                                                   "justifyContent": "flex-start",
+                                                  "lineHeight": 20,
                                                   "marginBottom": 8,
                                                   "marginTop": 8,
                                                 }
@@ -624,6 +626,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                                 style={
                                                   {
                                                     "color": "#000000",
+                                                    "fontSize": 15,
+                                                    "lineHeight": 20,
                                                   }
                                                 }
                                               >
@@ -970,7 +974,9 @@ exports[`Thread should match thread snapshot 1`] = `
                                                   "alignItems": "flex-start",
                                                   "flexDirection": "row",
                                                   "flexWrap": "wrap",
+                                                  "fontSize": 15,
                                                   "justifyContent": "flex-start",
+                                                  "lineHeight": 20,
                                                   "marginBottom": 8,
                                                   "marginTop": 8,
                                                 }
@@ -980,6 +986,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                                 style={
                                                   {
                                                     "color": "#000000",
+                                                    "fontSize": 15,
+                                                    "lineHeight": 20,
                                                   }
                                                 }
                                               >
@@ -1351,7 +1359,9 @@ exports[`Thread should match thread snapshot 1`] = `
                                                   "alignItems": "flex-start",
                                                   "flexDirection": "row",
                                                   "flexWrap": "wrap",
+                                                  "fontSize": 15,
                                                   "justifyContent": "flex-start",
+                                                  "lineHeight": 20,
                                                   "marginBottom": 8,
                                                   "marginTop": 8,
                                                 }
@@ -1361,6 +1371,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                                 style={
                                                   {
                                                     "color": "#000000",
+                                                    "fontSize": 15,
+                                                    "lineHeight": 20,
                                                   }
                                                 }
                                               >
@@ -1713,7 +1725,9 @@ exports[`Thread should match thread snapshot 1`] = `
                                                   "alignItems": "flex-start",
                                                   "flexDirection": "row",
                                                   "flexWrap": "wrap",
+                                                  "fontSize": 15,
                                                   "justifyContent": "flex-start",
+                                                  "lineHeight": 20,
                                                   "marginBottom": 8,
                                                   "marginTop": 8,
                                                 }
@@ -1723,6 +1737,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                                 style={
                                                   {
                                                     "color": "#000000",
+                                                    "fontSize": 15,
+                                                    "lineHeight": 20,
                                                   }
                                                 }
                                               >
