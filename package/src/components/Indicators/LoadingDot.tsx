@@ -19,14 +19,14 @@ type Props = {
 };
 
 export const LoadingDot = (props: Props) => {
-  const { diameter = 4, duration = 1500, offset = 0, style } = props;
+  const { diameter = 5, duration = 1500, offset = 0, style } = props;
   const halfDuration = duration / 2;
   const startingOffset = halfDuration - offset;
 
   const {
     theme: {
-      colors: { black },
       loadingDots: { loadingDot },
+      semantics,
     },
   } = useTheme();
   const opacity = useSharedValue(startingOffset / halfDuration);
@@ -56,7 +56,7 @@ export const LoadingDot = (props: Props) => {
     <Animated.View
       style={[
         {
-          backgroundColor: black,
+          backgroundColor: semantics.chatBgTypingIndicator,
           borderRadius: diameter / 2,
           height: diameter,
           width: diameter,

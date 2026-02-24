@@ -148,6 +148,14 @@
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Cevap",
   "{{ user }} is typing": "{{ user }} yazıyor",
+  "You voted: {{ option }}": "Oy verdiniz: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} ve {{ secondUser }} yazıyor",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }} kişi yazıyor",
+  "Typing": "Yazıyor",
+  "No messages yet": "Henüz mesaj yok",
+  "Message failed to send": "Mesaj gönderimi başarısız",
+  "and {{ count }} others": "{{ count }} kişi daha",
+  "{{ user }} voted: {{ option }}": "{{ user }} oy verdi: {{ option }}",
   "{{count}} votes_many": "{{count}} oy",
   "{{count}} votes_one": "{{count}} oy",
   "{{count}} votes_other": "{{count}} oy",
@@ -163,5 +171,6 @@
   "{{count}} Reactions_many": "{{count}} tepki",
   "{{count}} Reactions_one": "{{count}} tepki",
   "{{count}} Reactions_other": "{{count}} tepki",
-  "Tap to remove": "Kaldırmak için dokunun"
+  "Tap to remove": "Kaldırmak için dokunun",
+  "Draft": "Taslak"
 }

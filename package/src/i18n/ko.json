@@ -148,6 +148,14 @@
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} 답글",
   "{{ user }} is typing": "{{ user }} 타이핑 중",
+  "You voted: {{ option }}": "당신이 투표했습니다: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }}와 {{ secondUser }}가 타이핑 중입니다",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }}명이 타이핑 중입니다",
+  "Typing": "타이핑 중",
+  "No messages yet": "아직 메시지가 없습니다",
+  "Message failed to send": "메시지 전송 실패",
+  "and {{ count }} others": "{{ count }}명 이상",
+  "{{ user }} voted: {{ option }}": "{{ user }} 투표했습니다: {{ option }}",
   "{{count}} votes_many": "{{count}} 표",
   "{{count}} votes_one": "{{count}} 표",
   "{{count}} votes_other": "{{count}} 표",
@@ -163,5 +171,6 @@
   "{{count}} Reactions_many": "{{count}}개의 반응",
   "{{count}} Reactions_one": "{{count}}개의 반응",
   "{{count}} Reactions_other": "{{count}}개의 반응",
-  "Tap to remove": "탭하여 제거"
+  "Tap to remove": "탭하여 제거",
+  "Draft": "초안"
 }

@@ -34,7 +34,7 @@ export const ImageOverlaySelectedComponent = ({ index }: { index: number }) => {
         check,
       ]}
     >
-      {index !== -1 ? <BadgeNotification count={index + 1} size='lg' type='primary' /> : null}
+      {index !== -1 ? <BadgeNotification count={index + 1} size='sm' type='primary' /> : null}
     </View>
   );
 };

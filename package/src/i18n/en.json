@@ -148,6 +148,14 @@
   "{{ index }} of {{ photoLength }}": "{{ index }} of {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }} Replies",
   "{{ user }} is typing": "{{ user }} is typing",
+  "You voted: {{ option }}": "You voted: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} and {{ secondUser }} are typing",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }} people are typing",
+  "Typing": "Typing",
+  "No messages yet": "No messages yet",
+  "Message failed to send": "Message failed to send",
+  "and {{ count }} others": "and {{ count }} others",
+  "{{ user }} voted: {{ option }}": "{{ user }} voted: {{ option }}",
   "{{count}} votes_many": "{{count}} votes",
   "{{count}} votes_one": "{{count}} vote",
   "{{count}} votes_other": "{{count}} votes",
@@ -163,5 +171,6 @@
   "{{count}} Reactions_many": "{{count}} Reactions",
   "{{count}} Reactions_one": "{{count}} Reaction",
   "{{count}} Reactions_other": "{{count}} Reactions",
-  "Tap to remove": "Tap to remove"
+  "Tap to remove": "Tap to remove",
+  "Draft": "Draft"
 }

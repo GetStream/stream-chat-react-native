@@ -6,50 +6,60 @@ import { primitives } from '../../../theme';
 
 export type BadgeCountProps = {
   count: string | number;
-  size: 'sm' | 'xs' | 'md';
+  size: 'sm' | 'md' | 'lg';
 };
 
 const sizes = {
-  md: {
+  lg: {
     minWidth: 32,
     height: 32,
   },
-  sm: {
+  md: {
     minWidth: 24,
     height: 24,
   },
-  xs: {
+  sm: {
     minWidth: 20,
     height: 20,
   },
 };
 
 const textStyles = {
+  sm: {
+    fontSize: primitives.typographyFontSizeXxs,
+    fontWeight: primitives.typographyFontWeightBold,
+    lineHeight: primitives.typographyLineHeightTight,
+  },
   md: {
     fontSize: primitives.typographyFontSizeSm,
     fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: 14,
+    lineHeight: primitives.typographyLineHeightNormal,
   },
-  sm: {
+  lg: {
     fontSize: primitives.typographyFontSizeSm,
     fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: 14,
+    lineHeight: primitives.typographyLineHeightNormal,
   },
-  xs: {
-    fontSize: primitives.typographyFontSizeXxs,
-    fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: 10,
-  },
+};
+
+const paddingHorizontal: Record<BadgeCountProps['size'], number> = {
+  sm: primitives.spacingXxs,
+  md: primitives.spacingXs,
+  lg: primitives.spacingXs,
 };
 
 export const BadgeCount = (props: BadgeCountProps) => {
   const { count, size = 'sm' } = props;
   const styles = useStyles();
-  const paddingHorizontal = size === 'xs' ? primitives.spacingXxs : primitives.spacingXs;
 
   return (
     <View
-      style={[styles.container, sizes[size], primitives.lightElevation2, { paddingHorizontal }]}
+      style={[
+        styles.container,
+        sizes[size],
+        primitives.lightElevation2,
+        { paddingHorizontal: paddingHorizontal[size] },
+      ]}
     >
       <Text style={[styles.text, textStyles[size]]}>{count}</Text>
     </View>

@@ -1,8 +1,8 @@
 import { type ColorValue, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
-import type { CircleProps, StopProps } from 'react-native-svg';
+import type { CircleProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
-import { semantics } from '../../../theme';
+import { primitives, semantics } from '../../../theme';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 // TODO: Handle this better later depending on the size of the avatar used
@@ -164,35 +164,37 @@ export type Theme = {
   };
   channelListSkeleton: {
     animationTime: number;
-    background: ViewStyle;
     container: ViewStyle;
-    gradientStart: StopProps;
-    gradientStop: StopProps;
     height: number;
-    maskFillColor?: ColorValue;
   };
   colors: typeof Colors;
   channelPreview: {
-    avatar: {
-      size: number;
-    };
-    checkAllIcon: IconProps;
-    checkIcon: IconProps;
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
-    mutedStatus: {
-      height: number;
-      iconStyle: ViewStyle;
-      width: number;
-    };
+    mutedStatus: IconProps;
     message: {
       container: ViewStyle;
     };
-    row: ViewStyle;
+    messageDeliveryStatus: {
+      container: ViewStyle;
+      text: TextStyle;
+      checkAllIcon: IconProps;
+      checkIcon: IconProps;
+      timeIcon: IconProps;
+    };
+    lowerRow: ViewStyle;
     title: TextStyle;
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
+    typingIndicatorPreview: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
+    upperRow: ViewStyle;
+    statusContainer: ViewStyle;
+    titleContainer: ViewStyle;
+    wrapper: ViewStyle;
   };
   dateHeader: {
     container: ViewStyle;
@@ -1001,44 +1003,37 @@ export const defaultTheme: Theme = {
     flatListContent: {},
   },
   channelListSkeleton: {
-    animationTime: 1800, // in milliseconds
-    background: {},
+    animationTime: 1500, // in milliseconds
     container: {},
-    gradientStart: {
-      stopOpacity: 0,
-    },
-    gradientStop: {
-      stopOpacity: 0.5,
-    },
-    height: 64,
+    height: 80,
   },
   channelPreview: {
-    avatar: {
-      size: 40,
-    },
-    checkAllIcon: {
-      height: DEFAULT_STATUS_ICON_SIZE,
-      width: DEFAULT_STATUS_ICON_SIZE,
-    },
-    checkIcon: {
-      height: DEFAULT_STATUS_ICON_SIZE,
-      width: DEFAULT_STATUS_ICON_SIZE,
-    },
     container: {},
     contentContainer: {},
     date: {},
     message: {
       container: {},
     },
-    mutedStatus: {
-      height: 20,
-      iconStyle: {},
-      width: 20,
+    messageDeliveryStatus: {
+      container: {},
+      text: {},
+      checkAllIcon: {},
+      checkIcon: {},
+      timeIcon: {},
     },
-    row: {},
+    mutedStatus: {},
+    lowerRow: {},
     title: {},
     unreadContainer: {},
     unreadText: {},
+    typingIndicatorPreview: {
+      container: {},
+      text: {},
+    },
+    upperRow: {},
+    statusContainer: {},
+    titleContainer: {},
+    wrapper: {},
   },
   colors: Colors,
   dateHeader: {
@@ -1109,7 +1104,7 @@ export const defaultTheme: Theme = {
   loadingDots: {
     container: {},
     loadingDot: {},
-    spacing: 4,
+    spacing: primitives.spacingXxs,
   },
   loadingErrorIndicator: {
     container: {},

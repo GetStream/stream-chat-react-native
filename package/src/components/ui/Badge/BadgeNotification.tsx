@@ -7,40 +7,28 @@ import { primitives } from '../../../theme';
 export type BadgeNotificationProps = {
   type: 'primary' | 'error' | 'neutral';
   count: number;
-  size: 'sm' | 'md' | 'lg';
+  size: 'sm' | 'xs';
   testID?: string;
 };
 
 const sizes = {
-  lg: {
-    height: 24,
-    minWidth: 24,
-    borderWidth: 2,
-  },
-  md: {
+  sm: {
     height: 20,
     minWidth: 20,
-    borderWidth: 2,
   },
-  sm: {
+  xs: {
     height: 16,
     minWidth: 16,
-    borderWidth: 1,
   },
 };
 
 const textStyles = {
-  lg: {
-    fontSize: primitives.typographyFontSizeSm,
-    fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: 14,
-  },
-  md: {
-    fontSize: primitives.typographyFontSizeSm,
-    fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: 14,
-  },
   sm: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: primitives.typographyFontWeightBold,
+    lineHeight: 14,
+  },
+  xs: {
     fontSize: primitives.typographyFontSizeXxs,
     fontWeight: primitives.typographyFontWeightBold,
     lineHeight: 10,
@@ -48,7 +36,7 @@ const textStyles = {
 };
 
 export const BadgeNotification = (props: BadgeNotificationProps) => {
-  const { type, count, size = 'md', testID } = props;
+  const { type, count, size = 'sm', testID } = props;
   const styles = useStyles();
   const {
     theme: { semantics },
@@ -61,10 +49,12 @@ export const BadgeNotification = (props: BadgeNotificationProps) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors[type] }, sizes[size]]}>
-      <Text style={[styles.text, textStyles[size]]} testID={testID}>
-        {count}
-      </Text>
+    <View style={styles.border}>
+      <View style={[styles.container, { backgroundColor: colors[type] }, sizes[size]]}>
+        <Text style={[styles.text, textStyles[size]]} testID={testID}>
+          {count}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -79,9 +69,13 @@ const useStyles = () => {
       StyleSheet.create({
         container: {
           paddingHorizontal: primitives.spacingXxs,
-          borderColor: semantics.badgeBorder,
           borderRadius: primitives.radiusMax,
           justifyContent: 'center',
+        },
+        border: {
+          borderWidth: 2,
+          borderColor: semantics.badgeBorder,
+          borderRadius: primitives.radiusMax,
         },
         text: {
           color: semantics.badgeTextOnAccent,

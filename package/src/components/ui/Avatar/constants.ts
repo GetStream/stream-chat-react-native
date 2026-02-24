@@ -2,9 +2,18 @@ import { TextStyle } from 'react-native';
 
 import { UserAvatarProps } from './UserAvatar';
 
+import { primitives } from '../../../theme';
 import { OnlineIndicatorProps } from '../Badge';
 
 const avatarSizes = {
+  '2xl': {
+    height: 64,
+    width: 64,
+  },
+  xl: {
+    height: 48,
+    width: 48,
+  },
   lg: {
     height: 40,
     width: 40,
@@ -24,10 +33,12 @@ const avatarSizes = {
 };
 
 const indicatorSizes: Record<UserAvatarProps['size'], OnlineIndicatorProps['size']> = {
-  xs: 'sm',
-  sm: 'sm',
-  md: 'md',
+  '2xl': 'xl',
+  xl: 'xl',
   lg: 'lg',
+  md: 'md',
+  sm: 'sm',
+  xs: 'sm',
 };
 
 const iconSizes: Record<UserAvatarProps['size'], number> = {
@@ -35,16 +46,48 @@ const iconSizes: Record<UserAvatarProps['size'], number> = {
   sm: 12,
   md: 16,
   lg: 20,
+  xl: 24,
+  '2xl': 32,
 };
 
 const fontSizes: Record<
   UserAvatarProps['size'],
-  { fontSize: number; lineHeight: number; fontWeight: TextStyle['fontWeight'] }
+  {
+    fontSize: TextStyle['fontSize'];
+    lineHeight: TextStyle['lineHeight'];
+    fontWeight: TextStyle['fontWeight'];
+  }
 > = {
-  xs: { fontSize: 12, lineHeight: 16, fontWeight: '600' },
-  sm: { fontSize: 13, lineHeight: 16, fontWeight: '600' },
-  md: { fontSize: 13, lineHeight: 16, fontWeight: '600' },
-  lg: { fontSize: 15, lineHeight: 20, fontWeight: '600' },
+  xs: {
+    fontSize: primitives.typographyFontSizeXs,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightTight,
+  },
+  sm: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+  md: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+  lg: {
+    fontSize: primitives.typographyFontSizeMd,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+  xl: {
+    fontSize: primitives.typographyFontSizeLg,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightRelaxed,
+  },
+  '2xl': {
+    fontSize: primitives.typographyFontSizeXl,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightRelaxed,
+  },
 };
 
 const numberOfInitials: Record<UserAvatarProps['size'], number> = {
@@ -52,6 +95,8 @@ const numberOfInitials: Record<UserAvatarProps['size'], number> = {
   sm: 1,
   md: 2,
   lg: 2,
+  xl: 2,
+  '2xl': 2,
 };
 
 export { indicatorSizes, iconSizes, fontSizes, numberOfInitials, avatarSizes };

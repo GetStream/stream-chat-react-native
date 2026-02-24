@@ -430,6 +430,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "borderColor": "rgba(0, 0, 0, 0.1)",
                                       "borderWidth": 1,
                                     },
+                                    undefined,
                                   ]
                                 }
                                 testID="avatar-image"
@@ -785,6 +786,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "borderColor": "rgba(0, 0, 0, 0.1)",
                                       "borderWidth": 1,
                                     },
+                                    undefined,
                                   ]
                                 }
                                 testID="avatar-image"
@@ -1165,6 +1167,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "borderColor": "rgba(0, 0, 0, 0.1)",
                                       "borderWidth": 1,
                                     },
+                                    undefined,
                                   ]
                                 }
                                 testID="avatar-image"
@@ -1526,6 +1529,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "borderColor": "rgba(0, 0, 0, 0.1)",
                                       "borderWidth": 1,
                                     },
+                                    undefined,
                                   ]
                                 }
                                 testID="avatar-image"

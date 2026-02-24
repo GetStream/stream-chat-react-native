@@ -5,8 +5,6 @@ import type { Channel, Event, LocalMessage, MessageResponse, StreamChat } from '
 
 import { useIsChannelMuted } from './useIsChannelMuted';
 
-import { useLatestMessagePreview } from './useLatestMessagePreview';
-
 import { useChannelsContext } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 
@@ -16,7 +14,7 @@ const setLastMessageThrottleOptions = { leading: true, trailing: true };
 const refreshUnreadCountThrottleTimeout = 400;
 const refreshUnreadCountThrottleOptions = setLastMessageThrottleOptions;
 
-type LastMessageType = LocalMessage | MessageResponse;
+export type LastMessageType = LocalMessage | MessageResponse;
 
 export const useChannelPreviewData = (
   channel: Channel,
@@ -172,11 +170,5 @@ export const useChannelPreviewData = (
     return () => listeners.forEach((l) => l.unsubscribe());
   }, [channel, refreshUnreadCount, forceUpdate, channelListForceUpdate, setLastMessage]);
 
-  const latestMessagePreview = useLatestMessagePreview(
-    channel,
-    forceUpdate,
-    lastMessage as LocalMessage,
-  );
-
-  return { latestMessagePreview, muted, unread };
+  return { lastMessage, muted, unread };
 };

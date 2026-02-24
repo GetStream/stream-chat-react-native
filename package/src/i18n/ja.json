@@ -148,6 +148,14 @@
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Replies": "{{ replyCount }}件の返信",
   "{{ user }} is typing": "{{ user }}はタイピング中",
+  "You voted: {{ option }}": "あなたが投票しました: {{ option }}",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }}と{{ secondUser }}がタイピングしています",
+  "{{ numberOfUsers }} people are typing": "{{ numberOfUsers }}人がタイピングしています",
+  "Typing": "タイピング中",
+  "No messages yet": "まだメッセージがありません",
+  "Message failed to send": "メッセージを送信できませんでした",
+  "and {{ count }} others": "{{ count }}人がタイピングしています",
+  "{{ user }} voted: {{ option }}": "{{ user }} が投票しました: {{ option }}",
   "{{count}} votes_many": "{{count}}票",
   "{{count}} votes_one": "{{count}} 票",
   "{{count}} votes_other": "{{count}} 票",
@@ -163,5 +171,6 @@
   "{{count}} Reactions_many": "{{count}}件のリアクション",
   "{{count}} Reactions_one": "{{count}}件のリアクション",
   "{{count}} Reactions_other": "{{count}}件のリアクション",
-  "Tap to remove": "タップして削除"
+  "Tap to remove": "タップして削除",
+  "Draft": "下書き"
 }

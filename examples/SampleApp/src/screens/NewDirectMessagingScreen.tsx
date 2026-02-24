@@ -259,7 +259,11 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           )}
         </View>
         <View style={styles.searchContainerRight}>
-          {selectedUsers.length === 0 ? <User pathFill={grey} /> : <UserAdd pathFill={grey} />}
+          {selectedUsers.length === 0 ? (
+            <User pathFill={grey} />
+          ) : (
+            <UserAdd pathFill={grey} height={20} width={20} />
+          )}
         </View>
       </TouchableOpacity>
       {focusOnSearchInput && !searchText && selectedUsers.length === 0 && (

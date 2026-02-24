@@ -27,7 +27,7 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import type { ChannelListEventListenerOptions } from '../../types/types';
-import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
+import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 
@@ -55,6 +55,7 @@ export type ChannelListProps = Partial<
     | 'Skeleton'
     | 'maxUnreadCount'
     | 'numberOfSkeletons'
+    | 'mutedStatusPosition'
   >
 > & {
   /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
@@ -261,7 +262,7 @@ export const ChannelList = (props: ChannelListProps) => {
     loadMoreThreshold = 0.1,
     lockChannelOrder = false,
     maxUnreadCount = 255,
-    numberOfSkeletons = 6,
+    numberOfSkeletons = 8,
     onAddedToChannel,
     onChannelDeleted,
     onChannelHidden,
@@ -274,7 +275,7 @@ export const ChannelList = (props: ChannelListProps) => {
     onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
-    Preview = ChannelPreviewMessenger,
+    Preview = ChannelPreview,
     PreviewAvatar,
     PreviewMessage,
     PreviewMutedStatus,
@@ -285,6 +286,7 @@ export const ChannelList = (props: ChannelListProps) => {
     Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
     queryChannelsOverride,
+    mutedStatusPosition = 'inlineTitle',
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -416,6 +418,7 @@ export const ChannelList = (props: ChannelListProps) => {
       }
     },
     Skeleton,
+    mutedStatusPosition,
   });
 
   return (

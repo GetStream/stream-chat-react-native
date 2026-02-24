@@ -296,7 +296,7 @@ export const useMessageActions = ({
       }
     },
     actionType: 'muteUser',
-    icon: <Mute pathFill={semantics.textSecondary} height={20} width={20} />,
+    icon: <Mute fill={semantics.textSecondary} height={20} width={20} />,
     title: isMuted ? t('Unmute User') : t('Mute User'),
     type: 'standard',
   };
