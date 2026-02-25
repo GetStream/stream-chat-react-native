@@ -310,9 +310,10 @@ export class AudioPlayer {
 
   async seek(positionInSeconds: number) {
     if (this.previewVoiceRecording) {
-      this.position = positionInSeconds;
+      const positionInMillis = positionInSeconds * 1000;
+      this.position = positionInMillis;
       if (NativeHandlers.Audio?.seekToPlayer) {
-        NativeHandlers.Audio.seekToPlayer(positionInSeconds * 1000);
+        await NativeHandlers.Audio.seekToPlayer(positionInMillis);
       }
       return;
     }
