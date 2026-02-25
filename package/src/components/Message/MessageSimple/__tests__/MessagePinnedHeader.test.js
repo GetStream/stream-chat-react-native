@@ -9,7 +9,7 @@ import {
   generateStaticMessage,
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
-import { MessagePinnedHeader } from '../MessagePinnedHeader';
+import { MessagePinnedHeader } from '../Headers/MessagePinnedHeader';
 
 afterEach(cleanup);
 

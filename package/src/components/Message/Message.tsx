@@ -821,7 +821,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       >
         <View
           style={[
-            { marginTop: 2, paddingHorizontal: screenPadding },
+            { paddingHorizontal: screenPadding },
             wrapper,
             (isTargetedMessage || message.pinned) && !isMessageTypeDeleted
               ? {
@@ -969,8 +969,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
-  const groupStylesEqual =
-    prevGroupStyles.length === nextGroupStyles.length && prevGroupStyles[0] === nextGroupStyles[0];
+  const groupStylesEqual = prevGroupStyles === nextGroupStyles;
   if (!groupStylesEqual) {
     return false;
   }

@@ -423,9 +423,7 @@ const areEqual = (
     return false;
   }
 
-  const groupStylesEqual =
-    prevGroupStyles.length === nextGroupStyles.length &&
-    prevGroupStyles?.[0] === nextGroupStyles?.[0];
+  const groupStylesEqual = prevGroupStyles === nextGroupStyles;
   if (!groupStylesEqual) {
     return false;
   }

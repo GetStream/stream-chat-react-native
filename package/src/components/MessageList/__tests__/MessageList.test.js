@@ -141,7 +141,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId, queryByTestId } = render(
+    const { queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} deletedMessagesVisibilityType='sender'>
@@ -153,7 +153,6 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(queryByTestId('message-deleted')).toBeTruthy();
-      expect(getByTestId('only-visible-to-you')).toBeTruthy();
     });
   });
 

@@ -29,6 +29,7 @@ import type {
   MessagePressableHandlerPayload,
   MessageProps,
 } from '../../components/Message/Message';
+import type { MessagePinnedHeaderProps } from '../../components/Message/MessageSimple/Headers/MessagePinnedHeader';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageBlockedProps } from '../../components/Message/MessageSimple/MessageBlocked';
 import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
@@ -36,7 +37,6 @@ import type { MessageContentProps } from '../../components/Message/MessageSimple
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
 import { MessageHeaderProps } from '../../components/Message/MessageSimple/MessageHeader';
-import type { MessagePinnedHeaderProps } from '../../components/Message/MessageSimple/MessagePinnedHeader';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
