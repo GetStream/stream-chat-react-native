@@ -33,14 +33,14 @@ const INITIAL_STATE: AudioRecorderManagerState = {
 export class AudioRecorderManager {
   state: StateStore<AudioRecorderManagerState>;
   /**
-   * A boolean signifying whether we've tried to stop a recording while the
+   * A Set signifying whether we've tried to stop a recording session while the
    * startRecording method is still executing. It is useful to identify race
    * conditions where we try to cancel the recording altogether while setting
    * up the recording session finishes (which can take up to 700ms on some
    * slower devices).
    * @private
    */
-  private hasPendingStopWhileStarting = false;
+  private pendingStopRequestIds = new Set<number>();
   /**
    * A request ID for this recording session. Used to identify stale recording
    * sessions and respond adequately, avoiding race conditions.
@@ -53,8 +53,6 @@ export class AudioRecorderManager {
   }
 
   reset() {
-    this.startRequestId += 1;
-    this.hasPendingStopWhileStarting = false;
     this.state.next(INITIAL_STATE);
   }
 
@@ -82,7 +80,6 @@ export class AudioRecorderManager {
     if (isStarting || status === 'recording') {
       return true;
     }
-    this.hasPendingStopWhileStarting = false;
     const requestId = ++this.startRequestId;
     this.state.partialNext({
       duration: 0,
@@ -101,6 +98,7 @@ export class AudioRecorderManager {
         this.onRecordingStatusUpdate,
       );
     } catch {
+      this.pendingStopRequestIds.delete(requestId);
       if (requestId === this.startRequestId) {
         this.reset();
       }
@@ -108,14 +106,24 @@ export class AudioRecorderManager {
     }
 
     const { accessGranted, recording } = recordingInfo;
-    if (this.hasPendingStopWhileStarting || requestId !== this.startRequestId) {
-      try {
-        await NativeHandlers.Audio.stopRecording();
-      } catch {
-        // If stopRecording fails, the native implementation has already stopped the
-        // recorder and so we do nothing.
+    if (this.pendingStopRequestIds.has(requestId)) {
+      if (accessGranted) {
+        try {
+          await NativeHandlers.Audio.stopRecording();
+        } catch {
+          // If stopRecording fails, the native implementation has already stopped the
+          // recorder and so we do nothing.
+        }
       }
-      this.reset();
+      this.pendingStopRequestIds.delete(requestId);
+      if (requestId === this.startRequestId) {
+        this.reset();
+      }
+      return accessGranted;
+    }
+
+    if (requestId !== this.startRequestId) {
+      // Stale start completion, ignore to avoid affecting newer attempts
       return accessGranted;
     }
 
@@ -137,7 +145,8 @@ export class AudioRecorderManager {
     }
     const { isStarting, status } = this.state.getLatestValue();
     if (isStarting) {
-      this.hasPendingStopWhileStarting = true;
+      this.pendingStopRequestIds.add(this.startRequestId);
+      this.reset();
       return;
     }
     if (status !== 'recording') {

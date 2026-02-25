@@ -157,6 +157,8 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     }
     if (status === 'recording') {
       uploadVoiceRecording(asyncMessagesMultiSendEnabled);
+    } else {
+      resetAudioRecording();
     }
   });
 
