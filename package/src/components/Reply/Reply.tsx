@@ -160,11 +160,13 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
     isMyMessage: prevIsMyMessage,
     mode: prevMode,
     quotedMessage: prevQuotedMessage,
+    onDismiss: prevOnDismiss,
   } = prevProps;
   const {
     isMyMessage: nextIsMyMessage,
     mode: nextMode,
     quotedMessage: nextQuotedMessage,
+    onDismiss: nextOnDismiss,
   } = nextProps;
 
   const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
@@ -178,10 +180,17 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
     return false;
   }
 
+  const onDismissEqual = prevOnDismiss === nextOnDismiss;
+
+  if (!onDismissEqual) {
+    return false;
+  }
+
   const messageEqual =
     prevQuotedMessage &&
     nextQuotedMessage &&
     checkQuotedMessageEquality(prevQuotedMessage, nextQuotedMessage);
+
   if (!messageEqual) {
     return false;
   }
