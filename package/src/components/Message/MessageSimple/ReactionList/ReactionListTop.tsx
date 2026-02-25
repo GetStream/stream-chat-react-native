@@ -1,6 +1,11 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { ReactionListClustered } from './ReactionListClustered';
+
+import { ReactionListCountItem, ReactionListItem } from './ReactionListItem';
+
+import { useTheme } from '../../../../contexts';
 import {
   MessageContextValue,
   useMessageContext,
@@ -9,74 +14,8 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../../../contexts/messagesContext/MessagesContext';
-import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 
-import { Unknown } from '../../../../icons/Unknown';
-
-import type { IconProps } from '../../../../icons/utils/base';
-
-import type { ReactionData } from '../../../../utils/utils';
-import { ReactionSummary } from '../../hooks/useProcessReactions';
-
-type Props = Pick<IconProps, 'pathFill' | 'style'> & {
-  size: number;
-  type: string;
-  supportedReactions?: ReactionData[];
-};
-
-const Icon = ({ pathFill, size, style, supportedReactions, type }: Props) => {
-  const ReactionIcon =
-    supportedReactions?.find((reaction) => reaction.type === type)?.Icon || Unknown;
-
-  return (
-    <View>
-      <ReactionIcon height={size} pathFill={pathFill} style={style} width={size} />
-    </View>
-  );
-};
-
-export type ReactionListTopItemProps = Partial<Pick<MessageContextValue, 'reactions'>> &
-  Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
-    index: number;
-    reaction: ReactionSummary;
-  };
-
-export const ReactionListTopItem = (props: ReactionListTopItemProps) => {
-  const { index, reaction, reactions, supportedReactions } = props;
-  const {
-    theme: {
-      messageSimple: {
-        reactionListTop: {
-          item: { container, icon, iconFillColor, iconUnFillColor, reactionSize },
-        },
-      },
-    },
-  } = useTheme();
-
-  const reactionsLength = reactions ? reactions.length : 0;
-
-  return (
-    <View
-      key={reaction.type}
-      style={[
-        styles.reactionContainer,
-        {
-          marginRight: index < reactionsLength - 1 ? 5 : 0,
-        },
-        container,
-      ]}
-    >
-      <Icon
-        key={reaction.type}
-        pathFill={reaction.own ? iconFillColor : iconUnFillColor}
-        size={reactionSize / 2}
-        style={icon}
-        supportedReactions={supportedReactions}
-        type={reaction.type}
-      />
-    </View>
-  );
-};
+import { primitives } from '../../../../theme';
 
 export type ReactionListTopProps = Partial<
   Pick<
@@ -89,12 +28,12 @@ export type ReactionListTopProps = Partial<
     | 'preventPress'
     | 'reactions'
     | 'showReactionsOverlay'
+    | 'handleReaction'
   >
 > &
-  Pick<MessagesContextValue, 'supportedReactions'> & {
-    messageContentWidth: number;
-    fill?: string;
-    reactionSize?: number;
+  Pick<MessagesContextValue, 'supportedReactions' | 'reactionListType'> & {
+    type?: 'clustered' | 'segmented';
+    showCount?: boolean;
   };
 
 /**
@@ -103,17 +42,17 @@ export type ReactionListTopProps = Partial<
 export const ReactionListTop = (props: ReactionListTopProps) => {
   const {
     alignment: propAlignment,
-    fill: propFill,
     hasReactions: propHasReactions,
-    messageContentWidth,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
     preventPress: propPreventPress,
     reactions: propReactions,
-    reactionSize: propReactionSize,
     showReactionsOverlay: propShowReactionsOverlay,
     supportedReactions: propSupportedReactions,
+    handleReaction: propHandleReaction,
+    type,
+    showCount = true,
   } = props;
 
   const {
@@ -125,6 +64,7 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
     preventPress: contextPreventPress,
     reactions: contextReactions,
     showReactionsOverlay: contextShowReactionsOverlay,
+    handleReaction: contextHandleReaction,
   } = useMessageContext();
 
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
@@ -138,19 +78,8 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
   const reactions = propReactions || contextReactions;
   const showReactionsOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
-
-  const {
-    theme: {
-      colors: { grey_gainsboro, grey_whisper, white },
-      messageSimple: {
-        reactionListTop: {
-          container,
-          item: { reactionSize: themeReactionSize },
-          position: reactionPosition,
-        },
-      },
-    },
-  } = useTheme();
+  const handleReaction = propHandleReaction || contextHandleReaction;
+  const styles = useStyles({ alignment });
 
   const supportedReactionTypes = supportedReactions?.map(
     (supportedReaction) => supportedReaction.type,
@@ -160,99 +89,83 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
     supportedReactionTypes?.includes(reaction.type),
   );
 
-  if (!hasSupportedReactions || messageContentWidth === 0 || !hasReactions) {
+  if (!hasSupportedReactions || !hasReactions) {
     return null;
   }
 
-  const alignmentLeft = alignment === 'left';
-  const fill = propFill || (alignmentLeft ? grey_gainsboro : grey_whisper);
-  const reactionSize = propReactionSize || themeReactionSize;
+  const moreReactionsCount = reactions.slice(4).length;
 
-  // This is an estimated value for the message length that is considered small
-  const SMALL_MESSAGE_LENGTH_THRESHOLD = 80;
-
-  // It is the length of the reaction list
-  const totalReactionSize = reactionSize * reactions.length;
-  const halfReactionSize = totalReactionSize / 2;
-
-  const position =
-    messageContentWidth < SMALL_MESSAGE_LENGTH_THRESHOLD
-      ? messageContentWidth - reactionPosition
-      : messageContentWidth - halfReactionSize;
+  if (type === 'clustered') {
+    return (
+      <View style={styles.container} accessibilityLabel='Reaction List Top'>
+        <ReactionListClustered {...props} />
+      </View>
+    );
+  }
 
   return (
-    <TouchableOpacity
+    <ScrollView
       accessibilityLabel='Reaction List Top'
-      disabled={preventPress}
-      onLongPress={(event) => {
-        if (onLongPress) {
-          onLongPress({
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      onPress={(event) => {
-        if (onPress) {
-          onPress({
-            defaultHandler: showReactionsOverlay,
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      onPressIn={(event) => {
-        if (onPressIn) {
-          onPressIn({
-            defaultHandler: showReactionsOverlay,
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      style={[
-        styles.container,
-        {
-          backgroundColor: fill,
-          borderColor: white,
-          borderRadius: reactionSize,
-          height: reactionSize,
-          top: -reactionPosition,
-        },
-        alignmentLeft ? { left: position } : { right: position },
-        container,
-      ]}
+      contentContainerStyle={styles.contentContainer}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+      style={[styles.container, styles.list]}
     >
-      {reactions.map((reaction, index) => (
-        <ReactionListTopItem
-          index={index}
+      {reactions.slice(0, 4).map((reaction) => (
+        <ReactionListItem
           key={reaction.type}
           reaction={reaction}
-          reactions={reactions}
+          handleReaction={handleReaction}
+          onLongPress={onLongPress}
+          onPress={onPress}
+          onPressIn={onPressIn}
+          preventPress={preventPress}
+          showReactionsOverlay={showReactionsOverlay}
           supportedReactions={supportedReactions}
+          showCount={showCount}
+          selected={reaction.own}
         />
       ))}
-    </TouchableOpacity>
+      <ReactionListCountItem
+        count={moreReactionsCount}
+        onLongPress={onLongPress}
+        onPress={onPress}
+        onPressIn={onPressIn}
+        preventPress={preventPress}
+        showReactionsOverlay={showReactionsOverlay}
+      />
+    </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    paddingHorizontal: 5,
-    position: 'absolute',
-  },
-  reactionContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  reactionCount: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginLeft: 2,
-  },
-});
+const useStyles = ({ alignment }: { alignment: 'left' | 'right' }) => {
+  const {
+    theme: {
+      messageSimple: {
+        reactionListTop: { container, position, contentContainer, list },
+      },
+    },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        contentContainer: {
+          gap: primitives.spacingXxs,
+          ...contentContainer,
+        },
+        container: {
+          marginBottom: -position,
+          zIndex: 1,
+          right: alignment === 'right' ? position : undefined,
+          left: alignment === 'left' ? position : undefined,
+          ...container,
+        },
+        list: {
+          flexGrow: 0,
+          ...list,
+        },
+      }),
+    [alignment, container, contentContainer, list, position],
+  );
+};

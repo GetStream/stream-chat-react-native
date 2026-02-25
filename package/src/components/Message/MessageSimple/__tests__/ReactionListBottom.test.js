@@ -154,10 +154,10 @@ describe('ReactionListBottom', () => {
         handleReaction: handleReactionMock,
         message,
       },
-      { reactionListPosition: 'bottom' },
+      { reactionListPosition: 'bottom', reactionListType: 'segmented' },
     );
 
-    const reactionListBottomItem = screen.getByLabelText('Reaction List Bottom Item');
+    const reactionListBottomItem = screen.getByLabelText('Reaction List Item');
 
     fireEvent(reactionListBottomItem, 'onPress');
 

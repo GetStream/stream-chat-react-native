@@ -499,141 +499,166 @@ exports[`Thread should match thread snapshot 1`] = `
                                 }
                               >
                                 <View
-                                  accessibilityState={
-                                    {
-                                      "busy": undefined,
-                                      "checked": undefined,
-                                      "disabled": undefined,
-                                      "expanded": undefined,
-                                      "selected": undefined,
-                                    }
+                                  style={
+                                    [
+                                      {},
+                                      {},
+                                      {
+                                        "alignSelf": "flex-end",
+                                      },
+                                    ]
                                   }
-                                  accessibilityValue={
-                                    {
-                                      "max": undefined,
-                                      "min": undefined,
-                                      "now": undefined,
-                                      "text": undefined,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
+                                />
+                                <View
                                   style={
                                     [
                                       {
-                                        "opacity": 1,
+                                        "alignSelf": "flex-start",
+                                      },
+                                      {
+                                        "alignSelf": "flex-start",
                                       },
                                       {},
                                     ]
                                   }
                                 >
                                   <View
-                                    onLayout={[Function]}
-                                    style={{}}
+                                    accessibilityState={
+                                      {
+                                        "busy": undefined,
+                                        "checked": undefined,
+                                        "disabled": undefined,
+                                        "expanded": undefined,
+                                        "selected": undefined,
+                                      }
+                                    }
+                                    accessibilityValue={
+                                      {
+                                        "max": undefined,
+                                        "min": undefined,
+                                        "now": undefined,
+                                        "text": undefined,
+                                      }
+                                    }
+                                    accessible={true}
+                                    collapsable={false}
+                                    focusable={true}
+                                    onBlur={[Function]}
+                                    onClick={[Function]}
+                                    onFocus={[Function]}
+                                    onResponderGrant={[Function]}
+                                    onResponderMove={[Function]}
+                                    onResponderRelease={[Function]}
+                                    onResponderTerminate={[Function]}
+                                    onResponderTerminationRequest={[Function]}
+                                    onStartShouldSetResponder={[Function]}
+                                    style={
+                                      [
+                                        {
+                                          "opacity": 1,
+                                        },
+                                        {},
+                                      ]
+                                    }
                                   >
                                     <View
-                                      style={
-                                        [
-                                          {
-                                            "borderTopLeftRadius": 20,
-                                            "borderTopRightRadius": 20,
-                                            "borderWidth": 1,
-                                            "overflow": "hidden",
-                                          },
-                                          {
-                                            "backgroundColor": "#E9EAED",
-                                            "borderBottomLeftRadius": 0,
-                                            "borderBottomRightRadius": 20,
-                                            "borderColor": "#ECEBEB",
-                                          },
-                                          {},
-                                          {},
-                                          {},
-                                        ]
-                                      }
-                                      testID="message-content-wrapper"
+                                      onLayout={[Function]}
+                                      style={{}}
                                     >
                                       <View
                                         style={
                                           [
                                             {
-                                              "gap": 8,
-                                              "paddingBottom": 0,
-                                              "paddingHorizontal": 8,
-                                              "paddingTop": 0,
+                                              "borderTopLeftRadius": 20,
+                                              "borderTopRightRadius": 20,
+                                              "borderWidth": 1,
+                                              "overflow": "hidden",
                                             },
-                                            {},
-                                          ]
-                                        }
-                                      />
-                                      <View
-                                        style={
-                                          [
                                             {
-                                              "paddingHorizontal": 12,
+                                              "backgroundColor": "#E9EAED",
+                                              "borderBottomLeftRadius": 0,
+                                              "borderBottomRightRadius": 20,
+                                              "borderColor": "#ECEBEB",
                                             },
+                                            {},
+                                            {},
                                             {},
                                           ]
                                         }
+                                        testID="message-content-wrapper"
                                       >
                                         <View
                                           style={
                                             [
                                               {
-                                                "maxWidth": 256,
+                                                "gap": 8,
+                                                "paddingBottom": 0,
+                                                "paddingHorizontal": 8,
+                                                "paddingTop": 0,
                                               },
                                               {},
-                                              undefined,
                                             ]
                                           }
-                                          testID="message-text-container"
+                                        />
+                                        <View
+                                          style={
+                                            [
+                                              {
+                                                "paddingHorizontal": 12,
+                                              },
+                                              {},
+                                            ]
+                                          }
                                         >
                                           <View
                                             style={
                                               [
                                                 {
-                                                  "alignSelf": "stretch",
+                                                  "maxWidth": 256,
                                                 },
+                                                {},
                                                 undefined,
                                               ]
                                             }
+                                            testID="message-text-container"
                                           >
-                                            <Text
+                                            <View
                                               style={
-                                                {
-                                                  "alignItems": "flex-start",
-                                                  "flexDirection": "row",
-                                                  "flexWrap": "wrap",
-                                                  "fontSize": 15,
-                                                  "justifyContent": "flex-start",
-                                                  "lineHeight": 20,
-                                                  "marginBottom": 8,
-                                                  "marginTop": 8,
-                                                }
+                                                [
+                                                  {
+                                                    "alignSelf": "stretch",
+                                                  },
+                                                  undefined,
+                                                ]
                                               }
                                             >
                                               <Text
                                                 style={
                                                   {
-                                                    "color": "#000000",
+                                                    "alignItems": "flex-start",
+                                                    "flexDirection": "row",
+                                                    "flexWrap": "wrap",
                                                     "fontSize": 15,
+                                                    "justifyContent": "flex-start",
                                                     "lineHeight": 20,
+                                                    "marginBottom": 8,
+                                                    "marginTop": 8,
                                                   }
                                                 }
                                               >
-                                                Message6
+                                                <Text
+                                                  style={
+                                                    {
+                                                      "color": "#000000",
+                                                      "fontSize": 15,
+                                                      "lineHeight": 20,
+                                                    }
+                                                  }
+                                                >
+                                                  Message6
+                                                </Text>
                                               </Text>
-                                            </Text>
+                                            </View>
                                           </View>
                                         </View>
                                       </View>
@@ -859,141 +884,166 @@ exports[`Thread should match thread snapshot 1`] = `
                                 }
                               >
                                 <View
-                                  accessibilityState={
-                                    {
-                                      "busy": undefined,
-                                      "checked": undefined,
-                                      "disabled": undefined,
-                                      "expanded": undefined,
-                                      "selected": undefined,
-                                    }
+                                  style={
+                                    [
+                                      {},
+                                      {},
+                                      {
+                                        "alignSelf": "flex-end",
+                                      },
+                                    ]
                                   }
-                                  accessibilityValue={
-                                    {
-                                      "max": undefined,
-                                      "min": undefined,
-                                      "now": undefined,
-                                      "text": undefined,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
+                                />
+                                <View
                                   style={
                                     [
                                       {
-                                        "opacity": 1,
+                                        "alignSelf": "flex-start",
+                                      },
+                                      {
+                                        "alignSelf": "flex-start",
                                       },
                                       {},
                                     ]
                                   }
                                 >
                                   <View
-                                    onLayout={[Function]}
-                                    style={{}}
+                                    accessibilityState={
+                                      {
+                                        "busy": undefined,
+                                        "checked": undefined,
+                                        "disabled": undefined,
+                                        "expanded": undefined,
+                                        "selected": undefined,
+                                      }
+                                    }
+                                    accessibilityValue={
+                                      {
+                                        "max": undefined,
+                                        "min": undefined,
+                                        "now": undefined,
+                                        "text": undefined,
+                                      }
+                                    }
+                                    accessible={true}
+                                    collapsable={false}
+                                    focusable={true}
+                                    onBlur={[Function]}
+                                    onClick={[Function]}
+                                    onFocus={[Function]}
+                                    onResponderGrant={[Function]}
+                                    onResponderMove={[Function]}
+                                    onResponderRelease={[Function]}
+                                    onResponderTerminate={[Function]}
+                                    onResponderTerminationRequest={[Function]}
+                                    onStartShouldSetResponder={[Function]}
+                                    style={
+                                      [
+                                        {
+                                          "opacity": 1,
+                                        },
+                                        {},
+                                      ]
+                                    }
                                   >
                                     <View
-                                      style={
-                                        [
-                                          {
-                                            "borderTopLeftRadius": 20,
-                                            "borderTopRightRadius": 20,
-                                            "borderWidth": 1,
-                                            "overflow": "hidden",
-                                          },
-                                          {
-                                            "backgroundColor": "#E9EAED",
-                                            "borderBottomLeftRadius": 0,
-                                            "borderBottomRightRadius": 20,
-                                            "borderColor": "#ECEBEB",
-                                          },
-                                          {},
-                                          {},
-                                          {},
-                                        ]
-                                      }
-                                      testID="message-content-wrapper"
+                                      onLayout={[Function]}
+                                      style={{}}
                                     >
                                       <View
                                         style={
                                           [
                                             {
-                                              "gap": 8,
-                                              "paddingBottom": 0,
-                                              "paddingHorizontal": 8,
-                                              "paddingTop": 0,
+                                              "borderTopLeftRadius": 20,
+                                              "borderTopRightRadius": 20,
+                                              "borderWidth": 1,
+                                              "overflow": "hidden",
                                             },
-                                            {},
-                                          ]
-                                        }
-                                      />
-                                      <View
-                                        style={
-                                          [
                                             {
-                                              "paddingHorizontal": 12,
+                                              "backgroundColor": "#E9EAED",
+                                              "borderBottomLeftRadius": 0,
+                                              "borderBottomRightRadius": 20,
+                                              "borderColor": "#ECEBEB",
                                             },
+                                            {},
+                                            {},
                                             {},
                                           ]
                                         }
+                                        testID="message-content-wrapper"
                                       >
                                         <View
                                           style={
                                             [
                                               {
-                                                "maxWidth": 256,
+                                                "gap": 8,
+                                                "paddingBottom": 0,
+                                                "paddingHorizontal": 8,
+                                                "paddingTop": 0,
                                               },
                                               {},
-                                              undefined,
                                             ]
                                           }
-                                          testID="message-text-container"
+                                        />
+                                        <View
+                                          style={
+                                            [
+                                              {
+                                                "paddingHorizontal": 12,
+                                              },
+                                              {},
+                                            ]
+                                          }
                                         >
                                           <View
                                             style={
                                               [
                                                 {
-                                                  "alignSelf": "stretch",
+                                                  "maxWidth": 256,
                                                 },
+                                                {},
                                                 undefined,
                                               ]
                                             }
+                                            testID="message-text-container"
                                           >
-                                            <Text
+                                            <View
                                               style={
-                                                {
-                                                  "alignItems": "flex-start",
-                                                  "flexDirection": "row",
-                                                  "flexWrap": "wrap",
-                                                  "fontSize": 15,
-                                                  "justifyContent": "flex-start",
-                                                  "lineHeight": 20,
-                                                  "marginBottom": 8,
-                                                  "marginTop": 8,
-                                                }
+                                                [
+                                                  {
+                                                    "alignSelf": "stretch",
+                                                  },
+                                                  undefined,
+                                                ]
                                               }
                                             >
                                               <Text
                                                 style={
                                                   {
-                                                    "color": "#000000",
+                                                    "alignItems": "flex-start",
+                                                    "flexDirection": "row",
+                                                    "flexWrap": "wrap",
                                                     "fontSize": 15,
+                                                    "justifyContent": "flex-start",
                                                     "lineHeight": 20,
+                                                    "marginBottom": 8,
+                                                    "marginTop": 8,
                                                   }
                                                 }
                                               >
-                                                Message5
+                                                <Text
+                                                  style={
+                                                    {
+                                                      "color": "#000000",
+                                                      "fontSize": 15,
+                                                      "lineHeight": 20,
+                                                    }
+                                                  }
+                                                >
+                                                  Message5
+                                                </Text>
                                               </Text>
-                                            </Text>
+                                            </View>
                                           </View>
                                         </View>
                                       </View>
@@ -1244,141 +1294,166 @@ exports[`Thread should match thread snapshot 1`] = `
                                 }
                               >
                                 <View
-                                  accessibilityState={
-                                    {
-                                      "busy": undefined,
-                                      "checked": undefined,
-                                      "disabled": undefined,
-                                      "expanded": undefined,
-                                      "selected": undefined,
-                                    }
+                                  style={
+                                    [
+                                      {},
+                                      {},
+                                      {
+                                        "alignSelf": "flex-end",
+                                      },
+                                    ]
                                   }
-                                  accessibilityValue={
-                                    {
-                                      "max": undefined,
-                                      "min": undefined,
-                                      "now": undefined,
-                                      "text": undefined,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
+                                />
+                                <View
                                   style={
                                     [
                                       {
-                                        "opacity": 1,
+                                        "alignSelf": "flex-start",
+                                      },
+                                      {
+                                        "alignSelf": "flex-start",
                                       },
                                       {},
                                     ]
                                   }
                                 >
                                   <View
-                                    onLayout={[Function]}
-                                    style={{}}
+                                    accessibilityState={
+                                      {
+                                        "busy": undefined,
+                                        "checked": undefined,
+                                        "disabled": undefined,
+                                        "expanded": undefined,
+                                        "selected": undefined,
+                                      }
+                                    }
+                                    accessibilityValue={
+                                      {
+                                        "max": undefined,
+                                        "min": undefined,
+                                        "now": undefined,
+                                        "text": undefined,
+                                      }
+                                    }
+                                    accessible={true}
+                                    collapsable={false}
+                                    focusable={true}
+                                    onBlur={[Function]}
+                                    onClick={[Function]}
+                                    onFocus={[Function]}
+                                    onResponderGrant={[Function]}
+                                    onResponderMove={[Function]}
+                                    onResponderRelease={[Function]}
+                                    onResponderTerminate={[Function]}
+                                    onResponderTerminationRequest={[Function]}
+                                    onStartShouldSetResponder={[Function]}
+                                    style={
+                                      [
+                                        {
+                                          "opacity": 1,
+                                        },
+                                        {},
+                                      ]
+                                    }
                                   >
                                     <View
-                                      style={
-                                        [
-                                          {
-                                            "borderTopLeftRadius": 20,
-                                            "borderTopRightRadius": 20,
-                                            "borderWidth": 1,
-                                            "overflow": "hidden",
-                                          },
-                                          {
-                                            "backgroundColor": "#E9EAED",
-                                            "borderBottomLeftRadius": 0,
-                                            "borderBottomRightRadius": 20,
-                                            "borderColor": "#ECEBEB",
-                                          },
-                                          {},
-                                          {},
-                                          {},
-                                        ]
-                                      }
-                                      testID="message-content-wrapper"
+                                      onLayout={[Function]}
+                                      style={{}}
                                     >
                                       <View
                                         style={
                                           [
                                             {
-                                              "gap": 8,
-                                              "paddingBottom": 0,
-                                              "paddingHorizontal": 8,
-                                              "paddingTop": 0,
+                                              "borderTopLeftRadius": 20,
+                                              "borderTopRightRadius": 20,
+                                              "borderWidth": 1,
+                                              "overflow": "hidden",
                                             },
-                                            {},
-                                          ]
-                                        }
-                                      />
-                                      <View
-                                        style={
-                                          [
                                             {
-                                              "paddingHorizontal": 12,
+                                              "backgroundColor": "#E9EAED",
+                                              "borderBottomLeftRadius": 0,
+                                              "borderBottomRightRadius": 20,
+                                              "borderColor": "#ECEBEB",
                                             },
+                                            {},
+                                            {},
                                             {},
                                           ]
                                         }
+                                        testID="message-content-wrapper"
                                       >
                                         <View
                                           style={
                                             [
                                               {
-                                                "maxWidth": 256,
+                                                "gap": 8,
+                                                "paddingBottom": 0,
+                                                "paddingHorizontal": 8,
+                                                "paddingTop": 0,
                                               },
                                               {},
-                                              undefined,
                                             ]
                                           }
-                                          testID="message-text-container"
+                                        />
+                                        <View
+                                          style={
+                                            [
+                                              {
+                                                "paddingHorizontal": 12,
+                                              },
+                                              {},
+                                            ]
+                                          }
                                         >
                                           <View
                                             style={
                                               [
                                                 {
-                                                  "alignSelf": "stretch",
+                                                  "maxWidth": 256,
                                                 },
+                                                {},
                                                 undefined,
                                               ]
                                             }
+                                            testID="message-text-container"
                                           >
-                                            <Text
+                                            <View
                                               style={
-                                                {
-                                                  "alignItems": "flex-start",
-                                                  "flexDirection": "row",
-                                                  "flexWrap": "wrap",
-                                                  "fontSize": 15,
-                                                  "justifyContent": "flex-start",
-                                                  "lineHeight": 20,
-                                                  "marginBottom": 8,
-                                                  "marginTop": 8,
-                                                }
+                                                [
+                                                  {
+                                                    "alignSelf": "stretch",
+                                                  },
+                                                  undefined,
+                                                ]
                                               }
                                             >
                                               <Text
                                                 style={
                                                   {
-                                                    "color": "#000000",
+                                                    "alignItems": "flex-start",
+                                                    "flexDirection": "row",
+                                                    "flexWrap": "wrap",
                                                     "fontSize": 15,
+                                                    "justifyContent": "flex-start",
                                                     "lineHeight": 20,
+                                                    "marginBottom": 8,
+                                                    "marginTop": 8,
                                                   }
                                                 }
                                               >
-                                                Message4
+                                                <Text
+                                                  style={
+                                                    {
+                                                      "color": "#000000",
+                                                      "fontSize": 15,
+                                                      "lineHeight": 20,
+                                                    }
+                                                  }
+                                                >
+                                                  Message4
+                                                </Text>
                                               </Text>
-                                            </Text>
+                                            </View>
                                           </View>
                                         </View>
                                       </View>
@@ -1610,141 +1685,166 @@ exports[`Thread should match thread snapshot 1`] = `
                                 }
                               >
                                 <View
-                                  accessibilityState={
-                                    {
-                                      "busy": undefined,
-                                      "checked": undefined,
-                                      "disabled": true,
-                                      "expanded": undefined,
-                                      "selected": undefined,
-                                    }
+                                  style={
+                                    [
+                                      {},
+                                      {},
+                                      {
+                                        "alignSelf": "flex-end",
+                                      },
+                                    ]
                                   }
-                                  accessibilityValue={
-                                    {
-                                      "max": undefined,
-                                      "min": undefined,
-                                      "now": undefined,
-                                      "text": undefined,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
+                                />
+                                <View
                                   style={
                                     [
                                       {
-                                        "opacity": 1,
+                                        "alignSelf": "flex-start",
+                                      },
+                                      {
+                                        "alignSelf": "flex-start",
                                       },
                                       {},
                                     ]
                                   }
                                 >
                                   <View
-                                    onLayout={[Function]}
-                                    style={{}}
+                                    accessibilityState={
+                                      {
+                                        "busy": undefined,
+                                        "checked": undefined,
+                                        "disabled": true,
+                                        "expanded": undefined,
+                                        "selected": undefined,
+                                      }
+                                    }
+                                    accessibilityValue={
+                                      {
+                                        "max": undefined,
+                                        "min": undefined,
+                                        "now": undefined,
+                                        "text": undefined,
+                                      }
+                                    }
+                                    accessible={true}
+                                    collapsable={false}
+                                    focusable={true}
+                                    onBlur={[Function]}
+                                    onClick={[Function]}
+                                    onFocus={[Function]}
+                                    onResponderGrant={[Function]}
+                                    onResponderMove={[Function]}
+                                    onResponderRelease={[Function]}
+                                    onResponderTerminate={[Function]}
+                                    onResponderTerminationRequest={[Function]}
+                                    onStartShouldSetResponder={[Function]}
+                                    style={
+                                      [
+                                        {
+                                          "opacity": 1,
+                                        },
+                                        {},
+                                      ]
+                                    }
                                   >
                                     <View
-                                      style={
-                                        [
-                                          {
-                                            "borderTopLeftRadius": 20,
-                                            "borderTopRightRadius": 20,
-                                            "borderWidth": 1,
-                                            "overflow": "hidden",
-                                          },
-                                          {
-                                            "backgroundColor": "#E9EAED",
-                                            "borderBottomLeftRadius": 0,
-                                            "borderBottomRightRadius": 20,
-                                            "borderColor": "#ECEBEB",
-                                          },
-                                          {},
-                                          {},
-                                          {},
-                                        ]
-                                      }
-                                      testID="message-content-wrapper"
+                                      onLayout={[Function]}
+                                      style={{}}
                                     >
                                       <View
                                         style={
                                           [
                                             {
-                                              "gap": 8,
-                                              "paddingBottom": 0,
-                                              "paddingHorizontal": 8,
-                                              "paddingTop": 0,
+                                              "borderTopLeftRadius": 20,
+                                              "borderTopRightRadius": 20,
+                                              "borderWidth": 1,
+                                              "overflow": "hidden",
                                             },
-                                            {},
-                                          ]
-                                        }
-                                      />
-                                      <View
-                                        style={
-                                          [
                                             {
-                                              "paddingHorizontal": 12,
+                                              "backgroundColor": "#E9EAED",
+                                              "borderBottomLeftRadius": 0,
+                                              "borderBottomRightRadius": 20,
+                                              "borderColor": "#ECEBEB",
                                             },
+                                            {},
+                                            {},
                                             {},
                                           ]
                                         }
+                                        testID="message-content-wrapper"
                                       >
                                         <View
                                           style={
                                             [
                                               {
-                                                "maxWidth": 256,
+                                                "gap": 8,
+                                                "paddingBottom": 0,
+                                                "paddingHorizontal": 8,
+                                                "paddingTop": 0,
                                               },
                                               {},
-                                              undefined,
                                             ]
                                           }
-                                          testID="message-text-container"
+                                        />
+                                        <View
+                                          style={
+                                            [
+                                              {
+                                                "paddingHorizontal": 12,
+                                              },
+                                              {},
+                                            ]
+                                          }
                                         >
                                           <View
                                             style={
                                               [
                                                 {
-                                                  "alignSelf": "stretch",
+                                                  "maxWidth": 256,
                                                 },
+                                                {},
                                                 undefined,
                                               ]
                                             }
+                                            testID="message-text-container"
                                           >
-                                            <Text
+                                            <View
                                               style={
-                                                {
-                                                  "alignItems": "flex-start",
-                                                  "flexDirection": "row",
-                                                  "flexWrap": "wrap",
-                                                  "fontSize": 15,
-                                                  "justifyContent": "flex-start",
-                                                  "lineHeight": 20,
-                                                  "marginBottom": 8,
-                                                  "marginTop": 8,
-                                                }
+                                                [
+                                                  {
+                                                    "alignSelf": "stretch",
+                                                  },
+                                                  undefined,
+                                                ]
                                               }
                                             >
                                               <Text
                                                 style={
                                                   {
-                                                    "color": "#000000",
+                                                    "alignItems": "flex-start",
+                                                    "flexDirection": "row",
+                                                    "flexWrap": "wrap",
                                                     "fontSize": 15,
+                                                    "justifyContent": "flex-start",
                                                     "lineHeight": 20,
+                                                    "marginBottom": 8,
+                                                    "marginTop": 8,
                                                   }
                                                 }
                                               >
-                                                Message3
+                                                <Text
+                                                  style={
+                                                    {
+                                                      "color": "#000000",
+                                                      "fontSize": 15,
+                                                      "lineHeight": 20,
+                                                    }
+                                                  }
+                                                >
+                                                  Message3
+                                                </Text>
                                               </Text>
-                                            </Text>
+                                            </View>
                                           </View>
                                         </View>
                                       </View>

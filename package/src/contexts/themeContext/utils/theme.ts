@@ -665,7 +665,6 @@ export type Theme = {
       linkPreview: ViewStyle;
       linkPreviewText: TextStyle;
     };
-    headerWrapper: ViewStyle;
     lastMessageContainer: ViewStyle;
     loadingIndicator: {
       container: ViewStyle;
@@ -679,6 +678,12 @@ export type Theme = {
       text: TextStyle;
       textContainer: ViewStyle;
     };
+    bubble: {
+      reactionListTopContainer: ViewStyle;
+      contentContainer: ViewStyle;
+      wrapper: ViewStyle;
+      errorContainer: ViewStyle;
+    };
     pinnedHeader: {
       container: ViewStyle;
       label: TextStyle;
@@ -687,22 +692,31 @@ export type Theme = {
       contentContainer: ViewStyle;
       columnWrapper: ViewStyle;
       rowSeparator: ViewStyle;
-      item: {
-        countText: TextStyle;
-        icon: ViewStyle;
-        iconSize: number;
+    };
+    reactionListItem: {
+      reactionCount: TextStyle;
+      icon: {
+        size: number;
+        style: ViewStyle;
       };
+    };
+    reactionListClustered: {
+      contentContainer: ViewStyle;
+      reactionCount: TextStyle;
+      iconStyle: ViewStyle;
+      icon: {
+        size: number;
+        style: ViewStyle;
+      };
+    };
+    reactionListItemWrapper: {
+      wrapper: ViewStyle;
+      container: ViewStyle;
     };
     reactionListTop: {
       container: ViewStyle;
-      item: {
-        container: ViewStyle;
-        icon: ViewStyle;
-        iconFillColor: ColorValue;
-        iconSize: number;
-        iconUnFillColor: ColorValue;
-        reactionSize: number;
-      };
+      contentContainer: ViewStyle;
+      list: ViewStyle;
       position: number;
     };
     replies: {
@@ -1481,7 +1495,6 @@ export const defaultTheme: Theme = {
       header: {},
       imageIndicatorContainer: {},
     },
-    headerWrapper: {},
     lastMessageContainer: {},
     loadingIndicator: {
       container: {},
@@ -1493,6 +1506,12 @@ export const defaultTheme: Theme = {
       text: {},
       textContainer: {},
     },
+    bubble: {
+      reactionListTopContainer: {},
+      contentContainer: {},
+      wrapper: {},
+      errorContainer: {},
+    },
     messageGroupedSingleOrBottomContainer: {},
     messageGroupedTopContainer: {},
     pinnedHeader: {
@@ -1503,23 +1522,32 @@ export const defaultTheme: Theme = {
       contentContainer: {},
       columnWrapper: {},
       rowSeparator: {},
-      item: {
-        countText: {},
-        icon: {},
-        iconSize: 12,
+    },
+    reactionListItem: {
+      reactionCount: {},
+      icon: {
+        size: 12,
+        style: {},
       },
+    },
+    reactionListItemWrapper: {
+      wrapper: {},
+      container: {},
     },
     reactionListTop: {
       container: {},
-      item: {
-        container: {},
-        icon: {},
-        iconFillColor: Colors.accent_blue,
-        iconSize: 24,
-        iconUnFillColor: Colors.grey,
-        reactionSize: 24,
+      contentContainer: {},
+      list: {},
+      position: 8,
+    },
+    reactionListClustered: {
+      contentContainer: {},
+      reactionCount: {},
+      iconStyle: {},
+      icon: {
+        size: 12,
+        style: {},
       },
-      position: 16,
     },
     replies: {
       container: {},

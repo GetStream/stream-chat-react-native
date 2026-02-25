@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
-import { ReactionListItemWrapper } from './ReactionListItemWrapper';
+import { ReactionListClustered } from './ReactionListClustered';
+import { ReactionListItem, ReactionListItemProps } from './ReactionListItem';
 
 import {
   MessageContextValue,
@@ -13,128 +14,10 @@ import {
 } from '../../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 
-import { Unknown } from '../../../../icons/Unknown';
-
-import type { IconProps } from '../../../../icons/utils/base';
-
 import { primitives } from '../../../../theme';
-import type { ReactionData } from '../../../../utils/utils';
-import { ReactionSummary } from '../../hooks/useProcessReactions';
 
-type Props = Pick<IconProps, 'pathFill' | 'style'> & {
-  size: number;
-  type: string;
-  supportedReactions?: ReactionData[];
-};
-
-const Icon = ({ pathFill, size, style, supportedReactions, type }: Props) => {
-  const ReactionIcon =
-    supportedReactions?.find((reaction) => reaction.type === type)?.Icon || Unknown;
-
-  return <ReactionIcon size={size} pathFill={pathFill} style={style} />;
-};
-
-export type ReactionListBottomItemProps = Partial<
-  Pick<
-    MessageContextValue,
-    | 'handleReaction'
-    | 'onLongPress'
-    | 'onPress'
-    | 'onPressIn'
-    | 'preventPress'
-    | 'showReactionsOverlay'
-  >
-> &
-  Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
-    reaction: ReactionSummary;
-    showCount?: boolean;
-    selected?: boolean;
-  };
-
-export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
-  const {
-    handleReaction,
-    onLongPress,
-    onPress,
-    onPressIn,
-    preventPress,
-    reaction,
-    showReactionsOverlay,
-    supportedReactions,
-    showCount = true,
-    selected = false,
-  } = props;
-  const {
-    theme: {
-      messageSimple: {
-        reactionListBottom: {
-          item: { icon, iconSize },
-        },
-      },
-    },
-  } = useTheme();
-  const styles = useStyles({});
-
-  return (
-    <ReactionListItemWrapper
-      accessibilityLabel='Reaction List Bottom Item'
-      disabled={preventPress}
-      key={reaction.type}
-      onLongPress={(event) => {
-        if (onLongPress) {
-          onLongPress({
-            defaultHandler: () => {
-              if (showReactionsOverlay) {
-                showReactionsOverlay(reaction.type);
-              }
-            },
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      onPress={(event) => {
-        if (onPress) {
-          onPress({
-            defaultHandler: () => {
-              if (handleReaction) {
-                handleReaction(reaction.type);
-              }
-            },
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      onPressIn={(event) => {
-        if (onPressIn) {
-          onPressIn({
-            defaultHandler: () => {
-              if (handleReaction) {
-                handleReaction(reaction.type);
-              }
-            },
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      selected={selected}
-    >
-      <Icon
-        key={reaction.type}
-        size={iconSize}
-        style={icon}
-        supportedReactions={supportedReactions}
-        type={reaction.type}
-      />
-      {showCount ? <Text style={styles.reactionCount}>{reaction.count}</Text> : null}
-    </ReactionListItemWrapper>
-  );
-};
-
-const renderItem = ({ index, item }: { index: number; item: ReactionListBottomItemProps }) => (
-  <ReactionListBottomItem
+const renderItem = ({ index, item }: { index: number; item: ReactionListItemProps }) => (
+  <ReactionListItem
     handleReaction={item.handleReaction}
     key={index}
     onLongPress={item.onLongPress}
@@ -213,23 +96,11 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const reactions = propReactions || contextReactions;
   const showReactionsOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
-  const {
-    theme: {
-      messageSimple: {
-        reactionListBottom: {
-          item: { iconSize, icon },
-        },
-      },
-    },
-  } = useTheme();
+
   const styles = useStyles({ messageAlignment: alignment });
   const supportedReactionTypes = supportedReactions?.map(
     (supportedReaction) => supportedReaction.type,
   );
-  const reactionsCount = reactions.length;
-  const moreReactionsCount = reactionsCount - 4;
-  const reactionsCountText =
-    moreReactionsCount < 99 ? moreReactionsCount : `+${moreReactionsCount}`;
 
   const hasSupportedReactions = reactions.some((reaction) =>
     supportedReactionTypes?.includes(reaction.type),
@@ -239,7 +110,7 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     return null;
   }
 
-  const reactionListBottomItemData: ReactionListBottomItemProps[] = reactions.map((reaction) => ({
+  const reactionListBottomItemData: ReactionListItemProps[] = reactions.map((reaction) => ({
     handleReaction,
     onLongPress,
     onPress,
@@ -267,47 +138,7 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
       />
     );
   } else {
-    return (
-      <ReactionListItemWrapper
-        onPress={(event) => {
-          if (onPress) {
-            onPress({
-              defaultHandler: () => {
-                if (showReactionsOverlay) {
-                  showReactionsOverlay(undefined);
-                }
-              },
-              emitter: 'reactionList',
-              event,
-            });
-          }
-        }}
-        onPressIn={(event) => {
-          if (onPressIn) {
-            onPressIn({
-              defaultHandler: () => {
-                if (showReactionsOverlay) {
-                  showReactionsOverlay(undefined);
-                }
-              },
-              emitter: 'reactionList',
-              event,
-            });
-          }
-        }}
-      >
-        {reactions.slice(0, 4).map((reaction) => (
-          <Icon
-            key={reaction.type}
-            size={iconSize}
-            style={icon}
-            supportedReactions={supportedReactions}
-            type={reaction.type}
-          />
-        ))}
-        {reactionsCount > 4 ? <Text style={styles.reactionCount}>{reactionsCountText}</Text> : null}
-      </ReactionListItemWrapper>
-    );
+    return <ReactionListClustered accessibilityLabel='Reaction List Bottom' {...props} />;
   }
 };
 
@@ -318,14 +149,8 @@ const useStyles = ({
 }) => {
   const {
     theme: {
-      semantics,
       messageSimple: {
-        reactionListBottom: {
-          contentContainer,
-          columnWrapper,
-          rowSeparator,
-          item: { countText },
-        },
+        reactionListBottom: { contentContainer, columnWrapper, rowSeparator },
       },
     },
   } = useTheme();
@@ -340,18 +165,11 @@ const useStyles = ({
         contentContainer: {
           ...contentContainer,
         },
-        reactionCount: {
-          color: semantics.reactionText,
-          fontSize: primitives.typographyFontSizeXxs,
-          fontWeight: primitives.typographyFontWeightBold,
-          lineHeight: primitives.typographyLineHeightTight,
-          ...countText,
-        },
         itemSeparator: {
           height: primitives.spacingXxs,
           ...rowSeparator,
         },
       }),
-    [semantics, countText, contentContainer, columnWrapper, rowSeparator, messageAlignment],
+    [contentContainer, columnWrapper, rowSeparator, messageAlignment],
   );
 };

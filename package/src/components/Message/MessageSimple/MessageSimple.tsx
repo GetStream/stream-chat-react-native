@@ -49,7 +49,6 @@ export type MessageSimplePropsWithContext = Pick<
   | 'alignment'
   | 'channel'
   | 'groupStyles'
-  | 'hasReactions'
   | 'isMyMessage'
   | 'message'
   | 'onlyEmojis'
@@ -98,7 +97,6 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
     enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
-    hasReactions,
     isMyMessage,
     message,
     MessageAvatar,
@@ -132,11 +130,9 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
           receiverMessageBackgroundColor,
           senderMessageBackgroundColor,
         },
-        headerWrapper,
         lastMessageContainer,
         messageGroupedSingleOrBottomContainer,
         messageGroupedTopContainer,
-        reactionListTop: { position: reactionPosition },
       },
     },
   } = useTheme();
@@ -223,22 +219,10 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
             testID='message-components'
           >
             {/* TODO: Find a better way to avoid Remounting here. */}
-            {reactionListPosition === 'top' && hasReactions ? (
-              <View
-                style={[
-                  {
-                    paddingBottom: reactionPosition,
-                  },
-                  headerWrapper,
-                ]}
-              >
-                <MessageHeader />
-              </View>
-            ) : (
-              <MessageHeader />
-            )}
+            <MessageHeader />
             {enableSwipeToReply ? (
               <SwipableMessageBubble
+                alignment={alignment}
                 backgroundColor={backgroundColor}
                 isVeryLastMessage={isVeryLastMessage}
                 MessageContent={MessageContent}
@@ -250,6 +234,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
                 noBorder={noBorder}
                 onSwipe={onSwipeActionHandler}
                 reactionListPosition={reactionListPosition}
+                reactionListType={reactionListType}
                 ReactionListTop={ReactionListTop}
                 setMessageContentWidth={setMessageContentWidth}
                 shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
@@ -257,6 +242,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
               />
             ) : (
               <MessageBubble
+                alignment={alignment}
                 backgroundColor={backgroundColor}
                 isVeryLastMessage={isVeryLastMessage}
                 MessageContent={MessageContent}
@@ -266,6 +252,7 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
                 noBorder={noBorder}
                 reactionListPosition={reactionListPosition}
                 ReactionListTop={ReactionListTop}
+                reactionListType={reactionListType}
                 setMessageContentWidth={setMessageContentWidth}
                 message={message}
               />
@@ -293,7 +280,6 @@ const areEqual = (
   const {
     channel: prevChannel,
     groupStyles: prevGroupStyles,
-    hasReactions: prevHasReactions,
     message: prevMessage,
     myMessageTheme: prevMyMessageTheme,
     onlyEmojis: prevOnlyEmojis,
@@ -304,7 +290,6 @@ const areEqual = (
   const {
     channel: nextChannel,
     groupStyles: nextGroupStyles,
-    hasReactions: nextHasReactions,
     message: nextMessage,
     myMessageTheme: nextMyMessageTheme,
     onlyEmojis: nextOnlyEmojis,
@@ -312,11 +297,6 @@ const areEqual = (
     lastGroupMessage: nextLastGroupMessage,
     members: nextMembers,
   } = nextProps;
-
-  const hasReactionsEqual = prevHasReactions === nextHasReactions;
-  if (!hasReactionsEqual) {
-    return false;
-  }
 
   const groupStylesEqual = JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) {
@@ -427,7 +407,6 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
     alignment,
     channel,
     groupStyles,
-    hasReactions,
     isMyMessage,
     message,
     onlyEmojis,
@@ -472,7 +451,6 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
         enableMessageGroupingByUser,
         enableSwipeToReply,
         groupStyles,
-        hasReactions,
         isMyMessage,
         message,
         MessageAvatar,
