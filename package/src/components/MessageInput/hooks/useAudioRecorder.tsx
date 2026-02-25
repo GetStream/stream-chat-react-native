@@ -28,8 +28,6 @@ export const useAudioRecorder = ({
    * hence this approach.
    */
   const stopVoiceRecording = useCallback(async () => {
-    const { status } = audioRecorderManager.state.getLatestValue();
-    if (status !== 'recording') return;
     await audioRecorderManager.stopRecording();
   }, [audioRecorderManager]);
 

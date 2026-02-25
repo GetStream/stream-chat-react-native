@@ -151,12 +151,12 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   });
 
   const onTouchGestureEnd = useStableCallback(() => {
+    if (cancellableDuration) {
+      onEarlyReleaseHandler();
+      return;
+    }
     if (status === 'recording') {
-      if (cancellableDuration) {
-        onEarlyReleaseHandler();
-      } else {
-        uploadVoiceRecording(asyncMessagesMultiSendEnabled);
-      }
+      uploadVoiceRecording(asyncMessagesMultiSendEnabled);
     }
   });
 
