@@ -685,15 +685,12 @@ export type Theme = {
     };
     reactionListBottom: {
       contentContainer: ViewStyle;
+      columnWrapper: ViewStyle;
+      rowSeparator: ViewStyle;
       item: {
-        container: ViewStyle;
         countText: TextStyle;
-        filledBackgroundColor?: ColorValue;
         icon: ViewStyle;
-        iconFillColor?: ColorValue;
         iconSize: number;
-        iconUnFillColor?: ColorValue;
-        unfilledBackgroundColor?: ColorValue;
       };
     };
     reactionListTop: {
@@ -1504,11 +1501,12 @@ export const defaultTheme: Theme = {
     },
     reactionListBottom: {
       contentContainer: {},
+      columnWrapper: {},
+      rowSeparator: {},
       item: {
-        container: {},
         countText: {},
         icon: {},
-        iconSize: 16,
+        iconSize: 12,
       },
     },
     reactionListTop: {

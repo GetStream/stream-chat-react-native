@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { Animated } from 'react-native';
-
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
@@ -98,47 +96,49 @@ describe('ReactionListBottom', () => {
     });
   });
 
-  it('applies animation on press in', () => {
-    const animatedSpy = jest.spyOn(Animated, 'spring');
-    const user = generateUser();
-    const reaction = generateReaction();
-    const message = generateMessage({
-      reaction_groups: { [reaction.type]: reaction },
-      user,
-    });
+  // As discussed with Design team, the animation is not needed for now. Once we have it, we can add it.
 
-    renderMessage({ message }, { reactionListPosition: 'bottom' });
+  // it('applies animation on press in', () => {
+  //   const animatedSpy = jest.spyOn(Animated, 'spring');
+  //   const user = generateUser();
+  //   const reaction = generateReaction();
+  //   const message = generateMessage({
+  //     reaction_groups: { [reaction.type]: reaction },
+  //     user,
+  //   });
 
-    const reactionListBottomItem = screen.getByLabelText('Reaction List Bottom Item');
+  //   renderMessage({ message }, { reactionListPosition: 'bottom' });
 
-    fireEvent(reactionListBottomItem, 'onPressIn');
+  //   const reactionListBottomItem = screen.getByLabelText('Reaction List Bottom Item');
 
-    expect(animatedSpy).toHaveBeenCalledWith(expect.any(Animated.Value), {
-      toValue: 0.8,
-      useNativeDriver: true,
-    });
-  });
+  //   fireEvent(reactionListBottomItem, 'onPressIn');
 
-  it('applies animation on press out', () => {
-    const animatedSpy = jest.spyOn(Animated, 'spring');
-    const user = generateUser();
-    const reaction = generateReaction();
-    const message = generateMessage({
-      reaction_groups: { [reaction.type]: reaction },
-      user,
-    });
+  //   expect(animatedSpy).toHaveBeenCalledWith(expect.any(Animated.Value), {
+  //     toValue: 0.8,
+  //     useNativeDriver: true,
+  //   });
+  // });
 
-    renderMessage({ message }, { reactionListPosition: 'bottom' });
+  // it('applies animation on press out', () => {
+  //   const animatedSpy = jest.spyOn(Animated, 'spring');
+  //   const user = generateUser();
+  //   const reaction = generateReaction();
+  //   const message = generateMessage({
+  //     reaction_groups: { [reaction.type]: reaction },
+  //     user,
+  //   });
 
-    const reactionListBottomItem = screen.getByLabelText('Reaction List Bottom Item');
+  //   renderMessage({ message }, { reactionListPosition: 'bottom' });
 
-    fireEvent(reactionListBottomItem, 'onPressOut');
+  //   const reactionListBottomItem = screen.getByLabelText('Reaction List Bottom Item');
 
-    expect(animatedSpy).toHaveBeenCalledWith(expect.any(Animated.Value), {
-      toValue: 1,
-      useNativeDriver: true,
-    });
-  });
+  //   fireEvent(reactionListBottomItem, 'onPressOut');
+
+  //   expect(animatedSpy).toHaveBeenCalledWith(expect.any(Animated.Value), {
+  //     toValue: 1,
+  //     useNativeDriver: true,
+  //   });
+  // });
 
   it('call handleReaction on press', () => {
     const handleReactionMock = jest.fn();

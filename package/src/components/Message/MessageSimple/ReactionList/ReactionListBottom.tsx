@@ -1,5 +1,7 @@
-import React, { useCallback, useRef } from 'react';
-import { Animated, FlatList, Pressable, StyleSheet, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+
+import { ReactionListItemWrapper } from './ReactionListItemWrapper';
 
 import {
   MessageContextValue,
@@ -15,6 +17,7 @@ import { Unknown } from '../../../../icons/Unknown';
 
 import type { IconProps } from '../../../../icons/utils/base';
 
+import { primitives } from '../../../../theme';
 import type { ReactionData } from '../../../../utils/utils';
 import { ReactionSummary } from '../../hooks/useProcessReactions';
 
@@ -28,7 +31,7 @@ const Icon = ({ pathFill, size, style, supportedReactions, type }: Props) => {
   const ReactionIcon =
     supportedReactions?.find((reaction) => reaction.type === type)?.Icon || Unknown;
 
-  return <ReactionIcon height={size} pathFill={pathFill} style={style} width={size} />;
+  return <ReactionIcon size={size} pathFill={pathFill} style={style} />;
 };
 
 export type ReactionListBottomItemProps = Partial<
@@ -44,6 +47,8 @@ export type ReactionListBottomItemProps = Partial<
 > &
   Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
     reaction: ReactionSummary;
+    showCount?: boolean;
+    selected?: boolean;
   };
 
 export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
@@ -56,44 +61,22 @@ export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
     reaction,
     showReactionsOverlay,
     supportedReactions,
+    showCount = true,
+    selected = false,
   } = props;
-  const scaleValue = useRef(new Animated.Value(1)).current;
   const {
     theme: {
-      colors: { accent_blue, black, light_blue, grey, grey_gainsboro },
       messageSimple: {
         reactionListBottom: {
-          item: {
-            container,
-            countText,
-            filledBackgroundColor = light_blue,
-            icon,
-            iconFillColor = accent_blue,
-            iconSize,
-            iconUnFillColor = grey,
-            unfilledBackgroundColor = grey_gainsboro,
-          },
+          item: { icon, iconSize },
         },
       },
     },
   } = useTheme();
-
-  const onPressInAnimation = useCallback(() => {
-    Animated.spring(scaleValue, {
-      toValue: 0.8,
-      useNativeDriver: true,
-    }).start();
-  }, [scaleValue]);
-
-  const onPressOutAnimation = useCallback(() => {
-    Animated.spring(scaleValue, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-  }, [scaleValue]);
+  const styles = useStyles({});
 
   return (
-    <Pressable
+    <ReactionListItemWrapper
       accessibilityLabel='Reaction List Bottom Item'
       disabled={preventPress}
       key={reaction.type}
@@ -124,7 +107,6 @@ export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
         }
       }}
       onPressIn={(event) => {
-        onPressInAnimation();
         if (onPressIn) {
           onPressIn({
             defaultHandler: () => {
@@ -137,29 +119,17 @@ export const ReactionListBottomItem = (props: ReactionListBottomItemProps) => {
           });
         }
       }}
-      onPressOut={onPressOutAnimation}
+      selected={selected}
     >
-      <Animated.View
-        style={[
-          styles.itemContainer,
-          {
-            backgroundColor: reaction.own ? filledBackgroundColor : unfilledBackgroundColor,
-            transform: [{ scale: scaleValue }],
-          },
-          container,
-        ]}
-      >
-        <Icon
-          key={reaction.type}
-          pathFill={reaction.own ? iconFillColor : iconUnFillColor}
-          size={iconSize}
-          style={icon}
-          supportedReactions={supportedReactions}
-          type={reaction.type}
-        />
-        <Text style={[styles.reactionCount, { color: black }, countText]}>{reaction.count}</Text>
-      </Animated.View>
-    </Pressable>
+      <Icon
+        key={reaction.type}
+        size={iconSize}
+        style={icon}
+        supportedReactions={supportedReactions}
+        type={reaction.type}
+      />
+      {showCount ? <Text style={styles.reactionCount}>{reaction.count}</Text> : null}
+    </ReactionListItemWrapper>
   );
 };
 
@@ -174,12 +144,15 @@ const renderItem = ({ index, item }: { index: number; item: ReactionListBottomIt
     reaction={item.reaction}
     showReactionsOverlay={item.showReactionsOverlay}
     supportedReactions={item.supportedReactions}
+    selected={item.reaction.own}
+    showCount={item.showCount}
   />
 );
 
 export type ReactionListBottomProps = Partial<
   Pick<
     MessageContextValue,
+    | 'alignment'
     | 'handleReaction'
     | 'hasReactions'
     | 'onLongPress'
@@ -190,10 +163,19 @@ export type ReactionListBottomProps = Partial<
     | 'showReactionsOverlay'
   >
 > &
-  Partial<Pick<MessagesContextValue, 'supportedReactions'>>;
+  Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
+    type?: 'clustered' | 'segmented';
+    showCount?: boolean;
+  };
+
+const ItemSeparatorComponent = () => {
+  const styles = useStyles({});
+  return <View style={styles.itemSeparator} />;
+};
 
 export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const {
+    alignment: propAlignment,
     handleReaction: propHandlerReaction,
     hasReactions: propHasReactions,
     onLongPress: propOnLongPress,
@@ -203,9 +185,12 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     reactions: propReactions,
     showReactionsOverlay: propShowReactionsOverlay,
     supportedReactions: propSupportedReactions,
+    type,
+    showCount = true,
   } = props;
 
   const {
+    alignment: contextAlignment,
     handleReaction: contextHandleReaction,
     hasReactions: contextHasReactions,
     onLongPress: contextOnLongPress,
@@ -218,6 +203,7 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
 
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
 
+  const alignment = propAlignment || contextAlignment;
   const handleReaction = propHandlerReaction || contextHandleReaction;
   const hasReactions = propHasReactions || contextHasReactions;
   const onLongPress = propOnLongPress || contextOnLongPress;
@@ -225,19 +211,25 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const onPressIn = propOnPressIn || contextOnPressIn;
   const preventPress = propPreventPress || contextPreventPress;
   const reactions = propReactions || contextReactions;
-  const showMessageOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
+  const showReactionsOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
   const {
     theme: {
       messageSimple: {
-        reactionListBottom: { contentContainer },
+        reactionListBottom: {
+          item: { iconSize, icon },
+        },
       },
     },
   } = useTheme();
-
+  const styles = useStyles({ messageAlignment: alignment });
   const supportedReactionTypes = supportedReactions?.map(
     (supportedReaction) => supportedReaction.type,
   );
+  const reactionsCount = reactions.length;
+  const moreReactionsCount = reactionsCount - 4;
+  const reactionsCountText =
+    moreReactionsCount < 99 ? moreReactionsCount : `+${moreReactionsCount}`;
 
   const hasSupportedReactions = reactions.some((reaction) =>
     supportedReactionTypes?.includes(reaction.type),
@@ -254,38 +246,112 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     onPressIn,
     preventPress,
     reaction,
-    showMessageOverlay,
+    showReactionsOverlay,
     supportedReactions,
+    showCount,
   }));
 
-  return (
-    <FlatList
-      accessibilityLabel='Reaction List Bottom'
-      contentContainerStyle={[styles.contentContainer, contentContainer]}
-      data={reactionListBottomItemData}
-      keyExtractor={(item) => item.reaction.type}
-      numColumns={6}
-      renderItem={renderItem}
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-    />
-  );
+  if (type === 'segmented') {
+    return (
+      <FlatList
+        numColumns={showCount ? 5 : 6}
+        accessibilityLabel='Reaction List Bottom'
+        contentContainerStyle={styles.contentContainer}
+        columnWrapperStyle={styles.columnWrapper}
+        data={reactionListBottomItemData}
+        keyExtractor={(item) => item.reaction.type}
+        ItemSeparatorComponent={ItemSeparatorComponent} // This is for the gap between the rows of reactions
+        renderItem={renderItem}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      />
+    );
+  } else {
+    return (
+      <ReactionListItemWrapper
+        onPress={(event) => {
+          if (onPress) {
+            onPress({
+              defaultHandler: () => {
+                if (showReactionsOverlay) {
+                  showReactionsOverlay(undefined);
+                }
+              },
+              emitter: 'reactionList',
+              event,
+            });
+          }
+        }}
+        onPressIn={(event) => {
+          if (onPressIn) {
+            onPressIn({
+              defaultHandler: () => {
+                if (showReactionsOverlay) {
+                  showReactionsOverlay(undefined);
+                }
+              },
+              emitter: 'reactionList',
+              event,
+            });
+          }
+        }}
+      >
+        {reactions.slice(0, 4).map((reaction) => (
+          <Icon
+            key={reaction.type}
+            size={iconSize}
+            style={icon}
+            supportedReactions={supportedReactions}
+            type={reaction.type}
+          />
+        ))}
+        {reactionsCount > 4 ? <Text style={styles.reactionCount}>{reactionsCountText}</Text> : null}
+      </ReactionListItemWrapper>
+    );
+  }
 };
 
-const styles = StyleSheet.create({
-  contentContainer: {
-    alignSelf: 'flex-end',
-  },
-  itemContainer: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    margin: 2,
-    padding: 8,
-  },
-  reactionCount: {
-    fontWeight: '600',
-    marginLeft: 4,
-  },
-});
+const useStyles = ({
+  messageAlignment,
+}: {
+  messageAlignment?: MessageContextValue['alignment'];
+}) => {
+  const {
+    theme: {
+      semantics,
+      messageSimple: {
+        reactionListBottom: {
+          contentContainer,
+          columnWrapper,
+          rowSeparator,
+          item: { countText },
+        },
+      },
+    },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        columnWrapper: {
+          gap: primitives.spacingXxs, // Horizontal spacing between items
+          justifyContent: messageAlignment === 'right' ? 'flex-end' : 'flex-start',
+          ...columnWrapper,
+        },
+        contentContainer: {
+          ...contentContainer,
+        },
+        reactionCount: {
+          color: semantics.reactionText,
+          fontSize: primitives.typographyFontSizeXxs,
+          fontWeight: primitives.typographyFontWeightBold,
+          lineHeight: primitives.typographyLineHeightTight,
+          ...countText,
+        },
+        itemSeparator: {
+          height: primitives.spacingXxs,
+          ...rowSeparator,
+        },
+      }),
+    [semantics, countText, contentContainer, columnWrapper, rowSeparator, messageAlignment],
+  );
+};

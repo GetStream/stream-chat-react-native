@@ -248,9 +248,9 @@ export type MessagePropsWithContext = Pick<
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
   const [isErrorInMessage, setIsErrorInMessage] = useState(false);
-  const [showMessageReactions, setShowMessageReactions] = useState(false);
+  const [showMessageReactions, setShowMessageReactions] = useState<boolean>(false);
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
-  // const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
 
   const {
     channel,
@@ -349,10 +349,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     }
   });
 
-  const showReactionsOverlay = useStableCallback(() => {
-    if (!showMessageReactions) {
-      setShowMessageReactions(true);
-    }
+  const showReactionsOverlay = useStableCallback((reactionType?: string) => {
+    setShowMessageReactions(true);
+    setSelectedReaction(reactionType);
   });
 
   const { setNativeScrollability } = useMessageListItemContext();
@@ -880,6 +879,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                 message={message}
                 MessageUserReactionsAvatar={MessageUserReactionsAvatar}
                 MessageUserReactionsItem={MessageUserReactionsItem}
+                selectedReaction={selectedReaction}
               />
             </BottomSheetModal>
           ) : null}
