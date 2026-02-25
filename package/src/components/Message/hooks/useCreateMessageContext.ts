@@ -7,7 +7,6 @@ import { stringifyMessage } from '../../../utils/utils';
 function useStableRefValue<T>(value: T): T {
   const ref = useRef(value);
 
-  // Only update if reference truly changed
   if (ref.current !== value) {
     ref.current = value;
   }
