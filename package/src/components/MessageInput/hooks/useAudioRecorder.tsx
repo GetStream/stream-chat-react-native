@@ -27,11 +27,12 @@ export const useAudioRecorder = ({
    * side only. Meant to be used as a pure function (during unmounting for instance)
    * hence this approach.
    */
-  const stopVoiceRecording = useCallback(async () => {
-    const { status } = audioRecorderManager.state.getLatestValue();
-    if (status !== 'recording') return;
-    await audioRecorderManager.stopRecording();
-  }, [audioRecorderManager]);
+  const stopVoiceRecording = useCallback(
+    async (withDelete?: boolean) => {
+      await audioRecorderManager.stopRecording(withDelete);
+    },
+    [audioRecorderManager],
+  );
 
   // This effect stop the player from playing and stops audio recording on
   // the audio SDK side on unmount.
@@ -62,9 +63,8 @@ export const useAudioRecorder = ({
    * Function to delete voice recording.
    */
   const deleteVoiceRecording = useCallback(async () => {
-    await stopVoiceRecording();
-    audioRecorderManager.reset();
-  }, [audioRecorderManager, stopVoiceRecording]);
+    await stopVoiceRecording(true);
+  }, [stopVoiceRecording]);
 
   /**
    * Function to upload or send voice recording.
