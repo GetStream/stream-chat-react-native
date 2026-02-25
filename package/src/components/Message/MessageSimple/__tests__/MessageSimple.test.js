@@ -160,7 +160,13 @@ describe('MessageSimple', () => {
     renderMessage({ groupStyles: ['top'], message });
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-simple-wrapper').props.style[1]).toMatchObject({});
+      expect(screen.getByTestId('message-simple-wrapper').props.style).toMatchObject({
+        alignItems: 'flex-end',
+        gap: 8,
+        flexDirection: 'row',
+        paddingTop: 8,
+        paddingBottom: 4,
+      });
     });
   });
 
@@ -171,7 +177,14 @@ describe('MessageSimple', () => {
     renderMessage({ message });
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-simple-wrapper').props.style[1]).toMatchObject({});
+      const data = screen.getByTestId('message-simple-wrapper').props.style;
+
+      expect(data).toMatchObject({
+        alignItems: 'flex-end',
+        gap: 8,
+        flexDirection: 'row',
+        paddingBottom: 8,
+      });
     });
   });
 

@@ -369,7 +369,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     style={
                       [
                         {
-                          "marginTop": 2,
                           "paddingHorizontal": 16,
                         },
                         {},
@@ -384,18 +383,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         <View
                           pointerEvents="box-none"
                           style={
-                            [
-                              {
-                                "alignItems": "flex-end",
-                                "flexDirection": "row",
-                                "gap": 8,
-                              },
-                              {},
-                              {
-                                "flexDirection": "row",
-                              },
-                              {},
-                            ]
+                            {
+                              "alignItems": "flex-end",
+                              "flexDirection": "row",
+                              "gap": 8,
+                              "paddingVertical": 8,
+                            }
                           }
                           testID="message-simple-wrapper"
                         >
@@ -460,7 +453,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "flex-start",
                                 },
-                                {},
                                 {},
                               ]
                             }
@@ -658,12 +650,9 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
-                                [
-                                  {
-                                    "marginTop": -4,
-                                  },
-                                  {},
-                                ]
+                                {
+                                  "marginTop": -4,
+                                }
                               }
                             />
                             <View
@@ -747,7 +736,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     style={
                       [
                         {
-                          "marginTop": 2,
                           "paddingHorizontal": 16,
                         },
                         {},
@@ -762,18 +750,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         <View
                           pointerEvents="box-none"
                           style={
-                            [
-                              {
-                                "alignItems": "flex-end",
-                                "flexDirection": "row",
-                                "gap": 8,
-                              },
-                              {},
-                              {
-                                "flexDirection": "row",
-                              },
-                              {},
-                            ]
+                            {
+                              "alignItems": "flex-end",
+                              "flexDirection": "row",
+                              "gap": 8,
+                              "paddingVertical": 8,
+                            }
                           }
                           testID="message-simple-wrapper"
                         >
@@ -838,7 +820,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "flex-start",
                                 },
-                                {},
                                 {},
                               ]
                             }
@@ -1036,12 +1017,9 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
-                                [
-                                  {
-                                    "marginTop": -4,
-                                  },
-                                  {},
-                                ]
+                                {
+                                  "marginTop": -4,
+                                }
                               }
                             />
                             <View
@@ -1111,28 +1089,39 @@ exports[`Thread should match thread snapshot 1`] = `
               >
                 <View
                   style={
-                    {
-                      "alignSelf": "center",
-                      "backgroundColor": "#f6f8fa",
-                      "borderRadius": 9999,
-                      "paddingHorizontal": 12,
-                      "paddingVertical": 4,
-                    }
+                    [
+                      {
+                        "paddingVertical": 8,
+                      },
+                      {},
+                    ]
                   }
-                  testID="date-separator"
                 >
-                  <Text
+                  <View
                     style={
                       {
-                        "color": "#414552",
-                        "fontSize": 12,
-                        "fontWeight": 600,
-                        "lineHeight": 16,
+                        "alignSelf": "center",
+                        "backgroundColor": "#f6f8fa",
+                        "borderRadius": 9999,
+                        "paddingHorizontal": 12,
+                        "paddingVertical": 4,
                       }
                     }
+                    testID="date-separator"
                   >
-                    05/05/2020
-                  </Text>
+                    <Text
+                      style={
+                        {
+                          "color": "#414552",
+                          "fontSize": 12,
+                          "fontWeight": 600,
+                          "lineHeight": 16,
+                        }
+                      }
+                    >
+                      05/05/2020
+                    </Text>
+                  </View>
                 </View>
                 <View
                   style={
@@ -1150,7 +1139,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     style={
                       [
                         {
-                          "marginTop": 2,
                           "paddingHorizontal": 16,
                         },
                         {},
@@ -1165,18 +1153,12 @@ exports[`Thread should match thread snapshot 1`] = `
                         <View
                           pointerEvents="box-none"
                           style={
-                            [
-                              {
-                                "alignItems": "flex-end",
-                                "flexDirection": "row",
-                                "gap": 8,
-                              },
-                              {},
-                              {
-                                "flexDirection": "row",
-                              },
-                              {},
-                            ]
+                            {
+                              "alignItems": "flex-end",
+                              "flexDirection": "row",
+                              "gap": 8,
+                              "paddingVertical": 8,
+                            }
                           }
                           testID="message-simple-wrapper"
                         >
@@ -1241,7 +1223,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "flex-start",
                                 },
-                                {},
                                 {},
                               ]
                             }
@@ -1439,12 +1420,9 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
-                                [
-                                  {
-                                    "marginTop": -4,
-                                  },
-                                  {},
-                                ]
+                                {
+                                  "marginTop": -4,
+                                }
                               }
                             />
                             <View
@@ -1529,7 +1507,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     style={
                       [
                         {
-                          "marginTop": 2,
                           "paddingHorizontal": 16,
                         },
                         {},
@@ -1544,23 +1521,13 @@ exports[`Thread should match thread snapshot 1`] = `
                         <View
                           pointerEvents="box-none"
                           style={
-                            [
-                              {
-                                "alignItems": "flex-end",
-                                "flexDirection": "row",
-                                "gap": 8,
-                              },
-                              [
-                                {
-                                  "marginBottom": 12,
-                                },
-                                {},
-                              ],
-                              {
-                                "flexDirection": "row",
-                              },
-                              {},
-                            ]
+                            {
+                              "alignItems": "flex-end",
+                              "flexDirection": "row",
+                              "gap": 8,
+                              "marginBottom": 12,
+                              "paddingVertical": 8,
+                            }
                           }
                           testID="message-simple-wrapper"
                         >
@@ -1625,7 +1592,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "flex-start",
                                 },
-                                {},
                                 {},
                               ]
                             }
@@ -1823,12 +1789,9 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                             <View
                               style={
-                                [
-                                  {
-                                    "marginTop": -4,
-                                  },
-                                  {},
-                                ]
+                                {
+                                  "marginTop": -4,
+                                }
                               }
                             />
                             <View
