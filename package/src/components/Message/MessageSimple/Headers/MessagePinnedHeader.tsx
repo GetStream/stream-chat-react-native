@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import {
   MessageContextValue,
   useMessageContext,
-} from '../../../contexts/messageContext/MessageContext';
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { NewPin } from '../../../icons/NewPin';
-import { primitives } from '../../../theme';
+} from '../../../../contexts/messageContext/MessageContext';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { NewPin } from '../../../../icons/NewPin';
+import { primitives } from '../../../../theme';
 
 export type MessagePinnedHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
 
@@ -30,7 +30,7 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
 
   return (
     <View accessibilityLabel='Message Pinned Header' style={styles.container}>
-      <NewPin height={12} width={12} stroke={semantics.textPrimary} />
+      <NewPin height={16} width={16} stroke={semantics.textPrimary} />
       <Text style={styles.label}>
         {t('Pinned by')}{' '}
         {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}
@@ -61,7 +61,7 @@ const useStyles = () => {
       label: {
         color: semantics.textPrimary,
         fontSize: primitives.typographyFontSizeXs,
-        fontWeight: primitives.typographyFontWeightRegular,
+        fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
         ...label,
       },

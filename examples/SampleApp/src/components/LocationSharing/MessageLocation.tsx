@@ -160,12 +160,11 @@ export const MessageLocation = ({ message }: MessageLocationProps) => {
 const IMAGE_SIZE = 35;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {},
   mapView: {
-    height: 250,
-    width: 250,
+    height: 252,
+    width: 252,
+    borderRadius: 12,
   },
   textStyle: {
     fontSize: 12,

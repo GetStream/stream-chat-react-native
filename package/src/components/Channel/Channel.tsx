@@ -140,6 +140,7 @@ import {
   KeyboardCompatibleViewProps,
 } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { Message as MessageDefault } from '../Message/Message';
+import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/Headers/MessagePinnedHeader';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
@@ -148,7 +149,6 @@ import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimpl
 import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessageHeader as MessageHeaderDefault } from '../Message/MessageSimple/MessageHeader';
-import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/MessagePinnedHeader';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';

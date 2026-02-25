@@ -18,7 +18,6 @@ import {
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { Eye } from '../../../icons';
 
 import { primitives } from '../../../theme';
 import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
@@ -26,7 +25,6 @@ import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
 type MessageFooterComponentProps = {
   date?: string | Date;
   formattedDate?: string | Date;
-  isDeleted?: boolean;
 };
 
 type MessageFooterPropsWithContext = Pick<
@@ -34,61 +32,23 @@ type MessageFooterPropsWithContext = Pick<
   | 'alignment'
   | 'members'
   | 'message'
-  | 'otherAttachments'
   | 'showMessageStatus'
   | 'lastGroupMessage'
   | 'isMessageAIGenerated'
 > &
-  Pick<
-    MessagesContextValue,
-    'deletedMessagesVisibilityType' | 'MessageStatus' | 'MessageTimestamp'
-  > &
+  Pick<MessagesContextValue, 'MessageStatus'> &
   MessageFooterComponentProps;
-
-const OnlyVisibleToYouComponent = ({ alignment }: { alignment: Alignment }) => {
-  const {
-    theme: {
-      colors: { grey_dark },
-      messageSimple: {
-        content: { eyeIcon, metaText },
-      },
-    },
-  } = useTheme();
-  const { t } = useTranslationContext();
-
-  return (
-    <>
-      <Eye pathFill={grey_dark} {...eyeIcon} />
-      <Text
-        style={[
-          {
-            color: grey_dark,
-            textAlign: alignment,
-          },
-          metaText,
-        ]}
-        testID='only-visible-to-you'
-      >
-        {t('Only visible to you')}
-      </Text>
-    </>
-  );
-};
 
 const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
   const {
     alignment,
     date,
-    deletedMessagesVisibilityType,
     formattedDate,
-    isDeleted,
     isMessageAIGenerated,
     lastGroupMessage,
     members,
     message,
     MessageStatus,
-    MessageTimestamp,
-    otherAttachments,
     showMessageStatus,
   } = props;
   const styles = useStyles();
@@ -107,17 +67,6 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
     [message, isMessageAIGenerated],
   );
 
-  if (isDeleted) {
-    return (
-      <View style={[styles.container, container]}>
-        {deletedMessagesVisibilityType === 'sender' && (
-          <OnlyVisibleToYouComponent alignment={alignment} />
-        )}
-        <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
-      </View>
-    );
-  }
-
   if (lastGroupMessage === false && message.status === MessageStatusTypes.RECEIVED) {
     return null;
   }
@@ -126,9 +75,6 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
 
   return (
     <View style={[styles.container, container]} testID='message-status-time'>
-      {otherAttachments.length && otherAttachments[0].actions ? (
-        <OnlyVisibleToYouComponent alignment={alignment} />
-      ) : null}
       {Object.keys(members).length > 2 && alignment === 'left' && message.user?.name ? (
         <Text style={[styles.name, name]}>{message.user.name}</Text>
       ) : null}
@@ -149,7 +95,6 @@ const areEqual = (
     lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
     message: prevMessage,
-    otherAttachments: prevOtherAttachments,
     showMessageStatus: prevShowMessageStatus,
   } = prevProps;
   const {
@@ -159,7 +104,6 @@ const areEqual = (
     lastGroupMessage: nextLastGroupMessage,
     members: nextMembers,
     message: nextMessage,
-    otherAttachments: nextOtherAttachments,
     showMessageStatus: nextShowMessageStatus,
   } = nextProps;
 
@@ -178,12 +122,6 @@ const areEqual = (
     return false;
   }
 
-  const deletedMessagesVisibilityTypeEqual =
-    prevProps.deletedMessagesVisibilityType === nextProps.deletedMessagesVisibilityType;
-  if (!deletedMessagesVisibilityTypeEqual) {
-    return false;
-  }
-
   const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
   const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
 
@@ -195,13 +133,6 @@ const areEqual = (
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned;
   if (!messageEqual) {
-    return false;
-  }
-
-  const otherAttachmentsEqual =
-    prevOtherAttachments.length === nextOtherAttachments.length &&
-    prevOtherAttachments?.[0]?.actions?.length === nextOtherAttachments?.[0]?.actions?.length;
-  if (!otherAttachmentsEqual) {
     return false;
   }
 
@@ -239,30 +170,21 @@ export type MessageFooterProps = Partial<Pick<ChannelContextValue, 'members'>> &
   };
 
 export const MessageFooter = (props: MessageFooterProps) => {
-  const {
-    alignment,
-    isMessageAIGenerated,
-    lastGroupMessage,
-    members,
-    message,
-    otherAttachments,
-    showMessageStatus,
-  } = useMessageContext();
+  const { alignment, isMessageAIGenerated, lastGroupMessage, members, message, showMessageStatus } =
+    useMessageContext();
 
-  const { deletedMessagesVisibilityType, MessageStatus, MessageTimestamp } = useMessagesContext();
+  const { MessageStatus, MessageTimestamp } = useMessagesContext();
 
   return (
     <MemoizedMessageFooter
       {...{
         alignment,
-        deletedMessagesVisibilityType,
         isMessageAIGenerated,
         lastGroupMessage,
         members,
         message,
         MessageStatus,
         MessageTimestamp,
-        otherAttachments,
         showMessageStatus,
       }}
       {...props}

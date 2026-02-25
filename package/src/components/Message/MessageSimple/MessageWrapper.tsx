@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LocalMessage } from 'stream-chat';
 
@@ -14,6 +14,7 @@ import { ThemeProvider, useTheme } from '../../../contexts/themeContext/ThemeCon
 
 import { useStateStore } from '../../../hooks/useStateStore';
 import { ChannelUnreadStateStoreType } from '../../../state-store/channel-unread-state';
+import { primitives } from '../../../theme';
 
 const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
   first_unread_message_id: state.channelUnreadState?.first_unread_message_id,
@@ -71,7 +72,7 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
     useStateStore(channelUnreadStateStore.state, channelUnreadStateSelector);
   const {
     theme: {
-      messageList: { messageContainer },
+      messageList: { messageContainer, inlineDateSeparatorContainer },
       screenPadding,
     },
   } = useTheme();
@@ -94,7 +95,9 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
 
   const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
   const renderDateSeperator = dateSeparatorDate ? (
-    <InlineDateSeparator date={dateSeparatorDate} />
+    <View style={[styles.dateSeparatorContainer, inlineDateSeparatorContainer]}>
+      <InlineDateSeparator date={dateSeparatorDate} />
+    </View>
   ) : null;
 
   const renderMessage = (
@@ -133,4 +136,10 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
       {showUnreadUnderlay && <InlineUnreadIndicator />}
     </View>
   );
+});
+
+const styles = StyleSheet.create({
+  dateSeparatorContainer: {
+    paddingVertical: primitives.spacingXs,
+  },
 });

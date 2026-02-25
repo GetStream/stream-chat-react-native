@@ -43,7 +43,7 @@ export const useCreateMessageContext = ({
   videos,
   setQuotedMessage,
 }: MessageContextValue) => {
-  const groupStylesLength = groupStyles.length;
+  const stringifiedGroupStyles = groupStyles.join('');
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
   const stringifiedMessage = stringifyMessage({ message });
 
@@ -99,7 +99,7 @@ export const useCreateMessageContext = ({
       actionsEnabled,
       alignment,
       goToMessage,
-      groupStylesLength,
+      stringifiedGroupStyles,
       hasReactions,
       messageHasOnlySingleAttachment,
       lastGroupMessage,

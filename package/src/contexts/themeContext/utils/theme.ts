@@ -470,6 +470,7 @@ export type Theme = {
     };
     listContainer: ViewStyle;
     messageContainer: ViewStyle;
+    inlineDateSeparatorContainer: ViewStyle;
     messageSystem: {
       container: ViewStyle;
       dateText: TextStyle;
@@ -613,6 +614,12 @@ export type Theme = {
     };
     contentWrapper: ViewStyle;
     contentContainer: ViewStyle;
+    leftAlignItems: ViewStyle;
+    rightAlignItems: ViewStyle;
+    messageGroupedSingleStyles: ViewStyle;
+    messageGroupedBottomStyles: ViewStyle;
+    messageGroupedTopStyles: ViewStyle;
+    messageGroupedMiddleStyles: ViewStyle;
     file: {
       container: ViewStyle;
       details: ViewStyle;
@@ -1310,6 +1317,7 @@ export const defaultTheme: Theme = {
     },
     listContainer: {},
     messageContainer: {},
+    inlineDateSeparatorContainer: {},
     messageSystem: {
       container: {},
       dateText: {},
@@ -1458,6 +1466,12 @@ export const defaultTheme: Theme = {
     },
     contentWrapper: {},
     contentContainer: {},
+    leftAlignItems: {},
+    rightAlignItems: {},
+    messageGroupedSingleStyles: {},
+    messageGroupedBottomStyles: {},
+    messageGroupedTopStyles: {},
+    messageGroupedMiddleStyles: {},
     file: {
       container: {},
       details: {},
