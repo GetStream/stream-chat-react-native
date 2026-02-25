@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import {
@@ -77,7 +77,7 @@ export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
   Pick<MessageContextValue, 'message'> &
   Pick<MessagesContextValue, 'quotedMessage'> & {
     isMyMessage: boolean;
-    onDismiss: () => void;
+    onDismiss?: () => void;
     mode: 'reply' | 'edit';
     // This is temporary for the MessageContent Component to style the Reply component
     styles?: {
@@ -91,7 +91,15 @@ export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
   };
 
 export const ReplyWithContext = (props: ReplyPropsWithContext) => {
-  const { isMyMessage, ImageComponent, mode, onDismiss, quotedMessage, styles: stylesProp } = props;
+  const {
+    isMyMessage,
+    ImageComponent,
+    message: messageFromContext,
+    mode,
+    onDismiss,
+    quotedMessage,
+    styles: stylesProp,
+  } = props;
   const {
     theme: {
       reply: {
@@ -123,7 +131,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   }
 
   return (
-    <View style={[mode === 'edit' ? styles.wrapper : null, wrapper]}>
+    <View style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}>
       <View style={[styles.container, container, stylesProp?.container]}>
         <View style={[styles.leftContainer, leftContainer, stylesProp?.leftContainer]}>
           <View style={styles.titleContainer}>
@@ -138,7 +146,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
           <RightContent ImageComponent={ImageComponent} message={quotedMessage} />
         </View>
       </View>
-      {mode === 'edit' ? (
+      {onDismiss ? (
         <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
           <AttachmentRemoveControl onPress={onDismiss} />
         </View>
@@ -183,7 +191,8 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
 
 export const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof ReplyWithContext;
 
-export type ReplyProps = Partial<ReplyPropsWithContext> & Pick<ReplyPropsWithContext, 'mode'>;
+export type ReplyProps = Partial<ReplyPropsWithContext> &
+  Pick<ReplyPropsWithContext, 'mode' | 'onDismiss'>;
 
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();
@@ -194,10 +203,6 @@ export const Reply = (props: ReplyProps) => {
     messageComposer.state,
     messageComposerStateStoreSelector,
   );
-
-  const onDismiss = useCallback(() => {
-    messageComposer.setQuotedMessage(null);
-  }, [messageComposer]);
 
   const quotedMessage = messageFromContext
     ? (messageFromContext.quoted_message as MessagesContextValue['quotedMessage'])
@@ -210,7 +215,6 @@ export const Reply = (props: ReplyProps) => {
       ImageComponent={ImageComponent}
       isMyMessage={isMyMessage}
       message={messageFromContext}
-      onDismiss={onDismiss}
       quotedMessage={quotedMessage}
       {...props}
     />
