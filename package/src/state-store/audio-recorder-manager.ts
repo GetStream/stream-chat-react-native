@@ -138,7 +138,6 @@ export class AudioRecorderManager {
     const { isStarting, status } = this.state.getLatestValue();
     if (isStarting) {
       this.hasPendingStopWhileStarting = true;
-      this.reset();
       return;
     }
     if (status !== 'recording') {
