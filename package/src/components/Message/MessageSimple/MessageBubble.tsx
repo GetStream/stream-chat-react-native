@@ -12,7 +12,6 @@ import Animated, {
 
 import { MessageContentProps } from './MessageContent';
 import { MessageSimplePropsWithContext } from './MessageSimple';
-import { ReactionListTopProps } from './ReactionList/ReactionListTop';
 
 import { MessagesContextValue, useTheme } from '../../../contexts';
 
@@ -22,7 +21,11 @@ import { MessageStatusTypes } from '../../../utils/utils';
 
 export type MessageBubbleProps = Pick<
   MessagesContextValue,
-  'reactionListPosition' | 'MessageContent' | 'ReactionListTop' | 'MessageError'
+  | 'reactionListPosition'
+  | 'MessageContent'
+  | 'ReactionListTop'
+  | 'MessageError'
+  | 'reactionListType'
 > &
   Pick<
     MessageContentProps,
@@ -30,15 +33,18 @@ export type MessageBubbleProps = Pick<
     | 'backgroundColor'
     | 'messageGroupedSingleOrBottom'
     | 'noBorder'
-    | 'setMessageContentWidth'
     | 'message'
+    | 'setMessageContentWidth'
   > &
-  Pick<ReactionListTopProps, 'messageContentWidth'>;
+  Pick<MessageSimplePropsWithContext, 'alignment'> & {
+    messageContentWidth: number;
+  };
 
 export const MessageBubble = React.memo(
   ({
+    alignment,
     reactionListPosition,
-    messageContentWidth,
+    reactionListType,
     setMessageContentWidth,
     MessageContent,
     ReactionListTop,
@@ -51,29 +57,48 @@ export const MessageBubble = React.memo(
   }: MessageBubbleProps) => {
     const {
       theme: {
-        messageSimple: { contentContainer },
+        messageSimple: {
+          bubble: { contentContainer, errorContainer, reactionListTopContainer, wrapper },
+        },
       },
     } = useTheme();
     const isMessageErrorType =
       message?.type === 'error' || message?.status === MessageStatusTypes.FAILED;
 
     return (
-      <View style={[styles.contentContainer, contentContainer]}>
-        <MessageContent
-          backgroundColor={backgroundColor}
-          isVeryLastMessage={isVeryLastMessage}
-          messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-          noBorder={noBorder}
-          setMessageContentWidth={setMessageContentWidth}
-        />
+      <View style={[styles.wrapper, wrapper]}>
         {reactionListPosition === 'top' && ReactionListTop ? (
-          <ReactionListTop messageContentWidth={messageContentWidth} />
-        ) : null}
-        {isMessageErrorType ? (
-          <View style={styles.errorContainer}>
-            <MessageError />
+          <View
+            style={[
+              styles.reactionListTopContainer,
+              reactionListTopContainer,
+              { alignSelf: alignment === 'left' ? 'flex-end' : 'flex-start' },
+            ]}
+          >
+            <ReactionListTop type={reactionListType} />
           </View>
         ) : null}
+        <View
+          style={[
+            styles.contentContainer,
+            { alignSelf: alignment === 'left' ? 'flex-start' : 'flex-end' },
+            contentContainer,
+          ]}
+        >
+          <MessageContent
+            backgroundColor={backgroundColor}
+            isVeryLastMessage={isVeryLastMessage}
+            messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+            noBorder={noBorder}
+            setMessageContentWidth={setMessageContentWidth}
+          />
+
+          {isMessageErrorType ? (
+            <View style={[styles.errorContainer, errorContainer]}>
+              <MessageError />
+            </View>
+          ) : null}
+        </View>
       </View>
     );
   },
@@ -223,7 +248,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     zIndex: 1, // To hide the stick inside the message content
   },
-  contentContainer: {},
+  contentContainer: {
+    alignSelf: 'flex-start',
+  },
   swipeContentContainer: {
     flexShrink: 0,
     overflow: 'hidden',
@@ -234,4 +261,6 @@ const styles = StyleSheet.create({
     top: 8,
     right: -12,
   },
+  reactionListTopContainer: {},
+  wrapper: {},
 });

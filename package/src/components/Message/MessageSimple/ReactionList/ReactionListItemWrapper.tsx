@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, PressableProps, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, PressableProps, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
@@ -17,35 +17,41 @@ export const ReactionListItemWrapper = (props: ReactionListItemWrapperProps) => 
   } = useTheme();
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.container,
-        {
-          backgroundColor: selected
-            ? semantics.backgroundCoreSelected
-            : pressed
-              ? semantics.backgroundCorePressed
-              : semantics.reactionBg,
-        },
-        style,
-      ]}
-      {...rest}
-    >
-      {children}
-    </Pressable>
+    <View style={styles.wrapper}>
+      <Pressable
+        style={({ pressed }) => [
+          styles.container,
+          {
+            backgroundColor: selected
+              ? semantics.backgroundCoreSelected
+              : pressed
+                ? semantics.backgroundCorePressed
+                : semantics.reactionBg,
+          },
+          style,
+        ]}
+        {...rest}
+      >
+        {children}
+      </Pressable>
+    </View>
   );
 };
 
 const useStyles = () => {
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      messageSimple: {
+        reactionListItemWrapper: { wrapper, container },
+      },
+    },
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
       container: {
         alignItems: 'center',
         flexDirection: 'row',
-        justifyContent: 'center',
         borderWidth: 1,
         borderRadius: primitives.radiusMax,
         borderColor: semantics.reactionBorder,
@@ -53,7 +59,13 @@ const useStyles = () => {
         paddingVertical: primitives.spacingXxs,
         paddingHorizontal: primitives.spacingXs,
         gap: primitives.spacingXxs,
+        ...container,
+      },
+      wrapper: {
+        backgroundColor: semantics.reactionBg,
+        borderRadius: primitives.radiusMax,
+        ...wrapper,
       },
     });
-  }, [semantics]);
+  }, [semantics, wrapper, container]);
 };

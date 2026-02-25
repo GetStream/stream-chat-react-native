@@ -709,7 +709,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     PollContent,
     ReactionListBottom = ReactionListBottomDefault,
     reactionListPosition = 'top',
-    reactionListType = 'segmented',
+    reactionListType = 'clustered',
     ReactionListTop = ReactionListTopDefault,
     Reply = ReplyDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
