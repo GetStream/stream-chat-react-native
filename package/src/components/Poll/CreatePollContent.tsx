@@ -60,7 +60,6 @@ export const CreatePollContent = () => {
 
   const {
     theme: {
-      colors: { white },
       poll: {
         createContent: { addComment, anonymousPoll, optionCardWrapper, scrollView, suggestOption },
       },
@@ -150,7 +149,7 @@ export const CreatePollContent = () => {
       />
       <ScrollView
         contentContainerStyle={styles.contentContainerStyle}
-        style={[styles.scrollView, { backgroundColor: white }, scrollView]}
+        style={[styles.scrollView, scrollView]}
       >
         <NameField />
         <CreatePollOptions currentOptionPositions={currentOptionPositions} />
@@ -248,7 +247,11 @@ const useStyles = () => {
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
-      scrollView: { flex: 1, padding: primitives.spacingMd },
+      scrollView: {
+        flex: 1,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundElevationElevation1,
+      },
       contentContainerStyle: { paddingBottom: 70 },
       title: {
         color: semantics.textPrimary,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   AnimatableNumericValue,
   ColorValue,
@@ -117,7 +117,6 @@ export type MessageContentPropsWithContext = Pick<
  * Child of MessageSimple that displays a message's content
  */
 const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
-  const [longPressFired, setLongPressFired] = useState(false);
   const {
     additionalPressableProps,
     Attachment,
@@ -238,7 +237,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     <Pressable
       disabled={preventPress}
       onLongPress={(event) => {
-        setLongPressFired(true);
         if (onLongPress) {
           onLongPress({
             emitter: 'messageContent',
@@ -262,10 +260,9 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           });
         }
       }}
-      style={({ pressed }) => [{ opacity: pressed && !longPressFired ? 0.5 : 1 }, container]}
+      style={container}
       {...additionalPressableProps}
       onPressOut={(event) => {
-        setLongPressFired(false);
         setNativeScrollability(true);
 
         if (additionalPressableProps?.onPressOut) {
@@ -382,6 +379,7 @@ const areEqual = (
   nextProps: MessageContentPropsWithContext,
 ) => {
   const {
+    backgroundColor: prevBackgroundColor,
     preventPress: prevPreventPress,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
@@ -393,6 +391,7 @@ const areEqual = (
     t: prevT,
   } = prevProps;
   const {
+    backgroundColor: nextBackgroundColor,
     preventPress: nextPreventPress,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
@@ -402,6 +401,10 @@ const areEqual = (
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
+
+  if (prevBackgroundColor !== nextBackgroundColor) {
+    return false;
+  }
 
   if (prevPreventPress !== nextPreventPress) {
     return false;

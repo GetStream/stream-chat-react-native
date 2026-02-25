@@ -71,6 +71,16 @@ const useStyles = () => {
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
+      pollModalWrapper: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: semantics.backgroundElevationElevation1,
+      },
+      pollSafeArea: {
+        flex: 1,
+        backgroundColor: semantics.backgroundElevationElevation1,
+      },
       container: {
         alignItems: 'center',
         flexDirection: 'row',
@@ -454,14 +464,14 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       </Animated.View>
 
       {showPollCreationDialog ? (
-        <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+        <View style={styles.pollModalWrapper}>
           <Modal
             animationType='slide'
             onRequestClose={closePollCreationDialog}
             visible={showPollCreationDialog}
           >
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <SafeAreaViewWrapper style={{ flex: 1 }}>
+            <GestureHandlerRootView style={styles.pollSafeArea}>
+              <SafeAreaViewWrapper style={styles.pollSafeArea}>
                 <CreatePoll
                   closePollCreationDialog={closePollCreationDialog}
                   CreatePollContent={CreatePollContent}

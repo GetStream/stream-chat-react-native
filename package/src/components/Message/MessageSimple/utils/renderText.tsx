@@ -126,13 +126,11 @@ const defaultMarkdownStyles: MarkdownStyle = {
   paragraph: {
     marginBottom: 8,
     fontSize: primitives.typographyFontSizeMd,
-    lineHeight: primitives.typographyLineHeightNormal,
     marginTop: 8,
   },
   paragraphCenter: {
     marginBottom: 8,
     fontSize: primitives.typographyFontSizeMd,
-    lineHeight: primitives.typographyLineHeightNormal,
     marginTop: 8,
   },
   paragraphWithImage: {
@@ -201,6 +199,16 @@ export const renderText = (params: RenderTextParams) => {
   const styles: MarkdownStyle = {
     ...defaultMarkdownStyles,
     ...markdownStyles,
+    paragraph: {
+      ...(onlyEmojis ? {} : { lineHeight: primitives.typographyLineHeightNormal }),
+      ...defaultMarkdownStyles.paragraph,
+      ...markdownStyles?.paragraph,
+    },
+    paragraphCenter: {
+      ...(onlyEmojis ? {} : { lineHeight: primitives.typographyLineHeightNormal }),
+      ...defaultMarkdownStyles.paragraphCenter,
+      ...markdownStyles?.paragraphCenter,
+    },
     autolink: {
       fontSize: primitives.typographyFontSizeMd,
       lineHeight: primitives.typographyLineHeightNormal,
@@ -279,7 +287,7 @@ export const renderText = (params: RenderTextParams) => {
     },
     text: {
       fontSize: primitives.typographyFontSizeMd,
-      lineHeight: primitives.typographyLineHeightNormal,
+      ...(onlyEmojis ? {} : { lineHeight: primitives.typographyLineHeightNormal }),
       ...defaultMarkdownStyles.text,
       color: colors.black,
       ...markdownStyles?.text,

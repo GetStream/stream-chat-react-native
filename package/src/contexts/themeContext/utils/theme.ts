@@ -1,8 +1,14 @@
-import { type ColorValue, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
+import {
+  Appearance,
+  type ColorValue,
+  type ImageStyle,
+  type TextStyle,
+  type ViewStyle,
+} from 'react-native';
 import type { CircleProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
-import { primitives, semantics } from '../../../theme';
+import { primitives, lightSemantics, darkSemantics } from '../../../theme';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 // TODO: Handle this better later depending on the size of the avatar used
@@ -593,8 +599,6 @@ export type Theme = {
         onlyEmojiMarkdown: MarkdownStyle;
       };
       wrapper: ViewStyle;
-      receiverMessageBackgroundColor?: ColorValue;
-      senderMessageBackgroundColor?: ColorValue;
       timestampText?: TextStyle;
     };
     deleted: {
@@ -933,11 +937,11 @@ export type Theme = {
     thumb: ViewStyle;
     waveform: ViewStyle;
   };
-  semantics: typeof semantics;
+  semantics: typeof lightSemantics; // themed semantics have the same type
 };
 
 export const defaultTheme: Theme = {
-  semantics,
+  semantics: Appearance.getColorScheme() === 'light' ? lightSemantics : darkSemantics,
   aiTypingIndicatorView: {
     container: {},
     text: {},
