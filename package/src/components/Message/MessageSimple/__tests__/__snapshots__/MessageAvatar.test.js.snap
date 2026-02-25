@@ -22,10 +22,10 @@ exports[`MessageAvatar should render message avatar 1`] = `
             "width": 32,
           },
           {
-            "backgroundColor": "#d1f3f6",
+            "backgroundColor": "#003a3f",
           },
           {
-            "borderColor": "rgba(0, 0, 0, 0.1)",
+            "borderColor": "rgba(255, 255, 255, 0.2)",
             "borderWidth": 1,
           },
           undefined,

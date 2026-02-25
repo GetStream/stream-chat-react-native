@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   AttachmentTypePickerButton,
@@ -10,6 +10,7 @@ import {
   PollPickerButton,
   useAttachmentPickerContext,
   useStableCallback,
+  useTheme,
 } from 'stream-chat-react-native';
 import { ShareLocationIcon } from '../icons/ShareLocationIcon';
 import { LiveLocationCreateModal } from './LocationSharing/CreateLocationModal';
@@ -18,6 +19,8 @@ export const CustomAttachmentPickerSelectionBar = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const { attachmentPickerStore } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
+
+  const styles = useStyles();
 
   const onRequestClose = () => {
     setModalVisible(false);
@@ -47,11 +50,15 @@ export const CustomAttachmentPickerSelectionBar = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  selectionBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-  },
-});
+const useStyles = () => {
+  const { theme: { semantics }} = useTheme();
+  return useMemo(() => StyleSheet.create({
+    selectionBar: {
+      backgroundColor: semantics.composerBg,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingBottom: 12,
+    },
+  }), [semantics])
+}

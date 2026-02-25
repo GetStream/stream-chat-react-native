@@ -74,41 +74,79 @@ import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
 // TODO: Think if we really need this and strive to remove it if we can.
 const WAIT_FOR_SCROLL_TIMEOUT = 0;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-  },
-  contentContainer: {
-    /**
-     * paddingBottom is set to 4 to account for the default date
-     * header and inline indicator alignment. The top margin is 8
-     * on the header but 4 on the inline date, this adjusts the spacing
-     * to allow the "first" inline date to align with the date header.
-     */
-    paddingBottom: 4,
-  },
-  flex: { flex: 1 },
-  listContainer: {
-    flex: 1,
-    width: '100%',
-  },
-  scrollToBottomButtonContainer: {
-    position: 'absolute',
-    right: 16,
-  },
-  stickyHeaderContainer: {
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: primitives.spacingXs,
-  },
-  unreadMessagesNotificationContainer: {
-    alignSelf: 'center',
-    position: 'absolute',
-    top: 8,
-  },
-});
+
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      messageList: {
+        container,
+        contentContainer,
+        listContainer,
+        stickyHeaderContainer,
+        scrollToBottomButtonContainer,
+        unreadMessagesNotificationContainer,
+      },
+    },
+  } = useTheme();
+
+  const { backgroundCoreApp } = semantics;
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          width: '100%',
+          backgroundColor: backgroundCoreApp,
+          ...container,
+        },
+        contentContainer: {
+          /**
+           * paddingBottom is set to 4 to account for the default date
+           * header and inline indicator alignment. The top margin is 8
+           * on the header but 4 on the inline date, this adjusts the spacing
+           * to allow the "first" inline date to align with the date header.
+           */
+          paddingBottom: 4,
+          ...contentContainer,
+        },
+        flex: { flex: 1, backgroundColor: backgroundCoreApp },
+        listContainer: {
+          flex: 1,
+          width: '100%',
+          ...listContainer,
+        },
+        scrollToBottomButtonContainer: {
+          position: 'absolute',
+          right: 16,
+          ...scrollToBottomButtonContainer,
+        },
+        stickyHeaderContainer: {
+          left: 0,
+          position: 'absolute',
+          right: 0,
+          top: primitives.spacingXs,
+          ...stickyHeaderContainer,
+        },
+        unreadMessagesNotificationContainer: {
+          alignSelf: 'center',
+          position: 'absolute',
+          top: 8,
+          ...unreadMessagesNotificationContainer,
+        },
+      }),
+    [
+      backgroundCoreApp,
+      container,
+      contentContainer,
+      listContainer,
+      scrollToBottomButtonContainer,
+      stickyHeaderContainer,
+      unreadMessagesNotificationContainer,
+    ],
+  );
+};
 
 const keyExtractor = (derivedItem: MessageListItemWithNeighbours) => {
   const { message: item } = derivedItem;
@@ -330,22 +368,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   } = props;
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
+  const styles = useStyles();
   const { height: messageInputHeight } = useStateStore(
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
-
-  const {
-    colors: { white_snow },
-    messageList: {
-      container,
-      contentContainer,
-      listContainer,
-      stickyHeaderContainer,
-      scrollToBottomButtonContainer,
-      unreadMessagesNotificationContainer,
-    },
-  } = theme;
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
@@ -1123,19 +1150,19 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }
 
   const flatListStyle = useMemo(
-    () => [styles.listContainer, listContainer, additionalFlatListProps?.style],
-    [additionalFlatListProps?.style, listContainer],
+    () => [styles.listContainer, additionalFlatListProps?.style],
+    [additionalFlatListProps?.style, styles.listContainer],
   );
 
   const flatListContentContainerStyle = useMemo(
     () => [
       { paddingTop: messageInputFloating ? messageInputHeight : 0 },
+      styles.contentContainer,
       additionalFlatListProps?.contentContainerStyle,
-      contentContainer,
     ],
     [
       additionalFlatListProps?.contentContainerStyle,
-      contentContainer,
+      styles.contentContainer,
       messageInputHeight,
       messageInputFloating,
     ],
@@ -1193,7 +1220,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   if (loading) {
     return (
-      <View style={[styles.container, { backgroundColor: white_snow }, container]}>
+      <View style={styles.container}>
         <LoadingIndicator listType='message' />
       </View>
     );
@@ -1201,13 +1228,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   // TODO: Make sure this is actually overridable as the previous FlatList was.
   return (
-    <View
-      style={[styles.container, { backgroundColor: white_snow }, container]}
-      testID='message-flat-list-wrapper'
-    >
+    <View style={styles.container} testID='message-flat-list-wrapper'>
       {/* Don't show the empty list indicator for Thread messages */}
       {processedMessageList.length === 0 && !thread ? (
-        <View style={[styles.flex, { backgroundColor: white_snow }]} testID='empty-state'>
+        <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
       ) : (
@@ -1254,7 +1278,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </MessageListItemProvider>
       )}
-      <View style={[styles.stickyHeaderContainer, stickyHeaderContainer]}>
+      <View style={styles.stickyHeaderContainer}>
         {messageListLengthAfterUpdate && StickyHeader ? (
           <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
         ) : null}
@@ -1268,9 +1292,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         <Animated.View
           layout={LinearTransition.duration(200)}
           style={[
-            styles.scrollToBottomButtonContainer,
             { bottom: messageInputFloating ? messageInputHeight : 16 },
-            scrollToBottomButtonContainer,
+            styles.scrollToBottomButtonContainer,
           ]}
         >
           <ScrollToBottomButton
@@ -1283,9 +1306,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
-        <View
-          style={[styles.unreadMessagesNotificationContainer, unreadMessagesNotificationContainer]}
-        >
+        <View style={styles.unreadMessagesNotificationContainer}>
           <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
         </View>
       ) : null}

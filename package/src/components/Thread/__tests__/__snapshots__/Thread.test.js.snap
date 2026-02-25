@@ -19,16 +19,11 @@ exports[`Thread should match thread snapshot 1`] = `
   >
     <View
       style={
-        [
-          {
-            "flex": 1,
-            "width": "100%",
-          },
-          {
-            "backgroundColor": "#FCFCFC",
-          },
-          {},
-        ]
+        {
+          "backgroundColor": "#ffffff",
+          "flex": 1,
+          "width": "100%",
+        }
       }
       testID="message-flat-list-wrapper"
     >
@@ -40,8 +35,10 @@ exports[`Thread should match thread snapshot 1`] = `
             {
               "paddingTop": 0,
             },
+            {
+              "paddingBottom": 4,
+            },
             undefined,
-            {},
           ]
         }
         data={
@@ -297,7 +294,6 @@ exports[`Thread should match thread snapshot 1`] = `
                 "flex": 1,
                 "width": "100%",
               },
-              {},
               undefined,
             ],
           ]
@@ -528,14 +524,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={
-                                    [
-                                      {
-                                        "opacity": 1,
-                                      },
-                                      {},
-                                    ]
-                                  }
+                                  style={{}}
                                 >
                                   <View
                                     onLayout={[Function]}
@@ -551,7 +540,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             "overflow": "hidden",
                                           },
                                           {
-                                            "backgroundColor": "#E9EAED",
+                                            "backgroundColor": "#ebeef1",
                                             "borderBottomLeftRadius": 0,
                                             "borderBottomRightRadius": 20,
                                             "borderColor": "#ECEBEB",
@@ -888,14 +877,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={
-                                    [
-                                      {
-                                        "opacity": 1,
-                                      },
-                                      {},
-                                    ]
-                                  }
+                                  style={{}}
                                 >
                                   <View
                                     onLayout={[Function]}
@@ -911,7 +893,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             "overflow": "hidden",
                                           },
                                           {
-                                            "backgroundColor": "#E9EAED",
+                                            "backgroundColor": "#ebeef1",
                                             "borderBottomLeftRadius": 0,
                                             "borderBottomRightRadius": 20,
                                             "borderColor": "#ECEBEB",
@@ -1273,14 +1255,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={
-                                    [
-                                      {
-                                        "opacity": 1,
-                                      },
-                                      {},
-                                    ]
-                                  }
+                                  style={{}}
                                 >
                                   <View
                                     onLayout={[Function]}
@@ -1296,7 +1271,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             "overflow": "hidden",
                                           },
                                           {
-                                            "backgroundColor": "#E9EAED",
+                                            "backgroundColor": "#ebeef1",
                                             "borderBottomLeftRadius": 0,
                                             "borderBottomRightRadius": 20,
                                             "borderColor": "#ECEBEB",
@@ -1639,14 +1614,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={
-                                    [
-                                      {
-                                        "opacity": 1,
-                                      },
-                                      {},
-                                    ]
-                                  }
+                                  style={{}}
                                 >
                                   <View
                                     onLayout={[Function]}
@@ -1662,7 +1630,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             "overflow": "hidden",
                                           },
                                           {
-                                            "backgroundColor": "#E9EAED",
+                                            "backgroundColor": "#ebeef1",
                                             "borderBottomLeftRadius": 0,
                                             "borderBottomRightRadius": 20,
                                             "borderColor": "#ECEBEB",
@@ -1907,15 +1875,12 @@ exports[`Thread should match thread snapshot 1`] = `
       </RCTScrollView>
       <View
         style={
-          [
-            {
-              "left": 0,
-              "position": "absolute",
-              "right": 0,
-              "top": 8,
-            },
-            {},
-          ]
+          {
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 8,
+          }
         }
       />
     </View>
