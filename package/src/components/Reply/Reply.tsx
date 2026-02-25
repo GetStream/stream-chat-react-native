@@ -146,7 +146,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
           <RightContent ImageComponent={ImageComponent} message={quotedMessage} />
         </View>
       </View>
-      {!messageFromContext?.quoted_message ? (
+      {!messageFromContext?.quoted_message && mode !== 'reply' ? (
         <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
           <AttachmentRemoveControl onPress={onDismiss} />
         </View>
