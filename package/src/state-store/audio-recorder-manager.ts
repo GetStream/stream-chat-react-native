@@ -139,7 +139,7 @@ export class AudioRecorderManager {
     return accessGranted;
   }
 
-  async stopRecording() {
+  async stopRecording(withDelete: boolean = false) {
     if (!NativeHandlers.Audio) {
       return;
     }
@@ -157,7 +157,12 @@ export class AudioRecorderManager {
     } catch {
       // Best effort cleanup, native implementation may already be stopped.
     }
-    this.state.partialNext({ isStarting: false, status: 'stopped' });
+
+    if (withDelete) {
+      this.reset();
+    } else {
+      this.state.partialNext({ isStarting: false, status: 'stopped' });
+    }
   }
 
   set micLocked(value: boolean) {
