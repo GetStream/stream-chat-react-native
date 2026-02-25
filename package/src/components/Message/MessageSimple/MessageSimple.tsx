@@ -214,7 +214,6 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
             ]}
             testID='message-components'
           >
-            {/* TODO: Find a better way to avoid Remounting here. */}
             <MessageHeader />
             {enableSwipeToReply ? (
               <SwipableMessageBubble

@@ -21,11 +21,11 @@ type Props = Pick<IconProps, 'pathFill' | 'style'> & {
   supportedReactions?: ReactionData[];
 };
 
-const Icon = ({ pathFill, size, style, supportedReactions, type }: Props) => {
+const Icon = ({ size, style, supportedReactions, type }: Props) => {
   const ReactionIcon =
     supportedReactions?.find((reaction) => reaction.type === type)?.Icon || Unknown;
 
-  return <ReactionIcon size={size} pathFill={pathFill} style={style} />;
+  return <ReactionIcon size={size} style={style} />;
 };
 
 export type ReactionListItemProps = Partial<
