@@ -310,7 +310,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                         key={`quoted_reply_${messageContentOrderIndex}`}
                         style={[styles.replyContainer, replyContainer]}
                       >
-                        <Reply styles={replyStyles} />
+                        <Reply mode='reply' styles={replyStyles} />
                       </View>
                     )
                   );
