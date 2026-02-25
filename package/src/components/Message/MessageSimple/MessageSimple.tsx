@@ -97,19 +97,23 @@ const useStyles = ({
     return {
       single: {
         paddingVertical: primitives.spacingXs,
+        backgroundColor: 'red',
         ...messageGroupedSingleStyles,
       },
       top: {
         paddingTop: primitives.spacingXs,
         paddingBottom: primitives.spacingXxs,
+        backgroundColor: 'pink',
         ...messageGroupedTopStyles,
       },
       middle: {
         paddingBottom: primitives.spacingXxs,
+        backgroundColor: 'yellow',
         ...messageGroupedMiddleStyles,
       },
       bottom: {
         paddingBottom: primitives.spacingXs,
+        backgroundColor: 'blue',
         ...messageGroupedBottomStyles,
       },
     };
@@ -389,9 +393,7 @@ const areEqual = (
     members: nextMembers,
   } = nextProps;
 
-  const groupStylesEqual =
-    prevGroupStyles.length === nextGroupStyles.length &&
-    prevGroupStyles.every((style, index) => style === nextGroupStyles[index]);
+  const groupStylesEqual = prevGroupStyles === nextGroupStyles;
   if (!groupStylesEqual) {
     return false;
   }

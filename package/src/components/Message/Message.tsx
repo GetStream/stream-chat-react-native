@@ -969,9 +969,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
-  const groupStylesEqual =
-    prevGroupStyles.length === nextGroupStyles.length &&
-    prevGroupStyles.every((style, index) => style === nextGroupStyles[index]);
+  const groupStylesEqual = prevGroupStyles === nextGroupStyles;
   if (!groupStylesEqual) {
     return false;
   }

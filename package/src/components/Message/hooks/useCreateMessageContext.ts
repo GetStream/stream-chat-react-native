@@ -1,8 +1,19 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 
 import { stringifyMessage } from '../../../utils/utils';
+
+function useStableRefValue<T>(value: T): T {
+  const ref = useRef(value);
+
+  // Only update if reference truly changed
+  if (ref.current !== value) {
+    ref.current = value;
+  }
+
+  return ref.current;
+}
 
 export const useCreateMessageContext = ({
   actionsEnabled,
@@ -43,7 +54,7 @@ export const useCreateMessageContext = ({
   videos,
   setQuotedMessage,
 }: MessageContextValue) => {
-  const stringifiedGroupStyles = groupStyles.join('');
+  const stableGroupStyles = useStableRefValue(groupStyles);
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
   const stringifiedMessage = stringifyMessage({ message });
 
@@ -63,7 +74,7 @@ export const useCreateMessageContext = ({
       dismissOverlay,
       files,
       goToMessage,
-      groupStyles,
+      groupStyles: stableGroupStyles,
       handleAction,
       handleReaction,
       handleToggleReaction,
@@ -99,7 +110,7 @@ export const useCreateMessageContext = ({
       actionsEnabled,
       alignment,
       goToMessage,
-      stringifiedGroupStyles,
+      stableGroupStyles,
       hasReactions,
       messageHasOnlySingleAttachment,
       lastGroupMessage,
