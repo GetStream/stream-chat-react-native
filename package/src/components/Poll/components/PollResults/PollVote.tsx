@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PollVote as PollVoteClass, VotingVisibility } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../../contexts';
+import { primitives } from '../../../../theme';
 import { getDateString } from '../../../../utils/i18n/getDateString';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
 
@@ -15,7 +16,6 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
   const { votingVisibility } = usePollState();
   const {
     theme: {
-      colors: { black, text_low_emphasis },
       poll: {
         results: {
           vote: { container, dateText, userName },
@@ -23,6 +23,7 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const dateString = useMemo(
     () =>
@@ -43,28 +44,44 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
   return (
     <View style={[styles.voteContainer, container]}>
       <View style={styles.userContainer}>
-        {!isAnonymous && vote.user ? <UserAvatar user={vote.user} size='xs' showBorder /> : null}
-        <Text style={[styles.voteUserName, { color: black }, userName]}>
+        {!isAnonymous && vote.user ? <UserAvatar user={vote.user} size='md' showBorder /> : null}
+        <Text style={[styles.voteUserName, userName]}>
           {isAnonymous ? t('Anonymous') : (vote.user?.name ?? vote.user?.id)}
         </Text>
       </View>
-      <Text style={[styles.voteDate, { color: text_low_emphasis }, dateText]}>{dateString}</Text>
+      <Text style={[styles.voteDate, dateText]}>{dateString}</Text>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  voteContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-    paddingVertical: 8,
-  },
-  voteCount: { fontSize: 16, marginLeft: 16 },
-  voteDate: { fontSize: 14 },
-  voteUserName: { fontSize: 14, marginLeft: 4 },
-  userContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        voteContainer: {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingVertical: primitives.spacingXs,
+        },
+        voteDate: {
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textTertiary,
+        },
+        voteUserName: {
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
+          paddingLeft: primitives.spacingXs,
+        },
+        userContainer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+        },
+      }),
+    [semantics],
+  );
+};

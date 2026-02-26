@@ -876,10 +876,12 @@ export type Theme = {
         container: ViewStyle;
         headerContainer: ViewStyle;
         title: TextStyle;
+        titleMeta: TextStyle;
         voteCount: TextStyle;
       };
       scrollView: ViewStyle;
       title: TextStyle;
+      titleMeta: TextStyle;
       vote: { container: ViewStyle; dateText: TextStyle; userName: TextStyle };
     };
   };
@@ -1712,10 +1714,12 @@ export const defaultTheme: Theme = {
         container: {},
         headerContainer: {},
         title: {},
+        titleMeta: {},
         voteCount: {},
       },
       scrollView: {},
       title: {},
+      titleMeta: {},
       vote: { container: {}, dateText: {}, userName: {} },
     },
   },

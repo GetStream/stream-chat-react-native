@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { LocalMessage, Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
@@ -13,6 +13,7 @@ import {
   useTranslationContext,
 } from '../../../../contexts';
 
+import { primitives } from '../../../../theme';
 import { SafeAreaViewWrapper } from '../../../UIComponents/SafeAreaViewWrapper';
 import { usePollState } from '../../hooks/usePollState';
 import { GenericPollButton } from '../Button';
@@ -79,53 +80,85 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
 
 export type PollResultItemProps = {
   option: PollOption;
+  index: number;
 };
 
 const PollResultsVoteItem = (vote: PollVoteClass) => (
   <PollVote key={`results_vote_${vote.id}`} vote={vote} />
 );
 
-export const PollResultsItem = ({ option }: PollResultItemProps) => {
+export const PollResultsItem = ({ option, index }: PollResultItemProps) => {
   const { t } = useTranslationContext();
   const { latestVotesByOption, voteCountsByOption } = usePollState();
 
   const {
     theme: {
-      colors: { bg_user, black },
       poll: {
         results: {
-          item: { container, headerContainer, title, voteCount },
+          item: { container, headerContainer, title, titleMeta, voteCount },
         },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, { backgroundColor: bg_user }, container]}>
+    <View style={[styles.container, container]}>
+      <Text style={[styles.titleMeta, titleMeta]}>{`Option ${index + 1}`}</Text>
       <View style={[styles.headerContainer, headerContainer]}>
-        <Text style={[styles.title, { color: black }, title]}>{option.text}</Text>
-        <Text style={[styles.voteCount, { color: black }, voteCount]}>
+        <Text style={[styles.title, title]}>{option.text}</Text>
+        <Text style={[styles.voteCount, voteCount]}>
           {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
         </Text>
       </View>
-      {latestVotesByOption?.[option.id]?.length > 0 ? (
-        <View style={{ marginTop: 16 }}>
-          {(latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollResultsVoteItem)}
-        </View>
-      ) : null}
+      {latestVotesByOption?.[option.id]?.length > 0
+        ? (latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollResultsVoteItem)
+        : null}
       <ShowAllVotesButton option={option} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 12,
-    marginBottom: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  headerContainer: { flexDirection: 'row', justifyContent: 'space-between' },
-  title: { flex: 1, fontSize: 16, fontWeight: '500' },
-  voteCount: { fontSize: 16, marginLeft: 16 },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+          borderRadius: primitives.radiusLg,
+          marginBottom: primitives.spacingMd,
+          padding: primitives.spacingMd,
+        },
+        headerContainer: {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingBottom: primitives.spacingXs,
+        },
+        title: {
+          flex: 1,
+          fontSize: primitives.typographyFontSizeLg,
+          lineHeight: primitives.typographyLineHeightRelaxed,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+          paddingTop: primitives.spacingXs,
+        },
+        titleMeta: {
+          fontSize: primitives.typographyFontSizeSm,
+          color: semantics.textTertiary,
+          lineHeight: primitives.typographyLineHeightNormal,
+          fontWeight: primitives.typographyFontWeightMedium,
+        },
+        voteCount: {
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+          marginLeft: primitives.spacingMd,
+        },
+      }),
+    [semantics],
+  );
+};
