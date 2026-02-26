@@ -172,5 +172,10 @@
   "{{count}} Reactions_one": "{{count}} reactie",
   "{{count}} Reactions_other": "{{count}} reacties",
   "Tap to remove": "Tik om te verwijderen",
-  "Draft": "Ontwerp"
+  "Draft": "Ontwerp",
+  "Reminder set": "Reminder set",
+  "Also sent in channel": "Also sent in channel",
+  "Replied to a thread": "Replied to a thread",
+  "View": "View",
+  "Reminder overdue": "Reminder overdue"
 }

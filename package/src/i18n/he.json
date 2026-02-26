@@ -172,5 +172,10 @@
   "{{count}} Reactions_one": "{{count}} תגובה",
   "{{count}} Reactions_other": "{{count}} תגובות",
   "Tap to remove": "הקש כדי להסיר",
-  "Draft": "טיוטה"
+  "Draft": "טיוטה",
+  "Reminder set": "Recordatorio establecido",
+  "Also sent in channel": "También enviado en el canal",
+  "Replied to a thread": "Respondido a un hilo",
+  "View": "Ver",
+  "Reminder overdue": "Recordatorio vencido"
 }

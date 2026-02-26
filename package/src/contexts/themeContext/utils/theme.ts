@@ -699,6 +699,22 @@ export type Theme = {
       container: ViewStyle;
       label: TextStyle;
     };
+    savedForLaterHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+    };
+    reminderHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+      dot: TextStyle;
+      time: TextStyle;
+    };
+    sentToChannelHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+      dot: TextStyle;
+      link: TextStyle;
+    };
     reactionListBottom: {
       contentContainer: ViewStyle;
       columnWrapper: ViewStyle;
@@ -1535,6 +1551,22 @@ export const defaultTheme: Theme = {
     pinnedHeader: {
       container: {},
       label: {},
+    },
+    savedForLaterHeader: {
+      container: {},
+      label: {},
+    },
+    reminderHeader: {
+      container: {},
+      label: {},
+      dot: {},
+      time: {},
+    },
+    sentToChannelHeader: {
+      container: {},
+      label: {},
+      dot: {},
+      link: {},
     },
     reactionListBottom: {
       contentContainer: {},

@@ -172,5 +172,10 @@
   "{{count}} Reactions_one": "{{count}} प्रतिक्रिया",
   "{{count}} Reactions_other": "{{count}} प्रतिक्रियाएँ",
   "Tap to remove": "हटाने के लिए टैप करें",
-  "Draft": "ड्राफ्ट"
+  "Draft": "ड्राफ्ट",
+  "Reminder set": "रीमिंडर सेट किया गया",
+  "Also sent in channel": "चैनल में भी भेजा गया",
+  "Replied to a thread": "थ्रेड में उत्तर दिया",
+  "View": "देखें",
+  "Reminder overdue": "रीमिंडर ओवरडो"
 }

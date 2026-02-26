@@ -1,5 +1,12 @@
 import React from 'react';
 
+import { View } from 'react-native';
+
+import { MessageReminderHeader } from './Headers/MessageReminderHeader';
+import { MessageSavedForLaterHeader } from './Headers/MessageSavedForLaterHeader';
+
+import { SentToChannelHeader } from './Headers/SentToChannelHeader';
+
 import {
   MessageContextValue,
   useMessageContext,
@@ -8,26 +15,73 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
+import { useMessageReminder } from '../../../hooks/useMessageReminder';
 
 type MessageHeaderPropsWithContext = Pick<MessageContextValue, 'message'> &
-  Pick<MessagesContextValue, 'MessagePinnedHeader'>;
+  Pick<MessagesContextValue, 'MessagePinnedHeader'> & {
+    shouldShowSavedForLaterHeader?: boolean;
+    shouldShowPinnedHeader: boolean;
+    shouldShowReminderHeader: boolean;
+    shouldShowSentToChannelHeader: boolean;
+  };
 
 const MessageHeaderWithContext = (props: MessageHeaderPropsWithContext) => {
-  const { message, MessagePinnedHeader } = props;
+  const {
+    message,
+    MessagePinnedHeader,
+    shouldShowSavedForLaterHeader,
+    shouldShowPinnedHeader,
+    shouldShowReminderHeader,
+    shouldShowSentToChannelHeader,
+  } = props;
 
-  return <MessagePinnedHeader message={message} />;
+  return (
+    <View>
+      {shouldShowReminderHeader && <MessageReminderHeader />}
+      {shouldShowSavedForLaterHeader && <MessageSavedForLaterHeader />}
+      {shouldShowPinnedHeader && <MessagePinnedHeader message={message} />}
+      {shouldShowSentToChannelHeader && <SentToChannelHeader />}
+    </View>
+  );
 };
 
 const areEqual = (
   prevProps: MessageHeaderPropsWithContext,
   nextProps: MessageHeaderPropsWithContext,
 ) => {
-  const { message: prevMessage } = prevProps;
-  const { message: nextMessage } = nextProps;
+  const {
+    shouldShowSavedForLaterHeader: prevShouldShowSavedForLaterHeader,
+    shouldShowPinnedHeader: prevShouldShowPinnedHeader,
+    shouldShowReminderHeader: prevShouldShowReminderHeader,
+    shouldShowSentToChannelHeader: prevShouldShowSentToChannelHeader,
+  } = prevProps;
+  const {
+    shouldShowSavedForLaterHeader: nextShouldShowSavedForLaterHeader,
+    shouldShowPinnedHeader: nextShouldShowPinnedHeader,
+    shouldShowReminderHeader: nextShouldShowReminderHeader,
+    shouldShowSentToChannelHeader: nextShouldShowSentToChannelHeader,
+  } = nextProps;
 
-  const messageEqual =
-    prevMessage.id === nextMessage.id && prevMessage.pinned === nextMessage.pinned;
-  if (!messageEqual) {
+  const shouldShowSavedForLaterHeaderEqual =
+    prevShouldShowSavedForLaterHeader === nextShouldShowSavedForLaterHeader;
+  if (!shouldShowSavedForLaterHeaderEqual) {
+    return false;
+  }
+
+  const shouldShowPinnedHeaderEqual = prevShouldShowPinnedHeader === nextShouldShowPinnedHeader;
+  if (!shouldShowPinnedHeaderEqual) {
+    return false;
+  }
+
+  const shouldShowReminderHeaderEqual =
+    prevShouldShowReminderHeader === nextShouldShowReminderHeader;
+  if (!shouldShowReminderHeaderEqual) {
+    return false;
+  }
+
+  const shouldShowSentToChannelHeaderEqual =
+    prevShouldShowSentToChannelHeader === nextShouldShowSentToChannelHeader;
+  if (!shouldShowSentToChannelHeaderEqual) {
     return false;
   }
 
@@ -44,8 +98,22 @@ export type MessageHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
 export const MessageHeader = (props: MessageHeaderProps) => {
   const { message } = useMessageContext();
   const { MessagePinnedHeader } = useMessagesContext();
+  const reminder = useMessageReminder(message.id);
+
+  const shouldShowSavedForLaterHeader = reminder && !reminder.remindAt;
+  const shouldShowReminderHeader = reminder && reminder.remindAt;
+  const shouldShowPinnedHeader = !!message?.pinned;
+  const shouldShowSentToChannelHeader = !!message?.show_in_channel;
 
   return (
-    <MemoizedMessageHeader message={message} MessagePinnedHeader={MessagePinnedHeader} {...props} />
+    <MemoizedMessageHeader
+      message={message}
+      MessagePinnedHeader={MessagePinnedHeader}
+      shouldShowSavedForLaterHeader={shouldShowSavedForLaterHeader}
+      shouldShowPinnedHeader={shouldShowPinnedHeader}
+      shouldShowReminderHeader={!!shouldShowReminderHeader}
+      shouldShowSentToChannelHeader={shouldShowSentToChannelHeader}
+      {...props}
+    />
   );
 };

@@ -172,5 +172,10 @@
   "{{count}} Reactions_one": "{{count}}件のリアクション",
   "{{count}} Reactions_other": "{{count}}件のリアクション",
   "Tap to remove": "タップして削除",
-  "Draft": "下書き"
+  "Draft": "下書き",
+  "Reminder set": "リマインダー設定",
+  "Also sent in channel": "チャンネルにも送信",
+  "Replied to a thread": "スレッドに返信",
+  "View": "表示",
+  "Reminder overdue": "リマインダー期限切れ"
 }

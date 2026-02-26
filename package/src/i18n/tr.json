@@ -172,5 +172,10 @@
   "{{count}} Reactions_one": "{{count}} tepki",
   "{{count}} Reactions_other": "{{count}} tepki",
   "Tap to remove": "Kaldırmak için dokunun",
-  "Draft": "Taslak"
+  "Draft": "Taslak",
+  "Reminder set": "Hatırlatıcı ayarlandı",
+  "Also sent in channel": "Kanala da gönderildi",
+  "Replied to a thread": "Konuya yanıt verildi",
+  "View": "Görüntüle",
+  "Reminder overdue": "Hatırlatıcı süresi doldu"
 }

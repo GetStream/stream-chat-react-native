@@ -119,6 +119,13 @@ export type MessageContextValue = {
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
+  /**
+   * Function to handle thread select
+   * @param message - The message to select
+   * @param targetedMessageId - The id of the targeted message
+   * @returns void
+   */
+  onThreadSelect?: (message: LocalMessage, targetedMessageId?: string) => void;
 } & Pick<ChannelContextValue, 'channel' | 'members'> &
   Pick<MessageComposerAPIContextValue, 'setQuotedMessage'>;
 

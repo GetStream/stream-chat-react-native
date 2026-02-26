@@ -15,12 +15,11 @@ import { useStateStore } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
-import type { RouteProp } from '@react-navigation/native';
+import { type RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
 import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
-import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -74,7 +73,7 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   navigation,
   route: {
-    params: { channel, thread },
+    params: { channel, thread, targetedMessageId },
   },
 }) => {
   const {
@@ -87,7 +86,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
   const { messageInputFloating, messageListImplementation } = useAppContext();
-
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,
   ) => {
@@ -118,6 +116,13 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
     setThread(null);
   }, [setThread]);
 
+  const onBackPressThread = useCallback(
+    (messageId?: string) => {
+      navigation.popTo('ChannelScreen', { messageId: messageId });
+    },
+    [navigation],
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: white }]}>
       <Channel
@@ -128,14 +133,18 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
-        MessageHeader={MessageReminderHeader}
         MessageLocation={MessageLocation}
         onPressMessage={onPressMessage}
         thread={thread}
         threadList
+        onBackPressThread={onBackPressThread}
+        messageId={targetedMessageId}
       >
         <ThreadHeader thread={thread} />
-        <Thread onThreadDismount={onThreadDismount} shouldUseFlashList={messageListImplementation === 'flashlist'} />
+        <Thread
+          onThreadDismount={onThreadDismount}
+          shouldUseFlashList={messageListImplementation === 'flashlist'}
+        />
       </Channel>
     </View>
   );

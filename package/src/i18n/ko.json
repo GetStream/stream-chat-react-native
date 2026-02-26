@@ -172,5 +172,10 @@
   "{{count}} Reactions_one": "{{count}}개의 반응",
   "{{count}} Reactions_other": "{{count}}개의 반응",
   "Tap to remove": "탭하여 제거",
-  "Draft": "초안"
+  "Draft": "초안",
+  "Reminder set": "리마인더 설정",
+  "Also sent in channel": "채널에도 전송",
+  "Replied to a thread": "스레드에 답장",
+  "View": "보기",
+  "Reminder overdue": "리마인더 만료"
 }

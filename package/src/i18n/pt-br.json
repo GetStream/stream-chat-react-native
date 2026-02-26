@@ -172,5 +172,10 @@
   "{{count}} Reactions_one": "{{count}} reação",
   "{{count}} Reactions_other": "{{count}} reações",
   "Tap to remove": "Toque para remover",
-  "Draft": "Rascunho"
+  "Draft": "Rascunho",
+  "Reminder set": "Recordatorio establecido",
+  "Also sent in channel": "También enviado en el canal",
+  "Replied to a thread": "Respondido a un hilo",
+  "View": "Ver",
+  "Reminder overdue": "Recordatorio vencido"
 }

@@ -172,5 +172,10 @@
   "{{count}} Reactions_one": "{{count}} реакция",
   "{{count}} Reactions_other": "{{count}} реакций",
   "Tap to remove": "Нажмите, чтобы удалить",
-  "Draft": "Черновик"
+  "Draft": "Черновик",
+  "Reminder set": "Напоминание установлено",
+  "Also sent in channel": "Также отправлено в канал",
+  "Replied to a thread": "Ответил на тему",
+  "View": "Посмотреть",
+  "Reminder overdue": "Напоминание просрочено"
 }

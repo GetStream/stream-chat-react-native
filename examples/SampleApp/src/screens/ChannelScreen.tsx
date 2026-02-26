@@ -176,7 +176,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   };
 
   const onThreadSelect = useCallback(
-    (thread: LocalMessage | null) => {
+    (thread: LocalMessage | null, targetedMessageId?: string) => {
       if (!thread || !channel) {
         return;
       }
@@ -185,6 +185,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       navigation.navigate('ThreadScreen', {
         channel,
         thread,
+        targetedMessageId,
       });
     },
     [channel, navigation, setThread],
@@ -233,7 +234,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageActions={messageActions}
-        MessageHeader={MessageHeader}
         MessageLocation={MessageLocation}
         messageId={messageId}
         NetworkDownIndicator={() => null}
