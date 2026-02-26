@@ -76,5 +76,6 @@ export type TimestampFormatterOptions = {
 
 export type PredefinedFormatters = {
   durationFormatter: FormatterFactory<string>;
+  relativeCompactDateFormatter: FormatterFactory<string | Date>;
   timestampFormatter: FormatterFactory<string | Date>;
 };

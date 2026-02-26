@@ -141,7 +141,7 @@
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
-  "timestamp/PollVote": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[어제]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[내일]\",\"nextWeek\":\"dddd [LT에]\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/PollVote": "{{ timestamp | relativeCompactDateFormatter }}",
   "timestamp/ReminderNotification": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[어제]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[내일]\",\"nextWeek\":\"dddd [LT에]\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
