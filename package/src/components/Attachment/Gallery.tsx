@@ -43,6 +43,7 @@ import { getUrlWithoutParams } from '../../utils/utils';
 export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<
     MessageContextValue,
+    | 'alignment'
     | 'images'
     | 'videos'
     | 'onLongPress'
@@ -69,6 +70,7 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
 const GalleryWithContext = (props: GalleryPropsWithContext) => {
   const {
     additionalPressableProps,
+    alignment,
     imageGalleryStateStore,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
@@ -141,6 +143,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
         styles.container,
         {
           flexDirection: invertedDirections ? 'column' : 'row',
+          alignSelf: alignment === 'right' ? 'flex-end' : 'flex-start',
         },
         images.length !== 1
           ? { width: gridWidth, height: gridHeight }
@@ -439,17 +442,24 @@ const GalleryImageThumbnail = ({
 
 const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWithContext) => {
   const {
+    alignment: prevAlignment,
     images: prevImages,
     message: prevMessage,
     myMessageTheme: prevMyMessageTheme,
     videos: prevVideos,
   } = prevProps;
   const {
+    alignment: nextAlignment,
     images: nextImages,
     message: nextMessage,
     myMessageTheme: nextMyMessageTheme,
     videos: nextVideos,
   } = nextProps;
+
+  const alignmentEqual = prevAlignment === nextAlignment;
+  if (!alignmentEqual) {
+    return false;
+  }
 
   const messageEqual =
     prevMessage?.id === nextMessage?.id &&
@@ -498,6 +508,7 @@ export type GalleryProps = Partial<GalleryPropsWithContext>;
  */
 export const Gallery = (props: GalleryProps) => {
   const {
+    alignment: propAlignment,
     additionalPressableProps: propAdditionalPressableProps,
     ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
     ImageLoadingIndicator: PropImageLoadingIndicator,
@@ -517,6 +528,7 @@ export const Gallery = (props: GalleryProps) => {
 
   const { imageGalleryStateStore } = useImageGalleryContext();
   const {
+    alignment: contextAlignment,
     images: contextImages,
     message: contextMessage,
     onLongPress: contextOnLongPress,
@@ -539,7 +551,7 @@ export const Gallery = (props: GalleryProps) => {
   const images = propImages || contextImages;
   const videos = propVideos || contextVideos;
   const message = propMessage || contextMessage;
-
+  const alignment = propAlignment || contextAlignment;
   if (!images.length && !videos.length) {
     return null;
   }
@@ -568,6 +580,7 @@ export const Gallery = (props: GalleryProps) => {
     <MemoizedGallery
       {...{
         additionalPressableProps,
+        alignment,
         channelId: message?.cid,
         imageGalleryStateStore,
         ImageLoadingFailedIndicator,
@@ -608,7 +621,6 @@ const useStyles = () => {
       },
       container: {
         flexDirection: 'row',
-        justifyContent: 'center',
         gap: primitives.spacingXxs,
       },
       imageContainer: {},

@@ -85,6 +85,7 @@ export function buildGalleryOfSingleImage({
     image,
     resizableCDNHosts,
     flex: 1,
+    resizeMode: 'cover',
     ...container,
   });
 
