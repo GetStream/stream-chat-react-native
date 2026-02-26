@@ -28,7 +28,6 @@
   "Device gallery permissions is used to take photos or videos.": "Cihaz galerisi izinleri fotoğraf veya video çekmek için kullanılır.",
   "Do you want to send a copy of this message to a moderator for further investigation?": "Detaylı inceleme için bu mesajın kopyasını moderatöre göndermek istiyor musunuz?",
   "Due since {{ dueSince }}": "Son tarihi {{ dueSince }} itibarıyla geçmiştir.",
-  "Due {{ timeLeft }}": "Son tarihi {{ timeLeft }}'dir.",
   "Edit Message": "Mesajı Düzenle",
   "Edited": "Düzenlendi",
   "Editing Message": "Mesaj Düzenleniyor",

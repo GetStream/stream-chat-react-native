@@ -40,10 +40,8 @@ const MessageReminderHeaderWithContext = (props: MessageReminderHeaderPropsWithC
       </Text>
       <Text style={styles.dot}>·</Text>
       <Text style={styles.time}>
-        {t('{{ timeLeft }}', {
-          timeLeft: t('duration/Message reminder', {
-            milliseconds: timeLeftMs,
-          }),
+        {t('duration/Message reminder', {
+          milliseconds: timeLeftMs,
         })}
       </Text>
     </View>

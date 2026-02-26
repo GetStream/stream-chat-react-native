@@ -28,7 +28,6 @@
   "Device gallery permissions is used to take photos or videos.": "Разрешения галереи устройства используются для съемки фото или видео.",
   "Do you want to send a copy of this message to a moderator for further investigation?": "Вы хотите отправить копию этого сообщения модератору для дальнейшего изучения?",
   "Due since {{ dueSince }}": "Срок с {{ dueSince }}",
-  "Due {{ timeLeft }}": "Срок {{ timeLeft }}",
   "Edit Message": "Редактировать сообщение",
   "Edited": "Отредактировано",
   "Editing Message": "Редактирование сообщения",
