@@ -128,7 +128,6 @@
   "View {{count}} comments_one": "Bekijk {{count}} reactie",
   "View {{count}} comments_other": "Bekijk {{count}} reacties",
   "Voice message": "Spraakbericht",
-  "Vote ended": "Stemmen beëindigd",
   "You": "U",
   "You can't send messages in this channel": "Je kan geen berichten sturen in dit kanaal",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -173,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} reactie",
   "{{count}} Reactions_other": "{{count}} reacties",
   "Tap to remove": "Tik om te verwijderen",
-  "Draft": "Ontwerp"
+  "Draft": "Ontwerp",
+  "Poll has ended": "Stemmen beëindigd"
 }

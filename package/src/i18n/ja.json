@@ -128,7 +128,6 @@
   "View {{count}} comments_one": "{{count}} 件のコメントを表示",
   "View {{count}} comments_other": "{{count}} 件のコメントを表示",
   "Voice message": "ボイスメッセージ",
-  "Vote ended": "投票終了",
   "You": "あなた",
   "You can't send messages in this channel": "このチャンネルではメッセージを送信できません",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -173,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}}件のリアクション",
   "{{count}} Reactions_other": "{{count}}件のリアクション",
   "Tap to remove": "タップして削除",
-  "Draft": "下書き"
+  "Draft": "下書き",
+  "Poll has ended": "投票終了"
 }

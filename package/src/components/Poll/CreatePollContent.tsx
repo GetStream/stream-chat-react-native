@@ -273,14 +273,15 @@ const useStyles = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        backgroundColor: semantics.inputOptionCardBg,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
         padding: primitives.spacingMd,
         borderRadius: primitives.radiusLg,
       },
       optionCardWrapper: {
         gap: primitives.spacingMd,
+        // padding: primitives.spacingMd,
       },
-      optionCardSwitch: {},
+      optionCardSwitch: { width: 64 },
     });
   }, [semantics]);
 };

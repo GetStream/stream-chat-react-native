@@ -128,7 +128,6 @@
   "View {{count}} comments_one": "Посмотреть {{count}} комментарий",
   "View {{count}} comments_other": "Посмотреть {{count}} комментария",
   "Voice message": "Голосовое сообщение",
-  "Vote ended": "Голосование завершено",
   "You": "Вы",
   "You can't send messages in this channel": "Вы не можете отправлять сообщения в этот канал",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -173,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} реакция",
   "{{count}} Reactions_other": "{{count}} реакций",
   "Tap to remove": "Нажмите, чтобы удалить",
-  "Draft": "Черновик"
+  "Draft": "Черновик",
+  "Poll has ended": "Голосование завершено"
 }

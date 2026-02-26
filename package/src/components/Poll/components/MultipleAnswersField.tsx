@@ -122,7 +122,7 @@ const useStyles = () => {
       optionCardWrapper: {
         gap: primitives.spacingMd,
       },
-      optionCardSwitch: {},
+      optionCardSwitch: { width: 64 },
     });
   }, [semantics]);
 };

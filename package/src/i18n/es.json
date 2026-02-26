@@ -128,7 +128,6 @@
   "View {{count}} comments_one": "Ver {{count}} comentario",
   "View {{count}} comments_other": "Ver {{count}} comentarios",
   "Voice message": "Mensaje de voz",
-  "Vote ended": "Votación finalizada",
   "You": "Tú",
   "You can't send messages in this channel": "No puedes enviar mensajes en este canal",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -173,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} reacción",
   "{{count}} Reactions_other": "{{count}} reacciones",
   "Tap to remove": "Toca para quitar",
-  "Draft": "Borrador"
+  "Draft": "Borrador",
+  "Poll has ended": "Votación finalizada"
 }

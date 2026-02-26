@@ -128,7 +128,6 @@
   "View {{count}} comments_one": "{{count}} टिप्पणी देखें",
   "View {{count}} comments_other": "{{count}} टिप्पणियाँ देखें",
   "Voice message": "वॉइस संदेश",
-  "Vote ended": "वोट समाप्त",
   "You": "आप",
   "You can't send messages in this channel": "आप इस चैनल में संदेश नहीं भेज सकते",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -173,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} प्रतिक्रिया",
   "{{count}} Reactions_other": "{{count}} प्रतिक्रियाएँ",
   "Tap to remove": "हटाने के लिए टैप करें",
-  "Draft": "ड्राफ्ट"
+  "Draft": "ड्राफ्ट",
+  "Poll has ended": "वोट समाप्त"
 }

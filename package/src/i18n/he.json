@@ -128,7 +128,6 @@
   "View {{count}} comments_one": "הצג {{count}} תגובה",
   "View {{count}} comments_other": "הצג {{count}} תגובות",
   "Voice message": "הודעת קול",
-  "Vote ended": "ההצבעה הסתיימה",
   "You": "את/ה",
   "You can't send messages in this channel": "את/ב לא יכול/ה לשלוח הודעות בשיחה זו",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -173,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} תגובה",
   "{{count}} Reactions_other": "{{count}} תגובות",
   "Tap to remove": "הקש כדי להסיר",
-  "Draft": "טיוטה"
+  "Draft": "טיוטה",
+  "Poll has ended": "ההצבעה הסתיימה"
 }

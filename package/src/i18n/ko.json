@@ -128,7 +128,6 @@
   "View {{count}} comments_one": "{{count}}개의 댓글 보기",
   "View {{count}} comments_other": "{{count}}개의 댓글 보기",
   "Voice message": "음성 메시지",
-  "Vote ended": "투표 종료됨",
   "You": "당신",
   "You can't send messages in this channel": "이 채널에서는 메세지를 전송할 수 없습니다",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -173,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}}개의 반응",
   "{{count}} Reactions_other": "{{count}}개의 반응",
   "Tap to remove": "탭하여 제거",
-  "Draft": "초안"
+  "Draft": "초안",
+  "Poll has ended": "투표 종료됨"
 }
