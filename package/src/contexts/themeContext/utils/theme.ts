@@ -837,6 +837,7 @@ export type Theme = {
       contentContainer: ViewStyle;
       headerContainer: ViewStyle;
       headerText: TextStyle;
+      headerTitle: TextStyle;
     };
     inputDialog: {
       button: TextStyle;
@@ -1675,6 +1676,7 @@ export const defaultTheme: Theme = {
       contentContainer: {},
       headerContainer: {},
       headerText: {},
+      headerTitle: {},
     },
     inputDialog: {
       button: {},

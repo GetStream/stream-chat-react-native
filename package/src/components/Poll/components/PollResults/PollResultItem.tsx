@@ -49,11 +49,7 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
     setShowAllVotes(true);
   }, [message, onPress, option, poll]);
 
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   return (
     <>
@@ -68,8 +64,8 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
           onRequestClose={() => setShowAllVotes(false)}
           visible={showAllVotes}
         >
-          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader onPress={() => setShowAllVotes(false)} title={option.text} />
+          <SafeAreaViewWrapper style={styles.safeArea}>
+            <PollModalHeader onPress={() => setShowAllVotes(false)} title={t('Votes')} />
             <PollOptionFullResults message={message} option={option} poll={poll} />
           </SafeAreaViewWrapper>
         </Modal>
@@ -160,6 +156,10 @@ const useStyles = () => {
           fontWeight: primitives.typographyFontWeightSemiBold,
           color: semantics.textPrimary,
           marginLeft: primitives.spacingMd,
+        },
+        safeArea: {
+          backgroundColor: semantics.backgroundElevationElevation1,
+          flex: 1,
         },
       }),
     [semantics],
