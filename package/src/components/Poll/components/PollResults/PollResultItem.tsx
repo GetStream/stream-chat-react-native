@@ -129,7 +129,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+          backgroundColor: semantics.backgroundCoreSurfaceCard,
           borderRadius: primitives.radiusLg,
           marginBottom: primitives.spacingMd,
           padding: primitives.spacingMd,
@@ -137,6 +137,7 @@ const useStyles = () => {
         headerContainer: {
           flexDirection: 'row',
           justifyContent: 'space-between',
+          alignItems: 'center',
           paddingBottom: primitives.spacingXs,
         },
         title: {

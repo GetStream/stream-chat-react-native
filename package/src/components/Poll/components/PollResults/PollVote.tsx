@@ -64,6 +64,7 @@ const useStyles = () => {
         voteContainer: {
           flexDirection: 'row',
           justifyContent: 'space-between',
+          alignItems: 'center',
           paddingVertical: primitives.spacingXs,
         },
         voteDate: {

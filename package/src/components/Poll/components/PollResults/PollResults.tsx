@@ -83,7 +83,7 @@ const useStyles = () => {
         container: {
           borderRadius: primitives.radiusLg,
           padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+          backgroundColor: semantics.backgroundCoreSurfaceCard,
         },
         scrollView: {
           flex: 1,
