@@ -26,7 +26,7 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
       <View style={styles.sideContainer}>
         <Button
           variant='secondary'
-          type='outline'
+          type='solid'
           size='md'
           iconOnly
           LeadingIcon={NewCross}

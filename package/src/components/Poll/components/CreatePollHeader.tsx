@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { IconProps, SendPoll } from '../../../icons';
+import { Check, IconProps } from '../../../icons';
 import { NewCross } from '../../../icons/NewCross';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
@@ -41,18 +41,12 @@ export const CreatePollHeader = ({
   } = useTheme();
   const styles = useStyles();
 
-  const renderSendPollIcon = (props: IconProps) => {
-    return (
-      <SendPoll
-        {...props}
-        height={18}
-        fill={semantics.textOnAccent}
-        width={18}
-        stroke={'none'}
-        strokeWidth={0}
-      />
-    );
-  };
+  const renderSendPollIcon = useCallback(
+    (props: IconProps) => {
+      return <Check {...props} height={18} stroke={semantics.textOnAccent} width={18} />;
+    },
+    [semantics.textOnAccent],
+  );
 
   return (
     <View style={[styles.headerContainer, headerContainer]}>
