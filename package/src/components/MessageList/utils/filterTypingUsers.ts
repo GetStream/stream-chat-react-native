@@ -1,3 +1,5 @@
+import { UserResponse } from 'stream-chat';
+
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TypingContextValue } from '../../../contexts/typingContext/TypingContext';
@@ -7,7 +9,7 @@ type FilterTypingUsersParams = Pick<TypingContextValue, 'typing'> &
   Pick<ThreadContextValue, 'thread'>;
 
 export const filterTypingUsers = ({ client, thread, typing }: FilterTypingUsersParams) => {
-  const nonSelfUsers: string[] = [];
+  const nonSelfUsers: UserResponse[] = [];
 
   if (!client || !client.user || !typing) {
     return nonSelfUsers;
@@ -33,7 +35,7 @@ export const filterTypingUsers = ({ client, thread, typing }: FilterTypingUsersP
       return;
     }
 
-    const user = typing[typingKey].user?.name || typing[typingKey].user?.id;
+    const user = typing[typingKey].user;
     if (user) {
       nonSelfUsers.push(user);
     }

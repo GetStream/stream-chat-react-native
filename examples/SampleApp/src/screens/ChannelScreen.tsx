@@ -11,7 +11,6 @@ import {
   useChannelPreviewDisplayName,
   useChatContext,
   useTheme,
-  useTypingString,
   AITypingIndicatorView,
   useTranslationContext,
   MessageActionsParams,
@@ -56,7 +55,6 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { isOnline } = useChatContext();
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
-  const typing = useTypingString();
 
   const isOneOnOneConversation =
     channel &&
@@ -108,7 +106,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       )}
       showUnreadCountBadge
       Subtitle={isOnline ? undefined : NetworkDownIndicator}
-      subtitleText={typing ? typing : membersStatus}
+      subtitleText={membersStatus}
       titleText={displayName}
     />
   );
@@ -229,7 +227,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         channel={channel}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
-        disableTypingIndicator
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageActions={messageActions}

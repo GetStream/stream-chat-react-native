@@ -938,6 +938,8 @@ export type Theme = {
   };
   typingIndicator: {
     container: ViewStyle;
+    loadingDotsBubble: ViewStyle;
+    avatarStackContainer: ViewStyle;
     text: TextStyle & {
       fontSize: TextStyle['fontSize'];
     };
@@ -1774,6 +1776,8 @@ export const defaultTheme: Theme = {
   },
   typingIndicator: {
     container: {},
+    loadingDotsBubble: {},
+    avatarStackContainer: {},
     text: {
       fontSize: 14,
     },
