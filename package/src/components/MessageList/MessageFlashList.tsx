@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   LayoutChangeEvent,
   ScrollViewProps,
@@ -10,11 +10,12 @@ import {
 
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
-import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
+import { FlashListProps, FlashListRef, useFlashListContext } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
+import { useTypingUsers } from './hooks/useTypingUsers';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
@@ -274,7 +275,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     disableTypingIndicator,
     EmptyStateIndicator,
     // FlatList,
-    FooterComponent = LoadingMoreRecentIndicator,
+    FooterComponent,
     HeaderComponent = InlineLoadingMoreIndicator,
     hideStickyDateHeader,
     isLiveStreaming = false,
@@ -1002,6 +1003,29 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     currentListHeightRef.current = height;
   });
 
+  const ListFooterComponent = useCallback(() => {
+    if (FooterComponent) {
+      return <FooterComponent />;
+    }
+
+    return (
+      <FlashListFooterTypingAdapter enabled={!disableTypingIndicator && !!TypingIndicator}>
+        <LoadingMoreRecentIndicator />
+        {!disableTypingIndicator && TypingIndicator && (
+          <TypingIndicatorContainer>
+            <TypingIndicator />
+          </TypingIndicatorContainer>
+        )}
+      </FlashListFooterTypingAdapter>
+    );
+  }, [
+    FooterComponent,
+    LoadingMoreRecentIndicator,
+    TypingIndicator,
+    TypingIndicatorContainer,
+    disableTypingIndicator,
+  ]);
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -1034,7 +1058,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             }
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
-            ListFooterComponent={FooterComponent}
+            ListFooterComponent={ListFooterComponent}
             ListHeaderComponent={HeaderComponent}
             maintainVisibleContentPosition={maintainVisibleContentPosition}
             onMomentumScrollEnd={onUserScrollEvent}
@@ -1060,11 +1084,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
         ) : null}
       </View>
-      {!disableTypingIndicator && TypingIndicator && (
-        <TypingIndicatorContainer>
-          <TypingIndicator />
-        </TypingIndicatorContainer>
-      )}
       <Animated.View
         layout={LinearTransition.duration(200)}
         style={[
@@ -1086,6 +1105,41 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       ) : null}
     </View>
   );
+};
+
+const FlashListFooterTypingAdapter = ({
+  enabled,
+  children,
+}: PropsWithChildren<{
+  enabled: boolean;
+}>) => {
+  const api = useFlashListContext();
+  const typingUsers = useTypingUsers();
+
+  const typingUsersLengthRef = useRef<number>(typingUsers.length);
+
+  useEffect(() => {
+    const listApi = api?.getRef();
+
+    if (!enabled || !listApi) {
+      return;
+    }
+
+    const lastScrollOffset = listApi.getAbsoluteLastScrollOffset();
+    const contentSize = listApi.getChildContainerDimensions();
+    const windowSize = listApi.getWindowSize();
+
+    const visibleLength = windowSize.height;
+    const contentLength = contentSize.height + listApi.getFirstItemOffset();
+
+    const isNearEnd = Math.ceil(lastScrollOffset + visibleLength) >= contentLength;
+
+    if (listApi && typingUsersLengthRef.current === 0 && typingUsers.length > 0 && isNearEnd) {
+      listApi.scrollToEnd({ animated: true });
+    }
+  }, [enabled, api, typingUsers.length]);
+
+  return children;
 };
 
 export type MessageFlashListProps = Partial<MessageFlashListPropsWithContext>;

@@ -1229,7 +1229,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         )}
       </>
     );
-  }, [HeaderComponent, LoadingMoreRecentIndicator]);
+  }, [
+    HeaderComponent,
+    LoadingMoreRecentIndicator,
+    TypingIndicator,
+    TypingIndicatorContainer,
+    disableTypingIndicator,
+  ]);
 
   if (!ListComponent) {
     return null;
