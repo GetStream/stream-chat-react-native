@@ -762,8 +762,8 @@ export type Theme = {
       wrapper: ViewStyle;
     };
     answersList: {
-      buttonContainer: ViewStyle;
       container: ViewStyle;
+      contentContainer: ViewStyle;
       item: {
         answerText: TextStyle;
         container: ViewStyle;
@@ -1601,8 +1601,8 @@ export const defaultTheme: Theme = {
       wrapper: {},
     },
     answersList: {
-      buttonContainer: {},
       container: {},
+      contentContainer: {},
       item: {
         answerText: {},
         container: {},

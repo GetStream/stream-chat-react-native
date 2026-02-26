@@ -61,7 +61,7 @@ const useStyles = () => {
         },
         centerContainer: {
           alignItems: 'center',
-          flex: 1,
+          flex: 2,
           justifyContent: 'center',
         },
         sideContainer: {
