@@ -328,7 +328,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                   return (
                     <View
                       key={`gallery_${messageContentOrderIndex}`}
-                      style={[styles.galleryContainer]}
+                      style={styles.galleryContainer}
                     >
                       <Gallery />
                     </View>
