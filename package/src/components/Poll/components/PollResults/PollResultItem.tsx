@@ -104,7 +104,9 @@ export const PollResultsItem = ({ option, index }: PollResultItemProps) => {
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.titleMeta, titleMeta]}>{`Option ${index + 1}`}</Text>
+      <Text style={[styles.titleMeta, titleMeta]}>
+        {t('Option {{count}}', { count: index + 1 })}
+      </Text>
       <View style={[styles.headerContainer, headerContainer]}>
         <Text style={[styles.title, title]}>{option.text}</Text>
         <Text style={[styles.voteCount, voteCount]}>
