@@ -418,10 +418,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     <>
                       <MessageInputLeadingView />
 
-                      <AutoCompleteInput
-                        TextInputComponent={TextInputComponent}
-                        {...additionalTextInputProps}
-                      />
+                      <Animated.View layout={LinearTransition.duration(200)}>
+                        <AutoCompleteInput
+                          TextInputComponent={TextInputComponent}
+                          {...additionalTextInputProps}
+                        />
+                      </Animated.View>
                     </>
                   )}
 

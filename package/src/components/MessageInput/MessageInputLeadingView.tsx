@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { AttachmentManagerState } from 'stream-chat';
 
@@ -31,9 +33,13 @@ export const MessageInputLeadingView = () => {
   }, [textComposer, hasAttachments]);
 
   return command && !hasAttachments ? (
-    <View style={styles.giphyContainer}>
+    <Animated.View
+      entering={ZoomIn.duration(200)}
+      exiting={ZoomOut.duration(200)}
+      style={styles.giphyContainer}
+    >
       <GiphyChip />
-    </View>
+    </Animated.View>
   ) : null;
 };
 
