@@ -4,7 +4,6 @@ export * from './Archive';
 export * from './ArrowRight';
 export * from './ArrowLeft';
 export * from './ArrowUp';
-export * from './AtMentions';
 export * from './Attach';
 export * from './Audio';
 export * from './Camera';

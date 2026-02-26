@@ -3,6 +3,7 @@ import type { MessagesContextValue } from '../../../contexts/messagesContext/Mes
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { isClipboardAvailable } from '../../../native';
 
+import { FileTypes } from '../../../types/types';
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
 export type MessageActionsParams = {
@@ -53,6 +54,9 @@ export const messageActions = ({
   threadReply,
   unpinMessage,
 }: MessageActionsParams) => {
+  const messageHasGiphyOrImgur = message.attachments?.some(
+    (attachment) => attachment.type === FileTypes.Giphy || attachment.type === FileTypes.Imgur,
+  );
   if (showMessageReactions) {
     return [];
   }
@@ -72,8 +76,10 @@ export const messageActions = ({
   }
 
   if (
-    (isMyMessage && ownCapabilities.updateOwnMessage) ||
-    (!isMyMessage && ownCapabilities.updateAnyMessage)
+    ((isMyMessage && ownCapabilities.updateOwnMessage) ||
+      (!isMyMessage && ownCapabilities.updateAnyMessage)) &&
+    !messageHasGiphyOrImgur &&
+    !message.poll_id
   ) {
     actions.push(editMessage);
   }

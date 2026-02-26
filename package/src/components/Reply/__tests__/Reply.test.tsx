@@ -30,7 +30,7 @@ describe('<Reply/>', () => {
         <OverlayProvider>
           <Chat client={chatClient}>
             <Channel channel={channel} client={chatClient}>
-              <Reply />
+              <Reply mode='reply' />
             </Channel>
           </Chat>
         </OverlayProvider>

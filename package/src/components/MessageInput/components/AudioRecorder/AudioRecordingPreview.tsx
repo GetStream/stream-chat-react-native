@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 
 import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useStableCallback } from '../../../../hooks';
 import { useAudioPlayer } from '../../../../hooks/useAudioPlayer';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
@@ -100,6 +101,16 @@ export const AudioRecordingPreview = () => {
     [duration, position],
   );
 
+  const dragStart = useStableCallback(() => {
+    audioPlayer.pause();
+  });
+
+  const dragEnd = useStableCallback(async (currentProgress: number) => {
+    const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
+    await audioPlayer.seek(positionInSeconds);
+    audioPlayer.play();
+  });
+
   return (
     <View style={[styles.container, container]}>
       <View style={[styles.infoContainer, infoContainer]}>
@@ -123,7 +134,13 @@ export const AudioRecordingPreview = () => {
       </View>
       <View style={[styles.progressBar, progressBar]}>
         {/* Since the progress is in range 0-1 we convert it in terms of 100% */}
-        <WaveProgressBar progress={progress} waveformData={waveformData} />
+        <WaveProgressBar
+          isPlaying={isPlaying}
+          progress={progress}
+          waveformData={waveformData}
+          onStartDrag={dragStart}
+          onEndDrag={dragEnd}
+        />
       </View>
     </View>
   );

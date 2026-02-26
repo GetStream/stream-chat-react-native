@@ -2497,12 +2497,10 @@ exports[`Thread should match thread snapshot 1`] = `
       </View>
     </View>
     <View
-      entering={BaseAnimationMock {}}
-      exiting={BaseAnimationMock {}}
-      layout={BaseAnimationMock {}}
       style={
         [
           {
+            "backgroundColor": "#ffffff",
             "position": "absolute",
             "width": "100%",
           },
