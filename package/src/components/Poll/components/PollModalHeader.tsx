@@ -1,8 +1,10 @@
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { Back } from '../../../icons';
+import { NewCross } from '../../../icons/NewCross';
+import { primitives } from '../../../theme';
+import { Button } from '../../ui';
 
 export type PollModalHeaderProps = {
   onPress: () => void;
@@ -12,31 +14,70 @@ export type PollModalHeaderProps = {
 export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
   const {
     theme: {
-      colors: { black, text_high_emphasis, white },
       poll: {
         modalHeader: { container, title: titleStyle },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, { backgroundColor: white }, container]}>
-      <Pressable onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
-        <Back height={24} pathFill={text_high_emphasis} viewBox='0 0 24 24' width={24} />
-      </Pressable>
-      <Text numberOfLines={1} style={[styles.title, { color: black }, titleStyle]}>
-        {title}
-      </Text>
+    <View style={[styles.container, container]}>
+      <View style={styles.sideContainer}>
+        <Button
+          variant='secondary'
+          type='solid'
+          size='md'
+          iconOnly
+          LeadingIcon={NewCross}
+          onPress={onPress}
+          testID='poll-results-close-button'
+        />
+      </View>
+      <View style={styles.centerContainer}>
+        <Text numberOfLines={1} style={[styles.title, titleStyle]}>
+          {title}
+        </Text>
+      </View>
+      <View style={[styles.sideContainer, styles.sideContainerRight]} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  title: { fontSize: 16, fontWeight: '500', marginLeft: 32 },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: primitives.spacingMd,
+          paddingVertical: 10,
+          backgroundColor: semantics.backgroundElevationElevation1,
+        },
+        centerContainer: {
+          alignItems: 'center',
+          flex: 2,
+          justifyContent: 'center',
+        },
+        sideContainer: {
+          flex: 1,
+          justifyContent: 'center',
+        },
+        sideContainerRight: {
+          alignItems: 'flex-end',
+        },
+        title: {
+          fontSize: 17,
+          lineHeight: 22,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+        },
+      }),
+    [semantics],
+  );
+};

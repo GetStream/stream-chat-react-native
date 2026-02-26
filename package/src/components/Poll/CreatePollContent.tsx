@@ -157,7 +157,7 @@ export const CreatePollContent = () => {
           <MultipleAnswersField />
           <View style={[styles.optionCard, anonymousPoll.wrapper]}>
             <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
-              <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous poll')}</Text>
+              <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous voting')}</Text>
               <Text style={[styles.description, anonymousPoll.description]}>Hide who voted</Text>
             </View>
 
@@ -273,14 +273,14 @@ const useStyles = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        backgroundColor: semantics.inputOptionCardBg,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
         padding: primitives.spacingMd,
         borderRadius: primitives.radiusLg,
       },
       optionCardWrapper: {
         gap: primitives.spacingMd,
       },
-      optionCardSwitch: {},
+      optionCardSwitch: { width: 64 },
     });
   }, [semantics]);
 };

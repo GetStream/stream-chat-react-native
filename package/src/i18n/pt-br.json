@@ -10,7 +10,7 @@
   "Allow camera access in device settings": "Permitir acesso à câmera nas configurações do dispositivo",
   "Also send to channel": "Também enviar para o canal",
   "Anonymous": "Anônimo",
-  "Anonymous poll": "Enquete anônima",
+  "Anonymous voting": "Enquete anônima",
   "Are you sure you want to permanently delete this message?": "Tem certeza de que deseja excluir esta mensagem permanentemente?",
   "Are you sure?": "Tem certeza?",
   "Ask a question": "Fazer uma pergunta",
@@ -72,6 +72,7 @@
   "Only visible to you": "Apenas visível para você",
   "Open Settings": "Abrir Configurações",
   "Option": "Opção",
+  "Option {{count}}": "Opção {{count}}",
   "Option already exists": "A opção já existe",
   "Options": "Opções",
   "Photo": "Foto",
@@ -127,7 +128,6 @@
   "View {{count}} comments_one": "Ver {{count}} comentário",
   "View {{count}} comments_other": "Ver {{count}} comentários",
   "Voice message": "Mensagem de voz",
-  "Vote ended": "Votação encerrada",
   "You": "Você",
   "You can't send messages in this channel": "Você não pode enviar mensagens neste canal",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -140,7 +140,7 @@
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
-  "timestamp/PollVote": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Ontem]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Amanhã]\",\"nextWeek\":\"dddd [às] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/PollVote": "{{ timestamp | relativeCompactDateFormatter }}",
   "timestamp/ReminderNotification": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Ontem]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Amanhã]\",\"nextWeek\":\"dddd [às] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
@@ -172,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} reação",
   "{{count}} Reactions_other": "{{count}} reações",
   "Tap to remove": "Toque para remover",
-  "Draft": "Rascunho"
+  "Draft": "Rascunho",
+  "Poll has ended": "Votação encerrada"
 }

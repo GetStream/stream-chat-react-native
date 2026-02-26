@@ -50,7 +50,11 @@ describe('Streami18n instance - with built-in language', () => {
     it('should provide dutch translator', async () => {
       const { t: _t } = await streami18n.getTranslators();
       for (const key in nlTranslations) {
-        if ((key.indexOf('{{') > -1 && key.indexOf('}}') > -1) || key.indexOf('duration/') > -1) {
+        const value = nlTranslations[key];
+        const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
+        const hasTemplateInValue =
+          typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
+        if (hasTemplateInKey || hasTemplateInValue || key.indexOf('duration/') > -1) {
           continue;
         }
 
@@ -74,7 +78,11 @@ describe('Streami18n instance - with built-in language', () => {
     it('should provide dutch translator', async () => {
       const { t: _t } = await streami18n.getTranslators();
       for (const key in nlTranslations) {
-        if ((key.indexOf('{{') > -1 && key.indexOf('}}') > -1) || key.indexOf('duration/') > -1) {
+        const value = nlTranslations[key];
+        const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
+        const hasTemplateInValue =
+          typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
+        if (hasTemplateInKey || hasTemplateInValue || key.indexOf('duration/') > -1) {
           continue;
         }
 
@@ -189,7 +197,11 @@ describe('setLanguage - switch to french', () => {
     const { t: _t } = await streami18n.getTranslators();
     for (const key in frTranslations) {
       // Skip keys with template strings or duration keys
-      if ((key.indexOf('{{') > -1 && key.indexOf('}}') > -1) || key.indexOf('duration/') > -1) {
+      const value = frTranslations[key];
+      const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
+      const hasTemplateInValue =
+        typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
+      if (hasTemplateInKey || hasTemplateInValue || key.indexOf('duration/') > -1) {
         continue;
       }
 

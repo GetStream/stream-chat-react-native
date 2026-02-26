@@ -62,7 +62,6 @@ export const AutoCompleteSuggestionList = ({
 
   const {
     theme: {
-      colors: { black, white },
       messageInput: {
         container: { maxHeight },
       },
@@ -106,7 +105,7 @@ export const AutoCompleteSuggestionList = ({
         onEndReached={loadMore}
         onEndReachedThreshold={0.1}
         renderItem={renderItem}
-        style={[styles.flatlist, { backgroundColor: white, maxHeight, shadowColor: black }]}
+        style={[styles.flatlist, { maxHeight }]}
         testID={'auto-complete-suggestion-list'}
       />
     </Animated.View>
@@ -132,6 +131,8 @@ const useStyles = () => {
           borderColor: semantics.borderCoreDefault,
         },
         flatlist: {
+          backgroundColor: semantics.composerBg,
+          shadowColor: semantics.accentBlack,
           borderRadius: 8,
           elevation: 3,
           marginHorizontal: 8,

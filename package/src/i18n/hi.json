@@ -10,7 +10,7 @@
   "Allow camera access in device settings": "डिवाइस सेटिंग्स में कैमरा एक्सेस की अनुमति दें",
   "Also send to channel": "चैनल को भी भेजें",
   "Anonymous": "गुमनाम",
-  "Anonymous poll": "अनाम सर्वेक्षण",
+  "Anonymous voting": "अनाम सर्वेक्षण",
   "Are you sure you want to permanently delete this message?": "क्या आप वाकई इस संदेश को स्थायी रूप से हटाना चाहते हैं?",
   "Are you sure?": "क्या आप सुनिश्चित हैं?",
   "Ask a question": "एक प्रश्न पूछें",
@@ -72,6 +72,7 @@
   "Only visible to you": "केवल आपको दिखाई दे रहा है",
   "Open Settings": "सेटिंग्स खोलें",
   "Option": "विकल्प",
+  "Option {{count}}": "विकल्प {{count}}",
   "Option already exists": "विकल्प पहले से मौजूद है",
   "Options": "विकल्प",
   "Photo": "तस्वीर",
@@ -127,7 +128,6 @@
   "View {{count}} comments_one": "{{count}} टिप्पणी देखें",
   "View {{count}} comments_other": "{{count}} टिप्पणियाँ देखें",
   "Voice message": "वॉइस संदेश",
-  "Vote ended": "वोट समाप्त",
   "You": "आप",
   "You can't send messages in this channel": "आप इस चैनल में संदेश नहीं भेज सकते",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -140,7 +140,7 @@
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
-  "timestamp/PollVote": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[कल]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[कल]\",\"nextWeek\":\"dddd [को] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/PollVote": "{{ timestamp | relativeCompactDateFormatter }}",
   "timestamp/ReminderNotification": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[कल]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[कल]\",\"nextWeek\":\"dddd [को] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
@@ -172,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} प्रतिक्रिया",
   "{{count}} Reactions_other": "{{count}} प्रतिक्रियाएँ",
   "Tap to remove": "हटाने के लिए टैप करें",
-  "Draft": "ड्राफ्ट"
+  "Draft": "ड्राफ्ट",
+  "Poll has ended": "वोट समाप्त"
 }

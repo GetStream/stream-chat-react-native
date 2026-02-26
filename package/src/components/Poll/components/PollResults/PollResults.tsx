@@ -5,7 +5,13 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import { PollResultsItem } from './PollResultItem';
 
-import { PollContextProvider, PollContextValue, useTheme } from '../../../../contexts';
+import {
+  PollContextProvider,
+  PollContextValue,
+  useTheme,
+  useTranslationContext,
+} from '../../../../contexts';
+import { primitives } from '../../../../theme';
 import { usePollState } from '../../hooks/usePollState';
 
 export type PollResultsProps = PollContextValue & {
@@ -26,26 +32,26 @@ export const PollResultsContent = ({
     [voteCountsByOption, options],
   );
 
+  const { t } = useTranslationContext();
+
   const {
     theme: {
-      colors: { bg_user, black, white },
       poll: {
-        results: { container, scrollView, title },
+        results: { container, scrollView, title, titleMeta },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
-    <ScrollView
-      style={[styles.scrollView, { backgroundColor: white }, scrollView]}
-      {...additionalScrollViewProps}
-    >
-      <View style={[styles.container, { backgroundColor: bg_user }, container]}>
-        <Text style={[styles.title, { color: black }, title]}>{name}</Text>
+    <ScrollView style={[styles.scrollView, scrollView]} {...additionalScrollViewProps}>
+      <View style={[styles.container, container]}>
+        <Text style={[styles.titleMeta, titleMeta]}>{t('Question')}</Text>
+        <Text style={[styles.title, title]}>{name}</Text>
       </View>
-      <View style={{ marginTop: 16 }}>
-        {sortedOptions.map((option) => (
-          <PollResultsItem key={`results_${option.id}`} option={option} />
+      <View style={styles.resultsContainer}>
+        {sortedOptions.map((option, index) => (
+          <PollResultsItem key={`results_${option.id}`} option={option} index={index} />
         ))}
       </View>
     </ScrollView>
@@ -67,13 +73,40 @@ export const PollResults = ({
   </PollContextProvider>
 );
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 12,
-    marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  scrollView: { flex: 1, marginHorizontal: 16 },
-  title: { fontSize: 16, fontWeight: '500' },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          borderRadius: primitives.radiusLg,
+          padding: primitives.spacingMd,
+          backgroundColor: semantics.backgroundCoreSurfaceCard,
+        },
+        scrollView: {
+          flex: 1,
+          padding: primitives.spacingMd,
+          backgroundColor: semantics.backgroundElevationElevation1,
+        },
+        resultsContainer: {
+          paddingVertical: primitives.spacing2xl,
+        },
+        title: {
+          fontSize: primitives.typographyFontSizeLg,
+          lineHeight: primitives.typographyLineHeightRelaxed,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+          paddingTop: primitives.spacingXs,
+        },
+        titleMeta: {
+          fontSize: primitives.typographyFontSizeSm,
+          color: semantics.textTertiary,
+          lineHeight: primitives.typographyLineHeightNormal,
+          fontWeight: primitives.typographyFontWeightMedium,
+        },
+      }),
+    [semantics],
+  );
+};

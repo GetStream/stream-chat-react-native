@@ -10,7 +10,7 @@
   "Allow camera access in device settings": "Consenti l'accesso alla fotocamera nelle impostazioni del dispositivo",
   "Also send to channel": "Invia anche al canale",
   "Anonymous": "Anonimo",
-  "Anonymous poll": "Sondaggio anonimo",
+  "Anonymous voting": "Sondaggio anonimo",
   "Are you sure you want to permanently delete this message?": "Sei sicuro di voler eliminare definitivamente questo messaggio?",
   "Are you sure?": "Sei sicuro?",
   "Ask a question": "Fai una domanda",
@@ -72,6 +72,7 @@
   "Only visible to you": "Visibile solo a te",
   "Open Settings": "Apri Impostazioni",
   "Option": "Opzione",
+  "Option {{count}}": "Opzione {{count}}",
   "Option already exists": "L'opzione esiste già",
   "Options": "Opzioni",
   "Photo": "Foto",
@@ -127,7 +128,6 @@
   "View {{count}} comments_one": "Vedi {{count}} commento",
   "View {{count}} comments_other": "Vedi {{count}} commenti",
   "Voice message": "Messaggio vocale",
-  "Vote ended": "Votazione terminata",
   "You": "Tu",
   "You can't send messages in this channel": "Non puoi inviare messaggi in questo canale",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -140,7 +140,7 @@
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
-  "timestamp/PollVote": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Ieri]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Domani]\",\"nextWeek\":\"dddd [alle] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/PollVote": "{{ timestamp | relativeCompactDateFormatter }}",
   "timestamp/ReminderNotification": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Ieri]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Domani]\",\"nextWeek\":\"dddd [alle] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
@@ -172,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} reazione",
   "{{count}} Reactions_other": "{{count}} reazioni",
   "Tap to remove": "Tocca per rimuovere",
-  "Draft": "Borrador"
+  "Draft": "Borrador",
+  "Poll has ended": "Votazione terminata"
 }

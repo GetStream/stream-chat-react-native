@@ -10,7 +10,7 @@
   "Allow camera access in device settings": "Sta cameratoegang toe in de apparaatinstellingen",
   "Also send to channel": "Stuur ook naar kanaal",
   "Anonymous": "Anoniem",
-  "Anonymous poll": "Anonieme peiling",
+  "Anonymous voting": "Anonieme peiling",
   "Are you sure you want to permanently delete this message?": "Weet u zeker dat u dit bericht definitief wilt verwijderen?",
   "Are you sure?": "Weet je het zeker?",
   "Ask a question": "Stel een vraag",
@@ -72,6 +72,7 @@
   "Only visible to you": "Alleen zichtbaar voor jou",
   "Open Settings": "Open instellingen",
   "Option": "Optie",
+  "Option {{count}}": "Optie {{count}}",
   "Option already exists": "Optie bestaat al",
   "Options": "Opties",
   "Photo": "Foto",
@@ -127,7 +128,6 @@
   "View {{count}} comments_one": "Bekijk {{count}} reactie",
   "View {{count}} comments_other": "Bekijk {{count}} reacties",
   "Voice message": "Spraakbericht",
-  "Vote ended": "Stemmen beëindigd",
   "You": "U",
   "You can't send messages in this channel": "Je kan geen berichten sturen in dit kanaal",
   "duration/Location end at": "{{ milliseconds | durationFormatter(withSuffix: false) }}",
@@ -140,7 +140,7 @@
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageSystem": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageTimestamp": "{{ timestamp | timestampFormatter(format: LT) }}",
-  "timestamp/PollVote": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Gisteren]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Morgen]\",\"nextWeek\":\"dddd [om] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/PollVote": "{{ timestamp | relativeCompactDateFormatter }}",
   "timestamp/ReminderNotification": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/StickyHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/ThreadListItem": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Gisteren]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Morgen]\",\"nextWeek\":\"dddd [om] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
@@ -172,5 +172,6 @@
   "{{count}} Reactions_one": "{{count}} reactie",
   "{{count}} Reactions_other": "{{count}} reacties",
   "Tap to remove": "Tik om te verwijderen",
-  "Draft": "Ontwerp"
+  "Draft": "Ontwerp",
+  "Poll has ended": "Stemmen beëindigd"
 }

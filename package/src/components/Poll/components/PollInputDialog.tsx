@@ -10,6 +10,8 @@ import {
   View,
 } from 'react-native';
 
+import Animated, { LinearTransition, ZoomIn } from 'react-native-reanimated';
+
 import { useTheme, useTranslationContext } from '../../../contexts';
 
 export type PollInputDialogProps = {
@@ -52,7 +54,11 @@ export const PollInputDialog = ({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={[styles.transparentContainer, transparentContainer]}
       >
-        <View style={[styles.container, { backgroundColor: white }, container]}>
+        <Animated.View
+          entering={ZoomIn.duration(200)}
+          layout={LinearTransition.duration(200)}
+          style={[styles.container, { backgroundColor: white }, container]}
+        >
           <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
           <TextInput
             autoFocus={true}
@@ -80,7 +86,7 @@ export const PollInputDialog = ({
               <Text style={[styles.button, { color: accent_dark_blue }, button]}>{t('SEND')}</Text>
             </Pressable>
           </View>
-        </View>
+        </Animated.View>
       </KeyboardAvoidingView>
     </Modal>
   );
