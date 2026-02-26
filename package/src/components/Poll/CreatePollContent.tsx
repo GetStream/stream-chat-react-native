@@ -279,7 +279,6 @@ const useStyles = () => {
       },
       optionCardWrapper: {
         gap: primitives.spacingMd,
-        // padding: primitives.spacingMd,
       },
       optionCardSwitch: { width: 64 },
     });
