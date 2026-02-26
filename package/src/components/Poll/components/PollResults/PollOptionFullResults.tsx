@@ -136,6 +136,6 @@ const useStyles = () => {
           marginLeft: primitives.spacingMd,
         },
       }),
-    [],
+    [semantics.backgroundCoreSurfaceCard, semantics.textPrimary],
   );
 };

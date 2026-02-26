@@ -53,6 +53,9 @@ export const predefinedFormatters: PredefinedFormatters = {
       return result;
     },
   relativeCompactDateFormatter: (streamI18n) => (value) => {
+    if (value === undefined || value === null) {
+      return JSON.stringify(value);
+    }
     const parsedTime = streamI18n.tDateTimeParser(value);
     const parsedNow = streamI18n.tDateTimeParser();
 
