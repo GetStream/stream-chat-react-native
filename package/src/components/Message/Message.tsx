@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   GestureResponderEvent,
   StyleProp,
+  StyleSheet,
   useWindowDimensions,
   View,
   ViewStyle,
@@ -323,14 +324,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   );
   const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
-  const {
-    theme: {
-      colors: { bg_gradient_start },
-      messageSimple: { targetedMessageContainer, unreadUnderlayColor = bg_gradient_start, wrapper },
-      screenPadding,
-      semantics,
-    },
-  } = useTheme();
 
   const [rect, setRect] = useState<{ w: number; h: number; x: number; y: number } | undefined>(
     undefined,
@@ -802,6 +795,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     }
   }, [overlayActive, message]);
 
+  const styles = useStyles({
+    showUnreadUnderlay,
+    highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
+  });
+
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
   }
@@ -812,103 +810,82 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   return (
     <MessageProvider value={messageContext}>
-      <View
-        style={[
-          style,
-          {
-            backgroundColor: showUnreadUnderlay ? unreadUnderlayColor : undefined,
-          },
-        ]}
-      >
-        <View
-          style={[
-            { paddingHorizontal: screenPadding },
-            wrapper,
-            (isTargetedMessage || message.pinned) && !isMessageTypeDeleted
-              ? {
-                  backgroundColor: semantics.backgroundCoreHighlight,
-                  ...targetedMessageContainer,
-                }
-              : {},
-          ]}
-          testID='message-wrapper'
-        >
+      <View style={[style, styles.wrapper]} testID='message-wrapper'>
+        {overlayActive && rect ? (
+          <View
+            style={{
+              height: rect.h,
+              width: rect.w,
+            }}
+          />
+        ) : null}
+        {/*TODO: V9: Find a way to separate these in a dedicated file*/}
+        <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
           {overlayActive && rect ? (
             <View
-              style={{
-                height: rect.h,
-                width: rect.w,
-              }}
-            />
-          ) : null}
-          {/*TODO: V9: Find a way to separate these in a dedicated file*/}
-          <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
-            {overlayActive && rect ? (
-              <View
-                onLayout={(e) => {
-                  const { width: w, height: h } = e.nativeEvent.layout;
+              onLayout={(e) => {
+                const { width: w, height: h } = e.nativeEvent.layout;
 
-                  setOverlayTopH({
-                    h,
-                    w,
-                    x: isMyMessage ? screenW - rect.x - w : rect.x,
-                    y: rect.y - h,
-                  });
-                }}
-              >
-                <MessageReactionPicker
-                  dismissOverlay={dismissOverlay}
-                  handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-                />
-              </View>
-            ) : null}
-          </Portal>
-          <Portal
-            hostName={overlayActive ? 'message-overlay' : undefined}
-            style={overlayActive && rect ? { width: rect.w } : undefined}
-          >
-            <MessageSimple ref={messageWrapperRef} />
-          </Portal>
-          {showMessageReactions ? (
-            <BottomSheetModal
-              lazy={true}
-              onClose={() => setShowMessageReactions(false)}
-              visible={showMessageReactions}
-              height={424}
+                setOverlayTopH({
+                  h,
+                  w,
+                  x: isMyMessage ? screenW - rect.x - w : rect.x,
+                  y: rect.y - h,
+                });
+              }}
             >
-              <MessageUserReactions
-                message={message}
-                MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-                MessageUserReactionsItem={MessageUserReactionsItem}
-                selectedReaction={selectedReaction}
+              <MessageReactionPicker
+                dismissOverlay={dismissOverlay}
+                handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
               />
-            </BottomSheetModal>
+            </View>
           ) : null}
-          <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
-            {overlayActive && rect ? (
-              <View
-                onLayout={(e) => {
-                  const { width: w, height: h } = e.nativeEvent.layout;
-                  setOverlayBottomH({
-                    h,
-                    w,
-                    x: isMyMessage ? screenW - rect.x - w : rect.x,
-                    y: rect.y + rect.h,
-                  });
-                }}
-              >
-                <MessageActionList
-                  dismissOverlay={dismissOverlay}
-                  MessageActionListItem={MessageActionListItem}
-                  messageActions={messageActions}
-                />
-              </View>
-            ) : null}
-          </Portal>
-          {isBounceDialogOpen ? (
-            <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
+        </Portal>
+        <Portal
+          hostName={overlayActive ? 'message-overlay' : undefined}
+          style={overlayActive && rect ? { width: rect.w } : undefined}
+        >
+          <MessageSimple ref={messageWrapperRef} />
+        </Portal>
+        {showMessageReactions ? (
+          <BottomSheetModal
+            lazy={true}
+            onClose={() => setShowMessageReactions(false)}
+            visible={showMessageReactions}
+            height={424}
+          >
+            <MessageUserReactions
+              message={message}
+              MessageUserReactionsAvatar={MessageUserReactionsAvatar}
+              MessageUserReactionsItem={MessageUserReactionsItem}
+              selectedReaction={selectedReaction}
+            />
+          </BottomSheetModal>
+        ) : null}
+        <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
+          {overlayActive && rect ? (
+            <View
+              onLayout={(e) => {
+                const { width: w, height: h } = e.nativeEvent.layout;
+                setOverlayBottomH({
+                  h,
+                  w,
+                  x: isMyMessage ? screenW - rect.x - w : rect.x,
+                  y: rect.y + rect.h,
+                });
+              }}
+            >
+              <MessageActionList
+                dismissOverlay={dismissOverlay}
+                MessageActionListItem={MessageActionListItem}
+                messageActions={messageActions}
+              />
+            </View>
           ) : null}
-        </View>
+        </Portal>
+        {isBounceDialogOpen ? (
+          <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
+        ) : null}
       </View>
     </MessageProvider>
   );
@@ -1130,4 +1107,41 @@ export const Message = (props: MessageProps) => {
       {...props}
     />
   );
+};
+
+const useStyles = ({
+  showUnreadUnderlay,
+  highlightedMessage,
+}: {
+  showUnreadUnderlay?: boolean;
+  highlightedMessage?: boolean;
+}) => {
+  const {
+    theme: {
+      colors: { bg_gradient_start },
+      messageSimple: { wrapper, unreadUnderlayColor = bg_gradient_start, targetedMessageContainer },
+      screenPadding,
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      wrapper: {
+        paddingHorizontal: screenPadding,
+        backgroundColor: showUnreadUnderlay ? unreadUnderlayColor : undefined,
+        ...(highlightedMessage
+          ? { backgroundColor: semantics.backgroundCoreHighlight, ...targetedMessageContainer }
+          : {}),
+        ...wrapper,
+      },
+    });
+  }, [
+    wrapper,
+    screenPadding,
+    showUnreadUnderlay,
+    unreadUnderlayColor,
+    highlightedMessage,
+    semantics,
+    targetedMessageContainer,
+  ]);
 };
