@@ -1107,6 +1107,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   );
 };
 
+/**
+ * Unfortunately, FlashList does not handle autoscrolling if the footer changes properly. Because
+ * of that, we calculate this manually and autoscroll to the bottom if we're near the end. We only
+ * do this if the typing indicator is about to be rendered for now. Later on we can rely on proper
+ * layout calculations.
+ */
 const FlashListFooterTypingAdapter = ({
   enabled,
   children,
