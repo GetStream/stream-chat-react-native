@@ -29,11 +29,6 @@ export const ViewResultsButton = (props: PollButtonProps) => {
     setShowResults(true);
   }, [message, onPress, poll]);
 
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
   const styles = useStyles();
 
   const onRequestClose = useCallback(() => {
@@ -50,7 +45,7 @@ export const ViewResultsButton = (props: PollButtonProps) => {
       />
       {showResults ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showResults}>
-          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+          <SafeAreaViewWrapper style={styles.safeArea}>
             <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
             <PollResults message={message} poll={poll} />
           </SafeAreaViewWrapper>
@@ -80,11 +75,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
     setShowAllOptions(false);
   }, []);
 
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   return (
     <>
@@ -96,7 +87,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
       ) : null}
       {showAllOptions ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAllOptions}>
-          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+          <SafeAreaViewWrapper style={styles.safeArea}>
             <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
             <PollAllOptions message={message} poll={poll} />
           </SafeAreaViewWrapper>
@@ -122,11 +113,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
     setShowAnswers(true);
   }, [message, onPress, poll]);
 
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   const onRequestClose = useCallback(() => {
     setShowAnswers(false);
@@ -142,7 +129,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
       ) : null}
       {showAnswers ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAnswers}>
-          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
+          <SafeAreaViewWrapper style={styles.safeArea}>
             <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
             <PollAnswersList message={message} poll={poll} />
           </SafeAreaViewWrapper>
@@ -274,6 +261,10 @@ const useStyles = () => {
         borderColor: isPollCreatedByClient
           ? semantics.chatBorderOnChatOutgoing
           : semantics.chatBorderOnChatIncoming,
+      },
+      safeArea: {
+        backgroundColor: semantics.backgroundElevationElevation1,
+        flex: 1,
       },
     });
   }, [semantics, isPollCreatedByClient]);

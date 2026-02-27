@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
+
+import Animated, { LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { SearchSourceState, TextComposerState, TextComposerSuggestion } from 'stream-chat';
 
@@ -12,7 +14,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 
-export const DEFAULT_LIST_HEIGHT = 200;
+export const DEFAULT_LIST_HEIGHT = 208;
 
 export type AutoCompleteSuggestionListProps = Partial<
   Pick<MessageInputContextValue, 'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'>
@@ -60,13 +62,12 @@ export const AutoCompleteSuggestionList = ({
 
   const {
     theme: {
-      colors: { black, white },
       messageInput: {
         container: { maxHeight },
-        suggestionsListContainer: { flatlist },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const renderItem = useCallback(
     ({ item }: { item: TextComposerSuggestion }) => {
@@ -90,7 +91,12 @@ export const AutoCompleteSuggestionList = ({
   }
 
   return (
-    <View style={[styles.container]}>
+    <Animated.View
+      entering={ZoomIn.duration(200)}
+      exiting={ZoomOut.duration(200)}
+      layout={LinearTransition.duration(200)}
+      style={styles.container}
+    >
       <FlatList
         data={items}
         keyboardShouldPersistTaps='always'
@@ -99,33 +105,49 @@ export const AutoCompleteSuggestionList = ({
         onEndReached={loadMore}
         onEndReachedThreshold={0.1}
         renderItem={renderItem}
-        style={[
-          styles.flatlist,
-          flatlist,
-          { backgroundColor: white, maxHeight, shadowColor: black },
-        ]}
+        style={[styles.flatlist, { maxHeight }]}
         testID={'auto-complete-suggestion-list'}
       />
-    </View>
+    </Animated.View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    maxHeight: DEFAULT_LIST_HEIGHT,
-  },
-  flatlist: {
-    borderRadius: 8,
-    elevation: 3,
-    marginHorizontal: 8,
-    shadowOffset: {
-      height: 1,
-      width: 0,
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      messageInput: {
+        suggestionsListContainer: { flatlist },
+      },
     },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-  },
-});
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          maxHeight: DEFAULT_LIST_HEIGHT,
+          backgroundColor: semantics.composerBg,
+          borderTopWidth: 1,
+          borderColor: semantics.borderCoreDefault,
+        },
+        flatlist: {
+          backgroundColor: semantics.composerBg,
+          shadowColor: semantics.accentBlack,
+          borderRadius: 8,
+          elevation: 3,
+          marginHorizontal: 8,
+          shadowOffset: {
+            height: 1,
+            width: 0,
+          },
+          shadowOpacity: 0.22,
+          shadowRadius: 2.22,
+          ...flatlist,
+        },
+      }),
+    [semantics, flatlist],
+  );
+};
 
 AutoCompleteSuggestionList.displayName =
   'AutoCompleteSuggestionList{messageInput{suggestions{List}}}';

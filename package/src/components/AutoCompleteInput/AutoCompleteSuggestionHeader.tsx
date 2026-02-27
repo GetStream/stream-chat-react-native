@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import { Lightning } from '../../icons/Lightning';
 import { Smile } from '../../icons/Smile';
+import { primitives } from '../../theme';
 
 export type AutoCompleteSuggestionHeaderProps = {
   queryText?: string;
@@ -14,7 +14,7 @@ export type AutoCompleteSuggestionHeaderProps = {
 export const CommandsHeader: React.FC<AutoCompleteSuggestionHeaderProps> = () => {
   const {
     theme: {
-      colors: { accent_blue, grey },
+      semantics,
       messageInput: {
         suggestions: {
           header: { container, title },
@@ -25,8 +25,10 @@ export const CommandsHeader: React.FC<AutoCompleteSuggestionHeaderProps> = () =>
 
   return (
     <View style={[styles.container, container]}>
-      <Lightning fill={accent_blue} size={32} />
-      <Text style={[styles.title, { color: grey }, title]} testID='commands-header-title'>
+      <Text
+        style={[styles.title, { color: semantics.textTertiary }, title]}
+        testID='commands-header-title'
+      >
         {'Instant Commands'}
       </Text>
     </View>
@@ -107,7 +109,9 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   title: {
-    fontSize: 14,
+    fontSize: primitives.typographyFontSizeSm,
+    lineHeight: primitives.typographyLineHeightNormal,
+    fontWeight: primitives.typographyFontWeightMedium,
     paddingLeft: 8,
   },
 });

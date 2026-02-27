@@ -778,8 +778,8 @@ export type Theme = {
       wrapper: ViewStyle;
     };
     answersList: {
-      buttonContainer: ViewStyle;
       container: ViewStyle;
+      contentContainer: ViewStyle;
       item: {
         answerText: TextStyle;
         container: ViewStyle;
@@ -853,6 +853,7 @@ export type Theme = {
       contentContainer: ViewStyle;
       headerContainer: ViewStyle;
       headerText: TextStyle;
+      headerTitle: TextStyle;
     };
     inputDialog: {
       button: TextStyle;
@@ -892,10 +893,12 @@ export type Theme = {
         container: ViewStyle;
         headerContainer: ViewStyle;
         title: TextStyle;
+        titleMeta: TextStyle;
         voteCount: TextStyle;
       };
       scrollView: ViewStyle;
       title: TextStyle;
+      titleMeta: TextStyle;
       vote: { container: ViewStyle; dateText: TextStyle; userName: TextStyle };
     };
   };
@@ -1630,8 +1633,8 @@ export const defaultTheme: Theme = {
       wrapper: {},
     },
     answersList: {
-      buttonContainer: {},
       container: {},
+      contentContainer: {},
       item: {
         answerText: {},
         container: {},
@@ -1705,6 +1708,7 @@ export const defaultTheme: Theme = {
       contentContainer: {},
       headerContainer: {},
       headerText: {},
+      headerTitle: {},
     },
     inputDialog: {
       button: {},
@@ -1744,10 +1748,12 @@ export const defaultTheme: Theme = {
         container: {},
         headerContainer: {},
         title: {},
+        titleMeta: {},
         voteCount: {},
       },
       scrollView: {},
       title: {},
+      titleMeta: {},
       vote: { container: {}, dateText: {}, userName: {} },
     },
   },

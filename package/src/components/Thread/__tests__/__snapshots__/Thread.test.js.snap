@@ -413,7 +413,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 32,
                                     },
                                     {
-                                      "backgroundColor": "#fcedb9",
+                                      "backgroundColor": "#fcd579",
                                     },
                                     {
                                       "borderColor": "rgba(0, 0, 0, 0.1)",
@@ -620,7 +620,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                     "alignItems": "flex-start",
                                                     "flexDirection": "row",
                                                     "flexWrap": "wrap",
-                                                    "fontSize": 15,
+                                                    "fontSize": 17,
                                                     "justifyContent": "flex-start",
                                                     "lineHeight": 20,
                                                     "marginBottom": 8,
@@ -632,7 +632,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                   style={
                                                     {
                                                       "color": "#000000",
-                                                      "fontSize": 15,
+                                                      "fontSize": 17,
                                                       "lineHeight": 20,
                                                     }
                                                   }
@@ -676,7 +676,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   [
                                     {
                                       "color": "#687385",
-                                      "fontSize": 12,
+                                      "fontSize": 13,
                                       "fontWeight": 400,
                                       "lineHeight": 16,
                                     },
@@ -781,7 +781,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 32,
                                     },
                                     {
-                                      "backgroundColor": "#bdfcdb",
+                                      "backgroundColor": "#8febbd",
                                     },
                                     {
                                       "borderColor": "rgba(0, 0, 0, 0.1)",
@@ -988,7 +988,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                     "alignItems": "flex-start",
                                                     "flexDirection": "row",
                                                     "flexWrap": "wrap",
-                                                    "fontSize": 15,
+                                                    "fontSize": 17,
                                                     "justifyContent": "flex-start",
                                                     "lineHeight": 20,
                                                     "marginBottom": 8,
@@ -1000,7 +1000,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                   style={
                                                     {
                                                       "color": "#000000",
-                                                      "fontSize": 15,
+                                                      "fontSize": 17,
                                                       "lineHeight": 20,
                                                     }
                                                   }
@@ -1044,7 +1044,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   [
                                     {
                                       "color": "#687385",
-                                      "fontSize": 12,
+                                      "fontSize": 13,
                                       "fontWeight": 400,
                                       "lineHeight": 16,
                                     },
@@ -1115,7 +1115,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       style={
                         {
                           "color": "#414552",
-                          "fontSize": 12,
+                          "fontSize": 13,
                           "fontWeight": 600,
                           "lineHeight": 16,
                         }
@@ -1185,7 +1185,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 32,
                                     },
                                     {
-                                      "backgroundColor": "#fcedb9",
+                                      "backgroundColor": "#fcd579",
                                     },
                                     {
                                       "borderColor": "rgba(0, 0, 0, 0.1)",
@@ -1392,7 +1392,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                     "alignItems": "flex-start",
                                                     "flexDirection": "row",
                                                     "flexWrap": "wrap",
-                                                    "fontSize": 15,
+                                                    "fontSize": 17,
                                                     "justifyContent": "flex-start",
                                                     "lineHeight": 20,
                                                     "marginBottom": 8,
@@ -1404,7 +1404,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                   style={
                                                     {
                                                       "color": "#000000",
-                                                      "fontSize": 15,
+                                                      "fontSize": 17,
                                                       "lineHeight": 20,
                                                     }
                                                   }
@@ -1448,7 +1448,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   [
                                     {
                                       "color": "#687385",
-                                      "fontSize": 12,
+                                      "fontSize": 13,
                                       "fontWeight": 400,
                                       "lineHeight": 16,
                                     },
@@ -1555,7 +1555,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                       "width": 32,
                                     },
                                     {
-                                      "backgroundColor": "#bdfcdb",
+                                      "backgroundColor": "#8febbd",
                                     },
                                     {
                                       "borderColor": "rgba(0, 0, 0, 0.1)",
@@ -1762,7 +1762,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                     "alignItems": "flex-start",
                                                     "flexDirection": "row",
                                                     "flexWrap": "wrap",
-                                                    "fontSize": 15,
+                                                    "fontSize": 17,
                                                     "justifyContent": "flex-start",
                                                     "lineHeight": 20,
                                                     "marginBottom": 8,
@@ -1774,7 +1774,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                   style={
                                                     {
                                                       "color": "#000000",
-                                                      "fontSize": 15,
+                                                      "fontSize": 17,
                                                       "lineHeight": 20,
                                                     }
                                                   }
@@ -1818,7 +1818,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   [
                                     {
                                       "color": "#687385",
-                                      "fontSize": 12,
+                                      "fontSize": 13,
                                       "fontWeight": 400,
                                       "lineHeight": 16,
                                     },
@@ -2211,39 +2211,43 @@ exports[`Thread should match thread snapshot 1`] = `
                 ]
               }
             >
-              <TextInput
-                autoFocus={true}
-                editable={true}
-                maxLength={5000}
-                multiline={true}
-                onChangeText={[Function]}
-                onSelectionChange={[Function]}
-                placeholder="Send a message"
-                placeholderTextColor="#687385"
-                style={
-                  [
-                    {
-                      "color": "#1a1b25",
-                      "flex": 1,
-                      "fontSize": 16,
-                      "includeFontPadding": false,
-                      "lineHeight": 20,
-                      "paddingLeft": 16,
-                      "paddingVertical": 12,
-                      "textAlignVertical": "center",
-                    },
-                    {
-                      "maxHeight": 124,
-                      "paddingLeft": 16,
-                      "paddingRight": 8,
-                      "textAlign": "left",
-                    },
-                    {},
-                  ]
-                }
-                testID="auto-complete-text-input"
-                value=""
-              />
+              <View
+                layout={BaseAnimationMock {}}
+              >
+                <TextInput
+                  autoFocus={true}
+                  editable={true}
+                  maxLength={5000}
+                  multiline={true}
+                  onChangeText={[Function]}
+                  onSelectionChange={[Function]}
+                  placeholder="Send a message"
+                  placeholderTextColor="#687385"
+                  style={
+                    [
+                      {
+                        "color": "#1a1b25",
+                        "flex": 1,
+                        "fontSize": 16,
+                        "includeFontPadding": false,
+                        "lineHeight": 20,
+                        "paddingLeft": 16,
+                        "paddingVertical": 12,
+                        "textAlignVertical": "center",
+                      },
+                      {
+                        "maxHeight": 124,
+                        "paddingLeft": 16,
+                        "paddingRight": 8,
+                        "textAlign": "left",
+                      },
+                      {},
+                    ]
+                  }
+                  testID="auto-complete-text-input"
+                  value=""
+                />
+              </View>
               <View
                 style={
                   [
@@ -2501,12 +2505,10 @@ exports[`Thread should match thread snapshot 1`] = `
       </View>
     </View>
     <View
-      entering={BaseAnimationMock {}}
-      exiting={BaseAnimationMock {}}
-      layout={BaseAnimationMock {}}
       style={
         [
           {
+            "backgroundColor": "#ffffff",
             "position": "absolute",
             "width": "100%",
           },

@@ -7,7 +7,6 @@ import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionComma
 
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { AtMentions } from '../../icons/AtMentions';
 import { primitives } from '../../theme';
 import type { Emoji } from '../../types/types';
 
@@ -22,7 +21,7 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
   const { id, name, online } = item;
   const {
     theme: {
-      colors: { accent_blue, black },
+      colors: { black },
       messageInput: {
         suggestions: {
           mention: { column, container: mentionContainer, name: nameStyle },
@@ -40,7 +39,6 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
           {name || id}
         </Text>
       </View>
-      <AtMentions pathFill={accent_blue} />
     </View>
   );
 };
@@ -75,7 +73,7 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
   const { args, name } = item;
   const {
     theme: {
-      colors: { black, grey },
+      semantics,
       messageInput: {
         suggestions: {
           command: { args: argsStyle, container: commandContainer, title },
@@ -88,10 +86,16 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
   return (
     <View style={[styles.commandContainer, commandContainer]}>
       {name ? <AutoCompleteSuggestionCommandIcon name={name} /> : null}
-      <Text style={[styles.title, { color: black }, title]} testID='commands-item-title'>
+      <Text
+        style={[styles.title, { color: semantics.textPrimary }, title]}
+        testID='commands-item-title'
+      >
         {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
       </Text>
-      <Text style={[styles.args, { color: grey }, argsStyle]} testID='commands-item-args'>
+      <Text
+        style={[styles.args, { color: semantics.textTertiary }, argsStyle]}
+        testID='commands-item-args'
+      >
         {`/${name} ${args}`}
       </Text>
     </View>
@@ -203,8 +207,9 @@ const useStyles = () => {
           paddingVertical: primitives.spacingXs,
         },
         name: {
-          fontSize: 14,
-          fontWeight: 'bold',
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
           paddingBottom: 2,
         },
         tag: {

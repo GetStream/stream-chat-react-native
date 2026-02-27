@@ -107,7 +107,7 @@ export const WaveProgressBar = React.memo(
             }
           })
           .onUpdate((event) => {
-            const newProgress = Math.max(0, Math.min(event.x / fullWidth, 1));
+            const newProgress = Math.max(0, Math.min((state.value + event.x) / fullWidth, 1));
             state.value = newProgress;
             waveFormNumberFromProgress(newProgress);
           })
