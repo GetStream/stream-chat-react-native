@@ -16,7 +16,7 @@ import ReanimatedSwipeable, {
 
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 
-const ACTION_WIDTH = 50;
+const ACTION_WIDTH = 80;
 const DEFAULT_RIGHT_ACTIONS_WIDTH = ACTION_WIDTH * 2;
 
 const animationOptions = {
@@ -53,12 +53,6 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
   const swipeRegistry = useSwipeRegistryContext();
   const swipeableRef = useRef<SwipeableMethods | null>(null);
 
-  const {
-    onSwipeableWillOpen: onSwipeableWillOpenFromProps,
-    renderRightActions: renderRightActionsFromProps,
-    ...restSwipableProps
-  } = swipableProps ?? {};
-
   const defaultRenderRightActions = useCallback(
     (_progress: SharedValue<number>, translation: SharedValue<number>) => (
       <DefaultRightActions translation={translation} />
@@ -81,9 +75,9 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
       if (swipeRegistry && swipeableId) {
         swipeRegistry.notifyWillOpen(swipeableId);
       }
-      onSwipeableWillOpenFromProps?.(direction);
+      swipableProps?.onSwipeableWillOpen?.(direction);
     },
-    [onSwipeableWillOpenFromProps, swipeRegistry, swipeableId],
+    [swipableProps, swipeRegistry, swipeableId],
   );
 
   return (
@@ -96,8 +90,8 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
       overshootRight={true}
       overshootFriction={16}
       renderLeftActions={undefined}
-      renderRightActions={renderRightActionsFromProps ?? defaultRenderRightActions}
-      {...restSwipableProps}
+      renderRightActions={defaultRenderRightActions}
+      {...swipableProps}
     >
       {children}
     </ReanimatedSwipeable>

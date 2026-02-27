@@ -17,21 +17,25 @@ type SwipeRegistryContextValue = {
 const SwipeRegistryContext = createContext<SwipeRegistryContextValue | undefined>(undefined);
 
 export const SwipeRegistryProvider = ({ children }: PropsWithChildren) => {
-  const swipeablesRef = useRef<Map<string, CloseSwipeable>>(new Map());
+  const swipeablesRef = useRef<Map<string, CloseSwipeable> | undefined>(undefined);
 
   const registerSwipeable = useCallback((id: string, close: CloseSwipeable) => {
+    if (!swipeablesRef.current) {
+      swipeablesRef.current = new Map();
+    }
+
     swipeablesRef.current.set(id, close);
 
     return () => {
-      const registered = swipeablesRef.current.get(id);
+      const registered = swipeablesRef.current?.get(id);
       if (registered === close) {
-        swipeablesRef.current.delete(id);
+        swipeablesRef.current?.delete(id);
       }
     };
   }, []);
 
   const notifyWillOpen = useCallback((id: string) => {
-    for (const [registeredId, close] of swipeablesRef.current.entries()) {
+    for (const [registeredId, close] of swipeablesRef.current?.entries() ?? []) {
       if (registeredId !== id) {
         close();
       }
