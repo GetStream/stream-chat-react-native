@@ -1143,6 +1143,8 @@ const FlashListFooterTypingAdapter = ({
     if (listApi && typingUsersLengthRef.current === 0 && typingUsers.length > 0 && isNearEnd) {
       listApi.scrollToEnd({ animated: true });
     }
+
+    typingUsersLengthRef.current = typingUsers.length;
   }, [enabled, api, typingUsers.length]);
 
   return children;
