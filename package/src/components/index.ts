@@ -182,6 +182,7 @@ export * from './UIComponents/BottomSheetModal';
 export * from './UIComponents/StreamBottomSheetModalFlatList';
 export * from './UIComponents/ImageBackground';
 export * from './UIComponents/Spinner';
+export * from './UIComponents/SwipableWrapper';
 
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';

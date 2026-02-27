@@ -55,7 +55,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const leaveGroup = useStableCallback(async () => {
+  const leave = useStableCallback(async () => {
     if (!channel) {
       return;
     }
@@ -64,7 +64,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const deleteConversation = useStableCallback(() => {
+  const deleteChannel = useStableCallback(() => {
     if (!channel) {
       return;
     }
@@ -95,7 +95,7 @@ export const useChannelActions = (channel: Channel) => {
   });
 
   return useMemo(
-    () => ({ pinUnpin, archiveUnarchive, leaveGroup, deleteConversation }),
-    [archiveUnarchive, deleteConversation, leaveGroup, pinUnpin],
+    () => ({ pinUnpin, archiveUnarchive, leave, deleteChannel }),
+    [archiveUnarchive, deleteChannel, leave, pinUnpin],
   );
 };

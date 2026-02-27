@@ -10,6 +10,7 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
+import { SwipableWrapper } from '../UIComponents';
 
 export type ChannelPreviewProps = Partial<Pick<ChatContextValue, 'client'>> &
   Partial<Pick<ChannelsContextValue, 'Preview' | 'forceUpdate'>> & {
@@ -34,5 +35,9 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
 
   const message = translatedLastMessage ? translatedLastMessage : lastMessage;
 
-  return <Preview channel={channel} muted={muted} unread={unread} lastMessage={message} />;
+  return (
+    <SwipableWrapper>
+      <Preview channel={channel} muted={muted} unread={unread} lastMessage={message} />
+    </SwipableWrapper>
+  );
 };
