@@ -7,11 +7,12 @@ import { useChannelMembershipState } from './useChannelMembershipState';
 
 import { useChannelMembersState } from './useChannelMembersState';
 
-import { useChatContext } from '../../../contexts';
+import { useChatContext, useTranslationContext } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 
 export const useChannelActions = (channel: Channel) => {
   const { client } = useChatContext();
+  const { t } = useTranslationContext();
   const ownUserId = client.userID;
   const membership = useChannelMembershipState(channel);
   const members = useChannelMembersState(channel);
@@ -69,13 +70,15 @@ export const useChannelActions = (channel: Channel) => {
     }
 
     const isDirectChat = otherMembers?.length === 1;
-    const title = `Delete ${isDirectChat ? 'chat' : 'group'}`;
-    const message = `Are you sure you want to delete this ${isDirectChat ? 'chat' : 'group'}? This can't be undone.`;
+    const title = isDirectChat ? t('Delete chat') : t('Delete group');
+    const message = isDirectChat
+      ? t("Are you sure you want to delete this chat? This can't be undone.")
+      : t("Are you sure you want to delete this group? This can't be undone.");
 
     Alert.alert(title, message, [
       {
         style: 'cancel',
-        text: 'Cancel',
+        text: t('Cancel'),
       },
       {
         onPress: async () => {
@@ -86,10 +89,13 @@ export const useChannelActions = (channel: Channel) => {
           }
         },
         style: 'destructive',
-        text: 'Delete',
+        text: t('Delete'),
       },
     ]);
   });
 
-  return { pinUnpin, archiveUnarchive, leaveGroup, deleteConversation };
+  return useMemo(
+    () => ({ pinUnpin, archiveUnarchive, leaveGroup, deleteConversation }),
+    [archiveUnarchive, deleteConversation, leaveGroup, pinUnpin],
+  );
 };

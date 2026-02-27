@@ -177,5 +177,9 @@
   "Replied to a thread": "Respondido a un hilo",
   "View": "Ver",
   "Reminder overdue": "Recordatorio vencido",
-  "Poll has ended": "Votazione terminata"
+  "Poll has ended": "Votazione terminata",
+  "Are you sure you want to delete this group? This can't be undone.": "Are you sure you want to delete this group? This can't be undone.",
+  "Are you sure you want to delete this chat? This can't be undone.": "Are you sure you want to delete this chat? This can't be undone.",
+  "Delete chat": "Delete chat",
+  "Delete group": "Delete group"
 }
