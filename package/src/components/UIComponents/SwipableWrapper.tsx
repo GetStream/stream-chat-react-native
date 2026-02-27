@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
+import { Pressable } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   SharedValue,
@@ -18,6 +19,7 @@ import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRe
 
 const ACTION_WIDTH = 80;
 const DEFAULT_RIGHT_ACTIONS_WIDTH = ACTION_WIDTH * 2;
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const animationOptions = {
   damping: 24,
@@ -43,8 +45,18 @@ const DefaultRightActions = ({ translation }: { translation: SharedValue<number>
 
   return (
     <Animated.View style={styles.rightActionsContainer}>
-      <Animated.View style={[styles.action, styles.redAction, animatedActionWidthStyle]} />
-      <Animated.View style={[styles.action, styles.blueAction, animatedActionWidthStyle]} />
+      <AnimatedPressable
+        onPress={() => Alert.alert('Red pressed')}
+        style={[styles.action, animatedActionWidthStyle]}
+      >
+        <View style={{ flex: 1, backgroundColor: 'red' }} />
+      </AnimatedPressable>
+      <AnimatedPressable
+        onPress={() => Alert.alert('Blue pressed')}
+        style={[styles.action, animatedActionWidthStyle]}
+      >
+        <View style={{ flex: 1, backgroundColor: 'blue' }} />
+      </AnimatedPressable>
     </Animated.View>
   );
 };
