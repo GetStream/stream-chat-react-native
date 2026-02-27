@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import Animated, {
   Extrapolation,
@@ -19,34 +19,56 @@ type SwipableWrapperProps = PropsWithChildren<{
   swipableProps?: SwipeableProps;
 }>;
 
-const DefaultRightActions = ({ progress }: { progress: SharedValue<number> }) => {
-  const animatedRedActionStyle = useAnimatedStyle(() => ({
-    width: interpolate(progress.value, [0, 1], [0, ACTION_WIDTH], Extrapolation.CLAMP),
+const DefaultRightActions = ({ translation }: { translation: SharedValue<number> }) => {
+  const animatedContainerStyle = useAnimatedStyle(() => ({
+    width: interpolate(
+      -translation.value,
+      [0, DEFAULT_RIGHT_ACTIONS_WIDTH, DEFAULT_RIGHT_ACTIONS_WIDTH + 40],
+      [DEFAULT_RIGHT_ACTIONS_WIDTH, DEFAULT_RIGHT_ACTIONS_WIDTH, DEFAULT_RIGHT_ACTIONS_WIDTH + 16],
+      Extrapolation.CLAMP,
+    ),
   }));
 
-  const animatedBlueActionStyle = useAnimatedStyle(() => ({
-    width: interpolate(progress.value, [0, 1], [0, ACTION_WIDTH], Extrapolation.CLAMP),
+  const animatedActionWidthStyle = useAnimatedStyle(() => ({
+    width: interpolate(
+      -translation.value,
+      [0, DEFAULT_RIGHT_ACTIONS_WIDTH, DEFAULT_RIGHT_ACTIONS_WIDTH + 40],
+      [0, ACTION_WIDTH, ACTION_WIDTH + 8],
+      Extrapolation.CLAMP,
+    ),
   }));
 
   return (
-    <View style={styles.rightActionsContainer}>
-      <Animated.View style={[styles.action, styles.redAction, animatedRedActionStyle]} />
-      <Animated.View style={[styles.action, styles.blueAction, animatedBlueActionStyle]} />
-    </View>
+    <Animated.View style={[styles.rightActionsContainer, animatedContainerStyle]}>
+      <Animated.View style={[styles.action, styles.redAction, animatedActionWidthStyle]} />
+      <Animated.View style={[styles.action, styles.blueAction, animatedActionWidthStyle]} />
+    </Animated.View>
   );
 };
 
 export const SwipableWrapper = ({ children, swipableProps }: SwipableWrapperProps) => {
   const defaultRenderRightActions = useCallback(
-    (progress: SharedValue<number>) => <DefaultRightActions progress={progress} />,
+    (_progress: SharedValue<number>, translation: SharedValue<number>) => (
+      <DefaultRightActions translation={translation} />
+    ),
     [],
   );
+  const animationOptions = {
+    damping: 24,
+    mass: 1,
+    overshootClamping: false,
+    stiffness: 180,
+    ...swipableProps?.animationOptions,
+  };
 
   return (
     <ReanimatedSwipeable
       {...swipableProps}
+      animationOptions={animationOptions}
       overshootLeft={false}
-      overshootFriction={16}
+      overshootRight={swipableProps?.overshootRight ?? true}
+      overshootFriction={swipableProps?.overshootFriction ?? 8}
+      renderLeftActions={undefined}
       renderRightActions={swipableProps?.renderRightActions ?? defaultRenderRightActions}
     >
       {children}
@@ -56,14 +78,11 @@ export const SwipableWrapper = ({ children, swipableProps }: SwipableWrapperProp
 
 const styles = StyleSheet.create({
   rightActionsContainer: {
-    alignItems: 'stretch',
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    overflow: 'hidden',
-    width: DEFAULT_RIGHT_ACTIONS_WIDTH,
   },
   action: {
-    width: ACTION_WIDTH,
+    width: 0,
   },
   redAction: {
     backgroundColor: 'red',
