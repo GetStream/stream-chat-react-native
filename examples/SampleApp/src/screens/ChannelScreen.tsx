@@ -27,7 +27,6 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
-import { MessageHeader } from '../components/Reminders/MessageReminderHeader.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
