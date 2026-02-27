@@ -20,15 +20,6 @@ type SwipableWrapperProps = PropsWithChildren<{
 }>;
 
 const DefaultRightActions = ({ translation }: { translation: SharedValue<number> }) => {
-  const animatedContainerStyle = useAnimatedStyle(() => ({
-    width: interpolate(
-      -translation.value,
-      [0, DEFAULT_RIGHT_ACTIONS_WIDTH, DEFAULT_RIGHT_ACTIONS_WIDTH + 40],
-      [DEFAULT_RIGHT_ACTIONS_WIDTH, DEFAULT_RIGHT_ACTIONS_WIDTH, DEFAULT_RIGHT_ACTIONS_WIDTH + 16],
-      Extrapolation.CLAMP,
-    ),
-  }));
-
   const animatedActionWidthStyle = useAnimatedStyle(() => ({
     width: interpolate(
       -translation.value,
@@ -39,7 +30,7 @@ const DefaultRightActions = ({ translation }: { translation: SharedValue<number>
   }));
 
   return (
-    <Animated.View style={[styles.rightActionsContainer, animatedContainerStyle]}>
+    <Animated.View style={styles.rightActionsContainer}>
       <Animated.View style={[styles.action, styles.redAction, animatedActionWidthStyle]} />
       <Animated.View style={[styles.action, styles.blueAction, animatedActionWidthStyle]} />
     </Animated.View>
@@ -80,6 +71,8 @@ const styles = StyleSheet.create({
   rightActionsContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    overflow: 'visible',
+    width: DEFAULT_RIGHT_ACTIONS_WIDTH,
   },
   action: {
     width: 0,
