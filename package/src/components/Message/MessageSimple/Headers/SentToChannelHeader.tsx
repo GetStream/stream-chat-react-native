@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -8,33 +8,65 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../../../contexts/channelContext/ChannelContext';
-import {
-  MessageContextValue,
-  useMessageContext,
-} from '../../../../contexts/messageContext/MessageContext';
+import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import {
-  ThreadContextValue,
-  useThreadContext,
-} from '../../../../contexts/threadContext/ThreadContext';
+import { useThreadContext } from '../../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../../../hooks';
 import { ArrowUpRight } from '../../../../icons/ArrowUpRight';
 import { primitives } from '../../../../theme';
 
-type SentToChannelHeaderPropsWithContext = Pick<ThreadContextValue, 'onBackPressThread'> &
-  Pick<ChannelContextValue, 'threadList' | 'channel' | 'setTargetedMessage'> &
-  Pick<MessageContextValue, 'onThreadSelect' | 'message'>;
+type SentToChannelHeaderPropsWithContext = Pick<ChannelContextValue, 'threadList'> & {
+  /**
+   * Function to handle press on the sent to channel header
+   * @returns void
+   */
+  onPress: () => void;
+  /**
+   * Boolean to show the view text
+   * @default false
+   */
+  showViewText?: boolean;
+};
 
 const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithContext) => {
-  const { onBackPressThread, threadList, onThreadSelect, message, channel, setTargetedMessage } =
-    props;
+  const { threadList, onPress, showViewText } = props;
   const {
     theme: { semantics },
   } = useTheme();
   const { t } = useTranslationContext();
   const styles = useStyles();
 
-  const handleOnPress = useCallback(async () => {
+  return (
+    <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
+      <ArrowUpRight height={16} width={16} stroke={semantics.textPrimary} />
+      <Text style={styles.label}>
+        {threadList ? t('Also sent in channel') : t('Replied to a thread')}
+      </Text>
+      {showViewText ? (
+        <>
+          <Text style={styles.dot}>·</Text>
+          <Pressable onPress={onPress}>
+            <Text style={styles.link}>{t('View')}</Text>
+          </Pressable>
+        </>
+      ) : null}
+    </View>
+  );
+};
+
+const MemoizedSentToChannelHeader = React.memo(
+  SentToChannelHeaderWithContext,
+) as typeof SentToChannelHeaderWithContext;
+
+export type SentToChannelHeaderProps = Partial<SentToChannelHeaderPropsWithContext>;
+
+export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
+  const { onBackPressThread } = useThreadContext();
+  const { threadList, channel, setTargetedMessage } = useChannelContext();
+  const { onThreadSelect, message } = useMessageContext();
+
+  const handleOnPress = useStableCallback(async () => {
     if (!threadList) {
       return await channel
         .getClient()
@@ -53,68 +85,14 @@ const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithConte
       setTargetedMessage(message.id);
       onBackPressThread?.(message.id);
     }
-  }, [
-    channel,
-    message.id,
-    message.parent_id,
-    onBackPressThread,
-    onThreadSelect,
-    setTargetedMessage,
-    threadList,
-  ]);
+  });
+
+  const showViewText = useMemo(() => {
+    return !!((!threadList && onThreadSelect) || (threadList && onBackPressThread));
+  }, [threadList, onThreadSelect, onBackPressThread]);
 
   return (
-    <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
-      <ArrowUpRight height={16} width={16} stroke={semantics.textPrimary} />
-      <Text style={styles.label}>
-        {threadList ? t('Also sent in channel') : t('Replied to a thread')}
-      </Text>
-      {(!threadList && onThreadSelect) || (threadList && onBackPressThread) ? (
-        <>
-          <Text style={styles.dot}>·</Text>
-          <Pressable onPress={handleOnPress}>
-            <Text style={styles.link}>{t('View')}</Text>
-          </Pressable>
-        </>
-      ) : null}
-    </View>
-  );
-};
-
-const areEqual = (
-  prevProps: SentToChannelHeaderPropsWithContext,
-  nextProps: SentToChannelHeaderPropsWithContext,
-) => {
-  const { threadList: prevThreadList } = prevProps;
-  const { threadList: nextThreadList } = nextProps;
-  if (prevThreadList !== nextThreadList) {
-    return false;
-  }
-  return true;
-};
-
-const MemoizedSentToChannelHeader = React.memo(
-  SentToChannelHeaderWithContext,
-  areEqual,
-) as typeof SentToChannelHeaderWithContext;
-
-export type SentToChannelHeaderProps = Partial<SentToChannelHeaderPropsWithContext>;
-
-export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
-  const { onBackPressThread } = useThreadContext();
-  const { threadList, channel, setTargetedMessage } = useChannelContext();
-  const { onThreadSelect, message } = useMessageContext();
-
-  return (
-    <MemoizedSentToChannelHeader
-      onBackPressThread={onBackPressThread}
-      threadList={threadList}
-      onThreadSelect={onThreadSelect}
-      message={message}
-      channel={channel}
-      setTargetedMessage={setTargetedMessage}
-      {...props}
-    />
+    <MemoizedSentToChannelHeader onPress={handleOnPress} showViewText={showViewText} {...props} />
   );
 };
 
