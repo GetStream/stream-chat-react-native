@@ -458,7 +458,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-components"
                           >
-                            <View />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -826,7 +825,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-components"
                           >
-                            <View />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -1230,7 +1228,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-components"
                           >
-                            <View />
                             <View
                               collapsable={false}
                               hitSlop={
@@ -1600,7 +1597,6 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-components"
                           >
-                            <View />
                             <View
                               collapsable={false}
                               hitSlop={
