@@ -2,11 +2,6 @@ import React from 'react';
 
 import { View } from 'react-native';
 
-import { MessageReminderHeader } from './Headers/MessageReminderHeader';
-import { MessageSavedForLaterHeader } from './Headers/MessageSavedForLaterHeader';
-
-import { SentToChannelHeader } from './Headers/SentToChannelHeader';
-
 import {
   MessageContextValue,
   useMessageContext,
@@ -18,7 +13,13 @@ import {
 import { useMessageReminder } from '../../../hooks/useMessageReminder';
 
 type MessageHeaderPropsWithContext = Pick<MessageContextValue, 'message'> &
-  Pick<MessagesContextValue, 'MessagePinnedHeader'> & {
+  Pick<
+    MessagesContextValue,
+    | 'MessagePinnedHeader'
+    | 'MessageReminderHeader'
+    | 'MessageSavedForLaterHeader'
+    | 'SentToChannelHeader'
+  > & {
     shouldShowSavedForLaterHeader?: boolean;
     shouldShowPinnedHeader: boolean;
     shouldShowReminderHeader: boolean;
@@ -33,6 +34,9 @@ const MessageHeaderWithContext = (props: MessageHeaderPropsWithContext) => {
     shouldShowPinnedHeader,
     shouldShowReminderHeader,
     shouldShowSentToChannelHeader,
+    MessageReminderHeader,
+    MessageSavedForLaterHeader,
+    SentToChannelHeader,
   } = props;
 
   return (
@@ -97,7 +101,12 @@ export type MessageHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
 
 export const MessageHeader = (props: MessageHeaderProps) => {
   const { message } = useMessageContext();
-  const { MessagePinnedHeader } = useMessagesContext();
+  const {
+    MessagePinnedHeader,
+    MessageReminderHeader,
+    MessageSavedForLaterHeader,
+    SentToChannelHeader,
+  } = useMessagesContext();
   const reminder = useMessageReminder(message.id);
 
   const shouldShowSavedForLaterHeader = reminder && !reminder.remindAt;
@@ -113,6 +122,9 @@ export const MessageHeader = (props: MessageHeaderProps) => {
       shouldShowPinnedHeader={shouldShowPinnedHeader}
       shouldShowReminderHeader={!!shouldShowReminderHeader}
       shouldShowSentToChannelHeader={shouldShowSentToChannelHeader}
+      MessageReminderHeader={MessageReminderHeader}
+      MessageSavedForLaterHeader={MessageSavedForLaterHeader}
+      SentToChannelHeader={SentToChannelHeader}
       {...props}
     />
   );
