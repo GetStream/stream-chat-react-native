@@ -7,11 +7,8 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       {
         "alignItems": "center",
         "flexDirection": "row",
-        "height": 24,
+        "gap": 8,
         "justifyContent": "flex-start",
-      },
-      {
-        "backgroundColor": "#FCFCFCE6",
       },
       {},
     ]
@@ -22,12 +19,9 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
     style={
       [
         {
-          "flexDirection": "row",
+          "paddingTop": 4,
         },
         {},
-        {
-          "marginLeft": 8,
-        },
       ]
     }
   >
@@ -35,76 +29,222 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       style={
         [
           {
-            "backgroundColor": "#687385",
-            "borderRadius": 2.5,
-            "height": 5,
-            "width": 5,
+            "alignItems": "center",
+            "flexDirection": "row",
           },
           {
-            "marginRight": 2,
+            "width": 51.2,
           },
-          {
-            "opacity": -0.3333333333333333,
-          },
-          {},
         ]
       }
-    />
-    <View
-      style={
-        [
-          {
-            "backgroundColor": "#687385",
-            "borderRadius": 2.5,
-            "height": 5,
-            "width": 5,
-          },
-          {
-            "marginHorizontal": 2,
-          },
-          {
-            "opacity": 0.3333333333333333,
-          },
-          {},
-        ]
-      }
-    />
-    <View
-      style={
-        [
-          {
-            "backgroundColor": "#687385",
-            "borderRadius": 2.5,
-            "height": 5,
-            "width": 5,
-          },
-          {
-            "marginLeft": 2,
-          },
-          {
-            "opacity": 1,
-          },
-          {},
-        ]
-      }
-    />
+    >
+      <View
+        style={
+          [
+            {
+              "position": "absolute",
+            },
+            {
+              "left": 0,
+            },
+          ]
+        }
+      >
+        <View
+          testID="user-avatar"
+        >
+          <View
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "borderRadius": 9999,
+                  "justifyContent": "center",
+                  "overflow": "hidden",
+                },
+                {
+                  "height": 32,
+                  "width": 32,
+                },
+                {
+                  "backgroundColor": "#fcd579",
+                },
+                {
+                  "borderColor": "rgba(0, 0, 0, 0.1)",
+                  "borderWidth": 1,
+                },
+                undefined,
+              ]
+            }
+            testID="avatar-image"
+          >
+            <Image
+              onError={[Function]}
+              source={
+                {
+                  "uri": "https://i.imgur.com/LuuGvh0.png",
+                }
+              }
+              style={
+                [
+                  {},
+                  {
+                    "height": 32,
+                    "width": 32,
+                  },
+                ]
+              }
+            />
+          </View>
+        </View>
+      </View>
+      <View
+        style={
+          [
+            {
+              "position": "absolute",
+            },
+            {
+              "left": 19.2,
+            },
+          ]
+        }
+      >
+        <View
+          testID="user-avatar"
+        >
+          <View
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "borderRadius": 9999,
+                  "justifyContent": "center",
+                  "overflow": "hidden",
+                },
+                {
+                  "height": 32,
+                  "width": 32,
+                },
+                {
+                  "backgroundColor": "#8febbd",
+                },
+                {
+                  "borderColor": "rgba(0, 0, 0, 0.1)",
+                  "borderWidth": 1,
+                },
+                undefined,
+              ]
+            }
+            testID="avatar-image"
+          >
+            <Image
+              onError={[Function]}
+              source={
+                {
+                  "uri": "https://i.imgur.com/spueyAP.png",
+                }
+              }
+              style={
+                [
+                  {},
+                  {
+                    "height": 32,
+                    "width": 32,
+                  },
+                ]
+              }
+            />
+          </View>
+        </View>
+      </View>
+    </View>
   </View>
-  <Text
+  <View
     style={
       [
         {
-          "marginLeft": 8,
+          "backgroundColor": "#ebeef1",
+          "borderBottomLeftRadius": 0,
+          "borderBottomRightRadius": 20,
+          "borderTopLeftRadius": 20,
+          "borderTopRightRadius": 20,
+          "paddingHorizontal": 12,
+          "paddingVertical": 16,
         },
-        {
-          "color": "#7A7A7A",
-        },
-        {
-          "fontSize": 14,
-        },
+        {},
       ]
     }
   >
-    Arthur and 1 more are typing
-  </Text>
+    <View
+      style={
+        [
+          {
+            "flexDirection": "row",
+          },
+          {},
+          {},
+        ]
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#687385",
+              "borderRadius": 2.5,
+              "height": 5,
+              "width": 5,
+            },
+            {
+              "marginRight": 2,
+            },
+            {
+              "opacity": -0.3333333333333333,
+            },
+            {},
+          ]
+        }
+      />
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#687385",
+              "borderRadius": 2.5,
+              "height": 5,
+              "width": 5,
+            },
+            {
+              "marginHorizontal": 2,
+            },
+            {
+              "opacity": 0.3333333333333333,
+            },
+            {},
+          ]
+        }
+      />
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#687385",
+              "borderRadius": 2.5,
+              "height": 5,
+              "width": 5,
+            },
+            {
+              "marginLeft": 2,
+            },
+            {
+              "opacity": 1,
+            },
+            {},
+          ]
+        }
+      />
+    </View>
+  </View>
 </View>
 `;
