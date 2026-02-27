@@ -10,7 +10,7 @@ import { UserAvatar } from './UserAvatar';
 import { BadgeCount } from '../Badge';
 
 export type AvatarStackProps = {
-  avatarSize?: 'sm' | 'xs';
+  avatarSize?: 'sm' | 'md' | 'xs';
   maxVisible?: number;
   items: React.ReactNode[];
   overlap?: number;
@@ -25,7 +25,12 @@ export const AvatarStack = (props: AvatarStackProps) => {
   const extraCount = items.length - visibleItems.length;
 
   if (extraCount > 0) {
-    visibleItems.push(<BadgeCount count={extraCount} size={avatarSize === 'sm' ? 'md' : 'sm'} />);
+    visibleItems.push(
+      <BadgeCount
+        count={extraCount}
+        size={avatarSize === 'sm' || avatarSize === 'md' ? 'md' : 'sm'}
+      />,
+    );
   }
 
   const totalWidth = diameter + (visibleItems.length - 1) * visiblePortion;
@@ -66,14 +71,18 @@ export type UserAvatarStackProps = Pick<
 };
 
 export const UserAvatarStack = ({
-  avatarSize,
+  avatarSize = 'sm',
   maxVisible,
   overlap,
   users,
 }: UserAvatarStackProps) => {
-  const items = users.map((user) => {
-    return <UserAvatar key={user.id} user={user} size='sm' showBorder />;
-  });
+  const items = useMemo(
+    () =>
+      users.map((user) => {
+        return <UserAvatar key={user.id} user={user} size={avatarSize} showBorder />;
+      }),
+    [avatarSize, users],
+  );
 
   return (
     <AvatarStack avatarSize={avatarSize} maxVisible={maxVisible} overlap={overlap} items={items} />

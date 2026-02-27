@@ -2209,6 +2209,13 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <View
                 layout={BaseAnimationMock {}}
+                style={
+                  {
+                    "flex": 1,
+                    "flexShrink": 1,
+                    "minWidth": 0,
+                  }
+                }
               >
                 <TextInput
                   autoFocus={true}

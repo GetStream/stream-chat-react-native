@@ -1,43 +1,63 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { useTypingString } from './hooks/useTypingString';
+import { useTypingUsers } from './hooks/useTypingUsers';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
+import { components, primitives } from '../../theme';
 import { LoadingDots } from '../Indicators/LoadingDots';
+import { UserAvatarStack } from '../ui';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    height: 24,
-    justifyContent: 'flex-start',
-  },
-  loadingDots: {
-    marginLeft: 8,
-  },
-  typingText: {
-    marginLeft: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          gap: primitives.spacingXs,
+        },
+        loadingDots: {},
+        loadingDotsBubble: {
+          borderTopLeftRadius: components.messageBubbleRadiusGroupBottom,
+          borderTopRightRadius: components.messageBubbleRadiusGroupBottom,
+          borderBottomRightRadius: components.messageBubbleRadiusGroupBottom,
+          borderBottomLeftRadius: components.messageBubbleRadiusTail,
+          backgroundColor: semantics.chatBgIncoming,
+          paddingVertical: primitives.spacingMd,
+          paddingHorizontal: primitives.spacingSm,
+        },
+        avatarStackContainer: {
+          paddingTop: primitives.spacingXxs,
+        },
+      }),
+    [semantics],
+  );
+};
 
 export const TypingIndicator = () => {
   const {
     theme: {
-      colors: { grey, white_snow },
-      typingIndicator: { container, text },
+      typingIndicator: { container, loadingDotsBubble, avatarStackContainer },
     },
   } = useTheme();
-  const typingString = useTypingString();
+  const styles = useStyles();
+
+  const typingUsers = useTypingUsers();
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: `${white_snow}E6` }, container]}
-      testID='typing-indicator'
-    >
-      <LoadingDots style={styles.loadingDots} />
-      <Text style={[styles.typingText, { color: grey }, text]}>{typingString}</Text>
+    <View style={[styles.container, container]} testID='typing-indicator'>
+      <View style={[styles.avatarStackContainer, avatarStackContainer]}>
+        <UserAvatarStack users={typingUsers} avatarSize='md' maxVisible={3} overlap={0.4} />
+      </View>
+      <View style={[styles.loadingDotsBubble, loadingDotsBubble]}>
+        <LoadingDots style={styles.loadingDots} />
+      </View>
     </View>
   );
 };

@@ -69,6 +69,11 @@ const useStyles = () => {
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
+      autocompleteInputContainer: {
+        flex: 1,
+        flexShrink: 1,
+        minWidth: 0,
+      },
       pollModalWrapper: {
         alignItems: 'center',
         flex: 1,
@@ -418,7 +423,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     <>
                       <MessageInputLeadingView />
 
-                      <Animated.View layout={LinearTransition.duration(200)}>
+                      <Animated.View
+                        style={styles.autocompleteInputContainer}
+                        layout={LinearTransition.duration(200)}
+                      >
                         <AutoCompleteInput
                           TextInputComponent={TextInputComponent}
                           {...additionalTextInputProps}

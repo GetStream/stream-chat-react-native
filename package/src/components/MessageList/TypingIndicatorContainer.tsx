@@ -7,11 +7,12 @@ import { ChatContextValue, useChatContext } from '../../contexts/chatContext/Cha
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { TypingContextValue, useTypingContext } from '../../contexts/typingContext/TypingContext';
+import { primitives } from '../../theme';
 
 const styles = StyleSheet.create({
   container: {
-    bottom: 0,
-    position: 'absolute',
+    paddingVertical: primitives.spacingXs,
+    paddingHorizontal: primitives.spacingMd,
     width: '100%',
   },
 });
