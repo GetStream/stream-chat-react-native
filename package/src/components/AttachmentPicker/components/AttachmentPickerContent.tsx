@@ -175,8 +175,10 @@ const useCommandPickerStyle = () => {
           flexGrow: 1,
           paddingHorizontal: primitives.spacingXxs,
           paddingBottom: primitives.spacing2xl,
+          backgroundColor: semantics.composerBg,
         },
         title: {
+          backgroundColor: semantics.composerBg,
           fontWeight: primitives.typographyFontWeightSemiBold,
           fontSize: primitives.typographyFontSizeMd,
           color: semantics.textPrimary,
@@ -184,7 +186,7 @@ const useCommandPickerStyle = () => {
           paddingBottom: primitives.spacingMd,
         },
       }),
-    [semantics.textPrimary],
+    [semantics.composerBg, semantics.textPrimary],
   );
 };
 

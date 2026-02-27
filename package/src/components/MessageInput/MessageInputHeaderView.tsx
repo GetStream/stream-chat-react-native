@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -36,6 +36,9 @@ export const MessageInputHeaderView = () => {
     idleRecordingStateSelector,
   );
   const hasAttachments = useHasAttachments();
+  const onDismissReply = useCallback(() => {
+    messageComposer.setQuotedMessage(null);
+  }, [messageComposer]);
 
   return isRecordingStateIdle ? (
     <Animated.View
@@ -62,7 +65,7 @@ export const MessageInputHeaderView = () => {
       ) : null}
       {quotedMessage ? (
         <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
-          <Reply mode='reply' />
+          <Reply onDismiss={editing ? undefined : onDismissReply} mode='reply' />
         </Animated.View>
       ) : null}
       <AttachmentUploadPreviewList />

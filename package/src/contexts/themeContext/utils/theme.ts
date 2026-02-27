@@ -699,6 +699,22 @@ export type Theme = {
       container: ViewStyle;
       label: TextStyle;
     };
+    savedForLaterHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+    };
+    reminderHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+      dot: TextStyle;
+      time: TextStyle;
+    };
+    sentToChannelHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+      dot: TextStyle;
+      link: TextStyle;
+    };
     reactionListBottom: {
       contentContainer: ViewStyle;
       columnWrapper: ViewStyle;
@@ -762,8 +778,8 @@ export type Theme = {
       wrapper: ViewStyle;
     };
     answersList: {
-      buttonContainer: ViewStyle;
       container: ViewStyle;
+      contentContainer: ViewStyle;
       item: {
         answerText: TextStyle;
         container: ViewStyle;
@@ -837,6 +853,7 @@ export type Theme = {
       contentContainer: ViewStyle;
       headerContainer: ViewStyle;
       headerText: TextStyle;
+      headerTitle: TextStyle;
     };
     inputDialog: {
       button: TextStyle;
@@ -876,10 +893,12 @@ export type Theme = {
         container: ViewStyle;
         headerContainer: ViewStyle;
         title: TextStyle;
+        titleMeta: TextStyle;
         voteCount: TextStyle;
       };
       scrollView: ViewStyle;
       title: TextStyle;
+      titleMeta: TextStyle;
       vote: { container: ViewStyle; dateText: TextStyle; userName: TextStyle };
     };
   };
@@ -935,6 +954,8 @@ export type Theme = {
   };
   typingIndicator: {
     container: ViewStyle;
+    loadingDotsBubble: ViewStyle;
+    avatarStackContainer: ViewStyle;
     text: TextStyle & {
       fontSize: TextStyle['fontSize'];
     };
@@ -1536,6 +1557,22 @@ export const defaultTheme: Theme = {
       container: {},
       label: {},
     },
+    savedForLaterHeader: {
+      container: {},
+      label: {},
+    },
+    reminderHeader: {
+      container: {},
+      label: {},
+      dot: {},
+      time: {},
+    },
+    sentToChannelHeader: {
+      container: {},
+      label: {},
+      dot: {},
+      link: {},
+    },
     reactionListBottom: {
       contentContainer: {},
       columnWrapper: {},
@@ -1598,8 +1635,8 @@ export const defaultTheme: Theme = {
       wrapper: {},
     },
     answersList: {
-      buttonContainer: {},
       container: {},
+      contentContainer: {},
       item: {
         answerText: {},
         container: {},
@@ -1673,6 +1710,7 @@ export const defaultTheme: Theme = {
       contentContainer: {},
       headerContainer: {},
       headerText: {},
+      headerTitle: {},
     },
     inputDialog: {
       button: {},
@@ -1712,10 +1750,12 @@ export const defaultTheme: Theme = {
         container: {},
         headerContainer: {},
         title: {},
+        titleMeta: {},
         voteCount: {},
       },
       scrollView: {},
       title: {},
+      titleMeta: {},
       vote: { container: {}, dateText: {}, userName: {} },
     },
   },
@@ -1768,6 +1808,8 @@ export const defaultTheme: Theme = {
   },
   typingIndicator: {
     container: {},
+    loadingDotsBubble: {},
+    avatarStackContainer: {},
     text: {
       fontSize: 14,
     },

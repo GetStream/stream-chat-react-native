@@ -40,6 +40,7 @@ export type StackNavigatorParamList = {
   ThreadScreen: {
     channel: Channel;
     thread: LocalMessage | ThreadType;
+    targetedMessageId?: string;
   };
 };
 

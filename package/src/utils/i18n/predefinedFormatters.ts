@@ -5,6 +5,8 @@ import type { Duration as DayjsDuration } from 'dayjs/plugin/duration';
 import { getDateString } from './getDateString';
 import { DurationFormatterOptions, PredefinedFormatters, TimestampFormatterOptions } from './types';
 
+import { isDayOrMoment } from '../../contexts/translationContext/isDayOrMoment';
+
 export const predefinedFormatters: PredefinedFormatters = {
   durationFormatter:
     (streamI18n) =>
@@ -50,4 +52,37 @@ export const predefinedFormatters: PredefinedFormatters = {
       }
       return result;
     },
+  relativeCompactDateFormatter: (streamI18n) => (value) => {
+    if (value === undefined || value === null) {
+      return JSON.stringify(value);
+    }
+    const parsedTime = streamI18n.tDateTimeParser(value);
+    const parsedNow = streamI18n.tDateTimeParser();
+
+    if (!isDayOrMoment(parsedTime) || !isDayOrMoment(parsedNow)) {
+      return JSON.stringify(value);
+    }
+
+    const oneDayInMs = 24 * 60 * 60 * 1000;
+    const startOfNowDayMs = parsedNow.startOf('day').valueOf();
+    const startOfTimeDayMs = parsedTime.startOf('day').valueOf();
+    const daysAgo = Math.floor((startOfNowDayMs - startOfTimeDayMs) / oneDayInMs);
+
+    if (daysAgo <= 0) {
+      return 'Today';
+    }
+    if (daysAgo === 1) {
+      return 'Yesterday';
+    }
+    if (daysAgo <= 6) {
+      return `${daysAgo}d ago`;
+    }
+
+    const weeksAgo = Math.floor(daysAgo / 7);
+    if (weeksAgo <= 3) {
+      return `${weeksAgo}w ago`;
+    }
+
+    return parsedTime.format('DD/MM/YY');
+  },
 };

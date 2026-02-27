@@ -329,7 +329,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     EmptyStateIndicator,
     FlatList,
     FooterComponent = InlineLoadingMoreIndicator,
-    HeaderComponent = LoadingMoreRecentIndicator,
+    HeaderComponent,
     hideStickyDateHeader,
     inverted = true,
     isLiveStreaming = false,
@@ -1214,6 +1214,29 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     viewportHeightRef.current = nextViewportHeight;
   });
 
+  const ListHeaderComponent = useCallback(() => {
+    if (HeaderComponent) {
+      return <HeaderComponent />;
+    }
+
+    return (
+      <>
+        <LoadingMoreRecentIndicator />
+        {!disableTypingIndicator && TypingIndicator && (
+          <TypingIndicatorContainer>
+            <TypingIndicator />
+          </TypingIndicatorContainer>
+        )}
+      </>
+    );
+  }, [
+    HeaderComponent,
+    LoadingMoreRecentIndicator,
+    TypingIndicator,
+    TypingIndicatorContainer,
+    disableTypingIndicator,
+  ]);
+
   if (!ListComponent) {
     return null;
   }
@@ -1247,7 +1270,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
             ListFooterComponent={FooterComponent}
-            ListHeaderComponent={HeaderComponent}
+            ListHeaderComponent={ListHeaderComponent}
             /**
             If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
             bottom (10 offset or below).
@@ -1283,11 +1306,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
         ) : null}
       </View>
-      {!disableTypingIndicator && TypingIndicator && (
-        <TypingIndicatorContainer>
-          <TypingIndicator />
-        </TypingIndicatorContainer>
-      )}
       {scrollToBottomButtonVisible ? (
         <Animated.View
           layout={LinearTransition.duration(200)}

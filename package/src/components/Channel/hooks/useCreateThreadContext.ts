@@ -12,6 +12,7 @@ const selector = (nextValue: ThreadState) =>
 
 export const useCreateThreadContext = ({
   allowThreadMessagesInChannel,
+  onBackPressThread,
   closeThread,
   loadMoreThread,
   openThread,
@@ -39,6 +40,7 @@ export const useCreateThreadContext = ({
 
   return {
     allowThreadMessagesInChannel,
+    onBackPressThread,
     closeThread,
     loadMoreThread,
     openThread,

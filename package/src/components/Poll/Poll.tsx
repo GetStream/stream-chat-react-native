@@ -32,7 +32,7 @@ export const PollHeader = () => {
 
   const subtitle = useMemo(() => {
     if (isClosed) {
-      return t('Vote ended');
+      return t('Poll has ended');
     }
     if (enforceUniqueVote) {
       return t('Select one');

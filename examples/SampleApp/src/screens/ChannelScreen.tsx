@@ -11,7 +11,6 @@ import {
   useChannelPreviewDisplayName,
   useChatContext,
   useTheme,
-  useTypingString,
   AITypingIndicatorView,
   useTranslationContext,
   MessageActionsParams,
@@ -27,7 +26,6 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
-import { MessageHeader } from '../components/Reminders/MessageReminderHeader.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
@@ -56,7 +54,6 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { isOnline } = useChatContext();
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
-  const typing = useTypingString();
 
   const isOneOnOneConversation =
     channel &&
@@ -108,7 +105,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       )}
       showUnreadCountBadge
       Subtitle={isOnline ? undefined : NetworkDownIndicator}
-      subtitleText={typing ? typing : membersStatus}
+      subtitleText={membersStatus}
       titleText={displayName}
     />
   );
@@ -176,7 +173,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   };
 
   const onThreadSelect = useCallback(
-    (thread: LocalMessage | null) => {
+    (thread: LocalMessage | null, targetedMessageId?: string) => {
       if (!thread || !channel) {
         return;
       }
@@ -185,6 +182,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       navigation.navigate('ThreadScreen', {
         channel,
         thread,
+        targetedMessageId,
       });
     },
     [channel, navigation, setThread],
@@ -229,11 +227,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         channel={channel}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
-        disableTypingIndicator
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageActions={messageActions}
-        MessageHeader={MessageHeader}
         MessageLocation={MessageLocation}
         messageId={messageId}
         NetworkDownIndicator={() => null}

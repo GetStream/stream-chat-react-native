@@ -40,25 +40,21 @@ export const PollAllOptionsContent = ({
 
   const {
     theme: {
-      colors: { bg_user, black, white },
       poll: {
         allOptions: { listContainer, titleContainer, titleText, wrapper },
       },
     },
   } = useTheme();
+  const styles = useAllOptionStyles();
 
   return (
-    <ScrollView
-      contentContainerStyle={{ paddingBottom: 70 }}
-      style={[styles.allOptionsWrapper, { backgroundColor: white }, wrapper]}
-      {...additionalScrollViewProps}
-    >
-      <View style={[styles.allOptionsTitleContainer, { backgroundColor: bg_user }, titleContainer]}>
-        <Text style={[styles.allOptionsTitleText, { color: black }, titleText]}>{name}</Text>
+    <ScrollView style={[styles.allOptionsWrapper, wrapper]} {...additionalScrollViewProps}>
+      <View style={[styles.allOptionsTitleContainer, titleContainer]}>
+        <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
       </View>
-      <View style={[styles.allOptionsListContainer, { backgroundColor: bg_user }, listContainer]}>
+      <View style={[styles.allOptionsListContainer, listContainer]}>
         {options?.map((option: PollOptionClass) => (
-          <View key={`full_poll_options_${option.id}`} style={{ paddingVertical: 16 }}>
+          <View key={`full_poll_options_${option.id}`} style={styles.optionWrapper}>
             <PollOption key={option.id} option={option} showProgressBar={false} />
           </View>
         ))}
@@ -134,15 +130,15 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
             <Text style={[styles.votesText, votesText]}>{voteCountsByOption[option.id] || 0}</Text>
           </View>
         </View>
-        <View style={styles.progressBarContainer}>
-          {showProgressBar ? (
+        {showProgressBar ? (
+          <View style={styles.progressBarContainer}>
             <ProgressBar
               progress={votes / maxVotes}
               filledColor={filledColor}
               emptyColor={unFilledColor}
             />
-          ) : null}
-        </View>
+          </View>
+        ) : null}
       </View>
     </View>
   );
@@ -256,18 +252,39 @@ const useStyles = () => {
   }, [semantics]);
 };
 
-const styles = StyleSheet.create({
-  allOptionsListContainer: {
-    borderRadius: 12,
-    marginTop: 32,
-    paddingBottom: 18,
-    paddingHorizontal: 16,
-  },
-  allOptionsTitleContainer: {
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  allOptionsTitleText: { fontSize: 16, fontWeight: '500' },
-  allOptionsWrapper: { flex: 1, marginBottom: 16, padding: 16 },
-});
+const useAllOptionStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        allOptionsListContainer: {
+          borderRadius: primitives.radiusLg,
+          padding: primitives.spacingMd,
+          backgroundColor: semantics.backgroundCoreSurfaceCard,
+          marginTop: primitives.spacing2xl,
+        },
+        allOptionsTitleContainer: {
+          borderRadius: primitives.radiusLg,
+          padding: primitives.spacingMd,
+          backgroundColor: semantics.backgroundCoreSurfaceCard,
+        },
+        allOptionsTitleText: {
+          fontSize: primitives.typographyFontSizeLg,
+          lineHeight: primitives.typographyLineHeightRelaxed,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+        },
+        allOptionsWrapper: {
+          flex: 1,
+          padding: primitives.spacingMd,
+          backgroundColor: semantics.backgroundElevationElevation1,
+        },
+        optionWrapper: {
+          paddingVertical: primitives.spacingMd,
+        },
+      }),
+    [semantics],
+  );
+};

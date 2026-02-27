@@ -4,8 +4,6 @@ import { Modal, StyleSheet, TextInput, TextInputProps, View } from 'react-native
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
-  FadeIn,
-  FadeOut,
   interpolate,
   LinearTransition,
   useAnimatedStyle,
@@ -71,6 +69,11 @@ const useStyles = () => {
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
+      autocompleteInputContainer: {
+        flex: 1,
+        flexShrink: 1,
+        minWidth: 0,
+      },
       pollModalWrapper: {
         alignItems: 'center',
         flex: 1,
@@ -133,6 +136,7 @@ const useStyles = () => {
         shadowRadius: 12,
       },
       suggestionsListContainer: {
+        backgroundColor: semantics.composerBg,
         position: 'absolute',
         width: '100%',
       },
@@ -419,10 +423,15 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     <>
                       <MessageInputLeadingView />
 
-                      <AutoCompleteInput
-                        TextInputComponent={TextInputComponent}
-                        {...additionalTextInputProps}
-                      />
+                      <Animated.View
+                        style={styles.autocompleteInputContainer}
+                        layout={LinearTransition.duration(200)}
+                      >
+                        <AutoCompleteInput
+                          TextInputComponent={TextInputComponent}
+                          {...additionalTextInputProps}
+                        />
+                      </Animated.View>
                     </>
                   )}
 
@@ -454,14 +463,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         <MessageComposerTrailingView />
       )}
 
-      <Animated.View
-        entering={FadeIn.duration(200)}
-        exiting={FadeOut.duration(200)}
-        layout={LinearTransition.duration(200)}
-        style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
-      >
+      <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>
         <AutoCompleteSuggestionList />
-      </Animated.View>
+      </View>
 
       {showPollCreationDialog ? (
         <View style={styles.pollModalWrapper}>

@@ -9,8 +9,8 @@ import {
   MessageActionsParams,
   Time,
   TranslationContextValue,
+  Bell,
 } from 'stream-chat-react-native';
-import { Bell } from '../icons/Bell';
 import { Theme } from 'stream-chat-react-native';
 
 export function channelMessageActions({
@@ -94,7 +94,7 @@ export function channelMessageActions({
     },
     actionType: reminder ? 'remove-reminder' : 'remind-me',
     title: reminder ? 'Remove Reminder' : 'Remind Me',
-    icon: <Bell height={20} width={20} pathFill={semantics.textSecondary} />,
+    icon: <Bell height={20} width={20} stroke={semantics.textSecondary} />,
     type: 'standard',
   });
   actions.push({

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, type FlatListProps, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
 import { PollAnswer, VotingVisibility } from 'stream-chat';
 
@@ -13,7 +13,9 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../contexts';
+import { primitives } from '../../../theme';
 import { getDateString } from '../../../utils/i18n/getDateString';
+import { Button } from '../../ui';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
 import { usePollState } from '../hooks/usePollState';
@@ -34,31 +36,15 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
     setShowAddCommentDialog(true);
   }, [message, onPress, poll]);
 
-  const {
-    theme: {
-      colors: { accent_dark_blue, bg_user },
-      poll: {
-        answersList: { buttonContainer },
-        button: { text },
-      },
-    },
-  } = useTheme();
-
   return (
     <>
-      <Pressable
+      <Button
+        variant={'secondary'}
+        type={'outline'}
+        size={'lg'}
+        label={ownAnswer ? t('Update your comment') : t('Add a comment')}
         onPress={onPressHandler}
-        style={({ pressed }) => [
-          { opacity: pressed ? 0.5 : 1 },
-          styles.addCommentButtonContainer,
-          { backgroundColor: bg_user },
-          buttonContainer,
-        ]}
-      >
-        <Text style={[styles.addCommentButtonText, { color: accent_dark_blue }, text]}>
-          {ownAnswer ? t('Update your comment') : t('Add a comment')}
-        </Text>
-      </Pressable>
+      />
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddCommentDialog(false)}
@@ -83,12 +69,12 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
 
   const {
     theme: {
-      colors: { bg_user, black },
       poll: {
         answersList: { item: itemStyle },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const dateString = useMemo(
     () =>
@@ -107,20 +93,18 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   );
 
   return (
-    <View style={[styles.listItemContainer, { backgroundColor: bg_user }, itemStyle.container]}>
-      <Text style={[styles.listItemAnswerText, { color: black }, itemStyle.answerText]}>
-        {answer.answer_text}
-      </Text>
+    <View style={[styles.listItemContainer, itemStyle.container]}>
+      <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>{answer.answer_text}</Text>
       <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
         <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
           {!isAnonymous && answer.user?.image ? (
-            <UserAvatar user={answer.user} size='xs' showBorder />
+            <UserAvatar user={answer.user} size='md' showBorder />
           ) : null}
-          <Text style={{ color: black, fontSize: 14, marginLeft: 2 }}>
+          <Text style={styles.listItemInfoUserName}>
             {isAnonymous ? t('Anonymous') : answer.user?.name}
           </Text>
         </View>
-        <Text style={{ color: black }}>{dateString}</Text>
+        <Text style={styles.listItemInfoDate}>{dateString}</Text>
       </View>
     </View>
   );
@@ -136,18 +120,19 @@ export const PollAnswersListContent = ({
   const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
   const {
     theme: {
-      colors: { white },
       poll: {
-        answersList: { container },
+        answersList: { container, contentContainer },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, { backgroundColor: white }, container]}>
+    <View style={[styles.container, container]}>
       <FlatList
         data={pollAnswers}
         keyExtractor={(item) => `poll_answer_${item.id}`}
+        contentContainerStyle={[styles.contentContainer, contentContainer]}
         onEndReached={() => hasNextPage && loadMore()}
         renderItem={renderPollAnswerListItem}
         {...additionalFlatListProps}
@@ -172,23 +157,54 @@ export const PollAnswersList = ({
   </PollContextProvider>
 );
 
-const styles = StyleSheet.create({
-  addCommentButtonContainer: {
-    alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  addCommentButtonText: { fontSize: 16 },
-  container: { flex: 1, margin: 16 },
-  listItemAnswerText: { fontSize: 16, fontWeight: '500' },
-  listItemContainer: {
-    borderRadius: 12,
-    marginBottom: 8,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-  },
-  listItemInfoContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 24 },
-  listItemUserInfoContainer: { alignItems: 'center', flexDirection: 'row' },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        addCommentButtonContainer: {
+          alignItems: 'center',
+          borderRadius: 12,
+          paddingHorizontal: 16,
+          paddingVertical: 18,
+        },
+        contentContainer: { gap: primitives.spacingMd },
+        addCommentButtonText: { fontSize: 16 },
+        container: {
+          flex: 1,
+          padding: primitives.spacingMd,
+          backgroundColor: semantics.backgroundElevationElevation1,
+        },
+        listItemAnswerText: {
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightRelaxed,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+        },
+        listItemContainer: {
+          borderRadius: primitives.radiusLg,
+          padding: primitives.spacingMd,
+          backgroundColor: semantics.backgroundCoreSurfaceCard,
+        },
+        listItemInfoContainer: {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: 24,
+        },
+        listItemInfoUserName: {
+          color: semantics.textPrimary,
+          fontSize: primitives.typographyFontSizeSm,
+          marginLeft: primitives.spacingXxs,
+        },
+        listItemInfoDate: {
+          fontSize: primitives.typographyFontSizeSm,
+          color: semantics.textTertiary,
+        },
+        listItemUserInfoContainer: { alignItems: 'center', flexDirection: 'row' },
+      }),
+    [semantics],
+  );
+};

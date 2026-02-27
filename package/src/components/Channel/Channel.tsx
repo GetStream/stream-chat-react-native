@@ -141,6 +141,9 @@ import {
 } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/Headers/MessagePinnedHeader';
+import { MessageReminderHeader as MessageReminderHeaderDefault } from '../Message/MessageSimple/Headers/MessageReminderHeader';
+import { MessageSavedForLaterHeader as MessageSavedForLaterHeaderDefault } from '../Message/MessageSimple/Headers/MessageSavedForLaterHeader';
+import { SentToChannelHeader as SentToChannelHeaderDefault } from '../Message/MessageSimple/Headers/SentToChannelHeader';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
@@ -366,6 +369,9 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'MessageLocation'
       | 'MessageMenu'
       | 'MessagePinnedHeader'
+      | 'MessageReminderHeader'
+      | 'MessageSavedForLaterHeader'
+      | 'SentToChannelHeader'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
       | 'MessageSimple'
@@ -404,7 +410,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     >
   > &
   Partial<Pick<MessageContextValue, 'isMessageAIGenerated'>> &
-  Partial<Pick<ThreadContextValue, 'allowThreadMessagesInChannel'>> & {
+  Partial<Pick<ThreadContextValue, 'allowThreadMessagesInChannel' | 'onBackPressThread'>> & {
     shouldSyncChannel: boolean;
     thread: ThreadType;
     /**
@@ -683,6 +689,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageLocation,
     MessageMenu = MessageMenuDefault,
     MessagePinnedHeader = MessagePinnedHeaderDefault,
+    MessageReminderHeader = MessageReminderHeaderDefault,
+    MessageSavedForLaterHeader = MessageSavedForLaterHeaderDefault,
+    SentToChannelHeader = SentToChannelHeaderDefault,
     MessageReactionPicker = MessageReactionPickerDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
@@ -704,6 +713,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
+    onBackPressThread,
     openPollCreationDialog,
     overrideOwnCapabilities,
     PollContent,
@@ -1941,6 +1951,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageLocation,
     MessageMenu,
     MessagePinnedHeader,
+    MessageReminderHeader,
+    MessageSavedForLaterHeader,
+    SentToChannelHeader,
     MessageReactionPicker,
     MessageReplies,
     MessageRepliesAvatars,
@@ -1984,6 +1997,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
+    onBackPressThread,
     closeThread,
     loadMoreThread,
     openThread,
