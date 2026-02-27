@@ -114,6 +114,15 @@ export const MessageHeader = (props: MessageHeaderProps) => {
   const shouldShowPinnedHeader = !!message?.pinned;
   const shouldShowSentToChannelHeader = !!message?.show_in_channel;
 
+  if (
+    !shouldShowPinnedHeader &&
+    !shouldShowSavedForLaterHeader &&
+    !shouldShowReminderHeader &&
+    !shouldShowSentToChannelHeader
+  ) {
+    return null;
+  }
+
   return (
     <MemoizedMessageHeader
       message={message}
