@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import {
   ChannelPreviewMessenger,
   ChannelPreviewMessengerProps,
@@ -101,8 +101,10 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps> = (props) =>
 
   return (
     <Swipeable
-      overshootLeft={false}
-      overshootRight={false}
+      // overshootLeft={false}
+      // overshootRight={false}
+      friction={2}
+      rightThreshold={40}
       renderRightActions={() => (
         <View style={[styles.swipeableContainer, { backgroundColor: white_smoke }]}>
           <RectButton
