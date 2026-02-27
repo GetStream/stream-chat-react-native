@@ -26,6 +26,7 @@ import {
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import type { ChannelListEventListenerOptions } from '../../types/types';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
@@ -423,7 +424,9 @@ export const ChannelList = (props: ChannelListProps) => {
 
   return (
     <ChannelsProvider value={channelsContext}>
-      <List />
+      <SwipeRegistryProvider>
+        <List />
+      </SwipeRegistryProvider>
     </ChannelsProvider>
   );
 };

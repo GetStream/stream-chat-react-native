@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 
 import Animated, {
@@ -9,8 +9,12 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import ReanimatedSwipeable, {
+  SwipeDirection,
+  SwipeableMethods,
   SwipeableProps,
 } from 'react-native-gesture-handler/ReanimatedSwipeable';
+
+import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 
 const ACTION_WIDTH = 50;
 const DEFAULT_RIGHT_ACTIONS_WIDTH = ACTION_WIDTH * 2;
@@ -23,6 +27,7 @@ const animationOptions = {
 };
 
 type SwipableWrapperProps = PropsWithChildren<{
+  swipeableId?: string;
   swipableProps?: SwipeableProps;
 }>;
 
@@ -44,7 +49,16 @@ const DefaultRightActions = ({ translation }: { translation: SharedValue<number>
   );
 };
 
-export const SwipableWrapper = ({ children, swipableProps }: SwipableWrapperProps) => {
+export const SwipableWrapper = ({ children, swipeableId, swipableProps }: SwipableWrapperProps) => {
+  const swipeRegistry = useSwipeRegistryContext();
+  const swipeableRef = useRef<SwipeableMethods | null>(null);
+
+  const {
+    onSwipeableWillOpen: onSwipeableWillOpenFromProps,
+    renderRightActions: renderRightActionsFromProps,
+    ...restSwipableProps
+  } = swipableProps ?? {};
+
   const defaultRenderRightActions = useCallback(
     (_progress: SharedValue<number>, translation: SharedValue<number>) => (
       <DefaultRightActions translation={translation} />
@@ -52,16 +66,38 @@ export const SwipableWrapper = ({ children, swipableProps }: SwipableWrapperProp
     [],
   );
 
+  useEffect(() => {
+    if (!swipeRegistry || !swipeableId) {
+      return;
+    }
+
+    return swipeRegistry.registerSwipeable(swipeableId, () => {
+      swipeableRef.current?.close();
+    });
+  }, [swipeRegistry, swipeableId]);
+
+  const onSwipeableWillOpen = useCallback(
+    (direction: SwipeDirection.LEFT | SwipeDirection.RIGHT) => {
+      if (swipeRegistry && swipeableId) {
+        swipeRegistry.notifyWillOpen(swipeableId);
+      }
+      onSwipeableWillOpenFromProps?.(direction);
+    },
+    [onSwipeableWillOpenFromProps, swipeRegistry, swipeableId],
+  );
+
   return (
     <ReanimatedSwipeable
+      ref={swipeableRef}
       animationOptions={animationOptions}
+      friction={2}
+      onSwipeableWillOpen={onSwipeableWillOpen}
       overshootLeft={false}
       overshootRight={true}
       overshootFriction={16}
-      friction={2}
       renderLeftActions={undefined}
-      renderRightActions={defaultRenderRightActions}
-      {...swipableProps}
+      renderRightActions={renderRightActionsFromProps ?? defaultRenderRightActions}
+      {...restSwipableProps}
     >
       {children}
     </ReanimatedSwipeable>

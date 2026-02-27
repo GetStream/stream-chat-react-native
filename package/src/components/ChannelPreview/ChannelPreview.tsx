@@ -36,7 +36,7 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
   const message = translatedLastMessage ? translatedLastMessage : lastMessage;
 
   return (
-    <SwipableWrapper>
+    <SwipableWrapper swipeableId={channel.id}>
       <Preview channel={channel} muted={muted} unread={unread} lastMessage={message} />
     </SwipableWrapper>
   );
