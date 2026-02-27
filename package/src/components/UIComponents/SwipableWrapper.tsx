@@ -60,7 +60,7 @@ export const SwipableWrapper = ({ children, swipableProps }: SwipableWrapperProp
       overshootFriction={16}
       friction={2}
       renderLeftActions={undefined}
-      renderRightActions={swipableProps?.renderRightActions ?? defaultRenderRightActions}
+      renderRightActions={defaultRenderRightActions}
       {...swipableProps}
     >
       {children}
