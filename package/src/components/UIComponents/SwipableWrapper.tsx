@@ -15,6 +15,13 @@ import ReanimatedSwipeable, {
 const ACTION_WIDTH = 50;
 const DEFAULT_RIGHT_ACTIONS_WIDTH = ACTION_WIDTH * 2;
 
+const animationOptions = {
+  damping: 24,
+  mass: 1,
+  overshootClamping: false,
+  stiffness: 180,
+};
+
 type SwipableWrapperProps = PropsWithChildren<{
   swipableProps?: SwipeableProps;
 }>;
@@ -44,23 +51,17 @@ export const SwipableWrapper = ({ children, swipableProps }: SwipableWrapperProp
     ),
     [],
   );
-  const animationOptions = {
-    damping: 24,
-    mass: 1,
-    overshootClamping: false,
-    stiffness: 180,
-    ...swipableProps?.animationOptions,
-  };
 
   return (
     <ReanimatedSwipeable
-      {...swipableProps}
       animationOptions={animationOptions}
       overshootLeft={false}
-      overshootRight={swipableProps?.overshootRight ?? true}
-      overshootFriction={swipableProps?.overshootFriction ?? 8}
+      overshootRight={true}
+      overshootFriction={16}
+      friction={2}
       renderLeftActions={undefined}
       renderRightActions={swipableProps?.renderRightActions ?? defaultRenderRightActions}
+      {...swipableProps}
     >
       {children}
     </ReanimatedSwipeable>
