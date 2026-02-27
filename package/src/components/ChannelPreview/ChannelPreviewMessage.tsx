@@ -79,7 +79,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (draftMessage) {
     return (
       <View style={styles.container}>
-        <Text style={styles.draftText}>{t('Draft:')}</Text>
+        <Text style={styles.draftText}>{t('Draft')}:</Text>
         {renderMessagePreview(draftMessage)}
       </View>
     );

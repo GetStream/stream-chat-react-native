@@ -28,7 +28,6 @@
   "Device gallery permissions is used to take photos or videos.": "Разрешения галереи устройства используются для съемки фото или видео.",
   "Do you want to send a copy of this message to a moderator for further investigation?": "Вы хотите отправить копию этого сообщения модератору для дальнейшего изучения?",
   "Due since {{ dueSince }}": "Срок с {{ dueSince }}",
-  "Due {{ timeLeft }}": "Срок {{ timeLeft }}",
   "Edit Message": "Редактировать сообщение",
   "Edited": "Отредактировано",
   "Editing Message": "Редактирование сообщения",
@@ -173,5 +172,10 @@
   "{{count}} Reactions_other": "{{count}} реакций",
   "Tap to remove": "Нажмите, чтобы удалить",
   "Draft": "Черновик",
+  "Reminder set": "Напоминание установлено",
+  "Also sent in channel": "Также отправлено в канал",
+  "Replied to a thread": "Ответил на тему",
+  "View": "Посмотреть",
+  "Reminder overdue": "Напоминание просрочено",
   "Poll has ended": "Голосование завершено"
 }

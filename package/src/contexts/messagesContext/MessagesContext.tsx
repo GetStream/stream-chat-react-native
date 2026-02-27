@@ -30,6 +30,9 @@ import type {
   MessageProps,
 } from '../../components/Message/Message';
 import type { MessagePinnedHeaderProps } from '../../components/Message/MessageSimple/Headers/MessagePinnedHeader';
+import type { MessageReminderHeaderProps } from '../../components/Message/MessageSimple/Headers/MessageReminderHeader';
+import type { MessageSavedForLaterHeaderProps } from '../../components/Message/MessageSimple/Headers/MessageSavedForLaterHeader';
+import type { SentToChannelHeaderProps } from '../../components/Message/MessageSimple/Headers/SentToChannelHeader';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageBlockedProps } from '../../components/Message/MessageSimple/MessageBlocked';
 import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
@@ -237,6 +240,18 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Custom message pinned component
    */
   MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps>;
+  /**
+   * Custom message reminder component
+   */
+  MessageReminderHeader: React.ComponentType<MessageReminderHeaderProps>;
+  /**
+   * Custom message saved for later component
+   */
+  MessageSavedForLaterHeader: React.ComponentType<MessageSavedForLaterHeaderProps>;
+  /**
+   * Custom message sent to channel component
+   */
+  SentToChannelHeader: React.ComponentType<SentToChannelHeaderProps>;
   /**
    * UI component for MessageReactionPicker
    */

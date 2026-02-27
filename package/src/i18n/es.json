@@ -28,7 +28,6 @@
   "Device gallery permissions is used to take photos or videos.": "Los permisos de la galería del dispositivo se utilizan para tomar fotos o videos.",
   "Do you want to send a copy of this message to a moderator for further investigation?": "¿Deseas enviar una copia de este mensaje a un moderador para una investigación adicional?",
   "Due since {{ dueSince }}": "Debido desde {{ dueSince }}",
-  "Due {{ timeLeft }}": "Debido {{ timeLeft }}",
   "Edit Message": "Editar mensaje",
   "Edited": "Editado",
   "Editing Message": "Editando mensaje",
@@ -173,5 +172,10 @@
   "{{count}} Reactions_other": "{{count}} reacciones",
   "Tap to remove": "Toca para quitar",
   "Draft": "Borrador",
+  "Reminder set": "Recordatorio establecido",
+  "Also sent in channel": "También enviado en el canal",
+  "Replied to a thread": "Respondido a un hilo",
+  "View": "Ver",
+  "Reminder overdue": "Recordatorio vencido",
   "Poll has ended": "Votación finalizada"
 }

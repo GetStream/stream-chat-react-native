@@ -26,6 +26,12 @@ export type ThreadContextValue = {
   threadInstance?: Thread | null;
   threadLoadingMore?: boolean;
   threadLoadingMoreRecent?: boolean;
+  /**
+   * Function to handle back press on thread
+   * @param messageId - The id of the message to go back to
+   * @returns void
+   */
+  onBackPressThread?: (messageId?: string) => void;
 };
 
 export const ThreadContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ThreadContextValue);

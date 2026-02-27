@@ -28,7 +28,6 @@
   "Device gallery permissions is used to take photos or videos.": "Device gallery permissions is used to take photos or videos.",
   "Do you want to send a copy of this message to a moderator for further investigation?": "Do you want to send a copy of this message to a moderator for further investigation?",
   "Due since {{ dueSince }}": "Due since {{ dueSince }}",
-  "Due {{ timeLeft }}": "Due {{ timeLeft }}",
   "Edit Message": "Edit Message",
   "Edited": "Edited",
   "Editing Message": "Editing Message",
@@ -173,5 +172,10 @@
   "{{count}} Reactions_other": "{{count}} Reactions",
   "Tap to remove": "Tap to remove",
   "Draft": "Draft",
+  "Reminder set": "Reminder set",
+  "Also sent in channel": "Also sent in channel",
+  "Replied to a thread": "Replied to a thread",
+  "View": "View",
+  "Reminder overdue": "Reminder overdue",
   "Poll has ended": "Poll has ended"
 }

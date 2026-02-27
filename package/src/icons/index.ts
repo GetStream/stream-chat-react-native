@@ -104,3 +104,4 @@ export * from './UnreadIndicator';
 export * from './FilePickerIcon';
 export * from './CommandsIcon';
 export * from './CurveLineLeftUpReply';
+export * from './Bell';

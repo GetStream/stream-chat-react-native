@@ -773,6 +773,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           }
         }
       : null,
+    onThreadSelect,
     otherAttachments: attachments.other,
     preventPress: overlayActive ? true : preventPress,
     reactions,
