@@ -236,9 +236,6 @@ const useStyles = ({ alignment }: { alignment?: 'left' | 'right' }) => {
         ...contentContainer,
       },
       swipeContentContainer: {
-        flexShrink: 0,
-        overflow: 'hidden',
-        position: 'relative',
         ...swipeContentContainer,
       },
       errorContainer: {
