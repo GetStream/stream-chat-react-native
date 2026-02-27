@@ -4,10 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { ReminderState } from 'stream-chat';
 
-import {
-  MessageContextValue,
-  useMessageContext,
-} from '../../../../contexts/messageContext/MessageContext';
+import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useMessageReminder } from '../../../../hooks/useMessageReminder';
@@ -19,7 +16,7 @@ const reminderStateSelector = (state: ReminderState) => ({
   timeLeftMs: state.timeLeftMs,
 });
 
-type MessageReminderHeaderPropsWithContext = Pick<MessageContextValue, 'message'> & {
+type MessageReminderHeaderPropsWithContext = {
   timeLeftMs?: number;
   isReminderTimeLeft: boolean;
 };
@@ -48,31 +45,6 @@ const MessageReminderHeaderWithContext = (props: MessageReminderHeaderPropsWithC
   );
 };
 
-const areEqual = (
-  prevProps: MessageReminderHeaderPropsWithContext,
-  nextProps: MessageReminderHeaderPropsWithContext,
-) => {
-  const { timeLeftMs: prevTimeLeftMs, isReminderTimeLeft: prevIsReminderTimeLeft } = prevProps;
-  const { timeLeftMs: nextTimeLeftMs, isReminderTimeLeft: nextIsReminderTimeLeft } = nextProps;
-
-  const timeLeftMsEqual = prevTimeLeftMs === nextTimeLeftMs;
-  if (!timeLeftMsEqual) {
-    return false;
-  }
-
-  const isReminderTimeLeftEqual = prevIsReminderTimeLeft === nextIsReminderTimeLeft;
-  if (!isReminderTimeLeftEqual) {
-    return false;
-  }
-
-  return true;
-};
-
-const MemoizedMessageReminderHeader = React.memo(
-  MessageReminderHeaderWithContext,
-  areEqual,
-) as typeof MessageReminderHeaderWithContext;
-
 export type MessageReminderHeaderProps = Partial<MessageReminderHeaderPropsWithContext>;
 
 export const MessageReminderHeader = (props: MessageReminderHeaderProps) => {
@@ -83,8 +55,7 @@ export const MessageReminderHeader = (props: MessageReminderHeaderProps) => {
   const isReminderTimeLeft = !!(timeLeftMs && timeLeftMs > 0);
 
   return (
-    <MemoizedMessageReminderHeader
-      message={message}
+    <MessageReminderHeaderWithContext
       timeLeftMs={timeLeftMs ?? 0}
       isReminderTimeLeft={isReminderTimeLeft}
       {...props}

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -34,30 +34,34 @@ const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithConte
   const { t } = useTranslationContext();
   const styles = useStyles();
 
-  const queryParentMessageAndMoveToTargetedMessage = () => {
-    return channel
-      .getClient()
-      .search({ cid: channel.cid }, { id: message.parent_id })
-      .then(({ results }) => {
-        if (!results.length) {
-          return;
-        }
-        const targetMessage = formatMessage(results[0].message);
-        onThreadSelect?.(targetMessage, message.id);
-      })
-      .catch((error) => {
-        console.error('Error querying parent message:', error);
-      });
-  };
-
-  const handleOnPress = async () => {
+  const handleOnPress = useCallback(async () => {
     if (!threadList) {
-      await queryParentMessageAndMoveToTargetedMessage();
+      return await channel
+        .getClient()
+        .search({ cid: channel.cid }, { id: message.parent_id })
+        .then(({ results }) => {
+          if (!results.length) {
+            return;
+          }
+          const targetMessage = formatMessage(results[0].message);
+          onThreadSelect?.(targetMessage, message.id);
+        })
+        .catch((error) => {
+          console.error('Error querying parent message:', error);
+        });
     } else {
       setTargetedMessage(message.id);
       onBackPressThread?.(message.id);
     }
-  };
+  }, [
+    channel,
+    message.id,
+    message.parent_id,
+    onBackPressThread,
+    onThreadSelect,
+    setTargetedMessage,
+    threadList,
+  ]);
 
   return (
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
