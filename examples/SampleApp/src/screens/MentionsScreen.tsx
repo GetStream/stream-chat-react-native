@@ -1,6 +1,6 @@
 import React, { RefObject, useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { AtMentions, useTheme } from 'stream-chat-react-native';
+import { useTheme } from 'stream-chat-react-native';
 import { MessageResponse } from 'stream-chat';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -12,6 +12,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
 import { useAppContext } from '../context/AppContext';
+import { AtMentions } from '../icons/AtMentions';
 
 const styles = StyleSheet.create({
   container: {

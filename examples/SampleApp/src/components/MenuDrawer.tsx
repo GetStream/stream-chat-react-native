@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Pressable,
-  View,
-} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, Pressable, View } from 'react-native';
 import { Edit, Group, User, useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
@@ -115,7 +108,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
               }
               style={styles.menuItem}
             >
-              <Edit height={24} pathFill={grey} width={24} />
+              <Edit height={24} stroke={grey} width={24} />
               <Text
                 style={[
                   styles.menuTitle,
