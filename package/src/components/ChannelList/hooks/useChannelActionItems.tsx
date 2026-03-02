@@ -8,8 +8,10 @@ import { useChannelActions } from './useChannelActions';
 import { useChannelMembershipState } from './useChannelMembershipState';
 import { useChannelMembersState } from './useChannelMembersState';
 
-import { useChatContext, useTranslationContext } from '../../../contexts';
+import { useChatContext, useTheme, useTranslationContext } from '../../../contexts';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
+import { Archive, IconProps } from '../../../icons';
+import { ArrowBoxLeft } from '../../../icons/ArrowBoxLeft';
 
 export type ChannelActionHandler = () => Promise<void> | void;
 
@@ -35,61 +37,73 @@ export type BuildDefaultChannelActionItems = (
   channelActionItemsParams: ChannelActionItemsParams,
 ) => ChannelActionItem[];
 
+const ChannelActionsIcon = ({ Icon }: { Icon: React.ComponentType<IconProps> }) => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return <Icon stroke={semantics.textSecondary} width={20} height={20} />;
+};
+
 export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
   channelActionItemsParams,
 ) => {
   const {
-    actions: { archive, deleteChannel, leave, pin, unarchive, unpin },
+    actions: { archive, deleteChannel, leave, unarchive },
     isArchived,
     isDirectChat,
-    isPinned,
     t,
+    channel,
   } = channelActionItemsParams;
+  const ownUserId = channel.getClient().userID;
 
-  return [
-    isPinned
-      ? {
-          action: unpin,
-          Icon: <View />,
-          id: 'unpin',
-          label: '',
-          placement: 'both',
-          type: 'standard',
-        }
-      : {
-          action: pin,
-          Icon: <View />,
-          id: 'pin',
-          label: '',
-          placement: 'both',
-          type: 'standard',
-        },
+  const actionItems: ChannelActionItem[] = [
+    // isPinned
+    //   ? {
+    //       action: unpin,
+    //       Icon: <View />,
+    //       id: 'unpin',
+    //       label: '',
+    //       placement: 'both',
+    //       type: 'standard',
+    //     }
+    //   : {
+    //       action: pin,
+    //       Icon: <View />,
+    //       id: 'pin',
+    //       label: '',
+    //       placement: 'both',
+    //       type: 'standard',
+    //     },
     isArchived
       ? {
           action: unarchive,
-          Icon: <View />,
+          Icon: <ChannelActionsIcon Icon={Archive} />,
           id: 'unarchive',
-          label: '',
-          placement: 'both',
+          label: `Unarchive ${isDirectChat ? 'Chat' : 'Group'}`,
+          placement: isDirectChat ? 'sheet' : 'both',
           type: 'standard',
         }
       : {
           action: archive,
-          Icon: <View />,
+          Icon: <ChannelActionsIcon Icon={Archive} />,
           id: 'archive',
-          label: '',
-          placement: 'both',
+          label: `Archive ${isDirectChat ? 'Chat' : 'Group'}`,
+          placement: isDirectChat ? 'sheet' : 'both',
           type: 'standard',
         },
     {
       action: leave,
-      Icon: <View />,
+      Icon: <ChannelActionsIcon Icon={ArrowBoxLeft} />,
       id: 'leave',
-      label: '',
-      placement: 'both',
+      label: `Leave ${isDirectChat ? 'Chat' : 'Group'}`,
+      placement: 'sheet',
       type: 'destructive',
     },
-    {
+  ];
+
+  if (channel.data?.created_by_id === ownUserId) {
+    actionItems.push({
       action: () => {
         const title = isDirectChat ? t('Delete chat') : t('Delete group');
         const message = isDirectChat
@@ -113,10 +127,12 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       Icon: <View />,
       id: 'deleteChannel',
       label: '',
-      placement: 'both',
+      placement: 'sheet',
       type: 'destructive',
-    },
-  ];
+    });
+  }
+
+  return actionItems;
 };
 
 export type GetChannelActionItems = (params: {
