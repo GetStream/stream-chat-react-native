@@ -3,25 +3,24 @@ import { Alert } from 'react-native';
 
 import { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { useChannelMembershipState } from './useChannelMembershipState';
-
 import { useChannelMembersState } from './useChannelMembersState';
 
 import { useChatContext, useTranslationContext } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 
 export type ChannelActions = {
-  archiveUnarchive: () => Promise<void>;
+  archive: () => Promise<void>;
   deleteChannel: () => void;
   leave: () => Promise<void>;
-  pinUnpin: () => Promise<void>;
+  pin: () => Promise<void>;
+  unarchive: () => Promise<void>;
+  unpin: () => Promise<void>;
 };
 
 export const useChannelActions = (channel: Channel) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
   const ownUserId = client.userID;
-  const membership = useChannelMembershipState(channel);
   const members = useChannelMembersState(channel);
 
   const otherMembers = useMemo(
@@ -32,33 +31,47 @@ export const useChannelActions = (channel: Channel) => {
     [members, ownUserId],
   );
 
-  const pinUnpin = useStableCallback(async () => {
+  const pin = useStableCallback(async () => {
     try {
       if (!channel) {
         return;
       }
-      if (membership?.pinned_at) {
-        await channel.unpin();
-      } else {
-        await channel.pin();
-      }
+      await channel.pin();
     } catch (error) {
-      console.log('Error pinning/unpinning channel', error);
+      console.log('Error pinning channel', error);
     }
   });
 
-  const archiveUnarchive = useStableCallback(async () => {
+  const unpin = useStableCallback(async () => {
     try {
       if (!channel) {
         return;
       }
-      if (membership?.archived_at) {
-        await channel.unarchive();
-      } else {
-        await channel.archive();
-      }
+      await channel.unpin();
     } catch (error) {
-      console.log('Error archiving/unarchiving channel', error);
+      console.log('Error unpinning channel', error);
+    }
+  });
+
+  const archive = useStableCallback(async () => {
+    try {
+      if (!channel) {
+        return;
+      }
+      await channel.archive();
+    } catch (error) {
+      console.log('Error archiving channel', error);
+    }
+  });
+
+  const unarchive = useStableCallback(async () => {
+    try {
+      if (!channel) {
+        return;
+      }
+      await channel.unarchive();
+    } catch (error) {
+      console.log('Error unarchiving channel', error);
     }
   });
 
@@ -102,7 +115,7 @@ export const useChannelActions = (channel: Channel) => {
   });
 
   return useMemo<ChannelActions>(
-    () => ({ pinUnpin, archiveUnarchive, leave, deleteChannel }),
-    [archiveUnarchive, deleteChannel, leave, pinUnpin],
+    () => ({ pin, unpin, archive, unarchive, leave, deleteChannel }),
+    [archive, deleteChannel, leave, pin, unarchive, unpin],
   );
 };

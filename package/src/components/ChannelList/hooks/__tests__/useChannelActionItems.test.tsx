@@ -11,10 +11,12 @@ describe('useChannelActionItems', () => {
   const channel = {} as Channel;
 
   const channelActions: useChannelActionsModule.ChannelActions = {
-    archiveUnarchive: jest.fn(),
+    archive: jest.fn(),
     deleteChannel: jest.fn(),
     leave: jest.fn(),
-    pinUnpin: jest.fn(),
+    pin: jest.fn(),
+    unarchive: jest.fn(),
+    unpin: jest.fn(),
   };
 
   beforeEach(() => {
@@ -29,12 +31,22 @@ describe('useChannelActionItems', () => {
   it('returns default channel action items', () => {
     const { result } = renderHook(() => useChannelActionItems({ channel }));
 
-    expect(result.current).toHaveLength(4);
+    expect(result.current).toHaveLength(6);
     expect(result.current.map((item) => item.action)).toEqual([
-      channelActions.pinUnpin,
-      channelActions.archiveUnarchive,
+      channelActions.pin,
+      channelActions.unpin,
+      channelActions.archive,
+      channelActions.unarchive,
       channelActions.leave,
       channelActions.deleteChannel,
+    ]);
+    expect(result.current.map((item) => item.id)).toEqual([
+      'pin',
+      'unpin',
+      'archive',
+      'unarchive',
+      'leave',
+      'deleteChannel',
     ]);
     expect(result.current.every((item) => item.label === '')).toBe(true);
     expect(
@@ -44,6 +56,8 @@ describe('useChannelActionItems', () => {
       'standard',
       'standard',
       'standard',
+      'standard',
+      'destructive',
       'destructive',
     ]);
   });
@@ -53,6 +67,7 @@ describe('useChannelActionItems', () => {
       {
         action: channelActions.leave,
         Icon: <View testID='custom-icon' />,
+        id: 'leave',
         label: 'custom',
         type: 'standard',
       },
@@ -65,35 +80,58 @@ describe('useChannelActionItems', () => {
       }),
     );
 
-    expect(customGetChannelActionItems).toHaveBeenCalledWith(channelActions);
+    expect(customGetChannelActionItems).toHaveBeenCalledWith({
+      channel,
+      ...channelActions,
+    });
     expect(result.current).toHaveLength(1);
     expect(result.current[0].action).toBe(channelActions.leave);
+    expect(result.current[0].id).toBe('leave');
     expect(result.current[0].label).toBe('custom');
     expect(result.current[0].type).toBe('standard');
   });
 });
 
 describe('getChannelActionItems', () => {
+  const channel = {} as Channel;
+
   it('creates action items in default order', () => {
     const channelActions: useChannelActionsModule.ChannelActions = {
-      archiveUnarchive: jest.fn(),
+      archive: jest.fn(),
       deleteChannel: jest.fn(),
       leave: jest.fn(),
-      pinUnpin: jest.fn(),
+      pin: jest.fn(),
+      unarchive: jest.fn(),
+      unpin: jest.fn(),
     };
 
-    const actionItems = getChannelActionItems(channelActions);
+    const actionItems = getChannelActionItems({
+      channel,
+      ...channelActions,
+    });
 
     expect(actionItems.map((item) => item.action)).toEqual([
-      channelActions.pinUnpin,
-      channelActions.archiveUnarchive,
+      channelActions.pin,
+      channelActions.unpin,
+      channelActions.archive,
+      channelActions.unarchive,
       channelActions.leave,
       channelActions.deleteChannel,
+    ]);
+    expect(actionItems.map((item) => item.id)).toEqual([
+      'pin',
+      'unpin',
+      'archive',
+      'unarchive',
+      'leave',
+      'deleteChannel',
     ]);
     expect(actionItems.map((item) => item.type)).toEqual([
       'standard',
       'standard',
       'standard',
+      'standard',
+      'destructive',
       'destructive',
     ]);
   });

@@ -44,6 +44,7 @@ export * from './ChannelList/hooks/listeners/useChannelUpdated';
 export * from './ChannelList/hooks/useCreateChannelsContext';
 export * from './ChannelList/hooks/usePaginatedChannels';
 export * from './ChannelList/hooks/useChannelActionItems';
+export * from './ChannelList/hooks/useChannelActionItemsById';
 export * from './ChannelList/hooks/useChannelMembershipState';
 export * from './ChannelList/Skeleton';
 
