@@ -24,7 +24,7 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
   const { channel, client: propClient, forceUpdate: propForceUpdate, Preview: propPreview } = props;
 
   const { client: contextClient } = useChatContext();
-  const { Preview: contextPreview } = useChannelsContext();
+  const { Preview: contextPreview, getChannelActionItems } = useChannelsContext();
 
   const client = propClient || contextClient;
   const Preview = propPreview || contextPreview;
@@ -36,7 +36,7 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
   const message = translatedLastMessage ? translatedLastMessage : lastMessage;
 
   return (
-    <ChannelSwipableWrapper channel={channel}>
+    <ChannelSwipableWrapper channel={channel} getChannelActionItems={getChannelActionItems}>
       <Preview channel={channel} muted={muted} unread={unread} lastMessage={message} />
     </ChannelSwipableWrapper>
   );

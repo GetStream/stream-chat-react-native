@@ -10,6 +10,7 @@ import { ChannelDetailsBottomSheet } from './ChannelDetailsBottomSheet';
 import { useTheme } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { Archive, MenuPointHorizontal, Mute } from '../../icons';
+import { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActionItemsById } from '../ChannelList/hooks/useChannelActionItemsById';
 import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
@@ -30,15 +31,17 @@ export const OpenChannelDetailsButton = () => {
 
 export const ChannelSwipableWrapper = ({
   channel,
+  getChannelActionItems,
   swipableProps: _swipableProps,
   children,
 }: PropsWithChildren<{
   channel: Channel;
+  getChannelActionItems?: GetChannelActionItems;
   swipableProps?: SwipableWrapperProps['swipableProps'];
 }>) => {
   const [channelDetailSheetOpen, setChannelDetailSheetOpen] = useState(false);
-  const channelActionsById = useChannelActionItemsById({ channel });
-  const channelActionItems = useChannelActionItems({ channel });
+  const channelActionsById = useChannelActionItemsById({ channel, getChannelActionItems });
+  const channelActionItems = useChannelActionItems({ channel, getChannelActionItems });
   const swipableRegistry = useSwipeRegistryContext();
 
   const {

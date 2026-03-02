@@ -83,8 +83,6 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       )
     : undefined;
 
-  console.log('TTTT: ', client.mutedUsers, client.mutedChannels);
-
   const actionItems: ChannelActionItem[] = [
     // isPinned
     //   ? {

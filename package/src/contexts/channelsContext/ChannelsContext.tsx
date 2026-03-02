@@ -6,6 +6,7 @@ import type { FlatList } from 'react-native-gesture-handler';
 import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
+import type { GetChannelActionItems } from '../../components/ChannelList/hooks/useChannelActionItems';
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
 import { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
@@ -206,6 +207,7 @@ export type ChannelsContextValue = {
    * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
+  getChannelActionItems?: GetChannelActionItems;
 
   mutedStatusPosition?: 'trailingBottom' | 'inlineTitle';
 };

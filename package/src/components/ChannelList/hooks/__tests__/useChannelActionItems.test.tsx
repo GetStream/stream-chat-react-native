@@ -1,11 +1,6 @@
-import { isValidElement } from 'react';
-import { View } from 'react-native';
-
 import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import type { ChatContextValue } from '../../../../contexts/chatContext/ChatContext';
-import * as ChatContext from '../../../../contexts/chatContext/ChatContext';
 import type { TranslationContextValue } from '../../../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../../../contexts/translationContext/TranslationContext';
 import {
@@ -15,25 +10,41 @@ import {
 } from '../useChannelActionItems';
 import * as useChannelActionsModule from '../useChannelActions';
 import * as useChannelMembershipStateModule from '../useChannelMembershipState';
-import * as useChannelMembersStateModule from '../useChannelMembersState';
+import * as useChannelMuteActiveModule from '../useChannelMuteActive';
+import * as useIsDirectChatModule from '../useIsDirectChat';
 
 describe('useChannelActionItems', () => {
-  const channel = {} as Channel;
+  const channel = {
+    data: {
+      created_by: {
+        id: 'current-user-id',
+      },
+    },
+    getClient: () => ({
+      blockedUsers: {
+        getLatestValue: () => ({ userIds: [] }),
+      },
+      userID: 'current-user-id',
+    }),
+  } as unknown as Channel;
 
   const channelActions: useChannelActionsModule.ChannelActions = {
     archive: jest.fn(),
+    blockUser: jest.fn(),
     deleteChannel: jest.fn(),
     leave: jest.fn(),
+    muteChannel: jest.fn(),
+    muteUser: jest.fn(),
     pin: jest.fn(),
     unarchive: jest.fn(),
+    unblockUser: jest.fn(),
+    unmuteChannel: jest.fn(),
+    unmuteUser: jest.fn(),
     unpin: jest.fn(),
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest
-      .spyOn(ChatContext, 'useChatContext')
-      .mockImplementation(() => ({ client: { userID: 'current-user-id' } }) as ChatContextValue);
     jest
       .spyOn(TranslationContext, 'useTranslationContext')
       .mockImplementation(
@@ -43,7 +54,8 @@ describe('useChannelActionItems', () => {
       archived_at: undefined,
       pinned_at: undefined,
     } as never);
-    jest.spyOn(useChannelMembersStateModule, 'useChannelMembersState').mockReturnValue({});
+    jest.spyOn(useChannelMuteActiveModule, 'useChannelMuteActive').mockReturnValue(false);
+    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
     jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
   });
 
@@ -56,26 +68,28 @@ describe('useChannelActionItems', () => {
 
     expect(result.current).toHaveLength(4);
     expect(result.current.map((item) => item.action)).toEqual([
-      channelActions.pin,
+      channelActions.muteChannel,
       channelActions.archive,
       channelActions.leave,
       expect.any(Function),
     ]);
     expect(result.current.map((item) => item.id)).toEqual([
-      'pin',
+      'mute',
       'archive',
       'leave',
       'deleteChannel',
     ]);
-    expect(result.current.every((item) => item.label === '')).toBe(true);
-    expect(
-      result.current.every((item) => isValidElement(item.Icon) && item.Icon.type === View),
-    ).toBe(true);
     expect(result.current.map((item) => item.type)).toEqual([
       'standard',
       'standard',
       'destructive',
       'destructive',
+    ]);
+    expect(result.current.map((item) => item.placement)).toEqual([
+      'both',
+      'both',
+      'sheet',
+      'sheet',
     ]);
   });
 
@@ -96,28 +110,46 @@ describe('useChannelActionItems', () => {
         isArchived: false,
         isDirectChat: false,
         isPinned: false,
+        muteActive: false,
         t: expect.any(Function),
       },
       defaultItems: expect.any(Array),
     });
     expect(result.current).toHaveLength(1);
-    expect(result.current[0].action).toBe(channelActions.pin);
-    expect(result.current[0].id).toBe('pin');
-    expect(result.current[0].label).toBe('');
+    expect(result.current[0].action).toBe(channelActions.muteChannel);
+    expect(result.current[0].id).toBe('mute');
     expect(result.current[0].type).toBe('standard');
   });
 });
 
 describe('getChannelActionItems', () => {
-  const channel = {} as Channel;
+  const channel = {
+    data: {
+      created_by: {
+        id: 'current-user-id',
+      },
+    },
+    getClient: () => ({
+      blockedUsers: {
+        getLatestValue: () => ({ userIds: [] }),
+      },
+      userID: 'current-user-id',
+    }),
+  } as unknown as Channel;
 
   it('creates action items in default order', () => {
     const channelActions: useChannelActionsModule.ChannelActions = {
       archive: jest.fn(),
+      blockUser: jest.fn(),
       deleteChannel: jest.fn(),
       leave: jest.fn(),
+      muteChannel: jest.fn(),
+      muteUser: jest.fn(),
       pin: jest.fn(),
       unarchive: jest.fn(),
+      unblockUser: jest.fn(),
+      unmuteChannel: jest.fn(),
+      unmuteUser: jest.fn(),
       unpin: jest.fn(),
     };
 
@@ -127,6 +159,7 @@ describe('getChannelActionItems', () => {
       isArchived: false,
       isDirectChat: false,
       isPinned: false,
+      muteActive: false,
       t: (value) => value,
     });
     const actionItems = getChannelActionItems({
@@ -136,19 +169,20 @@ describe('getChannelActionItems', () => {
         isArchived: false,
         isDirectChat: false,
         isPinned: false,
+        muteActive: false,
         t: (value) => value,
       },
       defaultItems,
     });
 
     expect(actionItems.map((item) => item.action)).toEqual([
-      channelActions.pin,
+      channelActions.muteChannel,
       channelActions.archive,
       channelActions.leave,
       expect.any(Function),
     ]);
     expect(actionItems.map((item) => item.id)).toEqual([
-      'pin',
+      'mute',
       'archive',
       'leave',
       'deleteChannel',
