@@ -7,6 +7,7 @@ import { ChannelActions, getOtherUserInDirectChannel } from './useChannelActions
 import { useChannelActions } from './useChannelActions';
 import { useChannelMembershipState } from './useChannelMembershipState';
 
+import { useChannelMuteActive } from './useChannelMuteActive';
 import { useIsDirectChat } from './useIsDirectChat';
 
 import { useTheme, useTranslationContext } from '../../../contexts';
@@ -31,6 +32,7 @@ export type ChannelActionItemsParams = {
   isArchived: boolean;
   isDirectChat: boolean;
   isPinned: boolean;
+  muteActive: boolean;
   t: TranslationContextValue['t'];
 };
 
@@ -67,6 +69,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     },
     isArchived,
     isDirectChat,
+    muteActive,
     t,
     channel,
   } = channelActionItemsParams;
@@ -74,17 +77,13 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 
   const client = channel.getClient();
 
-  const muteActive = isDirectChat
-    ? !!client.mutedUsers.find(
-        (mutedUser) => getOtherUserInDirectChannel(channel)?.user?.id === mutedUser.target.id,
-      )
-    : client.mutedChannels.find((mutedChannel) => channel.cid === mutedChannel.channel?.cid);
-
   const isBlocked = isDirectChat
     ? new Set(client.blockedUsers.getLatestValue().userIds).has(
         getOtherUserInDirectChannel(channel)?.user?.id ?? '',
       )
     : undefined;
+
+  console.log('TTTT: ', client.mutedUsers, client.mutedChannels);
 
   const actionItems: ChannelActionItem[] = [
     // isPinned
@@ -149,7 +148,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     type: 'destructive',
   });
 
-  if (channel.data?.created_by_id === ownUserId) {
+  if (channel.data?.created_by?.id === ownUserId) {
     actionItems.push({
       action: () => {
         const title = isDirectChat ? t('Delete chat') : t('Delete group');
@@ -204,6 +203,9 @@ export const useChannelActionItems = ({
   const isDirectChat = useIsDirectChat(channel);
   const isPinned = Boolean(membership?.pinned_at);
   const isArchived = Boolean(membership?.archived_at);
+
+  const muteActive = useChannelMuteActive(channel);
+
   const channelActionItemsParams = useMemo(
     () => ({
       actions: channelActions,
@@ -211,9 +213,10 @@ export const useChannelActionItems = ({
       isArchived,
       isDirectChat,
       isPinned,
+      muteActive,
       t,
     }),
-    [channel, channelActions, isArchived, isDirectChat, isPinned, t],
+    [channel, muteActive, channelActions, isArchived, isDirectChat, isPinned, t],
   );
 
   const defaultItems = useMemo(

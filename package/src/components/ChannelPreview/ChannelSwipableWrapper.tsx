@@ -5,10 +5,12 @@ import { SharedValue } from 'react-native-reanimated';
 
 import { Channel } from 'stream-chat';
 
+import { ChannelDetailsBottomSheet } from './ChannelDetailsBottomSheet';
+
 import { useTheme } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
-import { Archive, IconProps, MenuPointHorizontal, Mute } from '../../icons';
-import { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
+import { Archive, MenuPointHorizontal, Mute } from '../../icons';
+import { useChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActionItemsById } from '../ChannelList/hooks/useChannelActionItemsById';
 import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
 import {
@@ -36,6 +38,7 @@ export const ChannelSwipableWrapper = ({
 }>) => {
   const [channelDetailSheetOpen, setChannelDetailSheetOpen] = useState(false);
   const channelActionsById = useChannelActionItemsById({ channel });
+  const channelActionItems = useChannelActionItems({ channel });
   const swipableRegistry = useSwipeRegistryContext();
 
   const {
@@ -112,8 +115,10 @@ export const ChannelSwipableWrapper = ({
       <BottomSheetModal
         onClose={() => setChannelDetailSheetOpen(false)}
         visible={channelDetailSheetOpen}
-        height={400}
-      />
+        height={356}
+      >
+        <ChannelDetailsBottomSheet channel={channel} items={channelActionItems} />
+      </BottomSheetModal>
     </>
   );
 };

@@ -1,0 +1,132 @@
+import React, { useMemo } from 'react';
+import { Text, StyleSheet, View } from 'react-native';
+
+import { Pressable } from 'react-native-gesture-handler';
+
+import { Channel } from 'stream-chat';
+
+import { ChannelPreviewTitle } from './ChannelPreviewTitle';
+
+import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDisplayPresence';
+
+import { useBottomSheetContext, useTheme } from '../../contexts';
+import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
+import { useStableCallback } from '../../hooks';
+import { primitives } from '../../theme';
+import { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
+import { ChannelAvatar } from '../ui';
+import { StreamBottomSheetModalFlatList } from '../UIComponents';
+
+export const ChannelDetailsHeader = ({ channel }: { channel: Channel }) => {
+  const styles = useStyles();
+  const online = useChannelPreviewDisplayPresence(channel);
+  return (
+    <View style={styles.headerContainer}>
+      <ChannelAvatar channel={channel} size={'lg'} />
+      <View>
+        <ChannelPreviewTitle channel={channel} />
+        <Text style={styles.headerMeta}>{online ? 'Online' : 'Offline'}</Text>
+      </View>
+    </View>
+  );
+};
+
+export const ChannelActionItemView = ({ item }: { item: ChannelActionItem }) => {
+  const { action, Icon, label } = item;
+  const { close } = useBottomSheetContext();
+  const swipableRegistry = useSwipeRegistryContext();
+  const styles = useStyles();
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  const onPress = useStableCallback(() => {
+    action();
+    close();
+    swipableRegistry?.closeAll();
+  });
+
+  return (
+    <Pressable onPress={onPress} style={styles.itemContainer}>
+      <Icon stroke={item.type === 'standard' ? semantics.textSecondary : semantics.accentError} />
+      <Text style={item.type === 'standard' ? styles.itemTextStandard : styles.itemTextDestructive}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+};
+
+const renderChannelActionItem = ({ item }: { item: ChannelActionItem }) => (
+  <ChannelActionItemView item={item} />
+);
+
+const keyExtractor = (item: ChannelActionItem) => item.id;
+
+export const ChannelDetailsBottomSheet = ({
+  items,
+  channel,
+}: {
+  items: ChannelActionItem[];
+  channel: Channel;
+}) => {
+  const styles = useStyles();
+  return (
+    <>
+      <ChannelDetailsHeader channel={channel} />
+      <StreamBottomSheetModalFlatList
+        data={items}
+        renderItem={renderChannelActionItem}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={styles.contentContainer}
+      />
+    </>
+  );
+};
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        contentContainer: {
+          flexGrow: 1,
+          backgroundColor: semantics.backgroundElevationElevation1,
+        },
+        headerContainer: {
+          flexDirection: 'row',
+          padding: primitives.spacingSm,
+          gap: primitives.spacingSm,
+        },
+        headerMeta: {
+          fontSize: primitives.typographyFontSizeSm,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textTertiary,
+        },
+        itemContainer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: primitives.spacingSm,
+          gap: primitives.spacingXs,
+        },
+        itemTextStandard: {
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
+        },
+        itemTextDestructive: {
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.accentError,
+        },
+      }),
+    [
+      semantics.accentError,
+      semantics.backgroundElevationElevation1,
+      semantics.textPrimary,
+      semantics.textTertiary,
+    ],
+  );
+};
