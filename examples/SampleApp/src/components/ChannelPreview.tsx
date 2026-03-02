@@ -9,7 +9,6 @@ import {
   useChannelMembershipState,
   useTheme,
 } from 'stream-chat-react-native';
-import { ChannelState } from 'stream-chat';
 
 const styles = StyleSheet.create({
   leftSwipeableButton: {

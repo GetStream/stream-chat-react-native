@@ -21,7 +21,7 @@ import type { ChannelSort } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
 import { Search } from '../icons/Search';
 import { useStableCallback } from 'stream-chat-react-native-core';
-import { ChannelActionHandler, ChannelActionItem, IconProps } from 'stream-chat-react-native-core/src';
+import { ChannelActionItem } from 'stream-chat-react-native-core/src';
 import { ChannelInfo } from '../icons/ChannelInfo.tsx';
 
 const styles = StyleSheet.create({
