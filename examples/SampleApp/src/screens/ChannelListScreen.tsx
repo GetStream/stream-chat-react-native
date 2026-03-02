@@ -118,8 +118,8 @@ export const ChannelListScreen: React.FC = () => {
     () => ({
       getItemLayout: (_: unknown, index: number) => ({
         index,
-        length: 65,
-        offset: 65 * index,
+        length: 80,
+        offset: 80 * index,
       }),
       keyboardDismissMode: 'on-drag',
     }),
