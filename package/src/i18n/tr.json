@@ -180,5 +180,6 @@
   "Poll has ended": "Oylama sona erdi",
   "Reply to a message to start a thread": "Bir mesaja yanıt vermek için konu başlatın",
   "Couldn't load new threads. Tap to retry": "Yeni konular yüklenemedi. Tekrar denemek için dokunun",
-  "{{count}} new threads": "{{count}} yeni konu"
+  "{{count}} new threads": "{{count}} yeni konu",
+  "No conversations yet": "Henüz konuşma yok"
 }

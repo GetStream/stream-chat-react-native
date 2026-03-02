@@ -180,5 +180,6 @@
   "Poll has ended": "Голосование завершено",
   "Reply to a message to start a thread": "Ответить на сообщение, чтобы начать тему",
   "Couldn't load new threads. Tap to retry": "Не удалось загрузить новые темы. Нажмите, чтобы попробовать снова",
-  "{{count}} new threads": "{{count}} новых тем"
+  "{{count}} new threads": "{{count}} новых тем",
+  "No conversations yet": "Нет чатов"
 }

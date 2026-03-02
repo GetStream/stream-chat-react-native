@@ -180,5 +180,6 @@
   "Poll has ended": "Vote terminé",
   "Reply to a message to start a thread": "Répondre à un message pour commencer un fil",
   "Couldn't load new threads. Tap to retry": "Impossible de charger les nouveaux fils. Appuyez pour réessayer",
-  "{{count}} new threads": "{{count}} nouveaux fils"
+  "{{count}} new threads": "{{count}} nouveaux fils",
+  "No conversations yet": "Aucune conversation pour le moment"
 }

@@ -180,5 +180,6 @@
   "Poll has ended": "Stemmen beëindigd",
   "Reply to a message to start a thread": "Antwoord op een bericht om een thread te starten",
   "Couldn't load new threads. Tap to retry": "Kan nieuwe threads niet laden. Tik om opnieuw te proberen",
-  "{{count}} new threads": "{{count}} nieuwe threads"
+  "{{count}} new threads": "{{count}} nieuwe threads",
+  "No conversations yet": "Nog geen gesprekken"
 }
