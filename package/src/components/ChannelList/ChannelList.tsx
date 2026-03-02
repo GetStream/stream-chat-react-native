@@ -52,6 +52,7 @@ export type ChannelListProps = Partial<
     | 'PreviewStatus'
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
+    | 'getChannelActionItems'
     | 'loadMoreThreshold'
     | 'Skeleton'
     | 'maxUnreadCount'
