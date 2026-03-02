@@ -7,25 +7,38 @@ import { Channel } from 'stream-chat';
 
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 
-import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDisplayPresence';
-
 import { useBottomSheetContext, useTheme } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 import { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
+import { useChannelMembersState } from '../ChannelList/hooks/useChannelMembersState';
+import { useChannelOnlineMemberCount } from '../ChannelList/hooks/useChannelOnlineMemberCount';
+import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
 import { ChannelAvatar } from '../ui';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
+// TODO: V9: Make these items customizable
+
 export const ChannelDetailsHeader = ({ channel }: { channel: Channel }) => {
   const styles = useStyles();
-  const online = useChannelPreviewDisplayPresence(channel);
+  const members = useChannelMembersState(channel);
+  const memberCount = useMemo(() => Object.keys(members).length, [members]);
+  const onlineCount = useChannelOnlineMemberCount(channel);
+  const isDirectChat = useIsDirectChat(channel);
+
   return (
     <View style={styles.headerContainer}>
       <ChannelAvatar channel={channel} size={'lg'} />
-      <View>
+      <View style={styles.metaContainer}>
         <ChannelPreviewTitle channel={channel} />
-        <Text style={styles.headerMeta}>{online ? 'Online' : 'Offline'}</Text>
+        <Text style={styles.headerMeta}>
+          {isDirectChat
+            ? onlineCount === 1
+              ? 'Online'
+              : 'Offline'
+            : `${memberCount > 9 ? '9+' : memberCount} members, ${onlineCount > 9 ? '9+' : onlineCount} online`}
+        </Text>
       </View>
     </View>
   );
@@ -104,6 +117,9 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeSm,
           lineHeight: primitives.typographyLineHeightNormal,
           color: semantics.textTertiary,
+        },
+        metaContainer: {
+          gap: primitives.spacingXxs,
         },
         itemContainer: {
           flexDirection: 'row',
