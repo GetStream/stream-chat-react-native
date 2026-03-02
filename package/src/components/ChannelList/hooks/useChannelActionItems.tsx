@@ -11,7 +11,7 @@ export type ChannelActionHandler = () => Promise<void> | void;
 export type ChannelActionItem = {
   action: ChannelActionHandler;
   Icon: React.ReactElement;
-  id: keyof ChannelActions;
+  id: keyof ChannelActions | string;
   label: string;
   type: 'destructive' | 'standard';
 };
