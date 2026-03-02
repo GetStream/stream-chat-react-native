@@ -124,6 +124,7 @@ const useStyles = () => {
           flexDirection: 'row',
           padding: primitives.spacingSm,
           gap: primitives.spacingSm,
+          backgroundColor: semantics.backgroundElevationElevation1,
         },
         headerMeta: {
           fontSize: primitives.typographyFontSizeSm,
