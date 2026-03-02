@@ -111,7 +111,13 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
           : muteChannel,
       Icon: (props) => <ChannelActionsIcon Icon={Mute} {...props} />,
       id: 'mute',
-      label: `${muteActive ? 'Unmute' : 'Mute'} ${isDirectChat ? 'User' : 'Group'}`,
+      label: isDirectChat
+        ? muteActive
+          ? t('Unmute User')
+          : t('Mute User')
+        : muteActive
+          ? t('Unmute Group')
+          : t('Mute Group'),
       placement: isDirectChat ? 'sheet' : 'both',
       type: 'standard',
     },
@@ -122,7 +128,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       action: isBlocked ? unblockUser : blockUser,
       Icon: (props) => <ChannelActionsIcon Icon={BlockUser} {...props} />,
       id: 'block',
-      label: `${isBlocked ? 'Unblock' : 'Block'} User`,
+      label: isBlocked ? t('Unblock User') : t('Block User'),
       placement: 'sheet',
       type: 'standard',
     });
@@ -132,7 +138,13 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     action: isArchived ? unarchive : archive,
     Icon: (props) => <ChannelActionsIcon Icon={Archive} {...props} />,
     id: 'archive',
-    label: `${isArchived ? 'Unarchive' : 'Archive'} ${isDirectChat ? 'Chat' : 'Group'}`,
+    label: isDirectChat
+      ? isArchived
+        ? t('Unarchive Chat')
+        : t('Archive Chat')
+      : isArchived
+        ? t('Unarchive Group')
+        : t('Archive Group'),
     placement: isDirectChat ? 'sheet' : 'both',
     type: 'standard',
   });
@@ -141,7 +153,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     action: leave,
     Icon: (props) => <ChannelActionsIcon Icon={ArrowBoxLeft} {...props} />,
     id: 'leave',
-    label: `Leave ${isDirectChat ? 'Chat' : 'Group'}`,
+    label: isDirectChat ? t('Leave Chat') : t('Leave Group'),
     placement: 'sheet',
     type: 'destructive',
   });
@@ -170,7 +182,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       },
       Icon: (props) => <ChannelActionsIcon Icon={Delete} {...props} />,
       id: 'deleteChannel',
-      label: `Delete ${isDirectChat ? 'Chat' : 'Group'}`,
+      label: isDirectChat ? t('Delete Chat') : t('Delete Group'),
       placement: 'sheet',
       type: 'destructive',
     });

@@ -7,7 +7,7 @@ import { Channel } from 'stream-chat';
 
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 
-import { useBottomSheetContext, useTheme } from '../../contexts';
+import { useBottomSheetContext, useTheme, useTranslationContext } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
@@ -22,10 +22,26 @@ import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
 export const ChannelDetailsHeader = ({ channel }: { channel: Channel }) => {
   const styles = useStyles();
+  const { t } = useTranslationContext();
   const members = useChannelMembersState(channel);
   const memberCount = useMemo(() => Object.keys(members).length, [members]);
   const onlineCount = useChannelOnlineMemberCount(channel);
   const isDirectChat = useIsDirectChat(channel);
+  const displayedMemberCount = memberCount > 9 ? '9+' : `${memberCount}`;
+  const displayedOnlineCount = onlineCount > 9 ? '9+' : `${onlineCount}`;
+  const membersAndOnlineLabel = useMemo(
+    () =>
+      memberCount === 1
+        ? t('{{ memberCount }} member, {{ onlineCount }} online', {
+            memberCount: displayedMemberCount,
+            onlineCount: displayedOnlineCount,
+          })
+        : t('{{ memberCount }} members, {{ onlineCount }} online', {
+            memberCount: displayedMemberCount,
+            onlineCount: displayedOnlineCount,
+          }),
+    [displayedMemberCount, displayedOnlineCount, memberCount, t],
+  );
 
   return (
     <View style={styles.headerContainer}>
@@ -33,11 +49,7 @@ export const ChannelDetailsHeader = ({ channel }: { channel: Channel }) => {
       <View style={styles.metaContainer}>
         <ChannelPreviewTitle channel={channel} />
         <Text style={styles.headerMeta}>
-          {isDirectChat
-            ? onlineCount === 1
-              ? 'Online'
-              : 'Offline'
-            : `${memberCount > 9 ? '9+' : memberCount} members, ${onlineCount > 9 ? '9+' : onlineCount} online`}
+          {isDirectChat ? (onlineCount === 1 ? t('Online') : t('Offline')) : membersAndOnlineLabel}
         </Text>
       </View>
     </View>
