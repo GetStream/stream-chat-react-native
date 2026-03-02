@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import { Alert, View } from 'react-native';
 
-import type { Channel, ChannelMemberResponse } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import type { ChannelActions } from './useChannelActions';
 import { useChannelActions } from './useChannelActions';
+import { useChannelMembershipState } from './useChannelMembershipState';
 import { useChannelMembersState } from './useChannelMembersState';
 
 import { useChatContext, useTranslationContext } from '../../../contexts';
@@ -17,16 +18,16 @@ export type ChannelActionItem = {
   Icon: React.ReactElement;
   id: keyof ChannelActions | string;
   label: string;
+  placement: 'both' | 'sheet' | 'swipe';
   type: 'destructive' | 'standard';
 };
 
 export type ChannelActionItemsParams = {
   actions: ChannelActions;
   channel: Channel;
+  isArchived: boolean;
   isDirectChat: boolean;
-  members: Record<string, ChannelMemberResponse>;
-  otherMembers: ChannelMemberResponse[];
-  ownUserId?: string;
+  isPinned: boolean;
   t: TranslationContextValue['t'];
 };
 
@@ -39,44 +40,53 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 ) => {
   const {
     actions: { archive, deleteChannel, leave, pin, unarchive, unpin },
+    isArchived,
     isDirectChat,
+    isPinned,
     t,
   } = channelActionItemsParams;
 
   return [
-    {
-      action: pin,
-      Icon: <View />,
-      id: 'pin',
-      label: '',
-      type: 'standard',
-    },
-    {
-      action: unpin,
-      Icon: <View />,
-      id: 'unpin',
-      label: '',
-      type: 'standard',
-    },
-    {
-      action: archive,
-      Icon: <View />,
-      id: 'archive',
-      label: '',
-      type: 'standard',
-    },
-    {
-      action: unarchive,
-      Icon: <View />,
-      id: 'unarchive',
-      label: '',
-      type: 'standard',
-    },
+    isPinned
+      ? {
+          action: unpin,
+          Icon: <View />,
+          id: 'unpin',
+          label: '',
+          placement: 'both',
+          type: 'standard',
+        }
+      : {
+          action: pin,
+          Icon: <View />,
+          id: 'pin',
+          label: '',
+          placement: 'both',
+          type: 'standard',
+        },
+    isArchived
+      ? {
+          action: unarchive,
+          Icon: <View />,
+          id: 'unarchive',
+          label: '',
+          placement: 'both',
+          type: 'standard',
+        }
+      : {
+          action: archive,
+          Icon: <View />,
+          id: 'archive',
+          label: '',
+          placement: 'both',
+          type: 'standard',
+        },
     {
       action: leave,
       Icon: <View />,
       id: 'leave',
       label: '',
+      placement: 'both',
       type: 'destructive',
     },
     {
@@ -103,6 +113,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       Icon: <View />,
       id: 'deleteChannel',
       label: '',
+      placement: 'both',
       type: 'destructive',
     },
   ];
@@ -127,27 +138,26 @@ export const useChannelActionItems = ({
   const { client } = useChatContext();
   const { t } = useTranslationContext();
   const ownUserId = client.userID;
+  const membership = useChannelMembershipState(channel);
   const members = useChannelMembersState(channel);
   const channelActions = useChannelActions(channel);
   const otherMembers = useMemo(
-    () =>
-      Object.values<ChannelMemberResponse>(members).filter(
-        (member) => member.user?.id !== ownUserId,
-      ),
+    () => Object.values(members).filter((member) => member.user?.id !== ownUserId),
     [members, ownUserId],
   );
   const isDirectChat = otherMembers.length === 1;
+  const isPinned = Boolean(membership?.pinned_at);
+  const isArchived = Boolean(membership?.archived_at);
   const channelActionItemsParams = useMemo(
     () => ({
       actions: channelActions,
       channel,
+      isArchived,
       isDirectChat,
-      members,
-      otherMembers,
-      ownUserId,
+      isPinned,
       t,
     }),
-    [channel, channelActions, isDirectChat, members, otherMembers, ownUserId, t],
+    [channel, channelActions, isArchived, isDirectChat, isPinned, t],
   );
 
   const defaultItems = useMemo(

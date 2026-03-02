@@ -14,6 +14,7 @@ import {
   useChannelActionItems,
 } from '../useChannelActionItems';
 import * as useChannelActionsModule from '../useChannelActions';
+import * as useChannelMembershipStateModule from '../useChannelMembershipState';
 import * as useChannelMembersStateModule from '../useChannelMembersState';
 
 describe('useChannelActionItems', () => {
@@ -38,6 +39,10 @@ describe('useChannelActionItems', () => {
       .mockImplementation(
         () => ({ t: (value: string) => value }) as unknown as TranslationContextValue,
       );
+    jest.spyOn(useChannelMembershipStateModule, 'useChannelMembershipState').mockReturnValue({
+      archived_at: undefined,
+      pinned_at: undefined,
+    } as never);
     jest.spyOn(useChannelMembersStateModule, 'useChannelMembersState').mockReturnValue({});
     jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
   });
@@ -49,20 +54,16 @@ describe('useChannelActionItems', () => {
   it('returns default channel action items', () => {
     const { result } = renderHook(() => useChannelActionItems({ channel }));
 
-    expect(result.current).toHaveLength(6);
+    expect(result.current).toHaveLength(4);
     expect(result.current.map((item) => item.action)).toEqual([
       channelActions.pin,
-      channelActions.unpin,
       channelActions.archive,
-      channelActions.unarchive,
       channelActions.leave,
       expect.any(Function),
     ]);
     expect(result.current.map((item) => item.id)).toEqual([
       'pin',
-      'unpin',
       'archive',
-      'unarchive',
       'leave',
       'deleteChannel',
     ]);
@@ -71,8 +72,6 @@ describe('useChannelActionItems', () => {
       result.current.every((item) => isValidElement(item.Icon) && item.Icon.type === View),
     ).toBe(true);
     expect(result.current.map((item) => item.type)).toEqual([
-      'standard',
-      'standard',
       'standard',
       'standard',
       'destructive',
@@ -94,10 +93,9 @@ describe('useChannelActionItems', () => {
       context: {
         actions: channelActions,
         channel,
+        isArchived: false,
         isDirectChat: false,
-        members: {},
-        otherMembers: [],
-        ownUserId: 'current-user-id',
+        isPinned: false,
         t: expect.any(Function),
       },
       defaultItems: expect.any(Array),
@@ -126,20 +124,18 @@ describe('getChannelActionItems', () => {
     const defaultItems = buildDefaultChannelActionItems({
       actions: channelActions,
       channel,
+      isArchived: false,
       isDirectChat: false,
-      members: {},
-      otherMembers: [],
-      ownUserId: 'current-user-id',
+      isPinned: false,
       t: (value) => value,
     });
     const actionItems = getChannelActionItems({
       context: {
         actions: channelActions,
         channel,
+        isArchived: false,
         isDirectChat: false,
-        members: {},
-        otherMembers: [],
-        ownUserId: 'current-user-id',
+        isPinned: false,
         t: (value) => value,
       },
       defaultItems,
@@ -147,23 +143,17 @@ describe('getChannelActionItems', () => {
 
     expect(actionItems.map((item) => item.action)).toEqual([
       channelActions.pin,
-      channelActions.unpin,
       channelActions.archive,
-      channelActions.unarchive,
       channelActions.leave,
       expect.any(Function),
     ]);
     expect(actionItems.map((item) => item.id)).toEqual([
       'pin',
-      'unpin',
       'archive',
-      'unarchive',
       'leave',
       'deleteChannel',
     ]);
     expect(actionItems.map((item) => item.type)).toEqual([
-      'standard',
-      'standard',
       'standard',
       'standard',
       'destructive',

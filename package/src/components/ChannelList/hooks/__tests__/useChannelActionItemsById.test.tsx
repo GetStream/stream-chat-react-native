@@ -24,6 +24,7 @@ describe('useChannelActionItemsById', () => {
         Icon: <></>,
         id: 'pin',
         label: '',
+        placement: 'both',
         type: 'standard',
       },
       {
@@ -31,6 +32,7 @@ describe('useChannelActionItemsById', () => {
         Icon: <></>,
         id: 'deleteChannel',
         label: '',
+        placement: 'both',
         type: 'destructive',
       },
     ];

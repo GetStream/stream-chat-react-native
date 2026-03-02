@@ -111,6 +111,7 @@ const swipableActions = [
     type: 'standard',
     Icon: <MenuPointHorizontal stroke={'green'} />,
     label: 'View more',
+    placement: 'both',
   },
   {
     id: 'delete',
@@ -118,6 +119,7 @@ const swipableActions = [
     type: 'destructive',
     Icon: <View style={{ width: 15, height: 15, backgroundColor: 'green' }} />,
     label: 'Delete',
+    placement: 'both',
   },
 ] as ChannelActionItem[];
 
