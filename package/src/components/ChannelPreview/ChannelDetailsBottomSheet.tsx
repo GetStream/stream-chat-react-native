@@ -31,15 +31,11 @@ export const ChannelDetailsHeader = ({ channel }: { channel: Channel }) => {
   const displayedOnlineCount = onlineCount > 9 ? '9+' : `${onlineCount}`;
   const membersAndOnlineLabel = useMemo(
     () =>
-      memberCount === 1
-        ? t('{{ memberCount }} member, {{ onlineCount }} online', {
-            memberCount: displayedMemberCount,
-            onlineCount: displayedOnlineCount,
-          })
-        : t('{{ memberCount }} members, {{ onlineCount }} online', {
-            memberCount: displayedMemberCount,
-            onlineCount: displayedOnlineCount,
-          }),
+      t('{{memberCount}} members, {{onlineCount}} online', {
+        count: memberCount,
+        memberCount: displayedMemberCount,
+        onlineCount: displayedOnlineCount,
+      }),
     [displayedMemberCount, displayedOnlineCount, memberCount, t],
   );
 

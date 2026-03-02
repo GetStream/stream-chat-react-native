@@ -194,6 +194,7 @@
   "Unarchive Chat": "Unarchive Chat",
   "Unarchive Group": "Unarchive Group",
   "Unmute Group": "Unmute Group",
-  "{{ memberCount }} member, {{ onlineCount }} online": "{{ memberCount }} member, {{ onlineCount }} online",
-  "{{ memberCount }} members, {{ onlineCount }} online": "{{ memberCount }} members, {{ onlineCount }} online"
+  "{{memberCount}} members, {{onlineCount}} online_one": "{{memberCount}} member, {{onlineCount}} online",
+  "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} members, {{onlineCount}} online",
+  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} members, {{onlineCount}} online"
 }
