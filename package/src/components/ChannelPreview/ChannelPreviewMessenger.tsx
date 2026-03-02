@@ -14,7 +14,9 @@ import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
 
@@ -81,18 +83,30 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
     },
   } = useTheme();
   const styles = useStyles();
+  const swipeRegistry = useSwipeRegistryContext();
+
+  const onPress = useStableCallback(() => {
+    if (swipeRegistry?.hasOpen()) {
+      swipeRegistry?.closeAll();
+      return;
+    }
+    if (onSelect) {
+      onSelect(channel);
+    }
+  });
 
   return (
     <View style={[styles.wrapper, wrapper]}>
       <Pressable
-        onPress={() => {
-          if (onSelect) {
-            onSelect(channel);
-          }
-        }}
+        onPress={onPress}
         style={({ pressed }) => [
           styles.container,
-          { backgroundColor: pressed ? semantics.backgroundCorePressed : 'transparent' },
+          {
+            backgroundColor:
+              pressed && !swipeRegistry?.hasOpen()
+                ? semantics.backgroundCorePressed
+                : 'transparent',
+          },
           container,
         ]}
         testID='channel-preview-button'

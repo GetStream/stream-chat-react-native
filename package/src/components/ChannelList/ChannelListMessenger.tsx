@@ -13,6 +13,7 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
+import { useStableCallback } from '../../hooks';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 
 const styles = StyleSheet.create({
@@ -127,6 +128,13 @@ const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithCon
     }
   }
 
+  const onEndReached = useStableCallback(() => {
+    if (!onEndReachedCalledDuringCurrentScrollRef.current && hasNextPage) {
+      loadNextPage();
+      onEndReachedCalledDuringCurrentScrollRef.current = true;
+    }
+  });
+
   if (error && !refreshing && !loadingChannels && (channels === null || !channelListInitialized)) {
     return (
       <LoadingErrorIndicator
@@ -137,13 +145,6 @@ const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithCon
       />
     );
   }
-
-  const onEndReached = () => {
-    if (!onEndReachedCalledDuringCurrentScrollRef.current && hasNextPage) {
-      loadNextPage();
-      onEndReachedCalledDuringCurrentScrollRef.current = true;
-    }
-  };
 
   return (
     <>

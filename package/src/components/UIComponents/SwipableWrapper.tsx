@@ -16,6 +16,7 @@ import ReanimatedSwipeable, {
 } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
+import { useStableCallback } from '../../hooks';
 
 const ACTION_WIDTH = 80;
 const DEFAULT_RIGHT_ACTIONS_WIDTH = ACTION_WIDTH * 2;
@@ -92,12 +93,19 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
     [swipableProps, swipeRegistry, swipeableId],
   );
 
+  const onSwipeableWillClose = useStableCallback(() => {
+    if (swipeableId) {
+      swipeRegistry?.updateOpenTracker(swipeableId, false);
+    }
+  });
+
   return (
     <ReanimatedSwipeable
       ref={swipeableRef}
       animationOptions={animationOptions}
       friction={2}
       onSwipeableWillOpen={onSwipeableWillOpen}
+      onSwipeableWillClose={onSwipeableWillClose}
       overshootLeft={false}
       overshootRight={true}
       overshootFriction={16}
