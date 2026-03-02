@@ -97,6 +97,7 @@ export const useChannelActions = (channel: Channel) => {
   });
 
   const muteUser = useStableCallback(async () => {
+    console.log('MUTIN A USER');
     if (!channel) {
       return;
     }
@@ -104,8 +105,10 @@ export const useChannelActions = (channel: Channel) => {
     const otherUser = getOtherUserInDirectChannel(channel);
 
     try {
+      console.log('WILL TRY MUTIN', otherUser?.user?.id);
       if (otherUser?.user?.id) {
         await client.muteUser(otherUser.user.id);
+        console.log('MUTAYD');
       }
     } catch (error) {
       console.log('Error muting user', error);

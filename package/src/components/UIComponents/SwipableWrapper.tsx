@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import React, { PropsWithChildren, useEffect, useMemo, useRef } from 'react';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 import Animated, {
@@ -17,8 +17,6 @@ import ReanimatedSwipeable, {
 
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useStableCallback } from '../../hooks';
-import { MenuPointHorizontal } from '../../icons';
-import { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
 
 const ACTION_WIDTH = 80;
 const MAX_RIGHT_ACTIONS_WIDTH = 240;
@@ -31,8 +29,15 @@ const animationOptions = {
   stiffness: 180,
 };
 
-type SwipableWrapperProps = PropsWithChildren<{
-  items?: ChannelActionItem[];
+export type SwipableActionItem = {
+  action: () => void | Promise<void>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  Content: React.ComponentType<Record<string, unknown>>;
+  id: string;
+};
+
+export type SwipableWrapperProps = PropsWithChildren<{
+  items?: SwipableActionItem[];
   swipeableId?: string;
   swipableProps?: SwipeableProps;
 }>;
@@ -48,11 +53,11 @@ export const getRightActionsLayout = (itemCount: number) => {
   return { containerWidth, itemWidth };
 };
 
-const RightActions = ({
+export const RightActions = ({
   items,
   translation,
 }: {
-  items: ChannelActionItem[];
+  items: SwipableActionItem[];
   translation: SharedValue<number>;
 }) => {
   const { containerWidth, itemWidth } = useMemo(
@@ -84,55 +89,29 @@ const RightActions = ({
 
   return (
     <Animated.View style={[styles.rightActionsContainer, { width: containerWidth }]}>
-      {items.map((item) => (
-        <AnimatedPressable
-          key={item.id}
-          onPress={item.action}
-          style={[styles.action, animatedActionWidthStyle]}
-        >
-          <View
-            style={[
-              styles.actionContent,
-              item.type === 'destructive' ? styles.destructiveAction : styles.standardAction,
-            ]}
+      {items.map((item) => {
+        const Content = item.Content;
+        return (
+          <AnimatedPressable
+            key={item.id}
+            onPress={item.action}
+            style={[styles.action, animatedActionWidthStyle]}
           >
-            <Animated.View style={animatedIconScaleStyle}>{item.Icon}</Animated.View>
-          </View>
-        </AnimatedPressable>
-      ))}
+            <View style={item.contentContainerStyle}>
+              <Animated.View style={animatedIconScaleStyle}>
+                <Content />
+              </Animated.View>
+            </View>
+          </AnimatedPressable>
+        );
+      })}
     </Animated.View>
   );
 };
 
-const swipableActions = [
-  {
-    id: 'openSheet',
-    action: () => Alert.alert('Pressed open sheet !'),
-    type: 'standard',
-    Icon: <MenuPointHorizontal stroke={'green'} />,
-    label: 'View more',
-    placement: 'both',
-  },
-  {
-    id: 'delete',
-    action: () => Alert.alert('Pressed delete !'),
-    type: 'destructive',
-    Icon: <View style={{ width: 15, height: 15, backgroundColor: 'green' }} />,
-    label: 'Delete',
-    placement: 'both',
-  },
-] as ChannelActionItem[];
-
 export const SwipableWrapper = ({ children, swipeableId, swipableProps }: SwipableWrapperProps) => {
   const swipeRegistry = useSwipeRegistryContext();
   const swipeableRef = useRef<SwipeableMethods | null>(null);
-
-  const renderRightActions = useCallback(
-    (_progress: SharedValue<number>, translation: SharedValue<number>) => (
-      <RightActions items={swipableActions} translation={translation} />
-    ),
-    [],
-  );
 
   useEffect(() => {
     if (!swipeRegistry || !swipeableId) {
@@ -170,7 +149,6 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
       overshootRight={true}
       overshootFriction={16}
       renderLeftActions={undefined}
-      renderRightActions={renderRightActions}
       {...swipableProps}
     >
       {children}
@@ -187,11 +165,6 @@ const styles = StyleSheet.create({
   action: {
     overflow: 'hidden',
     width: 0,
-  },
-  actionContent: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
   },
   actionLabel: {
     color: 'white',

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert } from 'react-native';
 
 import type { Channel } from 'stream-chat';
 
@@ -11,15 +11,15 @@ import { useIsDirectChat } from './useIsDirectChat';
 
 import { useTheme, useTranslationContext } from '../../../contexts';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
-import { Archive, IconProps, Mute, BlockUser } from '../../../icons';
+import { Archive, IconProps, Mute, BlockUser, Delete } from '../../../icons';
 import { ArrowBoxLeft } from '../../../icons/ArrowBoxLeft';
 
 export type ChannelActionHandler = () => Promise<void> | void;
 
 export type ChannelActionItem = {
   action: ChannelActionHandler;
-  Icon: React.ReactElement;
-  id: keyof ChannelActions | string;
+  Icon: React.ComponentType<IconProps>;
+  id: 'mute' | 'block' | 'archive' | 'leave' | 'deleteChannel' | string;
   label: string;
   placement: 'both' | 'sheet' | 'swipe';
   type: 'destructive' | 'standard';
@@ -38,12 +38,15 @@ export type BuildDefaultChannelActionItems = (
   channelActionItemsParams: ChannelActionItemsParams,
 ) => ChannelActionItem[];
 
-const ChannelActionsIcon = ({ Icon }: { Icon: React.ComponentType<IconProps> }) => {
+const ChannelActionsIcon = ({
+  Icon,
+  ...rest
+}: { Icon: React.ComponentType<IconProps> } & IconProps) => {
   const {
     theme: { semantics },
   } = useTheme();
 
-  return <Icon stroke={semantics.textSecondary} width={20} height={20} />;
+  return <Icon stroke={semantics.textSecondary} width={20} height={20} {...rest} />;
 };
 
 export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
@@ -101,69 +104,45 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     //       placement: 'both',
     //       type: 'standard',
     //     },
-    muteActive
-      ? {
-          action: isDirectChat ? unmuteUser : unmuteChannel,
-          Icon: <ChannelActionsIcon Icon={Mute} />,
-          id: 'unmute',
-          label: `Unmute ${isDirectChat ? 'User' : 'Group'}`,
-          placement: isDirectChat ? 'sheet' : 'both',
-          type: 'standard',
-        }
-      : {
-          action: isDirectChat ? muteUser : muteChannel,
-          Icon: <ChannelActionsIcon Icon={Mute} />,
-          id: 'mute',
-          label: `Mute ${isDirectChat ? 'User' : 'Group'}`,
-          placement: isDirectChat ? 'both' : 'sheet',
-          type: 'standard',
-        },
+    {
+      action: isDirectChat
+        ? muteActive
+          ? unmuteUser
+          : muteUser
+        : muteActive
+          ? unmuteChannel
+          : muteChannel,
+      Icon: (props) => <ChannelActionsIcon Icon={Mute} {...props} />,
+      id: 'mute',
+      label: `${muteActive ? 'Unmute' : 'Mute'} ${isDirectChat ? 'User' : 'Group'}`,
+      placement: isDirectChat ? 'sheet' : 'both',
+      type: 'standard',
+    },
   ];
 
   if (isDirectChat) {
-    actionItems.push(
-      isBlocked
-        ? {
-            action: unblockUser,
-            Icon: <ChannelActionsIcon Icon={BlockUser} />,
-            id: 'unblock',
-            label: `Unblock User`,
-            placement: 'sheet',
-            type: 'standard',
-          }
-        : {
-            action: blockUser,
-            Icon: <ChannelActionsIcon Icon={BlockUser} />,
-            id: 'block',
-            label: `Block User`,
-            placement: 'sheet',
-            type: 'standard',
-          },
-    );
+    actionItems.push({
+      action: isBlocked ? unblockUser : blockUser,
+      Icon: (props) => <ChannelActionsIcon Icon={BlockUser} {...props} />,
+      id: 'block',
+      label: `${isBlocked ? 'Unblock' : 'Block'} User`,
+      placement: 'sheet',
+      type: 'standard',
+    });
   }
 
-  actionItems.push(
-    isArchived
-      ? {
-          action: unarchive,
-          Icon: <ChannelActionsIcon Icon={Archive} />,
-          id: 'unarchive',
-          label: `Unarchive ${isDirectChat ? 'Chat' : 'Group'}`,
-          placement: isDirectChat ? 'sheet' : 'both',
-          type: 'standard',
-        }
-      : {
-          action: archive,
-          Icon: <ChannelActionsIcon Icon={Archive} />,
-          id: 'archive',
-          label: `Archive ${isDirectChat ? 'Chat' : 'Group'}`,
-          placement: isDirectChat ? 'sheet' : 'both',
-          type: 'standard',
-        },
-  );
+  actionItems.push({
+    action: isArchived ? unarchive : archive,
+    Icon: (props) => <ChannelActionsIcon Icon={Archive} {...props} />,
+    id: 'archive',
+    label: `${isArchived ? 'Unarchive' : 'Archive'} ${isDirectChat ? 'Chat' : 'Group'}`,
+    placement: isDirectChat ? 'sheet' : 'both',
+    type: 'standard',
+  });
+
   actionItems.push({
     action: leave,
-    Icon: <ChannelActionsIcon Icon={ArrowBoxLeft} />,
+    Icon: (props) => <ChannelActionsIcon Icon={ArrowBoxLeft} {...props} />,
     id: 'leave',
     label: `Leave ${isDirectChat ? 'Chat' : 'Group'}`,
     placement: 'sheet',
@@ -192,7 +171,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
           },
         ]);
       },
-      Icon: <View />,
+      Icon: (props) => <ChannelActionsIcon Icon={Delete} {...props} />,
       id: 'deleteChannel',
       label: `Delete ${isDirectChat ? 'Chat' : 'Group'}`,
       placement: 'sheet',
