@@ -12,6 +12,19 @@ export type ChannelActions = {
   pin: () => Promise<void>;
   unarchive: () => Promise<void>;
   unpin: () => Promise<void>;
+  muteUser: () => Promise<void>;
+  unmuteUser: () => Promise<void>;
+  muteChannel: () => Promise<void>;
+  unmuteChannel: () => Promise<void>;
+  blockUser: () => Promise<void>;
+  unblockUser: () => Promise<void>;
+};
+
+export const getOtherUserInDirectChannel = (channel: Channel) => {
+  const members = Object.values(channel.state.members);
+  return members.length === 2
+    ? members.find((member) => member.user?.id !== channel.getClient().userID)
+    : undefined;
 };
 
 export const useChannelActions = (channel: Channel) => {
@@ -83,8 +96,122 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
+  const muteUser = useStableCallback(async () => {
+    if (!channel) {
+      return;
+    }
+
+    const otherUser = getOtherUserInDirectChannel(channel);
+
+    try {
+      if (otherUser?.user?.id) {
+        await client.muteUser(otherUser.user.id);
+      }
+    } catch (error) {
+      console.log('Error muting user', error);
+    }
+  });
+
+  const unmuteUser = useStableCallback(async () => {
+    if (!channel) {
+      return;
+    }
+
+    const otherUser = getOtherUserInDirectChannel(channel);
+
+    try {
+      if (otherUser?.user?.id) {
+        await client.unmuteUser(otherUser.user.id);
+      }
+    } catch (error) {
+      console.log('Error muting user', error);
+    }
+  });
+
+  const muteChannel = useStableCallback(async () => {
+    if (!channel) {
+      return;
+    }
+
+    try {
+      await channel.mute();
+    } catch (error) {
+      console.log('Error muting channel', error);
+    }
+  });
+
+  const unmuteChannel = useStableCallback(async () => {
+    if (!channel) {
+      return;
+    }
+
+    try {
+      await channel.unmute();
+    } catch (error) {
+      console.log('Error muting channel', error);
+    }
+  });
+
+  const blockUser = useStableCallback(async () => {
+    if (!channel) {
+      return;
+    }
+
+    const otherUser = getOtherUserInDirectChannel(channel);
+
+    try {
+      if (otherUser?.user?.id) {
+        await client.blockUser(otherUser.user.id);
+      }
+    } catch (error) {
+      console.log('Error blocking user', error);
+    }
+  });
+
+  const unblockUser = useStableCallback(async () => {
+    if (!channel) {
+      return;
+    }
+
+    const otherUser = getOtherUserInDirectChannel(channel);
+
+    try {
+      if (otherUser?.user?.id) {
+        await client.unBlockUser(otherUser.user.id);
+      }
+    } catch (error) {
+      console.log('Error unblocking user', error);
+    }
+  });
+
   return useMemo<ChannelActions>(
-    () => ({ pin, unpin, archive, unarchive, leave, deleteChannel }),
-    [archive, deleteChannel, leave, pin, unarchive, unpin],
+    () => ({
+      pin,
+      unpin,
+      archive,
+      unarchive,
+      leave,
+      deleteChannel,
+      muteUser,
+      unmuteUser,
+      muteChannel,
+      unmuteChannel,
+      blockUser,
+      unblockUser,
+    }),
+    [
+      pin,
+      unpin,
+      archive,
+      unarchive,
+      leave,
+      deleteChannel,
+      muteUser,
+      unmuteUser,
+      muteChannel,
+      unmuteChannel,
+      blockUser,
+      unblockUser,
+    ],
   );
 };

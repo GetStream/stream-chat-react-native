@@ -6,6 +6,7 @@ export * from './ArrowLeft';
 export * from './ArrowUp';
 export * from './Attach';
 export * from './Audio';
+export * from './BlockUser';
 export * from './Camera';
 export * from './ChatIcon';
 export * from './Check';

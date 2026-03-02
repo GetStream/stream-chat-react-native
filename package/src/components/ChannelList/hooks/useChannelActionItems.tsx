@@ -3,14 +3,15 @@ import { Alert, View } from 'react-native';
 
 import type { Channel } from 'stream-chat';
 
-import type { ChannelActions } from './useChannelActions';
+import { ChannelActions, getOtherUserInDirectChannel } from './useChannelActions';
 import { useChannelActions } from './useChannelActions';
 import { useChannelMembershipState } from './useChannelMembershipState';
-import { useChannelMembersState } from './useChannelMembersState';
 
-import { useChatContext, useTheme, useTranslationContext } from '../../../contexts';
+import { useIsDirectChat } from './useIsDirectChat';
+
+import { useTheme, useTranslationContext } from '../../../contexts';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
-import { Archive, IconProps } from '../../../icons';
+import { Archive, IconProps, Mute, BlockUser } from '../../../icons';
 import { ArrowBoxLeft } from '../../../icons/ArrowBoxLeft';
 
 export type ChannelActionHandler = () => Promise<void> | void;
@@ -49,13 +50,38 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
   channelActionItemsParams,
 ) => {
   const {
-    actions: { archive, deleteChannel, leave, unarchive },
+    actions: {
+      archive,
+      deleteChannel,
+      leave,
+      unarchive,
+      muteChannel,
+      unmuteChannel,
+      muteUser,
+      unmuteUser,
+      blockUser,
+      unblockUser,
+    },
     isArchived,
     isDirectChat,
     t,
     channel,
   } = channelActionItemsParams;
   const ownUserId = channel.getClient().userID;
+
+  const client = channel.getClient();
+
+  const muteActive = isDirectChat
+    ? !!client.mutedUsers.find(
+        (mutedUser) => getOtherUserInDirectChannel(channel)?.user?.id === mutedUser.target.id,
+      )
+    : client.mutedChannels.find((mutedChannel) => channel.cid === mutedChannel.channel?.cid);
+
+  const isBlocked = isDirectChat
+    ? new Set(client.blockedUsers.getLatestValue().userIds).has(
+        getOtherUserInDirectChannel(channel)?.user?.id ?? '',
+      )
+    : undefined;
 
   const actionItems: ChannelActionItem[] = [
     // isPinned
@@ -75,6 +101,48 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     //       placement: 'both',
     //       type: 'standard',
     //     },
+    muteActive
+      ? {
+          action: isDirectChat ? unmuteUser : unmuteChannel,
+          Icon: <ChannelActionsIcon Icon={Mute} />,
+          id: 'unmute',
+          label: `Unmute ${isDirectChat ? 'User' : 'Group'}`,
+          placement: isDirectChat ? 'sheet' : 'both',
+          type: 'standard',
+        }
+      : {
+          action: isDirectChat ? muteUser : muteChannel,
+          Icon: <ChannelActionsIcon Icon={Mute} />,
+          id: 'mute',
+          label: `Mute ${isDirectChat ? 'User' : 'Group'}`,
+          placement: isDirectChat ? 'both' : 'sheet',
+          type: 'standard',
+        },
+  ];
+
+  if (isDirectChat) {
+    actionItems.push(
+      isBlocked
+        ? {
+            action: unblockUser,
+            Icon: <ChannelActionsIcon Icon={BlockUser} />,
+            id: 'unblock',
+            label: `Unblock User`,
+            placement: 'sheet',
+            type: 'standard',
+          }
+        : {
+            action: blockUser,
+            Icon: <ChannelActionsIcon Icon={BlockUser} />,
+            id: 'block',
+            label: `Block User`,
+            placement: 'sheet',
+            type: 'standard',
+          },
+    );
+  }
+
+  actionItems.push(
     isArchived
       ? {
           action: unarchive,
@@ -92,15 +160,15 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
           placement: isDirectChat ? 'sheet' : 'both',
           type: 'standard',
         },
-    {
-      action: leave,
-      Icon: <ChannelActionsIcon Icon={ArrowBoxLeft} />,
-      id: 'leave',
-      label: `Leave ${isDirectChat ? 'Chat' : 'Group'}`,
-      placement: 'sheet',
-      type: 'destructive',
-    },
-  ];
+  );
+  actionItems.push({
+    action: leave,
+    Icon: <ChannelActionsIcon Icon={ArrowBoxLeft} />,
+    id: 'leave',
+    label: `Leave ${isDirectChat ? 'Chat' : 'Group'}`,
+    placement: 'sheet',
+    type: 'destructive',
+  });
 
   if (channel.data?.created_by_id === ownUserId) {
     actionItems.push({
@@ -126,7 +194,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       },
       Icon: <View />,
       id: 'deleteChannel',
-      label: '',
+      label: `Delete ${isDirectChat ? 'Chat' : 'Group'}`,
       placement: 'sheet',
       type: 'destructive',
     });
@@ -151,17 +219,10 @@ export const useChannelActionItems = ({
   channel,
   getChannelActionItems: getChannelActionItemsProp = getChannelActionItems,
 }: UseChannelActionItemsParams) => {
-  const { client } = useChatContext();
   const { t } = useTranslationContext();
-  const ownUserId = client.userID;
   const membership = useChannelMembershipState(channel);
-  const members = useChannelMembersState(channel);
   const channelActions = useChannelActions(channel);
-  const otherMembers = useMemo(
-    () => Object.values(members).filter((member) => member.user?.id !== ownUserId),
-    [members, ownUserId],
-  );
-  const isDirectChat = otherMembers.length === 1;
+  const isDirectChat = useIsDirectChat(channel);
   const isPinned = Boolean(membership?.pinned_at);
   const isArchived = Boolean(membership?.archived_at);
   const channelActionItemsParams = useMemo(
