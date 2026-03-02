@@ -177,5 +177,8 @@
   "Replied to a thread": "הגב/י בשרשור",
   "View": "צפה",
   "Reminder overdue": "הזמן פג",
-  "Poll has ended": "ההצבעה הסתיימה"
+  "Poll has ended": "ההצבעה הסתיימה",
+  "Reply to a message to start a thread": "השב/י להודעה כדי להתחיל שרשור",
+  "Couldn't load new threads. Tap to retry": "לא ניתן לטעון שרשורים חדשים. הקש כדי לנסות שוב",
+  "{{count}} new threads": "{{count}} שרשורים חדשים"
 }

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../hooks/useViewport';
 import { ChatIcon, MessageBubbleEmpty, MessageIcon } from '../../icons';
+import { primitives } from '../../theme';
 
 export type EmptyStateProps = {
   listType?: 'channel' | 'message' | 'threads' | 'default';
@@ -21,11 +22,13 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
         messageContainer,
         messageTitle,
       },
+      semantics,
     },
   } = useTheme();
   const { vw } = useViewport();
   const width = vw(33);
   const { t } = useTranslationContext();
+  const styles = useStyles();
 
   switch (listType) {
     case 'channel':
@@ -58,8 +61,8 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
     case 'threads':
       return (
         <View style={[styles.container]}>
-          <MessageBubbleEmpty height={width} pathFill={'#B4BBBA'} width={width} />
-          <Text style={{ color: '#7E828B' }}>{t('No threads here yet')}...</Text>
+          <MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
+          <Text style={styles.threadText}>{t('Reply to a message to start a thread')}</Text>
         </View>
       );
     default:
@@ -67,24 +70,40 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
   }
 };
 
-const styles = StyleSheet.create({
-  channelDetails: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  channelTitle: {
-    fontSize: 16,
-    paddingBottom: 8,
-    paddingTop: 16,
-  },
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  messageTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    paddingBottom: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return useMemo(() => {
+    return StyleSheet.create({
+      channelDetails: {
+        fontSize: 14,
+        textAlign: 'center',
+      },
+      channelTitle: {
+        fontSize: 16,
+        paddingBottom: 8,
+        paddingTop: 16,
+      },
+      container: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
+      },
+      messageTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        paddingBottom: 8,
+      },
+      threadText: {
+        color: semantics.textTertiary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'center',
+        paddingVertical: primitives.spacingSm,
+      },
+    });
+  }, [semantics]);
+};

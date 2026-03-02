@@ -41,6 +41,8 @@ export const useGroupedAttachments = (attachments?: Attachment[]) => {
       (acc, attachment) => {
         if (isGiphyAttachment(attachment)) {
           acc.giphys.push(attachment);
+        } else if (isVoiceRecordingAttachment(attachment)) {
+          acc.voiceRecordings.push(attachment);
         } else if (isAudioAttachment(attachment)) {
           acc.audios.push(attachment);
         } else if (isImageAttachment(attachment)) {
@@ -49,8 +51,6 @@ export const useGroupedAttachments = (attachments?: Attachment[]) => {
           acc.videos.push(attachment);
         } else if (isFileAttachment(attachment)) {
           acc.files.push(attachment);
-        } else if (isVoiceRecordingAttachment(attachment)) {
-          acc.voiceRecordings.push(attachment);
         }
 
         return acc;

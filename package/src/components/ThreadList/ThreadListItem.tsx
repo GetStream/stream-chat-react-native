@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LocalMessage, Thread, ThreadState } from 'stream-chat';
+
+import { ThreadListItemMessagePreview } from './ThreadListItemMessagePreview';
+
+import { ThreadMessagePreviewDeliveryStatus } from './ThreadMessagePreviewDeliveryStatus';
 
 import { useChatContext, useTheme, useTranslationContext } from '../../contexts';
 import {
@@ -10,57 +14,16 @@ import {
 } from '../../contexts/threadsContext/ThreadListItemContext';
 import { useThreadsContext } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
-import { MessageBubble } from '../../icons';
+import { primitives } from '../../theme';
 import { getDateString } from '../../utils/i18n/getDateString';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
-import { MessagePreview } from '../MessagePreview/MessagePreview';
+import { BadgeNotification, UserAvatarStack } from '../ui';
 import { UserAvatar } from '../ui/Avatar/UserAvatar';
 
 export type ThreadListItemProps = {
   thread: Thread;
   timestampTranslationKey?: string;
 };
-
-const styles = StyleSheet.create({
-  boldText: { fontSize: 14, fontWeight: '500' },
-  contentRow: {
-    flexDirection: 'row',
-    marginTop: 6,
-  },
-  contentTextWrapper: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  dateText: { alignSelf: 'flex-end' },
-  headerRow: {
-    flexDirection: 'row',
-  },
-  infoRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  parentMessagePreviewContainer: {
-    flex: 1,
-    marginVertical: 2,
-  },
-  previewMessageContainer: {
-    flex: 1,
-    marginTop: 4,
-  },
-  touchableWrapper: {
-    flex: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 14,
-  },
-  unreadBubbleWrapper: {
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    borderRadius: 50,
-    height: 22,
-    justifyContent: 'center',
-    width: 22,
-  },
-});
 
 export const attachmentTypeIconMap = {
   audio: '🔈',
@@ -83,11 +46,10 @@ export const ThreadListItemComponent = () => {
   const displayName = useChannelPreviewDisplayName(channel);
   const { onThreadSelect } = useThreadsContext();
   const {
-    theme: {
-      colors: { accent_red, text_low_emphasis, white },
-      threadListItem,
-    },
+    theme: { semantics },
   } = useTheme();
+  const styles = useStyles();
+  const { t } = useTranslationContext();
 
   useEffect(() => {
     const unsubscribe = thread.messageComposer.registerDraftEventSubscriptions();
@@ -95,71 +57,64 @@ export const ThreadListItemComponent = () => {
   }, [thread.messageComposer]);
 
   return (
-    <TouchableOpacity
-      onPress={() => {
-        if (onThreadSelect) {
-          onThreadSelect(
-            { thread: parentMessage as LocalMessage, threadInstance: thread },
-            channel,
-          );
-        }
-      }}
-      style={[styles.touchableWrapper, threadListItem.touchableWrapper]}
-      testID='thread-list-item'
-    >
-      <View style={[styles.headerRow, threadListItem.headerRow]}>
-        <MessageBubble />
-        <Text
-          numberOfLines={1}
-          style={[styles.boldText, { color: text_low_emphasis }, threadListItem.boldText]}
-        >
-          {displayName || 'N/A'}
-        </Text>
-      </View>
-      <View style={[styles.infoRow, threadListItem.infoRow]}>
-        <View
-          style={[
-            styles.parentMessagePreviewContainer,
-            threadListItem.parentMessagePreviewContainer,
-          ]}
-        >
-          <MessagePreview message={parentMessage as LocalMessage} />
-        </View>
-        {ownUnreadMessageCount > 0 && !deletedAtDateString ? (
-          <View
-            style={[
-              styles.unreadBubbleWrapper,
-              { backgroundColor: accent_red },
-              threadListItem.unreadBubbleWrapper,
-            ]}
-          >
-            <Text style={[{ color: white }, threadListItem.unreadBubbleText]}>
-              {ownUnreadMessageCount}
-            </Text>
-          </View>
-        ) : null}
-      </View>
-      <View style={[styles.contentRow, threadListItem.contentRow]}>
+    <View style={styles.wrapper}>
+      <Pressable
+        onPress={() => {
+          if (onThreadSelect) {
+            onThreadSelect(
+              { thread: parentMessage as LocalMessage, threadInstance: thread },
+              channel,
+            );
+          }
+        }}
+        style={({ pressed }) => [
+          styles.container,
+          { backgroundColor: pressed ? semantics.backgroundCorePressed : 'transparent' },
+        ]}
+        testID='thread-list-item'
+      >
         {lastReply?.user ? (
-          <UserAvatar user={lastReply?.user} size='lg' showOnlineIndicator showBorder />
+          <UserAvatar user={lastReply?.user} size='xl' showOnlineIndicator showBorder />
         ) : null}
 
-        <View style={[styles.contentTextWrapper, threadListItem.contentTextWrapper]}>
-          <Text style={[styles.boldText, { color: text_low_emphasis }, threadListItem.boldText]}>
-            {lastReply?.user?.name}
+        <View style={styles.content}>
+          <Text numberOfLines={1} style={styles.channelName}>
+            {displayName || 'N/A'}
           </Text>
-          <View style={[styles.headerRow, threadListItem.headerRow]}>
-            <View style={[styles.previewMessageContainer, threadListItem.previewMessageContainer]}>
-              <MessagePreview message={lastReply as LocalMessage} />
+          {lastReply ? (
+            <View style={styles.previewMessageContainer}>
+              <ThreadMessagePreviewDeliveryStatus
+                channel={channel}
+                message={parentMessage as LocalMessage}
+              />
+              <ThreadListItemMessagePreview message={parentMessage as LocalMessage} />
             </View>
-
-            <Text style={[styles.dateText, { color: text_low_emphasis }, threadListItem.dateText]}>
-              {deletedAtDateString ?? dateString}
+          ) : null}
+          <View style={styles.lowerRow}>
+            <UserAvatarStack
+              users={parentMessage?.thread_participants || []}
+              avatarSize='sm'
+              maxVisible={3}
+              overlap={0.4}
+            />
+            <Text style={styles.messageRepliesText}>
+              {parentMessage?.reply_count === 1
+                ? t('1 Reply')
+                : t('{{ replyCount }} Replies', {
+                    replyCount: parentMessage?.reply_count,
+                  })}
             </Text>
+            <Text style={styles.dateText}>{deletedAtDateString ?? dateString}</Text>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+
+        {ownUnreadMessageCount > 0 && !deletedAtDateString ? (
+          <View style={styles.unreadBubbleWrapper}>
+            <BadgeNotification count={ownUnreadMessageCount} size='sm' />
+          </View>
+        ) : null}
+      </Pressable>
+    </View>
   );
 };
 
@@ -225,5 +180,71 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
     >
       <ThreadListItem />
     </ThreadListItemProvider>
+  );
+};
+
+const useStyles = () => {
+  const {
+    theme: { threadListItem, semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        wrapper: {
+          flex: 1,
+          padding: primitives.spacingXxs,
+          borderBottomWidth: 1,
+          borderBottomColor: semantics.borderCoreSubtle,
+          ...threadListItem.wrapper,
+        },
+        container: {
+          flexDirection: 'row',
+          gap: primitives.spacingSm,
+          padding: primitives.spacingSm,
+          borderRadius: primitives.radiusLg,
+          ...threadListItem.container,
+        },
+        channelName: {
+          color: semantics.textTertiary,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          ...threadListItem.channelName,
+        },
+        content: {
+          flex: 1,
+          gap: primitives.spacingXs,
+          ...threadListItem.content,
+        },
+        previewMessageContainer: {
+          flexDirection: 'row',
+          gap: primitives.spacingXxs,
+          ...threadListItem.previewMessageContainer,
+        },
+        lowerRow: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: primitives.spacingXs,
+          ...threadListItem.lowerRow,
+        },
+        messageRepliesText: {
+          color: semantics.textLink,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          ...threadListItem.messageRepliesText,
+        },
+        dateText: {
+          color: semantics.textTertiary,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
+          ...threadListItem.dateText,
+        },
+        unreadBubbleWrapper: {
+          ...threadListItem.unreadBubbleWrapper,
+        },
+      }),
+    [semantics, threadListItem],
   );
 };

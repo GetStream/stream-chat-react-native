@@ -177,5 +177,8 @@
   "Replied to a thread": "Replied to a thread",
   "View": "View",
   "Reminder overdue": "Reminder overdue",
-  "Poll has ended": "Poll has ended"
+  "Poll has ended": "Poll has ended",
+  "Reply to a message to start a thread": "Reply to a message to start a thread",
+  "Couldn't load new threads. Tap to retry": "Couldn't load new threads. Tap to retry",
+  "{{count}} new threads": "{{count}} new threads"
 }

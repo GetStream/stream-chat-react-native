@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
 export enum MessageDeliveryStatus {
   NOT_SENT_BY_CURRENT_USER = 'not_sent_by_current_user',

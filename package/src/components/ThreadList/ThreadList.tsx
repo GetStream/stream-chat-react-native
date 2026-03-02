@@ -4,6 +4,7 @@ import { FlatList, View } from 'react-native';
 import { Thread, ThreadManagerState } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
+import { ThreadListItemSkeleton } from './ThreadListItemSkeleton';
 import { ThreadListUnreadBanner as DefaultThreadListBanner } from './ThreadListUnreadBanner';
 
 import { useChatContext } from '../../contexts';
@@ -37,7 +38,13 @@ export type ThreadListProps = Pick<
 
 export const DefaultThreadListEmptyPlaceholder = () => <EmptyStateIndicator listType='threads' />;
 
-export const DefaultThreadListLoadingIndicator = () => <LoadingIndicator listType='threads' />;
+export const DefaultThreadListLoadingIndicator = () => (
+  <View style={{ flex: 1 }}>
+    {Array.from({ length: 10 }).map((_, index) => (
+      <ThreadListItemSkeleton key={index} />
+    ))}
+  </View>
+);
 export const DefaultThreadListLoadingNextIndicator = () => <LoadingIndicator />;
 
 const renderItem = (props: { item: Thread }) => <ThreadListItem thread={props.item} />;
@@ -56,11 +63,7 @@ const ThreadListComponent = () => {
   } = useThreadsContext();
 
   if (isLoading) {
-    return (
-      <View style={{ flex: 1 }}>
-        <ThreadListLoadingIndicator />
-      </View>
-    );
+    return <ThreadListLoadingIndicator />;
   }
 
   return (

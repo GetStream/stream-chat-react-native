@@ -177,5 +177,8 @@
   "Replied to a thread": "스레드에 답장",
   "View": "보기",
   "Reminder overdue": "리마인더 만료",
-  "Poll has ended": "투표 종료됨"
+  "Poll has ended": "투표 종료됨",
+  "Reply to a message to start a thread": "메시지에 답장하여 스레드 시작",
+  "Couldn't load new threads. Tap to retry": "새로운 스레드를 로드할 수 없습니다. 탭하여 다시 시도",
+  "{{count}} new threads": "{{count}} 새로운 스레드"
 }
