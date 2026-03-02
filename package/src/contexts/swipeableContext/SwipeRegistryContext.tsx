@@ -43,7 +43,6 @@ export const SwipeRegistryProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const updateOpenTracker = useCallback((id: string, value: boolean) => {
-    console.log('updating tracker', openRef.current);
     if (value) {
       openRef.current?.add(id);
       return;
@@ -55,7 +54,6 @@ export const SwipeRegistryProvider = ({ children }: PropsWithChildren) => {
     (id: string) => {
       for (const [registeredId, close] of swipeablesRef.current?.entries() ?? []) {
         if (registeredId !== id && openRef.current?.has(registeredId)) {
-          console.log('reg: ', registeredId);
           close();
         }
       }

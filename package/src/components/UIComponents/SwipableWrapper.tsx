@@ -123,7 +123,7 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
     });
   }, [swipeRegistry, swipeableId]);
 
-  const onSwipeableWillOpen = useStableCallback(
+  const onSwipeableOpenStartDrag = useStableCallback(
     (direction: SwipeDirection.LEFT | SwipeDirection.RIGHT) => {
       if (swipeRegistry && swipeableId) {
         swipeRegistry.notifyWillOpen(swipeableId);
@@ -141,9 +141,9 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
   return (
     <ReanimatedSwipeable
       ref={swipeableRef}
+      onSwipeableOpenStartDrag={onSwipeableOpenStartDrag}
       animationOptions={animationOptions}
-      friction={2}
-      onSwipeableWillOpen={onSwipeableWillOpen}
+      friction={1.5}
       onSwipeableWillClose={onSwipeableWillClose}
       overshootLeft={false}
       overshootRight={true}
