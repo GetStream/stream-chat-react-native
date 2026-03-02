@@ -10,6 +10,13 @@ import { useChannelMembersState } from './useChannelMembersState';
 import { useChatContext, useTranslationContext } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 
+export type ChannelActions = {
+  archiveUnarchive: () => Promise<void>;
+  deleteChannel: () => void;
+  leave: () => Promise<void>;
+  pinUnpin: () => Promise<void>;
+};
+
 export const useChannelActions = (channel: Channel) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
@@ -94,7 +101,7 @@ export const useChannelActions = (channel: Channel) => {
     ]);
   });
 
-  return useMemo(
+  return useMemo<ChannelActions>(
     () => ({ pinUnpin, archiveUnarchive, leave, deleteChannel }),
     [archiveUnarchive, deleteChannel, leave, pinUnpin],
   );
