@@ -106,7 +106,10 @@ export const ChannelDetailsBottomSheet = ({
 
 const useStyles = () => {
   const {
-    theme: { semantics },
+    theme: {
+      channelDetailsMenu: { contentContainer, header, item },
+      semantics,
+    },
   } = useTheme();
 
   return useMemo(
@@ -115,39 +118,53 @@ const useStyles = () => {
         contentContainer: {
           flexGrow: 1,
           backgroundColor: semantics.backgroundElevationElevation1,
+          ...contentContainer,
         },
         headerContainer: {
           flexDirection: 'row',
           padding: primitives.spacingSm,
           gap: primitives.spacingSm,
           backgroundColor: semantics.backgroundElevationElevation1,
+          ...header.container,
         },
         headerMeta: {
           fontSize: primitives.typographyFontSizeSm,
           lineHeight: primitives.typographyLineHeightNormal,
           color: semantics.textTertiary,
+          ...header.metaText,
         },
         metaContainer: {
           gap: primitives.spacingXxs,
+          ...header.metaContainer,
         },
         itemContainer: {
           flexDirection: 'row',
           alignItems: 'center',
           padding: primitives.spacingSm,
           gap: primitives.spacingXs,
+          ...item.container,
         },
         itemTextStandard: {
           fontSize: primitives.typographyFontSizeMd,
           lineHeight: primitives.typographyLineHeightNormal,
           color: semantics.textPrimary,
+          ...item.standardText,
         },
         itemTextDestructive: {
           fontSize: primitives.typographyFontSizeMd,
           lineHeight: primitives.typographyLineHeightNormal,
           color: semantics.accentError,
+          ...item.destructiveText,
         },
       }),
     [
+      contentContainer,
+      header.container,
+      header.metaContainer,
+      header.metaText,
+      item.container,
+      item.destructiveText,
+      item.standardText,
       semantics.accentError,
       semantics.backgroundElevationElevation1,
       semantics.textPrimary,

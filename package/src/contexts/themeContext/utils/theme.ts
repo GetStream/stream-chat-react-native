@@ -168,6 +168,19 @@ export type Theme = {
     flatList: ViewStyle;
     flatListContent: ViewStyle;
   };
+  channelDetailsMenu: {
+    contentContainer: ViewStyle;
+    header: {
+      container: ViewStyle;
+      metaContainer: ViewStyle;
+      metaText: TextStyle;
+    };
+    item: {
+      container: ViewStyle;
+      destructiveText: TextStyle;
+      standardText: TextStyle;
+    };
+  };
   channelListSkeleton: {
     animationTime: number;
     container: ViewStyle;
@@ -1061,6 +1074,19 @@ export const defaultTheme: Theme = {
   channelListMessenger: {
     flatList: {},
     flatListContent: {},
+  },
+  channelDetailsMenu: {
+    contentContainer: {},
+    header: {
+      container: {},
+      metaContainer: {},
+      metaText: {},
+    },
+    item: {
+      container: {},
+      destructiveText: {},
+      standardText: {},
+    },
   },
   channelListSkeleton: {
     animationTime: 1500, // in milliseconds
