@@ -177,5 +177,9 @@
   "Replied to a thread": "Respondido a un hilo",
   "View": "Ver",
   "Reminder overdue": "Recordatorio vencido",
-  "Poll has ended": "Votación finalizada"
+  "Poll has ended": "Votación finalizada",
+  "Reply to a message to start a thread": "Responde a un mensaje para empezar un hilo",
+  "Couldn't load new threads. Tap to retry": "No se pudieron cargar nuevos hilos. Toca para reintentar",
+  "{{count}} new threads": "{{count}} nuevos hilos",
+  "No conversations yet": "No hay conversaciones todavía"
 }

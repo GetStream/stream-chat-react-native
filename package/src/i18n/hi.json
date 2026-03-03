@@ -177,5 +177,9 @@
   "Replied to a thread": "थ्रेड में उत्तर दिया",
   "View": "देखें",
   "Reminder overdue": "रीमिंडर ओवरडो",
-  "Poll has ended": "वोट समाप्त"
+  "Poll has ended": "वोट समाप्त",
+  "Reply to a message to start a thread": "एक संदेश का जवाब देकर थ्रेड शुरू करें",
+  "Couldn't load new threads. Tap to retry": "नये थ्रेड्स लोड नहीं हो सके। टैप करके पुनः कोशिश करें",
+  "{{count}} new threads": "{{count}} नये थ्रेड्स",
+  "No conversations yet": "अभी तक कोई चैट नहीं है"
 }

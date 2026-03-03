@@ -1,6 +1,6 @@
 import { DraftMessage, LocalMessage, MessageResponse } from 'stream-chat';
 
-import { useGroupedAttachments } from '../../components/MessagePreview/hook/useGroupedAttachments';
+import { useGroupedAttachments } from '../../hooks/messagePreview/useGroupedAttachments';
 
 import { CircleBan } from '../../icons/CircleBan';
 import { File } from '../../icons/File';

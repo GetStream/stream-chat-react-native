@@ -177,5 +177,9 @@
   "Replied to a thread": "スレッドに返信",
   "View": "表示",
   "Reminder overdue": "リマインダー期限切れ",
-  "Poll has ended": "投票終了"
+  "Poll has ended": "投票終了",
+  "Reply to a message to start a thread": "メッセージに返信してスレッドを開始",
+  "Couldn't load new threads. Tap to retry": "新しいスレッドを読み込めませんでした。タップして再試行",
+  "{{count}} new threads": "{{count}} 新しいスレッド",
+  "No conversations yet": "まだ会話がありません"
 }

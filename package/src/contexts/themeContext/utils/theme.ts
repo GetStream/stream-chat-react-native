@@ -204,6 +204,10 @@ export type Theme = {
       errorText: TextStyle;
       draftText: TextStyle;
     };
+    messagePreview: {
+      container: ViewStyle;
+      subtitle: TextStyle;
+    };
   };
   dateHeader: {
     container: ViewStyle;
@@ -923,6 +927,10 @@ export type Theme = {
     subtitleContainer: ViewStyle;
     videoIcon: IconProps;
     wrapper: ViewStyle;
+    messagePreview: {
+      container: ViewStyle;
+      subtitle: TextStyle;
+    };
   };
   screenPadding: number;
   spinner: ViewStyle;
@@ -935,22 +943,28 @@ export type Theme = {
     };
   };
   threadListItem: {
-    boldText: TextStyle;
-    contentRow: ViewStyle;
-    contentTextWrapper: ViewStyle;
+    wrapper: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    channelName: TextStyle;
     dateText: TextStyle;
-    headerRow: ViewStyle;
-    infoRow: ViewStyle;
-    parentMessagePreviewContainer: ViewStyle;
-    parentMessageText: TextStyle;
+    lowerRow: ViewStyle;
+    messageRepliesText: TextStyle;
     previewMessageContainer: ViewStyle;
-    touchableWrapper: ViewStyle;
-    unreadBubbleText: TextStyle;
     unreadBubbleWrapper: ViewStyle;
+    messagePreview: {
+      container: ViewStyle;
+      subtitle: TextStyle;
+    };
+    messagePreviewDeliveryStatus: {
+      container: ViewStyle;
+      text: TextStyle;
+      username: TextStyle;
+    };
   };
   threadListUnreadBanner: {
     text: TextStyle;
-    touchableWrapper: ViewStyle;
+    container: ViewStyle;
   };
   typingIndicator: {
     container: ViewStyle;
@@ -1083,6 +1097,10 @@ export const defaultTheme: Theme = {
     statusContainer: {},
     titleContainer: {},
     wrapper: {},
+    messagePreview: {
+      container: {},
+      subtitle: {},
+    },
   },
   colors: Colors,
   dateHeader: {
@@ -1780,6 +1798,10 @@ export const defaultTheme: Theme = {
     title: {},
     videoIcon: {},
     wrapper: {},
+    messagePreview: {
+      container: {},
+      subtitle: {},
+    },
   },
   screenPadding: 16,
   spinner: {},
@@ -1789,22 +1811,28 @@ export const defaultTheme: Theme = {
     },
   },
   threadListItem: {
-    boldText: {},
-    contentRow: {},
-    contentTextWrapper: {},
-    dateText: {},
-    headerRow: {},
-    infoRow: {},
-    parentMessagePreviewContainer: {},
-    parentMessageText: {},
     previewMessageContainer: {},
-    touchableWrapper: {},
-    unreadBubbleText: {},
     unreadBubbleWrapper: {},
+    wrapper: {},
+    container: {},
+    content: {},
+    channelName: {},
+    dateText: {},
+    lowerRow: {},
+    messageRepliesText: {},
+    messagePreview: {
+      container: {},
+      subtitle: {},
+    },
+    messagePreviewDeliveryStatus: {
+      container: {},
+      text: {},
+      username: {},
+    },
   },
   threadListUnreadBanner: {
     text: {},
-    touchableWrapper: {},
+    container: {},
   },
   typingIndicator: {
     container: {},

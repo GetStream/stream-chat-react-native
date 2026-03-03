@@ -8,6 +8,8 @@ import {
   MessageComposerState,
 } from 'stream-chat';
 
+import { ReplyMessageView } from './ReplyMessageView';
+
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   MessageContextValue,
@@ -22,7 +24,6 @@ import { FileTypes } from '../../types/types';
 import { checkQuotedMessageEquality } from '../../utils/utils';
 import { FileIcon } from '../Attachment/FileIcon';
 import { AttachmentRemoveControl } from '../MessageInput/components/AttachmentPreview/AttachmentRemoveControl';
-import { MessagePreview } from '../MessagePreview/MessagePreview';
 import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
@@ -134,13 +135,11 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
     <View style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}>
       <View style={[styles.container, container, stylesProp?.container]}>
         <View style={[styles.leftContainer, leftContainer, stylesProp?.leftContainer]}>
-          <View style={styles.titleContainer}>
-            <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp?.title]}>
-              {title}
-            </Text>
-          </View>
+          <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp?.title]}>
+            {title}
+          </Text>
 
-          <MessagePreview message={quotedMessage} textStyle={styles.subtitle} />
+          <ReplyMessageView message={quotedMessage} isMyMessage={isMyMessage} />
         </View>
         <View style={[styles.rightContainer, rightContainer, stylesProp?.rightContainer]}>
           <RightContent ImageComponent={ImageComponent} message={quotedMessage} />
@@ -272,7 +271,6 @@ const useStyles = () => {
           right: 0,
           top: 0,
         },
-        iconStyle: {},
         leftContainer: {
           borderLeftWidth: 2,
           flex: 1,
@@ -284,25 +282,12 @@ const useStyles = () => {
           gap: primitives.spacingXxxs,
         },
         rightContainer: {},
-        subtitle: {
-          color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
-          flexShrink: 1,
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightRegular,
-          includeFontPadding: false,
-          lineHeight: primitives.typographyLineHeightTight,
-        },
-        titleContainer: {
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: primitives.spacingXxs,
-        },
         title: {
-          color: semantics.textPrimary,
+          color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
           fontSize: primitives.typographyFontSizeXs,
           fontWeight: primitives.typographyFontWeightSemiBold,
           includeFontPadding: false,
-          lineHeight: 16,
+          lineHeight: primitives.typographyLineHeightTight,
         },
         wrapper: {
           padding: primitives.spacingXxs,
