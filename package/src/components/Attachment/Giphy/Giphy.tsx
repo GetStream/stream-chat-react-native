@@ -26,7 +26,7 @@ import {
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
-import { NewEyeOpen } from '../../../icons/NewEyeOpen';
+import { EyeOpen } from '../../../icons/EyeOpen';
 import { primitives } from '../../../theme';
 
 export type GiphyPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
@@ -93,7 +93,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
   return actions ? (
     <View style={[styles.container, container]} testID='giphy-action-attachment'>
       <View style={[styles.header, header]}>
-        <NewEyeOpen height={16} width={16} fill={semantics.chatTextOutgoing} />
+        <EyeOpen height={16} width={16} fill={semantics.chatTextOutgoing} />
         <Text style={[styles.headerText, giphyHeaderText]}>{t('Only visible to you')}</Text>
       </View>
       <GiphyImage attachment={attachment} giphyVersion={giphyVersion} preview />

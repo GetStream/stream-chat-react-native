@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { CommandVariants } from 'stream-chat';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
+import { Flag, GiphyIcon, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
+import { Imgur } from '../../icons/Imgur';
 
 export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {

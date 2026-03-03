@@ -149,13 +149,13 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   const user = member?.user;
   const [muted, setMuted] = useState(
     chatClient?.mutedUsers &&
-    chatClient?.mutedUsers?.findIndex((mutedUser) => mutedUser.target.id === user?.id) > -1,
+      chatClient?.mutedUsers?.findIndex((mutedUser) => mutedUser.target.id === user?.id) > -1,
   );
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     chatClient?.mutedChannels &&
-    chatClient.mutedChannels.findIndex(
-      (mutedChannel) => mutedChannel.channel?.id === channel.id,
-    ) > -1,
+      chatClient.mutedChannels.findIndex(
+        (mutedChannel) => mutedChannel.channel?.id === channel.id,
+      ) > -1,
   );
 
   /**
@@ -357,7 +357,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <Pin fill={grey} />
+            <Pin height={24} width={24} stroke={grey} />
             <Text
               style={[
                 styles.itemText,

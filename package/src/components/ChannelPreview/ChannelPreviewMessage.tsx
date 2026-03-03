@@ -17,7 +17,7 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import { NewPoll } from '../../icons/NewPoll';
+import { PollIcon } from '../../icons/PollIcon';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { ErrorBadge } from '../ui';
@@ -76,7 +76,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (pollLabel) {
     return (
       <View style={styles.container}>
-        <NewPoll height={16} width={16} stroke={semantics.textSecondary} />
+        <PollIcon height={16} width={16} stroke={semantics.textSecondary} />
         <Text style={styles.subtitle}>{pollLabel}</Text>
       </View>
     );

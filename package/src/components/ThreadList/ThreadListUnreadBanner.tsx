@@ -6,7 +6,7 @@ import { ThreadManagerState } from 'stream-chat';
 import { useChatContext, useTheme, useTranslationContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
 import { Loading, Reload } from '../../icons';
-import { NewExclamationCircle } from '../../icons/NewExclamationCircle';
+import { ExclamationCircle } from '../../icons/ExclamationCircle';
 import { primitives } from '../../theme';
 
 const selector = (nextValue: ThreadManagerState) =>
@@ -49,7 +49,7 @@ export const ThreadListUnreadBanner = () => {
   if (error) {
     return (
       <View style={styles.container}>
-        <NewExclamationCircle stroke={semantics.textSecondary} height={20} width={20} />
+        <ExclamationCircle stroke={semantics.textSecondary} height={20} width={20} />
         <Text style={styles.text}>{t("Couldn't load new threads. Tap to retry")}</Text>
       </View>
     );

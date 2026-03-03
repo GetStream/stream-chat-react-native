@@ -8,7 +8,7 @@ import {
 } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { NewPin } from '../../../../icons/NewPin';
+import { Pin } from '../../../../icons/Pin';
 import { primitives } from '../../../../theme';
 
 export type MessagePinnedHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
@@ -30,7 +30,7 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
 
   return (
     <View accessibilityLabel='Message Pinned Header' style={styles.container}>
-      <NewPin height={16} width={16} stroke={semantics.textPrimary} />
+      <Pin height={16} width={16} stroke={semantics.textPrimary} />
       <Text style={styles.label}>
         {t('Pinned by')}{' '}
         {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}

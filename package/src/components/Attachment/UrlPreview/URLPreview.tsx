@@ -24,7 +24,7 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { NewLink } from '../../../icons/NewLink';
+import { Link } from '../../../icons/Link';
 import { primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
 import { makeImageCompatibleUrl } from '../../../utils/utils';
@@ -153,7 +153,7 @@ const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
           </Text>
         ) : null}
         <View style={[styles.linkPreview, linkPreview, stylesProp.linkPreview]}>
-          <NewLink height={12} width={12} stroke={semantics.chatTextIncoming} />
+          <Link height={12} width={12} stroke={semantics.chatTextIncoming} />
           <Text
             numberOfLines={1}
             style={[styles.linkPreviewText, linkPreviewText, stylesProp.linkPreviewText]}

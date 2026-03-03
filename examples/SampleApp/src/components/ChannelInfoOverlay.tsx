@@ -14,23 +14,16 @@ import Animated, {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  CircleClose,
-  Delete,
-  User,
-  UserMinus,
-  useTheme,
-  useViewport,
-  UserAvatar,
-} from 'stream-chat-react-native';
+import { Delete, User, useTheme, useViewport, UserAvatar, Pin } from 'stream-chat-react-native';
 import { ChannelMemberResponse } from 'stream-chat';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
 import { Archive } from '../icons/Archive';
-import { Pin } from '../icons/Pin';
 import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserMinus } from '../icons/UserMinus';
+import { CircleClose } from '../icons/CircleClose';
 
 dayjs.extend(relativeTime);
 
@@ -350,7 +343,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           ]}
                         >
                           <View style={styles.rowInner}>
-                            <Pin height={24} width={24} />
+                            <Pin height={24} width={24} stroke={grey} />
                           </View>
                           <Text style={[styles.rowText, { color: black }]}>
                             {membership?.pinned_at ? 'Unpin' : 'Pin'}

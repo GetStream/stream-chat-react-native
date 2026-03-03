@@ -1,15 +1,15 @@
 import { DraftMessage, LocalMessage, MessageResponse } from 'stream-chat';
 
-import { useGroupedAttachments } from './useGroupedAttachments';
+import { useGroupedAttachments } from '../../hooks/messagePreview/useGroupedAttachments';
 
 import { CircleBan } from '../../icons/CircleBan';
-import { NewFile } from '../../icons/NewFile';
-import { NewLink } from '../../icons/NewLink';
-import { NewMapPin } from '../../icons/NewMapPin';
-import { NewMic } from '../../icons/NewMic';
-import { NewPhoto } from '../../icons/NewPhoto';
-import { NewPoll } from '../../icons/NewPoll';
-import { NewVideo } from '../../icons/NewVideo';
+import { File } from '../../icons/File';
+import { Link } from '../../icons/Link';
+import { MapPin } from '../../icons/MapPin';
+import { Mic } from '../../icons/Mic';
+import { PhotoIcon } from '../../icons/PhotoIcon';
+import { PollIcon } from '../../icons/PollIcon';
+import { VideoIcon } from '../../icons/VideoIcon';
 import { FileTypes } from '../../types/types';
 
 export const useMessagePreviewIcon = ({
@@ -40,35 +40,35 @@ export const useMessagePreviewIcon = ({
   }
 
   if (message.poll_id) {
-    return NewPoll;
+    return PollIcon;
   }
 
   if (message.shared_location) {
-    return NewMapPin;
+    return MapPin;
   }
 
   if (hasLink) {
-    return NewLink;
+    return Link;
   }
 
   if (onlyAudio || onlyVoiceRecordings) {
-    return NewMic;
+    return Mic;
   }
 
   if (onlyVideos) {
-    return NewVideo;
+    return VideoIcon;
   }
 
   if (onlyImages) {
-    return NewPhoto;
+    return PhotoIcon;
   }
 
   if (giphys?.length) {
-    return NewFile;
+    return File;
   }
 
   if (files?.length || images?.length || videos?.length || audios?.length) {
-    return NewFile;
+    return File;
   }
 
   return null;

@@ -7,7 +7,6 @@ import {
   MessageInputContextValue,
   Search,
   SendRight,
-  SendUp,
   useChannelContext,
   useMessageInputContext,
   useTheme,
@@ -17,14 +16,16 @@ import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMess
 
 import { useUserSearchContext } from '../context/UserSearchContext';
 import { useAppContext } from '../context/AppContext';
+import { SendUp } from '../icons/SendUp';
 
-type NewDirectMessagingSendButtonPropsWithContext = Pick<MessageInputContextValue, 'giphyActive' | 'sendMessage'> & {
+type NewDirectMessagingSendButtonPropsWithContext = Pick<
+  MessageInputContextValue,
+  'giphyActive' | 'sendMessage'
+> & {
   /** Disables the button */ disabled: boolean;
 };
 
-const SendButtonWithContext = (
-  props: NewDirectMessagingSendButtonPropsWithContext,
-) => {
+const SendButtonWithContext = (props: NewDirectMessagingSendButtonPropsWithContext) => {
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
     theme: {

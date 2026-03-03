@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, ViewProps } from 'react-native';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import { Warning } from '../../icons';
+import { Warning } from '../../icons/Warning';
 
 const WARNING_ICON_SIZE = 14;
 
@@ -45,7 +45,7 @@ export const ImageLoadingFailedIndicator = (props: ImageLoadingFailedIndicatorPr
       <View style={[styles.container, { backgroundColor: overlay }]}>
         <Warning
           height={WARNING_ICON_SIZE}
-          pathFill={accent_red}
+          fill={accent_red}
           style={styles.warningIconStyle}
           width={WARNING_ICON_SIZE}
         />

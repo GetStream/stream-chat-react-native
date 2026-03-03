@@ -4,9 +4,9 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { LocalAttachmentUploadMetadata } from 'stream-chat';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { NewExclamationCircle } from '../../../../icons/NewExclamationCircle';
-import { NewWarning } from '../../../../icons/NewWarning';
+import { ExclamationCircle } from '../../../../icons/ExclamationCircle';
 import { RotateCircle } from '../../../../icons/RotateCircle';
+import { Warning } from '../../../../icons/Warning';
 import { primitives } from '../../../../theme';
 
 export const FileUploadInProgressIndicator = () => {
@@ -49,7 +49,7 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
       testID='inline-retry-indicator'
     >
       <View style={[styles.networkErrorContainer, fileUploadRetryIndicator.networkErrorContainer]}>
-        <NewWarning
+        <Warning
           height={16}
           fill={semantics.accentError}
           testID='retry-upload-progress-indicator'
@@ -95,7 +95,7 @@ export const FileUploadNotSupportedIndicator = ({
       style={[styles.container, fileUploadNotSupportedIndicator.container]}
       testID='inline-not-supported-indicator'
     >
-      <NewExclamationCircle height={16} width={16} fill={semantics.accentError} />
+      <ExclamationCircle height={16} width={16} fill={semantics.accentError} />
       <Text style={[styles.notSupportedText, fileUploadNotSupportedIndicator.notSupportedText]}>
         {message}
       </Text>
@@ -159,7 +159,7 @@ export const ImageUploadNotSupportedIndicator = () => {
       style={[styles.container, imageUploadNotSupportedIndicator.container]}
       testID='inline-not-supported-indicator'
     >
-      <NewExclamationCircle height={20} width={20} fill={semantics.accentError} />
+      <ExclamationCircle height={20} width={20} fill={semantics.accentError} />
     </View>
   );
 };

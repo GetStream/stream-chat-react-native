@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Delete, UserMinus, useTheme } from 'stream-chat-react-native';
+import { Delete, useTheme } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import {
   isAddMemberBottomSheetData,
   useBottomSheetOverlayContext,
 } from '../context/BottomSheetOverlayContext';
+import { UserMinus } from '../icons/UserMinus';
 
 const styles = StyleSheet.create({
   actionButtonLeft: {
