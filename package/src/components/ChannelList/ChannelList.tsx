@@ -26,6 +26,7 @@ import {
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import type { ChannelListEventListenerOptions } from '../../types/types';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
@@ -51,6 +52,9 @@ export type ChannelListProps = Partial<
     | 'PreviewStatus'
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
+    | 'ChannelDetailsBottomSheet'
+    | 'getChannelActionItems'
+    | 'swipeActionsEnabled'
     | 'loadMoreThreshold'
     | 'Skeleton'
     | 'maxUnreadCount'
@@ -276,17 +280,20 @@ export const ChannelList = (props: ChannelListProps) => {
     onSelect,
     options = DEFAULT_OPTIONS,
     Preview = ChannelPreview,
+    getChannelActionItems,
     PreviewAvatar,
     PreviewMessage,
     PreviewMutedStatus,
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    ChannelDetailsBottomSheet,
     setFlatListRef,
     Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
     queryChannelsOverride,
     mutedStatusPosition = 'inlineTitle',
+    swipeActionsEnabled = true,
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -403,12 +410,15 @@ export const ChannelList = (props: ChannelListProps) => {
     numberOfSkeletons,
     onSelect,
     Preview,
+    getChannelActionItems,
     PreviewAvatar,
     PreviewMessage,
     PreviewMutedStatus,
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    ChannelDetailsBottomSheet,
+    swipeActionsEnabled,
     refreshing,
     refreshList,
     reloadList,
@@ -423,7 +433,9 @@ export const ChannelList = (props: ChannelListProps) => {
 
   return (
     <ChannelsProvider value={channelsContext}>
-      <List />
+      <SwipeRegistryProvider>
+        <List />
+      </SwipeRegistryProvider>
     </ChannelsProvider>
   );
 };

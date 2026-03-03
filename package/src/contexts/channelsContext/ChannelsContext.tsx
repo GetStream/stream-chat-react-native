@@ -6,7 +6,9 @@ import type { FlatList } from 'react-native-gesture-handler';
 import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
+import type { GetChannelActionItems } from '../../components/ChannelList/hooks/useChannelActionItems';
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
+import type { ChannelDetailsBottomSheetProps } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
 import { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
 import type { ChannelPreviewStatusProps } from '../../components/ChannelPreview/ChannelPreviewStatus';
@@ -206,6 +208,9 @@ export type ChannelsContextValue = {
    * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
+  ChannelDetailsBottomSheet?: React.ComponentType<ChannelDetailsBottomSheetProps>;
+  getChannelActionItems?: GetChannelActionItems;
+  swipeActionsEnabled?: boolean;
 
   mutedStatusPosition?: 'trailingBottom' | 'inlineTitle';
 };

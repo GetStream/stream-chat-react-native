@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import { ChannelList, useTheme } from 'stream-chat-react-native';
+import { ChannelList, useTheme, useStableCallback, ChannelActionItem } from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -20,7 +20,8 @@ import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessa
 import type { ChannelSort } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
 import { Search } from '../icons/Search';
-import { CircleClose } from '../icons/CircleClose';
+import { ChannelInfo } from '../icons/ChannelInfo.tsx';
+import { CircleClose } from '../icons/CircleClose.tsx';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -119,8 +120,8 @@ export const ChannelListScreen: React.FC = () => {
     () => ({
       getItemLayout: (_: unknown, index: number) => ({
         index,
-        length: 65,
-        offset: 65 * index,
+        length: 80,
+        offset: 80 * index,
       }),
       keyboardDismissMode: 'on-drag',
     }),
@@ -143,6 +144,35 @@ export const ChannelListScreen: React.FC = () => {
     },
     [],
   );
+
+  const getChannelActionItems = useStableCallback(({ context: { isDirectChat, channel }, defaultItems }) => {
+    const viewInfo = () => {
+      if (!channel) {
+        return;
+      }
+      if (navigation) {
+        if (isDirectChat) {
+          navigation.navigate('OneOnOneChannelDetailScreen', {
+            channel,
+          });
+        } else {
+          navigation.navigate('GroupChannelDetailsScreen', {
+            channel,
+          });
+        }
+      }
+    };
+
+    const viewInfoItem: ChannelActionItem = {
+      action: viewInfo,
+      Icon: ChannelInfo,
+      id: 'info',
+      label: 'View Info',
+      placement: 'sheet',
+      type: 'standard',
+    }
+    return [viewInfoItem, ...defaultItems]
+  })
 
   if (!chatClient) {
     return null;
@@ -226,6 +256,7 @@ export const ChannelListScreen: React.FC = () => {
               options={options}
               Preview={ChannelPreview}
               setFlatListRef={setScrollRef}
+              getChannelActionItems={getChannelActionItems}
               sort={sort}
             />
           </View>

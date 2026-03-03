@@ -43,6 +43,8 @@ export * from './ChannelList/ChannelListMessenger';
 export * from './ChannelList/hooks/listeners/useChannelUpdated';
 export * from './ChannelList/hooks/useCreateChannelsContext';
 export * from './ChannelList/hooks/usePaginatedChannels';
+export * from './ChannelList/hooks/useChannelActionItems';
+export * from './ChannelList/hooks/useChannelActionItemsById';
 export * from './ChannelList/hooks/useChannelMembershipState';
 export * from './ChannelList/Skeleton';
 
@@ -180,6 +182,7 @@ export * from './UIComponents/BottomSheetModal';
 export * from './UIComponents/StreamBottomSheetModalFlatList';
 export * from './UIComponents/ImageBackground';
 export * from './UIComponents/Spinner';
+export * from './UIComponents/SwipableWrapper';
 
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';

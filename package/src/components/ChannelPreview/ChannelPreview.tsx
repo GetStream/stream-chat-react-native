@@ -2,6 +2,7 @@ import React from 'react';
 
 import type { Channel } from 'stream-chat';
 
+import { ChannelSwipableWrapper } from './ChannelSwipableWrapper';
 import { useChannelPreviewData } from './hooks/useChannelPreviewData';
 
 import {
@@ -23,7 +24,12 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
   const { channel, client: propClient, forceUpdate: propForceUpdate, Preview: propPreview } = props;
 
   const { client: contextClient } = useChatContext();
-  const { Preview: contextPreview } = useChannelsContext();
+  const {
+    Preview: contextPreview,
+    ChannelDetailsBottomSheet,
+    getChannelActionItems,
+    swipeActionsEnabled,
+  } = useChannelsContext();
 
   const client = propClient || contextClient;
   const Preview = propPreview || contextPreview;
@@ -34,5 +40,17 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
 
   const message = translatedLastMessage ? translatedLastMessage : lastMessage;
 
-  return <Preview channel={channel} muted={muted} unread={unread} lastMessage={message} />;
+  if (!swipeActionsEnabled) {
+    return <Preview channel={channel} muted={muted} unread={unread} lastMessage={message} />;
+  }
+
+  return (
+    <ChannelSwipableWrapper
+      channel={channel}
+      ChannelDetailsBottomSheet={ChannelDetailsBottomSheet}
+      getChannelActionItems={getChannelActionItems}
+    >
+      <Preview channel={channel} muted={muted} unread={unread} lastMessage={message} />
+    </ChannelSwipableWrapper>
+  );
 };
