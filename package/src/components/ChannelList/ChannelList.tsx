@@ -52,6 +52,7 @@ export type ChannelListProps = Partial<
     | 'PreviewStatus'
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
+    | 'ChannelDetailsBottomSheet'
     | 'getChannelActionItems'
     | 'swipeActionsEnabled'
     | 'loadMoreThreshold'
@@ -286,6 +287,7 @@ export const ChannelList = (props: ChannelListProps) => {
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    ChannelDetailsBottomSheet,
     setFlatListRef,
     Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
@@ -415,6 +417,7 @@ export const ChannelList = (props: ChannelListProps) => {
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    ChannelDetailsBottomSheet,
     swipeActionsEnabled,
     refreshing,
     refreshList,

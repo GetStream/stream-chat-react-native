@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 
@@ -400,6 +400,128 @@ describe('ChannelPreview', () => {
 
     await waitFor(() => {
       expect(getByText(message.i18n.no_text)).toBeTruthy();
+    });
+  });
+
+  describe('swipeActionsEnabled', () => {
+    const swipeChannel = { cid: 'messaging:test-channel', id: 'test-channel' } as Channel;
+    const swipeClient = { userID: 'test-user-id' };
+    const swipeLastMessage = { text: 'hello' } as LastMessageType;
+
+    beforeEach(() => {
+      jest.resetModules();
+    });
+
+    const renderWithSwipeMocks = ({
+      ChannelDetailsBottomSheet,
+      swipeActionsEnabled,
+    }: {
+      ChannelDetailsBottomSheet?: React.ComponentType;
+      swipeActionsEnabled: boolean;
+    }) => {
+      let rendered: ReturnType<typeof import('@testing-library/react-native').render> | undefined;
+      const mockChannelSwipableWrapper = jest.fn(({ children }: React.PropsWithChildren) => (
+        <View testID='swipe-wrapper'>{children}</View>
+      ));
+
+      const PreviewComponent = ({
+        lastMessage,
+        muted,
+        unread,
+      }: {
+        lastMessage: LastMessageType;
+        muted: boolean;
+        unread: number;
+      }) => (
+        <>
+          <Text testID='preview-muted'>{`${muted}`}</Text>
+          <Text testID='preview-unread'>{`${unread}`}</Text>
+          <Text testID='preview-last-message'>{lastMessage?.text ?? ''}</Text>
+        </>
+      );
+
+      jest.isolateModules(() => {
+        jest.doMock('../../../contexts/channelsContext/ChannelsContext', () => ({
+          useChannelsContext: () => ({
+            ChannelDetailsBottomSheet,
+            Preview: PreviewComponent,
+            getChannelActionItems: undefined,
+            swipeActionsEnabled,
+          }),
+        }));
+
+        jest.doMock('../../../contexts/chatContext/ChatContext', () => ({
+          useChatContext: () => ({ client: swipeClient }),
+        }));
+
+        jest.doMock('../hooks/useChannelPreviewData', () => ({
+          useChannelPreviewData: () => ({
+            lastMessage: swipeLastMessage,
+            muted: false,
+            unread: 3,
+          }),
+        }));
+
+        jest.doMock('../../../hooks/useTranslatedMessage', () => ({
+          useTranslatedMessage: () => undefined,
+        }));
+
+        jest.doMock('../ChannelSwipableWrapper', () => ({
+          ChannelSwipableWrapper: (...args: unknown[]) => mockChannelSwipableWrapper(...args),
+        }));
+
+        const { render } =
+          require('@testing-library/react-native') as typeof import('@testing-library/react-native');
+        const { ChannelPreview: IsolatedChannelPreview } =
+          require('../ChannelPreview') as typeof import('../ChannelPreview');
+
+        rendered = render(<IsolatedChannelPreview channel={swipeChannel} />);
+      });
+
+      if (!rendered) {
+        throw new Error('Failed to render ChannelPreview with mocked modules');
+      }
+
+      return { ...rendered, mockChannelSwipableWrapper };
+    };
+
+    it('does not render ChannelSwipableWrapper when swipeActionsEnabled is false', () => {
+      const { getByTestId, queryByTestId, mockChannelSwipableWrapper } = renderWithSwipeMocks({
+        swipeActionsEnabled: false,
+      });
+
+      expect(getByTestId('preview-muted')).toHaveTextContent('false');
+      expect(getByTestId('preview-unread')).toHaveTextContent('3');
+      expect(getByTestId('preview-last-message')).toHaveTextContent('hello');
+      expect(queryByTestId('swipe-wrapper')).toBeNull();
+      expect(mockChannelSwipableWrapper).not.toHaveBeenCalled();
+    });
+
+    it('renders ChannelSwipableWrapper when swipeActionsEnabled is true', () => {
+      const { getByTestId, mockChannelSwipableWrapper } = renderWithSwipeMocks({
+        swipeActionsEnabled: true,
+      });
+
+      expect(getByTestId('swipe-wrapper')).toBeTruthy();
+      expect(mockChannelSwipableWrapper).toHaveBeenCalledTimes(1);
+      expect(getByTestId('preview-unread')).toHaveTextContent('3');
+    });
+
+    it('passes ChannelDetailsBottomSheet override to ChannelSwipableWrapper', () => {
+      const ChannelDetailsBottomSheetOverride = () => null;
+
+      const { mockChannelSwipableWrapper } = renderWithSwipeMocks({
+        ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
+        swipeActionsEnabled: true,
+      });
+
+      expect(mockChannelSwipableWrapper).toHaveBeenCalled();
+      const swipableWrapperProps = mockChannelSwipableWrapper.mock.calls[0]?.[0];
+      expect(swipableWrapperProps).toEqual(
+        expect.objectContaining({
+          ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
+        }),
+      );
     });
   });
 });

@@ -5,7 +5,8 @@ import { SharedValue } from 'react-native-reanimated';
 
 import { Channel } from 'stream-chat';
 
-import { ChannelDetailsBottomSheet } from './ChannelDetailsBottomSheet';
+import { ChannelDetailsBottomSheet as DefaultChannelDetailsBottomSheet } from './ChannelDetailsBottomSheet';
+import type { ChannelDetailsBottomSheetProps } from './ChannelDetailsBottomSheet';
 
 import { useTheme } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
@@ -32,10 +33,12 @@ export const OpenChannelDetailsButton = () => {
 export const ChannelSwipableWrapper = ({
   channel,
   getChannelActionItems,
+  ChannelDetailsBottomSheet: ChannelDetailsBottomSheetComponent = DefaultChannelDetailsBottomSheet,
   swipableProps: _swipableProps,
   children,
 }: PropsWithChildren<{
   channel: Channel;
+  ChannelDetailsBottomSheet?: React.ComponentType<ChannelDetailsBottomSheetProps>;
   getChannelActionItems?: GetChannelActionItems;
   swipableProps?: SwipableWrapperProps['swipableProps'];
 }>) => {
@@ -120,7 +123,7 @@ export const ChannelSwipableWrapper = ({
         visible={channelDetailSheetOpen}
         height={356}
       >
-        <ChannelDetailsBottomSheet channel={channel} items={channelActionItems} />
+        <ChannelDetailsBottomSheetComponent channel={channel} items={channelActionItems} />
       </BottomSheetModal>
     </>
   );

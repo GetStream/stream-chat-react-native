@@ -13,6 +13,7 @@ import type { ChannelPreviewMessengerProps } from '../../components/ChannelPrevi
 import type { ChannelPreviewStatusProps } from '../../components/ChannelPreview/ChannelPreviewStatus';
 import type { ChannelPreviewTitleProps } from '../../components/ChannelPreview/ChannelPreviewTitle';
 import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPreview/ChannelPreviewUnreadCount';
+import type { ChannelDetailsBottomSheetProps } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
@@ -207,6 +208,7 @@ export type ChannelsContextValue = {
    * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
+  ChannelDetailsBottomSheet?: React.ComponentType<ChannelDetailsBottomSheetProps>;
   getChannelActionItems?: GetChannelActionItems;
   swipeActionsEnabled?: boolean;
 

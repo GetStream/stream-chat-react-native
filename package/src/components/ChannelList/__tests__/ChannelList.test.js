@@ -66,6 +66,16 @@ const ChannelListSwipeActionsProbe = () => {
   return <Text testID='swipe-actions-enabled'>{`${swipeActionsEnabled}`}</Text>;
 };
 
+let expectedChannelDetailsBottomSheetOverride;
+const ChannelListChannelDetailsBottomSheetProbe = () => {
+  const { ChannelDetailsBottomSheet } = useChannelsContext();
+  return (
+    <Text testID='channel-details-bottom-sheet-override'>
+      {`${ChannelDetailsBottomSheet === expectedChannelDetailsBottomSheetOverride}`}
+    </Text>
+  );
+};
+
 class DeferredPromise {
   constructor() {
     this.promise = new Promise((resolve, reject) => {
@@ -88,6 +98,7 @@ describe('ChannelList', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    expectedChannelDetailsBottomSheetOverride = undefined;
     chatClient = await getTestClientWithUser({ id: 'dan' });
     testChannel1 = generateChannelResponse();
     testChannel2 = generateChannelResponse();
@@ -249,6 +260,25 @@ describe('ChannelList', () => {
 
     await waitFor(() => expect(getByTestId('swipe-actions-enabled')).toBeTruthy());
     expect(getByTestId('swipe-actions-enabled')).toHaveTextContent('true');
+  });
+
+  it('should expose ChannelDetailsBottomSheet override in ChannelsContext', async () => {
+    useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+    const ChannelDetailsBottomSheetOverride = () => null;
+    expectedChannelDetailsBottomSheetOverride = ChannelDetailsBottomSheetOverride;
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <ChannelList
+          {...props}
+          ChannelDetailsBottomSheet={ChannelDetailsBottomSheetOverride}
+          List={ChannelListChannelDetailsBottomSheetProbe}
+        />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(getByTestId('channel-details-bottom-sheet-override')).toBeTruthy());
+    expect(getByTestId('channel-details-bottom-sheet-override')).toHaveTextContent('true');
   });
 
   describe('Event handling', () => {

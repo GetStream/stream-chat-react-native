@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
+import type { FlatListProps } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 
@@ -18,9 +19,16 @@ import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
 import { ChannelAvatar } from '../ui';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
-// TODO: V9: Make these items customizable
+export type ChannelDetailsHeaderProps = { channel: Channel };
 
-export const ChannelDetailsHeader = ({ channel }: { channel: Channel }) => {
+export type ChannelDetailsBottomSheetProps = {
+  additionalFlatListProps?: Partial<FlatListProps<ChannelActionItem>>;
+  channel: Channel;
+  ChannelDetailsHeader?: React.ComponentType<ChannelDetailsHeaderProps>;
+  items: ChannelActionItem[];
+};
+
+export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => {
   const styles = useStyles();
   const { t } = useTranslationContext();
   const members = useChannelMembersState(channel);
@@ -84,21 +92,21 @@ const renderChannelActionItem = ({ item }: { item: ChannelActionItem }) => (
 const keyExtractor = (item: ChannelActionItem) => item.id;
 
 export const ChannelDetailsBottomSheet = ({
+  additionalFlatListProps,
+  ChannelDetailsHeader: ChannelDetailsHeaderComponent = ChannelDetailsHeader,
   items,
   channel,
-}: {
-  items: ChannelActionItem[];
-  channel: Channel;
-}) => {
+}: ChannelDetailsBottomSheetProps) => {
   const styles = useStyles();
   return (
     <>
-      <ChannelDetailsHeader channel={channel} />
+      <ChannelDetailsHeaderComponent channel={channel} />
       <StreamBottomSheetModalFlatList
         data={items}
         renderItem={renderChannelActionItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={styles.contentContainer}
+        {...additionalFlatListProps}
       />
     </>
   );
