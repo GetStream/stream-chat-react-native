@@ -21,6 +21,7 @@ type OverlaySharedValueController = {
   resetCloseCorrectionY: () => void;
   reset: () => void;
   setBottomH: (rect: Rect) => void;
+  setComposerH: (height: number) => void;
   setMessageH: (rect: Rect) => void;
   setTopH: (rect: Rect) => void;
 };
@@ -46,6 +47,10 @@ export const setOverlayTopH = (topH: Rect) => {
 
 export const setOverlayBottomH = (bottomH: Rect) => {
   sharedValueController?.setBottomH(bottomH);
+};
+
+export const setOverlayComposerH = (height: number) => {
+  sharedValueController?.setComposerH(height);
 };
 
 export const bumpOverlayLayoutRevision = (closeCorrectionDeltaY = 0) => {

@@ -28,6 +28,7 @@ export const MessageOverlayHostLayer = () => {
   const messageH = useSharedValue<Rect>(undefined);
   const topH = useSharedValue<Rect>(undefined);
   const bottomH = useSharedValue<Rect>(undefined);
+  const composerH = useSharedValue(0);
   const closeCorrectionY = useSharedValue(0);
 
   const topInset = insets.top;
@@ -44,6 +45,7 @@ export const MessageOverlayHostLayer = () => {
   const maxY = screenH - bottomInset - padding;
 
   const backdrop = useSharedValue(0);
+  const closeCoverOpacity = useSharedValue(0);
 
   useEffect(
     () =>
@@ -63,6 +65,9 @@ export const MessageOverlayHostLayer = () => {
         setBottomH: (rect) => {
           bottomH.value = rect;
         },
+        setComposerH: (height) => {
+          composerH.value = height;
+        },
         setMessageH: (rect) => {
           messageH.value = rect;
         },
@@ -70,7 +75,7 @@ export const MessageOverlayHostLayer = () => {
           topH.value = rect;
         },
       }),
-    [bottomH, closeCorrectionY, messageH, topH],
+    [bottomH, closeCorrectionY, composerH, messageH, topH],
   );
 
   useEffect(() => {
@@ -80,10 +85,17 @@ export const MessageOverlayHostLayer = () => {
         runOnJS(finalizeCloseOverlay)();
       }
     });
-  }, [isActive, closing, backdrop]);
+    closeCoverOpacity.value = withSpring(closing ? 1 : 0, { duration: DURATION });
+  }, [isActive, closing, backdrop, closeCoverOpacity]);
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdrop.value,
+  }));
+  const closeCoverStyle = useAnimatedStyle(() => ({
+    opacity: closeCoverOpacity.value,
+  }));
+  const composerSlotStyle = useAnimatedStyle(() => ({
+    height: composerH.value,
   }));
 
   const messageShiftY = useDerivedValue(() => {
@@ -246,12 +258,39 @@ export const MessageOverlayHostLayer = () => {
             <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
         </View>
+
+        <Animated.View pointerEvents='box-none' style={[styles.overlayHeaderSlot, closeCoverStyle]}>
+          <PortalHost name='overlay-header' style={StyleSheet.absoluteFillObject} />
+        </Animated.View>
+
+        <Animated.View
+          pointerEvents='box-none'
+          style={[styles.overlayComposerSlot, closeCoverStyle, composerSlotStyle]}
+        >
+          <PortalHost name='overlay-composer' style={StyleSheet.absoluteFillObject} />
+        </Animated.View>
       </View>
     </GestureDetector>
   );
 };
 
 const styles = StyleSheet.create({
+  overlayComposerSlot: {
+    bottom: 0,
+    elevation: 20,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    width: '100%',
+    zIndex: 20,
+  },
+  overlayHeaderSlot: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-start',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+  },
   shadow3: {
     overflow: 'visible',
     ...Platform.select({

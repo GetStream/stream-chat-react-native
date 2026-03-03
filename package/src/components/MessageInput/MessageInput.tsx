@@ -56,11 +56,13 @@ import {
 import { useAttachmentPickerState } from '../../hooks/useAttachmentPickerState';
 import { useKeyboardVisibility } from '../../hooks/useKeyboardVisibility';
 import { useStateStore } from '../../hooks/useStateStore';
+import { setOverlayComposerH } from '../../state-store';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
+import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
 const useStyles = () => {
@@ -356,116 +358,123 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     () => ({ micPositionX, micPositionY }),
     [micPositionX, micPositionY],
   );
-
   return (
     <MicPositionProvider value={micPositionContextValue}>
-      {/* TODO V9: Think of a better way to do this without so much re-layouting. */}
-      <Animated.View
-        layout={LinearTransition.duration(200)}
-        onLayout={({
-          nativeEvent: {
-            layout: { height: newHeight },
-          },
-        }) =>
-          messageInputHeightStore.setHeight(
-            messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
-          )
-        } // BOTTOM OFFSET is the position of the input from the bottom of the screen
-        style={
-          messageInputFloating
-            ? [styles.wrapper, styles.floatingWrapper, { bottom: BOTTOM_OFFSET }, floatingWrapper]
-            : [
-                styles.wrapper,
-                {
-                  borderTopWidth: 1,
-                  backgroundColor: semantics.composerBg,
-                  borderColor: semantics.borderCoreDefault,
-                  // paddingBottom: BOTTOM_OFFSET,
-                  paddingBottom:
-                    selectedPicker && !isKeyboardVisible
-                      ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
-                      : BOTTOM_OFFSET,
-                },
-                wrapper,
-              ]
-        }
-      >
-        {Input ? (
-          <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
-        ) : (
-          <View style={[styles.container, container]}>
-            <MessageComposerLeadingView />
-            <Animated.View
-              layout={LinearTransition.duration(200)}
-              style={[
-                styles.inputBoxWrapper,
-                messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
-                inputBoxWrapper,
-                isFocused ? focusedInputBoxContainer : null,
-              ]}
-            >
-              <View style={[styles.inputBoxContainer, inputBoxContainer]}>
-                {recordingStatus === 'stopped' ? (
-                  <AudioRecordingPreview />
-                ) : micLocked ? (
-                  <AudioRecordingInProgress />
-                ) : null}
-
-                <MessageInputHeaderView />
-
+      <Animated.View layout={LinearTransition.duration(200)}>
+        <PortalWhileClosingView
+          placeholderHeight={height}
+          portalHostName='overlay-composer'
+          portalName='message-input-composer'
+        >
+          <View
+            onLayout={({
+              nativeEvent: {
+                layout: { height: newHeight },
+              },
+            }) => {
+              setOverlayComposerH(newHeight);
+              messageInputHeightStore.setHeight(
+                messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
+              );
+            }}
+            style={
+              messageInputFloating
+                ? [styles.wrapper, styles.floatingWrapper, { bottom: BOTTOM_OFFSET }, floatingWrapper]
+                : [
+                    styles.wrapper,
+                    {
+                      borderTopWidth: 1,
+                      backgroundColor: semantics.composerBg,
+                      borderColor: semantics.borderCoreDefault,
+                      // paddingBottom: BOTTOM_OFFSET,
+                      paddingBottom:
+                        selectedPicker && !isKeyboardVisible
+                          ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
+                          : BOTTOM_OFFSET,
+                    },
+                    wrapper,
+                  ]
+            }
+          >
+          {Input ? (
+            <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
+          ) : (
+              <View style={[styles.container, container]}>
+                <MessageComposerLeadingView />
                 <Animated.View
-                  style={[styles.inputContainer, inputContainer]}
                   layout={LinearTransition.duration(200)}
+                  style={[
+                    styles.inputBoxWrapper,
+                    messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
+                    inputBoxWrapper,
+                    isFocused ? focusedInputBoxContainer : null,
+                  ]}
                 >
-                  {!isRecordingStateIdle ? (
-                    <AudioRecorder slideToCancelStyle={slideToCancelAnimatedStyle} />
-                  ) : (
-                    <>
-                      <MessageInputLeadingView />
+                  <View style={[styles.inputBoxContainer, inputBoxContainer]}>
+                    {recordingStatus === 'stopped' ? (
+                      <AudioRecordingPreview />
+                    ) : micLocked ? (
+                      <AudioRecordingInProgress />
+                    ) : null}
 
-                      <Animated.View
-                        style={styles.autocompleteInputContainer}
-                        layout={LinearTransition.duration(200)}
-                      >
-                        <AutoCompleteInput
-                          TextInputComponent={TextInputComponent}
-                          {...additionalTextInputProps}
-                        />
-                      </Animated.View>
-                    </>
-                  )}
+                    <MessageInputHeaderView />
 
-                  <MessageInputTrailingView />
+                    <Animated.View
+                      style={[styles.inputContainer, inputContainer]}
+                      layout={LinearTransition.duration(200)}
+                    >
+                      {!isRecordingStateIdle ? (
+                        <AudioRecorder slideToCancelStyle={slideToCancelAnimatedStyle} />
+                      ) : (
+                        <>
+                          <MessageInputLeadingView />
+
+                          <Animated.View
+                            style={styles.autocompleteInputContainer}
+                            layout={LinearTransition.duration(200)}
+                          >
+                            <AutoCompleteInput
+                              TextInputComponent={TextInputComponent}
+                              {...additionalTextInputProps}
+                            />
+                          </Animated.View>
+                        </>
+                      )}
+
+                      <MessageInputTrailingView />
+                    </Animated.View>
+                  </View>
                 </Animated.View>
               </View>
-            </Animated.View>
+            )}
+            <ShowThreadMessageInChannelButton threadList={threadList} />
+            {!isRecordingStateIdle ? (
+              <View
+                style={[
+                  styles.audioLockIndicatorWrapper,
+                  {
+                    bottom: messageInputFloating ? 0 : 16,
+                  },
+                ]}
+              >
+                <AudioRecordingLockIndicator
+                  messageInputHeight={height}
+                  micLocked={micLocked}
+                  style={lockIndicatorAnimatedStyle}
+                />
+              </View>
+            ) : (
+              <MessageComposerTrailingView />
+            )}
+
+            <View
+              style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
+            >
+              <AutoCompleteSuggestionList />
+            </View>
           </View>
-        )}
-        <ShowThreadMessageInChannelButton threadList={threadList} />
+        </PortalWhileClosingView>
       </Animated.View>
-
-      {!isRecordingStateIdle ? (
-        <View
-          style={[
-            styles.audioLockIndicatorWrapper,
-            {
-              bottom: messageInputFloating ? 0 : 16,
-            },
-          ]}
-        >
-          <AudioRecordingLockIndicator
-            messageInputHeight={height}
-            micLocked={micLocked}
-            style={lockIndicatorAnimatedStyle}
-          />
-        </View>
-      ) : (
-        <MessageComposerTrailingView />
-      )}
-
-      <View style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}>
-        <AutoCompleteSuggestionList />
-      </View>
 
       {showPollCreationDialog ? (
         <View style={styles.pollModalWrapper}>
