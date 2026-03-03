@@ -21,6 +21,7 @@ import type { ChannelSort } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
 import { Search } from '../icons/Search';
 import { ChannelInfo } from '../icons/ChannelInfo.tsx';
+import { CircleClose } from '../icons/CircleClose.tsx';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -248,7 +249,6 @@ export const ChannelListScreen: React.FC = () => {
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <ChannelList
               additionalFlatListProps={additionalFlatListProps}
-              get
               filters={filters}
               HeaderNetworkDownIndicator={HeaderNetworkDownIndicator}
               maxUnreadCount={99}

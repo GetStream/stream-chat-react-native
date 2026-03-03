@@ -23,6 +23,7 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 import { Archive } from '../icons/Archive';
 import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pin } from '../icons/Pin.tsx';
 
 dayjs.extend(relativeTime);
 
