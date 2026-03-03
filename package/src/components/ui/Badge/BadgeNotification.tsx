@@ -5,7 +5,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
 
 export type BadgeNotificationProps = {
-  type: 'primary' | 'error' | 'neutral';
+  type?: 'primary' | 'error' | 'neutral';
   count: number;
   size: 'sm' | 'xs';
   testID?: string;
@@ -36,7 +36,7 @@ const textStyles = {
 };
 
 export const BadgeNotification = (props: BadgeNotificationProps) => {
-  const { type, count, size = 'sm', testID } = props;
+  const { type = 'primary', count, size = 'sm', testID } = props;
   const styles = useStyles();
   const {
     theme: { semantics },

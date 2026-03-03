@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { DraftMessage, LocalMessage, MessageResponse } from 'stream-chat';
-
+import { ChannelMessagePreview } from './ChannelMessagePreview';
+import { ChannelMessagePreviewDeliveryStatus } from './ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewProps } from './ChannelPreview';
 
 import { ChannelTypingIndicatorPreview } from './ChannelTypingIndicatorPreview';
@@ -20,8 +20,6 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { NewPoll } from '../../icons/NewPoll';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
-import { MessagePreview } from '../MessagePreview/MessagePreview';
-import { MessagePreviewUserDetails } from '../MessagePreview/MessagePreviewUserDetails';
 import { ErrorBadge } from '../ui';
 
 export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> & {
@@ -53,25 +51,6 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const isFailedMessage =
     lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
 
-  const textStyle = useMemo(() => {
-    return [styles.subtitle];
-  }, [styles.subtitle]);
-
-  const iconProps = useMemo(() => {
-    return {
-      width: 16,
-      height: 16,
-      stroke: isMessageDeleted ? semantics.textTertiary : semantics.textSecondary,
-    };
-  }, [isMessageDeleted, semantics.textTertiary, semantics.textSecondary]);
-
-  const renderMessagePreview = useCallback(
-    (message: LocalMessage | MessageResponse | DraftMessage) => {
-      return <MessagePreview message={message} textStyle={textStyle} iconProps={iconProps} />;
-    },
-    [textStyle, iconProps],
-  );
-
   if (usersTyping.length > 0) {
     return <ChannelTypingIndicatorPreview channel={channel} usersTyping={usersTyping} />;
   }
@@ -80,7 +59,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     return (
       <View style={styles.container}>
         <Text style={styles.draftText}>{t('Draft')}:</Text>
-        {renderMessagePreview(draftMessage)}
+        <ChannelMessagePreview message={draftMessage} />
       </View>
     );
   }
@@ -115,15 +94,15 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (channel.data?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
-        <MessagePreviewUserDetails channel={channel} message={lastMessage} />
-        {renderMessagePreview(lastMessage)}
+        <ChannelMessagePreviewDeliveryStatus channel={channel} message={lastMessage} />
+        <ChannelMessagePreview message={lastMessage} />
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
-        <MessagePreviewUserDetails channel={channel} message={lastMessage} />
-        {renderMessagePreview(lastMessage)}
+        <ChannelMessagePreviewDeliveryStatus channel={channel} message={lastMessage} />
+        <ChannelMessagePreview message={lastMessage} />
       </View>
     );
   }

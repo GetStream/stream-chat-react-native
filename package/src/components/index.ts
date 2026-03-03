@@ -55,7 +55,7 @@ export * from './ChannelPreview/hooks/useChannelPreviewDisplayName';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayPresence';
 export * from './ChannelPreview/hooks/useChannelPreviewData';
 export * from './ChannelPreview/hooks/useIsChannelMuted';
-export * from './ChannelPreview/hooks/useMessageDeliveryStatus';
+export * from './ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 
 export * from './Chat/Chat';
 export * from './Chat/hooks/useCreateChatClient';
@@ -167,8 +167,6 @@ export * from './MessageMenu/MessageUserReactions';
 export * from './MessageMenu/MessageUserReactionsAvatar';
 export * from './MessageMenu/MessageReactionPicker';
 export * from './MessageMenu/hooks/useFetchReactions';
-
-export * from './MessagePreview/MessagePreview';
 
 export * from './ProgressControl/ProgressControl';
 export * from './ProgressControl/WaveProgressBar';
