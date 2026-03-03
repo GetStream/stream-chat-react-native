@@ -3,7 +3,6 @@ import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
-  Group,
   MessageInput,
   MessageList,
   User,
@@ -23,6 +22,7 @@ import type { Channel as StreamChatChannel } from 'stream-chat';
 
 import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import type { StackNavigatorParamList } from '../types';
+import { Group } from '../icons/Group';
 
 const styles = StyleSheet.create({
   container: {

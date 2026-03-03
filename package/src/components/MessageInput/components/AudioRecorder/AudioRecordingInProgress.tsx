@@ -9,7 +9,7 @@ import {
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { NewMic } from '../../../../icons/NewMic';
+import { Mic } from '../../../../icons/Mic';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
 
@@ -42,7 +42,7 @@ const AudioRecordingInProgressWithContext = (props: AudioRecordingInProgressProp
     <View style={[styles.container, container]}>
       {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
       <View style={styles.micContainer}>
-        <NewMic height={20} width={20} stroke={semantics.accentError} />
+        <Mic height={20} width={20} stroke={semantics.accentError} />
         <Text style={[styles.durationText, durationText]}>
           {duration ? dayjs.duration(duration).format('mm:ss') : null}
         </Text>

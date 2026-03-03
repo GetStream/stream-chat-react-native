@@ -13,7 +13,7 @@ import { useMessageInputContext } from '../../../../contexts/messageInputContext
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../../hooks/useViewport';
-import { NewPlus } from '../../../../icons/NewPlus';
+import { Plus } from '../../../../icons/Plus';
 import { NativeHandlers } from '../../../../native';
 import { primitives } from '../../../../theme';
 import type { File } from '../../../../types/types';
@@ -164,7 +164,7 @@ const AttachmentIosLimited = () => {
       ]}
       onPress={NativeHandlers.iOS14RefreshGallerySelection}
     >
-      <NewPlus width={20} height={20} stroke={styles.iosLimitedIcon.color} strokeWidth={1.5} />
+      <Plus width={20} height={20} stroke={styles.iosLimitedIcon.color} strokeWidth={1.5} />
       <Text style={styles.iosLimitedText}>Add more</Text>
     </BottomSheetTouchableOpacity>
   );

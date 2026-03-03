@@ -15,7 +15,7 @@ import {
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
-import { NewPlus } from '../../icons/NewPlus';
+import { Plus } from '../../icons/Plus';
 import { NativeHandlers } from '../../native';
 import { scheduleActionOnClose } from '../../state-store';
 
@@ -117,7 +117,7 @@ export const EmojiViewerButton = ({
           type='outline'
           size='sm'
           iconOnly
-          LeadingIcon={NewPlus}
+          LeadingIcon={Plus}
           onPress={onOpenEmojiViewer}
           testID='more-reactions-button'
         />

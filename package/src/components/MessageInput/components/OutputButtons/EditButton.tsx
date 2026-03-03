@@ -4,7 +4,7 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { NewTick } from '../../../../icons/NewTick';
+import { Tick } from '../../../../icons/Tick';
 import { Button } from '../../../ui';
 
 export type EditButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {
@@ -28,7 +28,7 @@ export const EditButton = (props: EditButtonProps) => {
     <Button
       variant='primary'
       type='solid'
-      LeadingIcon={NewTick}
+      LeadingIcon={Tick}
       iconOnly
       onPress={onPressHandler}
       size='sm'

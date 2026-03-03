@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Check, IconProps } from '../../../icons';
-import { NewCross } from '../../../icons/NewCross';
+import { Cross } from '../../../icons/Cross';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 import { useCanCreatePoll } from '../hooks/useCanCreatePoll';
@@ -54,7 +54,7 @@ export const CreatePollHeader = ({
         variant='secondary'
         onPress={onBackPressHandler}
         type='solid'
-        LeadingIcon={NewCross}
+        LeadingIcon={Cross}
         iconOnly
       />
 

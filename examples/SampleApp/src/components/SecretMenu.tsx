@@ -14,11 +14,13 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import { Close, Edit, Notification, Delete, Folder, ZIP, useTheme } from 'stream-chat-react-native';
+import { Close, Edit, Delete, ZIP, useTheme } from 'stream-chat-react-native';
 import { styles as menuDrawerStyles } from './MenuDrawer.tsx';
 import AsyncStore from '../utils/AsyncStore.ts';
 import { StreamChat } from 'stream-chat';
 import { LabeledTextInput } from '../screens/AdvancedUserSelectorScreen.tsx';
+import { Notification } from '../icons/Notification.tsx';
+import { Folder } from '../icons/Folder.tsx';
 
 const isAndroid = Platform.OS === 'android';
 

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-import { View } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 
 import {
   MessageContextValue,
@@ -12,7 +12,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useMessageReminder } from '../../../hooks/useMessageReminder';
 
-type MessageHeaderPropsWithContext = Pick<MessageContextValue, 'message'> &
+type MessageHeaderPropsWithContext = Pick<MessageContextValue, 'alignment' | 'message'> &
   Pick<
     MessagesContextValue,
     | 'MessagePinnedHeader'
@@ -28,6 +28,7 @@ type MessageHeaderPropsWithContext = Pick<MessageContextValue, 'message'> &
 
 const MessageHeaderWithContext = (props: MessageHeaderPropsWithContext) => {
   const {
+    alignment,
     message,
     MessagePinnedHeader,
     shouldShowSavedForLaterHeader,
@@ -39,8 +40,14 @@ const MessageHeaderWithContext = (props: MessageHeaderPropsWithContext) => {
     SentToChannelHeader,
   } = props;
 
+  const containerStyle: ViewStyle = useMemo(() => {
+    return {
+      alignItems: alignment === 'left' ? 'flex-start' : 'flex-end',
+    };
+  }, [alignment]);
+
   return (
-    <View>
+    <View style={containerStyle}>
       {shouldShowReminderHeader && <MessageReminderHeader />}
       {shouldShowSavedForLaterHeader && <MessageSavedForLaterHeader />}
       {shouldShowPinnedHeader && <MessagePinnedHeader message={message} />}
@@ -54,17 +61,24 @@ const areEqual = (
   nextProps: MessageHeaderPropsWithContext,
 ) => {
   const {
+    alignment: prevAlignment,
     shouldShowSavedForLaterHeader: prevShouldShowSavedForLaterHeader,
     shouldShowPinnedHeader: prevShouldShowPinnedHeader,
     shouldShowReminderHeader: prevShouldShowReminderHeader,
     shouldShowSentToChannelHeader: prevShouldShowSentToChannelHeader,
   } = prevProps;
   const {
+    alignment: nextAlignment,
     shouldShowSavedForLaterHeader: nextShouldShowSavedForLaterHeader,
     shouldShowPinnedHeader: nextShouldShowPinnedHeader,
     shouldShowReminderHeader: nextShouldShowReminderHeader,
     shouldShowSentToChannelHeader: nextShouldShowSentToChannelHeader,
   } = nextProps;
+
+  const alignmentEqual = prevAlignment === nextAlignment;
+  if (!alignmentEqual) {
+    return false;
+  }
 
   const shouldShowSavedForLaterHeaderEqual =
     prevShouldShowSavedForLaterHeader === nextShouldShowSavedForLaterHeader;
@@ -100,7 +114,7 @@ const MemoizedMessageHeader = React.memo(
 export type MessageHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
 
 export const MessageHeader = (props: MessageHeaderProps) => {
-  const { message } = useMessageContext();
+  const { alignment, message } = useMessageContext();
   const {
     MessagePinnedHeader,
     MessageReminderHeader,
@@ -125,6 +139,7 @@ export const MessageHeader = (props: MessageHeaderProps) => {
 
   return (
     <MemoizedMessageHeader
+      alignment={alignment}
       message={message}
       MessagePinnedHeader={MessagePinnedHeader}
       shouldShowSavedForLaterHeader={shouldShowSavedForLaterHeader}

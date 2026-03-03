@@ -19,7 +19,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../../hooks';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { NewMic } from '../../../../icons/NewMic';
+import { Mic } from '../../../../icons/Mic';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
@@ -239,7 +239,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   return (
     <GestureDetector gesture={Gesture.Simultaneous(panGesture, tapGesture)}>
       <Animated.View style={[styles.container, animatedStyle, micButtonContainer]}>
-        <NewMic height={20} width={20} strokeWidth={1.5} stroke={buttonStyles.foregroundColor} />
+        <Mic height={20} width={20} strokeWidth={1.5} stroke={buttonStyles.foregroundColor} />
       </Animated.View>
     </GestureDetector>
   );

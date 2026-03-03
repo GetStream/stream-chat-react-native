@@ -4,14 +4,13 @@ import { StyleSheet, View } from 'react-native';
 import { CommandVariants } from 'stream-chat';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
+import { Flag, GiphyIcon, Mute, Sound, UserAdd, UserDelete } from '../../icons';
+import { Imgur } from '../../icons/Imgur';
+import { Lightning } from '../../icons/Lightning';
 
 export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
-    theme: {
-      semantics,
-      colors: { white },
-    },
+    theme: { semantics },
   } = useTheme();
 
   if (name === 'ban') {
@@ -29,7 +28,7 @@ export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   } else if (name === 'unmute') {
     return <Sound height={20} stroke={semantics.textSecondary} width={20} />;
   } else {
-    return <Lightning fill={white} size={16} />;
+    return <Lightning fill={semantics.textSecondary} height={16} width={16} />;
   }
 };
 

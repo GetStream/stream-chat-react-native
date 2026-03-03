@@ -55,36 +55,18 @@ export const MessageBubble = React.memo(
     MessageError,
     message,
   }: MessageBubbleProps) => {
-    const {
-      theme: {
-        messageSimple: {
-          bubble: { contentContainer, errorContainer, reactionListTopContainer, wrapper },
-        },
-      },
-    } = useTheme();
+    const styles = useStyles({ alignment });
     const isMessageErrorType =
       message?.type === 'error' || message?.status === MessageStatusTypes.FAILED;
 
     return (
-      <View style={[styles.wrapper, wrapper]}>
+      <View style={styles.wrapper}>
         {reactionListPosition === 'top' && ReactionListTop ? (
-          <View
-            style={[
-              styles.reactionListTopContainer,
-              reactionListTopContainer,
-              { alignSelf: alignment === 'left' ? 'flex-end' : 'flex-start' },
-            ]}
-          >
+          <View style={styles.reactionListTopContainer}>
             <ReactionListTop type={reactionListType} />
           </View>
         ) : null}
-        <View
-          style={[
-            styles.contentContainer,
-            { alignSelf: alignment === 'left' ? 'flex-start' : 'flex-end' },
-            contentContainer,
-          ]}
-        >
+        <View style={styles.contentContainer}>
           <MessageContent
             backgroundColor={backgroundColor}
             isVeryLastMessage={isVeryLastMessage}
@@ -94,7 +76,7 @@ export const MessageBubble = React.memo(
           />
 
           {isMessageErrorType ? (
-            <View style={[styles.errorContainer, errorContainer]}>
+            <View style={styles.errorContainer}>
               <MessageError />
             </View>
           ) : null}
@@ -118,11 +100,7 @@ export const SwipableMessageBubble = React.memo(
     const { MessageSwipeContent, messageSwipeToReplyHitSlop, onSwipe, ...messageBubbleProps } =
       props;
 
-    const {
-      theme: {
-        messageSimple: { contentWrapper, swipeContentContainer },
-      },
-    } = useTheme();
+    const styles = useStyles({ alignment: props.alignment });
 
     const translateX = useSharedValue(0);
     const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
@@ -218,20 +196,13 @@ export const SwipableMessageBubble = React.memo(
           hitSlop={messageSwipeToReplyHitSlop}
           style={[
             styles.contentWrapper,
-            contentWrapper,
             props.messageContentWidth > 0 && shouldRenderAnimatedWrapper
               ? { width: props.messageContentWidth }
               : {},
           ]}
         >
           {shouldRenderAnimatedWrapper ? (
-            <AnimatedWrapper
-              style={[
-                styles.swipeContentContainer,
-                swipeContentAnimatedStyle,
-                swipeContentContainer,
-              ]}
-            >
+            <AnimatedWrapper style={[styles.swipeContentContainer, swipeContentAnimatedStyle]}>
               {MessageSwipeContent ? <MessageSwipeContent /> : null}
             </AnimatedWrapper>
           ) : null}
@@ -242,25 +213,52 @@ export const SwipableMessageBubble = React.memo(
   },
 );
 
-const styles = StyleSheet.create({
-  contentWrapper: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    zIndex: 1, // To hide the stick inside the message content
-  },
-  contentContainer: {
-    alignSelf: 'flex-start',
-  },
-  swipeContentContainer: {
-    flexShrink: 0,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  errorContainer: {
-    position: 'absolute',
-    top: 8,
-    right: -12,
-  },
-  reactionListTopContainer: {},
-  wrapper: {},
-});
+const useStyles = ({ alignment }: { alignment?: 'left' | 'right' }) => {
+  const {
+    theme: {
+      messageSimple: {
+        bubble: { contentContainer, errorContainer, reactionListTopContainer, wrapper },
+        contentWrapper,
+        swipeContentContainer,
+      },
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      contentWrapper: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        zIndex: 1, // To hide the stick inside the message content
+        ...contentWrapper,
+      },
+      contentContainer: {
+        alignSelf: alignment === 'left' ? 'flex-start' : 'flex-end',
+        ...contentContainer,
+      },
+      swipeContentContainer: {
+        ...swipeContentContainer,
+      },
+      errorContainer: {
+        position: 'absolute',
+        top: 8,
+        right: -12,
+        ...errorContainer,
+      },
+      reactionListTopContainer: {
+        alignSelf: alignment === 'left' ? 'flex-end' : 'flex-start',
+        ...reactionListTopContainer,
+      },
+      wrapper: {
+        ...wrapper,
+      },
+    });
+  }, [
+    alignment,
+    contentContainer,
+    contentWrapper,
+    errorContainer,
+    reactionListTopContainer,
+    swipeContentContainer,
+    wrapper,
+  ]);
+};
