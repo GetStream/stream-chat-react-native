@@ -166,16 +166,4 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: 0,
   },
-  actionLabel: {
-    color: 'white',
-    fontSize: 12,
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  destructiveAction: {
-    backgroundColor: '#ef4444',
-  },
-  standardAction: {
-    backgroundColor: '#64748b',
-  },
 });
