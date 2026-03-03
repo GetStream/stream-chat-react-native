@@ -29,8 +29,17 @@ import { generateChannel, generateChannelResponse } from '../../../mock-builders
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { ChannelPreview } from '../../ChannelPreview/ChannelPreview';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
+
+const mockChannelSwipableWrapper = jest.fn(({ children }) => (
+  <View testID='swipe-wrapper'>{children}</View>
+));
+
+jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
+  ChannelSwipableWrapper: (...args) => mockChannelSwipableWrapper(...args),
+}));
 
 /**
  * We are gonna use following custom UI components for preview and list.
@@ -64,6 +73,19 @@ const ChannelListComponent = (props) => {
 const ChannelListSwipeActionsProbe = () => {
   const { swipeActionsEnabled } = useChannelsContext();
   return <Text testID='swipe-actions-enabled'>{`${swipeActionsEnabled}`}</Text>;
+};
+
+const ChannelPreviewContent = ({ unread }) => <Text testID='preview-unread'>{`${unread}`}</Text>;
+
+const ChannelListWithChannelPreview = () => {
+  const { channels } = useChannelsContext();
+  return (
+    <View testID='channel-list-with-channel-preview'>
+      {channels?.map((channel) => (
+        <ChannelPreview channel={channel} key={channel.id} Preview={ChannelPreviewContent} />
+      ))}
+    </View>
+  );
 };
 
 let expectedChannelDetailsBottomSheetOverride;
@@ -262,6 +284,35 @@ describe('ChannelList', () => {
     expect(getByTestId('swipe-actions-enabled')).toHaveTextContent('true');
   });
 
+  it('should not render ChannelSwipableWrapper when swipeActionsEnabled is false', async () => {
+    useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+    const { getByTestId, queryByTestId } = render(
+      <Chat client={chatClient}>
+        <ChannelList {...props} List={ChannelListWithChannelPreview} swipeActionsEnabled={false} />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(getByTestId('channel-list-with-channel-preview')).toBeTruthy());
+    expect(getByTestId('preview-unread')).toHaveTextContent('0');
+    expect(queryByTestId('swipe-wrapper')).toBeNull();
+    expect(mockChannelSwipableWrapper).not.toHaveBeenCalled();
+  });
+
+  it('should render ChannelSwipableWrapper when swipeActionsEnabled is true', async () => {
+    useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <ChannelList {...props} List={ChannelListWithChannelPreview} swipeActionsEnabled={true} />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(getByTestId('channel-list-with-channel-preview')).toBeTruthy());
+    expect(getByTestId('swipe-wrapper')).toBeTruthy();
+    expect(mockChannelSwipableWrapper).toHaveBeenCalledTimes(1);
+  });
+
   it('should expose ChannelDetailsBottomSheet override in ChannelsContext', async () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
     const ChannelDetailsBottomSheetOverride = () => null;
@@ -279,6 +330,29 @@ describe('ChannelList', () => {
 
     await waitFor(() => expect(getByTestId('channel-details-bottom-sheet-override')).toBeTruthy());
     expect(getByTestId('channel-details-bottom-sheet-override')).toHaveTextContent('true');
+  });
+
+  it('should pass ChannelDetailsBottomSheet override to ChannelSwipableWrapper', async () => {
+    useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+    const ChannelDetailsBottomSheetOverride = () => null;
+
+    render(
+      <Chat client={chatClient}>
+        <ChannelList
+          {...props}
+          ChannelDetailsBottomSheet={ChannelDetailsBottomSheetOverride}
+          List={ChannelListWithChannelPreview}
+        />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(mockChannelSwipableWrapper).toHaveBeenCalled());
+    const swipableWrapperProps = mockChannelSwipableWrapper.mock.calls[0]?.[0];
+    expect(swipableWrapperProps).toEqual(
+      expect.objectContaining({
+        ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
+      }),
+    );
   });
 
   describe('Event handling', () => {
