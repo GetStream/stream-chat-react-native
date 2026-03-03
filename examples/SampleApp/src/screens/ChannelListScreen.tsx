@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import { ChannelList, useTheme } from 'stream-chat-react-native';
+import { ChannelList, useTheme, useStableCallback, ChannelActionItem } from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -20,8 +20,6 @@ import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessa
 import type { ChannelSort } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
 import { Search } from '../icons/Search';
-import { useStableCallback } from 'stream-chat-react-native-core';
-import { ChannelActionItem } from 'stream-chat-react-native-core/src';
 import { ChannelInfo } from '../icons/ChannelInfo.tsx';
 
 const styles = StyleSheet.create({

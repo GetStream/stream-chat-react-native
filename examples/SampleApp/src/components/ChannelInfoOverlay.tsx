@@ -14,6 +14,7 @@ import {
   useViewport,
   UserAvatar,
   BottomSheetModal,
+  useStableCallback,
 } from 'stream-chat-react-native';
 import { ChannelMemberResponse } from 'stream-chat';
 
@@ -22,7 +23,6 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 import { Archive } from '../icons/Archive';
 import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useStableCallback } from 'stream-chat-react-native-core';
 
 dayjs.extend(relativeTime);
 
