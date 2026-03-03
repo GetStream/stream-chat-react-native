@@ -23,7 +23,6 @@ import {
 } from '../../state-store';
 
 const DURATION = 300;
-
 export const MessageOverlayHostLayer = () => {
   const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
@@ -89,17 +88,40 @@ export const MessageOverlayHostLayer = () => {
     opacity: backdrop.value,
   }));
 
-  const shiftY = useDerivedValue(() => {
+  const messageShiftY = useDerivedValue(() => {
     if (!messageH.value || !topH.value || !bottomH.value) return 0;
 
     const anchorY = messageH.value.y;
     const msgH = messageH.value.h;
-
     const minTop = minY + topH.value.h;
-    const maxTop = maxY - (msgH + bottomH.value.h);
+    const maxTopWithBottom = maxY - (msgH + bottomH.value.h);
+    const maxTopWithoutBottom = maxY - msgH;
+    const maxTop = minTop <= maxTopWithBottom ? maxTopWithBottom : maxTopWithoutBottom;
+    const solvedTop = clamp(anchorY, minTop, Math.max(minTop, maxTop));
 
-    const solvedTop = clamp(anchorY, minTop, maxTop);
     return solvedTop - anchorY;
+  });
+
+  const bottomShiftY = useDerivedValue(() => {
+    if (!messageH.value || !topH.value || !bottomH.value) return 0;
+
+    const anchorMessageTop = messageH.value.y;
+    const msgH = messageH.value.h;
+    const minMessageTop = minY + topH.value.h;
+    const maxMessageTopWithBottom = maxY - (msgH + bottomH.value.h);
+    const maxMessageTopWithoutBottom = maxY - msgH;
+    const maxMessageTop =
+      minMessageTop <= maxMessageTopWithBottom
+        ? maxMessageTopWithBottom
+        : maxMessageTopWithoutBottom;
+    const solvedMessageTop = clamp(
+      anchorMessageTop,
+      minMessageTop,
+      Math.max(minMessageTop, maxMessageTop),
+    );
+
+    const solvedBottomTop = Math.min(solvedMessageTop + msgH, maxY - bottomH.value.h);
+    return solvedBottomTop - bottomH.value.y;
   });
 
   const viewportH = useSharedValue(screenH);
@@ -171,7 +193,7 @@ export const MessageOverlayHostLayer = () => {
   });
 
   const topItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
     return {
       transform: [
         { scale: backdrop.value },
@@ -192,7 +214,7 @@ export const MessageOverlayHostLayer = () => {
   });
 
   const bottomItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : bottomShiftY.value) : 0;
     return {
       transform: [
         { scale: backdrop.value },
@@ -213,7 +235,7 @@ export const MessageOverlayHostLayer = () => {
   });
 
   const hostTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
 
     return {
       transform: [
@@ -236,14 +258,15 @@ export const MessageOverlayHostLayer = () => {
       const x = t.x;
       const y = t.y;
 
-      const yShift = shiftY.value; // overlay shift
+      const messageYShift = messageShiftY.value; // overlay shift for top + message
+      const bottomYShift = bottomShiftY.value; // overlay shift for bottom
       const yParent = scrollY.value; // parent content
 
       const top = topH.value;
       if (top) {
         // top rectangle's final screen Y
-        // base layout Y + overlay shift (shiftY) + parent scroll transform (scrollY)
-        const topY = top.y + yParent + yShift;
+        // base layout Y + overlay shift + parent scroll transform
+        const topY = top.y + yParent + messageYShift;
         if (x >= top.x && x <= top.x + top.w && y >= topY && y <= topY + top.h) {
           state.fail();
           return;
@@ -253,8 +276,8 @@ export const MessageOverlayHostLayer = () => {
       const bot = bottomH.value;
       if (bot) {
         // bottom rectangle's final screen Y
-        // base layout Y + overlay shift (shiftY) + parent scroll transform (scrollY)
-        const botY = bot.y + yParent + yShift;
+        // base layout Y + overlay shift + parent scroll transform
+        const botY = bot.y + yParent + bottomYShift;
         if (x >= bot.x && x <= bot.x + bot.w && y >= botY && y <= botY + bot.h) {
           state.fail();
           return;
