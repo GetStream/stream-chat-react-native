@@ -61,6 +61,11 @@ const ChannelListComponent = (props) => {
   );
 };
 
+const ChannelListSwipeActionsProbe = () => {
+  const { swipeActionsEnabled } = useChannelsContext();
+  return <Text testID='swipe-actions-enabled'>{`${swipeActionsEnabled}`}</Text>;
+};
+
 class DeferredPromise {
   constructor() {
     this.promise = new Promise((resolve, reject) => {
@@ -218,6 +223,32 @@ describe('ChannelList', () => {
     await waitFor(() => {
       expect(setActiveChannel).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('should expose swipeActionsEnabled=false in ChannelsContext when disabled', async () => {
+    useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <ChannelList {...props} List={ChannelListSwipeActionsProbe} swipeActionsEnabled={false} />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(getByTestId('swipe-actions-enabled')).toBeTruthy());
+    expect(getByTestId('swipe-actions-enabled')).toHaveTextContent('false');
+  });
+
+  it('should expose swipeActionsEnabled=true in ChannelsContext by default', async () => {
+    useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <ChannelList {...props} List={ChannelListSwipeActionsProbe} />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(getByTestId('swipe-actions-enabled')).toBeTruthy());
+    expect(getByTestId('swipe-actions-enabled')).toHaveTextContent('true');
   });
 
   describe('Event handling', () => {

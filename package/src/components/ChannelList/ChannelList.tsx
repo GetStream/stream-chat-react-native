@@ -53,6 +53,7 @@ export type ChannelListProps = Partial<
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
     | 'getChannelActionItems'
+    | 'swipeActionsEnabled'
     | 'loadMoreThreshold'
     | 'Skeleton'
     | 'maxUnreadCount'
@@ -290,6 +291,7 @@ export const ChannelList = (props: ChannelListProps) => {
     sort = DEFAULT_SORT,
     queryChannelsOverride,
     mutedStatusPosition = 'inlineTitle',
+    swipeActionsEnabled = true,
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -413,6 +415,7 @@ export const ChannelList = (props: ChannelListProps) => {
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    swipeActionsEnabled,
     refreshing,
     refreshList,
     reloadList,

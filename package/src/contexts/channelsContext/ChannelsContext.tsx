@@ -208,6 +208,7 @@ export type ChannelsContextValue = {
    */
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
   getChannelActionItems?: GetChannelActionItems;
+  swipeActionsEnabled?: boolean;
 
   mutedStatusPosition?: 'trailingBottom' | 'inlineTitle';
 };
