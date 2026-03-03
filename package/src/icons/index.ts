@@ -2,6 +2,7 @@ export * from './utils/base';
 
 export * from './ArrowRight';
 export * from './Audio';
+export * from './Archive';
 export * from './BlockUser';
 export * from './Camera';
 export * from './Check';
@@ -63,6 +64,7 @@ export * from './XLS';
 export * from './XLSX';
 export * from './ZIP';
 export * from './MessageBubbleEmpty';
+export * from './MenuPointHorizontal';
 export * from './Reload';
 export * from './PollThumbnail';
 export * from './UnreadIndicator';
