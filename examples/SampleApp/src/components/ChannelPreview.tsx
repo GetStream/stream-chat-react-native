@@ -9,7 +9,6 @@ import {
   ChannelPreviewStatus,
   ChannelPreviewStatusProps,
   Delete,
-  MenuPointHorizontal,
   Pin,
   useChannelMembershipState,
   useChatContext,
@@ -24,6 +23,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { StackNavigatorParamList } from '../types';
 import { ChannelState } from 'stream-chat';
+import { MenuPointHorizontal } from '../icons/MenuPointHorizontal';
 
 const styles = StyleSheet.create({
   leftSwipeableButton: {

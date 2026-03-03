@@ -4,9 +4,9 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { NewChevronLeft } from '../../../../icons/NewChevronTop';
-import { NewLock } from '../../../../icons/NewLock';
-import { NewUnlock } from '../../../../icons/NewUnlock';
+import { ChevronTop } from '../../../../icons/ChevronTop';
+import { Lock } from '../../../../icons/Lock';
+import { Unlock } from '../../../../icons/Unlock';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
 
@@ -64,12 +64,12 @@ export const AudioRecordingLockIndicator = ({
       style={[styles.container, style, { bottom: messageInputHeight }, container]}
     >
       {micLocked ? (
-        <NewLock stroke={semantics.accentPrimary} height={20} width={20} />
+        <Lock stroke={semantics.accentPrimary} height={20} width={20} />
       ) : (
-        <NewUnlock stroke={semantics.textPrimary} height={20} width={20} {...lockIcon} />
+        <Unlock stroke={semantics.textPrimary} height={20} width={20} {...lockIcon} />
       )}
       {!micLocked && (
-        <NewChevronLeft stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
+        <ChevronTop stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
       )}
     </Animated.View>
   );

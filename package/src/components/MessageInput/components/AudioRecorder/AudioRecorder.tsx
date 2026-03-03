@@ -14,11 +14,11 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
-import { NewChevronLeft } from '../../../../icons/NewChevronLeft';
-import { NewMic } from '../../../../icons/NewMic';
-import { NewStop } from '../../../../icons/NewStop';
-import { NewTick } from '../../../../icons/NewTick';
-import { NewTrash } from '../../../../icons/NewTrash';
+import { ChevronLeft } from '../../../../icons/ChevronLeft';
+import { Mic } from '../../../../icons/Mic';
+import { Stop } from '../../../../icons/Stop';
+import { Tick } from '../../../../icons/Tick';
+import { Trash } from '../../../../icons/Trash';
 import { IconProps } from '../../../../icons/utils/base';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
@@ -53,7 +53,7 @@ const StopRecording = ({
   };
 
   const StopIcon = useCallback(
-    (props: IconProps) => <NewStop {...props} fill={semantics.buttonDestructiveBg} />,
+    (props: IconProps) => <Stop {...props} fill={semantics.buttonDestructiveBg} />,
     [semantics.buttonDestructiveBg],
   );
 
@@ -86,7 +86,7 @@ const UploadRecording = ({
       variant='primary'
       type='solid'
       onPress={onUploadVoiceRecording}
-      LeadingIcon={NewTick}
+      LeadingIcon={Tick}
       iconOnly
       size='sm'
     />
@@ -109,7 +109,7 @@ const DeleteRecording = ({
       size='sm'
       iconOnly
       onPress={onDeleteVoiceRecording}
-      LeadingIcon={NewTrash}
+      LeadingIcon={Trash}
     />
   );
 };
@@ -165,7 +165,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
     return (
       <>
         <View style={[styles.micContainer, micContainer]} testID='recording-active-container'>
-          <NewMic height={20} width={20} stroke={semantics.accentError} {...micIcon} />
+          <Mic height={20} width={20} stroke={semantics.accentError} {...micIcon} />
           <Text style={[styles.durationLabel]}>
             {duration ? dayjs.duration(duration).format('mm:ss') : '00:00'}
           </Text>
@@ -176,12 +176,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
           <Text style={[styles.slideToCancel, { color: semantics.textPrimary }]}>
             {t('Slide to Cancel')}
           </Text>
-          <NewChevronLeft
-            stroke={semantics.textTertiary}
-            height={20}
-            width={20}
-            {...arrowLeftIcon}
-          />
+          <ChevronLeft stroke={semantics.textTertiary} height={20} width={20} {...arrowLeftIcon} />
         </Animated.View>
       </>
     );

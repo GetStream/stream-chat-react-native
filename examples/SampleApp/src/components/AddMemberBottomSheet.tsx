@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CircleClose, Search, useTheme } from 'stream-chat-react-native';
+import { Search, useTheme } from 'stream-chat-react-native';
 
 import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
 
@@ -20,6 +20,7 @@ import {
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 
 import type { UserResponse } from 'stream-chat';
+import { CircleClose } from '../icons/CircleClose';
 
 const styles = StyleSheet.create({
   container: {

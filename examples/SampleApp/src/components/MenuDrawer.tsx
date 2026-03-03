@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, Pressable, View } from 'react-native';
-import { Edit, Group, User, useTheme } from 'stream-chat-react-native';
+import { Edit, User, useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { SecretMenu } from './SecretMenu.tsx';
 
 import type { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Group } from '../icons/Group.tsx';
 
 export const styles = StyleSheet.create({
   avatar: {

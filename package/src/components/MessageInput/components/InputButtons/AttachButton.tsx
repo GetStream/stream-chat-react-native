@@ -10,7 +10,7 @@ import {
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStableCallback } from '../../../../hooks';
-import { NewPlus } from '../../../../icons/NewPlus';
+import { Plus } from '../../../../icons/Plus';
 import { Button } from '../../../ui/';
 
 type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttachButtonPress'> &
@@ -49,7 +49,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
       type='outline'
       size='lg'
       iconOnly
-      LeadingIcon={NewPlus}
+      LeadingIcon={Plus}
       onPress={onPressHandler}
       disabled={disabled}
       testID='attach-button'

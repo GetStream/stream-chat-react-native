@@ -433,7 +433,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <Pin fill={grey} />
+              <Pin height={24} width={24} stroke={grey} />
               <Text
                 style={[
                   styles.itemText,

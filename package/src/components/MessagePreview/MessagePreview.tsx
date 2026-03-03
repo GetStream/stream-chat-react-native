@@ -17,14 +17,14 @@ import { useTheme } from '../../contexts';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../hooks';
 import { CircleBan } from '../../icons/CircleBan';
-import { NewFile } from '../../icons/NewFile';
-import { NewLink } from '../../icons/NewLink';
-import { NewMapPin } from '../../icons/NewMapPin';
-import { NewMic } from '../../icons/NewMic';
-import { NewPhoto } from '../../icons/NewPhoto';
-import { NewPoll } from '../../icons/NewPoll';
-import { NewVideo } from '../../icons/NewVideo';
+import { File } from '../../icons/File';
+import { Link } from '../../icons/Link';
+import { MapPin } from '../../icons/MapPin';
+import { Mic } from '../../icons/Mic';
+import { PhotoIcon } from '../../icons/PhotoIcon';
+import { PollIcon } from '../../icons/PollIcon';
 import { IconProps } from '../../icons/utils/base';
+import { VideoIcon } from '../../icons/VideoIcon';
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 
@@ -188,7 +188,7 @@ const MessagePreviewIcon = React.memo(
 
     if (message.poll_id) {
       return (
-        <NewPoll
+        <PollIcon
           height={12}
           stroke={semantics.textPrimary}
           style={styles.iconStyle}
@@ -200,7 +200,7 @@ const MessagePreviewIcon = React.memo(
 
     if (message.shared_location) {
       return (
-        <NewMapPin
+        <MapPin
           height={12}
           stroke={semantics.textPrimary}
           style={styles.iconStyle}
@@ -212,7 +212,7 @@ const MessagePreviewIcon = React.memo(
 
     if (hasLink) {
       return (
-        <NewLink
+        <Link
           height={12}
           stroke={semantics.textPrimary}
           style={styles.iconStyle}
@@ -224,7 +224,7 @@ const MessagePreviewIcon = React.memo(
 
     if (onlyAudio || onlyVoiceRecordings) {
       return (
-        <NewMic
+        <Mic
           height={12}
           stroke={semantics.textPrimary}
           strokeWidth={1.2}
@@ -237,7 +237,7 @@ const MessagePreviewIcon = React.memo(
 
     if (onlyVideos) {
       return (
-        <NewVideo
+        <VideoIcon
           height={12}
           stroke={semantics.textPrimary}
           style={styles.iconStyle}
@@ -249,7 +249,7 @@ const MessagePreviewIcon = React.memo(
 
     if (onlyImages) {
       return (
-        <NewPhoto
+        <PhotoIcon
           height={12}
           stroke={semantics.textPrimary}
           style={styles.iconStyle}
@@ -261,7 +261,7 @@ const MessagePreviewIcon = React.memo(
 
     if (giphys?.length) {
       return (
-        <NewFile
+        <File
           height={12}
           stroke={semantics.textPrimary}
           style={styles.iconStyle}
@@ -273,7 +273,7 @@ const MessagePreviewIcon = React.memo(
 
     if (files?.length || images?.length || videos?.length || audios?.length) {
       return (
-        <NewFile
+        <File
           height={12}
           stroke={semantics.textPrimary}
           style={styles.iconStyle}

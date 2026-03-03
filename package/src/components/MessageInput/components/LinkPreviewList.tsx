@@ -10,7 +10,7 @@ import { LinkPreviewsManager } from 'stream-chat';
 import { AttachmentRemoveControl } from './AttachmentPreview/AttachmentRemoveControl';
 
 import { useChatContext, useMessageComposer, useTheme } from '../../../contexts';
-import { NewLink } from '../../../icons/NewLink';
+import { Link } from '../../../icons/Link';
 import { components, primitives } from '../../../theme';
 import { useLinkPreviews } from '../hooks/useLinkPreviews';
 
@@ -73,7 +73,7 @@ export const LinkPreviewCard = ({ linkPreview }: LinkPreviewProps) => {
           ) : null}
           {og_scrape_url ? (
             <View style={styles.linkContainer}>
-              <NewLink
+              <Link
                 height={styles.text.fontSize}
                 stroke={styles.text.color}
                 width={styles.text.fontSize}

@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { NewDown } from '../../icons/NewDown';
+import { Down } from '../../icons/Down';
 import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
 import { Button } from '../ui/Button';
@@ -44,7 +44,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
         <Button
           variant='secondary'
           type='outline'
-          LeadingIcon={NewDown}
+          LeadingIcon={Down}
           onPress={onPress}
           size='md'
           testID='scroll-to-bottom-button'

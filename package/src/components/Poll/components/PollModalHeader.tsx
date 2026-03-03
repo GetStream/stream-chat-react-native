@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { NewCross } from '../../../icons/NewCross';
+import { Cross } from '../../../icons/Cross';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 
@@ -29,7 +29,7 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
           type='solid'
           size='md'
           iconOnly
-          LeadingIcon={NewCross}
+          LeadingIcon={Cross}
           onPress={onPress}
           testID='poll-results-close-button'
         />
