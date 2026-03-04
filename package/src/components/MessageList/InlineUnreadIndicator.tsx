@@ -5,13 +5,20 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../theme';
 
-export const InlineUnreadIndicator = () => {
+export type InlineUnreadIndicatorProps = {
+  unreadCount?: number;
+};
+
+export const InlineUnreadIndicator = (props: InlineUnreadIndicatorProps) => {
+  const { unreadCount } = props;
   const styles = useStyles();
   const { t } = useTranslationContext();
 
   return (
     <View accessibilityLabel='Inline unread indicator' style={styles.container}>
-      <Text style={styles.text}>{t('Unread Messages')}</Text>
+      <Text style={styles.text}>
+        {unreadCount ? t('{{count}} new messages', { count: unreadCount }) : t('Unread Messages')}
+      </Text>
     </View>
   );
 };

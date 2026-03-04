@@ -53,6 +53,7 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
+import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
@@ -102,6 +103,10 @@ const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageRe
 
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
+});
+
+const channelUnreadStateStoreSelector = (state: ChannelUnreadStateStoreType) => ({
+  unread_messages: state.channelUnreadState?.unread_messages,
 });
 
 type MessageFlashListPropsWithContext = Pick<
@@ -315,6 +320,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const { height: messageInputHeight } = useStateStore(
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
+  );
+
+  const { unread_messages } = useStateStore(
+    channelUnreadStateStore.state,
+    channelUnreadStateStoreSelector,
   );
 
   const [hasMoved, setHasMoved] = useState(false);
@@ -1094,13 +1104,16 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         <ScrollToBottomButton
           onPress={goToNewMessages}
           showNotification={scrollToBottomButtonVisible}
-          unreadCount={threadList ? 0 : channel?.countUnread()}
+          unreadCount={threadList ? 0 : unread_messages}
         />
       </Animated.View>
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
         <View style={styles.unreadMessagesNotificationContainer}>
-          <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
+          <UnreadMessagesNotification
+            onCloseHandler={onUnreadNotificationClose}
+            unreadCount={unread_messages}
+          />
         </View>
       ) : null}
     </View>

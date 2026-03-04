@@ -200,5 +200,7 @@
   "Unmute Group": "Unmute Group",
   "{{memberCount}} members, {{onlineCount}} online_one": "{{memberCount}} member, {{onlineCount}} online",
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} members, {{onlineCount}} online",
-  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} members, {{onlineCount}} online"
+  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} members, {{onlineCount}} online",
+  "{{count}} unread": "{{count}} unread",
+  "{{count}} new messages": "{{count}} new messages"
 }

@@ -200,5 +200,7 @@
   "Unmute Group": "Remover grupo do modo silencioso",
   "{{memberCount}} members, {{onlineCount}} online_one": "{{memberCount}} membro, {{onlineCount}} online",
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} membros, {{onlineCount}} online",
-  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} membros, {{onlineCount}} online"
+  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} membros, {{onlineCount}} online",
+  "{{count}} unread": "{{count}} não lidas",
+  "{{count}} new messages": "{{count}} novas mensagens"
 }

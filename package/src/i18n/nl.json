@@ -200,5 +200,7 @@
   "Unmute Group": "Dempen van groep opheffen",
   "{{memberCount}} members, {{onlineCount}} online_one": "{{memberCount}} lid, {{onlineCount}} online",
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} leden, {{onlineCount}} online",
-  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} leden, {{onlineCount}} online"
+  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} leden, {{onlineCount}} online",
+  "{{count}} unread": "{{count}} ongelezen",
+  "{{count}} new messages": "{{count}} nieuwe berichten"
 }

@@ -136,7 +136,7 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
       )}
       {showUnreadUnderlay && (
         <View style={styles.unreadUnderlayContainer}>
-          <InlineUnreadIndicator />
+          <InlineUnreadIndicator unreadCount={unread_messages} />
         </View>
       )}
     </View>

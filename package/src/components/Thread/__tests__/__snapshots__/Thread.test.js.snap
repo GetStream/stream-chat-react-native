@@ -1035,12 +1035,9 @@ exports[`Thread should match thread snapshot 1`] = `
               >
                 <View
                   style={
-                    [
-                      {
-                        "paddingVertical": 8,
-                      },
-                      {},
-                    ]
+                    {
+                      "paddingVertical": 8,
+                    }
                   }
                 >
                   <View
@@ -1834,7 +1831,7 @@ exports[`Thread should match thread snapshot 1`] = `
             "left": 0,
             "position": "absolute",
             "right": 0,
-            "top": 8,
+            "top": 16,
           }
         }
       />

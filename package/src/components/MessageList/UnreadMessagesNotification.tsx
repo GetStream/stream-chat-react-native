@@ -18,10 +18,14 @@ export type UnreadMessagesNotificationProps = {
    * Callback to handle the press event
    */
   onPressHandler?: () => Promise<void>;
+  /**
+   * Unread count
+   */
+  unreadCount?: number;
 };
 
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
-  const { onCloseHandler, onPressHandler } = props;
+  const { onCloseHandler, onPressHandler, unreadCount } = props;
   const { t } = useTranslationContext();
   const {
     channelUnreadStateStore,
@@ -60,7 +64,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           variant='secondary'
           type='ghost'
           LeadingIcon={ArrowUp}
-          label={t('Unread Messages')}
+          label={unreadCount ? t('{{count}} unread', { count: unreadCount }) : t('Unread Messages')}
           onPress={handleOnPress}
           size='md'
         />
