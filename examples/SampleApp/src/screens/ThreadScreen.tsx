@@ -119,7 +119,27 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
 
   const onAlsoSentToChannelHeaderPress = useCallback(
     ({ targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
-      navigation.navigate('ChannelScreen', { channel, messageId: targetedMessageId });
+      const params: StackNavigatorParamList['ChannelScreen'] = {
+        channel,
+        messageId: targetedMessageId,
+      };
+      const hasChannelInStack = navigation
+        .getState()
+        .routes.some((route) => {
+          if (route.name !== 'ChannelScreen') {
+            return false;
+          }
+          const routeParams = route.params as StackNavigatorParamList['ChannelScreen'] | undefined;
+          const routeChannelId = routeParams?.channel?.id ?? routeParams?.channelId;
+          return routeChannelId === channel.id;
+        });
+
+      if (hasChannelInStack) {
+        navigation.popTo('ChannelScreen', params);
+        return;
+      }
+
+      navigation.navigate('ChannelScreen', params);
     },
     [channel, navigation],
   );

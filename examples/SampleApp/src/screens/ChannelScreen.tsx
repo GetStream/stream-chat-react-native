@@ -33,6 +33,7 @@ import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
 import { CustomAttachmentPickerContent } from '../components/AttachmentPickerContent.tsx';
+import { ThreadType } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
@@ -195,7 +196,29 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       }
       setSelectedThread(parentMessage);
       setThread(parentMessage);
-      navigation.navigate('ThreadScreen', { channel, thread: parentMessage, targetedMessageId });
+      const params: StackNavigatorParamList['ThreadScreen'] = {
+        channel,
+        targetedMessageId,
+        thread: parentMessage,
+      };
+      const hasThreadInStack = navigation.getState().routes.some((route) => {
+        if (route.name !== 'ThreadScreen') {
+          return false;
+        }
+        const routeParams = route.params as StackNavigatorParamList['ThreadScreen'] | undefined;
+        const routeThreadId =
+          (routeParams?.thread as LocalMessage)?.id ??
+          (routeParams?.thread as ThreadType)?.thread?.id;
+        const routeChannelId = routeParams?.channel?.id;
+        return routeThreadId === parentMessage.id && routeChannelId === channel.id;
+      });
+
+      if (hasThreadInStack) {
+        navigation.popTo('ThreadScreen', params);
+        return;
+      }
+
+      navigation.navigate('ThreadScreen', params);
     },
     [channel, navigation, setThread],
   );
