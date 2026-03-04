@@ -474,7 +474,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           ]}
         >
           <View style={styles.actionLabelContainer}>
-            <Delete fill={accent_red} size={24} />
+            <Delete fill={accent_red} width={24} height={24} />
             <Text
               style={[
                 styles.itemText,
