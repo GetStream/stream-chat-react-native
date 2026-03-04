@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
+  AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageInput,
   MessageList,
@@ -32,6 +33,7 @@ import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
 import { CustomAttachmentPickerContent } from '../components/AttachmentPickerContent.tsx';
+import { ThreadType } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
@@ -173,7 +175,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   };
 
   const onThreadSelect = useCallback(
-    (thread: LocalMessage | null, targetedMessageId?: string) => {
+    (thread: LocalMessage | null) => {
       if (!thread || !channel) {
         return;
       }
@@ -182,8 +184,41 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       navigation.navigate('ThreadScreen', {
         channel,
         thread,
-        targetedMessageId,
       });
+    },
+    [channel, navigation, setThread],
+  );
+
+  const onAlsoSentToChannelHeaderPress = useCallback(
+    async ({ parentMessage, targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
+      if (!channel || !parentMessage) {
+        return;
+      }
+      setSelectedThread(parentMessage);
+      setThread(parentMessage);
+      const params: StackNavigatorParamList['ThreadScreen'] = {
+        channel,
+        targetedMessageId,
+        thread: parentMessage,
+      };
+      const hasThreadInStack = navigation.getState().routes.some((route) => {
+        if (route.name !== 'ThreadScreen') {
+          return false;
+        }
+        const routeParams = route.params as StackNavigatorParamList['ThreadScreen'] | undefined;
+        const routeThreadId =
+          (routeParams?.thread as LocalMessage)?.id ??
+          (routeParams?.thread as ThreadType)?.thread?.id;
+        const routeChannelId = routeParams?.channel?.id;
+        return routeThreadId === parentMessage.id && routeChannelId === channel.id;
+      });
+
+      if (hasThreadInStack) {
+        navigation.popTo('ThreadScreen', params);
+        return;
+      }
+
+      navigation.navigate('ThreadScreen', params);
     },
     [channel, navigation, setThread],
   );
@@ -233,6 +268,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         MessageLocation={MessageLocation}
         messageId={messageId}
         NetworkDownIndicator={() => null}
+        onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}
         maximumMessageLimit={messageListPruning}
       >

@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import {
+  AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageActionsParams,
   Thread,
@@ -73,7 +74,7 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   navigation,
   route: {
-    params: { channel, thread, targetedMessageId },
+    params: { channel, thread, targetedMessageId: targetedMessageIdFromParams },
   },
 }) => {
   const {
@@ -116,11 +117,31 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
     setThread(null);
   }, [setThread]);
 
-  const onBackPressThread = useCallback(
-    (messageId?: string) => {
-      navigation.popTo('ChannelScreen', { messageId: messageId });
+  const onAlsoSentToChannelHeaderPress = useCallback(
+    ({ targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
+      const params: StackNavigatorParamList['ChannelScreen'] = {
+        channel,
+        messageId: targetedMessageId,
+      };
+      const hasChannelInStack = navigation
+        .getState()
+        .routes.some((route) => {
+          if (route.name !== 'ChannelScreen') {
+            return false;
+          }
+          const routeParams = route.params as StackNavigatorParamList['ChannelScreen'] | undefined;
+          const routeChannelId = routeParams?.channel?.id ?? routeParams?.channelId;
+          return routeChannelId === channel.id;
+        });
+
+      if (hasChannelInStack) {
+        navigation.popTo('ChannelScreen', params);
+        return;
+      }
+
+      navigation.navigate('ChannelScreen', params);
     },
-    [navigation],
+    [channel, navigation],
   );
 
   return (
@@ -137,8 +158,8 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         onPressMessage={onPressMessage}
         thread={thread}
         threadList
-        onBackPressThread={onBackPressThread}
-        messageId={targetedMessageId}
+        onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+        messageId={targetedMessageIdFromParams}
       >
         <ThreadHeader thread={thread} />
         <Thread
