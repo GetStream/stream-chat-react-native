@@ -62,7 +62,7 @@ const MemoizedSentToChannelHeader = React.memo(
 export type SentToChannelHeaderProps = Partial<SentToChannelHeaderPropsWithContext>;
 
 export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
-  const { onBackPressThread } = useThreadContext();
+  const { onAlsoSentToChannelHeaderPress } = useThreadContext();
   const { threadList, channel, setTargetedMessage } = useChannelContext();
   const { onThreadSelect, message } = useMessageContext();
 
@@ -83,13 +83,13 @@ export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
         });
     } else {
       setTargetedMessage(message.id);
-      onBackPressThread?.(message.id);
+      onAlsoSentToChannelHeaderPress?.(message.id);
     }
   });
 
   const showViewText = useMemo(() => {
-    return !!((!threadList && onThreadSelect) || (threadList && onBackPressThread));
-  }, [threadList, onThreadSelect, onBackPressThread]);
+    return !!((!threadList && onThreadSelect) || (threadList && onAlsoSentToChannelHeaderPress));
+  }, [threadList, onThreadSelect, onAlsoSentToChannelHeaderPress]);
 
   return (
     <MemoizedSentToChannelHeader onPress={handleOnPress} showViewText={showViewText} {...props} />

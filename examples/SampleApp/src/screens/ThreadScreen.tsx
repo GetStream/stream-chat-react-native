@@ -116,7 +116,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
     setThread(null);
   }, [setThread]);
 
-  const onBackPressThread = useCallback(
+  const onAlsoSentToChannelHeaderPress = useCallback(
     (messageId?: string) => {
       navigation.popTo('ChannelScreen', { messageId: messageId });
     },
@@ -137,7 +137,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         onPressMessage={onPressMessage}
         thread={thread}
         threadList
-        onBackPressThread={onBackPressThread}
+        onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         messageId={targetedMessageId}
       >
         <ThreadHeader thread={thread} />

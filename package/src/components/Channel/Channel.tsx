@@ -410,7 +410,12 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     >
   > &
   Partial<Pick<MessageContextValue, 'isMessageAIGenerated'>> &
-  Partial<Pick<ThreadContextValue, 'allowThreadMessagesInChannel' | 'onBackPressThread'>> & {
+  Partial<
+    Pick<
+      ThreadContextValue,
+      'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress'
+    >
+  > & {
     shouldSyncChannel: boolean;
     thread: ThreadType;
     /**
@@ -713,7 +718,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
-    onBackPressThread,
+    onAlsoSentToChannelHeaderPress,
     openPollCreationDialog,
     overrideOwnCapabilities,
     PollContent,
@@ -1997,7 +2002,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
-    onBackPressThread,
+    onAlsoSentToChannelHeaderPress,
     closeThread,
     loadMoreThread,
     openThread,

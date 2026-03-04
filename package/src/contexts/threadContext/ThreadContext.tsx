@@ -27,11 +27,11 @@ export type ThreadContextValue = {
   threadLoadingMore?: boolean;
   threadLoadingMoreRecent?: boolean;
   /**
-   * Function to handle back press on thread
-   * @param messageId - The id of the message to go back to
+   * Function to handle press on the "Also sent to channel" header action.
+   * @param messageId - The id of the message to target
    * @returns void
    */
-  onBackPressThread?: (messageId?: string) => void;
+  onAlsoSentToChannelHeaderPress?: (messageId?: string) => void;
 };
 
 export const ThreadContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ThreadContextValue);
