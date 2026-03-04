@@ -3,11 +3,8 @@ import { Alert } from 'react-native';
 import { LocalMessage, StreamChat } from 'stream-chat';
 import {
   Colors,
-  Delete,
-  Eye,
   messageActions,
   MessageActionsParams,
-  Time,
   TranslationContextValue,
   Bell,
 } from 'stream-chat-react-native';
@@ -63,8 +60,8 @@ export function channelMessageActions({
             {
               text: 'Remove',
               onPress: () => {
-                chatClient.reminders.deleteReminder(reminder.id).catch((error) => {
-                  console.error('Error deleting reminder:', error);
+                chatClient.reminders.deleteReminder(reminder.id).catch((err) => {
+                  console.error('Error deleting reminder:', err);
                 });
               },
               style: 'destructive',
