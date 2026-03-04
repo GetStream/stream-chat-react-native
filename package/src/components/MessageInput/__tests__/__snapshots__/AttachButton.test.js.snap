@@ -787,19 +787,15 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
     }
   >
     <View
+      pointerEvents="box-none"
       style={
-        [
-          {
-            "height": 0,
-          },
-          {
-            "transform": [
-              {
-                "translateY": 0,
-              },
-            ],
-          },
-        ]
+        {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
       }
     >
       <View
@@ -1708,19 +1704,15 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
     }
   >
     <View
+      pointerEvents="box-none"
       style={
-        [
-          {
-            "height": 0,
-          },
-          {
-            "transform": [
-              {
-                "translateY": 0,
-              },
-            ],
-          },
-        ]
+        {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
       }
     >
       <View
@@ -2629,19 +2621,15 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
     }
   >
     <View
+      pointerEvents="box-none"
       style={
-        [
-          {
-            "height": 0,
-          },
-          {
-            "transform": [
-              {
-                "translateY": 0,
-              },
-            ],
-          },
-        ]
+        {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
       }
     >
       <View
