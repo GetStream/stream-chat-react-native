@@ -1,5 +1,7 @@
 import { Alert } from 'react-native';
 
+import { useUserMuteActive } from './useUserMuteActive';
+
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import { MessageComposerAPIContextValue } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
@@ -32,13 +34,11 @@ export const useMessageActionHandlers = ({
   const handleResendMessage = () => retrySendMessage(message);
   const translatedMessage = useTranslatedMessage(message);
 
+  const isMuted = useUserMuteActive(message.user);
+
   const handleQuotedReplyMessage = () => {
     setQuotedMessage(message);
   };
-
-  const isMuted = (client.mutedUsers || []).some(
-    (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
-  );
 
   const handleCopyMessage = () => {
     if (!message.text) {

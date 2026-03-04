@@ -84,23 +84,6 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     : undefined;
 
   const actionItems: ChannelActionItem[] = [
-    // isPinned
-    //   ? {
-    //       action: unpin,
-    //       Icon: <View />,
-    //       id: 'unpin',
-    //       label: '',
-    //       placement: 'both',
-    //       type: 'standard',
-    //     }
-    //   : {
-    //       action: pin,
-    //       Icon: <View />,
-    //       id: 'pin',
-    //       label: '',
-    //       placement: 'both',
-    //       type: 'standard',
-    //     },
     {
       action: isDirectChat
         ? muteActive
