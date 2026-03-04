@@ -86,7 +86,7 @@ if (videoPackage) {
 }
 // expo-av
 else if (ExpoAVVideoComponent) {
-  Video = ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef }) => {
+  Video = ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef, rate }) => {
     // This is done so that the audio of the video is not muted when the phone is in silent mode for iOS.
     useEffect(() => {
       const initializeSound = async () => {
@@ -107,6 +107,7 @@ else if (ExpoAVVideoComponent) {
           uri,
         }}
         style={[style]}
+        playbackRate={rate}
       />
     );
   };

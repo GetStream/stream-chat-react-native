@@ -54,177 +54,166 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 });
 
 const videoPlayerSelector = (state: VideoPlayerState) => ({
+  currentPlaybackRate: state.currentPlaybackRate,
   isPlaying: state.isPlaying,
 });
 
-export const AnimatedGalleryVideo = React.memo(
-  (props: AnimatedGalleryVideoType) => {
-    const [opacity, setOpacity] = useState<number>(1);
-    const { imageGalleryStateStore } = useImageGalleryContext();
-    const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
+export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
+  const [opacity, setOpacity] = useState<number>(1);
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
-    const {
-      attachmentId,
-      index,
-      offsetScale,
-      scale,
-      screenHeight,
-      style,
-      photo,
-      translateX,
-      translateY,
-    } = props;
+  const {
+    attachmentId,
+    index,
+    offsetScale,
+    scale,
+    screenHeight,
+    style,
+    photo,
+    translateX,
+    translateY,
+  } = props;
 
-    const videoRef = useRef<VideoType>(null);
+  const videoRef = useRef<VideoType>(null);
 
-    const videoPlayer = useImageGalleryVideoPlayer({
-      id: attachmentId,
-    });
+  const videoPlayer = useImageGalleryVideoPlayer({
+    id: attachmentId,
+  });
 
-    useEffect(() => {
-      if (videoRef.current) {
-        videoPlayer.initPlayer({ playerRef: videoRef.current });
-      }
+  useEffect(() => {
+    if (videoRef.current) {
+      videoPlayer.initPlayer({ playerRef: videoRef.current });
+    }
 
-      return () => {
-        videoPlayer.playerRef = null;
-      };
-    }, [videoPlayer]);
+    return () => {
+      videoPlayer.playerRef = null;
+    };
+  }, [videoPlayer]);
 
-    const { isPlaying } = useStateStore(videoPlayer.state, videoPlayerSelector);
+  const { isPlaying, currentPlaybackRate } = useStateStore(videoPlayer.state, videoPlayerSelector);
 
-    const onLoadStart = () => {
+  const onLoadStart = () => {
+    setOpacity(1);
+  };
+
+  const onLoad = (payload: VideoPayloadData) => {
+    setOpacity(0);
+
+    videoPlayer.duration = payload.duration * ONE_SECOND_IN_MILLISECONDS;
+  };
+
+  const onEnd = () => {
+    videoPlayer.stop();
+  };
+
+  const onProgress = (data: VideoProgressData) => {
+    videoPlayer.position = data.currentTime * ONE_SECOND_IN_MILLISECONDS;
+  };
+
+  const onBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
+    if (isBuffering) {
       setOpacity(1);
-    };
-
-    const onLoad = (payload: VideoPayloadData) => {
+    } else {
       setOpacity(0);
-
-      videoPlayer.duration = payload.duration * ONE_SECOND_IN_MILLISECONDS;
-    };
-
-    const onEnd = () => {
-      videoPlayer.stop();
-    };
-
-    const onProgress = (data: VideoProgressData) => {
-      videoPlayer.position = data.currentTime * ONE_SECOND_IN_MILLISECONDS;
-    };
-
-    const onBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
-      if (isBuffering) {
-        setOpacity(1);
-      } else {
-        setOpacity(0);
-      }
-    };
-
-    const onPlayBackStatusUpdate = (playbackStatus: PlaybackStatus) => {
-      if (!playbackStatus.isLoaded) {
-        // Update your UI for the unloaded state
-        setOpacity(1);
-        if (playbackStatus.error) {
-          console.error(`Encountered a fatal error during playback: ${playbackStatus.error}`);
-        }
-      } else {
-        // Update your UI for the loaded state
-        setOpacity(0);
-        videoPlayer.duration = playbackStatus.durationMillis;
-        if (playbackStatus.isPlaying) {
-          // Update your UI for the playing state
-          videoPlayer.progress = playbackStatus.positionMillis / playbackStatus.durationMillis;
-        }
-
-        if (playbackStatus.isBuffering) {
-          // Update your UI for the buffering state
-          setOpacity(1);
-        }
-
-        if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
-          // The player has just finished playing and will stop. Maybe you want to play something else?
-          videoPlayer.stop();
-        }
-      }
-    };
-
-    const selected = currentIndex === index;
-    const previous = currentIndex > index;
-    const shouldRender = Math.abs(currentIndex - index) < 4;
-
-    const animatedStyles = useAnimatedGalleryStyle({
-      index,
-      offsetScale,
-      previous,
-      scale,
-      screenHeight,
-      selected,
-      translateX,
-      translateY,
-    });
-
-    /**
-     * An empty view is rendered for images not close to the currently
-     * selected in order to maintain spacing while reducing the image
-     * load on memory.
-     */
-    if (!shouldRender) {
-      return (
-        <View
-          accessibilityLabel='Empty View Image Gallery'
-          style={[style, { transform: [{ scale: oneEighth }] }]}
-        />
-      );
     }
+  };
 
+  const onPlayBackStatusUpdate = (playbackStatus: PlaybackStatus) => {
+    if (!playbackStatus.isLoaded) {
+      // Update your UI for the unloaded state
+      setOpacity(1);
+      if (playbackStatus.error) {
+        console.error(`Encountered a fatal error during playback: ${playbackStatus.error}`);
+      }
+    } else {
+      // Update your UI for the loaded state
+      setOpacity(0);
+      videoPlayer.duration = playbackStatus.durationMillis;
+      if (playbackStatus.isPlaying) {
+        // Update your UI for the playing state
+        videoPlayer.progress = playbackStatus.positionMillis / playbackStatus.durationMillis;
+      }
+
+      if (playbackStatus.isBuffering) {
+        // Update your UI for the buffering state
+        setOpacity(1);
+      }
+
+      if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
+        // The player has just finished playing and will stop. Maybe you want to play something else?
+        videoPlayer.stop();
+      }
+    }
+  };
+
+  const selected = currentIndex === index;
+  const previous = currentIndex > index;
+  const shouldRender = Math.abs(currentIndex - index) < 4;
+
+  const animatedStyles = useAnimatedGalleryStyle({
+    index,
+    offsetScale,
+    previous,
+    scale,
+    screenHeight,
+    selected,
+    translateX,
+    translateY,
+  });
+
+  /**
+   * An empty view is rendered for images not close to the currently
+   * selected in order to maintain spacing while reducing the image
+   * load on memory.
+   */
+  if (!shouldRender) {
     return (
-      <Animated.View accessibilityLabel='Image Gallery Video' style={[...animatedStyles, style]}>
-        {isVideoPlayerAvailable() && NativeHandlers.Video ? (
-          <NativeHandlers.Video
-            onBuffer={onBuffer}
-            onEnd={onEnd}
-            onLoad={onLoad}
-            onLoadStart={onLoadStart}
-            onPlaybackStatusUpdate={onPlayBackStatusUpdate}
-            onProgress={onProgress}
-            paused={!isPlaying}
-            repeat={true}
-            resizeMode='contain'
-            style={style}
-            testID='video-player'
-            uri={photo.uri}
-            videoRef={videoRef as RefObject<VideoType>}
-          />
-        ) : null}
-        <Animated.View
-          accessibilityLabel='Spinner'
-          style={[
-            styles.activityIndicator,
-            {
-              opacity,
-              transform: [
-                { scaleX: -1 },
-                { translateY: -screenHeight * 4 },
-                { scale: 1 / oneEighth },
-              ],
-            },
-          ]}
-        >
-          <Spinner height={40} width={40} />
-        </Animated.View>
-      </Animated.View>
+      <View
+        accessibilityLabel='Empty View Image Gallery'
+        style={[style, { transform: [{ scale: oneEighth }] }]}
+      />
     );
-  },
+  }
 
-  (prevProps, nextProps) => {
-    if (
-      prevProps.screenHeight === nextProps.screenHeight &&
-      prevProps.index === nextProps.index &&
-      prevProps.photo === nextProps.photo
-    ) {
-      return true;
-    }
-    return false;
-  },
-);
+  return (
+    <Animated.View accessibilityLabel='Image Gallery Video' style={[...animatedStyles, style]}>
+      {isVideoPlayerAvailable() && NativeHandlers.Video ? (
+        <NativeHandlers.Video
+          onBuffer={onBuffer}
+          onEnd={onEnd}
+          onLoad={onLoad}
+          onLoadStart={onLoadStart}
+          onPlaybackStatusUpdate={onPlayBackStatusUpdate}
+          onProgress={onProgress}
+          paused={!isPlaying}
+          repeat={true}
+          resizeMode='contain'
+          style={style}
+          testID='video-player'
+          uri={photo.uri}
+          videoRef={videoRef as RefObject<VideoType>}
+          rate={currentPlaybackRate}
+        />
+      ) : null}
+      <Animated.View
+        accessibilityLabel='Spinner'
+        style={[
+          styles.activityIndicator,
+          {
+            opacity,
+            transform: [
+              { scaleX: -1 },
+              { translateY: -screenHeight * 4 },
+              { scale: 1 / oneEighth },
+            ],
+          },
+        ]}
+      >
+        <Spinner height={40} width={40} />
+      </Animated.View>
+    </Animated.View>
+  );
+};
 
 AnimatedGalleryVideo.displayName = 'AnimatedGalleryVideo';

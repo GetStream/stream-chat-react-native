@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts';
-import { NewPlay } from '../../icons/NewPlay';
+import { Play } from '../../icons/Play';
 import { primitives } from '../../theme';
 
 const sizes = {
@@ -39,7 +39,7 @@ export const VideoPlayIndicator = (props: VideoPlayIndicatorProps) => {
 
   return (
     <View style={[styles.container, sizes[size]]}>
-      <NewPlay
+      <Play
         fill={semantics.controlPlayControlIcon}
         height={iconSizes[size]}
         width={iconSizes[size]}

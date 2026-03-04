@@ -33,10 +33,12 @@ describe('VideoPlayer', () => {
   describe('INITIAL_VIDEO_PLAYER_STATE', () => {
     it('should have correct initial values', () => {
       expect(INITIAL_VIDEO_PLAYER_STATE).toEqual({
+        currentPlaybackRate: 1,
         duration: 0,
         isPlaying: false,
         position: 0,
         progress: 0,
+        playbackRates: [1, 1.5, 2],
       });
     });
   });

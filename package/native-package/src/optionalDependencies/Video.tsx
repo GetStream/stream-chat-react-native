@@ -2,7 +2,19 @@ import React from 'react';
 import AudioVideoPlayer from './AudioVideo';
 
 export const Video = AudioVideoPlayer
-  ? ({ onBuffer, onEnd, onLoad, onProgress, paused, repeat, resizeMode, style, uri, videoRef }) => (
+  ? ({
+      onBuffer,
+      onEnd,
+      onLoad,
+      onProgress,
+      paused,
+      repeat,
+      resizeMode,
+      style,
+      uri,
+      videoRef,
+      rate,
+    }) => (
       <AudioVideoPlayer
         ignoreSilentSwitch={'ignore'}
         onBuffer={onBuffer}
@@ -20,6 +32,7 @@ export const Video = AudioVideoPlayer
           uri,
         }}
         style={style}
+        rate={rate}
       />
     )
   : null;

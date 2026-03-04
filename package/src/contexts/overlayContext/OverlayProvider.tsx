@@ -14,6 +14,7 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
+
 import {
   DEFAULT_USER_LANGUAGE,
   TranslationProvider,
@@ -46,9 +47,6 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
     value,
     autoPlayVideo,
     giphyVersion,
-    imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight,
-    imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
   } = props;
 
@@ -95,19 +93,9 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
     () => ({
       autoPlayVideo,
       giphyVersion,
-      imageGalleryCustomComponents,
-      imageGalleryGridHandleHeight,
-      imageGalleryGridSnapPoints,
       numberOfImageGalleryGridColumns,
     }),
-    [
-      autoPlayVideo,
-      giphyVersion,
-      imageGalleryCustomComponents,
-      imageGalleryGridHandleHeight,
-      imageGalleryGridSnapPoints,
-      numberOfImageGalleryGridColumns,
-    ],
+    [autoPlayVideo, giphyVersion, numberOfImageGalleryGridColumns],
   );
 
   return (

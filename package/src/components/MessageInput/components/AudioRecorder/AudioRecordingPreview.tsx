@@ -9,8 +9,8 @@ import { useStableCallback } from '../../../../hooks';
 import { useAudioPlayer } from '../../../../hooks/useAudioPlayer';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
-import { NewPause } from '../../../../icons/NewPause';
-import { NewPlay } from '../../../../icons/NewPlay';
+import { Pause } from '../../../../icons/Pause';
+import { Play } from '../../../../icons/Play';
 import { NativeHandlers } from '../../../../native';
 import { AudioPlayerState } from '../../../../state-store/audio-player';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
@@ -116,9 +116,9 @@ export const AudioRecordingPreview = () => {
       <View style={[styles.infoContainer, infoContainer]}>
         <Pressable onPress={handlePlayPause} hitSlop={15}>
           {!isPlaying ? (
-            <NewPlay fill={semantics.textPrimary} height={20} width={20} {...playIcon} />
+            <Play fill={semantics.textPrimary} height={20} width={20} {...playIcon} />
           ) : (
-            <NewPause fill={semantics.textPrimary} height={20} width={20} {...pauseIcon} />
+            <Pause fill={semantics.textPrimary} height={20} width={20} {...pauseIcon} />
           )}
         </Pressable>
         {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}

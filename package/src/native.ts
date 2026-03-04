@@ -284,6 +284,7 @@ export type VideoType = {
   play?: () => void;
   pause?: () => void;
   replay?: () => void;
+  rate?: number;
 };
 
 type Handlers = {

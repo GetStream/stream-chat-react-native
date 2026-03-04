@@ -8,6 +8,10 @@ import duration from 'dayjs/plugin/duration';
 
 import { LocalMessage } from 'stream-chat';
 
+import { ImageGalleryFooter as ImageGalleryFooterDefault } from '../../../components/ImageGallery/components/ImageGalleryFooter';
+import { ImageGalleryHeader as ImageGalleryHeaderDefault } from '../../../components/ImageGallery/components/ImageGalleryHeader';
+import { ImageGalleryVideoControl as ImageGalleryVideoControlDefault } from '../../../components/ImageGallery/components/ImageGalleryVideoControl';
+import { ImageGalleryGrid as ImageGalleryGridDefault } from '../../../components/ImageGallery/components/ImageGrid';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -58,7 +62,15 @@ const ImageGalleryComponent = (props: ImageGalleryProps & { message: LocalMessag
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
       <ImageGalleryContext.Provider
-        value={{ imageGalleryStateStore } as unknown as ImageGalleryContextValue}
+        value={
+          {
+            imageGalleryStateStore,
+            ImageGalleryHeader: ImageGalleryHeaderDefault,
+            ImageGalleryFooter: ImageGalleryFooterDefault,
+            ImageGalleryVideoControls: ImageGalleryVideoControlDefault,
+            ImageGalleryGrid: ImageGalleryGridDefault,
+          } as unknown as ImageGalleryContextValue
+        }
       >
         <ImageGallery {...props} />
       </ImageGalleryContext.Provider>

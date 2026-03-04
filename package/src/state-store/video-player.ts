@@ -10,6 +10,8 @@ export type VideoPlayerState = {
   position: number;
   progress: number;
   isPlaying: boolean;
+  currentPlaybackRate: number;
+  playbackRates: number[];
 };
 
 export type VideoDescriptor = {
@@ -17,14 +19,19 @@ export type VideoDescriptor = {
 };
 
 export type VideoPlayerOptions = VideoDescriptor & {
+  playbackRates?: number[];
   autoPlay?: boolean;
 };
+
+const DEFAULT_PLAYBACK_RATES = [1.0, 1.5, 2.0];
 
 export const INITIAL_VIDEO_PLAYER_STATE: VideoPlayerState = {
   duration: 0,
   isPlaying: false,
   position: 0,
   progress: 0,
+  currentPlaybackRate: 1.0,
+  playbackRates: DEFAULT_PLAYBACK_RATES,
 };
 
 export class VideoPlayer {
@@ -37,12 +44,17 @@ export class VideoPlayer {
 
   constructor(options: VideoPlayerOptions) {
     this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
+
+    this.options = options;
+    this._id = options.id;
+
+    const playbackRates = options.playbackRates ?? DEFAULT_PLAYBACK_RATES;
     this.state = new StateStore<VideoPlayerState>({
       ...INITIAL_VIDEO_PLAYER_STATE,
       isPlaying: options.autoPlay ?? false,
+      currentPlaybackRate: playbackRates[0],
+      playbackRates,
     });
-    this.options = options;
-    this._id = options.id;
   }
 
   initPlayer = ({ playerRef }: { playerRef?: VideoType }) => {
@@ -67,6 +79,14 @@ export class VideoPlayer {
 
   get progress() {
     return this.state.getLatestValue().progress;
+  }
+
+  get playbackRates() {
+    return this.state.getLatestValue().playbackRates;
+  }
+
+  get currentPlaybackRate() {
+    return this.state.getLatestValue().currentPlaybackRate;
   }
 
   set pool(pool: VideoPlayerPool) {
@@ -96,6 +116,19 @@ export class VideoPlayer {
   set isPlaying(isPlaying: boolean) {
     this.state.partialNext({
       isPlaying,
+    });
+  }
+
+  changePlaybackRate() {
+    let currentPlaybackRateIndex = this.playbackRates.indexOf(this.currentPlaybackRate);
+    if (currentPlaybackRateIndex === -1) {
+      currentPlaybackRateIndex = 0;
+    }
+    const nextPlayBackIndex =
+      currentPlaybackRateIndex === this.playbackRates.length - 1 ? 0 : currentPlaybackRateIndex + 1;
+    const nextPlaybackRate = this.playbackRates[nextPlayBackIndex];
+    this.state.partialNext({
+      currentPlaybackRate: nextPlaybackRate,
     });
   }
 
@@ -150,6 +183,10 @@ export class VideoPlayer {
       this.playerRef.pause();
     }
     this.playerRef = null;
-    this.state.partialNext(INITIAL_VIDEO_PLAYER_STATE);
+    this.state.partialNext({
+      ...INITIAL_VIDEO_PLAYER_STATE,
+      currentPlaybackRate: this.playbackRates[0],
+      playbackRates: DEFAULT_PLAYBACK_RATES,
+    });
   }
 }

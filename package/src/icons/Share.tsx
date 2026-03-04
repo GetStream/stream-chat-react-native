@@ -1,18 +1,17 @@
 import React from 'react';
-import { Rect } from 'react-native-svg';
 
-import { IconProps, RootPath, RootSvg } from './utils/base';
+import Svg, { Path } from 'react-native-svg';
 
-export const Share = (props: IconProps) => (
-  <RootSvg {...props}>
-    <RootPath
-      d='M5.306 9.695a1.043 1.043 0 001.476 0l5.219-5.225 5.218 5.224a1.043 1.043 0 001.476 0 1.046 1.046 0 000-1.478l-5.904-5.91a1.04 1.04 0 00-.8-.304 1.04 1.04 0 00-.781.305l-5.904 5.91a1.046 1.046 0 000 1.478z'
-      {...props}
+import { IconProps } from './utils/base';
+
+export const Share = ({ height, width, ...rest }: IconProps) => (
+  <Svg fill={'none'} height={height} viewBox={`0 0 20 20`} width={width} {...rest}>
+    <Path
+      d='M6.45831 5.20703L9.99998 1.45703L13.5416 5.20703M9.99998 2.29036V11.0404M6.45831 8.1237H5.62498C4.7045 8.1237 3.95831 8.86986 3.95831 9.79036V15.207C3.95831 16.1275 4.7045 16.8737 5.62498 16.8737H14.375C15.2955 16.8737 16.0416 16.1275 16.0416 15.207V9.79036C16.0416 8.86986 15.2955 8.1237 14.375 8.1237H13.5416'
+      strokeWidth={1.5}
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      {...rest}
     />
-    <Rect fill={props.pathFill || '#000000'} height={16} rx={1} width={2} x={11} y={2} />
-    <RootPath
-      d='M4 12a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2v-6a2 2 0 00-2-2h-5v2h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4a1 1 0 011-1h4v-2H4z'
-      {...props}
-    />
-  </RootSvg>
+  </Svg>
 );

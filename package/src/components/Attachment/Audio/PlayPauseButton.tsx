@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { Pressable, PressableProps, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { NewPause } from '../../../icons/NewPause';
-import { NewPlay } from '../../../icons/NewPlay';
+import { Pause } from '../../../icons/Pause';
+import { Play } from '../../../icons/Play';
 import { primitives } from '../../../theme';
 import { buttonSizes } from '../../ui/Button/constants';
 
@@ -45,9 +45,9 @@ export const PlayPauseButton = ({
       {...rest}
     >
       {isPlaying ? (
-        <NewPause fill={semantics.textSecondary} height={20} width={20} strokeWidth={1.5} />
+        <Pause fill={semantics.textSecondary} height={20} width={20} strokeWidth={1.5} />
       ) : (
-        <NewPlay fill={semantics.textSecondary} height={20} width={20} strokeWidth={1.5} />
+        <Play fill={semantics.textSecondary} height={20} width={20} strokeWidth={1.5} />
       )}
     </Pressable>
   );

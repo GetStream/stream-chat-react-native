@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, ImageStyle, StyleSheet, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
@@ -11,24 +11,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import BottomSheet from '@gorhom/bottom-sheet';
-
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
-import {
-  ImageGalleryFooter,
-  ImageGalleryFooterCustomComponentProps,
-} from './components/ImageGalleryFooter';
-import {
-  ImageGalleryHeader,
-  ImageGalleryHeaderCustomComponentProps,
-} from './components/ImageGalleryHeader';
-import { ImageGalleryOverlay } from './components/ImageGalleryOverlay';
-import { ImageGalleryGridImageComponents, ImageGrid } from './components/ImageGrid';
-import {
-  ImageGalleryGridHandleCustomComponentProps,
-  ImageGridHandle,
-} from './components/ImageGridHandle';
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
@@ -43,9 +27,21 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks';
 import { useViewport } from '../../hooks/useViewport';
+import { IconProps } from '../../icons/utils/base';
 import { ImageGalleryState } from '../../state-store/image-gallery-state-store';
 import { FileTypes } from '../../types/types';
 import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { BottomSheetModal } from '../UIComponents';
+
+export type ImageGalleryActionHandler = () => Promise<void> | void;
+
+export type ImageGalleryActionItem = {
+  action: ImageGalleryActionHandler;
+  Icon: React.ComponentType<IconProps>;
+  id: 'showInChat' | 'save' | 'reply' | 'delete' | string;
+  label: string;
+  type: 'destructive' | 'standard';
+};
 
 const MARGIN = 32;
 
@@ -60,46 +56,6 @@ export enum IsSwiping {
   FALSE,
 }
 
-export type ImageGalleryCustomComponents = {
-  /**
-   * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
-   *
-   * - [ImageGalleryFooter](#ImageGalleryFooter)
-   *
-   * - [ImageGrid](#ImageGrid)
-   *
-   * - [ImageGridHandle](#ImageGridHandle)
-   *
-   * - [ImageGalleryHeader](#ImageGalleryHeader)
-   *
-   * e.g.,
-   *
-   * ```js
-   * {
-   *  footer: {
-   *    ShareIcon: CustomShareIconComponent
-   *  },
-   *  grid: {
-   *    avatarComponent: CustomAvatarComponent
-   *  },
-   *  gridHandle: {
-   *    centerComponent: CustomCenterComponent
-   *  },
-   *  header: {
-   *    CloseIcon: CustomCloseButtonComponent
-   *  },
-   * }
-   * ```
-   * @overrideType object
-   */
-  imageGalleryCustomComponents?: {
-    footer?: ImageGalleryFooterCustomComponentProps;
-    grid?: ImageGalleryGridImageComponents;
-    gridHandle?: ImageGalleryGridHandleCustomComponentProps;
-    header?: ImageGalleryHeaderCustomComponentProps;
-  };
-};
-
 const imageGallerySelector = (state: ImageGalleryState) => ({
   assets: state.assets,
   currentIndex: state.currentIndex,
@@ -107,21 +63,24 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 
 type ImageGalleryWithContextProps = Pick<
   ImageGalleryProviderProps,
-  | 'imageGalleryCustomComponents'
-  | 'imageGalleryGridSnapPoints'
-  | 'imageGalleryGridHandleHeight'
   | 'numberOfImageGalleryGridColumns'
+  | 'ImageGalleryHeader'
+  | 'ImageGalleryFooter'
+  | 'ImageGalleryVideoControls'
+  | 'ImageGalleryGrid'
 > &
   Pick<OverlayContextValue, 'overlayOpacity'>;
 
 export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
   const {
-    imageGalleryGridHandleHeight,
-    imageGalleryGridSnapPoints,
-    imageGalleryCustomComponents,
     numberOfImageGalleryGridColumns,
     overlayOpacity,
+    ImageGalleryHeader,
+    ImageGalleryFooter,
+    ImageGalleryVideoControls,
+    ImageGalleryGrid,
   } = props;
+  const [isGridViewVisible, setIsGridViewVisible] = useState(false);
   const {
     theme: {
       colors: { white_snow },
@@ -143,22 +102,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
 
   const halfScreenHeight = fullWindowHeight / 2;
   const quarterScreenHeight = fullWindowHeight / 4;
-  const snapPoints = React.useMemo(
-    () => [(fullWindowHeight * 3) / 4, fullWindowHeight - (imageGalleryGridHandleHeight ?? 0)],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
-
-  /**
-   * BottomSheetModal ref
-   */
-  const bottomSheetModalRef = useRef<BottomSheet>(null);
-
-  /**
-   * BottomSheetModal state
-   */
-  const [currentBottomSheetIndex, setCurrentBottomSheetIndex] = useState(0);
-  const animatedBottomSheetIndex = useSharedValue(0);
 
   /**
    * Fade animation for screen, it is always rendered with pointerEvents
@@ -322,29 +265,15 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
    * Functions toclose BottomSheetModal with image grid
    */
   const closeGridView = () => {
-    if (bottomSheetModalRef.current?.close) {
-      bottomSheetModalRef.current.close();
-    }
+    setIsGridViewVisible(false);
   };
 
   /**
    * Function to open BottomSheetModal with image grid
    */
   const openGridView = () => {
-    if (bottomSheetModalRef.current?.snapToIndex) {
-      bottomSheetModalRef.current.snapToIndex(0);
-    }
+    setIsGridViewVisible(true);
   };
-
-  const MemoizedImageGridHandle = useCallback(
-    () => (
-      <ImageGridHandle
-        closeGridView={closeGridView}
-        {...imageGalleryCustomComponents?.gridHandle}
-      />
-    ),
-    [imageGalleryCustomComponents?.gridHandle],
-  );
 
   return (
     <Animated.View
@@ -403,42 +332,34 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
           </Animated.View>
         </Animated.View>
       </GestureDetector>
-      <ImageGalleryHeader
-        opacity={headerFooterOpacity}
-        visible={headerFooterVisible}
-        {...imageGalleryCustomComponents?.header}
-      />
+      {ImageGalleryHeader ? (
+        <ImageGalleryHeader opacity={headerFooterOpacity} visible={headerFooterVisible} />
+      ) : null}
 
-      <ImageGalleryFooter
-        accessibilityLabel={'Image Gallery Footer'}
-        opacity={headerFooterOpacity}
-        openGridView={openGridView}
-        visible={headerFooterVisible}
-        {...imageGalleryCustomComponents?.footer}
-      />
-
-      <ImageGalleryOverlay
-        animatedBottomSheetIndex={animatedBottomSheetIndex}
-        closeGridView={closeGridView}
-        currentBottomSheetIndex={currentBottomSheetIndex}
-      />
-      <BottomSheet
-        animatedIndex={animatedBottomSheetIndex}
-        enablePanDownToClose={true}
-        handleComponent={MemoizedImageGridHandle}
-        // @ts-ignore
-        handleHeight={imageGalleryGridHandleHeight}
-        index={-1}
-        onChange={(index: number) => setCurrentBottomSheetIndex(index)}
-        ref={bottomSheetModalRef}
-        snapPoints={imageGalleryGridSnapPoints || snapPoints}
-      >
-        <ImageGrid
-          closeGridView={closeGridView}
-          numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-          {...imageGalleryCustomComponents?.grid}
+      {ImageGalleryFooter ? (
+        <ImageGalleryFooter
+          accessibilityLabel={'Image Gallery Footer'}
+          opacity={headerFooterOpacity}
+          openGridView={openGridView}
+          visible={headerFooterVisible}
+          ImageGalleryVideoControls={ImageGalleryVideoControls}
         />
-      </BottomSheet>
+      ) : null}
+
+      <BottomSheetModal
+        height={350}
+        onClose={() => {
+          setIsGridViewVisible(false);
+        }}
+        visible={isGridViewVisible}
+      >
+        {ImageGalleryGrid ? (
+          <ImageGalleryGrid
+            closeGridView={closeGridView}
+            numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+          />
+        ) : null}
+      </BottomSheetModal>
     </Animated.View>
   );
 };
@@ -447,19 +368,21 @@ export type ImageGalleryProps = Partial<ImageGalleryWithContextProps>;
 
 export const ImageGallery = (props: ImageGalleryProps) => {
   const {
-    imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight,
-    imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
+    ImageGalleryHeader,
+    ImageGalleryFooter,
+    ImageGalleryVideoControls,
+    ImageGalleryGrid,
   } = useImageGalleryContext();
   const { overlayOpacity } = useOverlayContext();
   return (
     <ImageGalleryWithContext
-      imageGalleryCustomComponents={imageGalleryCustomComponents}
-      imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-      imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
       numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
       overlayOpacity={overlayOpacity}
+      ImageGalleryHeader={ImageGalleryHeader}
+      ImageGalleryFooter={ImageGalleryFooter}
+      ImageGalleryVideoControls={ImageGalleryVideoControls}
+      ImageGalleryGrid={ImageGalleryGrid}
       {...props}
     />
   );
