@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
@@ -63,12 +63,12 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
   const {
     theme: {
       semantics,
-      colors: { black },
       messageMenu: {
         actionListItem: { container, icon: iconTheme, title: titleTheme },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onActionPress = useStableCallback(() => {
     closeOverlay();
@@ -88,23 +88,36 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
         style={[styles.container, container]}
       >
         <View style={iconTheme}>{icon}</View>
-        <Text style={[styles.titleStyle, { color: black }, titleStyle, titleTheme]}>{title}</Text>
+        <Text style={[styles.titleStyle, titleStyle, titleTheme]}>{title}</Text>
       </View>
     </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
-  buttonContainer: {
-    borderRadius: primitives.radiusLg,
-  },
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    padding: primitives.spacingXs,
-  },
-  titleStyle: {
-    paddingLeft: primitives.spacingXs,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        buttonContainer: {
+          borderRadius: primitives.radiusLg,
+        },
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          padding: primitives.spacingXs,
+        },
+        titleStyle: {
+          paddingLeft: primitives.spacingXs,
+          fontWeight: primitives.typographyFontWeightMedium,
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
+        },
+      }),
+    [semantics.textPrimary],
+  );
+};

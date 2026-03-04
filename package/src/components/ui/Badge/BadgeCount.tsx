@@ -28,17 +28,14 @@ const textStyles = {
   sm: {
     fontSize: primitives.typographyFontSizeXxs,
     fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: primitives.typographyLineHeightTight,
   },
   md: {
     fontSize: primitives.typographyFontSizeSm,
     fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: primitives.typographyLineHeightNormal,
   },
   lg: {
     fontSize: primitives.typographyFontSizeSm,
     fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: primitives.typographyLineHeightNormal,
   },
 };
 

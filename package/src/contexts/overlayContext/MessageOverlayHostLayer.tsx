@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -229,37 +229,41 @@ export const MessageOverlayHostLayer = () => {
     };
   }, [isActive, closing]);
 
-  const tap = Gesture.Tap()
-    .onTouchesDown((e, state) => {
-      const t = e.allTouches[0];
-      if (!t) return;
+  const tap = useMemo(
+    () =>
+      Gesture.Tap()
+        .onTouchesDown((e, state) => {
+          const t = e.allTouches[0];
+          if (!t || !topH || !bottomH) return;
 
-      const x = t.x;
-      const y = t.y;
+          const x = t.x;
+          const y = t.y;
 
-      const messageYShift = messageShiftY.value; // overlay shift for top + message
-      const bottomYShift = bottomShiftY.value; // overlay shift for bottom
-      const top = topH.value;
-      if (top) {
-        const topY = top.y + messageYShift;
-        if (x >= top.x && x <= top.x + top.w && y >= topY && y <= topY + top.h) {
-          state.fail();
-          return;
-        }
-      }
+          const messageYShift = messageShiftY.value; // overlay shift for top + message
+          const bottomYShift = bottomShiftY.value; // overlay shift for bottom
+          const top = topH.value;
+          if (top) {
+            const topY = top.y + messageYShift;
+            if (x >= top.x && x <= top.x + top.w && y >= topY && y <= topY + top.h) {
+              state.fail();
+              return;
+            }
+          }
 
-      const bot = bottomH.value;
-      if (bot) {
-        const botY = bot.y + bottomYShift;
-        if (x >= bot.x && x <= bot.x + bot.w && y >= botY && y <= botY + bot.h) {
-          state.fail();
-          return;
-        }
-      }
-    })
-    .onEnd(() => {
-      runOnJS(closeOverlay)();
-    });
+          const bot = bottomH.value;
+          if (bot) {
+            const botY = bot.y + bottomYShift;
+            if (x >= bot.x && x <= bot.x + bot.w && y >= botY && y <= botY + bot.h) {
+              state.fail();
+              return;
+            }
+          }
+        })
+        .onEnd(() => {
+          runOnJS(closeOverlay)();
+        }),
+    [bottomH, bottomShiftY, messageShiftY, topH],
+  );
 
   console.log('TEST', Object.entries(closingPortalLayouts));
 
