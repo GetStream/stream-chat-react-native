@@ -26,12 +26,10 @@ const textStyles = {
   sm: {
     fontSize: primitives.typographyFontSizeSm,
     fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: 14,
   },
   xs: {
     fontSize: primitives.typographyFontSizeXxs,
     fontWeight: primitives.typographyFontWeightBold,
-    lineHeight: 10,
   },
 };
 
@@ -71,6 +69,7 @@ const useStyles = () => {
           paddingHorizontal: primitives.spacingXxs,
           borderRadius: primitives.radiusMax,
           justifyContent: 'center',
+          alignItems: 'center',
         },
         border: {
           borderWidth: 2,
