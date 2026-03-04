@@ -109,7 +109,15 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
         : muteActive
           ? unmuteChannel
           : muteChannel,
-      Icon: (props) => <ChannelActionsIcon Icon={Mute} {...props} />,
+      Icon: (props) => (
+        <Mute
+          width={20}
+          height={20}
+          {...props}
+          stroke={undefined}
+          fill={props.fill ?? props.stroke}
+        />
+      ),
       id: 'mute',
       label: isDirectChat
         ? muteActive
