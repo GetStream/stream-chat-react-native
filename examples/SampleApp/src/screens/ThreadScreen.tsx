@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import {
+  AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageActionsParams,
   Thread,
@@ -73,7 +74,7 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   navigation,
   route: {
-    params: { channel, thread, targetedMessageId },
+    params: { channel, thread, targetedMessageId: targetedMessageIdFromParams },
   },
 }) => {
   const {
@@ -117,7 +118,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   }, [setThread]);
 
   const onAlsoSentToChannelHeaderPress = useCallback(
-    ({ targetedMessageId }: { targetedMessageId: string }) => {
+    ({ targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
       navigation.navigate('ChannelScreen', { channel, messageId: targetedMessageId });
     },
     [channel, navigation],
@@ -138,7 +139,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         thread={thread}
         threadList
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
-        messageId={targetedMessageId}
+        messageId={targetedMessageIdFromParams}
       >
         <ThreadHeader thread={thread} />
         <Thread

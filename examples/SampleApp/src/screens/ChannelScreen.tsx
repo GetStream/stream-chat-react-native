@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
+  AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageInput,
   MessageList,
@@ -188,13 +189,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   );
 
   const onAlsoSentToChannelHeaderPress = useCallback(
-    async ({
-      parentMessage,
-      targetedMessageId,
-    }: {
-      parentMessage?: LocalMessage;
-      targetedMessageId: string;
-    }) => {
+    async ({ parentMessage, targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
       if (!channel || !parentMessage) {
         return;
       }
