@@ -411,10 +411,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   > &
   Partial<Pick<MessageContextValue, 'isMessageAIGenerated'>> &
   Partial<
-    Pick<
-      ThreadContextValue,
-      'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress'
-    >
+    Pick<ThreadContextValue, 'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress'>
   > & {
     shouldSyncChannel: boolean;
     thread: ThreadType;
