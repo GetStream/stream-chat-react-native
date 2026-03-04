@@ -1088,7 +1088,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         layout={LinearTransition.duration(200)}
         style={[
           styles.scrollToBottomButtonContainer,
-          { bottom: messageInputFloating ? messageInputHeight : 16 },
+          { bottom: messageInputFloating ? messageInputHeight : primitives.spacingMd },
         ]}
       >
         <ScrollToBottomButton
@@ -1313,13 +1313,15 @@ const useStyles = () => {
           left: 0,
           position: 'absolute',
           right: 0,
-          top: primitives.spacingXs,
+          top: primitives.spacingMd,
           ...stickyHeaderContainer,
         },
         unreadMessagesNotificationContainer: {
-          alignSelf: 'center',
           position: 'absolute',
-          top: 8,
+          top: primitives.spacingMd,
+          left: 0,
+          right: 0,
+          alignItems: 'center',
           ...unreadMessagesNotificationContainer,
         },
       }),

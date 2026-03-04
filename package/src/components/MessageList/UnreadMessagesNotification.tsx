@@ -1,10 +1,13 @@
-import React from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { ArrowUp } from '../../icons/ArrowUp';
 import { NewClose } from '../../icons/NewClose';
+import { primitives } from '../../theme';
+import { Button } from '../ui';
 
 export type UnreadMessagesNotificationProps = {
   /**
@@ -48,57 +51,67 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     }
   };
 
-  const {
-    theme: {
-      colors: { text_low_emphasis, white_snow },
-      messageList: {
-        unreadMessagesNotification: { closeButtonContainer, closeIcon, container, text },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   return (
-    <Pressable
-      onPress={handleOnPress}
-      style={({ pressed }) => [
-        styles.container,
-        { backgroundColor: text_low_emphasis, opacity: pressed ? 0.8 : 1 },
-        container,
-      ]}
-    >
-      <Text style={[styles.text, { color: white_snow }, text]}>{t('Unread Messages')}</Text>
-      <Pressable
-        onPress={handleClose}
-        style={({ pressed }) => [
-          {
-            opacity: pressed ? 0.8 : 1,
-          },
-          closeButtonContainer,
-        ]}
-      >
-        <NewClose pathFill={white_snow} {...closeIcon} />
-      </Pressable>
-    </Pressable>
+    <View style={styles.container}>
+      <View style={styles.leftButtonContainer}>
+        <Button
+          variant='secondary'
+          type='ghost'
+          LeadingIcon={ArrowUp}
+          label={t('Unread Messages')}
+          onPress={handleOnPress}
+          size='md'
+        />
+      </View>
+      <View style={styles.rightButtonContainer}>
+        <Button
+          variant='secondary'
+          type='ghost'
+          iconOnly
+          LeadingIcon={NewClose}
+          onPress={handleClose}
+          size='md'
+        />
+      </View>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 20,
-    elevation: 4,
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      height: 2,
-      width: 0,
+const useStyles = () => {
+  const {
+    theme: {
+      messageList: {
+        unreadMessagesNotification: { container, leftButtonContainer, rightButtonContainer },
+      },
+      semantics,
     },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-  },
-  text: {
-    fontWeight: '500',
-    marginRight: 8,
-  },
-});
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          borderRadius: primitives.radiusMax,
+          borderWidth: 1,
+          borderColor: semantics.borderCoreDefault,
+          backgroundColor: semantics.backgroundCoreApp,
+          flexDirection: 'row',
+          alignItems: 'center',
+          ...primitives.lightElevation4,
+          ...container,
+        },
+        leftButtonContainer: {
+          flexShrink: 0,
+          borderRightWidth: 1,
+          borderRightColor: semantics.borderCoreDefault,
+          ...leftButtonContainer,
+        },
+        rightButtonContainer: {
+          flexShrink: 0,
+          ...rightButtonContainer,
+        },
+      }),
+    [semantics, container, leftButtonContainer, rightButtonContainer],
+  );
+};
