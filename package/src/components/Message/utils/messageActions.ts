@@ -21,12 +21,9 @@ export type MessageActionsParams = {
   pinMessage: MessageActionType;
   quotedReply: MessageActionType;
   retry: MessageActionType;
-  /**
-   * Determines if the message actions are visible.
-   */
-  showMessageReactions: boolean;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
+  blockUser: MessageActionType;
   // Optional Actions
   deleteForMeMessage?: MessageActionType;
 } & Pick<MessageContextValue, 'message' | 'isMyMessage'> &
@@ -35,7 +32,7 @@ export type MessageActionsParams = {
 export type MessageActionsProp = (param: MessageActionsParams) => MessageActionType[];
 
 export const messageActions = ({
-  banUser,
+  // banUser,
   copyMessage,
   deleteMessage,
   editMessage,
@@ -50,16 +47,13 @@ export const messageActions = ({
   pinMessage,
   quotedReply,
   retry,
-  showMessageReactions,
   threadReply,
   unpinMessage,
+  blockUser,
 }: MessageActionsParams) => {
   const messageHasGiphyOrImgur = message.attachments?.some(
     (attachment) => attachment.type === FileTypes.Giphy || attachment.type === FileTypes.Imgur,
   );
-  if (showMessageReactions) {
-    return [];
-  }
 
   const actions: Array<MessageActionType> = [];
 
@@ -67,12 +61,20 @@ export const messageActions = ({
     actions.push(retry);
   }
 
+  if (ownCapabilities.sendReply && !isThreadMessage && !error) {
+    actions.push(threadReply);
+  }
+
   if (ownCapabilities.quoteMessage && !isThreadMessage && !error) {
     actions.push(quotedReply);
   }
 
-  if (ownCapabilities.sendReply && !isThreadMessage && !error) {
-    actions.push(threadReply);
+  if (ownCapabilities.pinMessage && !message.pinned) {
+    actions.push(pinMessage);
+  }
+
+  if (ownCapabilities.pinMessage && message.pinned) {
+    actions.push(unpinMessage);
   }
 
   if (
@@ -84,29 +86,18 @@ export const messageActions = ({
     actions.push(editMessage);
   }
 
-  if (ownCapabilities.readEvents && !error && !isThreadMessage) {
-    actions.push(markUnread);
-  }
-
   if (isClipboardAvailable() && message.text && !error) {
     actions.push(copyMessage);
   }
 
-  if (!isMyMessage && ownCapabilities.flagMessage) {
-    actions.push(flagMessage);
+  if (ownCapabilities.readEvents && !error && !isThreadMessage) {
+    actions.push(markUnread);
   }
 
-  if (ownCapabilities.pinMessage && !message.pinned) {
-    actions.push(pinMessage);
-  }
-
-  if (ownCapabilities.pinMessage && message.pinned) {
-    actions.push(unpinMessage);
-  }
-
-  if (!isMyMessage && ownCapabilities.banChannelMembers) {
-    actions.push(banUser);
-  }
+  // TODO: V9: Check if we really want this.
+  // if (!isMyMessage && ownCapabilities.banChannelMembers) {
+  //   actions.push(banUser);
+  // }
 
   if (
     (isMyMessage && ownCapabilities.deleteOwnMessage) ||
@@ -115,8 +106,22 @@ export const messageActions = ({
     actions.push(deleteMessage);
   }
 
+  if (!isMyMessage && ownCapabilities.flagMessage) {
+    actions.push(flagMessage);
+  }
+
   if (!isMyMessage) {
     actions.push(muteUser);
+    actions.push(blockUser);
+  }
+
+  if (error) {
+    return actions.filter(
+      (action) =>
+        action.actionType === 'deleteMessage' ||
+        action.actionType === 'retry' ||
+        action.actionType === 'editMessage',
+    );
   }
 
   return actions;

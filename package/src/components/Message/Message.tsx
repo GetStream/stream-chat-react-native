@@ -197,6 +197,7 @@ export type MessagePropsWithContext = Pick<
     | 'handleReaction'
     | 'handleRetry'
     | 'handleThreadReply'
+    | 'handleBlockUser'
     | 'isAttachmentEqual'
     | 'MessageMenu'
     | 'messageActions'
@@ -278,6 +279,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleReaction: handleReactionProp,
     handleRetry,
     handleThreadReply,
+    handleBlockUser,
     isTargetedMessage,
     members,
     message,
@@ -582,6 +584,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     retry,
     threadReply,
     unpinMessage,
+    blockUser,
   } = useMessageActions({
     channel,
     client,
@@ -602,6 +605,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleReaction: handleReactionProp,
     handleRetry,
     handleThreadReply,
+    handleBlockUser,
     message,
     onThreadSelect,
     openThread,
@@ -639,10 +643,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           pinMessage,
           quotedReply,
           retry,
-          showMessageReactions,
           threadReply,
           unpinMessage,
           updateMessage,
+          blockUser,
         });
 
   const actionHandlers: MessageActionHandlers = {
