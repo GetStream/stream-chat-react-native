@@ -117,10 +117,10 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   }, [setThread]);
 
   const onAlsoSentToChannelHeaderPress = useCallback(
-    (messageId?: string) => {
-      navigation.popTo('ChannelScreen', { messageId: messageId });
+    ({ targetedMessageId }: { targetedMessageId: string }) => {
+      navigation.navigate('ChannelScreen', { channel, messageId: targetedMessageId });
     },
-    [navigation],
+    [channel, navigation],
   );
 
   return (

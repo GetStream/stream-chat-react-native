@@ -63,33 +63,41 @@ export type SentToChannelHeaderProps = Partial<SentToChannelHeaderPropsWithConte
 
 export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
   const { onAlsoSentToChannelHeaderPress } = useThreadContext();
-  const { threadList, channel, setTargetedMessage } = useChannelContext();
-  const { onThreadSelect, message } = useMessageContext();
+  const { channel, threadList } = useChannelContext();
+  const { message } = useMessageContext();
 
+  // TODO: V9: This should be handled by the channel/thread entirely. We should only fetch
+  //           if we don't have the message in state already.
   const handleOnPress = useStableCallback(async () => {
-    if (!threadList) {
-      return await channel
-        .getClient()
-        .search({ cid: channel.cid }, { id: message.parent_id })
-        .then(({ results }) => {
-          if (!results.length) {
-            return;
-          }
-          const targetMessage = formatMessage(results[0].message);
-          onThreadSelect?.(targetMessage, message.id);
-        })
-        .catch((error) => {
-          console.error('Error querying parent message:', error);
-        });
-    } else {
-      setTargetedMessage(message.id);
-      onAlsoSentToChannelHeaderPress?.(message.id);
+    if (threadList) {
+      onAlsoSentToChannelHeaderPress?.({ targetedMessageId: message.id });
+      return;
+    }
+
+    if (!message.parent_id) {
+      return;
+    }
+
+    try {
+      const { messages } = await channel.getMessagesById([message.parent_id]);
+      const parentThreadMessage = formatMessage(messages?.[0]);
+
+      if (!parentThreadMessage) {
+        return;
+      }
+
+      onAlsoSentToChannelHeaderPress?.({
+        parentMessage: formatMessage(parentThreadMessage),
+        targetedMessageId: message.id,
+      });
+    } catch (error) {
+      console.error('Error querying parent message:', error);
     }
   });
 
   const showViewText = useMemo(() => {
-    return !!((!threadList && onThreadSelect) || (threadList && onAlsoSentToChannelHeaderPress));
-  }, [threadList, onThreadSelect, onAlsoSentToChannelHeaderPress]);
+    return !!onAlsoSentToChannelHeaderPress;
+  }, [onAlsoSentToChannelHeaderPress]);
 
   return (
     <MemoizedSentToChannelHeader onPress={handleOnPress} showViewText={showViewText} {...props} />

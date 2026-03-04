@@ -173,7 +173,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   };
 
   const onThreadSelect = useCallback(
-    (thread: LocalMessage | null, targetedMessageId?: string) => {
+    (thread: LocalMessage | null) => {
       if (!thread || !channel) {
         return;
       }
@@ -182,8 +182,25 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       navigation.navigate('ThreadScreen', {
         channel,
         thread,
-        targetedMessageId,
       });
+    },
+    [channel, navigation, setThread],
+  );
+
+  const onAlsoSentToChannelHeaderPress = useCallback(
+    async ({
+      parentMessage,
+      targetedMessageId,
+    }: {
+      parentMessage?: LocalMessage;
+      targetedMessageId: string;
+    }) => {
+      if (!channel || !parentMessage) {
+        return;
+      }
+      setSelectedThread(parentMessage);
+      setThread(parentMessage);
+      navigation.navigate('ThreadScreen', { channel, thread: parentMessage, targetedMessageId });
     },
     [channel, navigation, setThread],
   );
@@ -233,6 +250,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         MessageLocation={MessageLocation}
         messageId={messageId}
         NetworkDownIndicator={() => null}
+        onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}
         maximumMessageLimit={messageListPruning}
       >
