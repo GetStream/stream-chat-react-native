@@ -2,13 +2,11 @@ import React, { useEffect, useMemo } from 'react';
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  cancelAnimation,
   clamp,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withDecay,
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,7 +21,6 @@ import {
 } from '../../state-store';
 
 const DURATION = 300;
-
 export const MessageOverlayHostLayer = () => {
   const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
@@ -89,75 +86,41 @@ export const MessageOverlayHostLayer = () => {
     opacity: backdrop.value,
   }));
 
-  const shiftY = useDerivedValue(() => {
+  const messageShiftY = useDerivedValue(() => {
     if (!messageH.value || !topH.value || !bottomH.value) return 0;
 
     const anchorY = messageH.value.y;
     const msgH = messageH.value.h;
-
     const minTop = minY + topH.value.h;
-    const maxTop = maxY - (msgH + bottomH.value.h);
+    const maxTopWithBottom = maxY - (msgH + bottomH.value.h);
+    const maxTopWithoutBottom = maxY - msgH;
+    const maxTop = minTop <= maxTopWithBottom ? maxTopWithBottom : maxTopWithoutBottom;
+    const solvedTop = clamp(anchorY, minTop, Math.max(minTop, maxTop));
 
-    const solvedTop = clamp(anchorY, minTop, maxTop);
     return solvedTop - anchorY;
   });
 
-  const viewportH = useSharedValue(screenH);
-  useEffect(() => {
-    viewportH.value = screenH;
-  }, [screenH, viewportH]);
+  const bottomShiftY = useDerivedValue(() => {
+    if (!messageH.value || !topH.value || !bottomH.value) return 0;
 
-  const scrollY = useSharedValue(0);
-  const initialScrollOffset = useSharedValue(0);
+    const anchorMessageTop = messageH.value.y;
+    const msgH = messageH.value.h;
+    const minMessageTop = minY + topH.value.h;
+    const maxMessageTopWithBottom = maxY - (msgH + bottomH.value.h);
+    const maxMessageTopWithoutBottom = maxY - msgH;
+    const maxMessageTop =
+      minMessageTop <= maxMessageTopWithBottom
+        ? maxMessageTopWithBottom
+        : maxMessageTopWithoutBottom;
+    const solvedMessageTop = clamp(
+      anchorMessageTop,
+      minMessageTop,
+      Math.max(minMessageTop, maxMessageTop),
+    );
 
-  useEffect(() => {
-    if (isActive) scrollY.value = 0;
-  }, [isActive, scrollY]);
-
-  const contentH = useDerivedValue(() =>
-    topH.value && bottomH.value && messageH.value
-      ? Math.max(
-          screenH,
-          topH.value.h + messageH.value.h + bottomH.value.h + topInset + bottomInset + 20,
-        )
-      : 0,
-  );
-
-  const maxScroll = useDerivedValue(() => Math.max(0, contentH.value - viewportH.value));
-
-  const pan = useMemo(
-    () =>
-      Gesture.Pan()
-        .activeOffsetY([-8, 8])
-        .failOffsetX([-12, 12])
-        .onBegin(() => {
-          cancelAnimation(scrollY);
-          initialScrollOffset.value = scrollY.value;
-        })
-        .onUpdate((e) => {
-          scrollY.value = clamp(initialScrollOffset.value + e.translationY, 0, maxScroll.value);
-        })
-        .onEnd((e) => {
-          scrollY.value = withDecay({ clamp: [0, maxScroll.value], velocity: e.velocityY });
-        }),
-    [initialScrollOffset, maxScroll, scrollY],
-  );
-
-  const scrollAtClose = useSharedValue(0);
-
-  useDerivedValue(() => {
-    if (closing) {
-      scrollAtClose.value = scrollY.value;
-      cancelAnimation(scrollY);
-    }
-  }, [closing]);
-
-  const closeCompStyle = useAnimatedStyle(() => {
-    const target = closing ? -scrollAtClose.value : 0;
-    return {
-      transform: [{ translateY: withSpring(target, { duration: DURATION }) }],
-    };
-  }, [closing]);
+    const solvedBottomTop = Math.min(solvedMessageTop + msgH, maxY - bottomH.value.h);
+    return solvedBottomTop - bottomH.value.y;
+  });
 
   const topItemStyle = useAnimatedStyle(() => {
     if (!topH.value) return { height: 0 };
@@ -165,13 +128,13 @@ export const MessageOverlayHostLayer = () => {
       height: topH.value.h,
       left: topH.value.x,
       position: 'absolute',
-      top: topH.value.y + scrollY.value,
+      top: topH.value.y,
       width: topH.value.w,
     };
   });
 
   const topItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
     return {
       transform: [
         { scale: backdrop.value },
@@ -186,13 +149,13 @@ export const MessageOverlayHostLayer = () => {
       height: bottomH.value.h,
       left: bottomH.value.x,
       position: 'absolute',
-      top: bottomH.value.y + scrollY.value,
+      top: bottomH.value.y,
       width: bottomH.value.w,
     };
   });
 
   const bottomItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : bottomShiftY.value) : 0;
     return {
       transform: [
         { scale: backdrop.value },
@@ -207,13 +170,13 @@ export const MessageOverlayHostLayer = () => {
       height: messageH.value.h,
       left: messageH.value.x,
       position: 'absolute',
-      top: messageH.value.y + scrollY.value, // layout scroll (no special msg-only compensation)
+      top: messageH.value.y,
       width: messageH.value.w,
     };
   });
 
   const hostTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : shiftY.value) : 0;
+    const target = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
 
     return {
       transform: [
@@ -224,49 +187,44 @@ export const MessageOverlayHostLayer = () => {
     };
   }, [isActive, closing]);
 
-  const contentStyle = useAnimatedStyle(() => ({
-    height: contentH.value,
-  }));
+  const tap = useMemo(
+    () =>
+      Gesture.Tap()
+        .onTouchesDown((e, state) => {
+          const t = e.allTouches[0];
+          if (!t || !topH || !bottomH) return;
 
-  const tap = Gesture.Tap()
-    .onTouchesDown((e, state) => {
-      const t = e.allTouches[0];
-      if (!t) return;
+          const x = t.x;
+          const y = t.y;
 
-      const x = t.x;
-      const y = t.y;
+          const messageYShift = messageShiftY.value; // overlay shift for top + message
+          const bottomYShift = bottomShiftY.value; // overlay shift for bottom
+          const top = topH.value;
+          if (top) {
+            const topY = top.y + messageYShift;
+            if (x >= top.x && x <= top.x + top.w && y >= topY && y <= topY + top.h) {
+              state.fail();
+              return;
+            }
+          }
 
-      const yShift = shiftY.value; // overlay shift
-      const yParent = scrollY.value; // parent content
-
-      const top = topH.value;
-      if (top) {
-        // top rectangle's final screen Y
-        // base layout Y + overlay shift (shiftY) + parent scroll transform (scrollY)
-        const topY = top.y + yParent + yShift;
-        if (x >= top.x && x <= top.x + top.w && y >= topY && y <= topY + top.h) {
-          state.fail();
-          return;
-        }
-      }
-
-      const bot = bottomH.value;
-      if (bot) {
-        // bottom rectangle's final screen Y
-        // base layout Y + overlay shift (shiftY) + parent scroll transform (scrollY)
-        const botY = bot.y + yParent + yShift;
-        if (x >= bot.x && x <= bot.x + bot.w && y >= botY && y <= botY + bot.h) {
-          state.fail();
-          return;
-        }
-      }
-    })
-    .onEnd(() => {
-      runOnJS(closeOverlay)();
-    });
+          const bot = bottomH.value;
+          if (bot) {
+            const botY = bot.y + bottomYShift;
+            if (x >= bot.x && x <= bot.x + bot.w && y >= botY && y <= botY + bot.h) {
+              state.fail();
+              return;
+            }
+          }
+        })
+        .onEnd(() => {
+          runOnJS(closeOverlay)();
+        }),
+    [bottomH, bottomShiftY, messageShiftY, topH],
+  );
 
   return (
-    <GestureDetector gesture={Gesture.Exclusive(pan, tap)}>
+    <GestureDetector gesture={tap}>
       <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
         {isActive ? (
           <Animated.View
@@ -275,7 +233,7 @@ export const MessageOverlayHostLayer = () => {
           />
         ) : null}
 
-        <Animated.View style={[contentStyle, closeCompStyle]}>
+        <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
           {isActive ? (
             <Pressable onPress={closeOverlay} style={StyleSheet.absoluteFillObject} />
           ) : null}
@@ -291,7 +249,7 @@ export const MessageOverlayHostLayer = () => {
           <Animated.View style={[bottomItemStyle, bottomItemTranslateStyle, styles.shadow3]}>
             <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
-        </Animated.View>
+        </View>
       </View>
     </GestureDetector>
   );
