@@ -100,7 +100,12 @@ export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
   }, [onAlsoSentToChannelHeaderPress]);
 
   return (
-    <MemoizedSentToChannelHeader onPress={handleOnPress} showViewText={showViewText} {...props} />
+    <MemoizedSentToChannelHeader
+      onPress={handleOnPress}
+      showViewText={showViewText}
+      threadList={threadList}
+      {...props}
+    />
   );
 };
 
