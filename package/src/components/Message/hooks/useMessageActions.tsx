@@ -276,8 +276,9 @@ export const useMessageActions = ({
     const banUser: MessageActionType = {
       action: onBanUser,
       actionType: 'banUser',
-      icon: <UserDelete width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <UserDelete width={20} height={20} stroke={semantics.accentError} />,
       title: message.user?.banned ? t('Unban User') : t('Ban User'),
+      titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };
 

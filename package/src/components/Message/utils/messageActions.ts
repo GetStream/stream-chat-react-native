@@ -32,7 +32,7 @@ export type MessageActionsParams = {
 export type MessageActionsProp = (param: MessageActionsParams) => MessageActionType[];
 
 export const messageActions = ({
-  // banUser,
+  banUser,
   copyMessage,
   deleteMessage,
   editMessage,
@@ -94,10 +94,9 @@ export const messageActions = ({
     actions.push(markUnread);
   }
 
-  // TODO: V9: Check if we really want this.
-  // if (!isMyMessage && ownCapabilities.banChannelMembers) {
-  //   actions.push(banUser);
-  // }
+  if (!isMyMessage && ownCapabilities.banChannelMembers) {
+    actions.push(banUser);
+  }
 
   if (
     (isMyMessage && ownCapabilities.deleteOwnMessage) ||

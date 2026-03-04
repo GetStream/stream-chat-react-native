@@ -111,11 +111,11 @@ describe('Own capabilities', () => {
   });
 
   describe(`${allOwnCapabilities.banChannelMembers} capability`, () => {
-    // it(`should render "Ban User" message action when ${allOwnCapabilities.banChannelMembers} capability is enabled`, async () => {
-    //   await generateChannelWithCapabilities([allOwnCapabilities.banChannelMembers]);
-    //   const { queryByLabelText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-    //   expect(!!queryByLabelText('banUser action list item')).toBeTruthy();
-    // });
+    it(`should render "Ban User" message action when ${allOwnCapabilities.banChannelMembers} capability is enabled`, async () => {
+      await generateChannelWithCapabilities([allOwnCapabilities.banChannelMembers]);
+      const { queryByLabelText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByLabelText('banUser action list item')).toBeTruthy();
+    });
 
     it(`should not render "Ban User" message action when ${allOwnCapabilities.banChannelMembers} capability is disabled`, async () => {
       await generateChannelWithCapabilities();
