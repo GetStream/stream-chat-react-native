@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  SharedValue,
   clamp,
   runOnJS,
   useAnimatedStyle,
@@ -17,18 +18,56 @@ import {
   finalizeCloseOverlay,
   registerOverlaySharedValueController,
   Rect,
+  useClosingPortalLayouts,
   useOverlayController,
 } from '../../state-store';
 
 const DURATION = 300;
+const ClosingPortalHostSlot = ({
+  closeCoverOpacity,
+  hostName,
+  rect,
+}: {
+  closeCoverOpacity: SharedValue<number>;
+  hostName: string;
+  rect: Exclude<Rect, undefined>;
+}) => {
+  const layout = useSharedValue<Rect>(rect);
+
+  useEffect(() => {
+    layout.value = rect;
+  }, [layout, rect]);
+
+  const style = useAnimatedStyle(() => {
+    const value = layout.value;
+    if (!value) return { opacity: closeCoverOpacity.value };
+
+    return {
+      height: value.h,
+      left: value.x,
+      opacity: closeCoverOpacity.value,
+      top: value.y,
+      width: value.w,
+    };
+  });
+
+  console.log('RENDERING: ', hostName);
+
+  return (
+    <Animated.View pointerEvents='box-none' style={[styles.overlayClosingSlot, style]}>
+      <PortalHost name={hostName} style={StyleSheet.absoluteFillObject} />
+    </Animated.View>
+  );
+};
+
 export const MessageOverlayHostLayer = () => {
   const { id, closing } = useOverlayController();
+  const closingPortalLayouts = useClosingPortalLayouts();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
   const messageH = useSharedValue<Rect>(undefined);
   const topH = useSharedValue<Rect>(undefined);
   const bottomH = useSharedValue<Rect>(undefined);
-  const composerH = useSharedValue(0);
   const closeCorrectionY = useSharedValue(0);
 
   const topInset = insets.top;
@@ -65,9 +104,6 @@ export const MessageOverlayHostLayer = () => {
         setBottomH: (rect) => {
           bottomH.value = rect;
         },
-        setComposerH: (height) => {
-          composerH.value = height;
-        },
         setMessageH: (rect) => {
           messageH.value = rect;
         },
@@ -75,7 +111,7 @@ export const MessageOverlayHostLayer = () => {
           topH.value = rect;
         },
       }),
-    [bottomH, closeCorrectionY, composerH, messageH, topH],
+    [bottomH, closeCorrectionY, messageH, topH],
   );
 
   useEffect(() => {
@@ -90,12 +126,6 @@ export const MessageOverlayHostLayer = () => {
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdrop.value,
-  }));
-  const closeCoverStyle = useAnimatedStyle(() => ({
-    opacity: closeCoverOpacity.value,
-  }));
-  const composerSlotStyle = useAnimatedStyle(() => ({
-    height: composerH.value,
   }));
 
   const messageShiftY = useDerivedValue(() => {
@@ -231,6 +261,8 @@ export const MessageOverlayHostLayer = () => {
       runOnJS(closeOverlay)();
     });
 
+  console.log('TEST', Object.entries(closingPortalLayouts));
+
   return (
     <GestureDetector gesture={tap}>
       <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
@@ -259,37 +291,27 @@ export const MessageOverlayHostLayer = () => {
           </Animated.View>
         </View>
 
-        <Animated.View pointerEvents='box-none' style={[styles.overlayHeaderSlot, closeCoverStyle]}>
-          <PortalHost name='overlay-header' style={StyleSheet.absoluteFillObject} />
-        </Animated.View>
-
-        <Animated.View
-          pointerEvents='box-none'
-          style={[styles.overlayComposerSlot, closeCoverStyle, composerSlotStyle]}
-        >
-          <PortalHost name='overlay-composer' style={StyleSheet.absoluteFillObject} />
-        </Animated.View>
+        {Object.entries(closingPortalLayouts).map(([hostName, rect]) => {
+          if (!rect) return null;
+          return (
+            <ClosingPortalHostSlot
+              closeCoverOpacity={closeCoverOpacity}
+              hostName={hostName}
+              key={hostName}
+              rect={rect}
+            />
+          );
+        })}
       </View>
     </GestureDetector>
   );
 };
 
 const styles = StyleSheet.create({
-  overlayComposerSlot: {
-    bottom: 0,
+  overlayClosingSlot: {
     elevation: 20,
-    left: 0,
     position: 'absolute',
-    right: 0,
-    width: '100%',
     zIndex: 20,
-  },
-  overlayHeaderSlot: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-start',
-    left: 0,
-    position: 'absolute',
-    right: 0,
   },
   shadow3: {
     overflow: 'visible',

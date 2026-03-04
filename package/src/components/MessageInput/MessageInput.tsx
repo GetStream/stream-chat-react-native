@@ -56,7 +56,6 @@ import {
 import { useAttachmentPickerState } from '../../hooks/useAttachmentPickerState';
 import { useKeyboardVisibility } from '../../hooks/useKeyboardVisibility';
 import { useStateStore } from '../../hooks/useStateStore';
-import { setOverlayComposerH } from '../../state-store';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
@@ -362,7 +361,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     <MicPositionProvider value={micPositionContextValue}>
       <Animated.View layout={LinearTransition.duration(200)}>
         <PortalWhileClosingView
-          placeholderHeight={height}
           portalHostName='overlay-composer'
           portalName='message-input-composer'
         >
@@ -372,7 +370,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 layout: { height: newHeight },
               },
             }) => {
-              setOverlayComposerH(newHeight);
               messageInputHeightStore.setHeight(
                 messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
               );

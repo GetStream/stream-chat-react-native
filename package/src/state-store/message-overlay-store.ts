@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 
 import { StateStore } from 'stream-chat';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { useStateStore } from '../hooks';
 
@@ -10,10 +11,16 @@ type OverlayState = {
 };
 
 export type Rect = { x: number; y: number; w: number; h: number } | undefined;
+type ClosingPortalLayoutsState = {
+  layouts: Record<string, Rect>;
+};
 
 const DefaultState = {
   closing: false,
   id: undefined,
+};
+const DefaultClosingPortalLayoutsState: ClosingPortalLayoutsState = {
+  layouts: {},
 };
 
 type OverlaySharedValueController = {
@@ -21,7 +28,6 @@ type OverlaySharedValueController = {
   resetCloseCorrectionY: () => void;
   reset: () => void;
   setBottomH: (rect: Rect) => void;
-  setComposerH: (height: number) => void;
   setMessageH: (rect: Rect) => void;
   setTopH: (rect: Rect) => void;
 };
@@ -47,10 +53,6 @@ export const setOverlayTopH = (topH: Rect) => {
 
 export const setOverlayBottomH = (bottomH: Rect) => {
   sharedValueController?.setBottomH(bottomH);
-};
-
-export const setOverlayComposerH = (height: number) => {
-  sharedValueController?.setComposerH(height);
 };
 
 export const bumpOverlayLayoutRevision = (closeCorrectionDeltaY = 0) => {
@@ -81,10 +83,29 @@ export const scheduleActionOnClose = (action: () => void | Promise<void>) => {
 
 export const finalizeCloseOverlay = () => {
   overlayStore.partialNext(DefaultState);
+  // closingPortalLayoutsStore.next(DefaultClosingPortalLayoutsState);
   sharedValueController?.reset();
 };
 
 export const overlayStore = new StateStore<OverlayState>(DefaultState);
+const closingPortalLayoutsStore = new StateStore<ClosingPortalLayoutsState>(
+  DefaultClosingPortalLayoutsState,
+);
+
+export const setClosingPortalLayout = (hostName: string, layout: Rect) => {
+  const { layouts } = closingPortalLayoutsStore.getLatestValue();
+  if (layout) {
+    closingPortalLayoutsStore.next({ layouts: { ...layouts, [hostName]: layout } });
+    return;
+  }
+  const nextLayouts = { ...layouts };
+  delete nextLayouts[hostName];
+  closingPortalLayoutsStore.next({ layouts: nextLayouts });
+};
+
+export const clearClosingPortalLayout = (hostName: string) => {
+  setClosingPortalLayout(hostName, undefined);
+};
 
 const actionQueueSelector = (nextState: OverlayState) => ({ active: !!nextState.id });
 
@@ -108,6 +129,19 @@ const selector = (nextState: OverlayState) => ({
 
 export const useOverlayController = () => {
   return useStateStore(overlayStore, selector);
+};
+
+export const useClosingPortalLayouts = () => {
+  const subscribe = useCallback(
+    (listener: () => void) =>
+      closingPortalLayoutsStore.subscribe(() => {
+        listener();
+      }),
+    [],
+  );
+  const getSnapshot = useCallback(() => closingPortalLayoutsStore.getLatestValue().layouts, []);
+
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 };
 
 const noOpObject = { active: false, closing: false };
