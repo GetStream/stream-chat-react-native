@@ -63,6 +63,7 @@ import { useClientNotificationsToastHandler } from './src/hooks/useClientNotific
 import AsyncStore from './src/utils/AsyncStore.ts';
 import {
   MessageInputFloatingConfigItem,
+  MessageOverlayBackdropConfigItem,
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
@@ -141,6 +142,9 @@ const App = () => {
   const [messageInputFloating, setMessageInputFloating] = useState<
     MessageInputFloatingConfigItem['value'] | undefined
   >(undefined);
+  const [messageOverlayBackdrop, setMessageOverlayBackdrop] = useState<
+    MessageOverlayBackdropConfigItem['value'] | undefined
+  >(undefined);
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
   const streami18n = new Streami18n();
@@ -200,6 +204,10 @@ const App = () => {
         '@stream-rn-sampleapp-messageinput-floating',
         { value: false },
       );
+      const messageOverlayBackdropStoredValue = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-message-overlay-backdrop',
+        { value: 'default' },
+      );
       setMessageListImplementation(
         messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
       );
@@ -209,6 +217,9 @@ const App = () => {
       );
       setMessageInputFloating(
         messageInputFloatingStoredValue?.value as MessageInputFloatingConfigItem['value'],
+      );
+      setMessageOverlayBackdrop(
+        messageOverlayBackdropStoredValue?.value as MessageOverlayBackdropConfigItem['value'],
       );
     };
     getMessageListConfig();
@@ -258,7 +269,9 @@ const App = () => {
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <OverlayProvider
-          MessageOverlayBackground={MessageOverlayBlurBackground}
+          MessageOverlayBackground={
+            messageOverlayBackdrop === 'blurview' ? MessageOverlayBlurBackground : undefined
+          }
           value={{ style: streamChatTheme }}
           i18nInstance={streami18n}
         >
