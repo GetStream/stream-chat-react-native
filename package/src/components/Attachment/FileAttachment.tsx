@@ -6,7 +6,7 @@ import type { Attachment } from 'stream-chat';
 import { FilePreview } from './FilePreview';
 import { openUrlSafely } from './utils/openUrlSafely';
 
-import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
+import { FileIcon as FileIconDefault, FileIconProps } from '../../components/Attachment/FileIcon';
 import {
   MessageContextValue,
   useMessageContext,
@@ -24,7 +24,7 @@ export type FileAttachmentPropsWithContext = Pick<
   Pick<MessagesContextValue, 'additionalPressableProps'> & {
     /** The attachment to render */
     attachment: Attachment;
-    attachmentIconSize?: number;
+    attachmentIconSize?: FileIconProps['size'];
     // TODO: Think we really need a way to style the file preview using props if we have theme.
     styles?: Partial<{
       container: StyleProp<ViewStyle>;

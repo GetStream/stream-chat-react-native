@@ -78,7 +78,6 @@ export const FileAttachmentUploadPreview = ({
     <View style={[styles.wrapper, wrapper]} testID={'file-attachment-upload-preview'}>
       <FilePreview
         attachment={attachment}
-        attachmentIconSize={40}
         titleNumberOfLines={1}
         styles={{ container: styles.fileContainer }}
         indicator={renderIndicator}
