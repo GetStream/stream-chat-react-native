@@ -345,6 +345,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'handleQuotedReply'
       | 'handleRetry'
       | 'handleThreadReply'
+      | 'handleBlockUser'
       | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
       | 'isAttachmentEqual'
@@ -634,6 +635,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleReaction,
     handleRetry,
     handleThreadReply,
+    handleBlockUser,
     hasCameraPicker = isImagePickerAvailable(),
     hasCommands,
     hasCreatePoll,
@@ -1925,6 +1927,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleReaction,
     handleRetry,
     handleThreadReply,
+    handleBlockUser,
     hasCreatePoll:
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
     ImageLoadingFailedIndicator,

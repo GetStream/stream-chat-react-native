@@ -422,6 +422,8 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   handleRetry?: (message: LocalMessage) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
   handleThreadReply?: (message: LocalMessage) => Promise<void>;
+  /** Handler to access when a blocking user action is invoked */
+  handleBlockUser?: (user: LocalMessage['user']) => Promise<void>;
   /** A flag specifying whether the poll creation button is available or not. */
   hasCreatePoll?: boolean;
   /** Handler to deal with custom memoization logic of Attachment */

@@ -19,7 +19,7 @@ import { MessageStatusTypes } from '../../../utils/utils';
 
 export type MessageStatusPropsWithContext = Pick<
   MessageContextValue,
-  'deliveredToCount' | 'message' | 'readBy' | 'threadList'
+  'deliveredToCount' | 'message' | 'readBy'
 > &
   Pick<MessagesContextValue, 'MessageTimestamp'> & {
     formattedDate?: string | Date;
@@ -27,15 +27,7 @@ export type MessageStatusPropsWithContext = Pick<
   };
 
 const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
-  const {
-    deliveredToCount,
-    formattedDate,
-    message,
-    readBy,
-    threadList,
-    timestamp,
-    MessageTimestamp,
-  } = props;
+  const { deliveredToCount, formattedDate, message, readBy, timestamp, MessageTimestamp } = props;
 
   const styles = useStyles();
 
@@ -48,7 +40,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     },
   } = useTheme();
 
-  if (threadList || message.status === MessageStatusTypes.FAILED || message.type === 'error') {
+  if (message.status === MessageStatusTypes.FAILED || message.type === 'error') {
     return null;
   }
 
@@ -112,7 +104,6 @@ const areEqual = (
     deliveredToCount: prevDeliveredBy,
     message: prevMessage,
     readBy: prevReadBy,
-    threadList: prevThreadList,
     formattedDate: prevFormattedDate,
     timestamp: prevTimestamp,
   } = prevProps;
@@ -120,18 +111,12 @@ const areEqual = (
     deliveredToCount: nextDeliveredBy,
     message: nextMessage,
     readBy: nextReadBy,
-    threadList: nextThreadList,
     formattedDate: nextFormattedDate,
     timestamp: nextTimestamp,
   } = nextProps;
 
   const deliveredByEqual = prevDeliveredBy === nextDeliveredBy;
   if (!deliveredByEqual) {
-    return false;
-  }
-
-  const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) {
     return false;
   }
 
@@ -168,7 +153,7 @@ export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 
 export const MessageStatus = (props: MessageStatusProps) => {
   const { channel } = useChannelContext();
-  const { deliveredToCount, message, readBy, threadList } = useMessageContext();
+  const { deliveredToCount, message, readBy } = useMessageContext();
   const { MessageTimestamp } = useMessagesContext();
 
   const channelMembersCount = Object.keys(channel?.state.members).length;
@@ -181,7 +166,6 @@ export const MessageStatus = (props: MessageStatusProps) => {
         deliveredToCount,
         message,
         readBy,
-        threadList,
         MessageTimestamp,
       }}
       {...props}
