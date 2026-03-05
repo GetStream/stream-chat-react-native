@@ -5,7 +5,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
 import { useStableCallback } from '../../hooks';
-import { setClosingPortalLayout, useOverlayController } from '../../state-store';
+import {
+  clearClosingPortalLayout,
+  setClosingPortalLayout,
+  useOverlayController,
+} from '../../state-store';
 
 type PortalWhileClosingViewProps = {
   children: ReactNode;
@@ -57,6 +61,14 @@ export const PortalWhileClosingView = ({
       cancelled = true;
     };
   }, [insets.top, portalHostName]);
+
+  const unregisterPortalHost = useStableCallback(() => clearClosingPortalLayout(portalHostName));
+
+  useEffect(() => {
+    return () => {
+      unregisterPortalHost();
+    };
+  }, [unregisterPortalHost]);
 
   const onWrapperViewLayout = useStableCallback((event: LayoutChangeEvent) => {
     const { height, width } = event.nativeEvent.layout;
