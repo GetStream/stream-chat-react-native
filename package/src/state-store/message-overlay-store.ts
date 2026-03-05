@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
 
+import { makeMutable, type SharedValue } from 'react-native-reanimated';
+
 import { StateStore } from 'stream-chat';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { useStateStore } from '../hooks';
 
@@ -10,10 +13,19 @@ type OverlayState = {
 };
 
 export type Rect = { x: number; y: number; w: number; h: number } | undefined;
+export type ClosingPortalLayoutEntry = {
+  layout: SharedValue<Rect>;
+};
+type ClosingPortalLayoutsState = {
+  layouts: Record<string, ClosingPortalLayoutEntry>;
+};
 
 const DefaultState = {
   closing: false,
   id: undefined,
+};
+const DefaultClosingPortalLayoutsState: ClosingPortalLayoutsState = {
+  layouts: {},
 };
 
 type OverlaySharedValueController = {
@@ -80,6 +92,37 @@ export const finalizeCloseOverlay = () => {
 };
 
 export const overlayStore = new StateStore<OverlayState>(DefaultState);
+const closingPortalLayoutsStore = new StateStore<ClosingPortalLayoutsState>(
+  DefaultClosingPortalLayoutsState,
+);
+
+export const setClosingPortalLayout = (hostName: string, layout: Rect) => {
+  const { layouts } = closingPortalLayoutsStore.getLatestValue();
+  const existingEntry = layouts[hostName];
+
+  if (existingEntry) {
+    existingEntry.layout.value = layout;
+    return;
+  }
+
+  if (!layout) return;
+
+  closingPortalLayoutsStore.next({
+    layouts: {
+      ...layouts,
+      [hostName]: {
+        layout: makeMutable<Rect>(layout),
+      },
+    },
+  });
+};
+
+export const clearClosingPortalLayout = (hostName: string) => {
+  const { layouts } = closingPortalLayoutsStore.getLatestValue();
+  const nextLayouts = { ...layouts };
+  delete nextLayouts[hostName];
+  closingPortalLayoutsStore.next({ layouts: nextLayouts });
+};
 
 const actionQueueSelector = (nextState: OverlayState) => ({ active: !!nextState.id });
 
@@ -103,6 +146,37 @@ const selector = (nextState: OverlayState) => ({
 
 export const useOverlayController = () => {
   return useStateStore(overlayStore, selector);
+};
+
+/**
+ * NOTE:
+ * Do not swap this back to `useStateStore(closingPortalLayoutsStore, selector)`.
+ *
+ * Why this is special:
+ * - `layouts` is a dynamic-key map (hosts are added/removed at runtime)
+ * - We only need React updates when the key set changes (add/remove/reset)
+ * - Per-layout movement is already on UI thread via `entry.layout.value`
+ *
+ * Why `useStateStore` is unsafe here:
+ * - Both `stream-chat`'s `subscribeWithSelector` and our `useStateStore` snapshot
+ *   comparator use an asymmetric key comparison (they iterate previous keys only)
+ * - That means `{}` -> `{ newHost: entry }` can be treated as "no change"
+ * - When that happens, overlay slots never mount even though registration has run
+ *
+ * `useSyncExternalStore` with raw store subscription avoids that selector compare path,
+ * so add/remove of hosts is always treated as observable.
+ */
+export const useClosingPortalLayouts = () => {
+  const subscribe = useCallback(
+    (listener: () => void) =>
+      closingPortalLayoutsStore.subscribe(() => {
+        listener();
+      }),
+    [],
+  );
+  const getSnapshot = useCallback(() => closingPortalLayoutsStore.getLatestValue().layouts, []);
+
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 };
 
 const noOpObject = { active: false, closing: false };

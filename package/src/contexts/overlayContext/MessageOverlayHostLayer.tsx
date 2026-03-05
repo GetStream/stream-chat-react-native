@@ -12,6 +12,8 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PortalHost } from 'react-native-teleport';
 
+import { ClosingPortalHostsLayer } from './ClosingPortalHostsLayer';
+
 import {
   closeOverlay,
   finalizeCloseOverlay,
@@ -21,6 +23,7 @@ import {
 } from '../../state-store';
 
 const DURATION = 300;
+
 export const MessageOverlayHostLayer = () => {
   const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
@@ -44,6 +47,7 @@ export const MessageOverlayHostLayer = () => {
   const maxY = screenH - bottomInset - padding;
 
   const backdrop = useSharedValue(0);
+  const closeCoverOpacity = useSharedValue(0);
 
   useEffect(
     () =>
@@ -80,7 +84,8 @@ export const MessageOverlayHostLayer = () => {
         runOnJS(finalizeCloseOverlay)();
       }
     });
-  }, [isActive, closing, backdrop]);
+    closeCoverOpacity.value = withSpring(closing ? 1 : 0, { duration: DURATION });
+  }, [isActive, closing, backdrop, closeCoverOpacity]);
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdrop.value,
@@ -250,6 +255,8 @@ export const MessageOverlayHostLayer = () => {
             <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
         </View>
+
+        <ClosingPortalHostsLayer closeCoverOpacity={closeCoverOpacity} />
       </View>
     </GestureDetector>
   );
