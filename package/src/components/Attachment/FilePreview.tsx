@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-n
 
 import type { Attachment } from 'stream-chat';
 
-import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
+import { FileIcon as FileIconDefault, FileIconProps } from '../../components/Attachment/FileIcon';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -15,7 +15,7 @@ import { getDurationLabelFromDuration, getFileSizeDisplayText } from '../../util
 export type FilePreviewProps = Partial<Pick<MessagesContextValue, 'FileAttachmentIcon'>> & {
   /** The attachment to render */
   attachment: Attachment;
-  attachmentIconSize?: number;
+  attachmentIconSize?: FileIconProps['size'];
   // TODO: Think we really need a way to style the file preview using props if we have theme.
   styles?: Partial<{
     container: StyleProp<ViewStyle>;
