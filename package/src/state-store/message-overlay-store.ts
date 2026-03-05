@@ -148,6 +148,24 @@ export const useOverlayController = () => {
   return useStateStore(overlayStore, selector);
 };
 
+/**
+ * NOTE:
+ * Do not swap this back to `useStateStore(closingPortalLayoutsStore, selector)`.
+ *
+ * Why this is special:
+ * - `layouts` is a dynamic-key map (hosts are added/removed at runtime)
+ * - We only need React updates when the key set changes (add/remove/reset)
+ * - Per-layout movement is already on UI thread via `entry.layout.value`
+ *
+ * Why `useStateStore` is unsafe here:
+ * - Both `stream-chat`'s `subscribeWithSelector` and our `useStateStore` snapshot
+ *   comparator use an asymmetric key comparison (they iterate previous keys only)
+ * - That means `{}` -> `{ newHost: entry }` can be treated as "no change"
+ * - When that happens, overlay slots never mount even though registration has run
+ *
+ * `useSyncExternalStore` with raw store subscription avoids that selector compare path,
+ * so add/remove of hosts is always treated as observable.
+ */
 export const useClosingPortalLayouts = () => {
   const subscribe = useCallback(
     (listener: () => void) =>
