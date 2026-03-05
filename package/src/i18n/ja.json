@@ -200,5 +200,7 @@
   "Unmute Group": "グループのミュートを解除",
   "{{memberCount}} members, {{onlineCount}} online_one": "{{memberCount}}人のメンバー、{{onlineCount}}人がオンライン",
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}}人のメンバー、{{onlineCount}}人がオンライン",
-  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}}人のメンバー、{{onlineCount}}人がオンライン"
+  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}}人のメンバー、{{onlineCount}}人がオンライン",
+  "{{count}} unread": "{{count}} 未読",
+  "{{count}} new messages": "{{count}} 新しいメッセージ"
 }

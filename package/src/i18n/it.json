@@ -200,5 +200,7 @@
   "Unmute Group": "Riattiva audio gruppo",
   "{{memberCount}} members, {{onlineCount}} online_one": "{{memberCount}} membro, {{onlineCount}} online",
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} membri, {{onlineCount}} online",
-  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} membri, {{onlineCount}} online"
+  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} membri, {{onlineCount}} online",
+  "{{count}} unread": "{{count}} non letti",
+  "{{count}} new messages": "{{count}} nuovi messaggi"
 }

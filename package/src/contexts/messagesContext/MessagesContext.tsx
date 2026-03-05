@@ -12,7 +12,11 @@ import type {
   MessageResponse,
 } from 'stream-chat';
 
-import type { PollContentProps, StreamingMessageViewProps } from '../../components';
+import type {
+  InlineUnreadIndicatorProps,
+  PollContentProps,
+  StreamingMessageViewProps,
+} from '../../components';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AudioAttachmentProps } from '../../components/Attachment/Audio';
 import type { FileAttachmentProps } from '../../components/Attachment/FileAttachment';
@@ -181,7 +185,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * UI component for InlineUnreadIndicator
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/InlineUnreadIndicator.tsx)
    **/
-  InlineUnreadIndicator: React.ComponentType;
+  InlineUnreadIndicator: React.ComponentType<InlineUnreadIndicatorProps>;
 
   Message: React.ComponentType<MessageProps>;
   /**

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
@@ -72,10 +72,11 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
     useStateStore(channelUnreadStateStore.state, channelUnreadStateSelector);
   const {
     theme: {
-      messageList: { messageContainer, inlineDateSeparatorContainer },
+      messageList: { messageContainer },
       screenPadding,
     },
   } = useTheme();
+  const styles = useStyles();
   if (!channel || channel.disconnected) {
     return null;
   }
@@ -95,7 +96,7 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
 
   const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
   const renderDateSeperator = dateSeparatorDate ? (
-    <View style={[styles.dateSeparatorContainer, inlineDateSeparatorContainer]}>
+    <View style={styles.dateSeparatorContainer}>
       <InlineDateSeparator date={dateSeparatorDate} />
     </View>
   ) : null;
@@ -133,13 +134,33 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
           {renderMessage}
         </View>
       )}
-      {showUnreadUnderlay && <InlineUnreadIndicator />}
+      {showUnreadUnderlay && (
+        <View style={styles.unreadUnderlayContainer}>
+          <InlineUnreadIndicator unreadCount={unread_messages} />
+        </View>
+      )}
     </View>
   );
 });
 
-const styles = StyleSheet.create({
-  dateSeparatorContainer: {
-    paddingVertical: primitives.spacingXs,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      messageList: { unreadUnderlayContainer, inlineDateSeparatorContainer },
+    },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        dateSeparatorContainer: {
+          paddingVertical: primitives.spacingXs,
+          ...inlineDateSeparatorContainer,
+        },
+        unreadUnderlayContainer: {
+          paddingVertical: primitives.spacingXs,
+          ...unreadUnderlayContainer,
+        },
+      }),
+    [unreadUnderlayContainer, inlineDateSeparatorContainer],
+  );
+};

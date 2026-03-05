@@ -486,6 +486,7 @@ export type Theme = {
     listContainer: ViewStyle;
     messageContainer: ViewStyle;
     inlineDateSeparatorContainer: ViewStyle;
+    unreadUnderlayContainer: ViewStyle;
     messageSystem: {
       container: ViewStyle;
       dateText: TextStyle;
@@ -503,10 +504,9 @@ export type Theme = {
     typingIndicatorContainer: ViewStyle;
     unreadMessagesNotificationContainer: ViewStyle;
     unreadMessagesNotification: {
-      closeButtonContainer: ViewStyle;
-      closeIcon: IconProps;
       container: ViewStyle;
-      text: TextStyle;
+      leftButtonContainer: ViewStyle;
+      rightButtonContainer: ViewStyle;
     };
   };
   messageMenu: {
@@ -1380,6 +1380,7 @@ export const defaultTheme: Theme = {
     listContainer: {},
     messageContainer: {},
     inlineDateSeparatorContainer: {},
+    unreadUnderlayContainer: {},
     messageSystem: {
       container: {},
       dateText: {},
@@ -1396,10 +1397,9 @@ export const defaultTheme: Theme = {
     stickyHeaderContainer: {},
     typingIndicatorContainer: {},
     unreadMessagesNotification: {
-      closeButtonContainer: {},
-      closeIcon: {},
       container: {},
-      text: {},
+      leftButtonContainer: {},
+      rightButtonContainer: {},
     },
     unreadMessagesNotificationContainer: {},
   },

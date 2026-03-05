@@ -200,5 +200,7 @@
   "Unmute Group": "ग्रुप अनम्यूट करें",
   "{{memberCount}} members, {{onlineCount}} online_one": "{{memberCount}} सदस्य, {{onlineCount}} ऑनलाइन",
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} सदस्य, {{onlineCount}} ऑनलाइन",
-  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} सदस्य, {{onlineCount}} ऑनलाइन"
+  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} सदस्य, {{onlineCount}} ऑनलाइन",
+  "{{count}} unread": "{{count}} ना पढ़े हुए",
+  "{{count}} new messages": "{{count}} नये संदेश"
 }

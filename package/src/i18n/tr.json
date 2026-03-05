@@ -200,5 +200,7 @@
   "Unmute Group": "Grubun sesini ac",
   "{{memberCount}} members, {{onlineCount}} online_one": "{{memberCount}} üye, {{onlineCount}} çevrimiçi",
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} üye, {{onlineCount}} çevrimiçi",
-  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} üye, {{onlineCount}} çevrimiçi"
+  "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} üye, {{onlineCount}} çevrimiçi",
+  "{{count}} unread": "{{count}} okunmamış",
+  "{{count}} new messages": "{{count}} yeni mesaj"
 }

@@ -126,13 +126,15 @@ const useStyles = () => {
           left: 0,
           position: 'absolute',
           right: 0,
-          top: primitives.spacingXs,
+          top: primitives.spacingMd,
           ...stickyHeaderContainer,
         },
         unreadMessagesNotificationContainer: {
-          alignSelf: 'center',
           position: 'absolute',
-          top: 8,
+          top: primitives.spacingMd,
+          left: 0,
+          right: 0,
+          alignItems: 'center',
           ...unreadMessagesNotificationContainer,
         },
       }),
@@ -1310,7 +1312,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         <Animated.View
           layout={LinearTransition.duration(200)}
           style={[
-            { bottom: messageInputFloating ? messageInputHeight : 16 },
+            { bottom: messageInputFloating ? messageInputHeight : primitives.spacingMd },
             styles.scrollToBottomButtonContainer,
           ]}
         >
@@ -1325,7 +1327,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
         <View style={styles.unreadMessagesNotificationContainer}>
-          <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
+          <UnreadMessagesNotification
+            onCloseHandler={onUnreadNotificationClose}
+            channelUnreadStateStore={channelUnreadStateStore}
+          />
         </View>
       ) : null}
     </View>
