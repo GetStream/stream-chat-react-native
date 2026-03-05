@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 
-import { StyleProp, ViewStyle } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
@@ -12,10 +11,6 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type Overlay = 'alert' | 'gallery' | 'none';
-export type MessageOverlayBackgroundProps = {
-  overlayOpacity: SharedValue<number>;
-  style?: StyleProp<ViewStyle>;
-};
 
 export type OverlayContextValue = {
   overlay: Overlay;
@@ -33,9 +28,8 @@ export type OverlayProviderProps = ImageGalleryProviderProps & {
   i18nInstance?: Streami18n;
   /**
    * Custom backdrop component rendered behind overlay content in `MessageOverlayHostLayer`.
-   * Receives a shared opacity value that should be used for its visibility animation.
    */
-  MessageOverlayBackground?: React.ComponentType<MessageOverlayBackgroundProps>;
+  MessageOverlayBackground?: React.ComponentType;
   value?: Partial<OverlayContextValue>;
 };
 

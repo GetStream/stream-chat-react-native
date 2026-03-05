@@ -3,7 +3,6 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  useColorScheme,
   useWindowDimensions,
   View,
 } from 'react-native';
@@ -20,7 +19,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PortalHost } from 'react-native-teleport';
 
 import { ClosingPortalHostsLayer } from './ClosingPortalHostsLayer';
-import type { MessageOverlayBackgroundProps } from './OverlayContext';
 
 import {
   closeOverlay,
@@ -33,13 +31,13 @@ import { useTheme } from '../themeContext/ThemeContext';
 
 const DURATION = 300;
 
-const DefaultMessageOverlayBackground = ({ style }: MessageOverlayBackgroundProps) => {
+const DefaultMessageOverlayBackground = () => {
   const {
     theme: { semantics },
   } = useTheme();
 
   return (
-    <View pointerEvents='none' style={[StyleSheet.absoluteFillObject, style]}>
+    <View pointerEvents='none' style={StyleSheet.absoluteFillObject}>
       <View
         pointerEvents='none'
         style={[
@@ -54,7 +52,7 @@ const DefaultMessageOverlayBackground = ({ style }: MessageOverlayBackgroundProp
 };
 
 type MessageOverlayHostLayerProps = {
-  BackgroundComponent?: React.ComponentType<MessageOverlayBackgroundProps>;
+  BackgroundComponent?: React.ComponentType;
 };
 
 export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayHostLayerProps) => {
@@ -271,7 +269,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
             pointerEvents='none'
             style={[StyleSheet.absoluteFillObject, backdropStyle]}
           >
-            <OverlayBackground overlayOpacity={backdrop} style={StyleSheet.absoluteFillObject} />
+            <OverlayBackground />
           </Animated.View>
         ) : null}
 

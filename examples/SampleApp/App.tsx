@@ -17,7 +17,6 @@ import {
   useOverlayContext,
   useTheme,
 } from 'stream-chat-react-native';
-import type { MessageOverlayBackgroundProps } from 'stream-chat-react-native';
 
 import { getMessaging } from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
@@ -99,7 +98,7 @@ const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createNativeStackNavigator<UserSelectorParamList>();
 
-const MessageOverlayBlurBackground = ({ style }: MessageOverlayBackgroundProps) => {
+const MessageOverlayBlurBackground = () => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -116,7 +115,7 @@ const MessageOverlayBlurBackground = ({ style }: MessageOverlayBackgroundProps) 
         downsampleFactor={isIOS ? undefined : 12}
         pointerEvents='none'
         reducedTransparencyFallbackColor='rgba(0, 0, 0, 0.8)'
-        style={[styles.messageOverlayBlurBackground, style]}
+        style={styles.messageOverlayBlurBackground}
       />
       <View
         style={[
