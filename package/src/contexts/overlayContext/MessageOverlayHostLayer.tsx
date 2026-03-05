@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PortalHost } from 'react-native-teleport';
 
 import {
+  ClosingPortalLayoutEntry,
   closeOverlay,
   finalizeCloseOverlay,
   registerOverlaySharedValueController,
@@ -26,18 +27,12 @@ const DURATION = 300;
 const ClosingPortalHostSlot = ({
   closeCoverOpacity,
   hostName,
-  rect,
+  layout,
 }: {
   closeCoverOpacity: SharedValue<number>;
   hostName: string;
-  rect: Exclude<Rect, undefined>;
+  layout: ClosingPortalLayoutEntry['layout'];
 }) => {
-  const layout = useSharedValue<Rect>(rect);
-
-  useEffect(() => {
-    layout.value = rect;
-  }, [layout, rect]);
-
   const style = useAnimatedStyle(() => {
     const value = layout.value;
     if (!value) return { opacity: closeCoverOpacity.value };
@@ -50,8 +45,6 @@ const ClosingPortalHostSlot = ({
       width: value.w,
     };
   });
-
-  console.log('RENDERING: ', hostName);
 
   return (
     <Animated.View pointerEvents='box-none' style={[styles.overlayClosingSlot, style]}>
@@ -265,8 +258,6 @@ export const MessageOverlayHostLayer = () => {
     [bottomH, bottomShiftY, messageShiftY, topH],
   );
 
-  console.log('TEST', Object.entries(closingPortalLayouts));
-
   return (
     <GestureDetector gesture={tap}>
       <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
@@ -295,14 +286,13 @@ export const MessageOverlayHostLayer = () => {
           </Animated.View>
         </View>
 
-        {Object.entries(closingPortalLayouts).map(([hostName, rect]) => {
-          if (!rect) return null;
+        {Object.entries(closingPortalLayouts).map(([hostName, entry]) => {
           return (
             <ClosingPortalHostSlot
               closeCoverOpacity={closeCoverOpacity}
               hostName={hostName}
               key={hostName}
-              rect={rect}
+              layout={entry.layout}
             />
           );
         })}

@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 
+import { makeMutable, type SharedValue } from 'react-native-reanimated';
+
 import { StateStore } from 'stream-chat';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -11,8 +13,11 @@ type OverlayState = {
 };
 
 export type Rect = { x: number; y: number; w: number; h: number } | undefined;
+export type ClosingPortalLayoutEntry = {
+  layout: SharedValue<Rect>;
+};
 type ClosingPortalLayoutsState = {
-  layouts: Record<string, Rect>;
+  layouts: Record<string, ClosingPortalLayoutEntry>;
 };
 
 const DefaultState = {
@@ -83,7 +88,6 @@ export const scheduleActionOnClose = (action: () => void | Promise<void>) => {
 
 export const finalizeCloseOverlay = () => {
   overlayStore.partialNext(DefaultState);
-  // closingPortalLayoutsStore.next(DefaultClosingPortalLayoutsState);
   sharedValueController?.reset();
 };
 
@@ -94,17 +98,30 @@ const closingPortalLayoutsStore = new StateStore<ClosingPortalLayoutsState>(
 
 export const setClosingPortalLayout = (hostName: string, layout: Rect) => {
   const { layouts } = closingPortalLayoutsStore.getLatestValue();
-  if (layout) {
-    closingPortalLayoutsStore.next({ layouts: { ...layouts, [hostName]: layout } });
+  const existingEntry = layouts[hostName];
+
+  if (existingEntry) {
+    existingEntry.layout.value = layout;
     return;
   }
-  const nextLayouts = { ...layouts };
-  delete nextLayouts[hostName];
-  closingPortalLayoutsStore.next({ layouts: nextLayouts });
+
+  if (!layout) return;
+
+  closingPortalLayoutsStore.next({
+    layouts: {
+      ...layouts,
+      [hostName]: {
+        layout: makeMutable<Rect>(layout),
+      },
+    },
+  });
 };
 
 export const clearClosingPortalLayout = (hostName: string) => {
-  setClosingPortalLayout(hostName, undefined);
+  const { layouts } = closingPortalLayoutsStore.getLatestValue();
+  const nextLayouts = { ...layouts };
+  delete nextLayouts[hostName];
+  closingPortalLayoutsStore.next({ layouts: nextLayouts });
 };
 
 const actionQueueSelector = (nextState: OverlayState) => ({ active: !!nextState.id });
