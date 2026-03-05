@@ -1,9 +1,10 @@
-import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, View } from 'react-native';
+import React, { ReactNode, useEffect, useRef } from 'react';
+import { LayoutChangeEvent, Platform, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
+import { useStableCallback } from '../../hooks';
 import { setClosingPortalLayout, useOverlayController } from '../../state-store';
 
 type PortalWhileClosingViewProps = {
@@ -20,12 +21,8 @@ export const PortalWhileClosingView = ({
   const { closing } = useOverlayController();
   const containerRef = useRef<View | null>(null);
   const absolutePositionRef = useRef<{ x: number; y: number } | null>(null);
-  const measuredSizeRef = useRef<{ h: number; w: number }>({ h: 0, w: 0 });
-  const [measuredHeight, setMeasuredHeight] = useState(0);
-  const [measuredWidth, setMeasuredWidth] = useState(0);
+  const layoutRef = useRef<{ h: number; w: number }>({ h: 0, w: 0 });
   const insets = useSafeAreaInsets();
-
-  const resolvedPlaceholderHeight = useMemo(() => measuredHeight, [measuredHeight]);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,7 +37,7 @@ export const PortalWhileClosingView = ({
 
         absolutePositionRef.current = absolute;
 
-        const { h, w } = measuredSizeRef.current;
+        const { h, w } = layoutRef.current;
         if (!w || !h) return;
 
         setClosingPortalLayout(portalHostName, {
@@ -61,31 +58,27 @@ export const PortalWhileClosingView = ({
     };
   }, [insets.top, portalHostName]);
 
+  const onWrapperViewLayout = useStableCallback((event: LayoutChangeEvent) => {
+    const { height, width } = event.nativeEvent.layout;
+    layoutRef.current = { h: height, w: width };
+
+    const absolute = absolutePositionRef.current;
+    if (!absolute) return;
+
+    setClosingPortalLayout(portalHostName, { ...absolute, h: height, w: width });
+  });
+
   return (
     <>
       <Portal hostName={closing ? portalHostName : undefined} name={portalName}>
-        <View
-          collapsable={false}
-          ref={containerRef}
-          onLayout={(event) => {
-            const { height, width } = event.nativeEvent.layout;
-            setMeasuredHeight(height);
-            setMeasuredWidth(width);
-            measuredSizeRef.current = { h: height, w: width };
-
-            const absolute = absolutePositionRef.current;
-            if (!absolute) return;
-
-            setClosingPortalLayout(portalHostName, { ...absolute, h: height, w: width });
-          }}
-        >
+        <View collapsable={false} ref={containerRef} onLayout={onWrapperViewLayout}>
           {children}
         </View>
       </Portal>
-      {closing && resolvedPlaceholderHeight > 0 ? (
+      {closing && layoutRef.current.h > 0 ? (
         <View
           pointerEvents='none'
-          style={{ height: resolvedPlaceholderHeight, width: measuredWidth || '100%' }}
+          style={{ height: layoutRef.current.h, width: layoutRef.current.w || '100%' }}
         />
       ) : null}
     </>
