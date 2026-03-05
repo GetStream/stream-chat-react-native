@@ -376,7 +376,12 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             }}
             style={
               messageInputFloating
-                ? [styles.wrapper, styles.floatingWrapper, { bottom: BOTTOM_OFFSET }, floatingWrapper]
+                ? [
+                    styles.wrapper,
+                    styles.floatingWrapper,
+                    { bottom: BOTTOM_OFFSET },
+                    floatingWrapper,
+                  ]
                 : [
                     styles.wrapper,
                     {
@@ -393,9 +398,9 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                   ]
             }
           >
-          {Input ? (
-            <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
-          ) : (
+            {Input ? (
+              <Input additionalTextInputProps={additionalTextInputProps} getUsers={getUsers} />
+            ) : (
               <View style={[styles.container, container]}>
                 <MessageComposerLeadingView />
                 <Animated.View
