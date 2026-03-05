@@ -11,6 +11,7 @@ import { useMessageReminder } from '../../../../hooks/useMessageReminder';
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { Bell } from '../../../../icons';
 import { primitives } from '../../../../theme';
+import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
 const reminderStateSelector = (state: ReminderState) => ({
   timeLeftMs: state.timeLeftMs,
@@ -23,15 +24,12 @@ type MessageReminderHeaderPropsWithContext = {
 
 const MessageReminderHeaderWithContext = (props: MessageReminderHeaderPropsWithContext) => {
   const { timeLeftMs, isReminderTimeLeft } = props;
-  const {
-    theme: { semantics },
-  } = useTheme();
   const { t } = useTranslationContext();
   const styles = useStyles();
 
   return (
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
-      <Bell height={16} width={16} stroke={semantics.textPrimary} />
+      <Bell height={16} width={16} stroke={styles.time.color} />
       <Text style={styles.label}>
         {isReminderTimeLeft ? t('Reminder set') : t('Reminder overdue')}
       </Text>
@@ -72,6 +70,7 @@ const useStyles = () => {
       },
     },
   } = useTheme();
+  const shouldUseOverlayStyles = useShouldUseOverlayStyles();
 
   return useMemo(() => {
     return StyleSheet.create({
@@ -83,26 +82,26 @@ const useStyles = () => {
         ...container,
       },
       label: {
-        color: semantics.textPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
         ...label,
       },
       dot: {
-        color: semantics.textPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
         ...dot,
       },
       time: {
-        color: semantics.textPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
         ...time,
       },
     });
-  }, [container, semantics, label, dot, time]);
+  }, [shouldUseOverlayStyles, container, semantics, label, dot, time]);
 };

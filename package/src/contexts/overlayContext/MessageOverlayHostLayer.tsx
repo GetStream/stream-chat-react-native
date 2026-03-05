@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
-import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  useColorScheme,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   clamp,
@@ -13,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PortalHost } from 'react-native-teleport';
 
 import { ClosingPortalHostsLayer } from './ClosingPortalHostsLayer';
+import type { MessageOverlayBackgroundProps } from './OverlayContext';
 
 import {
   closeOverlay,
@@ -21,10 +29,35 @@ import {
   Rect,
   useOverlayController,
 } from '../../state-store';
+import { useTheme } from '../themeContext/ThemeContext';
 
 const DURATION = 300;
 
-export const MessageOverlayHostLayer = () => {
+const DefaultMessageOverlayBackground = ({ style }: MessageOverlayBackgroundProps) => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return (
+    <View pointerEvents='none' style={[StyleSheet.absoluteFillObject, style]}>
+      <View
+        pointerEvents='none'
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: semantics.badgeBgOverlay,
+          },
+        ]}
+      />
+    </View>
+  );
+};
+
+type MessageOverlayHostLayerProps = {
+  BackgroundComponent?: React.ComponentType<MessageOverlayBackgroundProps>;
+};
+
+export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayHostLayerProps) => {
   const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
@@ -90,6 +123,8 @@ export const MessageOverlayHostLayer = () => {
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdrop.value,
   }));
+
+  const OverlayBackground = BackgroundComponent ?? DefaultMessageOverlayBackground;
 
   const messageShiftY = useDerivedValue(() => {
     if (!messageH.value || !topH.value || !bottomH.value) return 0;
@@ -233,9 +268,11 @@ export const MessageOverlayHostLayer = () => {
       <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
         {isActive ? (
           <Animated.View
-            pointerEvents='box-none'
-            style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000CC' }, backdropStyle]}
-          />
+            pointerEvents='none'
+            style={[StyleSheet.absoluteFillObject, backdropStyle]}
+          >
+            <OverlayBackground overlayOpacity={backdrop} style={StyleSheet.absoluteFillObject} />
+          </Animated.View>
         ) : null}
 
         <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
@@ -243,7 +280,7 @@ export const MessageOverlayHostLayer = () => {
             <Pressable onPress={closeOverlay} style={StyleSheet.absoluteFillObject} />
           ) : null}
 
-          <Animated.View style={[topItemStyle, topItemTranslateStyle, styles.shadow3]}>
+          <Animated.View style={[topItemStyle, topItemTranslateStyle]}>
             <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
 
@@ -251,7 +288,7 @@ export const MessageOverlayHostLayer = () => {
             <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
 
-          <Animated.View style={[bottomItemStyle, bottomItemTranslateStyle, styles.shadow3]}>
+          <Animated.View style={[bottomItemStyle, bottomItemTranslateStyle]}>
             <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
         </View>
@@ -261,22 +298,3 @@ export const MessageOverlayHostLayer = () => {
     </GestureDetector>
   );
 };
-
-const styles = StyleSheet.create({
-  shadow3: {
-    overflow: 'visible',
-    ...Platform.select({
-      android: {
-        elevation: 3,
-        // helps on newer Android (API 28+) to tint elevation shadow
-        shadowColor: '#000000',
-      },
-      ios: {
-        shadowColor: 'white',
-        shadowOffset: { height: 4, width: 0 },
-        shadowOpacity: 0.4,
-        shadowRadius: 10,
-      },
-    }),
-  },
-});

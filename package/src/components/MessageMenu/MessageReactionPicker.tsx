@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useColorScheme, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 import { EmojiPickerList } from './EmojiPickerList';
@@ -58,6 +58,7 @@ export const MessageReactionPickerList = ({
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const reactions: ReactionPickerItemType[] = useMemo(
     () =>
@@ -87,6 +88,7 @@ export const EmojiViewerButton = ({
 }: {
   onSelectReaction: (type: string) => void;
 }) => {
+  const styles = useStyles();
   const [emojiViewerOpened, setEmojiViewerOpened] = React.useState<boolean>(false);
 
   const {
@@ -146,12 +148,12 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   const { dismissOverlay, handleReaction } = props;
   const {
     theme: {
-      colors: { white },
       messageMenu: {
         reactionPicker: { container },
       },
     },
   } = useTheme();
+  const styles = useStyles();
   const own_capabilities = useOwnCapabilitiesContext();
 
   const onSelectReaction = useStableCallback((type: string) => {
@@ -169,7 +171,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   return (
     <View
       accessibilityLabel='Reaction Selector on long pressing message'
-      style={[styles.container, { backgroundColor: white }, container]}
+      style={[styles.container, container]}
     >
       <MessageReactionPickerList onSelectReaction={onSelectReaction} />
       <EmojiViewerButton onSelectReaction={onSelectReaction} />
@@ -177,24 +179,39 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignSelf: 'stretch',
-    borderRadius: primitives.radius4xl,
-    marginVertical: 8,
-  },
-  reactionListContent: {
-    flexGrow: 1,
-    justifyContent: 'space-around',
-    gap: primitives.spacingXxxs,
-    paddingVertical: primitives.spacingXxs,
-    paddingLeft: primitives.spacingXxs,
-  },
-  emojiViewerButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingRight: primitives.spacingXs,
-    paddingLeft: primitives.spacingXs,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const scheme = useColorScheme();
+  const isDark = scheme === 'dark';
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flexDirection: 'row',
+          alignSelf: 'stretch',
+          borderRadius: primitives.radius4xl,
+          marginVertical: 8,
+          overflow: 'visible',
+          ...(isDark ? primitives.darkElevation3 : primitives.lightElevation3),
+          backgroundColor: semantics.backgroundElevationElevation2,
+        },
+        reactionListContent: {
+          flexGrow: 1,
+          justifyContent: 'space-around',
+          gap: primitives.spacingXxxs,
+          paddingVertical: primitives.spacingXxs,
+          paddingLeft: primitives.spacingXxs,
+        },
+        emojiViewerButton: {
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingRight: primitives.spacingXs,
+          paddingLeft: primitives.spacingXs,
+        },
+      }),
+    [isDark, semantics.backgroundElevationElevation2],
+  );
+};

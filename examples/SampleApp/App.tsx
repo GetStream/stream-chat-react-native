@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { DevSettings, LogBox, Platform, useColorScheme } from 'react-native';
+import { DevSettings, LogBox, Platform, StyleSheet, useColorScheme, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { BlurView } from '@react-native-community/blur';
 import {
   Chat,
   createTextComposerEmojiMiddleware,
@@ -14,7 +15,9 @@ import {
   Streami18n,
   ThemeProvider,
   useOverlayContext,
+  useTheme,
 } from 'stream-chat-react-native';
+import type { MessageOverlayBackgroundProps } from 'stream-chat-react-native';
 
 import { getMessaging } from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
@@ -95,6 +98,35 @@ notifee.onBackgroundEvent(async ({ detail, type }) => {
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createNativeStackNavigator<UserSelectorParamList>();
+
+const MessageOverlayBlurBackground = ({ style }: MessageOverlayBackgroundProps) => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const scheme = useColorScheme();
+  const isDark = scheme === 'dark';
+  const isIOS = Platform.OS === 'ios';
+
+  return (
+    <>
+      <BlurView
+        blurAmount={isIOS ? 10 : 6}
+        blurType={isDark ? 'dark' : 'light'}
+        blurRadius={isIOS ? undefined : 6}
+        downsampleFactor={isIOS ? undefined : 12}
+        pointerEvents='none'
+        reducedTransparencyFallbackColor='rgba(0, 0, 0, 0.8)'
+        style={[styles.messageOverlayBlurBackground, style]}
+      />
+      <View
+        style={[
+          styles.messageOverlayBlurBackground,
+          { backgroundColor: semantics.backgroundCoreScrim },
+        ]}
+      />
+    </>
+  );
+};
 
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
@@ -198,7 +230,7 @@ const App = () => {
         },
         linkPreviews: {
           enabled: true,
-        }
+        },
       });
 
       setupCommandUIMiddlewares(composer);
@@ -226,7 +258,11 @@ const App = () => {
       }}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
+        <OverlayProvider
+          MessageOverlayBackground={MessageOverlayBlurBackground}
+          value={{ style: streamChatTheme }}
+          i18nInstance={streami18n}
+        >
           <ThemeProvider style={streamChatTheme}>
             <NavigationContainer
               ref={RootNavigationRef}
@@ -416,3 +452,9 @@ const HomeScreen = () => {
 };
 
 export default App;
+
+const styles = StyleSheet.create({
+  messageOverlayBlurBackground: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});

@@ -16,6 +16,7 @@ import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
 import { primitives } from '../../../theme';
 import { MessageStatusTypes } from '../../../utils/utils';
+import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 export type MessageStatusPropsWithContext = Pick<
   MessageContextValue,
@@ -179,11 +180,12 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const shouldUseOverlayStyles = useShouldUseOverlayStyles();
 
   return useMemo(() => {
     return StyleSheet.create({
       readByCount: {
-        color: semantics.accentPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.accentPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
@@ -194,5 +196,5 @@ const useStyles = () => {
         gap: primitives.spacingXxs,
       },
     });
-  }, [semantics]);
+  }, [shouldUseOverlayStyles, semantics]);
 };
