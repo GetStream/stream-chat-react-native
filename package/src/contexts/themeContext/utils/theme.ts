@@ -948,7 +948,8 @@ export type Theme = {
   screenPadding: number;
   spinner: ViewStyle;
   thread: {
-    newThread: ViewStyle & {
+    newThread: {
+      container: ViewStyle;
       text: TextStyle;
       backgroundGradientStart?: string;
       backgroundGradientStop?: string;
@@ -1833,6 +1834,7 @@ export const defaultTheme: Theme = {
   spinner: {},
   thread: {
     newThread: {
+      container: {},
       text: {},
     },
   },
