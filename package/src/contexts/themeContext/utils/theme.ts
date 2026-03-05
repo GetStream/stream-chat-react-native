@@ -252,8 +252,8 @@ export type Theme = {
       container: ViewStyle;
       imageCountText: TextStyle;
       innerContainer: ViewStyle;
-      leftContainer: ViewStyle;
-      rightContainer: ViewStyle;
+      activityIndicatorContainer: ViewStyle;
+      wrapper: ViewStyle;
     };
     grid: {
       container: ViewStyle;
@@ -270,15 +270,13 @@ export type Theme = {
       container: ViewStyle;
       dateText: TextStyle;
       innerContainer: ViewStyle;
-      leftContainer: ViewStyle;
-      rightContainer: ViewStyle;
       usernameText: TextStyle;
     };
     videoControl: {
+      container: ViewStyle;
       durationTextStyle: TextStyle;
-      progressDurationText: TextStyle;
-      roundedView: ViewStyle;
-      videoContainer: ViewStyle;
+      leftContainer: ViewStyle;
+      progressContainer: ViewStyle;
     };
     backgroundColor?: string;
     pager?: ViewStyle;
@@ -1162,8 +1160,8 @@ export const defaultTheme: Theme = {
       container: {},
       imageCountText: {},
       innerContainer: {},
-      leftContainer: {},
-      rightContainer: {},
+      activityIndicatorContainer: {},
+      wrapper: {},
     },
     grid: {
       container: {},
@@ -1180,15 +1178,13 @@ export const defaultTheme: Theme = {
       container: {},
       dateText: {},
       innerContainer: {},
-      leftContainer: {},
-      rightContainer: {},
       usernameText: {},
     },
     videoControl: {
+      container: {},
       durationTextStyle: {},
-      progressDurationText: {},
-      roundedView: {},
-      videoContainer: {},
+      leftContainer: {},
+      progressContainer: {},
     },
   },
   inlineDateSeparator: {

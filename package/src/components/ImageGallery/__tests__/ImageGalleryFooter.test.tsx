@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { Attachment, LocalMessage } from 'stream-chat';
 
+import { ImageGalleryFooter as ImageGalleryFooterDefault } from '../../../components/ImageGallery/components/ImageGalleryFooter';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -19,7 +19,7 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { NativeHandlers } from '../../../native';
 import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
-import { ImageGallery, ImageGalleryCustomComponents, ImageGalleryProps } from '../ImageGallery';
+import { ImageGallery, ImageGalleryProps } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
   const { View } = require('react-native');
@@ -61,7 +61,12 @@ const ImageGalleryComponentVideo = (props: ImageGalleryProps) => {
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
       <ImageGalleryContext.Provider
-        value={{ imageGalleryStateStore } as unknown as ImageGalleryContextValue}
+        value={
+          {
+            imageGalleryStateStore,
+            ImageGalleryFooter: ImageGalleryFooterDefault,
+          } as unknown as ImageGalleryContextValue
+        }
       >
         <ImageGallery {...props} />
       </ImageGalleryContext.Provider>
@@ -96,7 +101,12 @@ const ImageGalleryComponentImage = (
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
       <ImageGalleryContext.Provider
-        value={{ imageGalleryStateStore } as unknown as ImageGalleryContextValue}
+        value={
+          {
+            imageGalleryStateStore,
+            ImageGalleryFooter: ImageGalleryFooterDefault,
+          } as unknown as ImageGalleryContextValue
+        }
       >
         <ImageGallery {...props} />
       </ImageGalleryContext.Provider>
@@ -105,84 +115,22 @@ const ImageGalleryComponentImage = (
 };
 
 describe('ImageGalleryFooter', () => {
-  it('render image gallery footer component with custom component footer props', async () => {
-    const CustomFooterLeftElement = () => (
-      <View>
-        <Text>Left element</Text>
-      </View>
-    );
-
-    const CustomFooterRightElement = () => (
-      <View>
-        <Text>Right element</Text>
-      </View>
-    );
-
-    const CustomFooterCenterElement = () => (
-      <View>
-        <Text>Center element</Text>
-      </View>
-    );
-
-    const CustomFooterVideoControlElement = () => (
-      <View>
-        <Text>Video Control element</Text>
-      </View>
-    );
-
-    render(
-      <ImageGalleryComponentVideo
-        imageGalleryCustomComponents={
-          {
-            footer: {
-              centerElement: CustomFooterCenterElement,
-              leftElement: CustomFooterLeftElement,
-              rightElement: CustomFooterRightElement,
-              videoControlElement: CustomFooterVideoControlElement,
-            },
-          } as ImageGalleryCustomComponents['imageGalleryCustomComponents']
-        }
-      />,
-    );
+  it('render image gallery footer component with default footer elements', async () => {
+    render(<ImageGalleryComponentVideo />);
 
     await waitFor(() => {
-      expect(screen.queryAllByText('Left element')).toHaveLength(1);
-      expect(screen.queryAllByText('Right element')).toHaveLength(1);
-      expect(screen.queryAllByText('Center element')).toHaveLength(1);
-      expect(screen.queryAllByText('Video Control element')).toHaveLength(1);
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
+      expect(screen.getByLabelText('Center element')).toBeTruthy();
+      expect(screen.getByLabelText('Grid Icon')).toBeTruthy();
     });
   });
 
-  it('render image gallery footer component with custom component footer Grid Icon and Share Icon component', async () => {
-    const CustomShareIconElement = () => (
-      <View>
-        <Text>Share Icon element</Text>
-      </View>
-    );
-
-    const CustomGridIconElement = () => (
-      <View>
-        <Text>Grid Icon element</Text>
-      </View>
-    );
-
-    render(
-      <ImageGalleryComponentVideo
-        imageGalleryCustomComponents={
-          {
-            footer: {
-              GridIcon: <CustomGridIconElement />,
-              ShareIcon: <CustomShareIconElement />,
-            },
-          } as ImageGalleryCustomComponents['imageGalleryCustomComponents']
-        }
-        overlayOpacity={{ value: 1 } as SharedValue<number>}
-      />,
-    );
+  it('render image gallery footer component with Share Button and Grid Icon', async () => {
+    render(<ImageGalleryComponentVideo />);
 
     await waitFor(() => {
-      expect(screen.queryAllByText('Share Icon element')).toHaveLength(1);
-      expect(screen.queryAllByText('Grid Icon element')).toHaveLength(1);
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
+      expect(screen.getByLabelText('Grid Icon')).toBeTruthy();
     });
   });
 
@@ -196,11 +144,11 @@ describe('ImageGalleryFooter', () => {
 
     render(<ImageGalleryComponentImage attachment={attachment} />);
 
-    const { getByLabelText } = screen;
-
     await waitFor(() => {
-      user.press(getByLabelText('Share Button'));
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
     });
+
+    await user.press(screen.getByLabelText('Share Button'));
 
     await waitFor(() => {
       expect(saveFileMock).not.toHaveBeenCalled();
@@ -222,11 +170,11 @@ describe('ImageGalleryFooter', () => {
 
     render(<ImageGalleryComponentImage attachment={attachment} />);
 
-    const { getByLabelText } = screen;
-
     await waitFor(() => {
-      user.press(getByLabelText('Share Button'));
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
     });
+
+    await user.press(screen.getByLabelText('Share Button'));
 
     await waitFor(() => {
       expect(saveFileMock).not.toHaveBeenCalled();
@@ -254,11 +202,11 @@ describe('ImageGalleryFooter', () => {
 
     render(<ImageGalleryComponentImage attachment={attachment} />);
 
-    const { getByLabelText } = screen;
-
     await waitFor(() => {
-      user.press(getByLabelText('Share Button'));
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
     });
+
+    await user.press(screen.getByLabelText('Share Button'));
 
     await waitFor(() => {
       expect(saveFileMock).toHaveBeenCalled();

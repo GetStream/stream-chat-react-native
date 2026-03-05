@@ -71,9 +71,7 @@ export * from './ImageGallery/components/AnimatedGalleryImage';
 export * from './ImageGallery/components/AnimatedGalleryVideo';
 export * from './ImageGallery/components/ImageGalleryFooter';
 export * from './ImageGallery/components/ImageGalleryHeader';
-export * from './ImageGallery/components/ImageGalleryOverlay';
 export * from './ImageGallery/components/ImageGrid';
-export * from './ImageGallery/components/ImageGridHandle';
 export * from './ImageGallery/components/ImageGalleryVideoControl';
 export * from './ImageGallery/hooks/useImageGalleryVideoPlayer';
 

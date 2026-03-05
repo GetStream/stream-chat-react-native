@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { Text, View } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 
-import { SharedValue } from 'react-native-reanimated';
+import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { LocalMessage } from 'stream-chat';
 
-import { LocalMessage } from '../../../../../../stream-chat-js/dist/types/types';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -18,10 +17,12 @@ import {
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
-import { ImageGrid, ImageGridType } from '../components/ImageGrid';
+import { ImageGalleryGrid, ImageGalleryGridProps } from '../components/ImageGrid';
 
-const ImageGalleryGridComponent = (props: Partial<ImageGridType> & { message: LocalMessage }) => {
-  const { message } = props;
+const ImageGalleryGridComponent = (
+  props: Partial<ImageGalleryGridProps> & { message: LocalMessage },
+) => {
+  const { message, closeGridView = jest.fn(), ...rest } = props;
   const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
 
   useEffect(() => {
@@ -43,51 +44,40 @@ const ImageGalleryGridComponent = (props: Partial<ImageGridType> & { message: Lo
       <ImageGalleryContext.Provider
         value={{ imageGalleryStateStore } as unknown as ImageGalleryContextValue}
       >
-        <ImageGrid {...(props as unknown as ImageGridType)} />
+        <ImageGalleryGrid closeGridView={closeGridView} {...rest} />
       </ImageGalleryContext.Provider>
     </OverlayProvider>
   );
 };
 
-describe('ImageGalleryOverlay', () => {
-  it('should render ImageGalleryGrid', () => {
+describe('ImageGalleryGrid', () => {
+  it('should render ImageGalleryGrid', async () => {
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateImageAttachment()],
     }) as unknown as LocalMessage;
 
     render(<ImageGalleryGridComponent message={message} />);
 
-    expect(screen.queryAllByLabelText('Image Grid')).toHaveLength(1);
+    await waitFor(() => {
+      expect(screen.queryAllByLabelText('Image Grid')).toHaveLength(1);
+    });
   });
 
-  it('should render ImageGalleryGrid individual images', () => {
+  it('should render ImageGalleryGrid individual images', async () => {
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
     }) as unknown as LocalMessage;
 
     render(<ImageGalleryGridComponent message={message} />);
 
-    expect(screen.queryAllByLabelText('Grid Image')).toHaveLength(2);
+    await waitFor(() => {
+      expect(screen.queryAllByLabelText('Grid Image')).toHaveLength(2);
+    });
   });
 
-  it('should render ImageGalleryGrid with custom image component', () => {
-    const CustomImageComponent = () => (
-      <View>
-        <Text>Image Attachment</Text>
-      </View>
-    );
-
-    const message = generateMessage({
-      attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
-    }) as unknown as LocalMessage;
-
-    render(<ImageGalleryGridComponent imageComponent={CustomImageComponent} message={message} />);
-
-    expect(screen.queryAllByText('Image Attachment')).toHaveLength(2);
-  });
-
-  it('should trigger the selectAndClose when the Image item is pressed', () => {
+  it('should trigger the selectAndClose when the Image item is pressed', async () => {
     const closeGridViewMock = jest.fn();
+    const user = userEvent.setup();
 
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
@@ -95,12 +85,14 @@ describe('ImageGalleryOverlay', () => {
 
     render(<ImageGalleryGridComponent closeGridView={closeGridViewMock} message={message} />);
 
-    const component = screen.getAllByLabelText('Grid Image');
-
-    act(() => {
-      fireEvent(component[0], 'onPress');
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('Grid Image')).toHaveLength(2);
     });
 
-    expect(closeGridViewMock).toHaveBeenCalledTimes(1);
+    await user.press(screen.getAllByLabelText('Grid Image')[0]);
+
+    await waitFor(() => {
+      expect(closeGridViewMock).toHaveBeenCalledTimes(1);
+    });
   });
 });
