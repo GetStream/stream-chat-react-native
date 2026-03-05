@@ -48,6 +48,13 @@ type PortalWhileClosingViewProps = {
  *
  * Host registration is done once per key; subsequent layout updates are pushed via shared values.
  *
+ * Note: As the `PortalWhileClosingView` relies heavily on being able to calculate the layout and positioning
+ * properties of its children automatically, make sure that you do not wrap absolutely positioned views with
+ * it as positioning parameters specifically will not be calculated correctly as the absolute position of
+ * the immediate child will be towards its immediate parent (which is our `Portal` view). Instead, wrap its
+ * children directly (the non-absolutely positioned ones). Since we use `measureInWindow` to get a hold of
+ * the initial measurements, we'll always have the correct position of the relevant content.
+ *
  * @param props.children content to render and teleport while closing
  * @param props.portalHostName closing host slot name used for layout registration and portal target
  * @param props.portalName stable portal instance name for `react-native-teleport`
