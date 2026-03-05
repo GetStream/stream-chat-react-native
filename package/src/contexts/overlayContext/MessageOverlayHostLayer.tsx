@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from 'react';
 import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  SharedValue,
   clamp,
   runOnJS,
   useAnimatedStyle,
@@ -13,49 +12,20 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PortalHost } from 'react-native-teleport';
 
+import { ClosingPortalHostsLayer } from './ClosingPortalHostsLayer';
+
 import {
-  ClosingPortalLayoutEntry,
   closeOverlay,
   finalizeCloseOverlay,
   registerOverlaySharedValueController,
   Rect,
-  useClosingPortalLayouts,
   useOverlayController,
 } from '../../state-store';
 
 const DURATION = 300;
-const ClosingPortalHostSlot = ({
-  closeCoverOpacity,
-  hostName,
-  layout,
-}: {
-  closeCoverOpacity: SharedValue<number>;
-  hostName: string;
-  layout: ClosingPortalLayoutEntry['layout'];
-}) => {
-  const style = useAnimatedStyle(() => {
-    const value = layout.value;
-    if (!value) return { opacity: closeCoverOpacity.value };
-
-    return {
-      height: value.h,
-      left: value.x,
-      opacity: closeCoverOpacity.value,
-      top: value.y,
-      width: value.w,
-    };
-  });
-
-  return (
-    <Animated.View pointerEvents='box-none' style={[styles.overlayClosingSlot, style]}>
-      <PortalHost name={hostName} style={StyleSheet.absoluteFillObject} />
-    </Animated.View>
-  );
-};
 
 export const MessageOverlayHostLayer = () => {
   const { id, closing } = useOverlayController();
-  const closingPortalLayouts = useClosingPortalLayouts();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
   const messageH = useSharedValue<Rect>(undefined);
@@ -286,27 +256,13 @@ export const MessageOverlayHostLayer = () => {
           </Animated.View>
         </View>
 
-        {Object.entries(closingPortalLayouts).map(([hostName, entry]) => {
-          return (
-            <ClosingPortalHostSlot
-              closeCoverOpacity={closeCoverOpacity}
-              hostName={hostName}
-              key={hostName}
-              layout={entry.layout}
-            />
-          );
-        })}
+        <ClosingPortalHostsLayer closeCoverOpacity={closeCoverOpacity} />
       </View>
     </GestureDetector>
   );
 };
 
 const styles = StyleSheet.create({
-  overlayClosingSlot: {
-    elevation: 20,
-    position: 'absolute',
-    zIndex: 20,
-  },
   shadow3: {
     overflow: 'visible',
     ...Platform.select({
