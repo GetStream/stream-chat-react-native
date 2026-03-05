@@ -66,7 +66,6 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision } from '../../state-store';
-import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
@@ -305,10 +304,6 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
 
-const channelUnreadStateStoreSelector = (state: ChannelUnreadStateStoreType) => ({
-  unread_messages: state.channelUnreadState?.unread_messages,
-});
-
 /**
  * The message list component renders a list of messages. It consumes the following contexts:
  *
@@ -379,10 +374,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const { height: messageInputHeight } = useStateStore(
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
-  );
-  const { unread_messages } = useStateStore(
-    channelUnreadStateStore.state,
-    channelUnreadStateStoreSelector,
   );
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
@@ -1328,7 +1319,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           <ScrollToBottomButton
             onPress={goToNewMessages}
             showNotification={scrollToBottomButtonVisible}
-            unreadCount={threadList ? 0 : unread_messages}
+            unreadCount={threadList ? 0 : channel?.countUnread()}
           />
         </Animated.View>
       ) : null}
@@ -1338,7 +1329,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         <View style={styles.unreadMessagesNotificationContainer}>
           <UnreadMessagesNotification
             onCloseHandler={onUnreadNotificationClose}
-            unreadCount={unread_messages}
+            channelUnreadStateStore={channelUnreadStateStore}
           />
         </View>
       ) : null}

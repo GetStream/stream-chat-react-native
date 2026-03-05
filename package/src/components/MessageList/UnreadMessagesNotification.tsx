@@ -1,15 +1,23 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../hooks/useStateStore';
 import { ArrowUp } from '../../icons/ArrowUp';
 import { NewClose } from '../../icons/NewClose';
+import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
 import { primitives } from '../../theme';
 import { Button } from '../ui';
 
-export type UnreadMessagesNotificationProps = {
+export type UnreadMessagesNotificationProps = Pick<
+  ChannelContextValue,
+  'channelUnreadStateStore'
+> & {
   /**
    * Callback to handle the close event
    */
@@ -24,16 +32,21 @@ export type UnreadMessagesNotificationProps = {
   unreadCount?: number;
 };
 
+const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
+  unread_messages: state.channelUnreadState?.unread_messages,
+});
+
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
-  const { onCloseHandler, onPressHandler, unreadCount } = props;
+  const { onCloseHandler, onPressHandler, unreadCount, channelUnreadStateStore } = props;
   const { t } = useTranslationContext();
-  const {
-    channelUnreadStateStore,
-    loadChannelAtFirstUnreadMessage,
-    markRead,
-    setChannelUnreadState,
-    setTargetedMessage,
-  } = useChannelContext();
+  const { loadChannelAtFirstUnreadMessage, markRead, setChannelUnreadState, setTargetedMessage } =
+    useChannelContext();
+  const { unread_messages } = useStateStore(
+    channelUnreadStateStore.state,
+    channelUnreadStateSelector,
+  );
+
+  const count = unread_messages ?? unreadCount;
 
   const handleOnPress = async () => {
     if (onPressHandler) {
@@ -64,7 +77,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           variant='secondary'
           type='ghost'
           LeadingIcon={ArrowUp}
-          label={unreadCount ? t('{{count}} unread', { count: unreadCount }) : t('Unread Messages')}
+          label={count ? t('{{count}} unread', { count }) : t('Unread Messages')}
           onPress={handleOnPress}
           size='md'
         />
