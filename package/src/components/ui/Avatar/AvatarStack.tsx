@@ -10,7 +10,7 @@ import { UserAvatar } from './UserAvatar';
 import { BadgeCount } from '../Badge';
 
 export type AvatarStackProps = {
-  avatarSize?: 'sm' | 'md' | 'xs';
+  avatarSize?: 'md' | 'sm' | 'xs';
   maxVisible?: number;
   items: React.ReactNode[];
   overlap?: number;
@@ -24,41 +24,50 @@ export const AvatarStack = (props: AvatarStackProps) => {
   const visibleItems = items.slice(0, maxVisible);
   const extraCount = items.length - visibleItems.length;
 
-  if (extraCount > 0) {
-    visibleItems.push(
-      <BadgeCount
-        count={extraCount}
-        size={avatarSize === 'sm' || avatarSize === 'md' ? 'md' : 'sm'}
-      />,
-    );
-  }
-
   const totalWidth = diameter + (visibleItems.length - 1) * visiblePortion;
 
+  const badgeCountSize = avatarSize === 'md' ? 'lg' : avatarSize === 'sm' ? 'md' : 'sm';
+
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          width: totalWidth,
-        },
-      ]}
-    >
-      {visibleItems.map((item, index) => {
-        return (
-          <View
-            style={[
-              styles.item,
-              {
-                left: index * visiblePortion,
-              },
-            ]}
-            key={index}
-          >
-            {item}
-          </View>
-        );
-      })}
+    <View style={styles.wrapper}>
+      <View
+        style={[
+          styles.container,
+          {
+            width: totalWidth,
+            height: diameter,
+          },
+        ]}
+      >
+        {visibleItems.map((item, index) => {
+          return (
+            <View
+              style={[
+                styles.item,
+                {
+                  left: index * visiblePortion,
+                },
+              ]}
+              key={index}
+            >
+              {item}
+            </View>
+          );
+        })}
+      </View>
+
+      {extraCount > 0 && (
+        <View
+          style={[
+            styles.badgeCount,
+            {
+              marginLeft: -(overlap * diameter),
+            },
+          ]}
+        >
+          <BadgeCount count={extraCount} size={badgeCountSize} />
+        </View>
+      )}
     </View>
   );
 };
@@ -99,6 +108,10 @@ const useStyles = () => {
         },
         item: {
           position: 'absolute',
+        },
+        badgeCount: {},
+        wrapper: {
+          flexDirection: 'row',
         },
       }),
     [],
