@@ -87,8 +87,8 @@ export const UserAvatarStack = ({
 }: UserAvatarStackProps) => {
   const items = useMemo(
     () =>
-      users.map((user, index) => {
-        return <UserAvatar key={`${user.id}-${index}`} user={user} size={avatarSize} showBorder />;
+      users.map((user) => {
+        return <UserAvatar key={user.id} user={user} size={avatarSize} showBorder />;
       }),
     [avatarSize, users],
   );
