@@ -745,9 +745,15 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       };
 
       const handleOnPress = () => {
+        if (errorOrFailed) {
+          onPress(true);
+          return;
+        }
+
         if (onPressMessageProp) {
           return onPressMessageProp(onPressArgs);
         }
+
         if (payload.defaultHandler) {
           return payload.defaultHandler();
         }
