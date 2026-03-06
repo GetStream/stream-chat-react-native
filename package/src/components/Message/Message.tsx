@@ -782,6 +782,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
     videos: attachments.videos,
+    isMessageErrorType: errorOrFailed,
   });
 
   const prevActive = useRef<boolean>(overlayActive);

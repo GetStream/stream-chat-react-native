@@ -52,6 +52,7 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
     | 'preventPress'
     | 'message'
     | 'messageContentOrder'
+    | 'isMessageErrorType'
   > &
   Pick<
     MessagesContextValue,
@@ -85,6 +86,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     videos,
     VideoThumbnail,
     messageHasOnlyOneImage = false,
+    isMessageErrorType,
   } = props;
 
   const { resizableCDNHosts } = useChatConfigContext();
@@ -209,6 +211,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   setOverlay={setOverlay}
                   thumbnail={thumbnail}
                   VideoThumbnail={VideoThumbnail}
+                  isMessageErrorType={isMessageErrorType}
                 />
               );
             })}
@@ -238,7 +241,10 @@ type GalleryThumbnailProps = {
   | 'ImageReloadIndicator'
 > &
   Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
-  Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
+  Pick<
+    MessageContextValue,
+    'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress' | 'isMessageErrorType'
+  > &
   Pick<OverlayContextValue, 'setOverlay'>;
 
 const GalleryThumbnail = ({
@@ -262,6 +268,7 @@ const GalleryThumbnail = ({
   setOverlay,
   thumbnail,
   VideoThumbnail,
+  isMessageErrorType,
 }: GalleryThumbnailProps) => {
   const {
     theme: {
@@ -315,7 +322,7 @@ const GalleryThumbnail = ({
         if (onPress) {
           onPress({
             additionalInfo: { thumbnail },
-            defaultHandler: defaultOnPress,
+            defaultHandler: isMessageErrorType ? undefined : defaultOnPress,
             emitter: 'gallery',
             event,
           });
@@ -325,7 +332,7 @@ const GalleryThumbnail = ({
         if (onPressIn) {
           onPressIn({
             additionalInfo: { thumbnail },
-            defaultHandler: defaultOnPress,
+            defaultHandler: isMessageErrorType ? undefined : defaultOnPress,
             emitter: 'gallery',
             event,
           });
@@ -447,6 +454,7 @@ const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWit
     message: prevMessage,
     myMessageTheme: prevMyMessageTheme,
     videos: prevVideos,
+    isMessageErrorType: prevIsMessageErrorType,
   } = prevProps;
   const {
     alignment: nextAlignment,
@@ -454,10 +462,16 @@ const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWit
     message: nextMessage,
     myMessageTheme: nextMyMessageTheme,
     videos: nextVideos,
+    isMessageErrorType: nextIsMessageErrorType,
   } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) {
+    return false;
+  }
+
+  const isMessageErrorTypeEqual = prevIsMessageErrorType === nextIsMessageErrorType;
+  if (!isMessageErrorTypeEqual) {
     return false;
   }
 
@@ -524,6 +538,7 @@ export const Gallery = (props: GalleryProps) => {
     videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
     messageContentOrder: propMessageContentOrder,
+    isMessageErrorType: propIsMessageErrorType,
   } = props;
 
   const { imageGalleryStateStore } = useImageGalleryContext();
@@ -537,6 +552,7 @@ export const Gallery = (props: GalleryProps) => {
     preventPress: contextPreventPress,
     videos: contextVideos,
     messageContentOrder: contextMessageContentOrder,
+    isMessageErrorType: contextIsMessageErrorType,
   } = useMessageContext();
   const {
     additionalPressableProps: contextAdditionalPressableProps,
@@ -570,6 +586,7 @@ export const Gallery = (props: GalleryProps) => {
   const ImageReloadIndicator = PropImageReloadIndicator || ContextImageReloadIndicator;
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
   const messageContentOrder = propMessageContentOrder || contextMessageContentOrder;
+  const isMessageErrorType = propIsMessageErrorType || contextIsMessageErrorType;
 
   const messageHasOnlyOneImage =
     messageContentOrder?.length === 1 &&
@@ -598,6 +615,7 @@ export const Gallery = (props: GalleryProps) => {
         VideoThumbnail,
         messageHasOnlyOneImage,
         messageContentOrder,
+        isMessageErrorType,
       }}
     />
   );
