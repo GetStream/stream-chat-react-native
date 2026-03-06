@@ -20,6 +20,7 @@
   },
   "peerDependencies": {
     "expo": ">=51.0.0",
+    "react-native": ">=0.76.0",
     "expo-av": "*",
     "expo-clipboard": "*",
     "expo-document-picker": "*",
@@ -72,6 +73,11 @@
   "scripts": {
     "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"
+  },
+  "codegenConfig": {
+    "name": "StreamChatExpoSpec",
+    "type": "all",
+    "jsSrcsDir": "src/native"
   },
   "resolutions": {
     "@types/react": "^19.0.0"
