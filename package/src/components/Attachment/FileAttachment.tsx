@@ -19,7 +19,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
-  'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress' | 'isMessageErrorType'
+  'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
   Pick<MessagesContextValue, 'additionalPressableProps'> & {
     /** The attachment to render */
@@ -46,12 +46,9 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
     onPressIn,
     preventPress,
     styles: stylesProp = styles,
-    isMessageErrorType,
   } = props;
 
-  const defaultOnPress = () => {
-    openUrlSafely(attachment.asset_url);
-  };
+  const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
   return (
     <Pressable
@@ -69,7 +66,7 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
         if (onPress) {
           onPress({
             additionalInfo: { attachment },
-            defaultHandler: isMessageErrorType ? undefined : defaultOnPress,
+            defaultHandler: defaultOnPress,
             emitter: 'fileAttachment',
             event,
           });
@@ -79,7 +76,7 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
         if (onPressIn) {
           onPressIn({
             additionalInfo: { attachment },
-            defaultHandler: isMessageErrorType ? undefined : defaultOnPress,
+            defaultHandler: defaultOnPress,
             emitter: 'fileAttachment',
             event,
           });
@@ -101,7 +98,7 @@ export type FileAttachmentProps = Partial<Omit<FileAttachmentPropsWithContext, '
   Pick<FileAttachmentPropsWithContext, 'attachment'>;
 
 export const FileAttachment = (props: FileAttachmentProps) => {
-  const { onLongPress, onPress, onPressIn, preventPress, isMessageErrorType } = useMessageContext();
+  const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
   const { additionalPressableProps, FileAttachmentIcon = FileIconDefault } = useMessagesContext();
 
   return (
@@ -113,7 +110,6 @@ export const FileAttachment = (props: FileAttachmentProps) => {
         onPress,
         onPressIn,
         preventPress,
-        isMessageErrorType,
       }}
       {...props}
     />

@@ -53,7 +53,6 @@ export const useCreateMessageContext = ({
   threadList,
   videos,
   setQuotedMessage,
-  isMessageErrorType,
 }: MessageContextValue) => {
   const stableGroupStyles = useStableRefValue(groupStyles);
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
@@ -106,7 +105,6 @@ export const useCreateMessageContext = ({
       showMessageStatus,
       threadList,
       videos,
-      isMessageErrorType,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -128,7 +126,6 @@ export const useCreateMessageContext = ({
       showMessageStatus,
       threadList,
       preventPress,
-      isMessageErrorType,
     ],
   );
 

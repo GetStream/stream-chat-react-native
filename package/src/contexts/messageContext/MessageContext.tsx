@@ -20,8 +20,6 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 export type Alignment = 'right' | 'left';
 
 export type MessageContextValue = {
-  /** Whether or not the message is an error */
-  isMessageErrorType: boolean;
   /** Whether or not actions can be performed on message */
   actionsEnabled: boolean;
   /** Position of the message, either 'right' or 'left' */

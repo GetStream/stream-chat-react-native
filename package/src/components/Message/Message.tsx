@@ -745,9 +745,15 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       };
 
       const handleOnPress = () => {
+        if (errorOrFailed) {
+          onPress(true);
+          return;
+        }
+
         if (onPressMessageProp) {
           return onPressMessageProp(onPressArgs);
         }
+
         if (payload.defaultHandler) {
           return payload.defaultHandler();
         }
@@ -782,7 +788,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
     videos: attachments.videos,
-    isMessageErrorType: errorOrFailed,
   });
 
   const prevActive = useRef<boolean>(overlayActive);
