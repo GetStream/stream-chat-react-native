@@ -67,10 +67,8 @@ android {
 
   sourceSets {
     main {
-      java.srcDirs += ["../../shared-native/android/src/main/java"]
       if (isNewArchitectureEnabled()) {
         java.srcDirs += [
-          "src/newarch",
           "${project.buildDir}/generated/source/codegen/java"
         ]
       }
