@@ -26,6 +26,10 @@ export const OverlayContext = React.createContext(
 export type OverlayProviderProps = ImageGalleryProviderProps & {
   /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
   i18nInstance?: Streami18n;
+  /**
+   * Custom backdrop component rendered behind overlay content in `MessageOverlayHostLayer`.
+   */
+  MessageOverlayBackground?: React.ComponentType;
   value?: Partial<OverlayContextValue>;
 };
 

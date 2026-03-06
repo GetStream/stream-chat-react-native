@@ -21,6 +21,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 
 import { primitives } from '../../../theme';
 import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
+import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 type MessageFooterComponentProps = {
   date?: string | Date;
@@ -196,6 +197,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const shouldUseOverlayStyles = useShouldUseOverlayStyles();
   return useMemo(() => {
     return StyleSheet.create({
       container: {
@@ -206,17 +208,22 @@ const useStyles = () => {
         gap: primitives.spacingXs,
       },
       name: {
-        color: semantics.chatTextUsername,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.chatTextUsername,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
       },
       editedText: {
-        color: semantics.chatTextTimestamp,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.chatTextTimestamp,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
       },
     });
-  }, [semantics]);
+  }, [
+    shouldUseOverlayStyles,
+    semantics.chatTextTimestamp,
+    semantics.chatTextUsername,
+    semantics.textOnAccent,
+  ]);
 };

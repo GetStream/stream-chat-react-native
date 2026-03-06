@@ -812,16 +812,6 @@ exports[`SendButton should render a SendButton 1`] = `
                 },
               ],
             },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
-            },
           ]
         }
       >
@@ -883,16 +873,6 @@ exports[`SendButton should render a SendButton 1`] = `
                   "translateY": 0,
                 },
               ],
-            },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
             },
           ]
         }
@@ -1727,16 +1707,6 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                 },
               ],
             },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
-            },
           ]
         }
       >
@@ -1798,16 +1768,6 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   "translateY": 0,
                 },
               ],
-            },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
             },
           ]
         }
