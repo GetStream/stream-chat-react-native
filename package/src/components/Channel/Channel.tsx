@@ -119,7 +119,6 @@ import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
-import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
 import { URLPreview as URLPreviewDefault } from '../Attachment/UrlPreview';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
@@ -351,7 +350,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'isAttachmentEqual'
       | 'ImageLoadingFailedIndicator'
       | 'ImageLoadingIndicator'
-      | 'ImageReloadIndicator'
       | 'markdownRules'
       | 'Message'
       | 'MessageActionList'
@@ -647,7 +645,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageAttachmentUploadPreview = ImageAttachmentUploadPreviewDefault,
     ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
     ImageLoadingIndicator = ImageLoadingIndicatorDefault,
-    ImageReloadIndicator = ImageReloadIndicatorDefault,
     initialScrollToFirstUnreadMessage = false,
     InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
@@ -1932,7 +1929,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
-    ImageReloadIndicator,
     initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
     InlineDateSeparator,
     InlineUnreadIndicator,

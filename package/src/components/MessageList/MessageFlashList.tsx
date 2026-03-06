@@ -8,7 +8,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
 
 import { FlashListProps, FlashListRef, useFlashListContext } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
@@ -56,6 +56,7 @@ import { useStableCallback, useStateStore } from '../../hooks';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
+import { ShimmerProvider } from '../UIComponents/Shimmer/ShimmerContext';
 
 let FlashList;
 
@@ -700,6 +701,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   });
 
+  const visibleMessages = useSharedValue<string[]>([]);
+
   /**
    * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
    * Thus useRef.
@@ -709,6 +712,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }: {
     viewableItems: ViewToken[] | undefined;
   }) => {
+    visibleMessages.value = viewableItems?.map((viewToken) => viewToken.item.message.id) ?? [];
     if (!viewableItems) {
       return;
     }
@@ -1041,72 +1045,74 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }
 
   return (
-    <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
-      {processedMessageList.length === 0 && !thread ? (
-        <View style={styles.flex} testID='empty-state'>
-          {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
+    <ShimmerProvider visibleMessages={visibleMessages}>
+      <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
+        {processedMessageList.length === 0 && !thread ? (
+          <View style={styles.flex} testID='empty-state'>
+            {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
+          </View>
+        ) : (
+          <MessageListItemProvider value={messageListItemContextValue}>
+            <FlashList
+              contentContainerStyle={flatListContentContainerStyle}
+              data={processedMessageList}
+              drawDistance={800}
+              getItemType={getItemTypeInternal}
+              initialScrollIndex={
+                indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
+              }
+              keyboardShouldPersistTaps='handled'
+              keyExtractor={keyExtractor}
+              ListFooterComponent={ListFooterComponent}
+              ListHeaderComponent={HeaderComponent}
+              maintainVisibleContentPosition={maintainVisibleContentPosition}
+              onMomentumScrollEnd={onUserScrollEvent}
+              onScroll={handleScroll}
+              onScrollBeginDrag={onScrollBeginDrag}
+              onScrollEndDrag={onScrollEndDrag}
+              onTouchEnd={dismissImagePicker}
+              onViewableItemsChanged={stableOnViewableItemsChanged}
+              ref={refCallback}
+              renderItem={renderItem}
+              scrollEnabled={scrollEnabled}
+              scrollEventThrottle={isLiveStreaming ? 16 : undefined}
+              showsVerticalScrollIndicator={false}
+              style={flatListStyle}
+              testID='message-flash-list'
+              viewabilityConfig={flatListViewabilityConfig}
+              {...additionalFlashListPropsExcludingStyle}
+            />
+          </MessageListItemProvider>
+        )}
+        <View style={styles.stickyHeaderContainer}>
+          {messageListLengthAfterUpdate && StickyHeader ? (
+            <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
+          ) : null}
         </View>
-      ) : (
-        <MessageListItemProvider value={messageListItemContextValue}>
-          <FlashList
-            contentContainerStyle={flatListContentContainerStyle}
-            data={processedMessageList}
-            drawDistance={800}
-            getItemType={getItemTypeInternal}
-            initialScrollIndex={
-              indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
-            }
-            keyboardShouldPersistTaps='handled'
-            keyExtractor={keyExtractor}
-            ListFooterComponent={ListFooterComponent}
-            ListHeaderComponent={HeaderComponent}
-            maintainVisibleContentPosition={maintainVisibleContentPosition}
-            onMomentumScrollEnd={onUserScrollEvent}
-            onScroll={handleScroll}
-            onScrollBeginDrag={onScrollBeginDrag}
-            onScrollEndDrag={onScrollEndDrag}
-            onTouchEnd={dismissImagePicker}
-            onViewableItemsChanged={stableOnViewableItemsChanged}
-            ref={refCallback}
-            renderItem={renderItem}
-            scrollEnabled={scrollEnabled}
-            scrollEventThrottle={isLiveStreaming ? 16 : undefined}
-            showsVerticalScrollIndicator={false}
-            style={flatListStyle}
-            testID='message-flash-list'
-            viewabilityConfig={flatListViewabilityConfig}
-            {...additionalFlashListPropsExcludingStyle}
+        <Animated.View
+          layout={LinearTransition.duration(200)}
+          style={[
+            styles.scrollToBottomButtonContainer,
+            { bottom: messageInputFloating ? messageInputHeight : primitives.spacingMd },
+          ]}
+        >
+          <ScrollToBottomButton
+            onPress={goToNewMessages}
+            showNotification={scrollToBottomButtonVisible}
+            unreadCount={threadList ? 0 : channel?.countUnread()}
           />
-        </MessageListItemProvider>
-      )}
-      <View style={styles.stickyHeaderContainer}>
-        {messageListLengthAfterUpdate && StickyHeader ? (
-          <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
+        </Animated.View>
+        <NetworkDownIndicator />
+        {isUnreadNotificationOpen && !threadList ? (
+          <View style={styles.unreadMessagesNotificationContainer}>
+            <UnreadMessagesNotification
+              onCloseHandler={onUnreadNotificationClose}
+              channelUnreadStateStore={channelUnreadStateStore}
+            />
+          </View>
         ) : null}
       </View>
-      <Animated.View
-        layout={LinearTransition.duration(200)}
-        style={[
-          styles.scrollToBottomButtonContainer,
-          { bottom: messageInputFloating ? messageInputHeight : primitives.spacingMd },
-        ]}
-      >
-        <ScrollToBottomButton
-          onPress={goToNewMessages}
-          showNotification={scrollToBottomButtonVisible}
-          unreadCount={threadList ? 0 : channel?.countUnread()}
-        />
-      </Animated.View>
-      <NetworkDownIndicator />
-      {isUnreadNotificationOpen && !threadList ? (
-        <View style={styles.unreadMessagesNotificationContainer}>
-          <UnreadMessagesNotification
-            onCloseHandler={onUnreadNotificationClose}
-            channelUnreadStateStore={channelUnreadStateStore}
-          />
-        </View>
-      ) : null}
-    </View>
+    </ShimmerProvider>
   );
 };
 

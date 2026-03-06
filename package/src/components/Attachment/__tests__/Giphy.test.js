@@ -321,7 +321,7 @@ describe('Giphy', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
+      expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
     });
   });
 
@@ -336,7 +336,7 @@ describe('Giphy', () => {
       </OverlayProvider>,
     );
     await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
+      expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
     });
 
     act(() => {
@@ -344,14 +344,14 @@ describe('Giphy', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
+      expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
     });
 
     act(() => {
       fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoad');
     });
 
-    waitForElementToBeRemoved(() => screen.getByAccessibilityHint('image-loading'));
+    waitForElementToBeRemoved(() => screen.getByLabelText('Image Loading Indicator'));
 
     await waitFor(() => {
       expect(screen.getByLabelText('Giphy Attachment Image')).toBeTruthy();

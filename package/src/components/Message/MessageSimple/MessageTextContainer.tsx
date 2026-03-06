@@ -17,9 +17,10 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
+import { primitives } from '../../../theme';
 
 const styles = StyleSheet.create({
-  textContainer: { maxWidth: 256 },
+  textContainer: { maxWidth: 256, paddingHorizontal: primitives.spacingSm },
 });
 
 export type MessageTextProps = MessageTextContainerProps & {

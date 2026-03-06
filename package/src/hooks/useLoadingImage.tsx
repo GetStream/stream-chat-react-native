@@ -30,7 +30,7 @@ function reducer(prevState: ImageState, action: Action) {
 }
 export const useLoadingImage = () => {
   const [imageState, dispatch] = useReducer(reducer, {
-    isLoadingImage: true,
+    isLoadingImage: false,
     isLoadingImageError: false,
   });
   const { isLoadingImage, isLoadingImageError } = imageState;

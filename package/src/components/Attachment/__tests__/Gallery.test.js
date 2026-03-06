@@ -272,7 +272,7 @@ describe('Gallery', () => {
     fireEvent(screen.getByLabelText('Gallery Image'), 'error', {
       nativeEvent: { error: 'error loading image' },
     });
-    expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
+    expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
   });
 
   it('should render a loading indicator and when successful render the image', async () => {
@@ -289,10 +289,10 @@ describe('Gallery', () => {
     });
 
     fireEvent(screen.getByLabelText('Gallery Image'), 'onLoadStart');
-    expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
+    expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
 
     fireEvent(screen.getByLabelText('Gallery Image'), 'onLoadFinish');
-    waitForElementToBeRemoved(() => screen.getByAccessibilityHint('image-loading'));
+    waitForElementToBeRemoved(() => screen.getByLabelText('Image Loading Indicator'));
     expect(screen.getByLabelText('Gallery Image')).toBeTruthy();
   });
 });

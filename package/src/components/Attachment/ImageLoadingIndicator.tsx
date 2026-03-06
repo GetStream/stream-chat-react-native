@@ -1,31 +1,14 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View, ViewProps } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ShimmerView } from '../UIComponents/Shimmer/ShimmerView';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
-  },
-});
-
-export type ImageLoadingIndicatorProps = ViewProps;
-
-export const ImageLoadingIndicator = (props: ImageLoadingIndicatorProps) => {
-  const {
-    theme: {
-      messageSimple: {
-        loadingIndicator: { container },
-      },
-    },
-  } = useTheme();
-  const { style, ...rest } = props;
+export const ImageLoadingIndicator = () => {
   return (
-    <View {...rest} accessibilityHint='image-loading' style={[styles.container, container, style]}>
-      <ActivityIndicator />
+    <View style={StyleSheet.absoluteFillObject}>
+      <ShimmerView>
+        <ActivityIndicator />
+      </ShimmerView>
     </View>
   );
 };

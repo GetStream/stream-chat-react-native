@@ -39,8 +39,13 @@ const GiphyImageWithContext = (props: GiphyImagePropsWithContext) => {
 
   const { giphy: giphyData, image_url, thumb_url, type } = attachment;
 
-  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
-    useLoadingImage();
+  const {
+    isLoadingImage,
+    isLoadingImageError,
+    setLoadingImage,
+    setLoadingImageError,
+    onReloadImage,
+  } = useLoadingImage();
 
   const {
     theme: {
@@ -93,7 +98,7 @@ const GiphyImageWithContext = (props: GiphyImagePropsWithContext) => {
       />
       {isLoadingImageError && (
         <View style={[styles.imageIndicatorContainer, imageIndicatorContainer]}>
-          <ImageLoadingFailedIndicator />
+          <ImageLoadingFailedIndicator onReloadImage={onReloadImage} />
         </View>
       )}
       {isLoadingImage && (

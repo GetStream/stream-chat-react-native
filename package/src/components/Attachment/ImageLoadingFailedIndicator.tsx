@@ -1,56 +1,45 @@
-import React from 'react';
-import { StyleSheet, Text, View, ViewProps } from 'react-native';
+import React, { useMemo } from 'react';
+import { Pressable, StyleSheet, ViewProps } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { RetryBadge } from '../ui/Badge/RetryBadge';
 
-import { Warning } from '../../icons/Warning';
+export type ImageLoadingFailedIndicatorProps = ViewProps & {
+  /**
+   * Callback to reload the image
+   * @returns Callback to reload the image
+   */
+  onReloadImage: () => void;
+};
 
-const WARNING_ICON_SIZE = 14;
+export const ImageLoadingFailedIndicator = ({
+  onReloadImage,
+}: ImageLoadingFailedIndicatorProps) => {
+  const styles = useStyles();
 
-const styles = StyleSheet.create({
-  container: {
-    alignContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  errorText: {
-    fontSize: 8,
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-  },
-  warningIconStyle: {
-    borderRadius: 24,
-    marginLeft: 4,
-    marginTop: 6,
-  },
-});
-
-export type ImageLoadingFailedIndicatorProps = ViewProps;
-
-export const ImageLoadingFailedIndicator = (props: ImageLoadingFailedIndicatorProps) => {
-  const {
-    theme: {
-      colors: { accent_red, overlay, white },
-    },
-  } = useTheme();
-
-  const { t } = useTranslationContext();
-
-  const { style, ...rest } = props;
   return (
-    <View {...rest} accessibilityHint='image-loading-error' style={[style]}>
-      <View style={[styles.container, { backgroundColor: overlay }]}>
-        <Warning
-          height={WARNING_ICON_SIZE}
-          fill={accent_red}
-          style={styles.warningIconStyle}
-          width={WARNING_ICON_SIZE}
-        />
-        <Text style={[styles.errorText, { color: white }]}>{t('Error loading')}</Text>
-      </View>
-    </View>
+    <Pressable
+      accessibilityLabel='Image Loading Error Indicator'
+      onPress={onReloadImage}
+      style={styles.imageLoadingErrorIndicatorStyle}
+    >
+      <RetryBadge size='lg' />
+    </Pressable>
   );
+};
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      imageLoadingErrorIndicatorStyle: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: semantics.backgroundCoreOverlayLight,
+      },
+    });
+  }, [semantics]);
 };
