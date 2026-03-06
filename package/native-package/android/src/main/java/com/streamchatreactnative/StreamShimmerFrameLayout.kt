@@ -162,13 +162,33 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     }
 
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
+    val softBase = colorWithAlpha(highlightColor, EDGE_HIGHLIGHT_ALPHA_FACTOR)
+    val mediumBase = colorWithAlpha(highlightColor, MID_HIGHLIGHT_ALPHA_FACTOR)
     shimmerShader = LinearGradient(
       0f,
       0f,
       shimmerWidth,
       0f,
-      intArrayOf(baseColor, highlightColor, baseColor),
-      floatArrayOf(0f, 0.5f, 1f),
+      intArrayOf(
+        baseColor,
+        softBase,
+        mediumBase,
+        highlightColor,
+        highlightColor,
+        mediumBase,
+        softBase,
+        baseColor,
+      ),
+      floatArrayOf(
+        0f,
+        0.2f,
+        0.34f,
+        0.44f,
+        0.56f,
+        0.66f,
+        0.8f,
+        1f,
+      ),
       Shader.TileMode.CLAMP,
     )
   }
@@ -207,7 +227,9 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     private const val DEFAULT_HIGHLIGHT_COLOR = 0x59FFFFFF
     private const val DEFAULT_GRADIENT_COLOR = Color.WHITE
     private const val SHIMMER_DURATION_MS = 1200L
-    private const val SHIMMER_STRIP_WIDTH_RATIO = 0.35f
+    private const val SHIMMER_STRIP_WIDTH_RATIO = 1.1f
+    private const val EDGE_HIGHLIGHT_ALPHA_FACTOR = 0.45f
+    private const val MID_HIGHLIGHT_ALPHA_FACTOR = 0.75f
     private const val GRADIENT_CENTER_ALPHA = 0.35f
   }
 }
