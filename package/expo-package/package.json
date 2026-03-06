@@ -11,6 +11,15 @@
     "url": "https://github.com/GetStream/stream-chat-react-native.git",
     "directory": "package/expo-package"
   },
+  "files": [
+    "src",
+    "types",
+    "android/src",
+    "android/build.gradle",
+    "android/gradle.properties",
+    "react-native.config.js",
+    "package.json"
+  ],
   "license": "SEE LICENSE IN LICENSE",
   "main": "src/index.js",
   "types": "types/index.d.ts",

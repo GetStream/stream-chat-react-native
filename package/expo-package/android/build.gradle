@@ -30,6 +30,14 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["StreamChatExpo_" + name]).toInteger()
 }
 
+def localShimmerSourceDir = new File(projectDir, "src/main/java/com/streamchatreactnative")
+def sharedShimmerSourceDir = new File(projectDir, "../../shared-native/android/src/main/java/com/streamchatreactnative")
+def generatedShimmerSourceDir = new File(project.buildDir, "generated/stream-shimmer/src/main/java/com/streamchatreactnative")
+def shimmerSourceFiles = ["StreamShimmerFrameLayout.kt", "StreamShimmerViewManager.kt"]
+def hasAllShimmerFiles = { File dir ->
+  shimmerSourceFiles.every { filename -> new File(dir, filename).exists() }
+}
+
 android {
   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
   def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
@@ -67,13 +75,51 @@ android {
 
   sourceSets {
     main {
+      java.srcDirs += [generatedShimmerSourceDir.absolutePath]
       if (isNewArchitectureEnabled()) {
         java.srcDirs += [
+          "src/newarch",
           "${project.buildDir}/generated/source/codegen/java"
         ]
       }
     }
   }
+}
+
+tasks.register("syncSharedShimmerSources") {
+  outputs.dir(generatedShimmerSourceDir)
+  outputs.upToDateWhen { false }
+  doLast {
+    def sourceDir = null
+    if (hasAllShimmerFiles(localShimmerSourceDir)) {
+      sourceDir = localShimmerSourceDir
+    } else if (hasAllShimmerFiles(sharedShimmerSourceDir)) {
+      sourceDir = sharedShimmerSourceDir
+    }
+
+    if (sourceDir == null) {
+      throw new GradleException(
+        "Missing shimmer native sources. Expected either src/main/java/com/streamchatreactnative/*.kt " +
+          "or ../../shared-native/android/src/main/java/com/streamchatreactnative/*.kt."
+      )
+    }
+
+    generatedShimmerSourceDir.mkdirs()
+    shimmerSourceFiles.each { filename ->
+      def srcFile = new File(sourceDir, filename)
+      def dstFile = new File(generatedShimmerSourceDir, filename)
+      dstFile.bytes = srcFile.bytes
+    }
+  }
+}
+
+tasks.matching { it.name == "preBuild" }.configureEach {
+  dependsOn("syncSharedShimmerSources")
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+  dependsOn("syncSharedShimmerSources")
+  source(generatedShimmerSourceDir.absolutePath)
 }
 
 repositories {
