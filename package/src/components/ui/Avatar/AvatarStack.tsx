@@ -24,41 +24,51 @@ export const AvatarStack = (props: AvatarStackProps) => {
   const visibleItems = items.slice(0, maxVisible);
   const extraCount = items.length - visibleItems.length;
 
-  if (extraCount > 0) {
-    visibleItems.push(
-      <BadgeCount
-        count={extraCount}
-        size={avatarSize === 'sm' || avatarSize === 'md' ? 'md' : 'sm'}
-      />,
-    );
-  }
-
   const totalWidth = diameter + (visibleItems.length - 1) * visiblePortion;
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          width: totalWidth,
-        },
-      ]}
-    >
-      {visibleItems.map((item, index) => {
-        return (
-          <View
-            style={[
-              styles.item,
-              {
-                left: index * visiblePortion,
-              },
-            ]}
-            key={index}
-          >
-            {item}
-          </View>
-        );
-      })}
+    <View style={styles.wrapper}>
+      <View
+        style={[
+          styles.container,
+          {
+            width: totalWidth,
+          },
+        ]}
+      >
+        {visibleItems.map((item, index) => {
+          return (
+            <View
+              style={[
+                styles.item,
+                {
+                  left: index * visiblePortion,
+                },
+              ]}
+              key={index}
+            >
+              {item}
+            </View>
+          );
+        })}
+      </View>
+
+      {extraCount > 0 && (
+        <View
+          style={[
+            styles.badgeCount,
+            {
+              // This is to ensure the badge is aligned with the last avatar in the stack
+              marginLeft: -(overlap * diameter),
+            },
+          ]}
+        >
+          <BadgeCount
+            count={extraCount}
+            size={avatarSize === 'sm' || avatarSize === 'md' ? 'md' : 'sm'}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -99,6 +109,10 @@ const useStyles = () => {
         },
         item: {
           position: 'absolute',
+        },
+        badgeCount: {},
+        wrapper: {
+          flexDirection: 'row',
         },
       }),
     [],
