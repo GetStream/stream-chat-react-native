@@ -78,8 +78,8 @@
     }
   },
   "scripts": {
-    "prepack": " cp ../../README.md .",
-    "postpack": "rm README.md"
+    "prepack": "bash ../scripts/sync-shimmer-native.sh native-package && cp ../../README.md .",
+    "postpack": "rm README.md && bash ../scripts/clean-shimmer-native-copies.sh native-package"
   },
   "devDependencies": {
     "react-native": "^0.79.3"

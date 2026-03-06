@@ -71,8 +71,8 @@
     "expo-audio": "~0.4.6"
   },
   "scripts": {
-    "prepack": " cp ../../README.md .",
-    "postpack": "rm README.md"
+    "prepack": "bash ../scripts/sync-shimmer-native.sh expo-package && cp ../../README.md .",
+    "postpack": "rm README.md && bash ../scripts/clean-shimmer-native-copies.sh expo-package"
   },
   "codegenConfig": {
     "name": "StreamChatExpoSpec",
