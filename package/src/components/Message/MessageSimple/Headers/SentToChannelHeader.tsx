@@ -15,6 +15,7 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { useStableCallback } from '../../../../hooks';
 import { ArrowUpRight } from '../../../../icons/ArrowUpRight';
 import { primitives } from '../../../../theme';
+import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
 type SentToChannelHeaderPropsWithContext = Pick<ChannelContextValue, 'threadList'> & {
   /**
@@ -31,15 +32,12 @@ type SentToChannelHeaderPropsWithContext = Pick<ChannelContextValue, 'threadList
 
 const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithContext) => {
   const { threadList, onPress, showViewText } = props;
-  const {
-    theme: { semantics },
-  } = useTheme();
   const { t } = useTranslationContext();
   const styles = useStyles();
 
   return (
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
-      <ArrowUpRight height={16} width={16} stroke={semantics.textPrimary} />
+      <ArrowUpRight height={16} width={16} stroke={styles.link.color} />
       <Text style={styles.label}>
         {threadList ? t('Also sent in channel') : t('Replied to a thread')}
       </Text>
@@ -118,6 +116,7 @@ const useStyles = () => {
       },
     },
   } = useTheme();
+  const shouldUseOverlayStyles = useShouldUseOverlayStyles();
 
   return useMemo(() => {
     return StyleSheet.create({
@@ -129,26 +128,28 @@ const useStyles = () => {
         ...container,
       },
       label: {
-        color: semantics.textPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
         ...label,
       },
       dot: {
-        color: semantics.textPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
         ...dot,
       },
       link: {
-        color: semantics.accentPrimary,
+        color: shouldUseOverlayStyles
+          ? semantics.buttonPrimaryTextOnAccent
+          : semantics.accentPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
         ...link,
       },
     });
-  }, [container, semantics, label, dot, link]);
+  }, [shouldUseOverlayStyles, container, semantics, label, dot, link]);
 };

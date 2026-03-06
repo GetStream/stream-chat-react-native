@@ -814,16 +814,6 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                 },
               ],
             },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
-            },
           ]
         }
       >
@@ -885,16 +875,6 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                   "translateY": 0,
                 },
               ],
-            },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
             },
           ]
         }
@@ -1731,16 +1711,6 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                 },
               ],
             },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
-            },
           ]
         }
       >
@@ -1802,16 +1772,6 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                   "translateY": 0,
                 },
               ],
-            },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
             },
           ]
         }
@@ -2648,16 +2608,6 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                 },
               ],
             },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
-            },
           ]
         }
       >
@@ -2719,16 +2669,6 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                   "translateY": 0,
                 },
               ],
-            },
-            {
-              "overflow": "visible",
-              "shadowColor": "white",
-              "shadowOffset": {
-                "height": 4,
-                "width": 0,
-              },
-              "shadowOpacity": 0.4,
-              "shadowRadius": 10,
             },
           ]
         }

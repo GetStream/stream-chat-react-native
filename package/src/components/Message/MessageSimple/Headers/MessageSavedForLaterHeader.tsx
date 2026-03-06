@@ -6,19 +6,17 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Bookmark } from '../../../../icons/Bookmark';
 import { primitives } from '../../../../theme';
+import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
 export type MessageSavedForLaterHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
 
 export const MessageSavedForLaterHeader = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
   const styles = useStyles();
   const { t } = useTranslationContext();
 
   return (
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
-      <Bookmark height={16} width={16} stroke={semantics.accentPrimary} />
+      <Bookmark height={16} width={16} stroke={styles.label.color} />
       <Text style={styles.label}>{t('Saved For Later')}</Text>
     </View>
   );
@@ -33,6 +31,7 @@ const useStyles = () => {
       },
     },
   } = useTheme();
+  const shouldUseOverlayStyles = useShouldUseOverlayStyles();
 
   return useMemo(() => {
     return StyleSheet.create({
@@ -44,12 +43,12 @@ const useStyles = () => {
         ...container,
       },
       label: {
-        color: semantics.accentPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.accentPrimary,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
         ...label,
       },
     });
-  }, [semantics, container, label]);
+  }, [shouldUseOverlayStyles, semantics, container, label]);
 };

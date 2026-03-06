@@ -44,6 +44,7 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
   const {
     children,
     i18nInstance,
+    MessageOverlayBackground,
     value,
     autoPlayVideo,
     giphyVersion,
@@ -106,7 +107,7 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
             <PortalProvider>
               {children}
               {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
-              <MessageOverlayHostLayer />
+              <MessageOverlayHostLayer BackgroundComponent={MessageOverlayBackground} />
             </PortalProvider>
           </ThemeProvider>
         </ImageGalleryProvider>

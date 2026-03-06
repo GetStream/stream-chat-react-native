@@ -17,6 +17,7 @@ import {
 import { ReplyConnectorLeft } from '../../../icons/ReplyConnectorLeft';
 import { ReplyConnectorRight } from '../../../icons/ReplyConnectorRight';
 import { primitives } from '../../../theme';
+import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 export type MessageRepliesPropsWithContext = Pick<
   MessageContextValue,
@@ -206,6 +207,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const shouldUseOverlayStyles = useShouldUseOverlayStyles();
   return useMemo(() => {
     return StyleSheet.create({
       container: {
@@ -223,11 +225,11 @@ const useStyles = () => {
         paddingBottom: primitives.spacingXxs,
       },
       messageRepliesText: {
-        color: semantics.textPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textPrimary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
       },
     });
-  }, [semantics]);
+  }, [shouldUseOverlayStyles, semantics]);
 };

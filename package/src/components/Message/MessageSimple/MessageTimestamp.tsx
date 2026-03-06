@@ -8,6 +8,7 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../../theme';
 import { getDateString } from '../../../utils/i18n/getDateString';
+import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 export type MessageTimestampProps = Partial<Pick<TranslationContextValue, 'tDateTimeParser'>> & {
   /**
@@ -66,15 +67,17 @@ const useStyles = () => {
       },
     },
   } = useTheme();
+  const shouldUseOverlayStyles = useShouldUseOverlayStyles();
+
   return useMemo(() => {
     return StyleSheet.create({
       text: {
-        color: semantics.chatTextTimestamp,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.chatTextTimestamp,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
         ...timestampText,
       },
     });
-  }, [semantics, timestampText]);
+  }, [shouldUseOverlayStyles, semantics, timestampText]);
 };

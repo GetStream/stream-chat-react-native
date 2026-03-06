@@ -64,15 +64,17 @@ export const BackButton: React.FC<{
   return (
     <TouchableOpacity
       onPress={() => {
+        if (onBack) {
+          onBack();
+          return;
+        }
+
         if (!navigation.canGoBack()) {
           // if no previous screen was present in history, go to the list screen
           // this can happen when opened through push notification
           navigation.reset({ index: 0, routes: [{ name: 'HomeScreen' }] });
         } else {
           navigation.goBack();
-        }
-        if (onBack) {
-          onBack();
         }
       }}
       style={styles.backButton}

@@ -29,6 +29,10 @@ export type MessageListImplementationConfigItem = { label: string; id: 'flatlist
 export type MessageListModeConfigItem = { label: string; mode: 'default' | 'livestream' };
 export type MessageListPruningConfigItem = { label: string; value: 100 | 500 | 1000 | undefined };
 export type MessageInputFloatingConfigItem = { label: string; value: boolean };
+export type MessageOverlayBackdropConfigItem = {
+  label: string;
+  value: 'default' | 'blurview';
+};
 
 const messageListImplementationConfigItems: MessageListImplementationConfigItem[] = [
   { label: 'FlatList', id: 'flatlist' },
@@ -50,6 +54,11 @@ const messageListPruningConfigItems: MessageListPruningConfigItem[] = [
 const messageInputFloatingConfigItems: MessageInputFloatingConfigItem[] = [
   { label: 'Normal', value: false },
   { label: 'Floating', value: true },
+];
+
+const messageOverlayBackdropConfigItems: MessageOverlayBackdropConfigItem[] = [
+  { label: 'Default', value: 'default' },
+  { label: 'BlurView', value: 'blurview' },
 ];
 
 export const SlideInView = ({
@@ -220,6 +229,23 @@ const SecretMenuMessageListPruningConfigItem = ({
   </TouchableOpacity>
 );
 
+const SecretMenuMessageOverlayBackdropConfigItem = ({
+  isSelected,
+  messageOverlayBackdropConfigItem,
+  storeMessageOverlayBackdrop,
+}: {
+  isSelected: boolean;
+  messageOverlayBackdropConfigItem: MessageOverlayBackdropConfigItem;
+  storeMessageOverlayBackdrop: (item: MessageOverlayBackdropConfigItem) => void;
+}) => (
+  <TouchableOpacity
+    style={[styles.notificationItemContainer, { borderColor: isSelected ? 'green' : 'gray' }]}
+    onPress={() => storeMessageOverlayBackdrop(messageOverlayBackdropConfigItem)}
+  >
+    <Text style={styles.notificationItem}>{messageOverlayBackdropConfigItem.label}</Text>
+  </TouchableOpacity>
+);
+
 /*
  * TODO: Please rewrite this entire component.
  */
@@ -245,6 +271,9 @@ export const SecretMenu = ({
   >(null);
   const [selectedMessageInputFloating, setSelectedMessageInputFloating] =
     useState<MessageInputFloatingConfigItem['value']>(false);
+  const [selectedMessageOverlayBackdrop, setSelectedMessageOverlayBackdrop] = useState<
+    MessageOverlayBackdropConfigItem['value'] | null
+  >(null);
   const {
     theme: {
       colors: { black, grey },
@@ -281,6 +310,10 @@ export const SecretMenu = ({
         '@stream-rn-sampleapp-messageinput-floating',
         messageInputFloatingConfigItems[0],
       );
+      const messageOverlayBackdrop = await AsyncStore.getItem(
+        '@stream-rn-sampleapp-message-overlay-backdrop',
+        messageOverlayBackdropConfigItems[0],
+      );
       setSelectedProvider(notificationProvider?.id ?? notificationConfigItems[0].id);
       setSelectedMessageListImplementation(
         messageListImplementation?.id ?? messageListImplementationConfigItems[0].id,
@@ -289,6 +322,9 @@ export const SecretMenu = ({
       setSelectedMessageListPruning(messageListPruning?.value);
       setSelectedMessageInputFloating(
         messageInputFloating?.value ?? messageInputFloatingConfigItems[0].value,
+      );
+      setSelectedMessageOverlayBackdrop(
+        messageOverlayBackdrop?.value ?? messageOverlayBackdropConfigItems[0].value,
       );
     };
     getSelectedConfig();
@@ -321,6 +357,14 @@ export const SecretMenu = ({
     await AsyncStore.setItem('@stream-rn-sampleapp-messageinput-floating', item);
     setSelectedMessageInputFloating(item.value);
   }, []);
+
+  const storeMessageOverlayBackdrop = useCallback(
+    async (item: MessageOverlayBackdropConfigItem) => {
+      await AsyncStore.setItem('@stream-rn-sampleapp-message-overlay-backdrop', item);
+      setSelectedMessageOverlayBackdrop(item.value);
+    },
+    [],
+  );
 
   const removeAllDevices = useCallback(async () => {
     const { devices } = await chatClient.getDevices(chatClient.userID);
@@ -385,6 +429,22 @@ export const SecretMenu = ({
                   messageInputFloatingConfigItem={item}
                   storeMessageInputFloating={storeMessageInputFloating}
                   isSelected={item.value === selectedMessageInputFloating}
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+        <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+          <Folder height={20} pathFill={grey} width={20} />
+          <View>
+            <Text style={[menuDrawerStyles.menuTitle]}>Message Overlay Backdrop</Text>
+            <View style={{ marginLeft: 16 }}>
+              {messageOverlayBackdropConfigItems.map((item) => (
+                <SecretMenuMessageOverlayBackdropConfigItem
+                  key={item.value}
+                  isSelected={item.value === selectedMessageOverlayBackdrop}
+                  messageOverlayBackdropConfigItem={item}
+                  storeMessageOverlayBackdrop={storeMessageOverlayBackdrop}
                 />
               ))}
             </View>
