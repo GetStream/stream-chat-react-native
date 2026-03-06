@@ -10,7 +10,7 @@ import { UserAvatar } from './UserAvatar';
 import { BadgeCount } from '../Badge';
 
 export type AvatarStackProps = {
-  avatarSize?: 'sm' | 'md' | 'xs';
+  avatarSize?: 'md' | 'sm' | 'xs';
   maxVisible?: number;
   items: React.ReactNode[];
   overlap?: number;
@@ -26,6 +26,8 @@ export const AvatarStack = (props: AvatarStackProps) => {
 
   const totalWidth = diameter + (visibleItems.length - 1) * visiblePortion;
 
+  const badgeCountSize = avatarSize === 'md' ? 'lg' : avatarSize === 'sm' ? 'md' : 'sm';
+
   return (
     <View style={styles.wrapper}>
       <View
@@ -33,6 +35,7 @@ export const AvatarStack = (props: AvatarStackProps) => {
           styles.container,
           {
             width: totalWidth,
+            height: diameter,
           },
         ]}
       >
@@ -58,15 +61,11 @@ export const AvatarStack = (props: AvatarStackProps) => {
           style={[
             styles.badgeCount,
             {
-              // This is to ensure the badge is aligned with the last avatar in the stack
               marginLeft: -(overlap * diameter),
             },
           ]}
         >
-          <BadgeCount
-            count={extraCount}
-            size={avatarSize === 'sm' || avatarSize === 'md' ? 'md' : 'sm'}
-          />
+          <BadgeCount count={extraCount} size={badgeCountSize} />
         </View>
       )}
     </View>
@@ -88,8 +87,8 @@ export const UserAvatarStack = ({
 }: UserAvatarStackProps) => {
   const items = useMemo(
     () =>
-      users.map((user) => {
-        return <UserAvatar key={user.id} user={user} size={avatarSize} showBorder />;
+      users.map((user, index) => {
+        return <UserAvatar key={`${user.id}-${index}`} user={user} size={avatarSize} showBorder />;
       }),
     [avatarSize, users],
   );
