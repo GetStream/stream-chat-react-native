@@ -27,134 +27,143 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
   >
     <View
       style={
-        [
-          {
-            "alignItems": "center",
-            "flexDirection": "row",
-          },
-          {
-            "width": 51.2,
-          },
-        ]
+        {
+          "flexDirection": "row",
+        }
       }
     >
       <View
         style={
           [
             {
-              "position": "absolute",
+              "alignItems": "center",
+              "flexDirection": "row",
             },
             {
-              "left": 0,
+              "height": 32,
+              "width": 51.2,
             },
           ]
         }
       >
         <View
-          testID="user-avatar"
+          style={
+            [
+              {
+                "position": "absolute",
+              },
+              {
+                "left": 0,
+              },
+            ]
+          }
         >
           <View
-            style={
-              [
-                {
-                  "alignItems": "center",
-                  "borderRadius": 9999,
-                  "justifyContent": "center",
-                  "overflow": "hidden",
-                },
-                {
-                  "height": 32,
-                  "width": 32,
-                },
-                {
-                  "backgroundColor": "#fcd579",
-                },
-                {
-                  "borderColor": "rgba(0, 0, 0, 0.1)",
-                  "borderWidth": 1,
-                },
-                undefined,
-              ]
-            }
-            testID="avatar-image"
+            testID="user-avatar"
           >
-            <Image
-              onError={[Function]}
-              source={
-                {
-                  "uri": "https://i.imgur.com/LuuGvh0.png",
-                }
-              }
+            <View
               style={
                 [
-                  {},
+                  {
+                    "alignItems": "center",
+                    "borderRadius": 9999,
+                    "justifyContent": "center",
+                    "overflow": "hidden",
+                  },
                   {
                     "height": 32,
                     "width": 32,
                   },
+                  {
+                    "backgroundColor": "#fcd579",
+                  },
+                  {
+                    "borderColor": "rgba(0, 0, 0, 0.1)",
+                    "borderWidth": 1,
+                  },
+                  undefined,
                 ]
               }
-            />
+              testID="avatar-image"
+            >
+              <Image
+                onError={[Function]}
+                source={
+                  {
+                    "uri": "https://i.imgur.com/LuuGvh0.png",
+                  }
+                }
+                style={
+                  [
+                    {},
+                    {
+                      "height": 32,
+                      "width": 32,
+                    },
+                  ]
+                }
+              />
+            </View>
           </View>
         </View>
-      </View>
-      <View
-        style={
-          [
-            {
-              "position": "absolute",
-            },
-            {
-              "left": 19.2,
-            },
-          ]
-        }
-      >
         <View
-          testID="user-avatar"
+          style={
+            [
+              {
+                "position": "absolute",
+              },
+              {
+                "left": 19.2,
+              },
+            ]
+          }
         >
           <View
-            style={
-              [
-                {
-                  "alignItems": "center",
-                  "borderRadius": 9999,
-                  "justifyContent": "center",
-                  "overflow": "hidden",
-                },
-                {
-                  "height": 32,
-                  "width": 32,
-                },
-                {
-                  "backgroundColor": "#8febbd",
-                },
-                {
-                  "borderColor": "rgba(0, 0, 0, 0.1)",
-                  "borderWidth": 1,
-                },
-                undefined,
-              ]
-            }
-            testID="avatar-image"
+            testID="user-avatar"
           >
-            <Image
-              onError={[Function]}
-              source={
-                {
-                  "uri": "https://i.imgur.com/spueyAP.png",
-                }
-              }
+            <View
               style={
                 [
-                  {},
+                  {
+                    "alignItems": "center",
+                    "borderRadius": 9999,
+                    "justifyContent": "center",
+                    "overflow": "hidden",
+                  },
                   {
                     "height": 32,
                     "width": 32,
                   },
+                  {
+                    "backgroundColor": "#8febbd",
+                  },
+                  {
+                    "borderColor": "rgba(0, 0, 0, 0.1)",
+                    "borderWidth": 1,
+                  },
+                  undefined,
                 ]
               }
-            />
+              testID="avatar-image"
+            >
+              <Image
+                onError={[Function]}
+                source={
+                  {
+                    "uri": "https://i.imgur.com/spueyAP.png",
+                  }
+                }
+                style={
+                  [
+                    {},
+                    {
+                      "height": 32,
+                      "width": 32,
+                    },
+                  ]
+                }
+              />
+            </View>
           </View>
         </View>
       </View>
