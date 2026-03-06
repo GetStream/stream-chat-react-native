@@ -74,7 +74,7 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
     messageHasOnlyOneImage: boolean;
   };
 
-const IMAGE_LOADING_INDICATOR_DELAY_MS = 120;
+const IMAGE_LOADING_INDICATOR_DELAY_MS = 350;
 
 const GalleryWithContext = (props: GalleryPropsWithContext) => {
   const {
@@ -444,15 +444,15 @@ const GalleryImageThumbnail = ({
         <ImageLoadingFailedIndicator onReloadImage={onReloadImage} />
       ) : (
         <>
-          <GalleryImage
-            onError={onError}
-            onLoadEnd={onLoadEnd}
-            onLoadStart={onLoadStart}
-            resizeMode={thumbnail.resizeMode}
-            style={gallery.image}
-            uri={thumbnail.url}
-          />
-          {isLoadingImage ? <ImageLoadingIndicator /> : null}
+          {/*<GalleryImage*/}
+          {/*  onError={onError}*/}
+          {/*  onLoadEnd={onLoadEnd}*/}
+          {/*  onLoadStart={onLoadStart}*/}
+          {/*  resizeMode={thumbnail.resizeMode}*/}
+          {/*  style={gallery.image}*/}
+          {/*  uri={thumbnail.url}*/}
+          {/*/>*/}
+          {true ? <ImageLoadingIndicator /> : null}
         </>
       )}
     </View>

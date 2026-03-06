@@ -86,7 +86,7 @@
   },
   "codegenConfig": {
     "name": "StreamChatReactNativeSpec",
-    "type": "modules",
+    "type": "all",
     "jsSrcsDir": "src/native"
   },
   "resolutions": {
