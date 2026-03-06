@@ -15,14 +15,23 @@ type Action =
 function reducer(prevState: ImageState, action: Action) {
   switch (action.type) {
     case 'reloadImage':
+      if (prevState.isLoadingImage && !prevState.isLoadingImageError) {
+        return prevState;
+      }
       return {
         ...prevState,
         isLoadingImage: true,
         isLoadingImageError: false,
       };
     case 'setLoadingImage':
+      if (prevState.isLoadingImage === action.isLoadingImage) {
+        return prevState;
+      }
       return { ...prevState, isLoadingImage: action.isLoadingImage };
     case 'setLoadingImageError':
+      if (prevState.isLoadingImageError === action.isLoadingImageError) {
+        return prevState;
+      }
       return { ...prevState, isLoadingImageError: action.isLoadingImageError };
     default:
       return prevState;
