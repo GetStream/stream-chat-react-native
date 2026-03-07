@@ -19,15 +19,22 @@ public final class StreamShimmerView: UIView {
   private var gradientColor: UIColor = UIColor(white: 1, alpha: defaultHighlightAlpha)
   private var enabled = false
   private var lastAnimatedSize: CGSize = .zero
+  private var isAppActive = true
 
   public override init(frame: CGRect) {
     super.init(frame: frame)
     setupLayers()
+    setupLifecycleObservers()
   }
 
   public required init?(coder: NSCoder) {
     super.init(coder: coder)
     setupLayers()
+    setupLifecycleObservers()
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 
   public override func layoutSubviews() {
@@ -82,6 +89,33 @@ public final class StreamShimmerView: UIView {
     layer.addSublayer(shimmerLayer)
   }
 
+  private func setupLifecycleObservers() {
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleWillEnterForeground),
+      name: UIApplication.willEnterForegroundNotification,
+      object: nil
+    )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleDidEnterBackground),
+      name: UIApplication.didEnterBackgroundNotification,
+      object: nil
+    )
+  }
+
+  @objc
+  private func handleWillEnterForeground() {
+    isAppActive = true
+    updateLayersForCurrentState()
+  }
+
+  @objc
+  private func handleDidEnterBackground() {
+    isAppActive = false
+    stopAnimation()
+  }
+
   private func updateLayersForCurrentState() {
     let bounds = self.bounds
     guard !bounds.isEmpty else {
@@ -117,7 +151,7 @@ public final class StreamShimmerView: UIView {
   }
 
   private func updateShimmerAnimation(for bounds: CGRect) {
-    guard enabled, window != nil, bounds.width > 0, bounds.height > 0 else {
+    guard enabled, isAppActive, window != nil, bounds.width > 0, bounds.height > 0 else {
       stopAnimation()
       return
     }
