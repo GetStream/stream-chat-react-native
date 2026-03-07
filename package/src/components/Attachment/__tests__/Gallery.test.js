@@ -1,12 +1,6 @@
 import React from 'react';
 
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
@@ -288,11 +282,15 @@ describe('Gallery', () => {
       expect(screen.queryAllByTestId('gallery-container').length).toBe(1);
     });
 
-    fireEvent(screen.getByLabelText('Gallery Image'), 'onLoadStart');
-    expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
+    fireEvent(screen.getByLabelText('Gallery Image'), 'loadStart');
+    await waitFor(() => {
+      expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
+    });
 
-    fireEvent(screen.getByLabelText('Gallery Image'), 'onLoadFinish');
-    waitForElementToBeRemoved(() => screen.getByLabelText('Image Loading Indicator'));
+    fireEvent(screen.getByLabelText('Gallery Image'), 'loadEnd');
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Image Loading Indicator')).toBeNull();
+    });
     expect(screen.getByLabelText('Gallery Image')).toBeTruthy();
   });
 });

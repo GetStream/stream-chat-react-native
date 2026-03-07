@@ -10,6 +10,8 @@ export const ImageLoadingIndicator = () => {
   } = useTheme();
   return (
     <NativeShimmerView
+      accessibilityLabel='Image Loading Indicator'
+      accessible
       enabled
       gradientColor={semantics.skeletonLoadingHighlight}
       style={StyleSheet.absoluteFillObject}

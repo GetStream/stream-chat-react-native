@@ -8,7 +8,6 @@ import {
   screen,
   userEvent,
   waitFor,
-  waitForElementToBeRemoved,
 } from '@testing-library/react-native';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
@@ -335,23 +334,21 @@ describe('Giphy', () => {
         </Chat>
       </OverlayProvider>,
     );
+    act(() => {
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'loadStart');
+    });
+
     await waitFor(() => {
       expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
     });
 
     act(() => {
-      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoadStart');
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'loadEnd');
     });
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
+      expect(screen.queryByLabelText('Image Loading Indicator')).toBeNull();
     });
-
-    act(() => {
-      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoad');
-    });
-
-    waitForElementToBeRemoved(() => screen.getByLabelText('Image Loading Indicator'));
 
     await waitFor(() => {
       expect(screen.getByLabelText('Giphy Attachment Image')).toBeTruthy();

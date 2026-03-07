@@ -6,6 +6,7 @@ exports[`MessageTextContainer should render message text container 1`] = `
     [
       {
         "maxWidth": 256,
+        "paddingHorizontal": 12,
       },
       {},
       undefined,
