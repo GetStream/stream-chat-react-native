@@ -14,7 +14,7 @@ public final class StreamShimmerView: UIView {
   private let shimmerLayer = CAGradientLayer()
   private let centerGradientLayer = CAGradientLayer()
 
-  private var baseColor: UIColor = .clear
+  private var baseColor: UIColor = UIColor(white: 1, alpha: 0)
   private var highlightColor: UIColor = UIColor(white: 1, alpha: centerGradientAlpha)
   private var gradientColor: UIColor = .white
   private var gradientWidth: CGFloat = 0
@@ -60,10 +60,13 @@ public final class StreamShimmerView: UIView {
   private func setupLayers() {
     isUserInteractionEnabled = false
 
+    shimmerLayer.contentsScale = UIScreen.main.scale
+    shimmerLayer.allowsEdgeAntialiasing = true
     shimmerLayer.startPoint = CGPoint(x: 0, y: 0.5)
     shimmerLayer.endPoint = CGPoint(x: 1, y: 0.5)
     shimmerLayer.locations = [0.0, 0.2, 0.34, 0.44, 0.56, 0.66, 0.8, 1.0]
 
+    centerGradientLayer.contentsScale = UIScreen.main.scale
     centerGradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
     centerGradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
     centerGradientLayer.locations = [0.0, 0.5, 1.0]
@@ -127,29 +130,57 @@ public final class StreamShimmerView: UIView {
       return
     }
 
-    if shimmerLayer.animation(forKey: Self.shimmerAnimationKey) != nil {
-      return
-    }
+    stopAnimation()
 
     let shimmerWidth = max(bounds.width * Self.shimmerStripWidthRatio, 1)
-    let animation = CABasicAnimation(keyPath: "position.x")
-    animation.fromValue = -shimmerWidth / 2
-    animation.toValue = bounds.width + shimmerWidth / 2
+    let animation = CABasicAnimation(keyPath: "transform.translation.x")
+    animation.fromValue = 0
+    animation.toValue = bounds.width + shimmerWidth
     animation.duration = Self.shimmerDuration
     animation.repeatCount = .infinity
-    animation.isRemovedOnCompletion = false
-    animation.fillMode = .forwards
+    animation.timingFunction = CAMediaTimingFunction(name: .linear)
+    animation.isRemovedOnCompletion = true
     shimmerLayer.add(animation, forKey: Self.shimmerAnimationKey)
   }
 
   private func color(_ color: UIColor, alphaFactor: CGFloat) -> UIColor {
+    let resolvedColor = color.resolvedColor(with: traitCollection)
+
     var red: CGFloat = 0
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    guard color.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
-      return color
+
+    if resolvedColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+      return UIColor(red: red, green: green, blue: blue, alpha: alpha * alphaFactor)
     }
-    return UIColor(red: red, green: green, blue: blue, alpha: alpha * alphaFactor)
+
+    guard
+      let converted = resolvedColor.cgColor.converted(
+        to: CGColorSpace(name: CGColorSpace.extendedSRGB)!,
+        intent: .defaultIntent,
+        options: nil
+      ),
+      let components = converted.components
+    else {
+      return resolvedColor.withAlphaComponent(resolvedColor.cgColor.alpha * alphaFactor)
+    }
+
+    switch components.count {
+    case 2:
+      return UIColor(
+        white: components[0],
+        alpha: components[1] * alphaFactor
+      )
+    case 4:
+      return UIColor(
+        red: components[0],
+        green: components[1],
+        blue: components[2],
+        alpha: components[3] * alphaFactor
+      )
+    default:
+      return resolvedColor.withAlphaComponent(resolvedColor.cgColor.alpha * alphaFactor)
+    }
   }
 }
