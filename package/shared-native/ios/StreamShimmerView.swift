@@ -3,22 +3,20 @@ import UIKit
 
 @objcMembers
 public final class StreamShimmerView: UIView {
-  private static let edgeHighlightAlpha: CGFloat = 0.45
-  private static let midHighlightAlpha: CGFloat = 0.75
-  private static let centerGradientAlpha: CGFloat = 0.35
-  private static let shimmerStripWidthRatio: CGFloat = 1.1
+  private static let edgeHighlightAlpha: CGFloat = 0.1
+  private static let softHighlightAlpha: CGFloat = 0.24
+  private static let midHighlightAlpha: CGFloat = 0.48
+  private static let innerHighlightAlpha: CGFloat = 0.72
+  private static let defaultHighlightAlpha: CGFloat = 0.35
+  private static let shimmerStripWidthRatio: CGFloat = 1.25
   private static let shimmerDuration: CFTimeInterval = 1.2
   private static let shimmerAnimationKey = "stream_shimmer_translate_x"
 
   private let baseLayer = CALayer()
   private let shimmerLayer = CAGradientLayer()
-  private let centerGradientLayer = CAGradientLayer()
 
   private var baseColor: UIColor = UIColor(white: 1, alpha: 0)
-  private var highlightColor: UIColor = UIColor(white: 1, alpha: centerGradientAlpha)
-  private var gradientColor: UIColor = .white
-  private var gradientWidth: CGFloat = 0
-  private var gradientHeight: CGFloat = 0
+  private var highlightColor: UIColor = UIColor(white: 1, alpha: defaultHighlightAlpha)
   private var enabled = false
   private var lastAnimatedSize: CGSize = .zero
 
@@ -65,9 +63,9 @@ public final class StreamShimmerView: UIView {
   ) {
     self.baseColor = baseColor
     self.highlightColor = highlightColor
-    self.gradientColor = gradientColor
-    self.gradientWidth = max(gradientWidth, 0)
-    self.gradientHeight = max(gradientHeight, 0)
+    _ = gradientColor
+    _ = gradientWidth
+    _ = gradientHeight
     self.enabled = enabled
     updateLayersForCurrentState()
   }
@@ -84,16 +82,10 @@ public final class StreamShimmerView: UIView {
     shimmerLayer.allowsEdgeAntialiasing = true
     shimmerLayer.startPoint = CGPoint(x: 0, y: 0.5)
     shimmerLayer.endPoint = CGPoint(x: 1, y: 0.5)
-    shimmerLayer.locations = [0.0, 0.2, 0.34, 0.44, 0.56, 0.66, 0.8, 1.0]
-
-    centerGradientLayer.contentsScale = UIScreen.main.scale
-    centerGradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
-    centerGradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
-    centerGradientLayer.locations = [0.0, 0.5, 1.0]
+    shimmerLayer.locations = [0.0, 0.08, 0.2, 0.32, 0.4, 0.5, 0.6, 0.68, 0.8, 0.92, 1.0]
 
     layer.addSublayer(baseLayer)
     layer.addSublayer(shimmerLayer)
-    layer.addSublayer(centerGradientLayer)
   }
 
   private func updateLayersForCurrentState() {
@@ -107,41 +99,27 @@ public final class StreamShimmerView: UIView {
     baseLayer.backgroundColor = baseColor.cgColor
 
     updateShimmerLayer(for: bounds)
-    updateCenterGradientLayer(for: bounds)
     updateShimmerAnimation(for: bounds)
   }
 
   private func updateShimmerLayer(for bounds: CGRect) {
     let shimmerWidth = max(bounds.width * Self.shimmerStripWidthRatio, 1)
+    let transparentHighlight = color(highlightColor, alphaFactor: 0)
     shimmerLayer.frame = CGRect(x: -shimmerWidth, y: 0, width: shimmerWidth, height: bounds.height)
     shimmerLayer.colors = [
-      baseColor.cgColor,
+      transparentHighlight.cgColor,
       color(highlightColor, alphaFactor: Self.edgeHighlightAlpha).cgColor,
+      color(highlightColor, alphaFactor: Self.softHighlightAlpha).cgColor,
       color(highlightColor, alphaFactor: Self.midHighlightAlpha).cgColor,
+      color(highlightColor, alphaFactor: Self.innerHighlightAlpha).cgColor,
       highlightColor.cgColor,
-      highlightColor.cgColor,
+      color(highlightColor, alphaFactor: Self.innerHighlightAlpha).cgColor,
       color(highlightColor, alphaFactor: Self.midHighlightAlpha).cgColor,
+      color(highlightColor, alphaFactor: Self.softHighlightAlpha).cgColor,
       color(highlightColor, alphaFactor: Self.edgeHighlightAlpha).cgColor,
-      baseColor.cgColor,
+      transparentHighlight.cgColor,
     ]
     shimmerLayer.isHidden = !enabled
-  }
-
-  private func updateCenterGradientLayer(for bounds: CGRect) {
-    guard gradientWidth > 0, gradientHeight > 0 else {
-      centerGradientLayer.isHidden = true
-      return
-    }
-
-    let left = (bounds.width - gradientWidth) / 2
-    let top = (bounds.height - gradientHeight) / 2
-    centerGradientLayer.frame = CGRect(x: left, y: top, width: gradientWidth, height: gradientHeight)
-    centerGradientLayer.colors = [
-      color(gradientColor, alphaFactor: 0).cgColor,
-      color(gradientColor, alphaFactor: Self.centerGradientAlpha).cgColor,
-      color(gradientColor, alphaFactor: 0).cgColor,
-    ]
-    centerGradientLayer.isHidden = false
   }
 
   private func updateShimmerAnimation(for bounds: CGRect) {

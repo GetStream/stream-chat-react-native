@@ -142,6 +142,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     }
 
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
+    val transparentHighlight = colorWithAlpha(highlightColor, 0f)
     val edgeBase = colorWithAlpha(highlightColor, EDGE_HIGHLIGHT_ALPHA_FACTOR)
     val softBase = colorWithAlpha(highlightColor, SOFT_HIGHLIGHT_ALPHA_FACTOR)
     val mediumBase = colorWithAlpha(highlightColor, MID_HIGHLIGHT_ALPHA_FACTOR)
@@ -152,7 +153,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
       shimmerWidth,
       0f,
       intArrayOf(
-        baseColor,
+        transparentHighlight,
         edgeBase,
         softBase,
         mediumBase,
@@ -162,7 +163,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
         mediumBase,
         softBase,
         edgeBase,
-        baseColor,
+        transparentHighlight,
       ),
       floatArrayOf(
         0f,
@@ -229,9 +230,9 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     private const val DEFAULT_HIGHLIGHT_COLOR = 0x59FFFFFF
     private const val SHIMMER_DURATION_MS = 1200L
     private const val SHIMMER_STRIP_WIDTH_RATIO = 1.25f
-    private const val EDGE_HIGHLIGHT_ALPHA_FACTOR = 0.16f
-    private const val SOFT_HIGHLIGHT_ALPHA_FACTOR = 0.32f
-    private const val MID_HIGHLIGHT_ALPHA_FACTOR = 0.55f
-    private const val INNER_HIGHLIGHT_ALPHA_FACTOR = 0.78f
+    private const val EDGE_HIGHLIGHT_ALPHA_FACTOR = 0.1f
+    private const val SOFT_HIGHLIGHT_ALPHA_FACTOR = 0.24f
+    private const val MID_HIGHLIGHT_ALPHA_FACTOR = 0.48f
+    private const val INNER_HIGHLIGHT_ALPHA_FACTOR = 0.72f
   }
 }
