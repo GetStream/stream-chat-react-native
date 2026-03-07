@@ -85,7 +85,6 @@ android {
 
   sourceSets {
     main {
-      java.srcDirs += [generatedShimmerSourceDir.absolutePath]
       if (isNewArchitectureEnabled()) {
         java.srcDirs += [
           "src/newarch",
@@ -132,7 +131,6 @@ tasks.matching { it.name == "preBuild" }.configureEach {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
   dependsOn("syncSharedShimmerSources")
-  source(generatedShimmerSourceDir.absolutePath)
 }
 
 repositories {

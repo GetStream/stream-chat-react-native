@@ -9,6 +9,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Shader
 import android.util.AttributeSet
+import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import kotlin.math.roundToInt
@@ -30,7 +31,13 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   private val shimmerMatrix = Matrix()
 
   private var shimmerShader: LinearGradient? = null
+  private var centerGradientShader: LinearGradient? = null
   private var shimmerTranslateX: Float = 0f
+  private var centerGradientLeft: Float = 0f
+  private var centerGradientTop: Float = 0f
+  private var centerGradientRight: Float = 0f
+  private var centerGradientBottom: Float = 0f
+  private var animatedViewWidth: Float = 0f
   private var animator: ValueAnimator? = null
 
   init {
@@ -54,18 +61,21 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   fun setGradientColor(color: Int) {
     if (gradientColor == color) return
     gradientColor = color
+    rebuildCenterGradientShader()
     invalidate()
   }
 
   fun setGradientWidth(widthPx: Float) {
     if (gradientWidth == widthPx) return
     gradientWidth = widthPx
+    rebuildCenterGradientShader()
     invalidate()
   }
 
   fun setGradientHeight(heightPx: Float) {
     if (gradientHeight == heightPx) return
     gradientHeight = heightPx
+    rebuildCenterGradientShader()
     invalidate()
   }
 
@@ -77,7 +87,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   fun updateAnimatorState() {
-    if (enabled && isAttachedToWindow && width > 0) {
+    if (shouldAnimateShimmer()) {
       startShimmer()
     } else {
       stopShimmer()
@@ -97,7 +107,20 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
     rebuildShimmerShader()
+    rebuildCenterGradientShader()
     updateAnimatorState()
+  }
+
+  override fun onWindowVisibilityChanged(visibility: Int) {
+    super.onWindowVisibilityChanged(visibility)
+    updateAnimatorState()
+  }
+
+  override fun onVisibilityChanged(changedView: View, visibility: Int) {
+    super.onVisibilityChanged(changedView, visibility)
+    if (changedView === this) {
+      updateAnimatorState()
+    }
   }
 
   override fun dispatchDraw(canvas: Canvas) {
@@ -130,27 +153,15 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   private fun drawGradient(canvas: Canvas, viewWidth: Float, viewHeight: Float) {
-    if (gradientWidth <= 0f || gradientHeight <= 0f) return
+    if (gradientWidth <= 0f || gradientHeight <= 0f || viewWidth <= 0f || viewHeight <= 0f) return
 
-    val left = (viewWidth - gradientWidth) / 2f
-    val top = (viewHeight - gradientHeight) / 2f
-    val right = left + gradientWidth
-    val bottom = top + gradientHeight
-    val gradient = LinearGradient(
-      left,
-      top,
-      right,
-      top,
-      intArrayOf(
-        colorWithAlpha(gradientColor, 0f),
-        colorWithAlpha(gradientColor, GRADIENT_CENTER_ALPHA),
-        colorWithAlpha(gradientColor, 0f),
-      ),
-      floatArrayOf(0f, 0.5f, 1f),
-      Shader.TileMode.CLAMP,
-    )
-    gradientPaint.shader = gradient
-    canvas.drawRect(left, top, right, bottom, gradientPaint)
+    val shader = centerGradientShader ?: run {
+      rebuildCenterGradientShader()
+      centerGradientShader ?: return
+    }
+
+    gradientPaint.shader = shader
+    canvas.drawRect(centerGradientLeft, centerGradientTop, centerGradientRight, centerGradientBottom, gradientPaint)
     gradientPaint.shader = null
   }
 
@@ -194,12 +205,14 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   private fun startShimmer() {
-    if (animator != null) return
-
     val viewWidth = width.toFloat()
     if (viewWidth <= 0f) return
+    if (animator != null && animatedViewWidth == viewWidth) return
+
+    stopShimmer()
 
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
+    animatedViewWidth = viewWidth
     animator = ValueAnimator.ofFloat(-shimmerWidth, viewWidth).apply {
       duration = SHIMMER_DURATION_MS
       repeatCount = ValueAnimator.INFINITE
@@ -215,6 +228,45 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   private fun stopShimmer() {
     animator?.cancel()
     animator = null
+    animatedViewWidth = 0f
+  }
+
+  private fun rebuildCenterGradientShader() {
+    val viewWidth = width.toFloat()
+    val viewHeight = height.toFloat()
+    if (gradientWidth <= 0f || gradientHeight <= 0f || viewWidth <= 0f || viewHeight <= 0f) {
+      centerGradientShader = null
+      return
+    }
+
+    centerGradientLeft = (viewWidth - gradientWidth) / 2f
+    centerGradientTop = (viewHeight - gradientHeight) / 2f
+    centerGradientRight = centerGradientLeft + gradientWidth
+    centerGradientBottom = centerGradientTop + gradientHeight
+    centerGradientShader = LinearGradient(
+      centerGradientLeft,
+      centerGradientTop,
+      centerGradientRight,
+      centerGradientTop,
+      intArrayOf(
+        colorWithAlpha(gradientColor, 0f),
+        colorWithAlpha(gradientColor, GRADIENT_CENTER_ALPHA),
+        colorWithAlpha(gradientColor, 0f),
+      ),
+      floatArrayOf(0f, 0.5f, 1f),
+      Shader.TileMode.CLAMP,
+    )
+  }
+
+  private fun shouldAnimateShimmer(): Boolean {
+    return enabled &&
+      isAttachedToWindow &&
+      width > 0 &&
+      height > 0 &&
+      visibility == View.VISIBLE &&
+      windowVisibility == View.VISIBLE &&
+      isShown &&
+      alpha > 0f
   }
 
   private fun colorWithAlpha(color: Int, alphaFactor: Float): Int {
