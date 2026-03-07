@@ -69,7 +69,6 @@ import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
-import { ShimmerProvider } from '../UIComponents/Shimmer/ShimmerContext';
 
 // This is just to make sure that the scrolling happens in a different task queue.
 // TODO: Think if we really need this and strive to remove it if we can.
@@ -1257,89 +1256,87 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   // TODO: Make sure this is actually overridable as the previous FlatList was.
   return (
-    <ShimmerProvider visibleMessages={visibleMessages}>
-      <View style={styles.container} testID='message-flat-list-wrapper'>
-        {/* Don't show the empty list indicator for Thread messages */}
-        {processedMessageList.length === 0 && !thread ? (
-          <View style={styles.flex} testID='empty-state'>
-            {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
-          </View>
-        ) : (
-          <MessageListItemProvider value={messageListItemContextValue}>
-            <ListComponent
-              // TODO: Consider hiding this behind a feature flag.
-              layout={LayoutTransition}
-              contentContainerStyle={flatListContentContainerStyle}
-              /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-              data={processedMessageListWithNeighbors}
-              extraData={disabled}
-              inverted={inverted}
-              keyboardShouldPersistTaps='handled'
-              keyExtractor={keyExtractor}
-              ListFooterComponent={FooterComponent}
-              ListHeaderComponent={ListHeaderComponent}
-              /**
+    <View style={styles.container} testID='message-flat-list-wrapper'>
+      {/* Don't show the empty list indicator for Thread messages */}
+      {processedMessageList.length === 0 && !thread ? (
+        <View style={styles.flex} testID='empty-state'>
+          {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
+        </View>
+      ) : (
+        <MessageListItemProvider value={messageListItemContextValue}>
+          <ListComponent
+            // TODO: Consider hiding this behind a feature flag.
+            layout={LayoutTransition}
+            contentContainerStyle={flatListContentContainerStyle}
+            /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+            data={processedMessageListWithNeighbors}
+            extraData={disabled}
+            inverted={inverted}
+            keyboardShouldPersistTaps='handled'
+            keyExtractor={keyExtractor}
+            ListFooterComponent={FooterComponent}
+            ListHeaderComponent={ListHeaderComponent}
+            /**
             If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
             bottom (10 offset or below).
             minIndexForVisible = 1 means that beyond the item at index 1 we will not change the position on list updates,
             however it is not used when autoscrollToTopThreshold = 10.
           */
-              maintainVisibleContentPosition={maintainVisibleContentPosition}
-              maxToRenderPerBatch={30}
-              onContentSizeChange={onContentSizeChange}
-              onLayout={onLayout}
-              onMomentumScrollEnd={onUserScrollEvent}
-              onScroll={handleScroll}
-              onScrollBeginDrag={onScrollBeginDrag}
-              onScrollEndDrag={onScrollEndDrag}
-              onScrollToIndexFailed={onScrollToIndexFailedRef.current}
-              onTouchEnd={dismissImagePicker}
-              onViewableItemsChanged={stableOnViewableItemsChanged}
-              ref={refCallback}
-              renderItem={renderItem}
-              scrollEventThrottle={isLiveStreaming ? 16 : undefined}
-              showsVerticalScrollIndicator={false}
-              // @ts-expect-error Safe to do for now
-              strictMode={isLiveStreaming}
-              style={flatListStyle}
-              testID='message-flat-list'
-              viewabilityConfig={flatListViewabilityConfig}
-              {...additionalFlatListPropsExcludingStyle}
-            />
-          </MessageListItemProvider>
-        )}
-        <View style={styles.stickyHeaderContainer}>
-          {messageListLengthAfterUpdate && StickyHeader ? (
-            <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
-          ) : null}
-        </View>
-        {scrollToBottomButtonVisible ? (
-          <Animated.View
-            layout={LinearTransition.duration(200)}
-            style={[
-              { bottom: messageInputFloating ? messageInputHeight : primitives.spacingMd },
-              styles.scrollToBottomButtonContainer,
-            ]}
-          >
-            <ScrollToBottomButton
-              onPress={goToNewMessages}
-              showNotification={scrollToBottomButtonVisible}
-              unreadCount={threadList ? 0 : channel?.countUnread()}
-            />
-          </Animated.View>
-        ) : null}
-
-        <NetworkDownIndicator />
-        {isUnreadNotificationOpen && !threadList ? (
-          <View style={styles.unreadMessagesNotificationContainer}>
-            <UnreadMessagesNotification
-              onCloseHandler={onUnreadNotificationClose}
-              channelUnreadStateStore={channelUnreadStateStore}
-            />
-          </View>
+            maintainVisibleContentPosition={maintainVisibleContentPosition}
+            maxToRenderPerBatch={30}
+            onContentSizeChange={onContentSizeChange}
+            onLayout={onLayout}
+            onMomentumScrollEnd={onUserScrollEvent}
+            onScroll={handleScroll}
+            onScrollBeginDrag={onScrollBeginDrag}
+            onScrollEndDrag={onScrollEndDrag}
+            onScrollToIndexFailed={onScrollToIndexFailedRef.current}
+            onTouchEnd={dismissImagePicker}
+            onViewableItemsChanged={stableOnViewableItemsChanged}
+            ref={refCallback}
+            renderItem={renderItem}
+            scrollEventThrottle={isLiveStreaming ? 16 : undefined}
+            showsVerticalScrollIndicator={false}
+            // @ts-expect-error Safe to do for now
+            strictMode={isLiveStreaming}
+            style={flatListStyle}
+            testID='message-flat-list'
+            viewabilityConfig={flatListViewabilityConfig}
+            {...additionalFlatListPropsExcludingStyle}
+          />
+        </MessageListItemProvider>
+      )}
+      <View style={styles.stickyHeaderContainer}>
+        {messageListLengthAfterUpdate && StickyHeader ? (
+          <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
         ) : null}
       </View>
-    </ShimmerProvider>
+      {scrollToBottomButtonVisible ? (
+        <Animated.View
+          layout={LinearTransition.duration(200)}
+          style={[
+            { bottom: messageInputFloating ? messageInputHeight : primitives.spacingMd },
+            styles.scrollToBottomButtonContainer,
+          ]}
+        >
+          <ScrollToBottomButton
+            onPress={goToNewMessages}
+            showNotification={scrollToBottomButtonVisible}
+            unreadCount={threadList ? 0 : channel?.countUnread()}
+          />
+        </Animated.View>
+      ) : null}
+
+      <NetworkDownIndicator />
+      {isUnreadNotificationOpen && !threadList ? (
+        <View style={styles.unreadMessagesNotificationContainer}>
+          <UnreadMessagesNotification
+            onCloseHandler={onUnreadNotificationClose}
+            channelUnreadStateStore={channelUnreadStateStore}
+          />
+        </View>
+      ) : null}
+    </View>
   );
 };
 
