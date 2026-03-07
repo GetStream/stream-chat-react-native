@@ -432,9 +432,7 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     NativeHandlers.Sound = handlers.Sound;
   }
 
-  console.log('CHECK SHIMMER', handlers.NativeShimmerView);
   if (handlers.NativeShimmerView !== undefined) {
-    console.log('SHIMMER HERE ?!');
     NativeHandlers.NativeShimmerView = handlers.NativeShimmerView;
   }
 
