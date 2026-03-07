@@ -297,9 +297,6 @@ export type NativeShimmerViewProps = ViewProps & {
   baseColor?: ColorValue;
   enabled?: boolean;
   gradientColor?: ColorValue;
-  gradientHeight?: number;
-  gradientWidth?: number;
-  highlightColor?: ColorValue;
 };
 
 type Handlers = {

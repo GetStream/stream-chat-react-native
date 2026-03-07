@@ -103,10 +103,10 @@ tasks.register("syncSharedShimmerSources") {
   outputs.upToDateWhen { false }
   doLast {
     def sourceDir = null
-    if (hasAllShimmerFiles(localShimmerSourceDir)) {
-      sourceDir = localShimmerSourceDir
-    } else if (hasAllShimmerFiles(sharedShimmerSourceDir)) {
+    if (hasAllShimmerFiles(sharedShimmerSourceDir)) {
       sourceDir = sharedShimmerSourceDir
+    } else if (hasAllShimmerFiles(localShimmerSourceDir)) {
+      sourceDir = localShimmerSourceDir
     }
 
     if (sourceDir == null) {
@@ -117,10 +117,16 @@ tasks.register("syncSharedShimmerSources") {
     }
 
     generatedShimmerSourceDir.mkdirs()
+    localShimmerSourceDir.mkdirs()
     shimmerSourceFiles.each { filename ->
       def srcFile = new File(sourceDir, filename)
-      def dstFile = new File(generatedShimmerSourceDir, filename)
-      dstFile.bytes = srcFile.bytes
+      def generatedDstFile = new File(generatedShimmerSourceDir, filename)
+      generatedDstFile.bytes = srcFile.bytes
+
+      if (sourceDir != localShimmerSourceDir) {
+        def localDstFile = new File(localShimmerSourceDir, filename)
+        localDstFile.bytes = srcFile.bytes
+      }
     }
   }
 }

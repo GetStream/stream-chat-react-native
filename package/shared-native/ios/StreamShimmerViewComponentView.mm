@@ -76,15 +76,10 @@ using namespace facebook::react;
   const auto &newProps = *std::static_pointer_cast<const StreamShimmerViewProps>(props);
 
   UIColor *baseColor = RCTUIColorFromSharedColor(newProps.baseColor) ?: [UIColor colorWithWhite:1 alpha:0];
-  UIColor *highlightColor =
-      RCTUIColorFromSharedColor(newProps.highlightColor) ?: [UIColor colorWithWhite:1 alpha:0.35];
   UIColor *gradientColor = RCTUIColorFromSharedColor(newProps.gradientColor) ?: [UIColor whiteColor];
 
   [_shimmerView applyWithBaseColor:baseColor
-                    highlightColor:highlightColor
                      gradientColor:gradientColor
-                     gradientWidth:(CGFloat)MAX(newProps.gradientWidth, 0)
-                    gradientHeight:(CGFloat)MAX(newProps.gradientHeight, 0)
                            enabled:newProps.enabled];
 
   [super updateProps:props oldProps:oldProps];

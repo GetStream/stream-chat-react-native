@@ -16,7 +16,7 @@ public final class StreamShimmerView: UIView {
   private let shimmerLayer = CAGradientLayer()
 
   private var baseColor: UIColor = UIColor(white: 1, alpha: 0)
-  private var highlightColor: UIColor = UIColor(white: 1, alpha: defaultHighlightAlpha)
+  private var gradientColor: UIColor = UIColor(white: 1, alpha: defaultHighlightAlpha)
   private var enabled = false
   private var lastAnimatedSize: CGSize = .zero
 
@@ -55,17 +55,11 @@ public final class StreamShimmerView: UIView {
 
   public func apply(
     baseColor: UIColor,
-    highlightColor: UIColor,
     gradientColor: UIColor,
-    gradientWidth: CGFloat,
-    gradientHeight: CGFloat,
     enabled: Bool
   ) {
     self.baseColor = baseColor
-    self.highlightColor = highlightColor
-    _ = gradientColor
-    _ = gradientWidth
-    _ = gradientHeight
+    self.gradientColor = gradientColor
     self.enabled = enabled
     updateLayersForCurrentState()
   }
@@ -104,19 +98,19 @@ public final class StreamShimmerView: UIView {
 
   private func updateShimmerLayer(for bounds: CGRect) {
     let shimmerWidth = max(bounds.width * Self.shimmerStripWidthRatio, 1)
-    let transparentHighlight = color(highlightColor, alphaFactor: 0)
+    let transparentHighlight = color(gradientColor, alphaFactor: 0)
     shimmerLayer.frame = CGRect(x: -shimmerWidth, y: 0, width: shimmerWidth, height: bounds.height)
     shimmerLayer.colors = [
       transparentHighlight.cgColor,
-      color(highlightColor, alphaFactor: Self.edgeHighlightAlpha).cgColor,
-      color(highlightColor, alphaFactor: Self.softHighlightAlpha).cgColor,
-      color(highlightColor, alphaFactor: Self.midHighlightAlpha).cgColor,
-      color(highlightColor, alphaFactor: Self.innerHighlightAlpha).cgColor,
-      highlightColor.cgColor,
-      color(highlightColor, alphaFactor: Self.innerHighlightAlpha).cgColor,
-      color(highlightColor, alphaFactor: Self.midHighlightAlpha).cgColor,
-      color(highlightColor, alphaFactor: Self.softHighlightAlpha).cgColor,
-      color(highlightColor, alphaFactor: Self.edgeHighlightAlpha).cgColor,
+      color(gradientColor, alphaFactor: Self.edgeHighlightAlpha).cgColor,
+      color(gradientColor, alphaFactor: Self.softHighlightAlpha).cgColor,
+      color(gradientColor, alphaFactor: Self.midHighlightAlpha).cgColor,
+      color(gradientColor, alphaFactor: Self.innerHighlightAlpha).cgColor,
+      gradientColor.cgColor,
+      color(gradientColor, alphaFactor: Self.innerHighlightAlpha).cgColor,
+      color(gradientColor, alphaFactor: Self.midHighlightAlpha).cgColor,
+      color(gradientColor, alphaFactor: Self.softHighlightAlpha).cgColor,
+      color(gradientColor, alphaFactor: Self.edgeHighlightAlpha).cgColor,
       transparentHighlight.cgColor,
     ]
     shimmerLayer.isHidden = !enabled

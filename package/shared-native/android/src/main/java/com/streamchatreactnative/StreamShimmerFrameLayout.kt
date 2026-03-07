@@ -19,7 +19,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   attrs: AttributeSet? = null,
 ) : FrameLayout(context, attrs) {
   private var baseColor: Int = DEFAULT_BASE_COLOR
-  private var highlightColor: Int = DEFAULT_HIGHLIGHT_COLOR
+  private var gradientColor: Int = DEFAULT_GRADIENT_COLOR
   private var enabled: Boolean = true
 
   private val basePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
@@ -45,15 +45,16 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     invalidate()
   }
 
-  fun setHighlightColor(color: Int) {
-    if (highlightColor == color) return
-    highlightColor = color
+  fun setGradientColor(color: Int) {
+    if (gradientColor == color) return
+    gradientColor = color
     rebuildShimmerShader()
     invalidate()
   }
 
-  fun setGradientColor(color: Int) {
-    // Intentionally ignored: static center gradient rendering has been removed.
+  fun setHighlightColor(color: Int) {
+    // Backward-compatible alias while callsites migrate to gradientColor.
+    setGradientColor(color)
   }
 
   fun setGradientWidth(widthPx: Float) {
@@ -142,11 +143,11 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     }
 
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
-    val transparentHighlight = colorWithAlpha(highlightColor, 0f)
-    val edgeBase = colorWithAlpha(highlightColor, EDGE_HIGHLIGHT_ALPHA_FACTOR)
-    val softBase = colorWithAlpha(highlightColor, SOFT_HIGHLIGHT_ALPHA_FACTOR)
-    val mediumBase = colorWithAlpha(highlightColor, MID_HIGHLIGHT_ALPHA_FACTOR)
-    val innerBase = colorWithAlpha(highlightColor, INNER_HIGHLIGHT_ALPHA_FACTOR)
+    val transparentHighlight = colorWithAlpha(gradientColor, 0f)
+    val edgeBase = colorWithAlpha(gradientColor, EDGE_HIGHLIGHT_ALPHA_FACTOR)
+    val softBase = colorWithAlpha(gradientColor, SOFT_HIGHLIGHT_ALPHA_FACTOR)
+    val mediumBase = colorWithAlpha(gradientColor, MID_HIGHLIGHT_ALPHA_FACTOR)
+    val innerBase = colorWithAlpha(gradientColor, INNER_HIGHLIGHT_ALPHA_FACTOR)
     shimmerShader = LinearGradient(
       0f,
       0f,
@@ -158,7 +159,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
         softBase,
         mediumBase,
         innerBase,
-        highlightColor,
+        gradientColor,
         innerBase,
         mediumBase,
         softBase,
@@ -227,7 +228,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
   companion object {
     private const val DEFAULT_BASE_COLOR = 0x00FFFFFF
-    private const val DEFAULT_HIGHLIGHT_COLOR = 0x59FFFFFF
+    private const val DEFAULT_GRADIENT_COLOR = 0x59FFFFFF
     private const val SHIMMER_DURATION_MS = 1200L
     private const val SHIMMER_STRIP_WIDTH_RATIO = 1.25f
     private const val EDGE_HIGHLIGHT_ALPHA_FACTOR = 0.1f

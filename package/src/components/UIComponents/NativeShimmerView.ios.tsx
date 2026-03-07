@@ -7,16 +7,11 @@ export type NativeShimmerViewProps = ViewProps & {
   baseColor?: ColorValue;
   enabled?: boolean;
   gradientColor?: ColorValue;
-  gradientHeight?: number;
-  gradientWidth?: number;
-  highlightColor?: ColorValue;
 };
 
 export const NativeShimmerView = (props: NativeShimmerViewProps) => {
   const NativeShimmerComponent = NativeHandlers.NativeShimmerView;
-  console.log('SHIMMER ME: ', NativeShimmerComponent);
   if (NativeShimmerComponent) {
-    console.log('SHIMMER ME TIMBERS !');
     return <NativeShimmerComponent {...props} />;
   }
 

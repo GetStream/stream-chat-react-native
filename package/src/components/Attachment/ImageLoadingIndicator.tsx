@@ -1,27 +1,19 @@
 import React from 'react';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTheme } from '../../contexts';
 import { NativeShimmerView } from '../UIComponents/NativeShimmerView';
 import { ShimmerView } from '../UIComponents/Shimmer/ShimmerView';
 
 export const ImageLoadingIndicator = () => {
   const {
-    theme: {
-      semantics,
-      shimmer: { width, height },
-    },
+    theme: { semantics },
   } = useTheme();
-
   if (Platform.OS === 'android' || Platform.OS === 'ios') {
     return (
       <NativeShimmerView
-        // baseColor={semantics.backgroundCoreApp}
         enabled
-        gradientColor={semantics.backgroundCoreApp}
-        gradientHeight={height}
-        gradientWidth={width}
-        highlightColor='rgba(255,255,255,0.35)'
+        gradientColor={semantics.skeletonLoadingHighlight}
         style={StyleSheet.absoluteFillObject}
       >
         <View pointerEvents='none' style={styles.centered}>
