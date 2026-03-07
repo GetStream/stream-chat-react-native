@@ -125,9 +125,10 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     const msgH = messageH.value.h;
     const minTop = minY + topH.value.h;
     const maxTopWithBottom = maxY - (msgH + bottomH.value.h);
-    const maxTopWithoutBottom = maxY - msgH;
-    const maxTop = minTop <= maxTopWithBottom ? maxTopWithBottom : maxTopWithoutBottom;
-    const solvedTop = clamp(anchorY, minTop, Math.max(minTop, maxTop));
+    const canFitBottomWithoutOverlap = minTop <= maxTopWithBottom;
+    const solvedTop = canFitBottomWithoutOverlap
+      ? clamp(anchorY, minTop, Math.max(minTop, maxTopWithBottom))
+      : minTop;
 
     return solvedTop - anchorY;
   });
@@ -139,16 +140,10 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     const msgH = messageH.value.h;
     const minMessageTop = minY + topH.value.h;
     const maxMessageTopWithBottom = maxY - (msgH + bottomH.value.h);
-    const maxMessageTopWithoutBottom = maxY - msgH;
-    const maxMessageTop =
-      minMessageTop <= maxMessageTopWithBottom
-        ? maxMessageTopWithBottom
-        : maxMessageTopWithoutBottom;
-    const solvedMessageTop = clamp(
-      anchorMessageTop,
-      minMessageTop,
-      Math.max(minMessageTop, maxMessageTop),
-    );
+    const canFitBottomWithoutOverlap = minMessageTop <= maxMessageTopWithBottom;
+    const solvedMessageTop = canFitBottomWithoutOverlap
+      ? clamp(anchorMessageTop, minMessageTop, Math.max(minMessageTop, maxMessageTopWithBottom))
+      : minMessageTop;
 
     const solvedBottomTop = Math.min(solvedMessageTop + msgH, maxY - bottomH.value.h);
     return solvedBottomTop - bottomH.value.y;
