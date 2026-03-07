@@ -12,6 +12,11 @@ Pod::Spec.new do |s|
 
   s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :git => "./ios", :tag => "#{s.version}" }
+  s.prepare_command = <<-CMD
+    if [ -d ../shared-native/ios ]; then
+      cp -f ../shared-native/ios/* ios/
+    fi
+  CMD
   s.source_files = "ios/**/*.{h,m,mm,swift}"
   s.private_header_files = "ios/**/*.h"
 
