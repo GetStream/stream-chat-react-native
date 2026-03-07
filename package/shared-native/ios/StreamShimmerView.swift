@@ -20,6 +20,7 @@ public final class StreamShimmerView: UIView {
   private var gradientWidth: CGFloat = 0
   private var gradientHeight: CGFloat = 0
   private var enabled = false
+  private var lastAnimatedSize: CGSize = .zero
 
   public override init(frame: CGRect) {
     super.init(frame: frame)
@@ -34,6 +35,24 @@ public final class StreamShimmerView: UIView {
   public override func layoutSubviews() {
     super.layoutSubviews()
     updateLayersForCurrentState()
+  }
+
+  public override func didMoveToWindow() {
+    super.didMoveToWindow()
+    if window == nil {
+      stopAnimation()
+    } else {
+      updateLayersForCurrentState()
+    }
+  }
+
+  public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    if let previousTraitCollection,
+      traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)
+    {
+      updateLayersForCurrentState()
+    }
   }
 
   public func apply(
@@ -55,6 +74,7 @@ public final class StreamShimmerView: UIView {
 
   public func stopAnimation() {
     shimmerLayer.removeAnimation(forKey: Self.shimmerAnimationKey)
+    lastAnimatedSize = .zero
   }
 
   private func setupLayers() {
@@ -125,8 +145,12 @@ public final class StreamShimmerView: UIView {
   }
 
   private func updateShimmerAnimation(for bounds: CGRect) {
-    guard enabled, bounds.width > 0, bounds.height > 0 else {
+    guard enabled, window != nil, bounds.width > 0, bounds.height > 0 else {
       stopAnimation()
+      return
+    }
+
+    if shimmerLayer.animation(forKey: Self.shimmerAnimationKey) != nil, lastAnimatedSize == bounds.size {
       return
     }
 
@@ -141,6 +165,7 @@ public final class StreamShimmerView: UIView {
     animation.timingFunction = CAMediaTimingFunction(name: .linear)
     animation.isRemovedOnCompletion = true
     shimmerLayer.add(animation, forKey: Self.shimmerAnimationKey)
+    lastAnimatedSize = bounds.size
   }
 
   private func color(_ color: UIColor, alphaFactor: CGFloat) -> UIColor {

@@ -60,7 +60,15 @@ using namespace facebook::react;
 {
   [super layoutSubviews];
   _shimmerView.frame = self.bounds;
-  [self.layer insertSublayer:_shimmerView.layer atIndex:0];
+
+  BOOL needsReinsert = _shimmerView.layer.superlayer != self.layer;
+  if (!needsReinsert) {
+    CALayer *firstLayer = self.layer.sublayers.firstObject;
+    needsReinsert = firstLayer != _shimmerView.layer;
+  }
+  if (needsReinsert) {
+    [self.layer insertSublayer:_shimmerView.layer atIndex:0];
+  }
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
@@ -85,6 +93,11 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  [_shimmerView stopAnimation];
+}
+
+- (void)dealloc
+{
   [_shimmerView stopAnimation];
 }
 
