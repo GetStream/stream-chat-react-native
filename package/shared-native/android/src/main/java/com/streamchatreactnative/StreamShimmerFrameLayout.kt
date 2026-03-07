@@ -20,23 +20,17 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 ) : FrameLayout(context, attrs) {
   private var baseColor: Int = DEFAULT_BASE_COLOR
   private var highlightColor: Int = DEFAULT_HIGHLIGHT_COLOR
-  private var gradientColor: Int = DEFAULT_GRADIENT_COLOR
-  private var gradientWidth: Float = 0f
-  private var gradientHeight: Float = 0f
   private var enabled: Boolean = true
 
   private val basePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
-  private val shimmerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
-  private val gradientPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
+  private val shimmerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    style = Paint.Style.FILL
+    isDither = true
+  }
   private val shimmerMatrix = Matrix()
 
   private var shimmerShader: LinearGradient? = null
-  private var centerGradientShader: LinearGradient? = null
   private var shimmerTranslateX: Float = 0f
-  private var centerGradientLeft: Float = 0f
-  private var centerGradientTop: Float = 0f
-  private var centerGradientRight: Float = 0f
-  private var centerGradientBottom: Float = 0f
   private var animatedViewWidth: Float = 0f
   private var animator: ValueAnimator? = null
 
@@ -59,24 +53,15 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   fun setGradientColor(color: Int) {
-    if (gradientColor == color) return
-    gradientColor = color
-    rebuildCenterGradientShader()
-    invalidate()
+    // Intentionally ignored: static center gradient rendering has been removed.
   }
 
   fun setGradientWidth(widthPx: Float) {
-    if (gradientWidth == widthPx) return
-    gradientWidth = widthPx
-    rebuildCenterGradientShader()
-    invalidate()
+    // Intentionally ignored: static center gradient rendering has been removed.
   }
 
   fun setGradientHeight(heightPx: Float) {
-    if (gradientHeight == heightPx) return
-    gradientHeight = heightPx
-    rebuildCenterGradientShader()
-    invalidate()
+    // Intentionally ignored: static center gradient rendering has been removed.
   }
 
   fun setShimmerEnabled(enabled: Boolean) {
@@ -107,7 +92,6 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
     rebuildShimmerShader()
-    rebuildCenterGradientShader()
     updateAnimatorState()
   }
 
@@ -135,8 +119,6 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     canvas.drawRect(0f, 0f, viewWidth, viewHeight, basePaint)
 
     drawShimmer(canvas, viewWidth, viewHeight)
-    drawGradient(canvas, viewWidth, viewHeight)
-
     super.dispatchDraw(canvas)
   }
 
@@ -152,19 +134,6 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     shimmerPaint.shader = null
   }
 
-  private fun drawGradient(canvas: Canvas, viewWidth: Float, viewHeight: Float) {
-    if (gradientWidth <= 0f || gradientHeight <= 0f || viewWidth <= 0f || viewHeight <= 0f) return
-
-    val shader = centerGradientShader ?: run {
-      rebuildCenterGradientShader()
-      centerGradientShader ?: return
-    }
-
-    gradientPaint.shader = shader
-    canvas.drawRect(centerGradientLeft, centerGradientTop, centerGradientRight, centerGradientBottom, gradientPaint)
-    gradientPaint.shader = null
-  }
-
   private fun rebuildShimmerShader() {
     val viewWidth = width.toFloat()
     if (viewWidth <= 0f) {
@@ -173,8 +142,10 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     }
 
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
-    val softBase = colorWithAlpha(highlightColor, EDGE_HIGHLIGHT_ALPHA_FACTOR)
+    val edgeBase = colorWithAlpha(highlightColor, EDGE_HIGHLIGHT_ALPHA_FACTOR)
+    val softBase = colorWithAlpha(highlightColor, SOFT_HIGHLIGHT_ALPHA_FACTOR)
     val mediumBase = colorWithAlpha(highlightColor, MID_HIGHLIGHT_ALPHA_FACTOR)
+    val innerBase = colorWithAlpha(highlightColor, INNER_HIGHLIGHT_ALPHA_FACTOR)
     shimmerShader = LinearGradient(
       0f,
       0f,
@@ -182,22 +153,28 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
       0f,
       intArrayOf(
         baseColor,
+        edgeBase,
         softBase,
         mediumBase,
+        innerBase,
         highlightColor,
-        highlightColor,
+        innerBase,
         mediumBase,
         softBase,
+        edgeBase,
         baseColor,
       ),
       floatArrayOf(
         0f,
+        0.08f,
         0.2f,
-        0.34f,
-        0.44f,
-        0.56f,
-        0.66f,
+        0.32f,
+        0.4f,
+        0.5f,
+        0.6f,
+        0.68f,
         0.8f,
+        0.92f,
         1f,
       ),
       Shader.TileMode.CLAMP,
@@ -231,33 +208,6 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     animatedViewWidth = 0f
   }
 
-  private fun rebuildCenterGradientShader() {
-    val viewWidth = width.toFloat()
-    val viewHeight = height.toFloat()
-    if (gradientWidth <= 0f || gradientHeight <= 0f || viewWidth <= 0f || viewHeight <= 0f) {
-      centerGradientShader = null
-      return
-    }
-
-    centerGradientLeft = (viewWidth - gradientWidth) / 2f
-    centerGradientTop = (viewHeight - gradientHeight) / 2f
-    centerGradientRight = centerGradientLeft + gradientWidth
-    centerGradientBottom = centerGradientTop + gradientHeight
-    centerGradientShader = LinearGradient(
-      centerGradientLeft,
-      centerGradientTop,
-      centerGradientRight,
-      centerGradientTop,
-      intArrayOf(
-        colorWithAlpha(gradientColor, 0f),
-        colorWithAlpha(gradientColor, GRADIENT_CENTER_ALPHA),
-        colorWithAlpha(gradientColor, 0f),
-      ),
-      floatArrayOf(0f, 0.5f, 1f),
-      Shader.TileMode.CLAMP,
-    )
-  }
-
   private fun shouldAnimateShimmer(): Boolean {
     return enabled &&
       isAttachedToWindow &&
@@ -277,11 +227,11 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   companion object {
     private const val DEFAULT_BASE_COLOR = 0x00FFFFFF
     private const val DEFAULT_HIGHLIGHT_COLOR = 0x59FFFFFF
-    private const val DEFAULT_GRADIENT_COLOR = Color.WHITE
     private const val SHIMMER_DURATION_MS = 1200L
-    private const val SHIMMER_STRIP_WIDTH_RATIO = 1.1f
-    private const val EDGE_HIGHLIGHT_ALPHA_FACTOR = 0.45f
-    private const val MID_HIGHLIGHT_ALPHA_FACTOR = 0.75f
-    private const val GRADIENT_CENTER_ALPHA = 0.35f
+    private const val SHIMMER_STRIP_WIDTH_RATIO = 1.25f
+    private const val EDGE_HIGHLIGHT_ALPHA_FACTOR = 0.16f
+    private const val SOFT_HIGHLIGHT_ALPHA_FACTOR = 0.32f
+    private const val MID_HIGHLIGHT_ALPHA_FACTOR = 0.55f
+    private const val INNER_HIGHLIGHT_ALPHA_FACTOR = 0.78f
   }
 }
