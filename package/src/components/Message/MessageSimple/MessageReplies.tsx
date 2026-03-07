@@ -221,8 +221,6 @@ const useStyles = () => {
         alignItems: 'center',
         flexDirection: 'row',
         gap: primitives.spacingXs,
-        paddingTop: primitives.spacingXs,
-        paddingBottom: primitives.spacingXxs,
       },
       messageRepliesText: {
         color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textPrimary,
