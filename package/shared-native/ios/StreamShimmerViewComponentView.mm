@@ -49,8 +49,8 @@ using namespace facebook::react;
     _props = defaultProps;
 
     _shimmerView = [[StreamShimmerView alloc] initWithFrame:self.bounds];
-    _shimmerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self insertSubview:_shimmerView atIndex:0];
+    _shimmerView.userInteractionEnabled = NO;
+    [self.layer insertSublayer:_shimmerView.layer atIndex:0];
   }
 
   return self;
@@ -59,7 +59,8 @@ using namespace facebook::react;
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  [self sendSubviewToBack:_shimmerView];
+  _shimmerView.frame = self.bounds;
+  [self.layer insertSublayer:_shimmerView.layer atIndex:0];
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
