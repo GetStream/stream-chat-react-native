@@ -13,12 +13,12 @@ export const ImageLoadingIndicator = () => {
     },
   } = useTheme();
 
-  if (Platform.OS === 'android') {
+  if (Platform.OS === 'android' || Platform.OS === 'ios') {
     return (
       <NativeShimmerView
-        baseColor={semantics.backgroundCoreApp}
+        // baseColor={semantics.backgroundCoreApp}
         enabled
-        gradientColor='white'
+        gradientColor={semantics.backgroundCoreApp}
         gradientHeight={height}
         gradientWidth={width}
         highlightColor='rgba(255,255,255,0.35)'

@@ -14,7 +14,9 @@ export type NativeShimmerViewProps = ViewProps & {
 
 export const NativeShimmerView = (props: NativeShimmerViewProps) => {
   const NativeShimmerComponent = NativeHandlers.NativeShimmerView;
+  console.log('SHIMMER ME: ', NativeShimmerComponent);
   if (NativeShimmerComponent) {
+    console.log('SHIMMER ME TIMBERS !');
     return <NativeShimmerComponent {...props} />;
   }
 

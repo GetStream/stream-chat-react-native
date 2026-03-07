@@ -1,22 +1,23 @@
 import React from 'react';
-import type { HostComponent, ViewProps, ColorValue } from 'react-native';
+import { ColorValue, View, ViewProps } from 'react-native';
 
-import type { Double } from 'react-native/Libraries/Types/CodegenTypes';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import { NativeHandlers } from '../../native';
 
 export type NativeShimmerViewProps = ViewProps & {
   baseColor?: ColorValue;
   enabled?: boolean;
   gradientColor?: ColorValue;
-  gradientHeight?: Double;
-  gradientWidth?: Double;
+  gradientHeight?: number;
+  gradientWidth?: number;
   highlightColor?: ColorValue;
 };
 
-const NativeComponent = codegenNativeComponent<NativeShimmerViewProps>(
-  'StreamShimmerView',
-) as HostComponent<NativeShimmerViewProps>;
-
 export const NativeShimmerView = (props: NativeShimmerViewProps) => {
-  return <NativeComponent {...props} />;
+  const NativeShimmerComponent = NativeHandlers.NativeShimmerView;
+  if (NativeShimmerComponent) {
+    return <NativeShimmerComponent {...props} enabled={true} />;
+  }
+
+  const { children, ...rest } = props;
+  return <View {...rest}>{children}</View>;
 };

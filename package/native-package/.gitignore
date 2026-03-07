@@ -1,2 +1,8 @@
 # android
 android/build
+
+# ios
+ios/build
+ios/StreamShimmerView.swift
+ios/StreamShimmerViewComponentView.h
+ios/StreamShimmerViewComponentView.mm
