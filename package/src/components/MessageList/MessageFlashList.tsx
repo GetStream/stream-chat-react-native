@@ -8,7 +8,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { FlashListProps, FlashListRef, useFlashListContext } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
@@ -700,8 +700,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   });
 
-  const visibleMessages = useSharedValue<string[]>([]);
-
   /**
    * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
    * Thus useRef.
@@ -711,7 +709,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }: {
     viewableItems: ViewToken[] | undefined;
   }) => {
-    visibleMessages.value = viewableItems?.map((viewToken) => viewToken.item.message.id) ?? [];
     if (!viewableItems) {
       return;
     }

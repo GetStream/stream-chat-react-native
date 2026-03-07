@@ -11,7 +11,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import debounce from 'lodash/debounce';
 
@@ -579,8 +579,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   });
 
-  const visibleMessages = useSharedValue<string[]>([]);
-
   /**
    * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
    * Thus useRef.
@@ -590,7 +588,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }: {
     viewableItems: ViewToken[] | undefined;
   }) => {
-    visibleMessages.value = viewableItems?.map((viewToken) => viewToken.item.message.id) ?? [];
     viewabilityChangedCallback({ inverted, viewableItems });
 
     if (!viewableItems) {

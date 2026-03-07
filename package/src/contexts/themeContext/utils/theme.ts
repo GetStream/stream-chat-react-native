@@ -991,10 +991,6 @@ export type Theme = {
     waveform: ViewStyle;
   };
   semantics: typeof lightSemantics; // themed semantics have the same type
-  shimmer: {
-    width: number;
-    height: number;
-  };
 };
 
 export const defaultTheme: Theme = {
@@ -1872,9 +1868,5 @@ export const defaultTheme: Theme = {
     container: {},
     thumb: {},
     waveform: {},
-  },
-  shimmer: {
-    width: 300,
-    height: 192,
   },
 };
