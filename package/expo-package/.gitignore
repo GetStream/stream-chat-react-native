@@ -1,5 +1,7 @@
 # android
 android/build
+android/src/main/java/com/streamchatreactnative/StreamShimmerFrameLayout.kt
+android/src/main/java/com/streamchatreactnative/StreamShimmerViewManager.kt
 
 # ios
 ios/build
