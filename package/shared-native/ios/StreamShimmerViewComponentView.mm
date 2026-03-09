@@ -33,6 +33,9 @@ using namespace facebook::react;
 @interface StreamShimmerViewComponentView () <RCTStreamShimmerViewViewProtocol>
 @end
 
+// Fabric bridge for StreamShimmerView. This component view owns the native shimmer instance,
+// applies codegen props, and keeps shimmer rendered as a background layer while Fabric manages
+// React children. Keeping shimmer as a layer avoids child-order conflicts during mount/unmount.
 @implementation StreamShimmerViewComponentView {
   StreamShimmerView *_shimmerView;
 }
@@ -61,6 +64,8 @@ using namespace facebook::react;
   [super layoutSubviews];
   _shimmerView.frame = self.bounds;
 
+  // Keep shimmer pinned as the layer furthest back. Some layer operations can reorder sublayers, and
+  // this guard restores expected layering without touching Fabric managed child views.
   BOOL needsReinsert = _shimmerView.layer.superlayer != self.layer;
   if (!needsReinsert) {
     CALayer *firstLayer = self.layer.sublayers.firstObject;
@@ -88,6 +93,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  // Defensive cleanup for recycled cells/views so offscreen instances do not keep animating.
   [_shimmerView stopAnimation];
 }
 

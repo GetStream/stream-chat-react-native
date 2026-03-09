@@ -1,6 +1,11 @@
 import QuartzCore
 import UIKit
 
+/// Native shimmer view used by the Fabric component view.
+///
+/// It renders a base layer and a moving gradient highlight entirely in native code, so shimmer
+/// animation stays off the JS thread. The view updates its gradient when size or colors change and
+/// stops animation when it is not drawable (backgrounded, detached, hidden, or zero sized).
 @objcMembers
 public final class StreamShimmerView: UIView {
   private static let edgeHighlightAlpha: CGFloat = 0.1
@@ -45,8 +50,12 @@ public final class StreamShimmerView: UIView {
   public override func didMoveToWindow() {
     super.didMoveToWindow()
     if window == nil {
+      // Detaching from window means this view is no longer drawable. Stop and clear animation so
+      // a later reattach starts from a clean state.
       stopAnimation()
     } else {
+      // Reattaching (including reparenting across windows) re-evaluates state and restarts only
+      // when needed by current bounds/visibility/enablement.
       updateLayersForCurrentState()
     }
   }
@@ -56,6 +65,8 @@ public final class StreamShimmerView: UIView {
     if let previousTraitCollection,
       traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)
     {
+      // In current usage, colors are typically driven by JS props. We still refresh on trait
+      // changes so dynamically resolved native colors remain correct if that path is used later.
       updateLayersForCurrentState()
     }
   }
@@ -106,6 +117,8 @@ public final class StreamShimmerView: UIView {
 
   @objc
   private func handleWillEnterForeground() {
+    // iOS can drop active layer animations while the app is backgrounded. We explicitly rerun
+    // a state update on foreground so shimmer reliably restarts when returning to the app.
     isAppActive = true
     updateLayersForCurrentState()
   }
@@ -131,6 +144,8 @@ public final class StreamShimmerView: UIView {
   }
 
   private func updateShimmerLayer(for bounds: CGRect) {
+    // Rebuild the shimmer gradient for current width/colors. Keep this tied to real state changes
+    // such as layout/prop updates, not continuous per frame calls.
     let shimmerWidth = max(bounds.width * Self.shimmerStripWidthRatio, 1)
     let transparentHighlight = color(gradientColor, alphaFactor: 0)
     shimmerLayer.frame = CGRect(x: -shimmerWidth, y: 0, width: shimmerWidth, height: bounds.height)
@@ -156,12 +171,14 @@ public final class StreamShimmerView: UIView {
       return
     }
 
+    // If an animation already exists for the same size, keep it running instead of restarting.
     if shimmerLayer.animation(forKey: Self.shimmerAnimationKey) != nil, lastAnimatedSize == bounds.size {
       return
     }
 
     stopAnimation()
 
+    // Start just outside the left edge and sweep fully past the right edge for a clean pass.
     let shimmerWidth = max(bounds.width * Self.shimmerStripWidthRatio, 1)
     let animation = CABasicAnimation(keyPath: "transform.translation.x")
     animation.fromValue = 0
@@ -175,6 +192,7 @@ public final class StreamShimmerView: UIView {
   }
 
   private func color(_ color: UIColor, alphaFactor: CGFloat) -> UIColor {
+    // Preserve the resolved color channels and shape only alpha for smooth highlight falloff.
     let resolvedColor = color.resolvedColor(with: traitCollection)
 
     var red: CGFloat = 0

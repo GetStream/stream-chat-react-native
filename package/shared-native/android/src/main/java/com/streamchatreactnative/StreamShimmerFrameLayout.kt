@@ -80,10 +80,13 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
+    // Reattachment (including reparenting) should recheck visibility state and restart only if
+    // this instance is eligible to animate.
     updateAnimatorState()
   }
 
   override fun onDetachedFromWindow() {
+    // Detached views are not drawable; stop and clear animator so a future attach starts cleanly.
     stopShimmer()
     super.onDetachedFromWindow()
   }
@@ -187,6 +190,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   private fun startShimmer() {
     val viewWidth = width.toFloat()
     if (viewWidth <= 0f) return
+    // Keep the existing animator if the same-sized shimmer is already active.
     if (animator != null && animatedViewWidth == viewWidth) return
 
     stopShimmer()
