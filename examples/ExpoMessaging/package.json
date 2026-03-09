@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
+    "sync-native": "bash ../../package/scripts/sync-shimmer-from-package.sh expo-package && bash ../../package/scripts/sync-shimmer-native.sh expo-package",
+    "prestart": "yarn sync-native",
+    "preandroid": "yarn sync-native",
+    "preios": "yarn sync-native",
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",

@@ -444,15 +444,15 @@ const GalleryImageThumbnail = ({
         <ImageLoadingFailedIndicator onReloadImage={onReloadImage} />
       ) : (
         <>
-          <GalleryImage
-            onError={onError}
-            onLoadEnd={onLoadEnd}
-            onLoadStart={onLoadStart}
-            resizeMode={thumbnail.resizeMode}
-            style={gallery.image}
-            uri={thumbnail.url}
-          />
-          {isLoadingImage ? <ImageLoadingIndicator /> : null}
+          {/*<GalleryImage*/}
+          {/*  onError={onError}*/}
+          {/*  onLoadEnd={onLoadEnd}*/}
+          {/*  onLoadStart={onLoadStart}*/}
+          {/*  resizeMode={thumbnail.resizeMode}*/}
+          {/*  style={gallery.image}*/}
+          {/*  uri={thumbnail.url}*/}
+          {/*/>*/}
+          {true ? <ImageLoadingIndicator /> : null}
         </>
       )}
     </View>

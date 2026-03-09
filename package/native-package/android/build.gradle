@@ -36,7 +36,6 @@ def getExtOrDefault(name) {
 def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["ImageResizer_" + name]).toInteger()
 }
-
 def localShimmerSourceDir = new File(projectDir, "src/main/java/com/streamchatreactnative")
 def sharedShimmerSourceDir = new File(projectDir, "../../shared-native/android/src/main/java/com/streamchatreactnative")
 def generatedShimmerSourceDir = new File(project.buildDir, "generated/stream-shimmer/src/main/java/com/streamchatreactnative")
