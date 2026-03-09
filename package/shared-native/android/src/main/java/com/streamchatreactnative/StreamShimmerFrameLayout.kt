@@ -14,6 +14,15 @@ import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import kotlin.math.roundToInt
 
+/**
+ * Native shimmer container used by `StreamShimmerView`.
+ *
+ * This view draws a base color plus a moving highlight strip directly on canvas and still behaves
+ * like a regular container for React children. The animation runs fully on the native side so it
+ * does not depend on JS-driven frame updates. It automatically stops animating when the view is
+ * detached or not visible, rebuilds its shader when size or colors change, and waits for valid
+ * dimensions before starting animation to avoid invalid draw/animation states.
+ */
 class StreamShimmerFrameLayout @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null,
@@ -125,6 +134,8 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   private fun rebuildShimmerShader() {
+    // Recreates the shimmer gradient for the current width/colors. This allocates shader state,
+    // so keep calls tied to real changes (size or color updates), not per frame execution.
     val viewWidth = width.toFloat()
     if (viewWidth <= 0f) {
       shimmerShader = null

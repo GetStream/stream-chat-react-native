@@ -10,8 +10,12 @@ import com.facebook.react.viewmanagers.StreamShimmerViewManagerInterface
 /**
  * Fabric manager for StreamShimmerView.
  *
- * This must be a real ViewGroupManager because shimmer wraps React children. Using a non-group
- * manager here causes runtime cast failures in Fabric mounting paths.
+ * It creates the native shimmer layout, maps React props to native setters, and exposes child
+ * management methods so Fabric can mount and unmount children correctly inside this container.
+ * The manager rechecks animation state after prop transactions and disables shimmer when a view
+ * instance is dropped as a defensive cleanup step for recycled or unmounted views. Because the
+ * shimmer view wraps React children, this must remain a real ViewGroupManager as using a non-group
+ * manager can fail in Fabric mounting paths at runtime.
  */
 class StreamShimmerViewManager : ViewGroupManager<StreamShimmerFrameLayout>(),
   StreamShimmerViewManagerInterface<StreamShimmerFrameLayout> {
