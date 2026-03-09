@@ -52,19 +52,6 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     invalidate()
   }
 
-  fun setHighlightColor(color: Int) {
-    // Backward-compatible alias while callsites migrate to gradientColor.
-    setGradientColor(color)
-  }
-
-  fun setGradientWidth(widthPx: Float) {
-    // Intentionally ignored: static center gradient rendering has been removed.
-  }
-
-  fun setGradientHeight(heightPx: Float) {
-    // Intentionally ignored: static center gradient rendering has been removed.
-  }
-
   fun setShimmerEnabled(enabled: Boolean) {
     if (this.enabled == enabled) return
     this.enabled = enabled
