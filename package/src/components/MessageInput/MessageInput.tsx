@@ -359,7 +359,33 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   );
   return (
     <MicPositionProvider value={micPositionContextValue}>
-      <Animated.View layout={LinearTransition.duration(200)}>
+      {messageInputFloating ? (
+        <View
+          style={{
+            paddingBottom:
+              selectedPicker && !isKeyboardVisible
+                ? attachmentPickerBottomSheetHeight - bottomInset + 16
+                : 16,
+          }}
+        />
+      ) : null}
+      <Animated.View
+        style={
+          messageInputFloating
+            ? [
+                styles.floatingWrapper,
+                {
+                  bottom:
+                    selectedPicker && !isKeyboardVisible
+                      ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
+                      : BOTTOM_OFFSET,
+                },
+                floatingWrapper,
+              ]
+            : null
+        }
+        layout={LinearTransition.duration(200)}
+      >
         <PortalWhileClosingView
           portalHostName='overlay-composer'
           portalName='message-input-composer'
@@ -370,18 +396,11 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 layout: { height: newHeight },
               },
             }) => {
-              messageInputHeightStore.setHeight(
-                messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
-              );
+              messageInputHeightStore.setHeight(newHeight);
             }}
             style={
               messageInputFloating
-                ? [
-                    styles.wrapper,
-                    styles.floatingWrapper,
-                    { bottom: BOTTOM_OFFSET },
-                    floatingWrapper,
-                  ]
+                ? [styles.wrapper]
                 : [
                     styles.wrapper,
                     {
@@ -468,12 +487,11 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
             ) : (
               <MessageComposerTrailingView />
             )}
-
-            <View
-              style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
-            >
-              <AutoCompleteSuggestionList />
-            </View>
+          </View>
+          <View
+            style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
+          >
+            <AutoCompleteSuggestionList />
           </View>
         </PortalWhileClosingView>
       </Animated.View>
