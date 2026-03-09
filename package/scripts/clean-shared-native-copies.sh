@@ -32,4 +32,4 @@ case "$TARGET" in
     ;;
 esac
 
-echo "Cleaned generated shimmer native copies for target: $TARGET"
+echo "Cleaned generated shared native copies for target: $TARGET"

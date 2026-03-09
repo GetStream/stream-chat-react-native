@@ -24,8 +24,8 @@
   ],
   "scripts": {
     "install-all": "(yarn install --force && (cd native-package && yarn install --force) && (cd expo-package && yarn install --force))",
-    "shimmer:sync": "bash ./scripts/sync-shimmer-native.sh all",
-    "shimmer:clean-copies": "bash ./scripts/clean-shimmer-native-copies.sh all",
+    "shared-native:sync": "bash ./scripts/sync-shared-native.sh all",
+    "shared-native:clean-copies": "bash ./scripts/clean-shared-native-copies.sh all",
     "build": "rimraf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",
     "build-translations": "i18next-cli sync",
     "copy-translations": "echo '\u001b[34mℹ\u001b[0m Copying translation files to \u001b[34mlib/typescript/i18n\u001b[0m' && cp -R -f ./src/i18n ./lib/typescript/i18n && echo '\u001b[32m✓\u001b[0m Done Copying Translations'",

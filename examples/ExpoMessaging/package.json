@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
-    "sync-native": "bash ../../package/scripts/sync-shimmer-from-package.sh expo-package && bash ../../package/scripts/sync-shimmer-native.sh expo-package",
+    "sync-native": "bash ../../package/scripts/reconcile-shared-native.sh expo-package && bash ../../package/scripts/sync-shared-native.sh expo-package",
     "prestart": "yarn sync-native",
     "preandroid": "yarn sync-native",
     "preios": "yarn sync-native",

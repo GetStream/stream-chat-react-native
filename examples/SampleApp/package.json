@@ -7,7 +7,7 @@
     "url": "https://github.com/GetStream/stream-chat-react-native.git"
   },
   "scripts": {
-    "sync-native": "bash ../../package/scripts/sync-shimmer-from-package.sh native-package && bash ../../package/scripts/sync-shimmer-native.sh native-package",
+    "sync-native": "bash ../../package/scripts/reconcile-shared-native.sh native-package && bash ../../package/scripts/sync-shared-native.sh native-package",
     "preandroid": "yarn sync-native",
     "android": "react-native run-android",
     "preios": "yarn sync-native",

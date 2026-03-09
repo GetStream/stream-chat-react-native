@@ -82,9 +82,9 @@
     "expo-audio": "~0.4.6"
   },
   "scripts": {
-    "postinstall": "if [ -f ../scripts/sync-shimmer-native.sh ] && [ -d ../shared-native/ios ]; then bash ../scripts/sync-shimmer-native.sh expo-package; fi",
-    "prepack": "bash ../scripts/sync-shimmer-native.sh expo-package && cp ../../README.md .",
-    "postpack": "rm README.md && bash ../scripts/clean-shimmer-native-copies.sh expo-package"
+    "postinstall": "if [ -f ../scripts/sync-shared-native.sh ] && [ -d ../shared-native/ios ]; then bash ../scripts/sync-shared-native.sh expo-package; fi",
+    "prepack": "bash ../scripts/sync-shared-native.sh expo-package && cp ../../README.md .",
+    "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh expo-package"
   },
   "codegenConfig": {
     "name": "StreamChatExpoSpec",
