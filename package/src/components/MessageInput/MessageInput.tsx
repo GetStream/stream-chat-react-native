@@ -386,9 +386,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 layout: { height: newHeight },
               },
             }) => {
-              messageInputHeightStore.setHeight(
-                messageInputFloating ? newHeight + BOTTOM_OFFSET : newHeight,
-              );
+              messageInputHeightStore.setHeight(newHeight);
             }}
             style={
               messageInputFloating
