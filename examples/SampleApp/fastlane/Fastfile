@@ -184,8 +184,17 @@ lane :frameworks_sizes do
     yarn_all
     sh('yarn build')
     sh('yarn minify-bundle')
+
     js_bundle_size = file_size(path: 'package/lib/module/bundle.min.js')
-    { js_bundle_size: js_bundle_size }
+
+    # Include shared-native footprint so native only changes affect metrics from the shared directory.
+    native_shared_bytes = Dir.glob('package/shared-native/**/*').sum do |path|
+      File.file?(path) ? File.size(path) : 0
+    end
+
+    native_shared_size = native_shared_bytes / 1024.0
+
+    { js_bundle_size: js_bundle_size + native_shared_size }
   end
 end
 
