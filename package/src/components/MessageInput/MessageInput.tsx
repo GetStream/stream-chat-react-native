@@ -359,6 +359,16 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   );
   return (
     <MicPositionProvider value={micPositionContextValue}>
+      {messageInputFloating ? (
+        <View
+          style={{
+            paddingBottom:
+              selectedPicker && !isKeyboardVisible
+                ? attachmentPickerBottomSheetHeight - bottomInset + 16
+                : 16,
+          }}
+        />
+      ) : null}
       <Animated.View
         style={
           messageInputFloating
