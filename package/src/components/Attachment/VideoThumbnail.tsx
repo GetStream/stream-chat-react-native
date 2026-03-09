@@ -21,7 +21,7 @@ export type VideoThumbnailProps = {
    * Whether the attachment is currently being uploaded.
    * This is used to show a loading indicator in the thumbnail.
    */
-  isPendingAttachmentLoading: boolean;
+  isPendingAttachmentUploading?: boolean;
 };
 
 export const VideoThumbnail = (props: VideoThumbnailProps) => {
@@ -33,7 +33,7 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       semantics,
     },
   } = useTheme();
-  const { imageStyle, style, thumb_url, isPendingAttachmentLoading } = props;
+  const { imageStyle, style, thumb_url, isPendingAttachmentUploading } = props;
   return (
     <ImageBackground
       accessibilityLabel='Video Thumbnail'
@@ -42,7 +42,7 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       style={[styles.container, container, style]}
     >
       <VideoPlayIndicator size='md' />
-      {isPendingAttachmentLoading && (
+      {isPendingAttachmentUploading && (
         <View style={styles.activityIndicatorContainer}>
           <ActivityIndicator style={styles.activityIndicator} color={semantics.accentPrimary} />
         </View>

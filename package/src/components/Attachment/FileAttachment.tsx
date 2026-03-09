@@ -24,7 +24,7 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import type { PendingAttachmentsLoadingState } from '../../state-store/pending-attachments-loading-state';
+import type { PendingAttachmentsUploadingState } from '../../state-store/pending-attachments-uploading-state';
 
 export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
@@ -45,7 +45,7 @@ export type FileAttachmentPropsWithContext = Pick<
      * Whether the attachment is currently being uploaded.
      * This is used to show a loading indicator in the file attachment.
      */
-    isPendingAttachmentLoading: boolean;
+    isPendingAttachmentUploading: boolean;
   };
 
 const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
@@ -63,17 +63,17 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
     onPressIn,
     preventPress,
     styles: stylesProp = styles,
-    isPendingAttachmentLoading,
+    isPendingAttachmentUploading,
   } = props;
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
   const renderIndicator = useMemo(() => {
-    if (isPendingAttachmentLoading) {
+    if (isPendingAttachmentUploading) {
       return <ActivityIndicator color={semantics.accentPrimary} style={styles.activityIndicator} />;
     }
     return null;
-  }, [isPendingAttachmentLoading, semantics.accentPrimary, styles.activityIndicator]);
+  }, [isPendingAttachmentUploading, semantics.accentPrimary, styles.activityIndicator]);
 
   return (
     <Pressable
@@ -129,20 +129,20 @@ export const FileAttachment = (props: FileAttachmentProps) => {
   const {
     additionalPressableProps,
     FileAttachmentIcon = FileIconDefault,
-    pendingAttachmentsLoadingStore,
+    pendingAttachmentsUploadingStore,
   } = useMessagesContext();
 
   const attachmentId = `${message.id}-${attachment.originalFile?.uri}`;
   const selector = useCallback(
-    (state: PendingAttachmentsLoadingState) => ({
-      isPendingAttachmentLoading: state.pendingAttachmentsLoading[attachmentId] ?? false,
+    (state: PendingAttachmentsUploadingState) => ({
+      isPendingAttachmentUploading: state.pendingAttachmentsUploading[attachmentId] ?? false,
     }),
     [attachmentId],
   );
-  const { isPendingAttachmentLoading } = useStateStore(
-    pendingAttachmentsLoadingStore.store,
+  const { isPendingAttachmentUploading } = useStateStore(
+    pendingAttachmentsUploadingStore.store,
     selector,
-  ) ?? { isPendingAttachmentLoading: false };
+  ) ?? { isPendingAttachmentUploading: false };
 
   return (
     <FileAttachmentWithContext
@@ -153,7 +153,7 @@ export const FileAttachment = (props: FileAttachmentProps) => {
         onPress,
         onPressIn,
         preventPress,
-        isPendingAttachmentLoading,
+        isPendingAttachmentUploading,
       }}
       {...props}
     />

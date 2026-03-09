@@ -79,7 +79,7 @@ import { MessageUserReactionsItemProps } from '../../components/MessageMenu/Mess
 import type { ReplyProps } from '../../components/Reply/Reply';
 import { NativeHandlers } from '../../native';
 
-import { PendingAttachmentsLoadingStore } from '../../state-store/pending-attachments-loading-state';
+import { PendingAttachmentsUploadingStateStore } from '../../state-store/pending-attachments-uploading-state';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
@@ -128,7 +128,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
 
   enableMessageGroupingByUser: boolean;
 
-  pendingAttachmentsLoadingStore: PendingAttachmentsLoadingStore;
+  pendingAttachmentsUploadingStore: PendingAttachmentsUploadingStateStore;
 
   /**
    * UI component to display File type attachment.

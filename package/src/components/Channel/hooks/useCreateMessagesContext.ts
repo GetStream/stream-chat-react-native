@@ -109,7 +109,7 @@ export const useCreateMessagesContext = ({
   updateMessage,
   UrlPreview,
   VideoThumbnail,
-  pendingAttachmentsLoadingStore,
+  pendingAttachmentsUploadingStore,
 }: MessagesContextValue & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -228,7 +228,7 @@ export const useCreateMessagesContext = ({
       updateMessage,
       UrlPreview,
       VideoThumbnail,
-      pendingAttachmentsLoadingStore,
+      pendingAttachmentsUploadingStore,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [

@@ -99,7 +99,7 @@ import {
   ChannelUnreadStateStoreType,
 } from '../../state-store/channel-unread-state';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
-import { PendingAttachmentsLoadingStore } from '../../state-store/pending-attachments-loading-state';
+import { PendingAttachmentsUploadingStateStore } from '../../state-store/pending-attachments-uploading-state';
 import { FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
@@ -782,7 +782,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
   const [messageInputHeightStore] = useState(new MessageInputHeightStore());
-  const [pendingAttachmentsLoadingStore] = useState(new PendingAttachmentsLoadingStore());
+  const [pendingAttachmentsUploadingStore] = useState(new PendingAttachmentsUploadingStateStore());
   // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
@@ -1321,7 +1321,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     const updatedMessage = { ...message };
     if (updatedMessage.attachments?.length) {
-      pendingAttachmentsLoadingStore.addPendingAttachment({ message: updatedMessage });
+      pendingAttachmentsUploadingStore.addPendingAttachment({ message: updatedMessage });
 
       const uploadPromises = updatedMessage.attachments.map(async (attachment) => {
         // If the attachment is already uploaded, skip it.
@@ -1338,7 +1338,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
         const removeFromLoadingStore = () => {
           if (attachmentUri) {
-            pendingAttachmentsLoadingStore.removePendingAttachment(
+            pendingAttachmentsUploadingStore.removePendingAttachment(
               `${message.id}-${attachmentUri}`,
             );
           }
@@ -2001,7 +2001,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
-    pendingAttachmentsLoadingStore,
+    pendingAttachmentsUploadingStore,
     PollContent,
     ReactionListBottom,
     reactionListPosition,
