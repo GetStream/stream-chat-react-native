@@ -42,6 +42,7 @@ export const useCreateMessagesContext = ({
   hasCreatePoll,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
+  ImageUploadingIndicator,
   ImageReloadIndicator,
   initialScrollToFirstUnreadMessage,
   InlineDateSeparator,
@@ -108,6 +109,7 @@ export const useCreateMessagesContext = ({
   updateMessage,
   UrlPreview,
   VideoThumbnail,
+  pendingAttachmentsLoadingStore,
 }: MessagesContextValue & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -159,6 +161,7 @@ export const useCreateMessagesContext = ({
       hasCreatePoll,
       ImageLoadingFailedIndicator,
       ImageLoadingIndicator,
+      ImageUploadingIndicator,
       ImageReloadIndicator,
       initialScrollToFirstUnreadMessage,
       InlineDateSeparator,
@@ -225,6 +228,7 @@ export const useCreateMessagesContext = ({
       updateMessage,
       UrlPreview,
       VideoThumbnail,
+      pendingAttachmentsLoadingStore,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [

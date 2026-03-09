@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
@@ -34,8 +34,10 @@ import {
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
+import { useStateStore } from '../../hooks';
 import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { isVideoPlayerAvailable } from '../../native';
+import { PendingAttachmentsLoadingState } from '../../state-store/pending-attachments-loading-state';
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
@@ -60,7 +62,9 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
     | 'ImageReloadIndicator'
+    | 'ImageUploadingIndicator'
     | 'myMessageTheme'
+    | 'pendingAttachmentsLoadingStore'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -75,6 +79,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     ImageReloadIndicator,
+    ImageUploadingIndicator,
     images,
     message,
     onLongPress,
@@ -85,6 +90,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     videos,
     VideoThumbnail,
     messageHasOnlyOneImage = false,
+    pendingAttachmentsLoadingStore,
   } = props;
 
   const { resizableCDNHosts } = useChatConfigContext();
@@ -195,6 +201,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
                   ImageLoadingIndicator={ImageLoadingIndicator}
                   ImageReloadIndicator={ImageReloadIndicator}
+                  ImageUploadingIndicator={ImageUploadingIndicator}
                   imagesAndVideos={imagesAndVideos}
                   invertedDirections={invertedDirections || false}
                   key={rowIndex}
@@ -209,6 +216,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   setOverlay={setOverlay}
                   thumbnail={thumbnail}
                   VideoThumbnail={VideoThumbnail}
+                  pendingAttachmentsLoadingStore={pendingAttachmentsLoadingStore}
                 />
               );
             })}
@@ -236,6 +244,8 @@ type GalleryThumbnailProps = {
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
   | 'ImageReloadIndicator'
+  | 'ImageUploadingIndicator'
+  | 'pendingAttachmentsLoadingStore'
 > &
   Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
@@ -249,6 +259,7 @@ const GalleryThumbnail = ({
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
   ImageReloadIndicator,
+  ImageUploadingIndicator,
   imagesAndVideos,
   invertedDirections,
   message,
@@ -262,6 +273,7 @@ const GalleryThumbnail = ({
   setOverlay,
   thumbnail,
   VideoThumbnail,
+  pendingAttachmentsLoadingStore,
 }: GalleryThumbnailProps) => {
   const {
     theme: {
@@ -273,6 +285,18 @@ const GalleryThumbnail = ({
   } = useTheme();
   const { t } = useTranslationContext();
   const styles = useStyles();
+
+  const attachmentId = `${message.id}-${thumbnail.url}`;
+  const selector = useCallback(
+    (state: PendingAttachmentsLoadingState) => ({
+      isPendingAttachmentLoading: state.pendingAttachmentsLoading[attachmentId] ?? false,
+    }),
+    [attachmentId],
+  );
+  const { isPendingAttachmentLoading } = useStateStore(
+    pendingAttachmentsLoadingStore.store,
+    selector,
+  ) ?? { isPendingAttachmentLoading: false };
 
   const openImageViewer = () => {
     if (!message) {
@@ -346,6 +370,7 @@ const GalleryThumbnail = ({
         <VideoThumbnail
           style={[styles.image, imageBorderRadius ?? borderRadius, image]}
           thumb_url={thumbnail.thumb_url}
+          isPendingAttachmentLoading={isPendingAttachmentLoading}
         />
       ) : (
         <GalleryImageThumbnail
@@ -353,7 +378,9 @@ const GalleryThumbnail = ({
           ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
           ImageLoadingIndicator={ImageLoadingIndicator}
           ImageReloadIndicator={ImageReloadIndicator}
+          ImageUploadingIndicator={ImageUploadingIndicator}
           thumbnail={thumbnail}
+          isPendingAttachmentLoading={isPendingAttachmentLoading}
         />
       )}
       {colIndex === numOfColumns - 1 && rowIndex === numOfRows - 1 && imagesAndVideos.length > 4 ? (
@@ -381,14 +408,23 @@ const GalleryImageThumbnail = ({
   ImageLoadingIndicator,
   ImageReloadIndicator,
   thumbnail,
+  isPendingAttachmentLoading,
+  ImageUploadingIndicator,
 }: Pick<
   GalleryThumbnailProps,
   | 'ImageLoadingFailedIndicator'
   | 'ImageLoadingIndicator'
   | 'ImageReloadIndicator'
+  | 'ImageUploadingIndicator'
   | 'thumbnail'
   | 'borderRadius'
->) => {
+> & {
+  /**
+   * Whether the attachment is currently being uploaded.
+   * This is used to show a loading indicator in the thumbnail.
+   */
+  isPendingAttachmentLoading: boolean;
+}) => {
   const {
     isLoadingImage,
     isLoadingImageError,
@@ -432,6 +468,11 @@ const GalleryImageThumbnail = ({
           {isLoadingImage && (
             <View style={styles.imageLoadingIndicatorContainer}>
               <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
+            </View>
+          )}
+          {isPendingAttachmentLoading && (
+            <View style={styles.imageLoadingIndicatorContainer}>
+              <ImageUploadingIndicator style={styles.imageLoadingIndicatorStyle} />
             </View>
           )}
         </>
@@ -513,6 +554,7 @@ export const Gallery = (props: GalleryProps) => {
     ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
     ImageLoadingIndicator: PropImageLoadingIndicator,
     ImageReloadIndicator: PropImageReloadIndicator,
+    ImageUploadingIndicator: PropImageUploadingIndicator,
     images: propImages,
     message: propMessage,
     myMessageTheme: propMyMessageTheme,
@@ -524,6 +566,7 @@ export const Gallery = (props: GalleryProps) => {
     videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
     messageContentOrder: propMessageContentOrder,
+    pendingAttachmentsLoadingStore: propPendingAttachmentsLoadingStore,
   } = props;
 
   const { imageGalleryStateStore } = useImageGalleryContext();
@@ -543,8 +586,10 @@ export const Gallery = (props: GalleryProps) => {
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
     ImageReloadIndicator: ContextImageReloadIndicator,
+    ImageUploadingIndicator: ContextImageUploadingIndicator,
     myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
+    pendingAttachmentsLoadingStore: contextPendingAttachmentsLoadingStore,
   } = useMessagesContext();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
 
@@ -568,8 +613,11 @@ export const Gallery = (props: GalleryProps) => {
     PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
   const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
   const ImageReloadIndicator = PropImageReloadIndicator || ContextImageReloadIndicator;
+  const ImageUploadingIndicator = PropImageUploadingIndicator || ContextImageUploadingIndicator;
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
   const messageContentOrder = propMessageContentOrder || contextMessageContentOrder;
+  const pendingAttachmentsLoadingStore =
+    propPendingAttachmentsLoadingStore || contextPendingAttachmentsLoadingStore;
 
   const messageHasOnlyOneImage =
     messageContentOrder?.length === 1 &&
@@ -586,6 +634,7 @@ export const Gallery = (props: GalleryProps) => {
         ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
         ImageReloadIndicator,
+        ImageUploadingIndicator,
         images,
         message,
         myMessageTheme,
@@ -598,6 +647,7 @@ export const Gallery = (props: GalleryProps) => {
         VideoThumbnail,
         messageHasOnlyOneImage,
         messageContentOrder,
+        pendingAttachmentsLoadingStore,
       }}
     />
   );

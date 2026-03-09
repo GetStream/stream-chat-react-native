@@ -27,6 +27,7 @@ import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachment/ImageLoadingFailedIndicator';
 import type { ImageLoadingIndicatorProps } from '../../components/Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicatorProps } from '../../components/Attachment/ImageReloadIndicator';
+import { ImageUploadingIndicatorProps } from '../../components/Attachment/ImageUploadingIndicator';
 import type { URLPreviewProps } from '../../components/Attachment/UrlPreview';
 import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
@@ -78,6 +79,7 @@ import { MessageUserReactionsItemProps } from '../../components/MessageMenu/Mess
 import type { ReplyProps } from '../../components/Reply/Reply';
 import { NativeHandlers } from '../../native';
 
+import { PendingAttachmentsLoadingStore } from '../../state-store/pending-attachments-loading-state';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
@@ -126,6 +128,8 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
 
   enableMessageGroupingByUser: boolean;
 
+  pendingAttachmentsLoadingStore: PendingAttachmentsLoadingStore;
+
   /**
    * UI component to display File type attachment.
    * Defaults to: [FilePickerIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachment.tsx)
@@ -171,6 +175,11 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * The indicator rendered when image is loading. By default renders <ActivityIndicator/>
    */
   ImageLoadingIndicator: React.ComponentType<ImageLoadingIndicatorProps>;
+
+  /**
+   * The indicator rendered when image is uploading. By default renders <ActivityIndicator/>
+   */
+  ImageUploadingIndicator: React.ComponentType<ImageUploadingIndicatorProps>;
 
   /**
    * When true, messageList will be scrolled at first unread message, when opened.

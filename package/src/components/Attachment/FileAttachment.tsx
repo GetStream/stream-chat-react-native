@@ -1,5 +1,12 @@
-import React, { useMemo } from 'react';
-import { Pressable, StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -16,6 +23,8 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../hooks/useStateStore';
+import type { PendingAttachmentsLoadingState } from '../../state-store/pending-attachments-loading-state';
 
 export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
@@ -32,10 +41,18 @@ export type FileAttachmentPropsWithContext = Pick<
       size: StyleProp<TextStyle>;
       title: StyleProp<TextStyle>;
     }>;
+    /**
+     * Whether the attachment is currently being uploaded.
+     * This is used to show a loading indicator in the file attachment.
+     */
+    isPendingAttachmentLoading: boolean;
   };
 
 const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
   const styles = useStyles();
+  const {
+    theme: { semantics },
+  } = useTheme();
 
   const {
     additionalPressableProps,
@@ -46,9 +63,17 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
     onPressIn,
     preventPress,
     styles: stylesProp = styles,
+    isPendingAttachmentLoading,
   } = props;
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
+
+  const renderIndicator = useMemo(() => {
+    if (isPendingAttachmentLoading) {
+      return <ActivityIndicator color={semantics.accentPrimary} style={styles.activityIndicator} />;
+    }
+    return null;
+  }, [isPendingAttachmentLoading, semantics.accentPrimary, styles.activityIndicator]);
 
   return (
     <Pressable
@@ -88,6 +113,7 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
       <FilePreview
         attachment={attachment}
         attachmentIconSize={attachmentIconSize}
+        indicator={renderIndicator}
         styles={stylesProp}
       />
     </Pressable>
@@ -98,8 +124,25 @@ export type FileAttachmentProps = Partial<Omit<FileAttachmentPropsWithContext, '
   Pick<FileAttachmentPropsWithContext, 'attachment'>;
 
 export const FileAttachment = (props: FileAttachmentProps) => {
-  const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
-  const { additionalPressableProps, FileAttachmentIcon = FileIconDefault } = useMessagesContext();
+  const { attachment } = props;
+  const { onLongPress, onPress, onPressIn, preventPress, message } = useMessageContext();
+  const {
+    additionalPressableProps,
+    FileAttachmentIcon = FileIconDefault,
+    pendingAttachmentsLoadingStore,
+  } = useMessagesContext();
+
+  const attachmentId = `${message.id}-${attachment.originalFile?.uri}`;
+  const selector = useCallback(
+    (state: PendingAttachmentsLoadingState) => ({
+      isPendingAttachmentLoading: state.pendingAttachmentsLoading[attachmentId] ?? false,
+    }),
+    [attachmentId],
+  );
+  const { isPendingAttachmentLoading } = useStateStore(
+    pendingAttachmentsLoadingStore.store,
+    selector,
+  ) ?? { isPendingAttachmentLoading: false };
 
   return (
     <FileAttachmentWithContext
@@ -110,6 +153,7 @@ export const FileAttachment = (props: FileAttachmentProps) => {
         onPress,
         onPressIn,
         preventPress,
+        isPendingAttachmentLoading,
       }}
       {...props}
     />
@@ -133,6 +177,10 @@ const useStyles = () => {
           : isMyMessage
             ? semantics.chatBgAttachmentOutgoing
             : semantics.chatBgAttachmentIncoming,
+      },
+      activityIndicator: {
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
       },
     });
   }, [showBackgroundTransparent, isMyMessage, semantics]);

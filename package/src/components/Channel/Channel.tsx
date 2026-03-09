@@ -99,6 +99,7 @@ import {
   ChannelUnreadStateStoreType,
 } from '../../state-store/channel-unread-state';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
+import { PendingAttachmentsLoadingStore } from '../../state-store/pending-attachments-loading-state';
 import { FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
@@ -120,6 +121,7 @@ import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
 import { ImageReloadIndicator as ImageReloadIndicatorDefault } from '../Attachment/ImageReloadIndicator';
+import { ImageUploadingIndicator as ImageUploadingIndicatorDefault } from '../Attachment/ImageUploadingIndicator';
 import { URLPreview as URLPreviewDefault } from '../Attachment/UrlPreview';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
@@ -352,6 +354,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'ImageLoadingFailedIndicator'
       | 'ImageLoadingIndicator'
       | 'ImageReloadIndicator'
+      | 'ImageUploadingIndicator'
       | 'markdownRules'
       | 'Message'
       | 'MessageActionList'
@@ -648,6 +651,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
     ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     ImageReloadIndicator = ImageReloadIndicatorDefault,
+    ImageUploadingIndicator = ImageUploadingIndicatorDefault,
     initialScrollToFirstUnreadMessage = false,
     InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
@@ -778,6 +782,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
   const [messageInputHeightStore] = useState(new MessageInputHeightStore());
+  const [pendingAttachmentsLoadingStore] = useState(new PendingAttachmentsLoadingStore());
   // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
@@ -1316,71 +1321,89 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     const updatedMessage = { ...message };
     if (updatedMessage.attachments?.length) {
-      for (let i = 0; i < updatedMessage.attachments?.length; i++) {
-        const attachment = updatedMessage.attachments[i];
+      pendingAttachmentsLoadingStore.addPendingAttachment({ message: updatedMessage });
 
+      const uploadPromises = updatedMessage.attachments.map(async (attachment) => {
         // If the attachment is already uploaded, skip it.
         if (
           (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
           (attachment.asset_url && !isLocalUrl(attachment.asset_url))
         ) {
-          continue;
+          return;
         }
 
         const image = attachment.originalFile;
         const file = attachment.originalFile;
-        if (attachment.type === FileTypes.Image && image?.uri) {
-          const filename = image.name ?? getFileNameFromPath(image.uri);
-          // if any upload is in progress, cancel it
-          const controller = uploadAbortControllerRef.current.get(filename);
-          if (controller) {
-            controller.abort();
-            uploadAbortControllerRef.current.delete(filename);
+        const attachmentUri = attachment.originalFile?.uri;
+
+        const removeFromLoadingStore = () => {
+          if (attachmentUri) {
+            pendingAttachmentsLoadingStore.removePendingAttachment(
+              `${message.id}-${attachmentUri}`,
+            );
           }
-          const compressedUri = await compressedImageURI(image, compressImageQuality);
-          const contentType = lookup(filename) || 'multipart/form-data';
+        };
 
-          const uploadResponse = doFileUploadRequest
-            ? await doFileUploadRequest(image)
-            : await channel.sendImage(compressedUri, filename, contentType);
+        try {
+          if (attachment.type === FileTypes.Image && image?.uri) {
+            const filename = image.name ?? getFileNameFromPath(image.uri);
+            // if any upload is in progress, cancel it
+            const controller = uploadAbortControllerRef.current.get(filename);
+            if (controller) {
+              controller.abort();
+              uploadAbortControllerRef.current.delete(filename);
+            }
+            const compressedUri = await compressedImageURI(image, compressImageQuality);
+            const contentType = lookup(filename) || 'multipart/form-data';
 
-          attachment.image_url = uploadResponse.file;
-          delete attachment.originalFile;
+            const uploadResponse = doFileUploadRequest
+              ? await doFileUploadRequest(image)
+              : await channel.sendImage(compressedUri, filename, contentType);
 
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: { ...updatedMessage, cid: channel.cid },
-              }),
-            { method: 'updateMessage' },
-          );
+            removeFromLoadingStore();
+
+            attachment.image_url = uploadResponse.file;
+            delete attachment.originalFile;
+
+            client.offlineDb?.executeQuerySafely(
+              (db) =>
+                db.updateMessage({
+                  message: { ...updatedMessage, cid: channel.cid },
+                }),
+              { method: 'updateMessage' },
+            );
+          } else if (attachment.type !== FileTypes.Image && file?.uri) {
+            // if any upload is in progress, cancel it
+            const controller = uploadAbortControllerRef.current.get(file.name);
+            if (controller) {
+              controller.abort();
+              uploadAbortControllerRef.current.delete(file.name);
+            }
+            const response = doFileUploadRequest
+              ? await doFileUploadRequest(file)
+              : await channel.sendFile(file.uri, file.name, file.type);
+            attachment.asset_url = response.file;
+            if (response.thumb_url) {
+              attachment.thumb_url = response.thumb_url;
+            }
+
+            removeFromLoadingStore();
+
+            delete attachment.originalFile;
+            client.offlineDb?.executeQuerySafely(
+              (db) =>
+                db.updateMessage({
+                  message: { ...updatedMessage, cid: channel.cid },
+                }),
+              { method: 'updateMessage' },
+            );
+          }
+        } catch {
+          // TODO: Handle failed attachment upload. We don't have a way to handle this yet.
         }
+      });
 
-        if (attachment.type !== FileTypes.Image && file?.uri) {
-          // if any upload is in progress, cancel it
-          const controller = uploadAbortControllerRef.current.get(file.name);
-          if (controller) {
-            controller.abort();
-            uploadAbortControllerRef.current.delete(file.name);
-          }
-          const response = doFileUploadRequest
-            ? await doFileUploadRequest(file)
-            : await channel.sendFile(file.uri, file.name, file.type);
-          attachment.asset_url = response.file;
-          if (response.thumb_url) {
-            attachment.thumb_url = response.thumb_url;
-          }
-
-          delete attachment.originalFile;
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: { ...updatedMessage, cid: channel.cid },
-              }),
-            { method: 'updateMessage' },
-          );
-        }
-      }
+      await Promise.allSettled(uploadPromises);
     }
 
     return updatedMessage;
@@ -1933,6 +1956,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     ImageReloadIndicator,
+    ImageUploadingIndicator,
     initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
     InlineDateSeparator,
     InlineUnreadIndicator,
@@ -1977,6 +2001,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
+    pendingAttachmentsLoadingStore,
     PollContent,
     ReactionListBottom,
     reactionListPosition,

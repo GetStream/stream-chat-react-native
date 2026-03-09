@@ -1,22 +1,27 @@
 import React from 'react';
-import { ImageBackground, ImageStyle, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import {
+  ActivityIndicator,
+  ImageBackground,
+  ImageStyle,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 import { VideoPlayIndicator } from '../ui';
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    overflow: 'hidden',
-  },
-});
 
 export type VideoThumbnailProps = {
   imageStyle?: StyleProp<ImageStyle>;
   style?: StyleProp<ViewStyle>;
   thumb_url?: string;
+  /**
+   * Whether the attachment is currently being uploaded.
+   * This is used to show a loading indicator in the thumbnail.
+   */
+  isPendingAttachmentLoading: boolean;
 };
 
 export const VideoThumbnail = (props: VideoThumbnailProps) => {
@@ -25,9 +30,10 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       messageSimple: {
         videoThumbnail: { container },
       },
+      semantics,
     },
   } = useTheme();
-  const { imageStyle, style, thumb_url } = props;
+  const { imageStyle, style, thumb_url, isPendingAttachmentLoading } = props;
   return (
     <ImageBackground
       accessibilityLabel='Video Thumbnail'
@@ -36,6 +42,29 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       style={[styles.container, container, style]}
     >
       <VideoPlayIndicator size='md' />
+      {isPendingAttachmentLoading && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator style={styles.activityIndicator} color={semantics.accentPrimary} />
+        </View>
+      )}
     </ImageBackground>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    overflow: 'hidden',
+  },
+  activityIndicatorContainer: {
+    position: 'absolute',
+    left: primitives.spacingXs,
+    bottom: primitives.spacingXs,
+  },
+  activityIndicator: {
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+});
