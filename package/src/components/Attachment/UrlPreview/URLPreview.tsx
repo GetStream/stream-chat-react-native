@@ -255,6 +255,8 @@ const useStyles = () => {
           minWidth: 256,
           minHeight: 144,
           alignSelf: 'stretch',
+          alignItems: 'center',
+          justifyContent: 'center',
         },
         cardFooter: {
           justifyContent: 'space-between',
