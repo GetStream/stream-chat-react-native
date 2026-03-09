@@ -7,6 +7,12 @@ import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.viewmanagers.StreamShimmerViewManagerDelegate
 import com.facebook.react.viewmanagers.StreamShimmerViewManagerInterface
 
+/**
+ * Fabric manager for StreamShimmerView.
+ *
+ * This must be a real ViewGroupManager because shimmer wraps React children. Using a non-group
+ * manager here causes runtime cast failures in Fabric mounting paths.
+ */
 class StreamShimmerViewManager : ViewGroupManager<StreamShimmerFrameLayout>(),
   StreamShimmerViewManagerInterface<StreamShimmerFrameLayout> {
   private val delegate = StreamShimmerViewManagerDelegate(this)
@@ -22,6 +28,8 @@ class StreamShimmerViewManager : ViewGroupManager<StreamShimmerFrameLayout>(),
 
   override fun onAfterUpdateTransaction(@NonNull view: StreamShimmerFrameLayout) {
     super.onAfterUpdateTransaction(view)
+    // Prop batches can change visibility/enabled/colors together, so we re-evaluate the animator once
+    // after every transaction to keep state consistent and avoid duplicate start/stop churn.
     view.updateAnimatorState()
   }
 
@@ -57,6 +65,7 @@ class StreamShimmerViewManager : ViewGroupManager<StreamShimmerFrameLayout>(),
 
   override fun onDropViewInstance(@NonNull view: StreamShimmerFrameLayout) {
     super.onDropViewInstance(view)
+    // Defensive shutdown for recycled/unmounted views; avoids animator leaks in list-heavy screens.
     view.setShimmerEnabled(false)
   }
 

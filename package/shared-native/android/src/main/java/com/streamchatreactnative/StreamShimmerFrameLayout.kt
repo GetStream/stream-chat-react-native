@@ -73,6 +73,8 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   fun updateAnimatorState() {
+    // Centralized lifecycle gate for animation start/stop. This keeps shimmer off for detached or
+    // hidden views to avoid wasting UI-thread work in long lists.
     if (shouldAnimateShimmer()) {
       startShimmer()
     } else {
@@ -142,6 +144,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
       return
     }
 
+    // Wide multi-stop strip creates a softer "glassy" sweep and avoids the hard thin-line look.
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
     val transparentHighlight = colorWithAlpha(gradientColor, 0f)
     val edgeBase = colorWithAlpha(gradientColor, EDGE_HIGHLIGHT_ALPHA_FACTOR)
@@ -190,6 +193,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
     stopShimmer()
 
+    // Animate from fully offscreen left to fully offscreen right so the strip enters/exits cleanly.
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
     animatedViewWidth = viewWidth
     animator = ValueAnimator.ofFloat(-shimmerWidth, viewWidth).apply {
@@ -211,6 +215,8 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   private fun shouldAnimateShimmer(): Boolean {
+    // `isShown` and explicit visibility/window checks cover different hide paths in nested
+    // hierarchies. Keeping them all prevents animations running when not visible to the user.
     return enabled &&
       isAttachedToWindow &&
       width > 0 &&
@@ -222,6 +228,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   private fun colorWithAlpha(color: Int, alphaFactor: Float): Int {
+    // Preserve RGB while shaping only alpha; used for symmetric highlight falloff in gradient stops.
     val alpha = (Color.alpha(color) * alphaFactor).roundToInt().coerceIn(0, 255)
     return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
   }
