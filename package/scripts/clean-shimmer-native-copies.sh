@@ -8,9 +8,10 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 clean_package() {
   local package_name="$1"
-  local android_dir="$ROOT_DIR/$package_name/android/src/main/java/com/streamchatreactnative"
+  local android_dir="$ROOT_DIR/$package_name/android/src/main/java/com/streamchatreactnative/shared"
+  local ios_dir="$ROOT_DIR/$package_name/ios/shared"
 
-  rm -f "$android_dir/StreamShimmerFrameLayout.kt" "$android_dir/StreamShimmerViewManager.kt"
+  rm -rf "$android_dir" "$ios_dir"
 }
 
 case "$TARGET" in

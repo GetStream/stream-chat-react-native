@@ -14,12 +14,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "./ios", :tag => "#{s.version}" }
   s.prepare_command = <<-CMD
     if [ -d ../shared-native/ios ]; then
-      mkdir -p ios
-      for file in ../shared-native/ios/*; do
-        dest="ios/$(basename "$file")"
-        rm -f "$dest"
-        cp "$file" "$dest"
-      done
+      mkdir -p ios/shared
+      rsync -a --delete ../shared-native/ios/ ios/shared/
     fi
   CMD
   s.source_files = "ios/**/*.{h,m,mm,swift}"

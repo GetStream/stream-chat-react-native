@@ -5,66 +5,45 @@ set -euo pipefail
 TARGET="${1:-all}"
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-SHARED_ANDROID_DIR="$ROOT_DIR/shared-native/android/src/main/java/com/streamchatreactnative"
+SHARED_ANDROID_DIR="$ROOT_DIR/shared-native/android"
 SHARED_IOS_DIR="$ROOT_DIR/shared-native/ios"
 
-ANDROID_FILES=(
-  "StreamShimmerFrameLayout.kt"
-  "StreamShimmerViewManager.kt"
-)
-IOS_FILES=(
-  "StreamShimmerViewComponentView.h"
-  "StreamShimmerViewComponentView.mm"
-  "StreamShimmerView.swift"
-)
+sync_dir_contents() {
+  local src_dir="$1"
+  local dst_dir="$2"
 
-copy_file() {
-  local src_file="$1"
-  local dst_file="$2"
-  if [ -e "$dst_file" ]; then
-    local src_inode
-    local dst_inode
-    src_inode=$(stat -f %i "$src_file" 2>/dev/null || echo "")
-    dst_inode=$(stat -f %i "$dst_file" 2>/dev/null || echo "")
-    if [ -n "$src_inode" ] && [ "$src_inode" = "$dst_inode" ]; then
-      return
-    fi
+  mkdir -p "$dst_dir"
+
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a --delete "$src_dir"/ "$dst_dir"/
+  else
+    find "$dst_dir" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+    cp -R "$src_dir"/. "$dst_dir"/
   fi
-  cp "$src_file" "$dst_file"
+}
+
+has_content() {
+  local dir="$1"
+  [ -d "$dir" ] && [ -n "$(find "$dir" -mindepth 1 -print -quit)" ]
 }
 
 sync_from_package() {
   local package_name="$1"
-  local android_src_dir="$ROOT_DIR/$package_name/android/src/main/java/com/streamchatreactnative"
-  local ios_src_dir="$ROOT_DIR/$package_name/ios"
-  local missing=0
+  local android_src_dir="$ROOT_DIR/$package_name/android/src/main/java/com/streamchatreactnative/shared"
+  local ios_src_dir="$ROOT_DIR/$package_name/ios/shared"
 
   mkdir -p "$SHARED_ANDROID_DIR" "$SHARED_IOS_DIR"
 
-  for filename in "${ANDROID_FILES[@]}"; do
-    local src_file="$android_src_dir/$filename"
-    local dst_file="$SHARED_ANDROID_DIR/$filename"
-    if [ ! -f "$src_file" ]; then
-      echo "Missing Android shimmer source in $package_name (skipping reverse sync): $src_file"
-      missing=1
-      continue
-    fi
-    copy_file "$src_file" "$dst_file"
-  done
+  if has_content "$android_src_dir"; then
+    sync_dir_contents "$android_src_dir" "$SHARED_ANDROID_DIR"
+  else
+    echo "Skipping Android reverse sync for $package_name: no files in $android_src_dir"
+  fi
 
-  for filename in "${IOS_FILES[@]}"; do
-    local src_file="$ios_src_dir/$filename"
-    local dst_file="$SHARED_IOS_DIR/$filename"
-    if [ ! -f "$src_file" ]; then
-      echo "Missing iOS shimmer source in $package_name (skipping reverse sync): $src_file"
-      missing=1
-      continue
-    fi
-    copy_file "$src_file" "$dst_file"
-  done
-
-  if [ "$missing" -eq 1 ]; then
-    return 0
+  if has_content "$ios_src_dir"; then
+    sync_dir_contents "$ios_src_dir" "$SHARED_IOS_DIR"
+  else
+    echo "Skipping iOS reverse sync for $package_name: no files in $ios_src_dir"
   fi
 }
 
@@ -77,12 +56,12 @@ case "$TARGET" in
     ;;
   all)
     # Prefer native-package as source if both are present.
-    if [ -f "$ROOT_DIR/native-package/ios/StreamShimmerView.swift" ]; then
+    if has_content "$ROOT_DIR/native-package/android/src/main/java/com/streamchatreactnative/shared" || has_content "$ROOT_DIR/native-package/ios/shared"; then
       sync_from_package "native-package"
-    elif [ -f "$ROOT_DIR/expo-package/ios/StreamShimmerView.swift" ]; then
+    elif has_content "$ROOT_DIR/expo-package/android/src/main/java/com/streamchatreactnative/shared" || has_content "$ROOT_DIR/expo-package/ios/shared"; then
       sync_from_package "expo-package"
     else
-      echo "No package shimmer sources found to sync from"
+      echo "No package shared native sources found to sync from"
       exit 1
     fi
     ;;
@@ -93,4 +72,4 @@ case "$TARGET" in
     ;;
 esac
 
-echo "Synchronized shimmer native files from package mirror to shared-native for target: $TARGET"
+echo "Synchronized shared native directories from package mirror to shared-native for target: $TARGET"

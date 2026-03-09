@@ -36,12 +36,10 @@ def getExtOrDefault(name) {
 def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["ImageResizer_" + name]).toInteger()
 }
-def localShimmerSourceDir = new File(projectDir, "src/main/java/com/streamchatreactnative")
-def sharedShimmerSourceDir = new File(projectDir, "../../shared-native/android/src/main/java/com/streamchatreactnative")
-def generatedShimmerSourceDir = new File(project.buildDir, "generated/stream-shimmer/src/main/java/com/streamchatreactnative")
-def shimmerSourceFiles = ["StreamShimmerFrameLayout.kt", "StreamShimmerViewManager.kt"]
-def hasAllShimmerFiles = { File dir ->
-  shimmerSourceFiles.every { filename -> new File(dir, filename).exists() }
+def localSharedNativeRootDir = new File(projectDir, "src/main/java/com/streamchatreactnative/shared")
+def sharedNativeRootDir = new File(projectDir, "../../shared-native/android")
+def hasNativeSources = { File dir ->
+  dir.exists() && !fileTree(dir).matching { include "**/*.kt"; include "**/*.java" }.files.isEmpty()
 }
 
 android {
@@ -87,6 +85,7 @@ android {
       if (isNewArchitectureEnabled()) {
         java.srcDirs += [
           "src/newarch",
+          "src/main/java/com/streamchatreactnative/shared",
           // This is needed to build Kotlin project with NewArch enabled
           "${project.buildDir}/generated/source/codegen/java"
         ]
@@ -98,34 +97,31 @@ android {
 }
 
 tasks.register("syncSharedShimmerSources") {
-  outputs.dir(generatedShimmerSourceDir)
+  outputs.dir(localSharedNativeRootDir)
   outputs.upToDateWhen { false }
   doLast {
-    def sourceDir = null
-    if (hasAllShimmerFiles(sharedShimmerSourceDir)) {
-      sourceDir = sharedShimmerSourceDir
-    } else if (hasAllShimmerFiles(localShimmerSourceDir)) {
-      sourceDir = localShimmerSourceDir
+    def sourceRootDir = null
+    if (hasNativeSources(localSharedNativeRootDir)) {
+      sourceRootDir = localSharedNativeRootDir
+    } else if (hasNativeSources(sharedNativeRootDir)) {
+      sourceRootDir = sharedNativeRootDir
     }
 
-    if (sourceDir == null) {
+    if (sourceRootDir == null) {
       throw new GradleException(
-        "Missing shimmer native sources. Expected either src/main/java/com/streamchatreactnative/*.kt " +
-          "or ../../shared-native/android/src/main/java/com/streamchatreactnative/*.kt."
+        "Missing shared native Android sources. Expected either src/main/java/com/streamchatreactnative/shared/**/*.{kt,java} " +
+          "or ../../shared-native/android/**/*.{kt,java}."
       )
     }
 
-    generatedShimmerSourceDir.mkdirs()
-    localShimmerSourceDir.mkdirs()
-    shimmerSourceFiles.each { filename ->
-      def srcFile = new File(sourceDir, filename)
-      def generatedDstFile = new File(generatedShimmerSourceDir, filename)
-      generatedDstFile.bytes = srcFile.bytes
-
-      if (sourceDir != localShimmerSourceDir) {
-        def localDstFile = new File(localShimmerSourceDir, filename)
-        localDstFile.bytes = srcFile.bytes
+    if (sourceRootDir != localSharedNativeRootDir) {
+      project.delete(localSharedNativeRootDir)
+      project.copy {
+        from(sourceRootDir)
+        into(localSharedNativeRootDir)
       }
+    } else if (!hasNativeSources(localSharedNativeRootDir)) {
+      throw new GradleException("Shared native source directory exists but has no Kotlin/Java files.")
     }
   }
 }

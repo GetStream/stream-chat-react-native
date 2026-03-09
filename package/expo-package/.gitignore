@@ -1,10 +1,7 @@
 # android
 android/build
-android/src/main/java/com/streamchatreactnative/StreamShimmerFrameLayout.kt
-android/src/main/java/com/streamchatreactnative/StreamShimmerViewManager.kt
+android/src/main/java/com/streamchatreactnative/shared
 
 # ios
 ios/build
-ios/StreamShimmerView.swift
-ios/StreamShimmerViewComponentView.h
-ios/StreamShimmerViewComponentView.mm
+ios/shared
