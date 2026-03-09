@@ -1755,6 +1755,7 @@ exports[`Thread should match thread snapshot 1`] = `
     </View>
     <View
       layout={BaseAnimationMock {}}
+      style={null}
     >
       <View
         name="message-input-composer"
@@ -2321,22 +2322,22 @@ exports[`Thread should match thread snapshot 1`] = `
                 </View>
               </View>
             </View>
-            <View
-              style={
-                [
-                  {
-                    "backgroundColor": "#ffffff",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  {
-                    "bottom": 0,
-                  },
-                  {},
-                ]
-              }
-            />
           </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#ffffff",
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                {
+                  "bottom": 0,
+                },
+                {},
+              ]
+            }
+          />
         </View>
       </View>
     </View>
