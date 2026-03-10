@@ -1312,7 +1312,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         <Animated.View
           layout={LinearTransition.duration(200)}
           style={[
-            { bottom: messageInputFloating ? messageInputHeight : primitives.spacingMd },
+            {
+              bottom: messageInputFloating
+                ? messageInputHeight + primitives.spacingMd
+                : primitives.spacingMd,
+            },
             styles.scrollToBottomButtonContainer,
           ]}
         >
