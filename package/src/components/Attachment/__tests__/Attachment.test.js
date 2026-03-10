@@ -14,6 +14,7 @@ import {
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 
+import { PendingAttachmentsUploadingStateStore } from '../../../state-store/pending-attachments-uploading-state';
 import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Attachment } from '../Attachment';
@@ -24,10 +25,17 @@ jest.mock('../../../native.ts', () => ({
 }));
 
 const getAttachmentComponent = (props) => {
+  const pendingAttachmentsUploadingStore = new PendingAttachmentsUploadingStateStore();
   const message = generateMessage();
   return (
     <ThemeProvider>
-      <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
+      <MessagesProvider
+        value={{
+          ImageLoadingFailedIndicator,
+          ImageLoadingIndicator,
+          pendingAttachmentsUploadingStore,
+        }}
+      >
         <MessageProvider value={{ message }}>
           <Attachment {...props} />
         </MessageProvider>
