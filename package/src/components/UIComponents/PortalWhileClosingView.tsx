@@ -1,6 +1,7 @@
 import React, { ReactNode, useEffect, useRef } from 'react';
-import { LayoutChangeEvent, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
@@ -66,43 +67,38 @@ export const PortalWhileClosingView = ({
 }: PortalWhileClosingViewProps) => {
   const { closing } = useOverlayController();
   const containerRef = useRef<View | null>(null);
-  const absolutePositionRef = useRef<{ x: number; y: number } | null>(null);
-  const layoutRef = useRef<{ h: number; w: number }>({ h: 0, w: 0 });
+  const placeholderLayout = useSharedValue({ h: 0, w: 0 });
   const insets = useSafeAreaInsets();
 
-  useEffect(() => {
-    let cancelled = false;
+  const syncPortalLayout = useStableCallback(() => {
+    containerRef.current?.measureInWindow((x, y, width, height) => {
+      const absolute = {
+        x,
+        y: y + (Platform.OS === 'android' ? insets.top : 0),
+      };
 
-    const measureAbsolutePosition = () => {
-      containerRef.current?.measureInWindow((x, y) => {
-        if (cancelled) return;
-        const absolute = {
-          x,
-          y: y + (Platform.OS === 'android' ? insets.top : 0),
-        };
+      if (!width || !height) {
+        return;
+      }
 
-        absolutePositionRef.current = absolute;
+      placeholderLayout.value = { h: height, w: width };
 
-        const { h, w } = layoutRef.current;
-        if (!w || !h) return;
-
-        setClosingPortalLayout(portalHostName, {
-          ...absolute,
-          h,
-          w,
-        });
+      setClosingPortalLayout(portalHostName, {
+        ...absolute,
+        h: height,
+        w: width,
       });
-    };
+    });
+  });
 
+  useEffect(() => {
     // Measure once after mount and layout settle.
     requestAnimationFrame(() => {
-      requestAnimationFrame(measureAbsolutePosition);
+      requestAnimationFrame(() => {
+        syncPortalLayout();
+      });
     });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [insets.top, portalHostName]);
+  }, [insets.top, portalHostName, syncPortalLayout]);
 
   const unregisterPortalHost = useStableCallback(() => clearClosingPortalLayout(portalHostName));
 
@@ -112,29 +108,19 @@ export const PortalWhileClosingView = ({
     };
   }, [unregisterPortalHost]);
 
-  const onWrapperViewLayout = useStableCallback((event: LayoutChangeEvent) => {
-    const { height, width } = event.nativeEvent.layout;
-    layoutRef.current = { h: height, w: width };
-
-    const absolute = absolutePositionRef.current;
-    if (!absolute) return;
-
-    setClosingPortalLayout(portalHostName, { ...absolute, h: height, w: width });
-  });
+  const placeholderStyle = useAnimatedStyle(() => ({
+    height: placeholderLayout.value.h,
+    width: placeholderLayout.value.w > 0 ? placeholderLayout.value.w : '100%',
+  }));
 
   return (
     <>
       <Portal hostName={closing ? portalHostName : undefined} name={portalName}>
-        <View collapsable={false} ref={containerRef} onLayout={onWrapperViewLayout}>
+        <View collapsable={false} ref={containerRef} onLayout={syncPortalLayout}>
           {children}
         </View>
       </Portal>
-      {closing && layoutRef.current.h > 0 ? (
-        <View
-          pointerEvents='none'
-          style={{ height: layoutRef.current.h, width: layoutRef.current.w || '100%' }}
-        />
-      ) : null}
+      {closing ? <Animated.View pointerEvents='none' style={placeholderStyle} /> : null}
     </>
   );
 };
