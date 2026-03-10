@@ -296,7 +296,7 @@ const GalleryThumbnail = ({
   const { isPendingAttachmentUploading } = useStateStore(
     pendingAttachmentsUploadingStore.store,
     selector,
-  ) ?? { isPendingAttachmentUploading: false };
+  );
 
   const openImageViewer = () => {
     if (!message) {

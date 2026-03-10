@@ -142,7 +142,7 @@ export const FileAttachment = (props: FileAttachmentProps) => {
   const { isPendingAttachmentUploading } = useStateStore(
     pendingAttachmentsUploadingStore.store,
     selector,
-  ) ?? { isPendingAttachmentUploading: false };
+  );
 
   return (
     <FileAttachmentWithContext
