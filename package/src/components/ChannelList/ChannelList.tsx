@@ -28,7 +28,7 @@ import {
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import type { ChannelListEventListenerOptions } from '../../types/types';
-import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
+import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 
@@ -279,7 +279,7 @@ export const ChannelList = (props: ChannelListProps) => {
     onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
-    Preview = ChannelPreview,
+    Preview = ChannelPreviewMessenger,
     getChannelActionItems,
     PreviewAvatar,
     PreviewMessage,
