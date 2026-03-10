@@ -8,7 +8,6 @@ import {
   screen,
   userEvent,
   waitFor,
-  waitForElementToBeRemoved,
 } from '@testing-library/react-native';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
@@ -321,7 +320,7 @@ describe('Giphy', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
+      expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
     });
   });
 
@@ -335,23 +334,21 @@ describe('Giphy', () => {
         </Chat>
       </OverlayProvider>,
     );
-    await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
-    });
-
     act(() => {
-      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoadStart');
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'loadStart');
     });
 
     await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
+      expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
     });
 
     act(() => {
-      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoad');
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'loadEnd');
     });
 
-    waitForElementToBeRemoved(() => screen.getByAccessibilityHint('image-loading'));
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Image Loading Indicator')).toBeNull();
+    });
 
     await waitFor(() => {
       expect(screen.getByLabelText('Giphy Attachment Image')).toBeTruthy();

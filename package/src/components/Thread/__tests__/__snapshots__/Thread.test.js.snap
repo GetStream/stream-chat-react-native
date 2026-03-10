@@ -559,61 +559,51 @@ exports[`Thread should match thread snapshot 1`] = `
                                         style={
                                           [
                                             {
+                                              "maxWidth": 256,
                                               "paddingHorizontal": 12,
                                             },
                                             {},
+                                            undefined,
                                           ]
                                         }
+                                        testID="message-text-container"
                                       >
                                         <View
                                           style={
                                             [
                                               {
-                                                "maxWidth": 256,
+                                                "alignSelf": "stretch",
                                               },
-                                              {},
                                               undefined,
                                             ]
                                           }
-                                          testID="message-text-container"
                                         >
-                                          <View
+                                          <Text
                                             style={
-                                              [
-                                                {
-                                                  "alignSelf": "stretch",
-                                                },
-                                                undefined,
-                                              ]
+                                              {
+                                                "alignItems": "flex-start",
+                                                "flexDirection": "row",
+                                                "flexWrap": "wrap",
+                                                "fontSize": 17,
+                                                "justifyContent": "flex-start",
+                                                "lineHeight": 20,
+                                                "marginBottom": 8,
+                                                "marginTop": 8,
+                                              }
                                             }
                                           >
                                             <Text
                                               style={
                                                 {
-                                                  "alignItems": "flex-start",
-                                                  "flexDirection": "row",
-                                                  "flexWrap": "wrap",
+                                                  "color": "#000000",
                                                   "fontSize": 17,
-                                                  "justifyContent": "flex-start",
                                                   "lineHeight": 20,
-                                                  "marginBottom": 8,
-                                                  "marginTop": 8,
                                                 }
                                               }
                                             >
-                                              <Text
-                                                style={
-                                                  {
-                                                    "color": "#000000",
-                                                    "fontSize": 17,
-                                                    "lineHeight": 20,
-                                                  }
-                                                }
-                                              >
-                                                Message6
-                                              </Text>
+                                              Message6
                                             </Text>
-                                          </View>
+                                          </Text>
                                         </View>
                                       </View>
                                     </View>
@@ -899,61 +889,51 @@ exports[`Thread should match thread snapshot 1`] = `
                                         style={
                                           [
                                             {
+                                              "maxWidth": 256,
                                               "paddingHorizontal": 12,
                                             },
                                             {},
+                                            undefined,
                                           ]
                                         }
+                                        testID="message-text-container"
                                       >
                                         <View
                                           style={
                                             [
                                               {
-                                                "maxWidth": 256,
+                                                "alignSelf": "stretch",
                                               },
-                                              {},
                                               undefined,
                                             ]
                                           }
-                                          testID="message-text-container"
                                         >
-                                          <View
+                                          <Text
                                             style={
-                                              [
-                                                {
-                                                  "alignSelf": "stretch",
-                                                },
-                                                undefined,
-                                              ]
+                                              {
+                                                "alignItems": "flex-start",
+                                                "flexDirection": "row",
+                                                "flexWrap": "wrap",
+                                                "fontSize": 17,
+                                                "justifyContent": "flex-start",
+                                                "lineHeight": 20,
+                                                "marginBottom": 8,
+                                                "marginTop": 8,
+                                              }
                                             }
                                           >
                                             <Text
                                               style={
                                                 {
-                                                  "alignItems": "flex-start",
-                                                  "flexDirection": "row",
-                                                  "flexWrap": "wrap",
+                                                  "color": "#000000",
                                                   "fontSize": 17,
-                                                  "justifyContent": "flex-start",
                                                   "lineHeight": 20,
-                                                  "marginBottom": 8,
-                                                  "marginTop": 8,
                                                 }
                                               }
                                             >
-                                              <Text
-                                                style={
-                                                  {
-                                                    "color": "#000000",
-                                                    "fontSize": 17,
-                                                    "lineHeight": 20,
-                                                  }
-                                                }
-                                              >
-                                                Message5
-                                              </Text>
+                                              Message5
                                             </Text>
-                                          </View>
+                                          </Text>
                                         </View>
                                       </View>
                                     </View>
@@ -1272,61 +1252,51 @@ exports[`Thread should match thread snapshot 1`] = `
                                         style={
                                           [
                                             {
+                                              "maxWidth": 256,
                                               "paddingHorizontal": 12,
                                             },
                                             {},
+                                            undefined,
                                           ]
                                         }
+                                        testID="message-text-container"
                                       >
                                         <View
                                           style={
                                             [
                                               {
-                                                "maxWidth": 256,
+                                                "alignSelf": "stretch",
                                               },
-                                              {},
                                               undefined,
                                             ]
                                           }
-                                          testID="message-text-container"
                                         >
-                                          <View
+                                          <Text
                                             style={
-                                              [
-                                                {
-                                                  "alignSelf": "stretch",
-                                                },
-                                                undefined,
-                                              ]
+                                              {
+                                                "alignItems": "flex-start",
+                                                "flexDirection": "row",
+                                                "flexWrap": "wrap",
+                                                "fontSize": 17,
+                                                "justifyContent": "flex-start",
+                                                "lineHeight": 20,
+                                                "marginBottom": 8,
+                                                "marginTop": 8,
+                                              }
                                             }
                                           >
                                             <Text
                                               style={
                                                 {
-                                                  "alignItems": "flex-start",
-                                                  "flexDirection": "row",
-                                                  "flexWrap": "wrap",
+                                                  "color": "#000000",
                                                   "fontSize": 17,
-                                                  "justifyContent": "flex-start",
                                                   "lineHeight": 20,
-                                                  "marginBottom": 8,
-                                                  "marginTop": 8,
                                                 }
                                               }
                                             >
-                                              <Text
-                                                style={
-                                                  {
-                                                    "color": "#000000",
-                                                    "fontSize": 17,
-                                                    "lineHeight": 20,
-                                                  }
-                                                }
-                                              >
-                                                Message4
-                                              </Text>
+                                              Message4
                                             </Text>
-                                          </View>
+                                          </Text>
                                         </View>
                                       </View>
                                     </View>
@@ -1603,61 +1573,51 @@ exports[`Thread should match thread snapshot 1`] = `
                                       style={
                                         [
                                           {
+                                            "maxWidth": 256,
                                             "paddingHorizontal": 12,
                                           },
                                           {},
+                                          undefined,
                                         ]
                                       }
+                                      testID="message-text-container"
                                     >
                                       <View
                                         style={
                                           [
                                             {
-                                              "maxWidth": 256,
+                                              "alignSelf": "stretch",
                                             },
-                                            {},
                                             undefined,
                                           ]
                                         }
-                                        testID="message-text-container"
                                       >
-                                        <View
+                                        <Text
                                           style={
-                                            [
-                                              {
-                                                "alignSelf": "stretch",
-                                              },
-                                              undefined,
-                                            ]
+                                            {
+                                              "alignItems": "flex-start",
+                                              "flexDirection": "row",
+                                              "flexWrap": "wrap",
+                                              "fontSize": 17,
+                                              "justifyContent": "flex-start",
+                                              "lineHeight": 20,
+                                              "marginBottom": 8,
+                                              "marginTop": 8,
+                                            }
                                           }
                                         >
                                           <Text
                                             style={
                                               {
-                                                "alignItems": "flex-start",
-                                                "flexDirection": "row",
-                                                "flexWrap": "wrap",
+                                                "color": "#000000",
                                                 "fontSize": 17,
-                                                "justifyContent": "flex-start",
                                                 "lineHeight": 20,
-                                                "marginBottom": 8,
-                                                "marginTop": 8,
                                               }
                                             }
                                           >
-                                            <Text
-                                              style={
-                                                {
-                                                  "color": "#000000",
-                                                  "fontSize": 17,
-                                                  "lineHeight": 20,
-                                                }
-                                              }
-                                            >
-                                              Message3
-                                            </Text>
+                                            Message3
                                           </Text>
-                                        </View>
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>

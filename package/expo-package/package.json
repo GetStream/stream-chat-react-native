@@ -11,6 +11,17 @@
     "url": "https://github.com/GetStream/stream-chat-react-native.git",
     "directory": "package/expo-package"
   },
+  "files": [
+    "src",
+    "types",
+    "android/src",
+    "android/build.gradle",
+    "android/gradle.properties",
+    "ios",
+    "*.podspec",
+    "react-native.config.js",
+    "package.json"
+  ],
   "license": "SEE LICENSE IN LICENSE",
   "main": "src/index.js",
   "types": "types/index.d.ts",
@@ -20,6 +31,7 @@
   },
   "peerDependencies": {
     "expo": ">=51.0.0",
+    "react-native": ">=0.76.0",
     "expo-av": "*",
     "expo-clipboard": "*",
     "expo-document-picker": "*",
@@ -70,8 +82,19 @@
     "expo-audio": "~0.4.6"
   },
   "scripts": {
-    "prepack": " cp ../../README.md .",
-    "postpack": "rm README.md"
+    "postinstall": "if [ -f ../scripts/sync-shared-native.sh ] && [ -d ../shared-native/ios ]; then bash ../scripts/sync-shared-native.sh expo-package; fi",
+    "prepack": "bash ../scripts/sync-shared-native.sh expo-package && cp ../../README.md .",
+    "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh expo-package"
+  },
+  "codegenConfig": {
+    "name": "StreamChatExpoSpec",
+    "type": "all",
+    "jsSrcsDir": "src/native",
+    "ios": {
+      "componentProvider": {
+        "StreamShimmerView": "StreamShimmerViewComponentView"
+      }
+    }
   },
   "resolutions": {
     "@types/react": "^19.0.0"

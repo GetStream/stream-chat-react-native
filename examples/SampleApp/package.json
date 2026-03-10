@@ -7,8 +7,12 @@
     "url": "https://github.com/GetStream/stream-chat-react-native.git"
   },
   "scripts": {
+    "sync-native": "bash ../../package/scripts/reconcile-shared-native.sh native-package && bash ../../package/scripts/sync-shared-native.sh native-package",
+    "preandroid": "yarn sync-native",
     "android": "react-native run-android",
+    "preios": "yarn sync-native",
     "ios": "react-native run-ios",
+    "prestart": "yarn sync-native",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",

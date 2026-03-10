@@ -25,8 +25,6 @@ import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachment/ImageLoadingFailedIndicator';
-import type { ImageLoadingIndicatorProps } from '../../components/Attachment/ImageLoadingIndicator';
-import { ImageReloadIndicatorProps } from '../../components/Attachment/ImageReloadIndicator';
 import type { URLPreviewProps } from '../../components/Attachment/UrlPreview';
 import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
@@ -163,14 +161,9 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   ImageLoadingFailedIndicator: React.ComponentType<ImageLoadingFailedIndicatorProps>;
 
   /**
-   * The indicator rendered at the center of an image whenever its loading fails, used to trigger retries.
-   */
-  ImageReloadIndicator: React.ComponentType<ImageReloadIndicatorProps>;
-
-  /**
    * The indicator rendered when image is loading. By default renders <ActivityIndicator/>
    */
-  ImageLoadingIndicator: React.ComponentType<ImageLoadingIndicatorProps>;
+  ImageLoadingIndicator: React.ComponentType;
 
   /**
    * When true, messageList will be scrolled at first unread message, when opened.

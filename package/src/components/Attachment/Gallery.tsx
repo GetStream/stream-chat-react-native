@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ImageErrorEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
@@ -35,6 +35,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { useLoadingImage } from '../../hooks/useLoadingImage';
+import { useStableCallback } from '../../hooks/useStableCallback';
 import { isVideoPlayerAvailable } from '../../native';
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
@@ -59,7 +60,6 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
     | 'VideoThumbnail'
     | 'ImageLoadingIndicator'
     | 'ImageLoadingFailedIndicator'
-    | 'ImageReloadIndicator'
     | 'myMessageTheme'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
@@ -74,7 +74,6 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     imageGalleryStateStore,
     ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
-    ImageReloadIndicator,
     images,
     message,
     onLongPress,
@@ -148,8 +147,8 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
         images.length !== 1
           ? { width: gridWidth, height: gridHeight }
           : {
-              height,
-              width,
+              minHeight: height,
+              minWidth: width,
             },
         galleryContainer,
       ]}
@@ -194,7 +193,6 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   imageGalleryStateStore={imageGalleryStateStore}
                   ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
                   ImageLoadingIndicator={ImageLoadingIndicator}
-                  ImageReloadIndicator={ImageReloadIndicator}
                   imagesAndVideos={imagesAndVideos}
                   invertedDirections={invertedDirections || false}
                   key={rowIndex}
@@ -235,7 +233,6 @@ type GalleryThumbnailProps = {
   | 'VideoThumbnail'
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
-  | 'ImageReloadIndicator'
 > &
   Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
@@ -248,7 +245,6 @@ const GalleryThumbnail = ({
   imageGalleryStateStore,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
-  ImageReloadIndicator,
   imagesAndVideos,
   invertedDirections,
   message,
@@ -352,7 +348,6 @@ const GalleryThumbnail = ({
           borderRadius={imageBorderRadius ?? borderRadius}
           ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
           ImageLoadingIndicator={ImageLoadingIndicator}
-          ImageReloadIndicator={ImageReloadIndicator}
           thumbnail={thumbnail}
         />
       )}
@@ -379,15 +374,10 @@ const GalleryImageThumbnail = ({
   borderRadius,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
-  ImageReloadIndicator,
   thumbnail,
 }: Pick<
   GalleryThumbnailProps,
-  | 'ImageLoadingFailedIndicator'
-  | 'ImageLoadingIndicator'
-  | 'ImageReloadIndicator'
-  | 'thumbnail'
-  | 'borderRadius'
+  'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
 >) => {
   const {
     isLoadingImage,
@@ -405,35 +395,39 @@ const GalleryImageThumbnail = ({
 
   const styles = useStyles();
 
+  const onLoadStart = useStableCallback(() => {
+    setLoadingImageError(false);
+    setLoadingImage(true);
+  });
+
+  const onLoad = useStableCallback(() => {
+    setTimeout(() => {
+      setLoadingImage(false);
+      setLoadingImageError(false);
+    }, 0);
+  });
+
+  const onError = useStableCallback(({ nativeEvent: { error } }: ImageErrorEvent) => {
+    console.warn(error);
+    setLoadingImage(false);
+    setLoadingImageError(true);
+  });
+
   return (
-    <View style={styles.image}>
+    <View style={[styles.image, borderRadius]}>
       {isLoadingImageError ? (
-        <>
-          <ImageLoadingFailedIndicator style={styles.imageLoadingErrorIndicatorStyle} />
-          <ImageReloadIndicator
-            onReloadImage={onReloadImage}
-            style={styles.imageReloadContainerStyle}
-          />
-        </>
+        <ImageLoadingFailedIndicator onReloadImage={onReloadImage} />
       ) : (
         <>
           <GalleryImage
-            onError={({ nativeEvent: { error } }) => {
-              console.warn(error);
-              setLoadingImage(false);
-              setLoadingImageError(true);
-            }}
-            onLoadEnd={() => setTimeout(() => setLoadingImage(false), 0)}
-            onLoadStart={() => setLoadingImage(true)}
+            onError={onError}
+            onLoad={onLoad}
+            onLoadStart={onLoadStart}
             resizeMode={thumbnail.resizeMode}
-            style={[borderRadius, gallery.image]}
+            style={gallery.image}
             uri={thumbnail.url}
           />
-          {isLoadingImage && (
-            <View style={styles.imageLoadingIndicatorContainer}>
-              <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
-            </View>
-          )}
+          {isLoadingImage ? <ImageLoadingIndicator /> : null}
         </>
       )}
     </View>
@@ -512,7 +506,6 @@ export const Gallery = (props: GalleryProps) => {
     additionalPressableProps: propAdditionalPressableProps,
     ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
     ImageLoadingIndicator: PropImageLoadingIndicator,
-    ImageReloadIndicator: PropImageReloadIndicator,
     images: propImages,
     message: propMessage,
     myMessageTheme: propMyMessageTheme,
@@ -542,7 +535,6 @@ export const Gallery = (props: GalleryProps) => {
     additionalPressableProps: contextAdditionalPressableProps,
     ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
-    ImageReloadIndicator: ContextImageReloadIndicator,
     myMessageTheme: contextMyMessageTheme,
     VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext();
@@ -567,7 +559,6 @@ export const Gallery = (props: GalleryProps) => {
   const ImageLoadingFailedIndicator =
     PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
   const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
-  const ImageReloadIndicator = PropImageReloadIndicator || ContextImageReloadIndicator;
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
   const messageContentOrder = propMessageContentOrder || contextMessageContentOrder;
 
@@ -585,7 +576,6 @@ export const Gallery = (props: GalleryProps) => {
         imageGalleryStateStore,
         ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
-        ImageReloadIndicator,
         images,
         message,
         myMessageTheme,
@@ -607,6 +597,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { isMyMessage } = useMessageContext();
   return useMemo(() => {
     return StyleSheet.create({
       errorTextSize: {
@@ -626,11 +617,15 @@ const useStyles = () => {
       imageContainer: {},
       image: {
         flex: 1,
+        backgroundColor: isMyMessage
+          ? semantics.chatBgAttachmentOutgoing
+          : semantics.chatBgAttachmentIncoming,
+        overflow: 'hidden',
       },
       imageLoadingErrorIndicatorStyle: {
-        bottom: 4,
-        left: 4,
-        position: 'absolute',
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
       },
       imageLoadingIndicatorContainer: {
         height: '100%',
@@ -658,8 +653,17 @@ const useStyles = () => {
         lineHeight: primitives.typographyLineHeightRelaxed,
         fontWeight: primitives.typographyFontWeightSemiBold,
       },
+      imageLoadingErrorContainer: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      imageLoadingErrorWrapper: {
+        ...StyleSheet.absoluteFillObject,
+        overflow: 'hidden',
+      },
     });
-  }, [semantics]);
+  }, [semantics, isMyMessage]);
 };
 
 Gallery.displayName = 'Gallery{messageSimple{gallery}}';

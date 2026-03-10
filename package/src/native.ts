@@ -1,5 +1,11 @@
 import type React from 'react';
-import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
+import {
+  ColorValue,
+  FlatList as DefaultFlatList,
+  StyleProp,
+  ViewProps,
+  ViewStyle,
+} from 'react-native';
 
 import type { File } from './types/types';
 const fail = () => {
@@ -287,6 +293,12 @@ export type VideoType = {
   rate?: number;
 };
 
+export type NativeShimmerViewProps = ViewProps & {
+  baseColor?: ColorValue;
+  enabled?: boolean;
+  gradientColor?: ColorValue;
+};
+
 type Handlers = {
   Audio?: AudioType;
   compressImage?: CompressImage;
@@ -306,12 +318,16 @@ type Handlers = {
   setClipboardString?: SetClipboardString;
   shareImage?: ShareImage;
   Sound?: SoundType;
+  NativeShimmerView?: React.ComponentType<NativeShimmerViewProps>;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
   Video?: React.ComponentType<VideoType>;
 };
 
-export const NativeHandlers: Pick<Handlers, 'Audio' | 'FlatList' | 'Video' | 'Sound'> &
+export const NativeHandlers: Pick<
+  Handlers,
+  'Audio' | 'FlatList' | 'NativeShimmerView' | 'Video' | 'Sound'
+> &
   Required<
     Pick<
       Handlers,
@@ -346,6 +362,7 @@ export const NativeHandlers: Pick<Handlers, 'Audio' | 'FlatList' | 'Video' | 'So
   setClipboardString: fail,
   shareImage: fail,
   Sound: undefined,
+  NativeShimmerView: undefined,
   takePhoto: fail,
   triggerHaptic: fail,
   Video: undefined,
@@ -413,6 +430,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.Sound) {
     NativeHandlers.Sound = handlers.Sound;
+  }
+
+  if (handlers.NativeShimmerView !== undefined) {
+    NativeHandlers.NativeShimmerView = handlers.NativeShimmerView;
   }
 
   if (handlers.takePhoto !== undefined) {

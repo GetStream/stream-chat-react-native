@@ -169,7 +169,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           messageGroupedSingleOrBottomContainer,
           messageGroupedTopContainer,
           replyContainer,
-          textWrapper,
           wrapper,
         },
       },
@@ -363,11 +362,9 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
               }
             })}
           </View>
-          <View style={[styles.textWrapper, textWrapper]}>
-            {(otherAttachments.length && otherAttachments[0].actions) || isAIGenerated ? null : (
-              <MessageTextContainer />
-            )}
-          </View>
+          {(otherAttachments.length && otherAttachments[0].actions) || isAIGenerated ? null : (
+            <MessageTextContainer />
+          )}
         </View>
       </View>
     </Pressable>
@@ -665,7 +662,5 @@ const styles = StyleSheet.create({
   rightAlignItems: {
     alignItems: 'flex-end',
   },
-  textWrapper: {
-    paddingHorizontal: primitives.spacingSm,
-  },
+  textWrapper: {},
 });

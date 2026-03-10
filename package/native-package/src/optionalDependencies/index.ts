@@ -4,6 +4,7 @@ export * from './FlatList';
 export * from './getLocalAssetUri';
 export * from './getPhotos';
 export * from './iOS14RefreshGallerySelection';
+export * from './NativeShimmerView';
 export * from './oniOS14GalleryLibrarySelectionChange';
 export * from './pickDocument';
 export * from './pickImage';

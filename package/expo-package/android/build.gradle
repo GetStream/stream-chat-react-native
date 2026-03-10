@@ -1,0 +1,139 @@
+def kotlinVersion =
+  rootProject.ext.has("kotlinVersion")
+    ? rootProject.ext.get("kotlinVersion")
+    : project.properties["StreamChatExpo_kotlinVersion"]
+
+buildscript {
+  repositories {
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "com.android.tools.build:gradle:7.2.1"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+  }
+}
+
+def isNewArchitectureEnabled() {
+  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+}
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
+
+def getExtOrIntegerDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["StreamChatExpo_" + name]).toInteger()
+}
+def localSharedNativeRootDir = new File(projectDir, "src/main/java/com/streamchatreactnative/shared")
+def sharedNativeRootDir = new File(projectDir, "../../shared-native/android")
+def hasNativeSources = { File dir ->
+  dir.exists() && !fileTree(dir).matching { include "**/*.kt"; include "**/*.java" }.files.isEmpty()
+}
+
+android {
+  compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  def agpMajorVersion = agpVersion.tokenize('.')[0].toInteger()
+  def agpMinorVersion = agpVersion.tokenize('.')[1].toInteger()
+
+  if (agpMajorVersion >= 7 && agpMinorVersion >= 3) {
+    namespace "com.streamchatexpo"
+  }
+
+  defaultConfig {
+    minSdkVersion getExtOrIntegerDefault("minSdkVersion")
+    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+
+  lintOptions {
+    disable "GradleCompatible"
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = "17"
+  }
+
+  sourceSets {
+    main {
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += [
+          "src/newarch",
+          "src/main/java/com/streamchatreactnative/shared",
+          "${project.buildDir}/generated/source/codegen/java"
+        ]
+      }
+    }
+  }
+}
+
+tasks.register("syncSharedShimmerSources") {
+  outputs.dir(localSharedNativeRootDir)
+  outputs.upToDateWhen { false }
+  doLast {
+    def sourceRootDir = null
+    if (hasNativeSources(localSharedNativeRootDir)) {
+      sourceRootDir = localSharedNativeRootDir
+    } else if (hasNativeSources(sharedNativeRootDir)) {
+      sourceRootDir = sharedNativeRootDir
+    }
+
+    if (sourceRootDir == null) {
+      throw new GradleException(
+        "Missing shared native Android sources. Expected either src/main/java/com/streamchatreactnative/shared/**/*.{kt,java} " +
+          "or ../../shared-native/android/**/*.{kt,java}."
+      )
+    }
+
+    if (sourceRootDir != localSharedNativeRootDir) {
+      project.delete(localSharedNativeRootDir)
+      project.copy {
+        from(sourceRootDir)
+        into(localSharedNativeRootDir)
+      }
+    } else if (!hasNativeSources(localSharedNativeRootDir)) {
+      throw new GradleException("Shared native source directory exists but has no Kotlin/Java files.")
+    }
+  }
+}
+
+tasks.matching { it.name == "preBuild" }.configureEach {
+  dependsOn("syncSharedShimmerSources")
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+  dependsOn("syncSharedShimmerSources")
+}
+
+repositories {
+  mavenCentral()
+  google()
+}
+
+dependencies {
+  implementation "com.facebook.react:react-native:+"
+}
+
+if (isNewArchitectureEnabled()) {
+  react {
+    jsRootDir = file("../src/")
+    libraryName = "StreamChatExpo"
+    codegenJavaPackageName = "com.streamchatexpo"
+  }
+}

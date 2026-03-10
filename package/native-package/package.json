@@ -15,7 +15,10 @@
   "files": [
     "src",
     "types",
-    "android",
+    "android/src",
+    "android/build.gradle",
+    "android/gradle.properties",
+    "android/gradle",
     "ios",
     "*.podspec",
     "package.json"
@@ -78,16 +81,22 @@
     }
   },
   "scripts": {
-    "prepack": " cp ../../README.md .",
-    "postpack": "rm README.md"
+    "postinstall": "if [ -f ../scripts/sync-shared-native.sh ] && [ -d ../shared-native/ios ]; then bash ../scripts/sync-shared-native.sh native-package; fi",
+    "prepack": "bash ../scripts/sync-shared-native.sh native-package && cp ../../README.md .",
+    "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh native-package"
   },
   "devDependencies": {
     "react-native": "^0.79.3"
   },
   "codegenConfig": {
     "name": "StreamChatReactNativeSpec",
-    "type": "modules",
-    "jsSrcsDir": "src/native"
+    "type": "all",
+    "jsSrcsDir": "src/native",
+    "ios": {
+      "componentProvider": {
+        "StreamShimmerView": "StreamShimmerViewComponentView"
+      }
+    }
   },
   "resolutions": {
     "@types/react": "^19.0.0"

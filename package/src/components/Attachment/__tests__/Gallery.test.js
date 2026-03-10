@@ -1,12 +1,6 @@
 import React from 'react';
 
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
@@ -26,6 +20,15 @@ import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
 
 describe('Gallery', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   const user1 = generateUser();
 
   const getComponent = async (attachments = []) => {
@@ -272,7 +275,7 @@ describe('Gallery', () => {
     fireEvent(screen.getByLabelText('Gallery Image'), 'error', {
       nativeEvent: { error: 'error loading image' },
     });
-    expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
+    expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
   });
 
   it('should render a loading indicator and when successful render the image', async () => {
@@ -288,11 +291,15 @@ describe('Gallery', () => {
       expect(screen.queryAllByTestId('gallery-container').length).toBe(1);
     });
 
-    fireEvent(screen.getByLabelText('Gallery Image'), 'onLoadStart');
-    expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
+    fireEvent(screen.getByLabelText('Gallery Image'), 'loadStart');
+    await waitFor(() => {
+      expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
+    });
 
-    fireEvent(screen.getByLabelText('Gallery Image'), 'onLoadFinish');
-    waitForElementToBeRemoved(() => screen.getByAccessibilityHint('image-loading'));
+    fireEvent(screen.getByLabelText('Gallery Image'), 'onLoad');
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Image Loading Indicator')).toBeNull();
+    });
     expect(screen.getByLabelText('Gallery Image')).toBeTruthy();
-  });
+  }, 20000);
 });

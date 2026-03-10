@@ -5,9 +5,9 @@ import { LocalAttachmentUploadMetadata } from 'stream-chat';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { ExclamationCircle } from '../../../../icons/ExclamationCircle';
-import { RotateCircle } from '../../../../icons/RotateCircle';
 import { Warning } from '../../../../icons/Warning';
 import { primitives } from '../../../../theme';
+import { RetryBadge } from '../../../ui/Badge/RetryBadge';
 
 export const FileUploadInProgressIndicator = () => {
   const {
@@ -128,20 +128,9 @@ export type ImageUploadRetryIndicatorProps = {
 };
 
 export const ImageUploadRetryIndicator = ({ onRetryHandler }: ImageUploadRetryIndicatorProps) => {
-  const styles = useImageUploadRetryIndicatorStyles();
-  const {
-    theme: {
-      semantics,
-      messageInput: { imageUploadRetryIndicator },
-    },
-  } = useTheme();
   return (
-    <Pressable
-      style={[styles.container, imageUploadRetryIndicator.container]}
-      onPress={onRetryHandler}
-      testID='retry-upload-progress-indicator'
-    >
-      <RotateCircle height={16} width={16} stroke={semantics.textOnAccent} />
+    <Pressable onPress={onRetryHandler} testID='retry-upload-progress-indicator'>
+      <RetryBadge size='md' />
     </Pressable>
   );
 };
@@ -170,25 +159,6 @@ const useImageUploadInProgressIndicatorStyles = () => {
       position: 'absolute',
       left: primitives.spacingXxs,
       bottom: primitives.spacingXxs,
-    },
-  });
-};
-
-const useImageUploadRetryIndicatorStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-  return StyleSheet.create({
-    container: {
-      backgroundColor: semantics.accentError,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: primitives.radiusMax,
-      borderWidth: 2,
-      borderColor: semantics.textOnAccent,
-      alignSelf: 'center',
-      width: 32,
-      height: 32,
     },
   });
 };

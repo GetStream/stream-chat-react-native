@@ -184,6 +184,7 @@ lane :frameworks_sizes do
     yarn_all
     sh('yarn build')
     sh('yarn minify-bundle')
+
     js_bundle_size = file_size(path: 'package/lib/module/bundle.min.js')
     { js_bundle_size: js_bundle_size }
   end
