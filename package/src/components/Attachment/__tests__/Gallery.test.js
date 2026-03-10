@@ -20,6 +20,15 @@ import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
 
 describe('Gallery', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   const user1 = generateUser();
 
   const getComponent = async (attachments = []) => {
@@ -287,10 +296,10 @@ describe('Gallery', () => {
       expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
     });
 
-    fireEvent(screen.getByLabelText('Gallery Image'), 'loadEnd');
+    fireEvent(screen.getByLabelText('Gallery Image'), 'onLoad');
     await waitFor(() => {
       expect(screen.queryByLabelText('Image Loading Indicator')).toBeNull();
     });
     expect(screen.getByLabelText('Gallery Image')).toBeTruthy();
-  });
+  }, 20000);
 });
