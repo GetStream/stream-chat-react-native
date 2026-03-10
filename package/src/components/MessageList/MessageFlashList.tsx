@@ -1088,7 +1088,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         layout={LinearTransition.duration(200)}
         style={[
           styles.scrollToBottomButtonContainer,
-          { bottom: messageInputFloating ? messageInputHeight : primitives.spacingMd },
+          {
+            bottom: messageInputFloating
+              ? messageInputHeight + primitives.spacingMd
+              : primitives.spacingMd,
+          },
         ]}
       >
         <ScrollToBottomButton
