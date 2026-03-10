@@ -1,12 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import {
-  ImageErrorEventData,
-  NativeSyntheticEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import React, { useMemo } from 'react';
+import { ImageErrorEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
@@ -73,8 +66,6 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
     channelId: string | undefined;
     messageHasOnlyOneImage: boolean;
   };
-
-const IMAGE_LOADING_INDICATOR_DELAY_MS = 350;
 
 const GalleryWithContext = (props: GalleryPropsWithContext) => {
   const {
@@ -395,7 +386,6 @@ const GalleryImageThumbnail = ({
     setLoadingImage,
     setLoadingImageError,
   } = useLoadingImage();
-  const loadingIndicatorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     theme: {
@@ -405,38 +395,23 @@ const GalleryImageThumbnail = ({
 
   const styles = useStyles();
 
-  const clearLoadingIndicatorTimer = useStableCallback(() => {
-    if (loadingIndicatorTimerRef.current) {
-      clearTimeout(loadingIndicatorTimerRef.current);
-      loadingIndicatorTimerRef.current = null;
-    }
-  });
-
   const onLoadStart = useStableCallback(() => {
-    clearLoadingIndicatorTimer();
     setLoadingImageError(false);
-    loadingIndicatorTimerRef.current = setTimeout(() => {
-      setLoadingImage(true);
-      loadingIndicatorTimerRef.current = null;
-    }, IMAGE_LOADING_INDICATOR_DELAY_MS);
+    setLoadingImage(true);
   });
 
-  const onLoadEnd = useStableCallback(() => {
-    clearLoadingIndicatorTimer();
-    setLoadingImage(false);
-    setLoadingImageError(false);
-  });
-
-  const onError = useStableCallback(
-    ({ nativeEvent: { error } }: NativeSyntheticEvent<ImageErrorEventData>) => {
-      clearLoadingIndicatorTimer();
-      console.warn(error);
+  const onLoad = useStableCallback(() => {
+    setTimeout(() => {
       setLoadingImage(false);
-      setLoadingImageError(true);
-    },
-  );
+      setLoadingImageError(false);
+    }, 0);
+  });
 
-  useEffect(() => clearLoadingIndicatorTimer, [clearLoadingIndicatorTimer]);
+  const onError = useStableCallback(({ nativeEvent: { error } }: ImageErrorEvent) => {
+    console.warn(error);
+    setLoadingImage(false);
+    setLoadingImageError(true);
+  });
 
   return (
     <View style={[styles.image, borderRadius]}>
@@ -446,7 +421,7 @@ const GalleryImageThumbnail = ({
         <>
           <GalleryImage
             onError={onError}
-            onLoadEnd={onLoadEnd}
+            onLoad={onLoad}
             onLoadStart={onLoadStart}
             resizeMode={thumbnail.resizeMode}
             style={gallery.image}
