@@ -11,6 +11,8 @@ import {
   useTheme,
   useTranslationContext,
   useTypingString,
+  useClosingPortalHostBlacklist,
+  PortalWhileClosingView,
 } from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
 
@@ -161,7 +163,12 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         messageId={targetedMessageIdFromParams}
       >
-        <ThreadHeader thread={thread} />
+        <PortalWhileClosingView
+          portalHostName='overlay-header'
+          portalName='channel-header'
+        >
+          <ThreadHeader thread={thread} />
+        </PortalWhileClosingView>
         <Thread
           onThreadDismount={onThreadDismount}
           shouldUseFlashList={messageListImplementation === 'flashlist'}

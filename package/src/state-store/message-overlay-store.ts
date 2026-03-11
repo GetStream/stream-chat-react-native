@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { makeMutable, type SharedValue } from 'react-native-reanimated';
 
@@ -8,6 +8,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { useStateStore } from '../hooks';
 
 type OverlayState = {
+  closingPortalHostBlacklist: string[];
   id: string | undefined;
   closing: boolean;
 };
@@ -22,6 +23,7 @@ type ClosingPortalLayoutsState = {
 };
 
 const DefaultState = {
+  closingPortalHostBlacklist: [],
   closing: false,
   id: undefined,
 };
@@ -30,6 +32,8 @@ const DefaultClosingPortalLayoutsState: ClosingPortalLayoutsState = {
 };
 
 let closingPortalLayoutRegistrationCounter = 0;
+let closingPortalHostBlacklistRegistrationCounter = 0;
+let closingPortalHostBlacklistStack: Array<{ hostNames: string[]; id: string }> = [];
 
 type OverlaySharedValueController = {
   incrementCloseCorrectionY: (deltaY: number) => void;
@@ -69,7 +73,11 @@ export const bumpOverlayLayoutRevision = (closeCorrectionDeltaY = 0) => {
 
 export const openOverlay = (id: string) => {
   sharedValueController?.resetCloseCorrectionY();
-  overlayStore.partialNext({ closing: false, id });
+  overlayStore.partialNext({
+    closing: false,
+    closingPortalHostBlacklist: getCurrentClosingPortalHostBlacklist(),
+    id,
+  });
 };
 
 export const closeOverlay = () => {
@@ -90,7 +98,10 @@ export const scheduleActionOnClose = (action: () => void | Promise<void>) => {
 };
 
 export const finalizeCloseOverlay = () => {
-  overlayStore.partialNext(DefaultState);
+  overlayStore.next({
+    ...DefaultState,
+    closingPortalHostBlacklist: getCurrentClosingPortalHostBlacklist(),
+  });
   sharedValueController?.reset();
 };
 
@@ -101,6 +112,43 @@ const closingPortalLayoutsStore = new StateStore<ClosingPortalLayoutsState>(
 
 export const createClosingPortalLayoutRegistrationId = () =>
   `closing-portal-layout-${closingPortalLayoutRegistrationCounter++}`;
+
+const getCurrentClosingPortalHostBlacklist = () =>
+  closingPortalHostBlacklistStack[closingPortalHostBlacklistStack.length - 1]?.hostNames ?? [];
+
+const syncClosingPortalHostBlacklist = () => {
+  overlayStore.partialNext({
+    closingPortalHostBlacklist: getCurrentClosingPortalHostBlacklist(),
+  });
+};
+
+const createClosingPortalHostBlacklistRegistrationId = () =>
+  `closing-portal-host-blacklist-${closingPortalHostBlacklistRegistrationCounter++}`;
+
+const setClosingPortalHostBlacklist = (id: string, hostNames: string[]) => {
+  const existingEntryIndex = closingPortalHostBlacklistStack.findIndex((entry) => entry.id === id);
+
+  if (existingEntryIndex === -1) {
+    closingPortalHostBlacklistStack = [...closingPortalHostBlacklistStack, { hostNames, id }];
+  } else {
+    closingPortalHostBlacklistStack = closingPortalHostBlacklistStack.map((entry, index) =>
+      index === existingEntryIndex ? { ...entry, hostNames } : entry,
+    );
+  }
+
+  syncClosingPortalHostBlacklist();
+};
+
+const clearClosingPortalHostBlacklist = (id: string) => {
+  const nextBlacklistStack = closingPortalHostBlacklistStack.filter((entry) => entry.id !== id);
+
+  if (nextBlacklistStack.length === closingPortalHostBlacklistStack.length) {
+    return;
+  }
+
+  closingPortalHostBlacklistStack = nextBlacklistStack;
+  syncClosingPortalHostBlacklist();
+};
 
 export const setClosingPortalLayout = (hostName: string, id: string, layout: Rect) => {
   const { layouts } = closingPortalLayoutsStore.getLatestValue();
@@ -170,16 +218,66 @@ const overlayClosingSelector = (nextState: OverlayState) => ({
   closing: nextState.closing,
 });
 
+const closingPortalHostBlacklistSelector = (nextState: OverlayState) => ({
+  closingPortalHostBlacklist: nextState.closingPortalHostBlacklist,
+});
+
 export const useIsOverlayClosing = () => {
   return useStateStore(overlayStore, overlayClosingSelector).closing;
 };
 
+export const useClosingPortalHostBlacklistState = () => {
+  return useStateStore(overlayStore, closingPortalHostBlacklistSelector).closingPortalHostBlacklist;
+};
+
 export const useShouldTeleportToClosingPortal = (hostName: string, id: string) => {
   const closing = useIsOverlayClosing();
+  const closingPortalHostBlacklist = useClosingPortalHostBlacklistState();
   const closingPortalLayouts = useClosingPortalLayouts();
   const hostEntries = closingPortalLayouts[hostName];
 
-  return !!closing && hostEntries?.[hostEntries.length - 1]?.id === id;
+  return (
+    closing &&
+    !closingPortalHostBlacklist.includes(hostName) &&
+    hostEntries?.[hostEntries.length - 1]?.id === id
+  );
+};
+
+/**
+ * Registers a screen-level blacklist of closing portal hosts that should not render while this hook is active.
+ *
+ * The blacklist uses stack semantics:
+ * - mounting/enabling a new instance makes its blacklist active
+ * - unmounting/disabling restores the previous active blacklist automatically
+ *
+ * This keeps stacked screens predictable without requiring previous screens to rerun effects when the top screen
+ * disappears.
+ */
+export const useClosingPortalHostBlacklist = (hostNames: string[], enabled = true) => {
+  const registrationIdRef = useRef<string | null>(null);
+
+  if (!registrationIdRef.current) {
+    registrationIdRef.current = createClosingPortalHostBlacklistRegistrationId();
+  }
+
+  const registrationId = registrationIdRef.current;
+  const serializedNormalizedHostNames = JSON.stringify([...new Set(hostNames)]);
+
+  useEffect(() => {
+    if (!enabled) {
+      clearClosingPortalHostBlacklist(registrationId);
+      return;
+    }
+
+    setClosingPortalHostBlacklist(
+      registrationId,
+      JSON.parse(serializedNormalizedHostNames) as string[],
+    );
+
+    return () => {
+      clearClosingPortalHostBlacklist(registrationId);
+    };
+  }, [enabled, registrationId, serializedNormalizedHostNames]);
 };
 
 /**
