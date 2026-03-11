@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ChannelMessagePreview } from './ChannelMessagePreview';
+import { ChannelLastMessagePreview } from './ChannelLastMessagePreview';
 import { ChannelMessagePreviewDeliveryStatus } from './ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewProps } from './ChannelPreview';
 
@@ -24,7 +24,10 @@ import { MessageStatusTypes } from '../../utils/utils';
 import { ErrorBadge } from '../ui';
 
 export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> &
-  Pick<ChannelsContextValue, 'PreviewTypingIndicator' | 'PreviewMessageDeliveryStatus'> & {
+  Pick<
+    ChannelsContextValue,
+    'PreviewTypingIndicator' | 'PreviewMessageDeliveryStatus' | 'PreviewLastMessage'
+  > & {
     lastMessage?: LastMessageType;
   };
 
@@ -34,6 +37,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     lastMessage,
     PreviewTypingIndicator = ChannelPreviewTypingIndicator,
     PreviewMessageDeliveryStatus = ChannelMessagePreviewDeliveryStatus,
+    PreviewLastMessage = ChannelLastMessagePreview,
   } = props;
   const {
     theme: { semantics },
@@ -66,7 +70,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     return (
       <View style={styles.container}>
         <Text style={styles.draftText}>{t('Draft')}:</Text>
-        <ChannelMessagePreview message={draftMessage} />
+        <PreviewLastMessage message={draftMessage} />
       </View>
     );
   }
@@ -102,14 +106,14 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     return (
       <View style={styles.container}>
         <PreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
-        <ChannelMessagePreview message={lastMessage} />
+        <PreviewLastMessage message={lastMessage} />
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
         <PreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
-        <ChannelMessagePreview message={lastMessage} />
+        <PreviewLastMessage message={lastMessage} />
       </View>
     );
   }

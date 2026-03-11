@@ -16,7 +16,7 @@ import { hashStringToNumber } from '../../../utils/utils';
 export type ChannelAvatarProps = {
   channel: Channel;
   showOnlineIndicator?: boolean;
-  size: 'lg' | 'xl' | '2xl';
+  size?: 'lg' | 'xl' | '2xl';
   showBorder?: boolean;
 };
 
@@ -24,7 +24,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const { client } = useChatContext();
   const { channel } = props;
   const online = useChannelPreviewDisplayPresence(channel);
-  const { showOnlineIndicator = online, size, showBorder = true } = props;
+  const { showOnlineIndicator = online, size = 'xl', showBorder = true } = props;
 
   const {
     theme: { semantics },

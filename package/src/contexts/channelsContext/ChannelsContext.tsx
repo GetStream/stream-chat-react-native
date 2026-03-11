@@ -9,6 +9,7 @@ import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListH
 import type { GetChannelActionItems } from '../../components/ChannelList/hooks/useChannelActionItems';
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
 import type { ChannelDetailsBottomSheetProps } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
+import { ChannelLastMessagePreviewProps } from '../../components/ChannelPreview/ChannelLastMessagePreview';
 import { ChannelMessagePreviewDeliveryStatusProps } from '../../components/ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
@@ -20,6 +21,7 @@ import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndi
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 
+import { ChannelAvatarProps } from '../../components/ui/Avatar/ChannelAvatar';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -179,7 +181,7 @@ export type ChannelsContextValue = {
    *
    * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelAvatar.tsx)
    */
-  PreviewAvatar?: React.ComponentType;
+  PreviewAvatar?: React.ComponentType<ChannelAvatarProps>;
   /**
    * Custom UI component to render preview of latest message on channel.
    *
@@ -218,6 +220,12 @@ export type ChannelsContextValue = {
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
   PreviewTypingIndicator?: React.ComponentType<ChannelPreviewTypingIndicatorProps>;
   ChannelDetailsBottomSheet?: React.ComponentType<ChannelDetailsBottomSheetProps>;
+  /**
+   * Custom UI component to render preview of last message on channel.
+   *
+   * **Default** [ChannelLastMessagePreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelLastMessagePreview.tsx)
+   */
+  PreviewLastMessage?: React.ComponentType<ChannelLastMessagePreviewProps>;
   getChannelActionItems?: GetChannelActionItems;
   swipeActionsEnabled?: boolean;
 

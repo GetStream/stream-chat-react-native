@@ -45,12 +45,13 @@ export * from './ChannelList/hooks';
 
 /** Channel Preview exports */
 export * from './ChannelPreview/ChannelDetailsBottomSheet';
-export * from './ChannelPreview/ChannelMessagePreview';
+export * from './ChannelPreview/ChannelLastMessagePreview';
 export * from './ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 export * from './ChannelPreview/ChannelPreview';
 export * from './ChannelPreview/ChannelPreviewMessage';
 export * from './ChannelPreview/ChannelPreviewMessenger';
 export * from './ChannelPreview/ChannelPreviewMutedStatus';
+export * from './ChannelPreview/ChannelLastMessagePreview';
 export * from './ChannelPreview/ChannelPreviewStatus';
 export * from './ChannelPreview/ChannelPreviewTitle';
 export * from './ChannelPreview/ChannelPreviewTypingIndicator';
