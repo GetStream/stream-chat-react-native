@@ -49,6 +49,12 @@ import type { MessageStatusProps } from '../../components/Message/MessageSimple/
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
 import { MessageTimestampProps } from '../../components/Message/MessageSimple/MessageTimestamp';
 import { ReactionListBottomProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListBottom';
+import { ReactionListClusteredProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListClustered';
+import {
+  ReactionListItemProps,
+  ReactionListCountItemProps,
+} from '../../components/Message/MessageSimple/ReactionList/ReactionListItem';
+import { ReactionListItemWrapperProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListItemWrapper';
 import type { ReactionListTopProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListTop';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
@@ -607,6 +613,25 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
    */
   ReactionListTop?: React.ComponentType<ReactionListTopProps>;
+
+  /**
+   * UI component for ReactionListBottom
+   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
+   */
+  ReactionListClustered: React.ComponentType<ReactionListClusteredProps>;
+  /**
+   * UI component for ReactionListSegmented
+   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
+   */
+  ReactionListItem: React.ComponentType<ReactionListItemProps>;
+
+  /**
+   * UI component for ReactionListItemWrapper
+   * Defaults to: [ReactionListItemWrapper](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionListItemWrapper.tsx)
+   */
+  ReactionListItemWrapper: React.ComponentType<ReactionListItemWrapperProps>;
+
+  ReactionListCountItem: React.ComponentType<ReactionListCountItemProps>;
 
   /**
    * Full override of the reaction function on Message and Message Overlay
