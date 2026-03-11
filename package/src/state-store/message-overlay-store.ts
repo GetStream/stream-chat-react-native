@@ -14,10 +14,11 @@ type OverlayState = {
 
 export type Rect = { x: number; y: number; w: number; h: number } | undefined;
 export type ClosingPortalLayoutEntry = {
+  id: string;
   layout: SharedValue<Rect>;
 };
 type ClosingPortalLayoutsState = {
-  layouts: Record<string, ClosingPortalLayoutEntry>;
+  layouts: Record<string, ClosingPortalLayoutEntry[]>;
 };
 
 const DefaultState = {
@@ -27,6 +28,8 @@ const DefaultState = {
 const DefaultClosingPortalLayoutsState: ClosingPortalLayoutsState = {
   layouts: {},
 };
+
+let closingPortalLayoutRegistrationCounter = 0;
 
 type OverlaySharedValueController = {
   incrementCloseCorrectionY: (deltaY: number) => void;
@@ -96,9 +99,13 @@ const closingPortalLayoutsStore = new StateStore<ClosingPortalLayoutsState>(
   DefaultClosingPortalLayoutsState,
 );
 
-export const setClosingPortalLayout = (hostName: string, layout: Rect) => {
+export const createClosingPortalLayoutRegistrationId = () =>
+  `closing-portal-layout-${closingPortalLayoutRegistrationCounter++}`;
+
+export const setClosingPortalLayout = (hostName: string, id: string, layout: Rect) => {
   const { layouts } = closingPortalLayoutsStore.getLatestValue();
-  const existingEntry = layouts[hostName];
+  const hostEntries = layouts[hostName] ?? [];
+  const existingEntry = hostEntries.find((entry) => entry.id === id);
 
   if (existingEntry) {
     existingEntry.layout.value = layout;
@@ -110,17 +117,28 @@ export const setClosingPortalLayout = (hostName: string, layout: Rect) => {
   closingPortalLayoutsStore.next({
     layouts: {
       ...layouts,
-      [hostName]: {
-        layout: makeMutable<Rect>(layout),
-      },
+      [hostName]: [...hostEntries, { id, layout: makeMutable<Rect>(layout) }],
     },
   });
 };
 
-export const clearClosingPortalLayout = (hostName: string) => {
+export const clearClosingPortalLayout = (hostName: string, id: string) => {
   const { layouts } = closingPortalLayoutsStore.getLatestValue();
+  const hostEntries = layouts[hostName];
+
+  if (!hostEntries?.length) {
+    return;
+  }
+
+  const nextHostEntries = hostEntries.filter((entry) => entry.id !== id);
   const nextLayouts = { ...layouts };
-  delete nextLayouts[hostName];
+
+  if (nextHostEntries.length === 0) {
+    delete nextLayouts[hostName];
+  } else {
+    nextLayouts[hostName] = nextHostEntries;
+  }
+
   closingPortalLayoutsStore.next({ layouts: nextLayouts });
 };
 
@@ -148,14 +166,31 @@ export const useOverlayController = () => {
   return useStateStore(overlayStore, selector);
 };
 
+const overlayClosingSelector = (nextState: OverlayState) => ({
+  closing: nextState.closing,
+});
+
+export const useIsOverlayClosing = () => {
+  return useStateStore(overlayStore, overlayClosingSelector).closing;
+};
+
+export const useShouldTeleportToClosingPortal = (hostName: string, id: string) => {
+  const closing = useIsOverlayClosing();
+  const closingPortalLayouts = useClosingPortalLayouts();
+  const hostEntries = closingPortalLayouts[hostName];
+
+  return !!closing && hostEntries?.[hostEntries.length - 1]?.id === id;
+};
+
 /**
  * NOTE:
  * Do not swap this back to `useStateStore(closingPortalLayoutsStore, selector)`.
  *
  * Why this is special:
  * - `layouts` is a dynamic-key map (hosts are added/removed at runtime)
+ * - each host key maintains a stack of registrations
  * - We only need React updates when the key set changes (add/remove/reset)
- * - Per-layout movement is already on UI thread via `entry.layout.value`
+ * - Per-layout movement is already on UI thread via the top `entry.layout.value`
  *
  * Why `useStateStore` is unsafe here:
  * - Both `stream-chat`'s `subscribeWithSelector` and our `useStateStore` snapshot

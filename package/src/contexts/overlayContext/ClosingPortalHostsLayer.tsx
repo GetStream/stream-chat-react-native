@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { PortalHost } from 'react-native-teleport';
@@ -42,16 +42,31 @@ type ClosingPortalHostsLayerProps = {
 };
 
 export const ClosingPortalHostsLayer = ({ closeCoverOpacity }: ClosingPortalHostsLayerProps) => {
-  const closingPortalLayouts = useClosingPortalLayouts();
+  const closingPortalLayoutStacks = useClosingPortalLayouts();
+  const closingPortalHosts = useMemo(() => {
+    const topHosts: Array<{
+      hostName: string;
+      layout: ClosingPortalLayoutEntry['layout'];
+    }> = [];
+
+    Object.entries(closingPortalLayoutStacks).forEach(([hostName, entries]) => {
+      const topEntry = entries[entries.length - 1];
+      if (topEntry) {
+        topHosts.push({ hostName, layout: topEntry.layout });
+      }
+    });
+
+    return topHosts;
+  }, [closingPortalLayoutStacks]);
 
   return (
     <>
-      {Object.entries(closingPortalLayouts).map(([hostName, entry]) => (
+      {closingPortalHosts.map(({ hostName, layout }) => (
         <ClosingPortalHostSlot
           closeCoverOpacity={closeCoverOpacity}
           hostName={hostName}
           key={hostName}
-          layout={entry.layout}
+          layout={layout}
         />
       ))}
     </>
