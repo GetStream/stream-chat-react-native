@@ -31,7 +31,11 @@ const ClosingPortalHostSlot = ({
   });
 
   return (
-    <Animated.View pointerEvents='box-none' style={style}>
+    <Animated.View
+      pointerEvents='box-none'
+      style={style}
+      testID={`closing-portal-host-slot-${hostName}`}
+    >
       <PortalHost name={hostName} style={StyleSheet.absoluteFillObject} />
     </Animated.View>
   );

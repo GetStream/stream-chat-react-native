@@ -127,7 +127,13 @@ export const PortalWhileClosingView = ({
           {children}
         </View>
       </Portal>
-      {shouldTeleport ? <Animated.View pointerEvents='none' style={placeholderStyle} /> : null}
+      {shouldTeleport ? (
+        <Animated.View
+          pointerEvents='none'
+          style={placeholderStyle}
+          testID={`portal-while-closing-placeholder-${portalName}`}
+        />
+      ) : null}
     </>
   );
 };

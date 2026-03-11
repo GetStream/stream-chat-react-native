@@ -48,43 +48,6 @@ const BlacklistRegistrar = ({ hostNames }: { hostNames: string[] }) => {
   return null;
 };
 
-const findPortalNode = (
-  node: ReturnType<ReturnType<typeof render>['toJSON']>,
-  portalName: string,
-): null | { props?: { hostName?: string; name?: string } } => {
-  if (!node) {
-    return null;
-  }
-
-  if (Array.isArray(node)) {
-    for (const child of node) {
-      const found = findPortalNode(child, portalName);
-      if (found) {
-        return found;
-      }
-    }
-
-    return null;
-  }
-
-  if (node.props?.name === portalName) {
-    return node;
-  }
-
-  for (const child of node.children ?? []) {
-    if (typeof child === 'string') {
-      continue;
-    }
-
-    const found = findPortalNode(child, portalName);
-    if (found) {
-      return found;
-    }
-  }
-
-  return null;
-};
-
 describe('PortalWhileClosingView', () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -118,7 +81,7 @@ describe('PortalWhileClosingView', () => {
   });
 
   it('uses the real store to teleport once the overlay is closing and this host is active', () => {
-    const { toJSON } = render(
+    render(
       <>
         <PortalWhileClosingView portalHostName='overlay-composer' portalName='composer-portal'>
           <Text>Composer</Text>
@@ -136,7 +99,7 @@ describe('PortalWhileClosingView', () => {
     });
 
     expect(screen.getByTestId('teleport-state')).toHaveTextContent('false');
-    expect(findPortalNode(toJSON(), 'composer-portal')?.props?.hostName).toBeUndefined();
+    expect(screen.queryByTestId('portal-while-closing-placeholder-composer-portal')).toBeNull();
 
     act(() => {
       stateStore.openOverlay('message-1');
@@ -145,11 +108,11 @@ describe('PortalWhileClosingView', () => {
     flushAnimationFrameQueue();
 
     expect(screen.getByTestId('teleport-state')).toHaveTextContent('true');
-    expect(findPortalNode(toJSON(), 'composer-portal')?.props?.hostName).toBe('overlay-composer');
+    expect(screen.getByTestId('portal-while-closing-placeholder-composer-portal')).toBeTruthy();
   });
 
   it('keeps the portal local when the host is blacklisted', () => {
-    const { toJSON } = render(
+    render(
       <>
         <BlacklistRegistrar hostNames={['overlay-composer']} />
         <PortalWhileClosingView portalHostName='overlay-composer' portalName='composer-portal'>
@@ -171,7 +134,7 @@ describe('PortalWhileClosingView', () => {
     flushAnimationFrameQueue();
 
     expect(screen.getByTestId('teleport-state')).toHaveTextContent('false');
-    expect(findPortalNode(toJSON(), 'composer-portal')?.props?.hostName).toBeUndefined();
+    expect(screen.queryByTestId('portal-while-closing-placeholder-composer-portal')).toBeNull();
   });
 
   it('clears its registration from the real store when it unmounts', () => {
