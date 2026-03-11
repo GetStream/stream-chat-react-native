@@ -11,7 +11,6 @@ import {
   useTheme,
   useTranslationContext,
   useTypingString,
-  useClosingPortalHostBlacklist,
   PortalWhileClosingView,
 } from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
