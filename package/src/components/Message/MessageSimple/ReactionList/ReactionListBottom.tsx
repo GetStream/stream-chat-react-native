@@ -1,8 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import { ReactionListClustered } from './ReactionListClustered';
-import { ReactionListItem, ReactionListItemProps } from './ReactionListItem';
+import { ReactionListItemProps } from './ReactionListItem';
 
 import {
   MessageContextValue,
@@ -15,22 +14,6 @@ import {
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 
 import { primitives } from '../../../../theme';
-
-const renderItem = ({ index, item }: { index: number; item: ReactionListItemProps }) => (
-  <ReactionListItem
-    handleReaction={item.handleReaction}
-    key={index}
-    onLongPress={item.onLongPress}
-    onPress={item.onPress}
-    onPressIn={item.onPressIn}
-    preventPress={item.preventPress}
-    reaction={item.reaction}
-    showReactionsOverlay={item.showReactionsOverlay}
-    supportedReactions={item.supportedReactions}
-    selected={item.reaction.own}
-    showCount={item.showCount}
-  />
-);
 
 export type ReactionListBottomProps = Partial<
   Pick<
@@ -46,7 +29,9 @@ export type ReactionListBottomProps = Partial<
     | 'showReactionsOverlay'
   >
 > &
-  Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
+  Partial<
+    Pick<MessagesContextValue, 'supportedReactions' | 'ReactionListClustered' | 'ReactionListItem'>
+  > & {
     type?: 'clustered' | 'segmented';
     showCount?: boolean;
   };
@@ -70,6 +55,8 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     supportedReactions: propSupportedReactions,
     type,
     showCount = true,
+    ReactionListClustered: propReactionListClustered,
+    ReactionListItem: propReactionListItem,
   } = props;
 
   const {
@@ -84,7 +71,11 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     showReactionsOverlay: contextShowReactionsOverlay,
   } = useMessageContext();
 
-  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+  const {
+    supportedReactions: contextSupportedReactions,
+    ReactionListClustered: contextReactionListClustered,
+    ReactionListItem: contextReactionListItem,
+  } = useMessagesContext();
 
   const alignment = propAlignment || contextAlignment;
   const handleReaction = propHandlerReaction || contextHandleReaction;
@@ -96,6 +87,27 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const reactions = propReactions || contextReactions;
   const showReactionsOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
+  const ReactionListClustered = propReactionListClustered || contextReactionListClustered;
+  const ReactionListItem = propReactionListItem || contextReactionListItem;
+
+  const renderItem = useCallback(
+    ({ index, item }: { index: number; item: ReactionListItemProps }) => (
+      <ReactionListItem
+        handleReaction={item.handleReaction}
+        key={index}
+        onLongPress={item.onLongPress}
+        onPress={item.onPress}
+        onPressIn={item.onPressIn}
+        preventPress={item.preventPress}
+        reaction={item.reaction}
+        showReactionsOverlay={item.showReactionsOverlay}
+        supportedReactions={item.supportedReactions}
+        selected={item.reaction.own}
+        showCount={item.showCount}
+      />
+    ),
+    [ReactionListItem],
+  );
 
   const styles = useStyles({ messageAlignment: alignment });
   const supportedReactionTypes = supportedReactions?.map(

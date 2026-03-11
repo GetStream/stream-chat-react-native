@@ -158,6 +158,10 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { MessageSwipeContent as MessageSwipeContentDefault } from '../Message/MessageSimple/MessageSwipeContent';
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
 import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
+import { ReactionListClustered as ReactionListClusteredDefault } from '../Message/MessageSimple/ReactionList/ReactionListClustered';
+import { ReactionListCountItem as ReactionListCountItemDefault } from '../Message/MessageSimple/ReactionList/ReactionListItem';
+import { ReactionListItem as ReactionListItemDefault } from '../Message/MessageSimple/ReactionList/ReactionListItem';
+import { ReactionListItemWrapper as ReactionListItemWrapperDefault } from '../Message/MessageSimple/ReactionList/ReactionListItemWrapper';
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
@@ -393,6 +397,10 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'reactionListPosition'
       | 'reactionListType'
       | 'ReactionListTop'
+      | 'ReactionListClustered'
+      | 'ReactionListItem'
+      | 'ReactionListItemWrapper'
+      | 'ReactionListCountItem'
       | 'Reply'
       | 'shouldShowUnreadUnderlay'
       | 'ScrollToBottomButton'
@@ -722,6 +730,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     reactionListPosition = 'top',
     reactionListType = 'clustered',
     ReactionListTop = ReactionListTopDefault,
+    ReactionListClustered = ReactionListClusteredDefault,
+    ReactionListItem = ReactionListItemDefault,
+    ReactionListItemWrapper = ReactionListItemWrapperDefault,
+    ReactionListCountItem = ReactionListCountItemDefault,
     Reply = ReplyDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
@@ -1978,6 +1990,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     reactionListPosition,
     reactionListType,
     ReactionListTop,
+    ReactionListClustered,
+    ReactionListItem,
+    ReactionListItemWrapper,
+    ReactionListCountItem,
     removeMessage,
     Reply,
     retrySendMessage,
