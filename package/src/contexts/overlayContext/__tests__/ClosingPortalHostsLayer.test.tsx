@@ -1,3 +1,12 @@
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
+
+import { act, cleanup, render, screen } from '@testing-library/react-native';
+
+import { clearClosingPortalLayout, setClosingPortalLayout } from '../../../state-store';
+import { ClosingPortalHostsLayer } from '../ClosingPortalHostsLayer';
+
 jest.mock('react-native-reanimated', () => {
   const actual = jest.requireActual('react-native-reanimated/mock');
   const { View } = require('react-native');
@@ -16,15 +25,6 @@ jest.mock('react-native-reanimated', () => {
     useAnimatedStyle: (updater: () => unknown) => updater(),
   };
 });
-
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import type { SharedValue } from 'react-native-reanimated';
-
-import { act, cleanup, render, screen } from '@testing-library/react-native';
-
-import { clearClosingPortalLayout, setClosingPortalLayout } from '../../../state-store';
-import { ClosingPortalHostsLayer } from '../ClosingPortalHostsLayer';
 
 const FIRST_RECT = { h: 40, w: 100, x: 10, y: 20 };
 const SECOND_RECT = { h: 52, w: 140, x: 30, y: 45 };

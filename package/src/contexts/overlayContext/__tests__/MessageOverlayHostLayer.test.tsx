@@ -1,3 +1,20 @@
+import React from 'react';
+import { StyleSheet, Text } from 'react-native';
+
+import * as SafeAreaContext from 'react-native-safe-area-context';
+
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react-native';
+
+import {
+  finalizeCloseOverlay,
+  openOverlay,
+  overlayStore,
+  setOverlayBottomH,
+  setOverlayMessageH,
+  setOverlayTopH,
+} from '../../../state-store';
+import { MessageOverlayHostLayer } from '../MessageOverlayHostLayer';
+
 jest.mock('react-native', () => {
   const actual = jest.requireActual('react-native');
 
@@ -64,23 +81,6 @@ jest.mock('react-native-reanimated', () => {
     withSpring: (value: unknown) => value,
   };
 });
-
-import React from 'react';
-import { StyleSheet, Text } from 'react-native';
-
-import * as SafeAreaContext from 'react-native-safe-area-context';
-
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react-native';
-
-import {
-  finalizeCloseOverlay,
-  openOverlay,
-  overlayStore,
-  setOverlayBottomH,
-  setOverlayMessageH,
-  setOverlayTopH,
-} from '../../../state-store';
-import { MessageOverlayHostLayer } from '../MessageOverlayHostLayer';
 
 const TOP_RECT = { h: 20, w: 90, x: 5, y: 0 };
 const MESSAGE_RECT = { h: 50, w: 180, x: 10, y: 0 };

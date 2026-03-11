@@ -1,3 +1,11 @@
+import React from 'react';
+import { Text } from 'react-native';
+
+import { act, cleanup, render, screen } from '@testing-library/react-native';
+
+import * as stateStore from '../../../state-store';
+import { PortalWhileClosingView } from '../PortalWhileClosingView';
+
 jest.mock('../../../state-store', () => {
   const actual = jest.requireActual('../../../state-store');
   const createClosingPortalLayoutRegistrationId = jest.fn(() => 'registration-1');
@@ -12,14 +20,6 @@ jest.mock('../../../state-store', () => {
     },
   });
 });
-
-import React from 'react';
-import { Text } from 'react-native';
-
-import { act, cleanup, render, screen } from '@testing-library/react-native';
-
-import * as stateStore from '../../../state-store';
-import { PortalWhileClosingView } from '../PortalWhileClosingView';
 
 const BASE_RECT = { h: 48, w: 120, x: 12, y: 24 };
 
