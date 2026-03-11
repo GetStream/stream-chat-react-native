@@ -9,10 +9,12 @@ import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListH
 import type { GetChannelActionItems } from '../../components/ChannelList/hooks/useChannelActionItems';
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
 import type { ChannelDetailsBottomSheetProps } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
+import { ChannelMessagePreviewDeliveryStatusProps } from '../../components/ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
 import type { ChannelPreviewStatusProps } from '../../components/ChannelPreview/ChannelPreviewStatus';
 import type { ChannelPreviewTitleProps } from '../../components/ChannelPreview/ChannelPreviewTitle';
+import { ChannelPreviewTypingIndicatorProps } from '../../components/ChannelPreview/ChannelPreviewTypingIndicator';
 import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPreview/ChannelPreviewUnreadCount';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
@@ -185,6 +187,12 @@ export type ChannelsContextValue = {
    */
   PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps>;
   /**
+   * Custom UI component to render delivery status of latest message on channel.
+   *
+   * **Default** [ChannelMessagePreviewDeliveryStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelMessagePreviewDeliveryStatus.tsx)
+   */
+  PreviewMessageDeliveryStatus?: React.ComponentType<ChannelMessagePreviewDeliveryStatusProps>;
+  /**
    * Custom UI component to render muted status.
    *
    * **Default** [ChannelMutedStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewMutedStatus.tsx)
@@ -208,6 +216,7 @@ export type ChannelsContextValue = {
    * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
+  PreviewTypingIndicator?: React.ComponentType<ChannelPreviewTypingIndicatorProps>;
   ChannelDetailsBottomSheet?: React.ComponentType<ChannelDetailsBottomSheetProps>;
   getChannelActionItems?: GetChannelActionItems;
   swipeActionsEnabled?: boolean;

@@ -5,7 +5,7 @@ import { ChannelMessagePreview } from './ChannelMessagePreview';
 import { ChannelMessagePreviewDeliveryStatus } from './ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewProps } from './ChannelPreview';
 
-import { ChannelTypingIndicatorPreview } from './ChannelTypingIndicatorPreview';
+import { ChannelPreviewTypingIndicator } from './ChannelPreviewTypingIndicator';
 import { LastMessageType } from './hooks/useChannelPreviewData';
 
 import { useChannelPreviewDraftMessage } from './hooks/useChannelPreviewDraftMessage';
@@ -13,6 +13,7 @@ import { useChannelPreviewPollLabel } from './hooks/useChannelPreviewPollLabel';
 
 import { useChannelTypingState } from './hooks/useChannelTypingState';
 
+import { ChannelsContextValue } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -22,12 +23,18 @@ import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { ErrorBadge } from '../ui';
 
-export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> & {
-  lastMessage?: LastMessageType;
-};
+export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> &
+  Pick<ChannelsContextValue, 'PreviewTypingIndicator' | 'PreviewMessageDeliveryStatus'> & {
+    lastMessage?: LastMessageType;
+  };
 
 export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
-  const { channel, lastMessage } = props;
+  const {
+    channel,
+    lastMessage,
+    PreviewTypingIndicator = ChannelPreviewTypingIndicator,
+    PreviewMessageDeliveryStatus = ChannelMessagePreviewDeliveryStatus,
+  } = props;
   const {
     theme: { semantics },
   } = useTheme();
@@ -52,7 +59,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
 
   if (usersTyping.length > 0) {
-    return <ChannelTypingIndicatorPreview channel={channel} usersTyping={usersTyping} />;
+    return <PreviewTypingIndicator channel={channel} usersTyping={usersTyping} />;
   }
 
   if (draftMessage) {
@@ -94,14 +101,14 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (channel.data?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
-        <ChannelMessagePreviewDeliveryStatus channel={channel} message={lastMessage} />
+        <PreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
         <ChannelMessagePreview message={lastMessage} />
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
-        <ChannelMessagePreviewDeliveryStatus channel={channel} message={lastMessage} />
+        <PreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
         <ChannelMessagePreview message={lastMessage} />
       </View>
     );

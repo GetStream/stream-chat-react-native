@@ -56,14 +56,14 @@ const getTypingString = ({
   }
 };
 
-export type ChannelTypingIndicatorPreviewProps = Pick<ChannelPreviewProps, 'channel'> & {
+export type ChannelPreviewTypingIndicatorProps = Pick<ChannelPreviewProps, 'channel'> & {
   usersTyping: UserResponse[];
 };
 
-export const ChannelTypingIndicatorPreview = ({
+export const ChannelPreviewTypingIndicator = ({
   usersTyping,
   channel,
-}: ChannelTypingIndicatorPreviewProps) => {
+}: ChannelPreviewTypingIndicatorProps) => {
   const styles = useStyles();
   const { t } = useTranslationContext();
 

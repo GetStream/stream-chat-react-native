@@ -3,10 +3,10 @@ import { Image, Platform } from 'react-native';
 
 import { Channel, OfflineDBState } from 'stream-chat';
 
+import { useClientMutedUsers } from './hooks';
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
-import { useMutedUsers } from './hooks/useMutedUsers';
 
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
@@ -172,7 +172,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
    * Setup muted user listener
    * TODO: reimplement
    */
-  const mutedUsers = useMutedUsers(client);
+  const mutedUsers = useClientMutedUsers(client);
 
   const debugRef = useDebugContext();
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
