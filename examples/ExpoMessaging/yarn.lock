@@ -6010,8 +6010,10 @@ stream-buffers@2.2.x:
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
 "stream-chat-expo@link:../../package/expo-package":
-  version "0.0.0"
-  uid ""
+  version "8.1.0"
+  dependencies:
+    mime "^4.0.7"
+    stream-chat-react-native-core "8.1.0"
 
 stream-chat-react-native-core@8.1.0:
   version "8.1.0"
@@ -6034,25 +6036,24 @@ stream-chat-react-native-core@8.1.0:
     use-sync-external-store "^1.5.0"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
-
-stream-chat@^9.35.1:
-  version "9.35.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.35.1.tgz#d828854a9c27ea7e45e6642d9107966c6606f552"
-  integrity sha512-649sgO7+llFuW+y/Ja0K4d94aUC+EMxYUVo5mq5AFGT86vUAIXmRIMVHYHA/jw4MYoqfWAFrDK6L9Rhyn/eMkQ==
+  version "8.1.0"
   dependencies:
-    "@types/jsonwebtoken" "^9.0.8"
-    "@types/ws" "^8.5.14"
-    axios "^1.12.2"
-    base64-js "^1.5.1"
-    form-data "^4.0.4"
-    isomorphic-ws "^5.0.0"
-    jsonwebtoken "^9.0.3"
+    "@gorhom/bottom-sheet" "5.1.8"
+    "@ungap/structured-clone" "^1.3.0"
+    dayjs "1.11.13"
+    emoji-regex "^10.4.0"
+    i18next "^25.2.1"
+    intl-pluralrules "^2.0.1"
     linkifyjs "^4.3.2"
-    ws "^8.18.1"
+    lodash-es "4.17.23"
+    mime-types "^2.1.35"
+    path "0.12.7"
+    react-native-markdown-package "1.8.2"
+    react-native-url-polyfill "^2.0.0"
+    stream-chat "^9.36.0"
+    use-sync-external-store "^1.5.0"
 
-stream-chat@^9.9.0:
+stream-chat@^9.36.0, stream-chat@^9.9.0:
   version "9.36.0"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.36.0.tgz#154e0d6bdf8b15e97a6d9718c655d2ede34f6f25"
   integrity sha512-D1b5THI4UbnvsEcJyUv1tUIgK6lCYT+aStrV+87mdrM9owX+WUpKaWFkxz/Ug+DOrJtTazvfuzvpJMyDi82NXA==
@@ -6200,9 +6201,9 @@ tapable@^2.2.0:
   integrity sha512-ZL6DDuAlRlLGghwcfmSn9sK3Hr6ArtyudlSAiCqQ6IfE+b+HHbydbYDIG15IfS5do+7XQQBdBiubF/cV2dnDzg==
 
 tar@^7.4.3:
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-7.5.1.tgz#750a8bd63b7c44c1848e7bf982260a083cf747c9"
-  integrity sha512-nlGpxf+hv0v7GkWBK2V9spgactGOp0qvfWRxUMjqHyzrt3SgwE48DIv/FhqPHJYLHpgW1opq3nERbz5Anq7n1g==
+  version "7.5.11"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-7.5.11.tgz#1250fae45d98806b36d703b30973fa8e0a6d8868"
+  integrity sha512-ChjMH33/KetonMTAtpYdgUFr0tbz69Fp2v7zWxQfYZX4g5ZN2nOBXm1R2xyA+lMIKrLKIoKAwFj93jE/avX9cQ==
   dependencies:
     "@isaacs/fs-minipass" "^4.0.0"
     chownr "^3.0.0"
