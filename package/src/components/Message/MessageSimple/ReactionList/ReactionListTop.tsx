@@ -113,7 +113,7 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
   if (type === 'clustered') {
     return (
       <View style={styles.container} accessibilityLabel='Reaction List Top'>
-        {ReactionListClustered ? <ReactionListClustered {...props} /> : null}
+        <ReactionListClustered {...props} />
       </View>
     );
   }
@@ -127,25 +127,21 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
       showsVerticalScrollIndicator={false}
       style={[styles.container, styles.list]}
     >
-      {reactions
-        .slice(0, 4)
-        .map((reaction) =>
-          ReactionListItem ? (
-            <ReactionListItem
-              key={reaction.type}
-              reaction={reaction}
-              handleReaction={handleReaction}
-              onLongPress={onLongPress}
-              onPress={onPress}
-              onPressIn={onPressIn}
-              preventPress={preventPress}
-              showReactionsOverlay={showReactionsOverlay}
-              supportedReactions={supportedReactions}
-              showCount={showCount}
-              selected={reaction.own}
-            />
-          ) : null,
-        )}
+      {reactions.slice(0, 4).map((reaction) => (
+        <ReactionListItem
+          key={reaction.type}
+          reaction={reaction}
+          handleReaction={handleReaction}
+          onLongPress={onLongPress}
+          onPress={onPress}
+          onPressIn={onPressIn}
+          preventPress={preventPress}
+          showReactionsOverlay={showReactionsOverlay}
+          supportedReactions={supportedReactions}
+          showCount={showCount}
+          selected={reaction.own}
+        />
+      ))}
       <ReactionListCountItem
         count={moreReactionsCount}
         onLongPress={onLongPress}
