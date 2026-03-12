@@ -641,6 +641,11 @@ export type Theme = {
       icon: IconProps;
       title: TextStyle;
     };
+    unsupportedAttachment: {
+      container: ViewStyle;
+      details: ViewStyle;
+      title: TextStyle;
+    };
     fileAttachmentGroup: {
       attachmentContainer: ViewStyle;
       container: ViewStyle;
@@ -1537,6 +1542,11 @@ export const defaultTheme: Theme = {
       details: {},
       fileSize: {},
       icon: {},
+      title: {},
+    },
+    unsupportedAttachment: {
+      container: {},
+      details: {},
       title: {},
     },
     fileAttachmentGroup: {

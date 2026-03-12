@@ -30,12 +30,14 @@ export type FilePreviewProps = Partial<Pick<MessagesContextValue, 'FileAttachmen
 export const FilePreview = (props: FilePreviewProps) => {
   const {
     attachment,
+    FileAttachmentIcon: PropFileAttachmentIcon,
     attachmentIconSize,
     styles: stylesProp = {},
     titleNumberOfLines = 2,
     indicator,
   } = props;
-  const { FileAttachmentIcon = FileIconDefault } = useMessagesContext();
+  const { FileAttachmentIcon: ContextFileAttachmentIcon } = useMessagesContext();
+  const FileAttachmentIcon = PropFileAttachmentIcon || ContextFileAttachmentIcon || FileIconDefault;
 
   const styles = useStyles();
 

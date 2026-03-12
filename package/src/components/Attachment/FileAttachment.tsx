@@ -3,10 +3,10 @@ import { Pressable, StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-na
 
 import type { Attachment } from 'stream-chat';
 
-import { FilePreview } from './FilePreview';
 import { openUrlSafely } from './utils/openUrlSafely';
 
-import { FileIcon as FileIconDefault, FileIconProps } from '../../components/Attachment/FileIcon';
+import { FileIconProps } from '../../components/Attachment/FileIcon';
+
 import {
   MessageContextValue,
   useMessageContext,
@@ -21,7 +21,7 @@ export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
   'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
-  Pick<MessagesContextValue, 'additionalPressableProps'> & {
+  Pick<MessagesContextValue, 'additionalPressableProps' | 'FilePreview'> & {
     /** The attachment to render */
     attachment: Attachment;
     attachmentIconSize?: FileIconProps['size'];
@@ -41,6 +41,7 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
     additionalPressableProps,
     attachment,
     attachmentIconSize,
+    FilePreview,
     onLongPress,
     onPress,
     onPressIn,
@@ -98,14 +99,17 @@ export type FileAttachmentProps = Partial<Omit<FileAttachmentPropsWithContext, '
   Pick<FileAttachmentPropsWithContext, 'attachment'>;
 
 export const FileAttachment = (props: FileAttachmentProps) => {
+  const { FilePreview: PropFilePreview } = props;
   const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
-  const { additionalPressableProps, FileAttachmentIcon = FileIconDefault } = useMessagesContext();
+  const { additionalPressableProps, FilePreview: ContextFilePreview } = useMessagesContext();
+
+  const FilePreview = PropFilePreview || ContextFilePreview;
 
   return (
     <FileAttachmentWithContext
       {...{
         additionalPressableProps,
-        FileAttachmentIcon,
+        FilePreview,
         onLongPress,
         onPress,
         onPressIn,

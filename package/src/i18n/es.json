@@ -202,5 +202,6 @@
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} miembros, {{onlineCount}} en línea",
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} miembros, {{onlineCount}} en línea",
   "{{count}} unread": "{{count}} no leídos",
-  "{{count}} new messages": "{{count}} nuevos mensajes"
+  "{{count}} new messages": "{{count}} nuevos mensajes",
+  "Unsupported Attachment": "Adjunto no admitido"
 }

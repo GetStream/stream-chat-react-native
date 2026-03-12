@@ -13,7 +13,9 @@ import {
 
 import { AudioAttachment as AudioAttachmentDefault } from './Audio';
 
+import { UnsupportedAttachment as UnsupportedAttachmentDefault } from './UnsupportedAttachment';
 import { URLPreview as URLPreviewDefault } from './UrlPreview';
+import { URLPreviewCompact as URLPreviewCompactDefault } from './UrlPreview/URLPreviewCompact';
 
 import { FileAttachment as FileAttachmentDefault } from '../../components/Attachment/FileAttachment';
 import { Gallery as GalleryDefault } from '../../components/Attachment/Gallery';
@@ -43,7 +45,10 @@ export type AttachmentPropsWithContext = Pick<
   | 'Giphy'
   | 'isAttachmentEqual'
   | 'UrlPreview'
+  | 'URLPreviewCompact'
   | 'myMessageTheme'
+  | 'urlPreviewType'
+  | 'UnsupportedAttachment'
 > &
   Pick<MessageContextValue, 'message'> & {
     /**
@@ -64,8 +69,11 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
     Gallery,
     Giphy,
     UrlPreview,
+    URLPreviewCompact,
     index,
     message,
+    urlPreviewType,
+    UnsupportedAttachment,
   } = props;
   const audioAttachmentStyles = useAudioAttachmentStyles();
 
@@ -74,6 +82,9 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
   }
 
   if (attachment.og_scrape_url || attachment.title_link) {
+    if (urlPreviewType === 'compact') {
+      return <URLPreviewCompact attachment={attachment} />;
+    }
     return <UrlPreview attachment={attachment} />;
   }
 
@@ -109,8 +120,7 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
     return <FileAttachment attachment={attachment} />;
   }
 
-  // TODO: Handle custom attachments
-  return <UrlPreview attachment={attachment} />;
+  return <UnsupportedAttachment attachment={attachment} />;
 };
 
 const areEqual = (prevProps: AttachmentPropsWithContext, nextProps: AttachmentPropsWithContext) => {
@@ -162,6 +172,9 @@ export const Attachment = (props: AttachmentProps) => {
     Giphy: PropGiphy,
     myMessageTheme: PropMyMessageTheme,
     UrlPreview: PropUrlPreview,
+    URLPreviewCompact: PropURLPreviewCompact,
+    urlPreviewType: PropUrlPreviewType,
+    UnsupportedAttachment: PropUnsupportedAttachment,
   } = props;
 
   const {
@@ -172,6 +185,9 @@ export const Attachment = (props: AttachmentProps) => {
     isAttachmentEqual,
     myMessageTheme: ContextMyMessageTheme,
     UrlPreview: ContextUrlPreview,
+    URLPreviewCompact: ContextURLPreviewCompact,
+    urlPreviewType: ContextUrlPreviewType,
+    UnsupportedAttachment: ContextUnsupportedAttachment,
   } = useMessagesContext();
 
   const { message } = useMessageContext();
@@ -186,6 +202,11 @@ export const Attachment = (props: AttachmentProps) => {
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || URLPreviewDefault;
   const myMessageTheme = PropMyMessageTheme || ContextMyMessageTheme;
+  const URLPreviewCompact =
+    PropURLPreviewCompact || ContextURLPreviewCompact || URLPreviewCompactDefault;
+  const urlPreviewType = PropUrlPreviewType || ContextUrlPreviewType;
+  const UnsupportedAttachment =
+    PropUnsupportedAttachment || ContextUnsupportedAttachment || UnsupportedAttachmentDefault;
 
   return (
     <MemoizedAttachment
@@ -199,6 +220,9 @@ export const Attachment = (props: AttachmentProps) => {
         isAttachmentEqual,
         myMessageTheme,
         UrlPreview,
+        URLPreviewCompact,
+        urlPreviewType,
+        UnsupportedAttachment,
       }}
     />
   );

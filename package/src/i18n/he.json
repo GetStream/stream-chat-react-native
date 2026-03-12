@@ -202,5 +202,6 @@
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} חברים, {{onlineCount}} מחוברים",
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} חברים, {{onlineCount}} מחוברים",
   "{{count}} unread": "{{count}} שטרם נקרא",
-  "{{count}} new messages": "{{count}} הודעות חדשות"
+  "{{count}} new messages": "{{count}} הודעות חדשות",
+  "Unsupported Attachment": "קובץ לא נתמך"
 }
