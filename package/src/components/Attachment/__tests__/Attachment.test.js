@@ -17,6 +17,7 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Attachment } from '../Attachment';
+import { FilePreview as FilePreviewDefault } from '../FilePreview';
 
 jest.mock('../../../native.ts', () => ({
   isVideoPlayerAvailable: jest.fn(() => false),
@@ -27,7 +28,13 @@ const getAttachmentComponent = (props) => {
   const message = generateMessage();
   return (
     <ThemeProvider>
-      <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
+      <MessagesProvider
+        value={{
+          ImageLoadingFailedIndicator,
+          ImageLoadingIndicator,
+          FilePreview: FilePreviewDefault,
+        }}
+      >
         <MessageProvider value={{ message }}>
           <Attachment {...props} />
         </MessageProvider>

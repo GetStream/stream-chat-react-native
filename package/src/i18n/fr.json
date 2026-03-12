@@ -202,5 +202,6 @@
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} membres, {{onlineCount}} en ligne",
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} membres, {{onlineCount}} en ligne",
   "{{count}} unread": "{{count}} non lus",
-  "{{count}} new messages": "{{count}} nouveaux messages"
+  "{{count}} new messages": "{{count}} nouveaux messages",
+  "Unsupported Attachment": "Pièce jointe non prise en charge"
 }

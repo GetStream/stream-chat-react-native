@@ -19,6 +19,7 @@ export const useCreateMessagesContext = ({
   FileAttachment,
   FileAttachmentGroup,
   FileAttachmentIcon,
+  FilePreview,
   FlatList,
   forceAlignMessages,
   Gallery,
@@ -110,7 +111,10 @@ export const useCreateMessagesContext = ({
   UnreadMessagesNotification,
   updateMessage,
   UrlPreview,
+  URLPreviewCompact,
   VideoThumbnail,
+  urlPreviewType,
+  UnsupportedAttachment,
 }: MessagesContextValue & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -139,6 +143,7 @@ export const useCreateMessagesContext = ({
       FileAttachment,
       FileAttachmentGroup,
       FileAttachmentIcon,
+      FilePreview,
       FlatList,
       forceAlignMessages,
       Gallery,
@@ -230,7 +235,10 @@ export const useCreateMessagesContext = ({
       UnreadMessagesNotification,
       updateMessage,
       UrlPreview,
+      URLPreviewCompact,
       VideoThumbnail,
+      urlPreviewType,
+      UnsupportedAttachment,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [

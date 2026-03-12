@@ -115,11 +115,14 @@ import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/Audio';
 import { FileAttachment as FileAttachmentDefault } from '../Attachment/FileAttachment';
 import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment/FileAttachmentGroup';
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
+import { FilePreview as FilePreviewDefault } from '../Attachment/FilePreview';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
+import { UnsupportedAttachment as UnsupportedAttachmentDefault } from '../Attachment/UnsupportedAttachment';
 import { URLPreview as URLPreviewDefault } from '../Attachment/UrlPreview';
+import { URLPreviewCompact as URLPreviewCompactDefault } from '../Attachment/UrlPreview/URLPreviewCompact';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerContent as DefaultAttachmentPickerContent } from '../AttachmentPicker/components/AttachmentPickerContent';
@@ -326,9 +329,12 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
       | 'enableSwipeToReply'
+      | 'urlPreviewType'
+      | 'UnsupportedAttachment'
       | 'FileAttachment'
       | 'FileAttachmentIcon'
       | 'FileAttachmentGroup'
+      | 'FilePreview'
       | 'FlatList'
       | 'forceAlignMessages'
       | 'Gallery'
@@ -409,6 +415,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'TypingIndicator'
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
+      | 'URLPreviewCompact'
       | 'VideoThumbnail'
       | 'PollContent'
       | 'hasCreatePoll'
@@ -616,6 +623,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
+    FilePreview = FilePreviewDefault,
     FileUploadInProgressIndicator = FileUploadInProgressIndicatorDefault,
     FileUploadRetryIndicator = FileUploadRetryIndicatorDefault,
     FileUploadNotSupportedIndicator = FileUploadNotSupportedIndicatorDefault,
@@ -759,12 +767,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
     UrlPreview = URLPreviewDefault,
+    URLPreviewCompact = URLPreviewCompactDefault,
     VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
     maximumMessageLimit,
     initializeOnMount = true,
     AttachmentPickerContent = DefaultAttachmentPickerContent,
+    urlPreviewType = 'full',
+    UnsupportedAttachment = UnsupportedAttachmentDefault,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -1917,6 +1928,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileAttachment,
     FileAttachmentGroup,
     FileAttachmentIcon,
+    FilePreview,
     FlatList,
     forceAlignMessages,
     Gallery,
@@ -2009,7 +2021,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     UnreadMessagesNotification,
     updateMessage,
     UrlPreview,
+    URLPreviewCompact,
     VideoThumbnail,
+    urlPreviewType,
+    UnsupportedAttachment,
   });
 
   const threadContext = useCreateThreadContext({
