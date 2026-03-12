@@ -532,7 +532,7 @@ export const MessageInputProvider = ({
     if (Platform.OS === 'android') {
       setTimeout(() => {
         run();
-      }, 100);
+      }, 200);
     } else {
       run();
     }
