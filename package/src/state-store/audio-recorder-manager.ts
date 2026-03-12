@@ -150,6 +150,9 @@ export class AudioRecorderManager {
       return;
     }
     if (status !== 'recording') {
+      if (withDelete) {
+        this.reset();
+      }
       return;
     }
     try {
