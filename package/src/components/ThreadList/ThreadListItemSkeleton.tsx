@@ -7,13 +7,17 @@ import { NativeShimmerView } from '../UIComponents/NativeShimmerView';
 
 const SkeletonBlock = ({ style }: { style: React.ComponentProps<typeof View>['style'] }) => {
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      threadListSkeleton: { animationTime },
+    },
   } = useTheme();
 
   return (
     <View style={style}>
       <NativeShimmerView
         baseColor={semantics.backgroundCoreSurface}
+        duration={animationTime}
         gradientColor={semantics.skeletonLoadingHighlight}
         style={StyleSheet.absoluteFillObject}
       />

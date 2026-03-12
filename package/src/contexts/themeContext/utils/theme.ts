@@ -1107,7 +1107,7 @@ export const defaultTheme: Theme = {
     },
   },
   channelListSkeleton: {
-    animationTime: 1500, // in milliseconds
+    animationTime: 1000, // in milliseconds
     avatar: {},
     badge: {},
     content: {},
@@ -1118,7 +1118,7 @@ export const defaultTheme: Theme = {
     title: {},
   },
   threadListSkeleton: {
-    animationTime: 1500, // in milliseconds
+    animationTime: 1000, // in milliseconds
     avatar: {},
     body: {},
     content: {},

@@ -13,8 +13,8 @@ public final class StreamShimmerView: UIView {
   private static let midHighlightAlpha: CGFloat = 0.48
   private static let innerHighlightAlpha: CGFloat = 0.72
   private static let defaultHighlightAlpha: CGFloat = 0.35
+  private static let defaultShimmerDuration: CFTimeInterval = 1.2
   private static let shimmerStripWidthRatio: CGFloat = 1.25
-  private static let shimmerDuration: CFTimeInterval = 1.2
   private static let shimmerAnimationKey = "stream_shimmer_translate_x"
 
   private let baseLayer = CALayer()
@@ -23,6 +23,8 @@ public final class StreamShimmerView: UIView {
   private var baseColor: UIColor = UIColor(white: 1, alpha: 0)
   private var gradientColor: UIColor = UIColor(white: 1, alpha: defaultHighlightAlpha)
   private var enabled = false
+  private var shimmerDuration: CFTimeInterval = defaultShimmerDuration
+  private var lastAnimatedDuration: CFTimeInterval = 0
   private var lastAnimatedSize: CGSize = .zero
   private var isAppActive = true
 
@@ -74,16 +76,19 @@ public final class StreamShimmerView: UIView {
   public func apply(
     baseColor: UIColor,
     gradientColor: UIColor,
+    durationMilliseconds: Double,
     enabled: Bool
   ) {
     self.baseColor = baseColor
     self.gradientColor = gradientColor
+    shimmerDuration = Self.normalizedDuration(milliseconds: durationMilliseconds)
     self.enabled = enabled
     updateLayersForCurrentState()
   }
 
   public func stopAnimation() {
     shimmerLayer.removeAnimation(forKey: Self.shimmerAnimationKey)
+    lastAnimatedDuration = 0
     lastAnimatedSize = .zero
   }
 
@@ -172,7 +177,10 @@ public final class StreamShimmerView: UIView {
     }
 
     // If an animation already exists for the same size, keep it running instead of restarting.
-    if shimmerLayer.animation(forKey: Self.shimmerAnimationKey) != nil, lastAnimatedSize == bounds.size {
+    if shimmerLayer.animation(forKey: Self.shimmerAnimationKey) != nil,
+      lastAnimatedSize == bounds.size,
+      lastAnimatedDuration == shimmerDuration
+    {
       return
     }
 
@@ -183,12 +191,18 @@ public final class StreamShimmerView: UIView {
     let animation = CABasicAnimation(keyPath: "transform.translation.x")
     animation.fromValue = 0
     animation.toValue = bounds.width + shimmerWidth
-    animation.duration = Self.shimmerDuration
+    animation.duration = shimmerDuration
     animation.repeatCount = .infinity
     animation.timingFunction = CAMediaTimingFunction(name: .linear)
     animation.isRemovedOnCompletion = true
     shimmerLayer.add(animation, forKey: Self.shimmerAnimationKey)
+    lastAnimatedDuration = shimmerDuration
     lastAnimatedSize = bounds.size
+  }
+
+  private static func normalizedDuration(milliseconds: Double) -> CFTimeInterval {
+    guard milliseconds > 0 else { return defaultShimmerDuration }
+    return milliseconds / 1000
   }
 
   private func color(_ color: UIColor, alphaFactor: CGFloat) -> UIColor {

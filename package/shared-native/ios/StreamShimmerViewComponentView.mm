@@ -85,6 +85,7 @@ using namespace facebook::react;
 
   [_shimmerView applyWithBaseColor:baseColor
                      gradientColor:gradientColor
+               durationMilliseconds:newProps.duration
                            enabled:newProps.enabled];
 
   [super updateProps:props oldProps:oldProps];
