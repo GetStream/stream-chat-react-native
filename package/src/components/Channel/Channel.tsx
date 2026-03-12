@@ -188,6 +188,11 @@ import { InputButtons as InputButtonsDefault } from '../MessageInput/components/
 import { AttachButton as AttachButtonDefault } from '../MessageInput/components/InputButtons/AttachButton';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/components/OutputButtons/CooldownTimer';
 import { SendButton as SendButtonDefault } from '../MessageInput/components/OutputButtons/SendButton';
+import { MessageComposerLeadingView as MessageComposerLeadingViewDefault } from '../MessageInput/MessageComposerLeadingView';
+import { MessageComposerTrailingView as MessageComposerTrailingViewDefault } from '../MessageInput/MessageComposerTrailingView';
+import { MessageInputHeaderView as MessageInputHeaderViewDefault } from '../MessageInput/MessageInputHeaderView';
+import { MessageInputLeadingView as MessageInputLeadingViewDefault } from '../MessageInput/MessageInputLeadingView';
+import { MessageInputTrailingView as MessageInputTrailingViewDefault } from '../MessageInput/MessageInputTrailingView';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
@@ -666,6 +671,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
+    MessageComposerLeadingView = MessageComposerLeadingViewDefault,
+    MessageComposerTrailingView = MessageComposerTrailingViewDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
     keyboardBehavior,
@@ -699,6 +706,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageDeleted = MessageDeletedDefault,
     MessageError = MessageErrorDefault,
     messageInputFloating = false,
+    MessageInputHeaderView = MessageInputHeaderViewDefault,
+    MessageInputLeadingView = MessageInputLeadingViewDefault,
+    MessageInputTrailingView = MessageInputTrailingViewDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader = MessageHeaderDefault,
     messageId,
@@ -1883,8 +1893,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageAttachmentUploadPreview,
     Input,
     InputButtons,
+    MessageComposerLeadingView,
+    MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
+    MessageInputHeaderView,
+    MessageInputLeadingView,
+    MessageInputTrailingView,
     openPollCreationDialog,
     SendButton,
     sendMessage,

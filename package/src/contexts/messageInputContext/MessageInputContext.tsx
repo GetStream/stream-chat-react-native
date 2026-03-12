@@ -248,6 +248,26 @@ export type InputMessageInputContextValue = {
   ShowThreadMessageInChannelButton: React.ComponentType<{
     threadList?: boolean;
   }>;
+  /**
+   * Custom UI component to override leading side of composer container.
+   */
+  MessageComposerLeadingView: React.ComponentType;
+  /**
+   * Custom UI component to override trailing side of composer container.
+   */
+  MessageComposerTrailingView: React.ComponentType;
+  /**
+   * Custom UI component to override message input header content.
+   */
+  MessageInputHeaderView: React.ComponentType;
+  /**
+   * Custom UI component to override leading side of input row.
+   */
+  MessageInputLeadingView: React.ComponentType;
+  /**
+   * Custom UI component to override trailing side of input row.
+   */
+  MessageInputTrailingView: React.ComponentType;
 
   /**
    * Custom UI component for audio recording mic button.
