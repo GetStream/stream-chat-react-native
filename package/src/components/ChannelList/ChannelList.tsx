@@ -51,6 +51,7 @@ export type ChannelListProps = Partial<
     | 'PreviewMutedStatus'
     | 'PreviewStatus'
     | 'PreviewTitle'
+    | 'PreviewLastMessage'
     | 'PreviewUnreadCount'
     | 'PreviewTypingIndicator'
     | 'PreviewMessageDeliveryStatus'
@@ -286,6 +287,7 @@ export const ChannelList = (props: ChannelListProps) => {
     PreviewAvatar,
     PreviewMessage,
     PreviewMutedStatus,
+    PreviewLastMessage,
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
@@ -424,6 +426,7 @@ export const ChannelList = (props: ChannelListProps) => {
     PreviewTypingIndicator,
     PreviewMessageDeliveryStatus,
     ChannelDetailsBottomSheet,
+    PreviewLastMessage,
     swipeActionsEnabled,
     refreshing,
     refreshList,

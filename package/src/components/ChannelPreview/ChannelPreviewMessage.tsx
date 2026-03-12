@@ -13,7 +13,10 @@ import { useChannelPreviewPollLabel } from './hooks/useChannelPreviewPollLabel';
 
 import { useChannelTypingState } from './hooks/useChannelTypingState';
 
-import { ChannelsContextValue } from '../../contexts/channelsContext/ChannelsContext';
+import {
+  ChannelsContextValue,
+  useChannelsContext,
+} from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -24,9 +27,11 @@ import { MessageStatusTypes } from '../../utils/utils';
 import { ErrorBadge } from '../ui';
 
 export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> &
-  Pick<
-    ChannelsContextValue,
-    'PreviewTypingIndicator' | 'PreviewMessageDeliveryStatus' | 'PreviewLastMessage'
+  Partial<
+    Pick<
+      ChannelsContextValue,
+      'PreviewTypingIndicator' | 'PreviewMessageDeliveryStatus' | 'PreviewLastMessage'
+    >
   > & {
     lastMessage?: LastMessageType;
   };
@@ -35,10 +40,20 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const {
     channel,
     lastMessage,
-    PreviewTypingIndicator = ChannelPreviewTypingIndicator,
-    PreviewMessageDeliveryStatus = ChannelMessagePreviewDeliveryStatus,
-    PreviewLastMessage = ChannelLastMessagePreview,
+    PreviewTypingIndicator: PreviewTypingIndicatorProp = ChannelPreviewTypingIndicator,
+    PreviewMessageDeliveryStatus:
+      PreviewMessageDeliveryStatusProp = ChannelMessagePreviewDeliveryStatus,
+    PreviewLastMessage: PreviewLastMessageProp = ChannelLastMessagePreview,
   } = props;
+  const {
+    PreviewTypingIndicator: PreviewTypingIndicatorContext,
+    PreviewMessageDeliveryStatus: PreviewMessageDeliveryStatusContext,
+    PreviewLastMessage: PreviewLastMessageContext,
+  } = useChannelsContext();
+  const PreviewTypingIndicator = PreviewTypingIndicatorProp || PreviewTypingIndicatorContext;
+  const PreviewMessageDeliveryStatus =
+    PreviewMessageDeliveryStatusProp || PreviewMessageDeliveryStatusContext;
+  const PreviewLastMessage = PreviewLastMessageProp || PreviewLastMessageContext;
   const {
     theme: { semantics },
   } = useTheme();
