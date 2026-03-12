@@ -184,7 +184,10 @@ export type Theme = {
   channelListSkeleton: {
     animationTime: number;
     container: ViewStyle;
-    height: number;
+  };
+  threadListSkeleton: {
+    animationTime: number;
+    container: ViewStyle;
   };
   colors: typeof Colors;
   channelPreview: {
@@ -1089,7 +1092,10 @@ export const defaultTheme: Theme = {
   channelListSkeleton: {
     animationTime: 1500, // in milliseconds
     container: {},
-    height: 80,
+  },
+  threadListSkeleton: {
+    animationTime: 1500, // in milliseconds
+    container: {},
   },
   channelPreview: {
     container: {},

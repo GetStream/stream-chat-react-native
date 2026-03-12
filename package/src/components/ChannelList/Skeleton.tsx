@@ -50,13 +50,13 @@ export const Skeleton = () => {
 
   const {
     theme: {
-      channelListSkeleton: { container, height = 80 },
+      channelListSkeleton: { container },
     },
   } = useTheme();
 
   return (
     <View style={[styles.container, container]} testID='channel-preview-skeleton'>
-      <View style={[styles.content, { height }]}>
+      <View style={styles.content}>
         <SkeletonAvatar />
         <SkeletonContent />
       </View>
@@ -121,5 +121,5 @@ const useStyles = () => {
         overflow: 'hidden',
       },
     });
-  }, [semantics.borderCoreDefault]);
+  }, [semantics.borderCoreSubtle]);
 };
