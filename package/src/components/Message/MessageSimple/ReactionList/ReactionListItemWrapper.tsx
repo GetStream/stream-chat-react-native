@@ -4,7 +4,7 @@ import { Pressable, PressableProps, StyleProp, StyleSheet, View, ViewStyle } fro
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 
-type ReactionListItemWrapperProps = PressableProps & {
+export type ReactionListItemWrapperProps = PressableProps & {
   selected?: boolean;
   style?: StyleProp<ViewStyle>;
 };

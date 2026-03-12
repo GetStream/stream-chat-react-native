@@ -90,7 +90,7 @@ export type TextMentionTouchableHandlerPayload = {
 export type UrlTouchableHandlerAdditionalInfo = { url?: string };
 
 export type UrlTouchableHandlerPayload = {
-  emitter: 'textLink' | 'card';
+  emitter: 'textLink' | 'urlPreview';
   additionalInfo?: UrlTouchableHandlerAdditionalInfo;
 };
 
@@ -117,7 +117,7 @@ export type PressableHandlerPayload = {
   | {
       emitter?: Exclude<
         TouchableEmitter,
-        'textMention' | 'textLink' | 'card' | 'fileAttachment' | 'gallery'
+        'textMention' | 'textLink' | 'urlPreview' | 'fileAttachment' | 'gallery'
       >;
     }
   | TextMentionTouchableHandlerPayload

@@ -100,7 +100,7 @@ const URLPreviewCompactWithContext = (props: URLPreviewCompactPropsWithContext) 
           if (onLongPress) {
             onLongPress({
               additionalInfo: { url: og_scrape_url },
-              emitter: 'card',
+              emitter: 'urlPreview',
               event,
             });
           }
@@ -110,7 +110,7 @@ const URLPreviewCompactWithContext = (props: URLPreviewCompactPropsWithContext) 
             onPress({
               additionalInfo: { url: og_scrape_url },
               defaultHandler: defaultOnPress,
-              emitter: 'card',
+              emitter: 'urlPreview',
               event,
             });
           }
@@ -120,7 +120,7 @@ const URLPreviewCompactWithContext = (props: URLPreviewCompactPropsWithContext) 
             onPressIn({
               additionalInfo: { url: og_scrape_url },
               defaultHandler: defaultOnPress,
-              emitter: 'card',
+              emitter: 'urlPreview',
               event,
             });
           }

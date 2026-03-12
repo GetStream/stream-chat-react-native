@@ -1,14 +1,16 @@
 import React, { ReactNode, useEffect, useRef } from 'react';
-import { LayoutChangeEvent, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
 import { useStableCallback } from '../../hooks';
 import {
   clearClosingPortalLayout,
+  createClosingPortalLayoutRegistrationId,
   setClosingPortalLayout,
-  useOverlayController,
+  useShouldTeleportToClosingPortal,
 } from '../../state-store';
 
 type PortalWhileClosingViewProps = {
@@ -38,15 +40,16 @@ type PortalWhileClosingViewProps = {
  * This wrapper moves that UI into the overlay host layer for the closing phase, so stacking stays correct.
  *
  * To use it, simply wrap any view that should remain on top while the overlay is closing, and pass a `portalHostName`
- * and a `portalName`. Registration within the host layer will happen automatically, as will calculating layout.
+ * and a `portalName`. Once the wrapped view has a valid measured layout, it can participate in the closing host layer.
  *
  * Behavior:
  * - renders children in place during normal operation
- * - registers absolute layout for `portalHostName`
+ * - registers absolute layout for `portalHostName` once a valid measurement exists
  * - while overlay state is `closing`, teleports children to the matching closing host
  * - renders a local placeholder while closing to preserve original layout space
  *
- * Host registration is done once per key; subsequent layout updates are pushed via shared values.
+ * Stack presence only starts after first valid measurement. That prevents unmeasured entries from taking over a host
+ * slot and rendering with incomplete geometry.
  *
  * Note: As the `PortalWhileClosingView` relies heavily on being able to calculate the layout and positioning
  * properties of its children automatically, make sure that you do not wrap absolutely positioned views with
@@ -64,75 +67,71 @@ export const PortalWhileClosingView = ({
   portalHostName,
   portalName,
 }: PortalWhileClosingViewProps) => {
-  const { closing } = useOverlayController();
   const containerRef = useRef<View | null>(null);
-  const absolutePositionRef = useRef<{ x: number; y: number } | null>(null);
-  const layoutRef = useRef<{ h: number; w: number }>({ h: 0, w: 0 });
+  const registrationIdRef = useRef<string | null>(null);
+  const placeholderLayout = useSharedValue({ h: 0, w: 0 });
   const insets = useSafeAreaInsets();
 
-  useEffect(() => {
-    let cancelled = false;
+  if (!registrationIdRef.current) {
+    registrationIdRef.current = createClosingPortalLayoutRegistrationId();
+  }
 
-    const measureAbsolutePosition = () => {
-      containerRef.current?.measureInWindow((x, y) => {
-        if (cancelled) return;
-        const absolute = {
-          x,
-          y: y + (Platform.OS === 'android' ? insets.top : 0),
-        };
+  const registrationId = registrationIdRef.current;
+  const shouldTeleport = useShouldTeleportToClosingPortal(portalHostName, registrationId);
 
-        absolutePositionRef.current = absolute;
+  const syncPortalLayout = useStableCallback(() => {
+    containerRef.current?.measureInWindow((x, y, width, height) => {
+      const absolute = {
+        x,
+        y: y + (Platform.OS === 'android' ? insets.top : 0),
+      };
 
-        const { h, w } = layoutRef.current;
-        if (!w || !h) return;
+      if (!width || !height) {
+        return;
+      }
 
-        setClosingPortalLayout(portalHostName, {
-          ...absolute,
-          h,
-          w,
-        });
+      placeholderLayout.value = { h: height, w: width };
+
+      setClosingPortalLayout(portalHostName, registrationId, {
+        ...absolute,
+        h: height,
+        w: width,
       });
-    };
+    });
+  });
 
+  useEffect(() => {
+    return () => {
+      clearClosingPortalLayout(portalHostName, registrationId);
+    };
+  }, [portalHostName, registrationId]);
+
+  useEffect(() => {
     // Measure once after mount and layout settle.
     requestAnimationFrame(() => {
-      requestAnimationFrame(measureAbsolutePosition);
+      requestAnimationFrame(() => {
+        syncPortalLayout();
+      });
     });
+  }, [insets.top, portalHostName, syncPortalLayout]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [insets.top, portalHostName]);
-
-  const unregisterPortalHost = useStableCallback(() => clearClosingPortalLayout(portalHostName));
-
-  useEffect(() => {
-    return () => {
-      unregisterPortalHost();
-    };
-  }, [unregisterPortalHost]);
-
-  const onWrapperViewLayout = useStableCallback((event: LayoutChangeEvent) => {
-    const { height, width } = event.nativeEvent.layout;
-    layoutRef.current = { h: height, w: width };
-
-    const absolute = absolutePositionRef.current;
-    if (!absolute) return;
-
-    setClosingPortalLayout(portalHostName, { ...absolute, h: height, w: width });
-  });
+  const placeholderStyle = useAnimatedStyle(() => ({
+    height: placeholderLayout.value.h,
+    width: placeholderLayout.value.w > 0 ? placeholderLayout.value.w : '100%',
+  }));
 
   return (
     <>
-      <Portal hostName={closing ? portalHostName : undefined} name={portalName}>
-        <View collapsable={false} ref={containerRef} onLayout={onWrapperViewLayout}>
+      <Portal hostName={shouldTeleport ? portalHostName : undefined} name={portalName}>
+        <View collapsable={false} ref={containerRef} onLayout={syncPortalLayout}>
           {children}
         </View>
       </Portal>
-      {closing && layoutRef.current.h > 0 ? (
-        <View
+      {shouldTeleport ? (
+        <Animated.View
           pointerEvents='none'
-          style={{ height: layoutRef.current.h, width: layoutRef.current.w || '100%' }}
+          style={placeholderStyle}
+          testID={`portal-while-closing-placeholder-${portalName}`}
         />
       ) : null}
     </>

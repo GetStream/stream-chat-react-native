@@ -814,6 +814,7 @@ exports[`SendButton should render a SendButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-top"
       >
         <View
           name="top-item"
@@ -844,6 +845,7 @@ exports[`SendButton should render a SendButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-message"
       >
         <View
           name="message-overlay"
@@ -876,6 +878,7 @@ exports[`SendButton should render a SendButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-bottom"
       >
         <View
           name="bottom-item"
@@ -1709,6 +1712,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-top"
       >
         <View
           name="top-item"
@@ -1739,6 +1743,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-message"
       >
         <View
           name="message-overlay"
@@ -1771,6 +1776,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-bottom"
       >
         <View
           name="bottom-item"

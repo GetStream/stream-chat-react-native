@@ -115,11 +115,14 @@ import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/Audio';
 import { FileAttachment as FileAttachmentDefault } from '../Attachment/FileAttachment';
 import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment/FileAttachmentGroup';
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
+import { FilePreview as FilePreviewDefault } from '../Attachment/FilePreview';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
+import { UnsupportedAttachment as UnsupportedAttachmentDefault } from '../Attachment/UnsupportedAttachment';
 import { URLPreview as URLPreviewDefault } from '../Attachment/UrlPreview';
+import { URLPreviewCompact as URLPreviewCompactDefault } from '../Attachment/UrlPreview/URLPreviewCompact';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerContent as DefaultAttachmentPickerContent } from '../AttachmentPicker/components/AttachmentPickerContent';
@@ -158,6 +161,10 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { MessageSwipeContent as MessageSwipeContentDefault } from '../Message/MessageSimple/MessageSwipeContent';
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
 import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
+import { ReactionListClustered as ReactionListClusteredDefault } from '../Message/MessageSimple/ReactionList/ReactionListClustered';
+import { ReactionListCountItem as ReactionListCountItemDefault } from '../Message/MessageSimple/ReactionList/ReactionListItem';
+import { ReactionListItem as ReactionListItemDefault } from '../Message/MessageSimple/ReactionList/ReactionListItem';
+import { ReactionListItemWrapper as ReactionListItemWrapperDefault } from '../Message/MessageSimple/ReactionList/ReactionListItemWrapper';
 import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
 import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
 import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
@@ -181,6 +188,11 @@ import { InputButtons as InputButtonsDefault } from '../MessageInput/components/
 import { AttachButton as AttachButtonDefault } from '../MessageInput/components/InputButtons/AttachButton';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/components/OutputButtons/CooldownTimer';
 import { SendButton as SendButtonDefault } from '../MessageInput/components/OutputButtons/SendButton';
+import { MessageComposerLeadingView as MessageComposerLeadingViewDefault } from '../MessageInput/MessageComposerLeadingView';
+import { MessageComposerTrailingView as MessageComposerTrailingViewDefault } from '../MessageInput/MessageComposerTrailingView';
+import { MessageInputHeaderView as MessageInputHeaderViewDefault } from '../MessageInput/MessageInputHeaderView';
+import { MessageInputLeadingView as MessageInputLeadingViewDefault } from '../MessageInput/MessageInputLeadingView';
+import { MessageInputTrailingView as MessageInputTrailingViewDefault } from '../MessageInput/MessageInputTrailingView';
 import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
@@ -322,9 +334,12 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
       | 'enableSwipeToReply'
+      | 'urlPreviewType'
+      | 'UnsupportedAttachment'
       | 'FileAttachment'
       | 'FileAttachmentIcon'
       | 'FileAttachmentGroup'
+      | 'FilePreview'
       | 'FlatList'
       | 'forceAlignMessages'
       | 'Gallery'
@@ -393,6 +408,10 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'reactionListPosition'
       | 'reactionListType'
       | 'ReactionListTop'
+      | 'ReactionListClustered'
+      | 'ReactionListItem'
+      | 'ReactionListItemWrapper'
+      | 'ReactionListCountItem'
       | 'Reply'
       | 'shouldShowUnreadUnderlay'
       | 'ScrollToBottomButton'
@@ -401,6 +420,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'TypingIndicator'
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
+      | 'URLPreviewCompact'
       | 'VideoThumbnail'
       | 'PollContent'
       | 'hasCreatePoll'
@@ -608,6 +628,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
+    FilePreview = FilePreviewDefault,
     FileUploadInProgressIndicator = FileUploadInProgressIndicatorDefault,
     FileUploadRetryIndicator = FileUploadRetryIndicatorDefault,
     FileUploadNotSupportedIndicator = FileUploadNotSupportedIndicatorDefault,
@@ -650,6 +671,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
+    MessageComposerLeadingView = MessageComposerLeadingViewDefault,
+    MessageComposerTrailingView = MessageComposerTrailingViewDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
     keyboardBehavior,
@@ -683,6 +706,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageDeleted = MessageDeletedDefault,
     MessageError = MessageErrorDefault,
     messageInputFloating = false,
+    MessageInputHeaderView = MessageInputHeaderViewDefault,
+    MessageInputLeadingView = MessageInputLeadingViewDefault,
+    MessageInputTrailingView = MessageInputTrailingViewDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader = MessageHeaderDefault,
     messageId,
@@ -722,6 +748,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     reactionListPosition = 'top',
     reactionListType = 'clustered',
     ReactionListTop = ReactionListTopDefault,
+    ReactionListClustered = ReactionListClusteredDefault,
+    ReactionListItem = ReactionListItemDefault,
+    ReactionListItemWrapper = ReactionListItemWrapperDefault,
+    ReactionListCountItem = ReactionListCountItemDefault,
     Reply = ReplyDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
@@ -747,12 +777,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UnreadMessagesNotification = UnreadMessagesNotificationDefault,
     UrlPreview = URLPreviewDefault,
+    URLPreviewCompact = URLPreviewCompactDefault,
     VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
     VideoThumbnail = VideoThumbnailDefault,
     isOnline,
     maximumMessageLimit,
     initializeOnMount = true,
     AttachmentPickerContent = DefaultAttachmentPickerContent,
+    urlPreviewType = 'full',
+    UnsupportedAttachment = UnsupportedAttachmentDefault,
   } = props;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
@@ -1860,8 +1893,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ImageAttachmentUploadPreview,
     Input,
     InputButtons,
+    MessageComposerLeadingView,
+    MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
+    MessageInputHeaderView,
+    MessageInputLeadingView,
+    MessageInputTrailingView,
     openPollCreationDialog,
     SendButton,
     sendMessage,
@@ -1905,6 +1943,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FileAttachment,
     FileAttachmentGroup,
     FileAttachmentIcon,
+    FilePreview,
     FlatList,
     forceAlignMessages,
     Gallery,
@@ -1978,6 +2017,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     reactionListPosition,
     reactionListType,
     ReactionListTop,
+    ReactionListClustered,
+    ReactionListItem,
+    ReactionListItemWrapper,
+    ReactionListCountItem,
     removeMessage,
     Reply,
     retrySendMessage,
@@ -1993,7 +2036,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     UnreadMessagesNotification,
     updateMessage,
     UrlPreview,
+    URLPreviewCompact,
     VideoThumbnail,
+    urlPreviewType,
+    UnsupportedAttachment,
   });
 
   const threadContext = useCreateThreadContext({

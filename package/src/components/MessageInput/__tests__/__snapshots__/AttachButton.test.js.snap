@@ -816,6 +816,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             },
           ]
         }
+        testID="message-overlay-top"
       >
         <View
           name="top-item"
@@ -846,6 +847,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             },
           ]
         }
+        testID="message-overlay-message"
       >
         <View
           name="message-overlay"
@@ -878,6 +880,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             },
           ]
         }
+        testID="message-overlay-bottom"
       >
         <View
           name="bottom-item"
@@ -1713,6 +1716,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-top"
       >
         <View
           name="top-item"
@@ -1743,6 +1747,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-message"
       >
         <View
           name="message-overlay"
@@ -1775,6 +1780,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-bottom"
       >
         <View
           name="bottom-item"
@@ -2610,6 +2616,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-top"
       >
         <View
           name="top-item"
@@ -2640,6 +2647,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-message"
       >
         <View
           name="message-overlay"
@@ -2672,6 +2680,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             },
           ]
         }
+        testID="message-overlay-bottom"
       >
         <View
           name="bottom-item"

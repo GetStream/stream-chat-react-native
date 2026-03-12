@@ -5,6 +5,7 @@ import { NativeHandlers } from '../../native';
 
 export type NativeShimmerViewProps = ViewProps & {
   baseColor?: ColorValue;
+  duration?: number;
   enabled?: boolean;
   gradientColor?: ColorValue;
 };

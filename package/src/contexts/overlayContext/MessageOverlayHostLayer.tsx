@@ -264,18 +264,29 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
 
         <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
           {isActive ? (
-            <Pressable onPress={closeOverlay} style={StyleSheet.absoluteFillObject} />
+            <Pressable
+              onPress={closeOverlay}
+              style={StyleSheet.absoluteFillObject}
+              testID='message-overlay-backdrop'
+            />
           ) : null}
 
-          <Animated.View style={[topItemStyle, topItemTranslateStyle]}>
+          <Animated.View style={[topItemStyle, topItemTranslateStyle]} testID='message-overlay-top'>
             <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
 
-          <Animated.View pointerEvents='box-none' style={[hostStyle, hostTranslateStyle]}>
+          <Animated.View
+            pointerEvents='box-none'
+            style={[hostStyle, hostTranslateStyle]}
+            testID='message-overlay-message'
+          >
             <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
 
-          <Animated.View style={[bottomItemStyle, bottomItemTranslateStyle]}>
+          <Animated.View
+            style={[bottomItemStyle, bottomItemTranslateStyle]}
+            testID='message-overlay-bottom'
+          >
             <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
           </Animated.View>
         </View>

@@ -1,10 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { ReactionListClustered } from './ReactionListClustered';
-
-import { ReactionListCountItem, ReactionListItem } from './ReactionListItem';
-
 import { useTheme } from '../../../../contexts';
 import {
   MessageContextValue,
@@ -29,12 +25,19 @@ export type ReactionListTopProps = Partial<
     | 'reactions'
     | 'showReactionsOverlay'
     | 'handleReaction'
-  >
-> &
-  Pick<MessagesContextValue, 'supportedReactions' | 'reactionListType'> & {
-    type?: 'clustered' | 'segmented';
-    showCount?: boolean;
-  };
+  > &
+    Pick<
+      MessagesContextValue,
+      | 'supportedReactions'
+      | 'reactionListType'
+      | 'ReactionListClustered'
+      | 'ReactionListItem'
+      | 'ReactionListCountItem'
+    >
+> & {
+  type?: 'clustered' | 'segmented';
+  showCount?: boolean;
+};
 
 /**
  * ReactionListTop - A high level component which implements all the logic required for a message reaction list
@@ -53,6 +56,9 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
     handleReaction: propHandleReaction,
     type,
     showCount = true,
+    ReactionListClustered: propReactionListClustered,
+    ReactionListItem: propReactionListItem,
+    ReactionListCountItem: propReactionListCountItem,
   } = props;
 
   const {
@@ -67,7 +73,12 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
     handleReaction: contextHandleReaction,
   } = useMessageContext();
 
-  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+  const {
+    supportedReactions: contextSupportedReactions,
+    ReactionListClustered: contextReactionListClustered,
+    ReactionListItem: contextReactionListItem,
+    ReactionListCountItem: contextReactionListCountItem,
+  } = useMessagesContext();
 
   const alignment = propAlignment || contextAlignment;
   const hasReactions = propHasReactions || contextHasReactions;
@@ -79,6 +90,10 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
   const showReactionsOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
   const handleReaction = propHandleReaction || contextHandleReaction;
+  const ReactionListClustered = propReactionListClustered || contextReactionListClustered;
+  const ReactionListItem = propReactionListItem || contextReactionListItem;
+  const ReactionListCountItem = propReactionListCountItem || contextReactionListCountItem;
+
   const styles = useStyles({ alignment });
 
   const supportedReactionTypes = supportedReactions?.map(

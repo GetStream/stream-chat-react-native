@@ -22,10 +22,15 @@ import type { AudioAttachmentProps } from '../../components/Attachment/Audio';
 import type { FileAttachmentProps } from '../../components/Attachment/FileAttachment';
 import type { FileAttachmentGroupProps } from '../../components/Attachment/FileAttachmentGroup';
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
+import { FilePreviewProps } from '../../components/Attachment/FilePreview';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachment/ImageLoadingFailedIndicator';
-import type { URLPreviewProps } from '../../components/Attachment/UrlPreview';
+import { UnsupportedAttachmentProps } from '../../components/Attachment/UnsupportedAttachment';
+import type {
+  URLPreviewCompactProps,
+  URLPreviewProps,
+} from '../../components/Attachment/UrlPreview';
 import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
   MessagePressableHandlerPayload,
@@ -49,6 +54,12 @@ import type { MessageStatusProps } from '../../components/Message/MessageSimple/
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
 import { MessageTimestampProps } from '../../components/Message/MessageSimple/MessageTimestamp';
 import { ReactionListBottomProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListBottom';
+import { ReactionListClusteredProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListClustered';
+import {
+  ReactionListItemProps,
+  ReactionListCountItemProps,
+} from '../../components/Message/MessageSimple/ReactionList/ReactionListItem';
+import { ReactionListItemWrapperProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListItemWrapper';
 import type { ReactionListTopProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListTop';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
@@ -123,6 +134,24 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   dismissKeyboardOnMessageTouch: boolean;
 
   enableMessageGroupingByUser: boolean;
+
+  /**
+   * The type of URL preview to render.
+   * Defaults to: 'full'
+   */
+  urlPreviewType: 'compact' | 'full';
+
+  /**
+   * UI component to display unsupported attachment.
+   * Defaults to: [UnsupportedAttachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/UnsupportedAttachment.tsx)
+   */
+  UnsupportedAttachment: React.ComponentType<UnsupportedAttachmentProps>;
+
+  /**
+   * UI component for FilePreview
+   * Defaults to: [FilePreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FilePreview.tsx)
+   */
+  FilePreview: React.ComponentType<FilePreviewProps>;
 
   /**
    * UI component to display File type attachment.
@@ -347,6 +376,11 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/UrlPreview/URLPreview.tsx
    */
   UrlPreview: React.ComponentType<URLPreviewProps>;
+  /**
+   * Custom UI component to display compact url preview.
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/UrlPreview/URLPreviewCompact.tsx
+   */
+  URLPreviewCompact: React.ComponentType<URLPreviewCompactProps>;
   VideoThumbnail: React.ComponentType<VideoThumbnailProps>;
   /**
    * Provide any additional props for `Pressable` which wraps inner MessageContent component here.
@@ -607,6 +641,25 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
    */
   ReactionListTop?: React.ComponentType<ReactionListTopProps>;
+
+  /**
+   * UI component for ReactionListBottom
+   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
+   */
+  ReactionListClustered: React.ComponentType<ReactionListClusteredProps>;
+  /**
+   * UI component for ReactionListSegmented
+   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
+   */
+  ReactionListItem: React.ComponentType<ReactionListItemProps>;
+
+  /**
+   * UI component for ReactionListItemWrapper
+   * Defaults to: [ReactionListItemWrapper](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionListItemWrapper.tsx)
+   */
+  ReactionListItemWrapper: React.ComponentType<ReactionListItemWrapperProps>;
+
+  ReactionListCountItem: React.ComponentType<ReactionListCountItemProps>;
 
   /**
    * Full override of the reaction function on Message and Message Overlay

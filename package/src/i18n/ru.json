@@ -202,5 +202,6 @@
   "{{memberCount}} members, {{onlineCount}} online_other": "{{memberCount}} участника, {{onlineCount}} онлайн",
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} участников, {{onlineCount}} онлайн",
   "{{count}} unread": "{{count}} непрочитанных",
-  "{{count}} new messages": "{{count}} новых сообщений"
+  "{{count}} new messages": "{{count}} новых сообщений",
+  "Unsupported Attachment": "Неподдерживаемое вложение"
 }
