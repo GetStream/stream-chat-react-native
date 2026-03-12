@@ -28,6 +28,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   attrs: AttributeSet? = null,
 ) : FrameLayout(context, attrs) {
   private var baseColor: Int = DEFAULT_BASE_COLOR
+  private var durationMs: Long = DEFAULT_DURATION_MS
   private var gradientColor: Int = DEFAULT_GRADIENT_COLOR
   private var enabled: Boolean = true
 
@@ -40,6 +41,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
   private var shimmerShader: LinearGradient? = null
   private var shimmerTranslateX: Float = 0f
+  private var animatedDurationMs: Long = 0L
   private var animatedViewWidth: Float = 0f
   private var animator: ValueAnimator? = null
 
@@ -59,6 +61,14 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     gradientColor = color
     rebuildShimmerShader()
     invalidate()
+  }
+
+  fun setDuration(duration: Int) {
+    val normalizedDurationMs =
+      if (duration > 0) duration.toLong() else DEFAULT_DURATION_MS
+    if (durationMs == normalizedDurationMs) return
+    durationMs = normalizedDurationMs
+    updateAnimatorState()
   }
 
   fun setShimmerEnabled(enabled: Boolean) {
@@ -190,16 +200,17 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   private fun startShimmer() {
     val viewWidth = width.toFloat()
     if (viewWidth <= 0f) return
-    // Keep the existing animator if the same-sized shimmer is already active.
-    if (animator != null && animatedViewWidth == viewWidth) return
+    // Keep the existing animator only when size and duration still match the current request.
+    if (animator != null && animatedViewWidth == viewWidth && animatedDurationMs == durationMs) return
 
     stopShimmer()
 
     // Animate from fully offscreen left to fully offscreen right so the strip enters/exits cleanly.
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
     animatedViewWidth = viewWidth
+    animatedDurationMs = durationMs
     animator = ValueAnimator.ofFloat(-shimmerWidth, viewWidth).apply {
-      duration = SHIMMER_DURATION_MS
+      duration = durationMs
       repeatCount = ValueAnimator.INFINITE
       interpolator = LinearInterpolator()
       addUpdateListener {
@@ -213,6 +224,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   private fun stopShimmer() {
     animator?.cancel()
     animator = null
+    animatedDurationMs = 0L
     animatedViewWidth = 0f
   }
 
@@ -237,8 +249,8 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
   companion object {
     private const val DEFAULT_BASE_COLOR = 0x00FFFFFF
+    private const val DEFAULT_DURATION_MS = 1200L
     private const val DEFAULT_GRADIENT_COLOR = 0x59FFFFFF
-    private const val SHIMMER_DURATION_MS = 1200L
     private const val SHIMMER_STRIP_WIDTH_RATIO = 1.25f
     private const val EDGE_HIGHLIGHT_ALPHA_FACTOR = 0.1f
     private const val SOFT_HIGHLIGHT_ALPHA_FACTOR = 0.24f

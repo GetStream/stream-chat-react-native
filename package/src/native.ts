@@ -295,6 +295,7 @@ export type VideoType = {
 
 export type NativeShimmerViewProps = ViewProps & {
   baseColor?: ColorValue;
+  duration?: number;
   enabled?: boolean;
   gradientColor?: ColorValue;
 };
