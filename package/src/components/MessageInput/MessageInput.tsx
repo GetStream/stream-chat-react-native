@@ -15,11 +15,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type UserResponse } from 'stream-chat';
 
 import { MicPositionProvider } from './contexts/MicPositionContext';
-import { MessageComposerLeadingView } from './MessageComposerLeadingView';
-import { MessageComposerTrailingView } from './MessageComposerTrailingView';
-import { MessageInputHeaderView } from './MessageInputHeaderView';
-import { MessageInputLeadingView } from './MessageInputLeadingView';
-import { MessageInputTrailingView } from './MessageInputTrailingView';
 
 import { audioRecorderSelector } from './utils/audioRecorderSelectors';
 
@@ -176,8 +171,13 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
+    | 'MessageComposerLeadingView'
+    | 'MessageComposerTrailingView'
     | 'messageInputFloating'
     | 'messageInputHeightStore'
+    | 'MessageInputHeaderView'
+    | 'MessageInputLeadingView'
+    | 'MessageInputTrailingView'
     | 'SendButton'
     | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
@@ -224,8 +224,13 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     CreatePollContent,
     createPollOptionGap,
     editing,
+    MessageComposerLeadingView,
+    MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
+    MessageInputHeaderView,
+    MessageInputLeadingView,
+    MessageInputTrailingView,
     Input,
     inputBoxRef,
     isKeyboardVisible,
@@ -695,8 +700,13 @@ export const MessageInput = (props: MessageInputProps) => {
     Input,
     inputBoxRef,
     InputButtons,
+    MessageComposerLeadingView,
+    MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
+    MessageInputHeaderView,
+    MessageInputLeadingView,
+    MessageInputTrailingView,
     openPollCreationDialog,
     SendButton,
     sendMessage,
@@ -759,11 +769,16 @@ export const MessageInput = (props: MessageInputProps) => {
         Input,
         inputBoxRef,
         InputButtons,
+        MessageComposerLeadingView,
+        MessageComposerTrailingView,
         isKeyboardVisible,
         isOnline,
         members,
         messageInputFloating,
         messageInputHeightStore,
+        MessageInputHeaderView,
+        MessageInputLeadingView,
+        MessageInputTrailingView,
         openPollCreationDialog,
         Reply,
         SendButton,
