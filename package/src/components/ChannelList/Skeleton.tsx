@@ -48,14 +48,8 @@ const SkeletonContent = () => {
 export const Skeleton = () => {
   const styles = useStyles();
 
-  const {
-    theme: {
-      channelListSkeleton: { container },
-    },
-  } = useTheme();
-
   return (
-    <View style={[styles.container, container]} testID='channel-preview-skeleton'>
+    <View style={styles.container} testID='channel-preview-skeleton'>
       <View style={styles.content}>
         <SkeletonAvatar />
         <SkeletonContent />
@@ -68,7 +62,7 @@ Skeleton.displayName = 'Skeleton{channelListSkeleton}';
 
 const useStyles = () => {
   const {
-    theme: { semantics },
+    theme: { channelListSkeleton, semantics },
   } = useTheme();
 
   return useMemo(() => {
@@ -78,18 +72,21 @@ const useStyles = () => {
         height: 48,
         overflow: 'hidden',
         width: 48,
+        ...channelListSkeleton.avatar,
       },
       badge: {
         borderRadius: primitives.radiusMax,
-        width: 48,
         height: 16,
         minWidth: 0,
         overflow: 'hidden',
+        width: 48,
+        ...channelListSkeleton.badge,
       },
       container: {
         borderBottomColor: semantics.borderCoreSubtle,
         borderBottomWidth: 1,
         flexDirection: 'row',
+        ...channelListSkeleton.container,
       },
       content: {
         alignItems: 'center',
@@ -97,29 +94,34 @@ const useStyles = () => {
         gap: primitives.spacingMd,
         padding: primitives.spacingMd,
         width: '100%',
+        ...channelListSkeleton.content,
       },
       headerRow: {
         alignItems: 'center',
         flexDirection: 'row',
         gap: primitives.spacingMd,
         width: '100%',
+        ...channelListSkeleton.headerRow,
       },
       subtitle: {
         borderRadius: primitives.radiusMax,
         height: primitives.spacingMd,
         overflow: 'hidden',
         width: '65%',
+        ...channelListSkeleton.subtitle,
       },
       textContainer: {
         flex: 1,
         gap: primitives.spacingXs,
+        ...channelListSkeleton.textContainer,
       },
       title: {
         borderRadius: primitives.radiusMax,
         flex: 1,
         height: 16,
         overflow: 'hidden',
+        ...channelListSkeleton.title,
       },
     });
-  }, [semantics.borderCoreSubtle]);
+  }, [channelListSkeleton, semantics.borderCoreSubtle]);
 };

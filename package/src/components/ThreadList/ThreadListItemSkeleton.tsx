@@ -60,14 +60,8 @@ const SkeletonContent = () => {
 export const ThreadListItemSkeleton = () => {
   const styles = useStyles();
 
-  const {
-    theme: {
-      threadListSkeleton: { container },
-    },
-  } = useTheme();
-
   return (
-    <View style={[styles.container, container]} testID='channel-preview-skeleton'>
+    <View style={styles.container} testID='channel-preview-skeleton'>
       <View style={styles.content}>
         <SkeletonAvatar />
         <SkeletonContent />
@@ -81,7 +75,7 @@ ThreadListItemSkeleton.displayName = 'ThreadListItemSkeleton{threadListSkeleton}
 
 const useStyles = () => {
   const {
-    theme: { semantics },
+    theme: { semantics, threadListSkeleton },
   } = useTheme();
 
   return useMemo(() => {
@@ -91,16 +85,19 @@ const useStyles = () => {
         height: 48,
         overflow: 'hidden',
         width: 48,
+        ...threadListSkeleton.avatar,
       },
       body: {
         borderRadius: primitives.radiusMax,
         height: 20,
         overflow: 'hidden',
+        ...threadListSkeleton.body,
       },
       container: {
         borderBottomColor: semantics.borderCoreSubtle,
         borderBottomWidth: 1,
         flexDirection: 'row',
+        ...threadListSkeleton.container,
       },
       content: {
         alignItems: 'flex-start',
@@ -108,44 +105,52 @@ const useStyles = () => {
         gap: primitives.spacingSm,
         padding: primitives.spacingMd,
         width: '100%',
+        ...threadListSkeleton.content,
+      },
+      contentContainer: {
+        gap: primitives.spacingXs,
+        paddingVertical: primitives.spacingXxs,
+        ...threadListSkeleton.contentContainer,
       },
       footerIcon: {
         borderRadius: primitives.radiusMax,
         height: 24,
         overflow: 'hidden',
         width: 24,
+        ...threadListSkeleton.footerIcon,
       },
       footerPill: {
         borderRadius: primitives.radiusMax,
-        width: 64,
         height: 12,
         overflow: 'hidden',
+        width: 64,
+        ...threadListSkeleton.footerPill,
       },
       footerRow: {
         alignItems: 'center',
         flexDirection: 'row',
         gap: primitives.spacingXs,
+        ...threadListSkeleton.footerRow,
       },
       headerLabel: {
         borderRadius: primitives.radiusMax,
         height: 12,
         overflow: 'hidden',
         width: '40%',
+        ...threadListSkeleton.headerLabel,
       },
       textContainer: {
         flex: 1,
         gap: primitives.spacingXs,
-      },
-      contentContainer: {
-        paddingVertical: primitives.spacingXxs,
-        gap: primitives.spacingXs,
+        ...threadListSkeleton.textContainer,
       },
       timestamp: {
         borderRadius: primitives.radiusMax,
         height: 16,
         overflow: 'hidden',
         width: 48,
+        ...threadListSkeleton.timestamp,
       },
     });
-  }, [semantics.borderCoreSubtle]);
+  }, [semantics.borderCoreSubtle, threadListSkeleton]);
 };

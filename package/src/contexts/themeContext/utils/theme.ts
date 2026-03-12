@@ -183,11 +183,28 @@ export type Theme = {
   };
   channelListSkeleton: {
     animationTime: number;
+    avatar: ViewStyle;
+    badge: ViewStyle;
+    content: ViewStyle;
     container: ViewStyle;
+    headerRow: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
   };
   threadListSkeleton: {
     animationTime: number;
+    avatar: ViewStyle;
+    body: ViewStyle;
+    content: ViewStyle;
+    contentContainer: ViewStyle;
     container: ViewStyle;
+    footerIcon: ViewStyle;
+    footerPill: ViewStyle;
+    footerRow: ViewStyle;
+    headerLabel: ViewStyle;
+    textContainer: ViewStyle;
+    timestamp: ViewStyle;
   };
   colors: typeof Colors;
   channelPreview: {
@@ -1091,11 +1108,28 @@ export const defaultTheme: Theme = {
   },
   channelListSkeleton: {
     animationTime: 1500, // in milliseconds
+    avatar: {},
+    badge: {},
+    content: {},
     container: {},
+    headerRow: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
   },
   threadListSkeleton: {
     animationTime: 1500, // in milliseconds
+    avatar: {},
+    body: {},
+    content: {},
+    contentContainer: {},
     container: {},
+    footerIcon: {},
+    footerPill: {},
+    footerRow: {},
+    headerLabel: {},
+    textContainer: {},
+    timestamp: {},
   },
   channelPreview: {
     container: {},
