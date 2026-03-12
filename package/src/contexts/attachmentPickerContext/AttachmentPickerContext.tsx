@@ -51,8 +51,6 @@ export type AttachmentPickerContextValue = Pick<
   AttachmentPickerContent: React.ComponentType<AttachmentPickerContentProps>;
   attachmentPickerStore: AttachmentPickerStore;
   numberOfAttachmentPickerImageColumns?: number;
-  attachmentPickerErrorButtonText?: string;
-  attachmentPickerErrorText?: string;
   numberOfAttachmentImagesToLoadPerCall?: number;
 };
 

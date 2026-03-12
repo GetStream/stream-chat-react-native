@@ -294,8 +294,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'ImageOverlaySelectedComponent'
       | 'numberOfAttachmentPickerImageColumns'
       | 'AttachmentPickerIOSSelectMorePhotos'
-      | 'attachmentPickerErrorButtonText'
-      | 'attachmentPickerErrorText'
       | 'numberOfAttachmentImagesToLoadPerCall'
       | 'AttachmentPickerContent'
     >
@@ -594,8 +592,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
     AttachmentUploadPreviewList = AttachmentUploadPreviewDefault,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
-    attachmentPickerErrorButtonText,
-    attachmentPickerErrorText,
     numberOfAttachmentImagesToLoadPerCall = 25,
     numberOfAttachmentPickerImageColumns = 3,
     giphyVersion = 'fixed_height',
@@ -1770,8 +1766,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       AttachmentPickerSelectionBar,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
-      attachmentPickerErrorButtonText,
-      attachmentPickerErrorText,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
       AttachmentPickerContent,
@@ -1787,8 +1781,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       AttachmentPickerSelectionBar,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
-      attachmentPickerErrorButtonText,
-      attachmentPickerErrorText,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
       AttachmentPickerContent,

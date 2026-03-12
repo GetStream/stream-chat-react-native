@@ -3,9 +3,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LocalMessage, Thread, ThreadState } from 'stream-chat';
 
-import { ThreadListItemMessagePreview } from './ThreadListItemMessagePreview';
+import { ThreadListItemMessagePreview as ThreadListItemMessagePreviewDefault } from './ThreadListItemMessagePreview';
 
-import { ThreadMessagePreviewDeliveryStatus } from './ThreadMessagePreviewDeliveryStatus';
+import { ThreadMessagePreviewDeliveryStatus as ThreadMessagePreviewDeliveryStatusDefault } from './ThreadMessagePreviewDeliveryStatus';
 
 import { useChatContext, useTheme, useTranslationContext } from '../../contexts';
 import {
@@ -44,7 +44,11 @@ export const ThreadListItemComponent = () => {
     thread,
   } = useThreadListItemContext();
   const displayName = useChannelPreviewDisplayName(channel);
-  const { onThreadSelect } = useThreadsContext();
+  const {
+    onThreadSelect,
+    ThreadListItemMessagePreview = ThreadListItemMessagePreviewDefault,
+    ThreadMessagePreviewDeliveryStatus = ThreadMessagePreviewDeliveryStatusDefault,
+  } = useThreadsContext();
   const {
     theme: { semantics },
   } = useTheme();
