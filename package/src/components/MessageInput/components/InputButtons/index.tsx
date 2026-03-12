@@ -1,7 +1,13 @@
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  ZoomIn,
+  ZoomOut,
+} from 'react-native-reanimated';
 
 import { OwnCapabilitiesContextValue } from '../../../../contexts';
 import {
@@ -54,8 +60,10 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   }
 
   return hasAttachmentUploadCapabilities ? (
-    <Animated.View style={[styles.attachButtonContainer, attachButtonContainer, animatedStyle]}>
-      <AttachButton />
+    <Animated.View entering={ZoomIn.duration(200)} exiting={ZoomOut.duration(200)}>
+      <Animated.View style={[styles.attachButtonContainer, attachButtonContainer, animatedStyle]}>
+        <AttachButton />
+      </Animated.View>
     </Animated.View>
   ) : null;
 };
