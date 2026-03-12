@@ -63,6 +63,10 @@ class StreamShimmerViewManager : ViewGroupManager<StreamShimmerFrameLayout>(),
     view.setBaseColor(color ?: DEFAULT_BASE_COLOR)
   }
 
+  override fun setDuration(view: StreamShimmerFrameLayout, duration: Int) {
+    view.setDuration(duration)
+  }
+
   override fun setGradientColor(view: StreamShimmerFrameLayout, color: Int?) {
     view.setGradientColor(color ?: DEFAULT_GRADIENT_COLOR)
   }
