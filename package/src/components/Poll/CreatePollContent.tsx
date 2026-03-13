@@ -153,11 +153,14 @@ export const CreatePollContent = () => {
       >
         <NameField />
         <CreatePollOptions currentOptionPositions={currentOptionPositions} />
-        <View style={[styles.optionCardWrapper, optionCardWrapper]}>
+        <Animated.View
+          layout={LinearTransition.duration(200)}
+          style={[styles.optionCardWrapper, optionCardWrapper]}
+        >
           <MultipleAnswersField />
           <Animated.View
-            style={[styles.optionCardWrapper, optionCardWrapper]}
             layout={LinearTransition.duration(200)}
+            style={[styles.optionCardWrapper, optionCardWrapper]}
           >
             <View style={[styles.optionCard, anonymousPoll.wrapper]}>
               <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
@@ -200,7 +203,7 @@ export const CreatePollContent = () => {
               />
             </View>
           </Animated.View>
-        </View>
+        </Animated.View>
       </ScrollView>
     </>
   );
