@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated, { LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { textComposerStateSelector } from './utils/messageComposerSelectors';
 
@@ -25,6 +25,7 @@ export const MessageInputLeadingView = () => {
     <Animated.View
       entering={ZoomIn.duration(200)}
       exiting={ZoomOut.duration(200)}
+      layout={LinearTransition.duration(200)}
       style={styles.giphyContainer}
     >
       <GiphyChip />
@@ -35,5 +36,6 @@ export const MessageInputLeadingView = () => {
 const styles = StyleSheet.create({
   giphyContainer: {
     padding: primitives.spacingXs,
+    alignSelf: 'flex-end',
   },
 });
