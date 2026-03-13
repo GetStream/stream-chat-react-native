@@ -74,7 +74,6 @@ export const useMessageActions = ({
   client,
   deleteMessage: deleteMessageFromContext,
   deleteReaction,
-  dismissOverlay,
   enforceUniqueReaction,
   handleBan,
   handleCopy,
@@ -144,7 +143,6 @@ export const useMessageActions = ({
   });
 
   const onBanUser = useStableCallback(async () => {
-    dismissOverlay();
     if (message.user?.id) {
       if (handleBan) {
         handleBan(message);
@@ -155,7 +153,7 @@ export const useMessageActions = ({
   });
 
   const onCopyMessage = useStableCallback(() => {
-    dismissOverlay();
+    //
     if (handleCopy) {
       handleCopy(message);
     }
@@ -163,7 +161,6 @@ export const useMessageActions = ({
   });
 
   const onDeleteMessage = useStableCallback(() => {
-    dismissOverlay();
     if (handleDelete) {
       handleDelete(message);
     }
@@ -171,7 +168,6 @@ export const useMessageActions = ({
   });
 
   const onDeleteForMeMessage = useStableCallback(() => {
-    dismissOverlay();
     if (handleDeleteForMe) {
       handleDeleteForMe(message);
     }
@@ -179,7 +175,6 @@ export const useMessageActions = ({
   });
 
   const onEditMessage = useStableCallback(() => {
-    dismissOverlay();
     if (handleEdit) {
       handleEdit(message);
     }
@@ -187,7 +182,6 @@ export const useMessageActions = ({
   });
 
   const onFlagMessage = useStableCallback(() => {
-    dismissOverlay();
     if (handleFlag) {
       handleFlag(message);
     }
@@ -195,7 +189,6 @@ export const useMessageActions = ({
   });
 
   const onMarkUnread = useStableCallback(() => {
-    dismissOverlay();
     if (handleMarkUnread) {
       handleMarkUnread(message);
     }
@@ -203,7 +196,6 @@ export const useMessageActions = ({
   });
 
   const onTogglePinMessage = useStableCallback(() => {
-    dismissOverlay();
     if (handlePinMessage) {
       handlePinMessage(message);
     }
@@ -219,7 +211,6 @@ export const useMessageActions = ({
   });
 
   const onMuteUser = useStableCallback(async () => {
-    dismissOverlay();
     if (message.user?.id) {
       if (handleMute) {
         handleMute(message);
@@ -230,7 +221,6 @@ export const useMessageActions = ({
   });
 
   const onQuotedReply = useStableCallback(() => {
-    dismissOverlay();
     if (handleQuotedReply) {
       handleQuotedReply(message);
     }
@@ -238,7 +228,6 @@ export const useMessageActions = ({
   });
 
   const onRetry = useStableCallback(async () => {
-    dismissOverlay();
     const messageWithoutReservedFields = removeReservedFields(message);
     if (handleRetry) {
       handleRetry(messageWithoutReservedFields as LocalMessage);
@@ -248,7 +237,6 @@ export const useMessageActions = ({
   });
 
   const onThreadReply = useStableCallback(() => {
-    dismissOverlay();
     if (handleThreadReply) {
       handleThreadReply(message);
     }
@@ -256,7 +244,6 @@ export const useMessageActions = ({
   });
 
   const onBlockUser = useStableCallback(() => {
-    dismissOverlay();
     if (handleBlockUser) {
       handleBlockUser(message.user);
     }

@@ -60,12 +60,10 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   }
 
   return hasAttachmentUploadCapabilities ? (
-    <Animated.View
-      entering={ZoomIn.duration(200)}
-      exiting={ZoomOut.duration(200)}
-      style={[styles.attachButtonContainer, attachButtonContainer, animatedStyle]}
-    >
-      <AttachButton />
+    <Animated.View entering={ZoomIn.duration(200)} exiting={ZoomOut.duration(200)}>
+      <Animated.View style={[styles.attachButtonContainer, attachButtonContainer, animatedStyle]}>
+        <AttachButton />
+      </Animated.View>
     </Animated.View>
   ) : null;
 };

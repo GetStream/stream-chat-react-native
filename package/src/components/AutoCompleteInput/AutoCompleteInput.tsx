@@ -7,6 +7,8 @@ import {
   TextInputSelectionChangeEvent,
 } from 'react-native';
 
+import Animated, { LinearTransition } from 'react-native-reanimated';
+
 import { MessageComposerConfig, TextComposerState } from 'stream-chat';
 
 import {
@@ -27,6 +29,21 @@ import {
 import { useStateStore } from '../../hooks/useStateStore';
 import { useCooldownRemaining } from '../MessageInput/hooks/useCooldownRemaining';
 
+export type TextInputOverrideComponent =
+  | typeof RNTextInput
+  | React.ComponentClass<TextInputProps>
+  | React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<RNTextInput>>;
+
+type AnimatedTextInputRendererProps = TextInputProps & {
+  TextInputComponent: TextInputOverrideComponent;
+};
+
+const TextInputRenderer = React.forwardRef<RNTextInput, AnimatedTextInputRendererProps>(
+  ({ TextInputComponent: Component, ...props }, ref) => <Component {...props} ref={ref} />,
+);
+
+const AnimatedTextInputRenderer = Animated.createAnimatedComponent(TextInputRenderer);
+
 type AutoCompleteInputPropsWithContext = TextInputProps &
   Pick<ChannelContextValue, 'channel'> &
   Pick<MessageInputContextValue, 'setInputBoxRef'> &
@@ -36,11 +53,7 @@ type AutoCompleteInputPropsWithContext = TextInputProps &
      * that would happen if we put this in the MessageInputContext
      */
     cooldownRemainingSeconds?: number;
-    TextInputComponent?: React.ComponentType<
-      TextInputProps & {
-        ref: React.Ref<RNTextInput> | undefined;
-      }
-    >;
+    TextInputComponent?: TextInputOverrideComponent;
   };
 
 type AutoCompleteInputProps = Partial<AutoCompleteInputPropsWithContext>;
@@ -136,7 +149,9 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   }, [command, cooldownRemainingSeconds, t, placeholder]);
 
   return (
-    <TextInputComponent
+    <AnimatedTextInputRenderer
+      TextInputComponent={TextInputComponent}
+      layout={LinearTransition.duration(200)}
       autoFocus={!!command}
       editable={enabled}
       maxLength={maxMessageLength}

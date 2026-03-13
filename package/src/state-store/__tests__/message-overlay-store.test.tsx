@@ -123,6 +123,38 @@ describe('message overlay store portal hooks', () => {
     second.unmount();
   });
 
+  it('does not enter closing when closeOverlay is called without an active overlay id', () => {
+    act(() => {
+      closeOverlay();
+    });
+    flushAnimationFrameQueue();
+
+    expect(overlayStore.getLatestValue()).toMatchObject({
+      closing: false,
+      id: undefined,
+    });
+  });
+
+  it('does not teleport when closing is true but there is no active overlay id', () => {
+    const result = renderHook(() =>
+      useShouldTeleportToClosingPortal('overlay-composer', 'composer'),
+    );
+
+    rememberLayout('overlay-composer', 'composer');
+
+    act(() => {
+      overlayStore.next({
+        closing: true,
+        closingPortalHostBlacklist: [],
+        id: undefined,
+      });
+    });
+
+    expect(result.result.current).toBe(false);
+
+    result.unmount();
+  });
+
   it('restores the previous blacklist when the top blacklist registration disappears', () => {
     const { rerender } = render(
       <>

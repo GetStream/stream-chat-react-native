@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Modal, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -54,7 +54,10 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
+import {
+  AutoCompleteInput,
+  type TextInputOverrideComponent,
+} from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
@@ -196,11 +199,7 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
   Pick<AudioRecorderManagerState, 'micLocked'> & {
     editing: boolean;
     isKeyboardVisible: boolean;
-    TextInputComponent?: React.ComponentType<
-      TextInputProps & {
-        ref: React.Ref<TextInput> | undefined;
-      }
-    >;
+    TextInputComponent?: TextInputOverrideComponent;
     isRecordingStateIdle?: boolean;
     recordingStatus?: string;
   };
@@ -455,15 +454,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                         <>
                           <MessageInputLeadingView />
 
-                          <Animated.View
-                            style={styles.autocompleteInputContainer}
-                            layout={LinearTransition.duration(200)}
-                          >
-                            <AutoCompleteInput
-                              TextInputComponent={TextInputComponent}
-                              {...additionalTextInputProps}
-                            />
-                          </Animated.View>
+                          <AutoCompleteInput
+                            TextInputComponent={TextInputComponent}
+                            {...additionalTextInputProps}
+                          />
                         </>
                       )}
 

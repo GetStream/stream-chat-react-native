@@ -81,7 +81,15 @@ export const openOverlay = (id: string) => {
 };
 
 export const closeOverlay = () => {
+  if (!overlayStore.getLatestValue().id) {
+    return;
+  }
+
   requestAnimationFrame(() => {
+    if (!overlayStore.getLatestValue().id) {
+      return;
+    }
+
     overlayStore.partialNext({ closing: true });
   });
 };
@@ -237,6 +245,7 @@ export const useShouldTeleportToClosingPortal = (hostName: string, id: string) =
   const hostEntries = closingPortalLayouts[hostName];
 
   return (
+    !!overlayStore.getLatestValue().id &&
     closing &&
     !closingPortalHostBlacklist.includes(hostName) &&
     hostEntries?.[hostEntries.length - 1]?.id === id

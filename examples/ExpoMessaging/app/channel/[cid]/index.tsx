@@ -4,8 +4,8 @@ import {
   Channel,
   MessageInput,
   useChatContext,
-  MessageFlashList,
   ThreadContextValue,
+  MessageList,
 } from 'stream-chat-expo';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
@@ -13,8 +13,7 @@ import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
 import InputButtons from '../../../components/InputButtons';
 import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 export default function ChannelScreen() {
   const { client } = useChatContext();
@@ -67,18 +66,19 @@ export default function ChannelScreen() {
   }
 
   return (
-    <SafeAreaView edges={['bottom']} style={styles.container}>
+    <View style={styles.container}>
+      <Stack.Screen
+        options={{ title: 'Channel Screen', contentStyle: { backgroundColor: 'white' } }}
+      />
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
         onPressMessage={onPressMessage}
-        keyboardVerticalOffset={headerHeight}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : undefined}
         MessageLocation={MessageLocation}
         thread={thread}
       >
-        <Stack.Screen options={{ title: 'Channel Screen' }} />
-
-        <MessageFlashList
+        <MessageList
           onThreadSelect={(thread: ThreadContextValue['thread']) => {
             setThread(thread);
             router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
@@ -86,7 +86,7 @@ export default function ChannelScreen() {
         />
         <MessageInput InputButtons={InputButtons} />
       </Channel>
-    </SafeAreaView>
+    </View>
   );
 }
 
