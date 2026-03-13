@@ -14,7 +14,6 @@ import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
-  error: state.errors.max_votes_allowed,
   max_votes_allowed: state.data.max_votes_allowed,
 });
 
@@ -25,6 +24,8 @@ const MaxVotesTextInput = () => {
   const { max_votes_allowed } = useStateStore(pollComposer.state, pollComposerStateSelector);
   const hasSelectedInitialValueRef = useRef(false);
   const inputRef = useRef<TextInput>(null);
+
+  const styles = useStyles();
 
   const onChangeTextHandler = useCallback(
     async (newText: string) => {
@@ -75,6 +76,7 @@ const MaxVotesTextInput = () => {
       ref={inputRef}
       selectTextOnFocus
       value={max_votes_allowed}
+      style={styles.input}
     />
   );
 };
@@ -125,6 +127,7 @@ export const MultipleVotesSettings = () => {
       layout={LinearTransition.duration(200)}
       entering={StretchInY.duration(200)}
       exiting={StretchOutY.duration(200)}
+      style={{ gap: primitives.spacingMd }}
     >
       <View style={[styles.optionCard, multipleAnswers.optionCard]}>
         <View style={[styles.optionCardContent, multipleAnswers.optionCardContent]}>
@@ -143,7 +146,7 @@ export const MultipleVotesSettings = () => {
         <Animated.View
           entering={StretchInY.duration(200)}
           exiting={StretchOutY.duration(200)}
-          style={{ flexDirection: 'row', gap: primitives.spacingXxs }}
+          style={{ flexDirection: 'row', gap: primitives.spacingXxs, alignItems: 'center' }}
         >
           <Button
             variant='secondary'
@@ -203,6 +206,12 @@ const useStyles = () => {
         flexDirection: 'row',
       },
       optionCardSwitch: { width: 64 },
+      input: {
+        paddingVertical: primitives.spacingMd,
+        paddingHorizontal: primitives.spacingSm,
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+      },
     });
   }, [semantics]);
 };
