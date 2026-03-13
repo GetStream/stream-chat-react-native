@@ -3,6 +3,7 @@ export * from './PollButtons';
 export * from './CreatePollOptions';
 export * from './PollAnswersList';
 export * from './PollInputDialog';
+export * from './MultipleVotesSettings';
 export * from './PollOption';
 export * from './PollResults';
 export * from './PollModalHeader';

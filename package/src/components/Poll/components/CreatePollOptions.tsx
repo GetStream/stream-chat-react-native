@@ -580,11 +580,18 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   useAnimatedReaction(
     () => currentOptionPositions.value.totalHeight,
     (currentValue, previousValue) => {
-      if (currentValue !== previousValue) {
-        animatedOptionsContainerHeight.value = withTiming(currentValue, {
-          duration: 200,
-        });
+      if (currentValue === previousValue) {
+        return;
       }
+
+      if (animatedOptionsContainerHeight.value === 0 && currentValue > 0) {
+        animatedOptionsContainerHeight.value = currentValue;
+        return;
+      }
+
+      animatedOptionsContainerHeight.value = withTiming(currentValue, {
+        duration: 200,
+      });
     },
   );
 
