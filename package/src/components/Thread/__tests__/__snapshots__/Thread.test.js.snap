@@ -1986,50 +1986,40 @@ exports[`Thread should match thread snapshot 1`] = `
                       ]
                     }
                   >
-                    <View
+                    <TextInput
+                      autoFocus={true}
+                      editable={true}
                       layout={BaseAnimationMock {}}
+                      maxLength={5000}
+                      multiline={true}
+                      onChangeText={[Function]}
+                      onSelectionChange={[Function]}
+                      placeholder="Send a message"
+                      placeholderTextColor="#687385"
                       style={
-                        {
-                          "flex": 1,
-                          "flexShrink": 1,
-                          "minWidth": 0,
-                        }
+                        [
+                          {
+                            "color": "#1a1b25",
+                            "flex": 1,
+                            "fontSize": 16,
+                            "includeFontPadding": false,
+                            "lineHeight": 20,
+                            "paddingLeft": 16,
+                            "paddingVertical": 12,
+                            "textAlignVertical": "center",
+                          },
+                          {
+                            "maxHeight": 124,
+                            "paddingLeft": 16,
+                            "paddingRight": 8,
+                            "textAlign": "left",
+                          },
+                          {},
+                        ]
                       }
-                    >
-                      <TextInput
-                        autoFocus={true}
-                        editable={true}
-                        maxLength={5000}
-                        multiline={true}
-                        onChangeText={[Function]}
-                        onSelectionChange={[Function]}
-                        placeholder="Send a message"
-                        placeholderTextColor="#687385"
-                        style={
-                          [
-                            {
-                              "color": "#1a1b25",
-                              "flex": 1,
-                              "fontSize": 16,
-                              "includeFontPadding": false,
-                              "lineHeight": 20,
-                              "paddingLeft": 16,
-                              "paddingVertical": 12,
-                              "textAlignVertical": "center",
-                            },
-                            {
-                              "maxHeight": 124,
-                              "paddingLeft": 16,
-                              "paddingRight": 8,
-                              "textAlign": "left",
-                            },
-                            {},
-                          ]
-                        }
-                        testID="auto-complete-text-input"
-                        value=""
-                      />
-                    </View>
+                      testID="auto-complete-text-input"
+                      value=""
+                    />
                     <View
                       style={
                         [
