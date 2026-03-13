@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import Animated, { LinearTransition, StretchInY, StretchOutY } from 'react-native-reanimated';
 
@@ -18,12 +18,73 @@ const pollComposerStateSelector = (state: PollComposerState) => ({
   max_votes_allowed: state.data.max_votes_allowed,
 });
 
+const MaxVotesTextInput = () => {
+  const messageComposer = useMessageComposer();
+  const { pollComposer } = messageComposer;
+  const { handleFieldBlur, updateFields } = pollComposer;
+  const { max_votes_allowed } = useStateStore(pollComposer.state, pollComposerStateSelector);
+  const hasSelectedInitialValueRef = useRef(false);
+  const inputRef = useRef<TextInput>(null);
+
+  const onChangeTextHandler = useCallback(
+    async (newText: string) => {
+      await updateFields({ max_votes_allowed: newText });
+    },
+    [updateFields],
+  );
+
+  const onBlurHandler = useCallback(async () => {
+    await handleFieldBlur('max_votes_allowed');
+  }, [handleFieldBlur]);
+
+  useEffect(() => {
+    if (hasSelectedInitialValueRef.current || max_votes_allowed.length === 0) {
+      return;
+    }
+
+    hasSelectedInitialValueRef.current = true;
+
+    const focusFrame = requestAnimationFrame(() => {
+      inputRef.current?.focus();
+
+      if (Platform.OS !== 'ios') {
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        inputRef.current?.setNativeProps({
+          selection: {
+            end: max_votes_allowed.length,
+            start: 0,
+          },
+        });
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(focusFrame);
+    };
+  }, [max_votes_allowed.length]);
+
+  return (
+    <TextInput
+      autoFocus
+      inputMode='numeric'
+      onBlur={onBlurHandler}
+      onChangeText={onChangeTextHandler}
+      ref={inputRef}
+      selectTextOnFocus
+      value={max_votes_allowed}
+    />
+  );
+};
+
 export const MultipleVotesSettings = () => {
   const [allowMaxVotesPerPerson, setAllowMaxVotesPerPerson] = useState<boolean>(false);
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
-  const { handleFieldBlur, updateFields } = pollComposer;
+  const { updateFields } = pollComposer;
   const { max_votes_allowed } = useStateStore(pollComposer.state, pollComposerStateSelector);
   const {
     theme: {
@@ -50,17 +111,6 @@ export const MultipleVotesSettings = () => {
       await updateFields({ max_votes_allowed: String(numericValue + 1) });
     }
   });
-
-  const onChangeTextHandler = useCallback(
-    async (newText: string) => {
-      await updateFields({ max_votes_allowed: newText });
-    },
-    [updateFields],
-  );
-
-  const onBlurHandler = useCallback(async () => {
-    await handleFieldBlur('max_votes_allowed');
-  }, [handleFieldBlur]);
 
   const onMaxVotesPerPersonHandler = useStableCallback(async (value: boolean) => {
     const currentValue = pollComposer.state.getLatestValue().data.max_votes_allowed;
@@ -105,12 +155,7 @@ export const MultipleVotesSettings = () => {
             disabled={decrementDisabled}
             testID='max-votes-decrement'
           />
-          <TextInput
-            inputMode='numeric'
-            onChangeText={onChangeTextHandler}
-            value={max_votes_allowed}
-            onBlur={onBlurHandler}
-          />
+          <MaxVotesTextInput />
           <Button
             variant='secondary'
             type='outline'
