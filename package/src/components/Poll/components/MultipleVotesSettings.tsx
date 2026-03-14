@@ -22,6 +22,13 @@ const MaxVotesTextInput = () => {
   const { pollComposer } = messageComposer;
   const { handleFieldBlur, updateFields } = pollComposer;
   const { max_votes_allowed } = useStateStore(pollComposer.state, pollComposerStateSelector);
+  const {
+    theme: {
+      poll: {
+        createContent: { multipleAnswers },
+      },
+    },
+  } = useTheme();
   const hasSelectedInitialValueRef = useRef(false);
   const inputRef = useRef<TextInput>(null);
 
@@ -75,8 +82,8 @@ const MaxVotesTextInput = () => {
       onChangeText={onChangeTextHandler}
       ref={inputRef}
       selectTextOnFocus
+      style={[styles.input, multipleAnswers.input]}
       value={max_votes_allowed}
-      style={styles.input}
     />
   );
 };
@@ -127,7 +134,7 @@ export const MultipleVotesSettings = () => {
       layout={LinearTransition.duration(200)}
       entering={StretchInY.duration(200)}
       exiting={StretchOutY.duration(200)}
-      style={{ gap: primitives.spacingMd }}
+      style={[styles.settingsWrapper, multipleAnswers.settingsWrapper]}
     >
       <View style={[styles.optionCard, multipleAnswers.optionCard]}>
         <View style={[styles.optionCardContent, multipleAnswers.optionCardContent]}>
@@ -146,7 +153,7 @@ export const MultipleVotesSettings = () => {
         <Animated.View
           entering={StretchInY.duration(200)}
           exiting={StretchOutY.duration(200)}
-          style={{ flexDirection: 'row', gap: primitives.spacingXxs, alignItems: 'center' }}
+          style={[styles.row, multipleAnswers.row]}
         >
           <Button
             variant='secondary'
@@ -182,9 +189,6 @@ const useStyles = () => {
 
   return useMemo(() => {
     return StyleSheet.create({
-      maxVotesInput: {
-        paddingLeft: 0,
-      },
       title: {
         color: semantics.textPrimary,
         fontSize: primitives.typographyFontSizeMd,
@@ -206,11 +210,19 @@ const useStyles = () => {
         flexDirection: 'row',
       },
       optionCardSwitch: { width: 64 },
+      settingsWrapper: {
+        gap: primitives.spacingMd,
+      },
+      row: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingXxs,
+      },
       input: {
-        paddingVertical: primitives.spacingMd,
-        paddingHorizontal: primitives.spacingSm,
         color: semantics.textPrimary,
         fontSize: primitives.typographyFontSizeMd,
+        paddingHorizontal: primitives.spacingSm,
+        paddingVertical: primitives.spacingMd,
       },
     });
   }, [semantics]);

@@ -850,7 +850,9 @@ export type Theme = {
       };
       multipleAnswers: {
         description: TextStyle;
+        input: TextStyle;
         row: ViewStyle;
+        settingsWrapper: ViewStyle;
         title: TextStyle;
         optionCard: ViewStyle;
         optionCardContent: ViewStyle;
@@ -1758,8 +1760,10 @@ export const defaultTheme: Theme = {
       multipleAnswers: {
         row: {},
         description: {},
+        input: {},
         optionCardContent: {},
         optionCardSwitch: {},
+        settingsWrapper: {},
         title: {},
         optionCard: {},
         wrapper: {},
