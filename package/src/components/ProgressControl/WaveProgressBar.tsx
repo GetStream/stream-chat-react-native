@@ -53,8 +53,6 @@ const WAVE_MIN_HEIGHT = 2;
 export const WaveProgressBar = React.memo(
   (props: WaveProgressBarProps) => {
     const [width, setWidth] = useState<number>(0);
-    /* On Android, the seek doesn't work for AAC files, hence we disable progress drag for now */
-    const showProgressDrag = Platform.OS === 'ios';
     const {
       amplitudesCount = Math.max(20, Math.floor(width / (WAVEFORM_WIDTH + WAVEFORM_GAP))),
       isPlaying = false,
@@ -99,7 +97,6 @@ export const WaveProgressBar = React.memo(
     const pan = useMemo(
       () =>
         Gesture.Pan()
-          .enabled(showProgressDrag)
           .maxPointers(1)
           .onStart(() => {
             if (onStartDrag) {
@@ -116,7 +113,7 @@ export const WaveProgressBar = React.memo(
               runOnJS(onEndDrag)(state.value);
             }
           }),
-      [fullWidth, onEndDrag, onStartDrag, showProgressDrag, state, waveFormNumberFromProgress],
+      [fullWidth, onEndDrag, onStartDrag, state, waveFormNumberFromProgress],
     );
 
     const stringifiedWaveformData = waveformData.toString();
@@ -162,7 +159,7 @@ export const WaveProgressBar = React.memo(
               ]}
             />
           ))}
-          {showProgressDrag && (onEndDrag || onProgressDrag) && (
+          {(onEndDrag || onProgressDrag) && (
             <Animated.View style={[thumbStyles, thumb]}>
               <ProgressControlThumb isPlaying={isPlaying} />
             </Animated.View>
