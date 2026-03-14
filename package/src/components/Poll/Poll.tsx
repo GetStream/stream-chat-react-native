@@ -79,7 +79,7 @@ export const PollContent = ({
       {PollHeaderOverride ? <PollHeaderOverride /> : <PollHeader />}
       <View style={[styles.optionsWrapper, optionsWrapper]}>
         {options
-          ?.slice(0, 10)
+          ?.slice(0, 5)
           ?.map((option: PollOptionClass) => (
             <PollOption key={`message_poll_option_${option.id}`} option={option} />
           ))}

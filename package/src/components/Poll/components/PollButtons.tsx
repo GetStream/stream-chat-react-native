@@ -79,7 +79,7 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      {options && options.length > 10 ? (
+      {options && options.length > 5 ? (
         <GenericPollButton
           onPress={onPressHandler}
           label={t('See all {{count}} options', { count: options.length })}
