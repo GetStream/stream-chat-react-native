@@ -117,10 +117,9 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 // Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   navigation,
-  route: {
-    params: { channel: channelFromProp, channelId, messageId },
-  },
+  route,
 }) => {
+  const { channel: channelFromProp, channelId, messageId } = route.params;
   const {
     chatClient,
     messageListImplementation,
@@ -180,14 +179,20 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       if (!thread || !channel) {
         return;
       }
+
+      if (messageId) {
+        navigation.setParams({ messageId: undefined });
+      }
+
       setSelectedThread(thread);
       setThread(thread);
       navigation.navigate('ThreadScreen', {
         channel,
         thread,
+        targetedMessageId: undefined,
       });
     },
-    [channel, navigation, setThread],
+    [channel, messageId, navigation, setThread],
   );
 
   const onAlsoSentToChannelHeaderPress = useCallback(
@@ -195,6 +200,11 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       if (!channel || !parentMessage) {
         return;
       }
+
+      if (messageId) {
+        navigation.setParams({ messageId: undefined });
+      }
+
       setSelectedThread(parentMessage);
       setThread(parentMessage);
       const params: StackNavigatorParamList['ThreadScreen'] = {
@@ -202,11 +212,11 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         targetedMessageId,
         thread: parentMessage,
       };
-      const hasThreadInStack = navigation.getState().routes.some((route) => {
-        if (route.name !== 'ThreadScreen') {
+      const hasThreadInStack = navigation.getState().routes.some((stackRoute) => {
+        if (stackRoute.name !== 'ThreadScreen') {
           return false;
         }
-        const routeParams = route.params as StackNavigatorParamList['ThreadScreen'] | undefined;
+        const routeParams = stackRoute.params as StackNavigatorParamList['ThreadScreen'] | undefined;
         const routeThreadId =
           (routeParams?.thread as LocalMessage)?.id ??
           (routeParams?.thread as ThreadType)?.thread?.id;
@@ -221,7 +231,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
       navigation.navigate('ThreadScreen', params);
     },
-    [channel, navigation, setThread],
+    [channel, messageId, navigation, setThread],
   );
 
   const handleMessageInfo = useCallback((message: LocalMessage) => {

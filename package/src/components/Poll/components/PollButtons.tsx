@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { GenericPollButton, PollButtonProps } from './Button';
 import { PollAnswersList } from './PollAnswersList';
@@ -10,6 +11,7 @@ import { PollResults } from './PollResults';
 
 import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
 import { primitives } from '../../../theme';
+import { defaultPollOptionCount } from '../../../utils/constants';
 import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
@@ -45,10 +47,12 @@ export const ViewResultsButton = (props: PollButtonProps) => {
       />
       {showResults ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showResults}>
-          <SafeAreaViewWrapper style={styles.safeArea}>
-            <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
-            <PollResults message={message} poll={poll} />
-          </SafeAreaViewWrapper>
+          <GestureHandlerRootView style={styles.modalRoot}>
+            <SafeAreaViewWrapper style={styles.safeArea}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
+              <PollResults message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </GestureHandlerRootView>
         </Modal>
       ) : null}
     </>
@@ -79,18 +83,20 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      {options && options.length > 10 ? (
+      {options && options.length > defaultPollOptionCount ? (
         <GenericPollButton
           onPress={onPressHandler}
-          label={t('See all {{count}} options', { count: options.length })}
+          label={t('+{{count}} More Options', { count: options.length - defaultPollOptionCount })}
         />
       ) : null}
       {showAllOptions ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAllOptions}>
-          <SafeAreaViewWrapper style={styles.safeArea}>
-            <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
-            <PollAllOptions message={message} poll={poll} />
-          </SafeAreaViewWrapper>
+          <GestureHandlerRootView style={styles.modalRoot}>
+            <SafeAreaViewWrapper style={styles.safeArea}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
+              <PollAllOptions message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </GestureHandlerRootView>
         </Modal>
       ) : null}
     </>
@@ -129,10 +135,12 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
       ) : null}
       {showAnswers ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAnswers}>
-          <SafeAreaViewWrapper style={styles.safeArea}>
-            <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
-            <PollAnswersList message={message} poll={poll} />
-          </SafeAreaViewWrapper>
+          <GestureHandlerRootView style={styles.modalRoot}>
+            <SafeAreaViewWrapper style={styles.safeArea}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
+              <PollAnswersList message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </GestureHandlerRootView>
         </Modal>
       ) : null}
     </>
@@ -236,7 +244,6 @@ export const PollButtons = () => {
     <View style={styles.buttonsContainer}>
       <ViewResultsButton />
       <EndVoteButton />
-      <ShowAllOptionsButton />
       <SuggestOptionButton />
       <AddCommentButton />
       <ShowAllCommentsButton />
@@ -252,6 +259,9 @@ const useStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       buttonsContainer: { gap: primitives.spacingXs },
+      modalRoot: {
+        flex: 1,
+      },
       endVoteButton: {
         borderColor: isPollCreatedByClient
           ? semantics.chatBorderOnChatOutgoing

@@ -74,10 +74,9 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   navigation,
-  route: {
-    params: { channel, thread, targetedMessageId: targetedMessageIdFromParams },
-  },
+  route,
 }) => {
+  const { channel, thread, targetedMessageId: targetedMessageIdFromParams } = route.params;
   const {
     theme: {
       semantics,
@@ -88,6 +87,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
   const { messageInputFloating, messageListImplementation } = useAppContext();
+
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,
   ) => {
@@ -126,11 +126,11 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       };
       const hasChannelInStack = navigation
         .getState()
-        .routes.some((route) => {
-          if (route.name !== 'ChannelScreen') {
+        .routes.some((stackRoute) => {
+          if (stackRoute.name !== 'ChannelScreen') {
             return false;
           }
-          const routeParams = route.params as StackNavigatorParamList['ChannelScreen'] | undefined;
+          const routeParams = stackRoute.params as StackNavigatorParamList['ChannelScreen'] | undefined;
           const routeChannelId = routeParams?.channel?.id ?? routeParams?.channelId;
           return routeChannelId === channel.id;
         });

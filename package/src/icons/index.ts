@@ -30,6 +30,8 @@ export * from './PDF';
 export * from './Picture';
 export * from './Pin';
 export * from './Play';
+export * from './Plus';
+export * from './Minus';
 export * from './Refresh';
 export * from './Resend';
 export * from './Search';

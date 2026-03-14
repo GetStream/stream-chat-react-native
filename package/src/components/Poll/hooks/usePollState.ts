@@ -80,10 +80,9 @@ export const usePollState = (): UsePollStateReturnType => {
 
   const addOption = useCallback(
     async (optionText: string) => {
-      const { poll_option } = await poll.createOption({ text: optionText });
-      await poll.castVote(poll_option.id, message.id);
+      await poll.createOption({ text: optionText });
     },
-    [message, poll],
+    [poll],
   );
   const addComment = useCallback(
     (answerText: string) => poll.addAnswer(answerText, message.id),

@@ -12,7 +12,6 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated';
 
 import { PollComposerOption, PollComposerState } from 'stream-chat';
@@ -580,11 +579,11 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   useAnimatedReaction(
     () => currentOptionPositions.value.totalHeight,
     (currentValue, previousValue) => {
-      if (currentValue !== previousValue) {
-        animatedOptionsContainerHeight.value = withTiming(currentValue, {
-          duration: 200,
-        });
+      if (currentValue === previousValue) {
+        return;
       }
+
+      animatedOptionsContainerHeight.value = currentValue;
     },
   );
 
@@ -707,7 +706,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   return (
     <View style={[styles.container, container]}>
       <Text style={[styles.title, title]}>{t('Options')}</Text>
-      <Animated.View style={animatedOptionsContainerStyle}>
+      <Animated.View layout={LinearTransition.duration(200)} style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption
             optionsCount={options.length}

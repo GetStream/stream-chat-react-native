@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
-import { useSharedValue } from 'react-native-reanimated';
+import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
 
 import { PollComposerState, VotingVisibility } from 'stream-chat';
 
@@ -153,49 +153,57 @@ export const CreatePollContent = () => {
       >
         <NameField />
         <CreatePollOptions currentOptionPositions={currentOptionPositions} />
-        <View style={[styles.optionCardWrapper, optionCardWrapper]}>
+        <Animated.View
+          layout={LinearTransition.duration(200)}
+          style={[styles.optionCardWrapper, optionCardWrapper]}
+        >
           <MultipleAnswersField />
-          <View style={[styles.optionCard, anonymousPoll.wrapper]}>
-            <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
-              <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous voting')}</Text>
-              <Text style={[styles.description, anonymousPoll.description]}>Hide who voted</Text>
-            </View>
+          <Animated.View
+            layout={LinearTransition.duration(200)}
+            style={[styles.optionCardWrapper, optionCardWrapper]}
+          >
+            <View style={[styles.optionCard, anonymousPoll.wrapper]}>
+              <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
+                <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous voting')}</Text>
+                <Text style={[styles.description, anonymousPoll.description]}>Hide who voted</Text>
+              </View>
 
-            <Switch
-              onValueChange={onAnonymousPollChangeHandler}
-              value={isAnonymousPoll}
-              style={[styles.optionCardSwitch, anonymousPoll.optionCardSwitch]}
-            />
-          </View>
-          <View style={[styles.optionCard, suggestOption.wrapper]}>
-            <View style={[styles.optionCardContent, suggestOption.optionCardContent]}>
-              <Text style={[styles.title, suggestOption.title]}>{t('Suggest an option')}</Text>
-              <Text style={[styles.description, suggestOption.description]}>
-                Let others add options
-              </Text>
+              <Switch
+                onValueChange={onAnonymousPollChangeHandler}
+                value={isAnonymousPoll}
+                style={[styles.optionCardSwitch, anonymousPoll.optionCardSwitch]}
+              />
             </View>
+            <View style={[styles.optionCard, suggestOption.wrapper]}>
+              <View style={[styles.optionCardContent, suggestOption.optionCardContent]}>
+                <Text style={[styles.title, suggestOption.title]}>{t('Suggest an option')}</Text>
+                <Text style={[styles.description, suggestOption.description]}>
+                  Let others add options
+                </Text>
+              </View>
 
-            <Switch
-              onValueChange={onAllowUserSuggestedOptionsChangeHandler}
-              value={allowUserSuggestedOptions}
-              style={[styles.optionCardSwitch, suggestOption.optionCardSwitch]}
-            />
-          </View>
-          <View style={[styles.optionCard, addComment.wrapper]}>
-            <View style={[styles.optionCardContent, addComment.optionCardContent]}>
-              <Text style={[styles.title, addComment.title]}>{t('Add a comment')}</Text>
-              <Text style={[styles.description, addComment.description]}>
-                Add a comment to the poll
-              </Text>
+              <Switch
+                onValueChange={onAllowUserSuggestedOptionsChangeHandler}
+                value={allowUserSuggestedOptions}
+                style={[styles.optionCardSwitch, suggestOption.optionCardSwitch]}
+              />
             </View>
+            <View style={[styles.optionCard, addComment.wrapper]}>
+              <View style={[styles.optionCardContent, addComment.optionCardContent]}>
+                <Text style={[styles.title, addComment.title]}>{t('Add a comment')}</Text>
+                <Text style={[styles.description, addComment.description]}>
+                  Add a comment to the poll
+                </Text>
+              </View>
 
-            <Switch
-              onValueChange={onAllowAnswersChangeHandler}
-              value={allowAnswers}
-              style={[styles.optionCardSwitch, addComment.optionCardSwitch]}
-            />
-          </View>
-        </View>
+              <Switch
+                onValueChange={onAllowAnswersChangeHandler}
+                value={allowAnswers}
+                style={[styles.optionCardSwitch, addComment.optionCardSwitch]}
+              />
+            </View>
+          </Animated.View>
+        </Animated.View>
       </ScrollView>
     </>
   );
