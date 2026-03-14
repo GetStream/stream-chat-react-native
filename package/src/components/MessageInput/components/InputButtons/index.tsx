@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { OwnCapabilitiesContextValue } from '../../../../contexts';
+import { useActiveCommand } from '../../../../contexts/messageInputContext/hooks/useActiveCommand';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -37,6 +38,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   } = props;
   const { selectedPicker } = useAttachmentPickerState();
   const rotation = useSharedValue(0);
+  const command = useActiveCommand();
 
   const {
     theme: {
@@ -59,7 +61,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     return null;
   }
 
-  return hasAttachmentUploadCapabilities ? (
+  return hasAttachmentUploadCapabilities && !command ? (
     <Animated.View entering={ZoomIn.duration(200)} exiting={ZoomOut.duration(200)}>
       <Animated.View style={[styles.attachButtonContainer, attachButtonContainer, animatedStyle]}>
         <AttachButton />
