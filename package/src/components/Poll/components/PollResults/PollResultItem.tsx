@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { LocalMessage, Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
@@ -64,10 +65,12 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
           onRequestClose={() => setShowAllVotes(false)}
           visible={showAllVotes}
         >
-          <SafeAreaViewWrapper style={styles.safeArea}>
-            <PollModalHeader onPress={() => setShowAllVotes(false)} title={t('Votes')} />
-            <PollOptionFullResults message={message} option={option} poll={poll} />
-          </SafeAreaViewWrapper>
+          <GestureHandlerRootView style={styles.modalRoot}>
+            <SafeAreaViewWrapper style={styles.safeArea}>
+              <PollModalHeader onPress={() => setShowAllVotes(false)} title={t('Votes')} />
+              <PollOptionFullResults message={message} option={option} poll={poll} />
+            </SafeAreaViewWrapper>
+          </GestureHandlerRootView>
         </Modal>
       ) : null}
     </>
@@ -135,6 +138,9 @@ const useStyles = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingBottom: primitives.spacingXs,
+        },
+        modalRoot: {
+          flex: 1,
         },
         title: {
           flex: 1,

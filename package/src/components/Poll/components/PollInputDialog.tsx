@@ -9,6 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Animated, { LinearTransition, ZoomIn } from 'react-native-reanimated';
 
@@ -50,44 +51,48 @@ export const PollInputDialog = ({
 
   return (
     <Modal animationType='fade' onRequestClose={closeDialog} transparent={true} visible={visible}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[styles.transparentContainer, transparentContainer]}
-      >
-        <Animated.View
-          entering={ZoomIn.duration(200)}
-          layout={LinearTransition.duration(200)}
-          style={[styles.container, { backgroundColor: white }, container]}
+      <GestureHandlerRootView style={styles.modalRoot}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={[styles.transparentContainer, transparentContainer]}
         >
-          <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
-          <TextInput
-            autoFocus={true}
-            onChangeText={setDialogInput}
-            placeholder={t('Ask a question')}
-            style={[styles.input, { color: black }, input]}
-            value={dialogInput}
-          />
-          <View style={[styles.buttonContainer, buttonContainer]}>
-            <Pressable
-              onPress={closeDialog}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-            >
-              <Text style={[styles.button, { color: accent_dark_blue }, button]}>
-                {t('Cancel')}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                onSubmit(dialogInput);
-                closeDialog();
-              }}
-              style={({ pressed }) => ({ marginLeft: 32, opacity: pressed ? 0.5 : 1 })}
-            >
-              <Text style={[styles.button, { color: accent_dark_blue }, button]}>{t('SEND')}</Text>
-            </Pressable>
-          </View>
-        </Animated.View>
-      </KeyboardAvoidingView>
+          <Animated.View
+            entering={ZoomIn.duration(200)}
+            layout={LinearTransition.duration(200)}
+            style={[styles.container, { backgroundColor: white }, container]}
+          >
+            <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
+            <TextInput
+              autoFocus={true}
+              onChangeText={setDialogInput}
+              placeholder={t('Ask a question')}
+              style={[styles.input, { color: black }, input]}
+              value={dialogInput}
+            />
+            <View style={[styles.buttonContainer, buttonContainer]}>
+              <Pressable
+                onPress={closeDialog}
+                style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+              >
+                <Text style={[styles.button, { color: accent_dark_blue }, button]}>
+                  {t('Cancel')}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  onSubmit(dialogInput);
+                  closeDialog();
+                }}
+                style={({ pressed }) => ({ marginLeft: 32, opacity: pressed ? 0.5 : 1 })}
+              >
+                <Text style={[styles.button, { color: accent_dark_blue }, button]}>
+                  {t('SEND')}
+                </Text>
+              </Pressable>
+            </View>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </GestureHandlerRootView>
     </Modal>
   );
 };
@@ -102,6 +107,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 32,
     width: '80%',
+  },
+  modalRoot: {
+    flex: 1,
   },
   input: {
     alignItems: 'center',
