@@ -93,9 +93,6 @@
   "Resend": "Yeniden gönder",
   "SEND": "GÖNDER",
   "Search": "Ara",
-  "See all {{count}} options_many": "Tüm {{count}} seçeneklerini gör",
-  "See all {{count}} options_one": "Tüm {{count}} seçeneği gör",
-  "See all {{count}} options_other": "Tüm {{count}} seçeneği gör",
   "Select More Photos": "Daha Fazla Fotoğraf Seçin",
   "Select one": "Birini seç",
   "Select one or more": "Bir veya daha fazlasını seç",
@@ -205,5 +202,8 @@
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} üye, {{onlineCount}} çevrimiçi",
   "{{count}} unread": "{{count}} okunmamış",
   "{{count}} new messages": "{{count}} yeni mesaj",
-  "Unsupported Attachment": "Desteklenmeyen ek"
+  "Unsupported Attachment": "Desteklenmeyen ek",
+  "+{{count}} More Options_one": "+{{count}} seçenek daha",
+  "+{{count}} More Options_other": "+{{count}} seçenek daha",
+  "+{{count}} More Options_many": "+{{count}} seçenek daha"
 }

@@ -93,9 +93,6 @@
   "Resend": "Отправить",
   "SEND": "ОТПРАВИТЬ",
   "Search": "Поиск",
-  "See all {{count}} options_many": "Посмотреть все {{count}} вариантов",
-  "See all {{count}} options_one": "Посмотреть все {{count}} вариант",
-  "See all {{count}} options_other": "Посмотреть все {{count}} вариантов",
   "Select More Photos": "Выбрать больше фотографий",
   "Select one": "Выберите один",
   "Select one or more": "Выберите один или несколько",
@@ -205,5 +202,8 @@
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} участников, {{onlineCount}} онлайн",
   "{{count}} unread": "{{count}} непрочитанных",
   "{{count}} new messages": "{{count}} новых сообщений",
-  "Unsupported Attachment": "Неподдерживаемое вложение"
+  "Unsupported Attachment": "Неподдерживаемое вложение",
+  "+{{count}} More Options_one": "+ещё {{count}} вариант",
+  "+{{count}} More Options_other": "+ещё {{count}} варианта",
+  "+{{count}} More Options_many": "+ещё {{count}} вариантов"
 }

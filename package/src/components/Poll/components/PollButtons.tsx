@@ -10,6 +10,7 @@ import { PollResults } from './PollResults';
 
 import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
 import { primitives } from '../../../theme';
+import { defaultPollOptionCount } from '../../../utils/constants';
 import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
@@ -79,10 +80,10 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      {options && options.length > 5 ? (
+      {options && options.length > defaultPollOptionCount ? (
         <GenericPollButton
           onPress={onPressHandler}
-          label={t('See all {{count}} options', { count: options.length })}
+          label={t('+{{count}} More Options', { count: options.length - defaultPollOptionCount })}
         />
       ) : null}
       {showAllOptions ? (
@@ -236,7 +237,6 @@ export const PollButtons = () => {
     <View style={styles.buttonsContainer}>
       <ViewResultsButton />
       <EndVoteButton />
-      <ShowAllOptionsButton />
       <SuggestOptionButton />
       <AddCommentButton />
       <ShowAllCommentsButton />

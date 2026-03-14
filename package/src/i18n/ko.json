@@ -93,9 +93,6 @@
   "Resend": "재전송",
   "SEND": "보내기",
   "Search": "검색",
-  "See all {{count}} options_many": "모든 {{count}} 옵션 보기",
-  "See all {{count}} options_one": "모든 {{count}} 옵션 보기",
-  "See all {{count}} options_other": "모든 {{count}} 옵션 보기",
   "Select More Photos": "추가 사진 선택",
   "Select one": "하나 선택",
   "Select one or more": "하나 이상 선택",
@@ -205,5 +202,8 @@
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}}명, {{onlineCount}}명 온라인",
   "{{count}} unread": "{{count}} 읽지 않은",
   "{{count}} new messages": "{{count}} 새로운 메시지",
-  "Unsupported Attachment": "지원하지 않는 첨부파일"
+  "Unsupported Attachment": "지원하지 않는 첨부파일",
+  "+{{count}} More Options_one": "+옵션 {{count}}개 더",
+  "+{{count}} More Options_other": "+옵션 {{count}}개 더",
+  "+{{count}} More Options_many": "+옵션 {{count}}개 더"
 }

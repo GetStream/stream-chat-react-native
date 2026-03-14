@@ -93,9 +93,6 @@
   "Resend": "שלח/י שוב",
   "SEND": "שלח",
   "Search": "חפש/י",
-  "See all {{count}} options_many": "הצג את כל {{count}} האפשרויות",
-  "See all {{count}} options_one": "הצג את כל {{count}} האפשרויות",
-  "See all {{count}} options_other": "הצג את כל {{count}} האפשרויות",
   "Select More Photos": "בחר עוד תמונות",
   "Select one": "בחר אחת",
   "Select one or more": "בחר אחת או יותר",
@@ -205,5 +202,8 @@
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} חברים, {{onlineCount}} מחוברים",
   "{{count}} unread": "{{count}} שטרם נקרא",
   "{{count}} new messages": "{{count}} הודעות חדשות",
-  "Unsupported Attachment": "קובץ לא נתמך"
+  "Unsupported Attachment": "קובץ לא נתמך",
+  "+{{count}} More Options_one": "+עוד אפשרות {{count}}",
+  "+{{count}} More Options_other": "+עוד {{count}} אפשרויות",
+  "+{{count}} More Options_many": "+עוד {{count}} אפשרויות"
 }

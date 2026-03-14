@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { PollOption as PollOptionClass } from 'stream-chat';
 
-import { PollButtons, PollOption } from './components';
+import { PollButtons, PollOption, ShowAllOptionsButton } from './components';
 
 import { usePollState } from './hooks/usePollState';
 
@@ -16,6 +16,7 @@ import {
 } from '../../contexts';
 
 import { primitives } from '../../theme';
+import { defaultPollOptionCount } from '../../utils/constants';
 
 export type PollProps = Pick<PollContextValue, 'poll' | 'message'> &
   Pick<MessagesContextValue, 'PollContent'>;
@@ -79,10 +80,11 @@ export const PollContent = ({
       {PollHeaderOverride ? <PollHeaderOverride /> : <PollHeader />}
       <View style={[styles.optionsWrapper, optionsWrapper]}>
         {options
-          ?.slice(0, 5)
+          ?.slice(0, defaultPollOptionCount)
           ?.map((option: PollOptionClass) => (
             <PollOption key={`message_poll_option_${option.id}`} option={option} />
           ))}
+        <ShowAllOptionsButton />
       </View>
       {PollButtonsOverride ? <PollButtonsOverride /> : <PollButtons />}
     </View>

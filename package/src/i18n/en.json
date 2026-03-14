@@ -93,9 +93,6 @@
   "Resend": "Resend",
   "SEND": "SEND",
   "Search": "Search",
-  "See all {{count}} options_many": "See all {{count}} options_many",
-  "See all {{count}} options_one": "See all {{count}} options",
-  "See all {{count}} options_other": "See all {{count}} options",
   "Select More Photos": "Select More Photos",
   "Select one": "Select one",
   "Select one or more": "Select one or more",
@@ -205,5 +202,8 @@
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} members, {{onlineCount}} online",
   "{{count}} unread": "{{count}} unread",
   "{{count}} new messages": "{{count}} new messages",
-  "Unsupported Attachment": "Unsupported Attachment"
+  "Unsupported Attachment": "Unsupported Attachment",
+  "+{{count}} More Options_one": "+{{count}} More Option",
+  "+{{count}} More Options_other": "+{{count}} More Options",
+  "+{{count}} More Options_many": "+{{count}} More Options"
 }

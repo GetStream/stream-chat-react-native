@@ -93,9 +93,6 @@
   "Resend": "再送",
   "SEND": "送信",
   "Search": "検索",
-  "See all {{count}} options_many": "すべての{{count}}オプションを表示",
-  "See all {{count}} options_one": "{{count}} 個のオプションをすべて表示",
-  "See all {{count}} options_other": "{{count}} 個のオプションをすべて表示",
   "Select More Photos": "さらに写真を選択",
   "Select one": "1つ選択",
   "Select one or more": "1つ以上選択",
@@ -205,5 +202,8 @@
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}}人のメンバー、{{onlineCount}}人がオンライン",
   "{{count}} unread": "{{count}} 未読",
   "{{count}} new messages": "{{count}} 新しいメッセージ",
-  "Unsupported Attachment": "サポートされていない添付ファイル"
+  "Unsupported Attachment": "サポートされていない添付ファイル",
+  "+{{count}} More Options_one": "+{{count}} 件の追加オプション",
+  "+{{count}} More Options_other": "+{{count}} 件の追加オプション",
+  "+{{count}} More Options_many": "+{{count}} 件の追加オプション"
 }

@@ -93,9 +93,6 @@
   "Resend": "Reenviar",
   "SEND": "ENVIAR",
   "Search": "Buscar",
-  "See all {{count}} options_many": "Ver las {{count}} opciones",
-  "See all {{count}} options_one": "Ver las {{count}} opciones",
-  "See all {{count}} options_other": "Ver las {{count}} opciones",
   "Select More Photos": "Seleccionar más fotos",
   "Select one": "Seleccionar una",
   "Select one or more": "Seleccionar una o más",
@@ -205,5 +202,8 @@
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} miembros, {{onlineCount}} en línea",
   "{{count}} unread": "{{count}} no leídos",
   "{{count}} new messages": "{{count}} nuevos mensajes",
-  "Unsupported Attachment": "Adjunto no admitido"
+  "Unsupported Attachment": "Adjunto no admitido",
+  "+{{count}} More Options_one": "+{{count}} opción más",
+  "+{{count}} More Options_other": "+{{count}} opciones más",
+  "+{{count}} More Options_many": "+{{count}} opciones más"
 }

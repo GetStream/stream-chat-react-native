@@ -93,9 +93,6 @@
   "Resend": "Opnieuw versturen",
   "SEND": "VERZENDEN",
   "Search": "Zoeken",
-  "See all {{count}} options_many": "Bekijk alle {{count}} opties",
-  "See all {{count}} options_one": "Bekijk alle {{count}} opties",
-  "See all {{count}} options_other": "Bekijk alle {{count}} opties",
   "Select More Photos": "Selecteer Meer foto's",
   "Select one": "Kies één",
   "Select one or more": "Kies één of meer",
@@ -205,5 +202,8 @@
   "{{memberCount}} members, {{onlineCount}} online_many": "{{memberCount}} leden, {{onlineCount}} online",
   "{{count}} unread": "{{count}} ongelezen",
   "{{count}} new messages": "{{count}} nieuwe berichten",
-  "Unsupported Attachment": "Ondersteunde bijlage"
+  "Unsupported Attachment": "Ondersteunde bijlage",
+  "+{{count}} More Options_one": "+{{count}} extra optie",
+  "+{{count}} More Options_other": "+{{count}} extra opties",
+  "+{{count}} More Options_many": "+{{count}} extra opties"
 }
