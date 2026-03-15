@@ -5,12 +5,6 @@ import type { Attachment } from 'stream-chat';
 
 import { GiphyImage } from './GiphyImage';
 
-import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
-
-import {
-  ImageGalleryContextValue,
-  useImageGalleryContext,
-} from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -19,25 +13,19 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
-import {
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import { EyeOpen } from '../../../icons/EyeOpen';
 import { primitives } from '../../../theme';
 
-export type GiphyPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
-  Pick<
-    MessageContextValue,
-    'handleAction' | 'message' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
-  > &
-  Pick<ChatContextValue, 'ImageComponent'> &
+export type GiphyPropsWithContext = Pick<
+  MessageContextValue,
+  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
+> &
   Pick<MessagesContextValue, 'additionalPressableProps' | 'giphyVersion'> & {
     attachment: Attachment;
-  } & Pick<OverlayContextValue, 'setOverlay'>;
+  };
 
 const GiphyWithContext = (props: GiphyPropsWithContext) => {
   const {
@@ -45,13 +33,10 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
     attachment,
     giphyVersion,
     handleAction,
-    imageGalleryStateStore,
-    message,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
-    setOverlay,
   } = props;
 
   const { actions, image_url, thumb_url } = attachment;
@@ -77,14 +62,6 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
   const styles = useStyles();
 
   const uri = image_url || thumb_url;
-
-  const defaultOnPress = () => {
-    if (!uri) {
-      return;
-    }
-    imageGalleryStateStore.openImageGallery({ messages: [message], selectedAttachmentUrl: uri });
-    setOverlay('gallery');
-  };
 
   if (!uri) {
     return null;
@@ -144,7 +121,6 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
       onPress={(event) => {
         if (onPress) {
           onPress({
-            defaultHandler: defaultOnPress,
             emitter: 'giphy',
             event,
           });
@@ -171,12 +147,10 @@ const areEqual = (prevProps: GiphyPropsWithContext, nextProps: GiphyPropsWithCon
   const {
     attachment: { actions: prevActions, image_url: prevImageUrl, thumb_url: prevThumbUrl },
     giphyVersion: prevGiphyVersion,
-    message: prevMessage,
   } = prevProps;
   const {
     attachment: { actions: nextActions, image_url: nextImageUrl, thumb_url: nextThumbUrl },
     giphyVersion: nextGiphyVersion,
-    message: nextMessage,
   } = nextProps;
 
   const imageUrlEqual = prevImageUrl === nextImageUrl;
@@ -204,13 +178,6 @@ const areEqual = (prevProps: GiphyPropsWithContext, nextProps: GiphyPropsWithCon
     return false;
   }
 
-  const messageEqual =
-    prevMessage?.id === nextMessage?.id &&
-    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
-
-  if (!messageEqual) {
-    return false;
-  }
   return true;
 };
 
@@ -224,12 +191,8 @@ export type GiphyProps = Partial<GiphyPropsWithContext> & {
  * UI component for card in attachments.
  */
 export const Giphy = (props: GiphyProps) => {
-  const { handleAction, message, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext();
-  const { ImageComponent } = useChatContext();
+  const { handleAction, onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
   const { additionalPressableProps, giphyVersion } = useMessagesContext();
-  const { imageGalleryStateStore } = useImageGalleryContext();
-  const { setOverlay } = useOverlayContext();
 
   return (
     <MemoizedGiphy
@@ -237,14 +200,10 @@ export const Giphy = (props: GiphyProps) => {
         additionalPressableProps,
         giphyVersion,
         handleAction,
-        ImageComponent,
-        imageGalleryStateStore,
-        message,
         onLongPress,
         onPress,
         onPressIn,
         preventPress,
-        setOverlay,
       }}
       {...props}
     />
