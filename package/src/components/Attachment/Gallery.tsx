@@ -540,8 +540,8 @@ export const Gallery = (props: GalleryProps) => {
   } = useMessagesContext();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
 
-  const images = propImages || contextImages;
-  const videos = propVideos || contextVideos;
+  const images = propImages ?? contextImages ?? [];
+  const videos = propVideos ?? contextVideos ?? [];
   const imagesAndVideos = [...images, ...videos];
   const message = propMessage || contextMessage;
   const alignment = propAlignment || contextAlignment;
