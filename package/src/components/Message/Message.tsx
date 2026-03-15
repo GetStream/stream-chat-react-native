@@ -72,6 +72,7 @@ import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvo
 import { BottomSheetModal } from '../UIComponents';
 
 export type TouchableEmitter =
+  | 'failed-image'
   | 'fileAttachment'
   | 'gallery'
   | 'giphy'
@@ -437,6 +438,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
               isVideoPlayerAvailable()
             ) {
               acc.videos.push({
+                ...cur,
                 image_url: cur.asset_url,
                 thumb_url: cur.thumb_url,
                 type: FileTypes.Video,

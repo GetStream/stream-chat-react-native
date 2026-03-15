@@ -546,6 +546,7 @@ export const MessageContent = (props: MessageContentProps) => {
     threadList,
     files,
     images,
+    videos,
   } = useMessageContext();
   const {
     additionalPressableProps,
@@ -562,10 +563,10 @@ export const MessageContent = (props: MessageContentProps) => {
   const { t } = useTranslationContext();
   const isSingleFile = files.length === 1;
   const messageHasPoll = messageContentOrder.includes('poll');
-  const messageHasSingleImage =
+  const messageHasSingleMedia =
     messageContentOrder.length === 1 &&
     messageContentOrder.includes('gallery') &&
-    images.length === 1;
+    images.length + videos.length === 1;
   const messageHasSingleFile =
     messageContentOrder.length === 1 && messageContentOrder[0] === 'files' && isSingleFile;
   const messageHasOnlyText = messageContentOrder.length === 1 && messageContentOrder[0] === 'text';
@@ -576,17 +577,17 @@ export const MessageContent = (props: MessageContentProps) => {
 
   const hidePaddingTop =
     messageHasPoll ||
-    messageHasSingleImage ||
+    messageHasSingleMedia ||
     messageHasSingleFile ||
     messageHasOnlyText ||
     messageHasGiphyOrImgur;
 
   const hidePaddingHorizontal =
-    messageHasPoll || messageHasSingleImage || messageHasSingleFile || messageHasGiphyOrImgur;
+    messageHasPoll || messageHasSingleMedia || messageHasSingleFile || messageHasGiphyOrImgur;
 
   const hidePaddingBottom =
     messageHasPoll ||
-    messageHasSingleImage ||
+    messageHasSingleMedia ||
     messageHasSingleFile ||
     messageHasOnlyText ||
     messageHasGiphyOrImgur ||

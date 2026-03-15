@@ -35,7 +35,7 @@ export const MessageInputLeadingView = () => {
 
 const styles = StyleSheet.create({
   giphyContainer: {
-    padding: primitives.spacingXs,
+    padding: primitives.spacingSm,
     alignSelf: 'flex-end',
   },
 });

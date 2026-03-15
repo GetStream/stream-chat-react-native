@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, ViewProps } from 'react-native';
+import { GestureResponderEvent, Pressable, StyleSheet, ViewProps } from 'react-native';
 
+import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStableCallback } from '../../hooks';
 import { RetryBadge } from '../ui/Badge/RetryBadge';
 
 export type ImageLoadingFailedIndicatorProps = ViewProps & {
@@ -16,10 +18,21 @@ export const ImageLoadingFailedIndicator = ({
   onReloadImage,
 }: ImageLoadingFailedIndicatorProps) => {
   const styles = useStyles();
+  const { onLongPress: longPressHandler } = useMessageContext();
+
+  const onLongPress = useStableCallback((event: GestureResponderEvent) => {
+    if (longPressHandler) {
+      longPressHandler({
+        emitter: 'failed-image',
+        event,
+      });
+    }
+  });
 
   return (
     <Pressable
       accessibilityLabel='Image Loading Error Indicator'
+      onLongPress={onLongPress}
       onPress={onReloadImage}
       style={styles.imageLoadingErrorIndicatorStyle}
     >

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   I18nManager,
+  Platform,
   TextInput as RNTextInput,
   StyleSheet,
   TextInputProps,
@@ -69,7 +70,7 @@ const configStateSelector = (state: MessageComposerConfig) => ({
 
 const MAX_NUMBER_OF_LINES = 5;
 const LINE_HEIGHT = 20;
-const PADDING_VERTICAL = 12;
+const INPUT_VERTICAL_PADDING = Platform.OS === 'ios' ? 7 : 12;
 
 const commandPlaceHolders: Record<string, string> = {
   giphy: 'Search GIFs',
@@ -164,7 +165,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       style={[
         styles.inputBox,
         {
-          maxHeight: LINE_HEIGHT * numberOfLines + PADDING_VERTICAL * 2,
+          maxHeight: LINE_HEIGHT * numberOfLines + INPUT_VERTICAL_PADDING * 2,
           paddingLeft: command ? 0 : 16,
           paddingRight: command ? 4 : 8,
           textAlign: I18nManager.isRTL ? 'right' : 'left',
