@@ -4,6 +4,14 @@ import { CalendarFormats } from './Streami18n';
  * Calendar formats for different languages.
  */
 export const calendarFormats: Record<string, CalendarFormats> = {
+  ar: {
+    lastDay: '[أمس]',
+    lastWeek: 'dddd',
+    nextDay: '[غدًا]',
+    nextWeek: 'dddd [عند] LT',
+    sameDay: '[اليوم]',
+    sameElse: 'L',
+  },
   en: {
     lastDay: '[Yesterday]',
     lastWeek: 'dddd',

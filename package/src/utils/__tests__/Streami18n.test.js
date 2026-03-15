@@ -1,8 +1,10 @@
 import { default as Dayjs } from 'dayjs';
+import 'dayjs/locale/ar';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
 import moment from 'moment-timezone';
 
+import arTranslations from '../../i18n/ar.json';
 import frTranslations from '../../i18n/fr.json';
 import nlTranslations from '../../i18n/nl.json';
 import { Streami18n } from '../i18n/Streami18n';
@@ -40,6 +42,69 @@ describe('Streami18n instance - default', () => {
     const { tDateTimeParser } = await streami18n.getTranslators();
     expect(tDateTimeParser() instanceof Dayjs).toBe(true);
     expect(tDateTimeParser().locale()).toBe('en');
+  });
+});
+
+describe('Streami18n instance - Arabic language (ar)', () => {
+  describe('datetime translations enabled', () => {
+    const streami18nOptions = { language: 'ar' };
+    const streami18n = new Streami18n(streami18nOptions);
+    it('should provide arabic translator', async () => {
+      const { t: _t } = await streami18n.getTranslators();
+      for (const key in arTranslations) {
+        const value = arTranslations[key];
+        const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
+        const hasTemplateInValue =
+          typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
+        if (
+          hasTemplateInKey ||
+          hasTemplateInValue ||
+          key.indexOf('duration/') > -1 ||
+          key.indexOf('timestamp/') > -1
+        ) {
+          continue;
+        }
+        expect(_t(key)).toBe(arTranslations[key]);
+      }
+    });
+    it('should provide dayjs with `ar` locale', async () => {
+      const { tDateTimeParser } = await streami18n.getTranslators();
+      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+      expect(tDateTimeParser().locale()).toBe('ar');
+    });
+  });
+
+  describe('datetime translations disabled', () => {
+    const streami18nOptions = {
+      disableDateTimeTranslations: true,
+      language: 'ar',
+    };
+    const streami18n = new Streami18n(streami18nOptions);
+
+    it('should provide arabic translator', async () => {
+      const { t: _t } = await streami18n.getTranslators();
+      for (const key in arTranslations) {
+        const value = arTranslations[key];
+        const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
+        const hasTemplateInValue =
+          typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
+        if (
+          hasTemplateInKey ||
+          hasTemplateInValue ||
+          key.indexOf('duration/') > -1 ||
+          key.indexOf('timestamp/') > -1
+        ) {
+          continue;
+        }
+        expect(_t(key)).toBe(arTranslations[key]);
+      }
+    });
+
+    it('should provide dayjs with default `en` locale when datetime translations disabled', async () => {
+      const { tDateTimeParser } = await streami18n.getTranslators();
+      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+      expect(tDateTimeParser().locale()).toBe('en');
+    });
   });
 });
 
