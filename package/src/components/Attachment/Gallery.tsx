@@ -64,7 +64,7 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
-    messageHasOnlyOneImage: boolean;
+    messageHasOnlyOneMedia: boolean;
   };
 
 const GalleryWithContext = (props: GalleryPropsWithContext) => {
@@ -83,7 +83,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     setOverlay,
     videos,
     VideoThumbnail,
-    messageHasOnlyOneImage = false,
+    messageHasOnlyOneMedia = false,
   } = props;
 
   const { resizableCDNHosts } = useChatConfigContext();
@@ -144,7 +144,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
           flexDirection: invertedDirections ? 'column' : 'row',
           alignSelf: alignment === 'right' ? 'flex-end' : 'flex-start',
         },
-        images.length !== 1
+        imagesAndVideos.length !== 1
           ? { width: gridWidth, height: gridHeight }
           : {
               minHeight: height,
@@ -178,7 +178,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                 rowIndex,
                 sizeConfig,
                 width,
-                messageHasOnlyOneImage,
+                messageHasOnlyOneMedia,
               });
 
               if (!message) {
@@ -542,6 +542,7 @@ export const Gallery = (props: GalleryProps) => {
 
   const images = propImages || contextImages;
   const videos = propVideos || contextVideos;
+  const imagesAndVideos = [...images, ...videos];
   const message = propMessage || contextMessage;
   const alignment = propAlignment || contextAlignment;
   if (!images.length && !videos.length) {
@@ -562,10 +563,10 @@ export const Gallery = (props: GalleryProps) => {
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
   const messageContentOrder = propMessageContentOrder || contextMessageContentOrder;
 
-  const messageHasOnlyOneImage =
+  const messageHasOnlyOneMedia =
     messageContentOrder?.length === 1 &&
     messageContentOrder?.includes('gallery') &&
-    images.length === 1;
+    imagesAndVideos.length === 1;
 
   return (
     <MemoizedGallery
@@ -586,7 +587,7 @@ export const Gallery = (props: GalleryProps) => {
         setOverlay,
         videos,
         VideoThumbnail,
-        messageHasOnlyOneImage,
+        messageHasOnlyOneMedia,
         messageContentOrder,
       }}
     />

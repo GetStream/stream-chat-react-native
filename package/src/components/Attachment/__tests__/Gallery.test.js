@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
@@ -97,6 +98,27 @@ describe('Gallery', () => {
       expect(screen.queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
       expect(screen.getAllByLabelText('Video Thumbnail').length).toBe(1);
     });
+  });
+
+  it('should use single-media sizing for a single video attachment', async () => {
+    const attachment = generateVideoAttachment({
+      original_height: 300,
+      original_width: 600,
+    });
+    const component = await getComponent([attachment]);
+    render(component);
+
+    await waitFor(() => {
+      expect(screen.queryAllByTestId('gallery-container').length).toBe(1);
+      expect(screen.getAllByLabelText('Video Thumbnail').length).toBe(1);
+    });
+
+    const containerStyle = StyleSheet.flatten(screen.getByTestId('gallery-container').props.style);
+
+    expect(containerStyle.width).toBeUndefined();
+    expect(containerStyle.height).toBeUndefined();
+    expect(containerStyle.minWidth).toBe(256);
+    expect(containerStyle.minHeight).toBe(128);
   });
 
   it('should render portrait and landscape image in two rows', async () => {

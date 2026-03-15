@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
@@ -7,6 +7,7 @@ import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import { generateVideoAttachment } from '../../../../mock-builders/generator/attachment';
 import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
@@ -180,6 +181,51 @@ describe('MessageContent', () => {
       expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
       expect(screen.getByTestId('gallery-container')).toBeTruthy();
     });
+  });
+
+  it('removes content padding for a single video attachment', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [
+        generateVideoAttachment({
+          original_height: 300,
+          original_width: 600,
+        }),
+      ],
+      html: '',
+      text: '',
+      user,
+    });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('gallery-container')).toBeTruthy();
+    });
+
+    const galleryContainer = screen.getByTestId('gallery-container');
+    let ancestor = galleryContainer.parent;
+    let contentContainerStyle;
+
+    while (ancestor && !contentContainerStyle) {
+      const flattenedStyle = StyleSheet.flatten(ancestor.props.style);
+      if (
+        flattenedStyle &&
+        'paddingTop' in flattenedStyle &&
+        'paddingHorizontal' in flattenedStyle &&
+        'paddingBottom' in flattenedStyle
+      ) {
+        contentContainerStyle = flattenedStyle;
+        break;
+      }
+      ancestor = ancestor.parent;
+    }
+
+    expect(contentContainerStyle).toBeTruthy();
+    expect(contentContainerStyle.paddingTop).toBe(0);
+    expect(contentContainerStyle.paddingHorizontal).toBe(0);
+    expect(contentContainerStyle.paddingBottom).toBe(0);
   });
 
   it('renders the FileAttachment component when a file attachment exists', async () => {
