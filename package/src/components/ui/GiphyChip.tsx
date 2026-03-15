@@ -54,8 +54,9 @@ const useStyles = () => {
           borderRadius: primitives.radiusMax,
           flexDirection: 'row',
           paddingHorizontal: primitives.spacingXs,
-          paddingVertical: primitives.spacingXxs,
+          paddingVertical: primitives.spacingXxxs,
           gap: primitives.spacingXxs,
+          height: 24,
         },
         text: {
           color: semantics.textInverse,
