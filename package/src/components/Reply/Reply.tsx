@@ -156,17 +156,23 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
 
 const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithContext) => {
   const {
+    styles: prevStyles,
     isMyMessage: prevIsMyMessage,
     mode: prevMode,
     quotedMessage: prevQuotedMessage,
     onDismiss: prevOnDismiss,
   } = prevProps;
   const {
+    styles: nextStyles,
     isMyMessage: nextIsMyMessage,
     mode: nextMode,
     quotedMessage: nextQuotedMessage,
     onDismiss: nextOnDismiss,
   } = nextProps;
+
+  if (prevStyles !== nextStyles) {
+    return false;
+  }
 
   const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
 
