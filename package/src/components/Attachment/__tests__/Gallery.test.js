@@ -31,7 +31,7 @@ describe('Gallery', () => {
 
   const user1 = generateUser();
 
-  const getComponent = async (attachments = []) => {
+  const getComponent = async (attachments = [], channelProps = {}) => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
 
     const mockedChannel = generateChannelResponse({
@@ -45,7 +45,7 @@ describe('Gallery', () => {
     return (
       <OverlayProvider>
         <Chat client={chatClient}>
-          <Channel channel={channel}>
+          <Channel channel={channel} {...channelProps}>
             <MessageList />
           </Channel>
         </Chat>
@@ -276,6 +276,40 @@ describe('Gallery', () => {
       nativeEvent: { error: 'error loading image' },
     });
     expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
+  });
+
+  it('should trigger long press on a failed image indicator', async () => {
+    const onLongPressMessage = jest.fn();
+    const image1 = generateImageAttachment({
+      original_height: 300,
+      original_width: 600,
+    });
+
+    const component = await getComponent([image1], { onLongPressMessage });
+    render(component);
+
+    await waitFor(() => {
+      expect(screen.queryAllByTestId('gallery-container').length).toBe(1);
+    });
+
+    fireEvent(screen.getByLabelText('Gallery Image'), 'error', {
+      nativeEvent: { error: 'error loading image' },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
+    });
+
+    fireEvent(screen.getByLabelText('Image Loading Error Indicator'), 'longPress');
+
+    await waitFor(() => {
+      expect(onLongPressMessage).toHaveBeenCalledTimes(1);
+      expect(onLongPressMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          emitter: 'failed-image',
+        }),
+      );
+    });
   });
 
   it('should render a loading indicator and when successful render the image', async () => {

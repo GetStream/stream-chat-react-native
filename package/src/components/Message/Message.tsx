@@ -72,6 +72,7 @@ import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvo
 import { BottomSheetModal } from '../UIComponents';
 
 export type TouchableEmitter =
+  | 'failed-image'
   | 'fileAttachment'
   | 'gallery'
   | 'giphy'

@@ -36,12 +36,12 @@ const streami18n = new Streami18n({
 });
 
 describe('Giphy', () => {
-  const getAttachmentComponent = (props) => {
+  const getAttachmentComponent = (props, messageContextValue = {}) => {
     const message = generateMessage();
     return (
       <ThemeProvider>
         <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
-          <MessageProvider value={{ message }}>
+          <MessageProvider value={{ message, ...messageContextValue }}>
             <Giphy {...props} />
           </MessageProvider>
         </MessagesProvider>
@@ -321,6 +321,37 @@ describe('Giphy', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
+    });
+  });
+
+  it('should trigger long press on a failed giphy image indicator', async () => {
+    const onLongPress = jest.fn();
+
+    render(getAttachmentComponent({ attachment }, { onLongPress }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('giphy-attachment')).toBeTruthy();
+    });
+
+    act(() => {
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'error');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
+    });
+
+    act(() => {
+      fireEvent(screen.getByLabelText('Image Loading Error Indicator'), 'longPress');
+    });
+
+    await waitFor(() => {
+      expect(onLongPress).toHaveBeenCalledTimes(1);
+      expect(onLongPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          emitter: 'failed-image',
+        }),
+      );
     });
   });
 
