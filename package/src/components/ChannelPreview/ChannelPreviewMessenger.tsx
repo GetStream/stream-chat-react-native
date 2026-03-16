@@ -111,7 +111,7 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
         ]}
         testID='channel-preview-button'
       >
-        <PreviewAvatar channel={channel} />
+        <PreviewAvatar channel={channel} size='xl' />
         <View
           style={[styles.contentContainer, contentContainer]}
           testID={`channel-preview-content-${channel.id}`}
