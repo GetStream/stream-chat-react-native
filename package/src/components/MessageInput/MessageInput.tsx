@@ -195,6 +195,7 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
   Pick<AudioRecorderManagerState, 'micLocked'> & {
     editing: boolean;
     isKeyboardVisible: boolean;
+    threadList?: boolean;
     TextInputComponent?: TextInputOverrideComponent;
     isRecordingStateIdle?: boolean;
     recordingStatus?: string;
