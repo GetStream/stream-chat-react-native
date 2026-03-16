@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { OutputButtons } from './components/OutputButtons';
 
@@ -22,9 +24,12 @@ export const MessageInputTrailingView = () => {
     audioRecorderSelector,
   );
   return (recordingStatus === 'idle' || recordingStatus === 'recording') && !micLocked ? (
-    <View style={[styles.outputButtonsContainer, outputButtonsContainer]}>
+    <Animated.View
+      layout={LinearTransition.duration(200)}
+      style={[styles.outputButtonsContainer, outputButtonsContainer]}
+    >
       <OutputButtons />
-    </View>
+    </Animated.View>
   ) : null;
 };
 

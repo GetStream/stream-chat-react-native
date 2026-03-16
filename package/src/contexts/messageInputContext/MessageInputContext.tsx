@@ -261,6 +261,10 @@ export type InputMessageInputContextValue = {
    */
   MessageInputHeaderView: React.ComponentType;
   /**
+   * Custom UI component to override message input footer content.
+   */
+  MessageInputFooterView: React.ComponentType;
+  /**
    * Custom UI component to override leading side of input row.
    */
   MessageInputLeadingView: React.ComponentType;

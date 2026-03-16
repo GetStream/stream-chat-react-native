@@ -120,6 +120,7 @@ export * from './MessageInput/components/InputButtons';
 export * from './MessageInput/MessageInput';
 export * from './MessageInput/MessageComposerLeadingView';
 export * from './MessageInput/MessageComposerTrailingView';
+export * from './MessageInput/MessageInputFooterView';
 export * from './MessageInput/MessageInputHeaderView';
 export * from './MessageInput/MessageInputLeadingView';
 export * from './MessageInput/MessageInputTrailingView';

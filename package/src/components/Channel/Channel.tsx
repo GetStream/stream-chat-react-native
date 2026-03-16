@@ -190,6 +190,7 @@ import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/component
 import { SendButton as SendButtonDefault } from '../MessageInput/components/OutputButtons/SendButton';
 import { MessageComposerLeadingView as MessageComposerLeadingViewDefault } from '../MessageInput/MessageComposerLeadingView';
 import { MessageComposerTrailingView as MessageComposerTrailingViewDefault } from '../MessageInput/MessageComposerTrailingView';
+import { MessageInputFooterView as MessageInputFooterViewDefault } from '../MessageInput/MessageInputFooterView';
 import { MessageInputHeaderView as MessageInputHeaderViewDefault } from '../MessageInput/MessageInputHeaderView';
 import { MessageInputLeadingView as MessageInputLeadingViewDefault } from '../MessageInput/MessageInputLeadingView';
 import { MessageInputTrailingView as MessageInputTrailingViewDefault } from '../MessageInput/MessageInputTrailingView';
@@ -702,6 +703,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageDeleted = MessageDeletedDefault,
     MessageError = MessageErrorDefault,
     messageInputFloating = false,
+    MessageInputFooterView = MessageInputFooterViewDefault,
     MessageInputHeaderView = MessageInputHeaderViewDefault,
     MessageInputLeadingView = MessageInputLeadingViewDefault,
     MessageInputTrailingView = MessageInputTrailingViewDefault,
@@ -1889,6 +1891,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
+    MessageInputFooterView,
     MessageInputHeaderView,
     MessageInputLeadingView,
     MessageInputTrailingView,
