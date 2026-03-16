@@ -72,7 +72,8 @@ import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
 import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { BottomSheetModal } from '../UIComponents';
 
-const createMessageOverlayId = () => `message-overlay-${generateRandomId()}`;
+const createMessageOverlayId = (messageId?: string) =>
+  `message-overlay-${messageId ?? 'unknown'}-${generateRandomId()}`;
 
 export type TouchableEmitter =
   | 'failed-image'
@@ -328,15 +329,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     () => isMessageAIGenerated(message),
     [message, isMessageAIGenerated],
   );
-  const messageOverlayIdRef = useRef(createMessageOverlayId());
-  const previousMessageIdRef = useRef(message.id);
-
-  if (previousMessageIdRef.current !== message.id) {
-    previousMessageIdRef.current = message.id;
-    messageOverlayIdRef.current = createMessageOverlayId();
-  }
-
-  const messageOverlayId = messageOverlayIdRef.current;
+  const messageOverlayId = useMemo(() => createMessageOverlayId(message.id), [message.id]);
   const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
 
