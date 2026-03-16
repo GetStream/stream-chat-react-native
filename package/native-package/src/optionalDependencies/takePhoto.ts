@@ -1,4 +1,5 @@
 import { AppState, Image, PermissionsAndroid, Platform } from 'react-native';
+import mime from 'mime';
 
 let ImagePicker;
 
@@ -46,7 +47,11 @@ export const takePhoto = ImagePicker
             cancelled: true,
           };
         }
-        if (asset.type.includes('video')) {
+        const assetType =
+          asset.type ||
+          mime.getType(asset.fileName || asset.uri) ||
+          (mediaType === 'video' || asset.duration ? 'video/*' : 'image/*');
+        if (assetType.includes('video')) {
           const clearFilter = new RegExp('[.:]', 'g');
           const date = new Date().toISOString().replace(clearFilter, '_');
           return {
@@ -55,7 +60,7 @@ export const takePhoto = ImagePicker
             duration: asset.duration * 1000,
             name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
             size: asset.fileSize,
-            type: asset.type,
+            type: assetType,
             uri: asset.uri,
           };
         } else {
@@ -90,7 +95,7 @@ export const takePhoto = ImagePicker
               cancelled: false,
               name: 'image_' + date + '.' + asset.uri.split('.').pop(),
               size: asset.fileSize,
-              type: asset.type,
+              type: assetType,
               uri: asset.uri,
               ...size,
             };
