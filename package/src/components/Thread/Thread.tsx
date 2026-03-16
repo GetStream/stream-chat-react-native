@@ -76,7 +76,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     additionalMessageInputProps,
     additionalMessageListProps,
     additionalMessageFlashListProps,
-    autoFocus = true,
+    autoFocus = false,
     closeThread,
     closeThreadOnDismount = true,
     disabled,
@@ -124,8 +124,9 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const additionalTextInputProps = useMemo(
     () => ({
       editable: !disabled,
+      autoFocus,
     }),
-    [disabled],
+    [disabled, autoFocus],
   );
 
   if (!thread?.id) {
