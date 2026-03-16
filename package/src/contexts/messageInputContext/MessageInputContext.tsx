@@ -10,6 +10,7 @@ import React, {
 import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
 
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
+import { lookup as lookupMimeType } from 'mime-types';
 import {
   LocalMessage,
   MessageComposer,
@@ -652,13 +653,26 @@ export const MessageInputProvider = ({
 
   const uploadNewFile = useStableCallback(async (file: File) => {
     try {
+      if (!file?.uri) {
+        return;
+      }
+
+      const fallbackMimeType =
+        lookupMimeType(file.name || file.uri || '') ||
+        (file.duration ? 'video/*' : file.height && file.width ? 'image/*' : undefined);
+      const normalizedFile = {
+        ...file,
+        type:
+          file.type ||
+          (typeof fallbackMimeType === 'string' ? fallbackMimeType : 'application/octet-stream'),
+      };
       uploadAbortControllerRef.current.set(file.name, client.createAbortControllerForNextRequest());
-      const fileURI = file.type.includes('image')
-        ? await compressedImageURI(file, value.compressImageQuality)
-        : file.uri;
-      const updatedFile = { ...file, uri: fileURI };
+      const fileURI = normalizedFile.type.includes('image')
+        ? await compressedImageURI(normalizedFile, value.compressImageQuality)
+        : normalizedFile.uri;
+      const updatedFile = { ...normalizedFile, uri: fileURI };
       await attachmentManager.uploadFiles([updatedFile]);
-      uploadAbortControllerRef.current.delete(file.name);
+      uploadAbortControllerRef.current.delete(normalizedFile.name);
     } catch (error) {
       if (
         error instanceof Error &&

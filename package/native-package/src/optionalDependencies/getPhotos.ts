@@ -92,9 +92,12 @@ export const getPhotos = CameraRollDependency
           results.edges.map(async (edge) => {
             const originalUri = edge.node?.image?.uri;
             const type =
-              Platform.OS === 'ios'
-                ? mime.getType(edge.node.image.filename as string)
-                : edge.node.type;
+              (Platform.OS === 'ios'
+                ? mime.getType(edge.node.image.filename as string) || edge.node.type
+                : edge.node.type) ||
+              mime.getType(edge.node.image.filename as string) ||
+              mime.getType(originalUri) ||
+              (edge.node.image.playableDuration ? 'video/*' : 'image/*');
             const isImage = type.includes('image');
 
             const uri =

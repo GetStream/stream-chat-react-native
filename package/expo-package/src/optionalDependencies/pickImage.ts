@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import mime from 'mime';
 import { PickImageOptions } from 'stream-chat-react-native-core';
 let ImagePicker;
 
@@ -47,7 +48,10 @@ export const pickImage = ImagePicker
               duration: asset.duration,
               name: asset.fileName,
               size: asset.fileSize,
-              type: asset.mimeType,
+              type:
+                asset.mimeType ||
+                mime.getType(asset.fileName || asset.uri) ||
+                (asset.duration ? 'video/*' : 'image/*'),
               uri: asset.uri,
             }));
             return { assets, cancelled: false };

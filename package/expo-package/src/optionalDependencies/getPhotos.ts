@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+
 import mime from 'mime';
 
 import type { File } from 'stream-chat-react-native-core';
@@ -54,14 +55,16 @@ export const getPhotos = MediaLibrary
         const assets = await Promise.all(
           results.assets.map(async (asset) => {
             const localUri = await getLocalAssetUri(asset.id);
-            const mimeType = mime.getType(asset.filename);
+            const mimeType =
+              mime.getType(asset.filename || asset.uri) ||
+              (asset.mediaType === MediaLibrary.MediaType.video ? 'video/*' : 'image/*');
             return {
               duration: asset.duration * 1000,
               height: asset.height,
               name: asset.filename,
               size: 0,
               thumb_url: asset.mediaType === 'photo' ? undefined : asset.uri,
-              type: mimeType,
+              type: undefined,
               uri: localUri || asset.uri,
               width: asset.width,
             };

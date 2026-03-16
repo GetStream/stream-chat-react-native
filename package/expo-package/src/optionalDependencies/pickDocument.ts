@@ -1,3 +1,5 @@
+import mime from 'mime';
+
 let DocumentPicker;
 
 try {
@@ -40,7 +42,10 @@ export const pickDocument = DocumentPicker
           return {
             assets: assets.map((asset) => ({
               ...asset,
-              type: asset.mimeType,
+              type:
+                asset.mimeType ||
+                mime.getType(asset.name || asset.uri) ||
+                'application/octet-stream',
             })),
             cancelled: false,
           };
@@ -50,7 +55,10 @@ export const pickDocument = DocumentPicker
           assets: [
             {
               ...rest,
-              type: rest.mimeType,
+              type:
+                rest.mimeType ||
+                mime.getType(rest.name || rest.uri) ||
+                'application/octet-stream',
             },
           ],
           cancelled: false,
