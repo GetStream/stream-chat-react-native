@@ -22,8 +22,6 @@ export * from './AutoCompleteInput/AutoCompleteSuggestionHeader';
 export * from './AutoCompleteInput/AutoCompleteSuggestionItem';
 export * from './AutoCompleteInput/AutoCompleteSuggestionList';
 
-export * from './Avatar/GroupAvatar';
-
 export * from './Channel/Channel';
 export * from './Channel/hooks/useCreateChannelContext';
 export * from './Channel/hooks/useCreateInputMessageInputContext';
