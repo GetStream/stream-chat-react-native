@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useState } from 'react';
+import React, { PropsWithChildren, createContext, useState } from 'react';
 import { Channel as ChannelType } from 'stream-chat';
 import { ThreadContextValue } from 'stream-chat-expo';
 

@@ -4,7 +4,7 @@ import {
   Channel,
   MessageInput,
   useChatContext,
-  MessageFlashList,
+  MessageList,
   ThreadContextValue,
 } from 'stream-chat-expo';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -78,7 +78,7 @@ export default function ChannelScreen() {
       >
         <Stack.Screen options={{ title: 'Channel Screen' }} />
 
-        <MessageFlashList
+        <MessageList
           onThreadSelect={(thread: ThreadContextValue['thread']) => {
             setThread(thread);
             router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
