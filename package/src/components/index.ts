@@ -33,37 +33,34 @@ export * from './Channel/hooks/useCreateThreadContext';
 export * from './Channel/hooks/useCreateTypingContext';
 export * from './Channel/hooks/useTargetedMessage';
 
+/** Channel List exports*/
 export * from './ChannelList/ChannelList';
 export * from './ChannelList/ChannelListFooterLoadingIndicator';
 export * from './ChannelList/ChannelListHeaderErrorIndicator';
 export * from './ChannelList/ChannelListHeaderNetworkDownIndicator';
 export * from './ChannelList/ChannelListLoadingIndicator';
 export * from './ChannelList/ChannelListMessenger';
-export * from './ChannelList/hooks/listeners/useChannelUpdated';
-export * from './ChannelList/hooks/useCreateChannelsContext';
-export * from './ChannelList/hooks/usePaginatedChannels';
-export * from './ChannelList/hooks/useChannelActionItems';
-export * from './ChannelList/hooks/useChannelActionItemsById';
-export * from './ChannelList/hooks/useChannelMembershipState';
 export * from './ChannelList/Skeleton';
+export * from './ChannelList/hooks';
 
+/** Channel Preview exports */
+export * from './ChannelPreview/ChannelDetailsBottomSheet';
+export * from './ChannelPreview/ChannelLastMessagePreview';
+export * from './ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 export * from './ChannelPreview/ChannelPreview';
+export * from './ChannelPreview/ChannelPreviewMessage';
 export * from './ChannelPreview/ChannelPreviewMessenger';
+export * from './ChannelPreview/ChannelPreviewMutedStatus';
+export * from './ChannelPreview/ChannelLastMessagePreview';
 export * from './ChannelPreview/ChannelPreviewStatus';
 export * from './ChannelPreview/ChannelPreviewTitle';
+export * from './ChannelPreview/ChannelPreviewTypingIndicator';
 export * from './ChannelPreview/ChannelPreviewUnreadCount';
-export * from './ChannelPreview/hooks/useChannelPreviewDisplayName';
-export * from './ChannelPreview/hooks/useChannelPreviewDisplayPresence';
-export * from './ChannelPreview/hooks/useChannelPreviewData';
-export * from './ChannelPreview/hooks/useIsChannelMuted';
-export * from './ChannelPreview/ChannelMessagePreviewDeliveryStatus';
+export * from './ChannelPreview/hooks';
 
+/** Chat exports */
 export * from './Chat/Chat';
-export * from './Chat/hooks/useCreateChatClient';
-export * from './Chat/hooks/useCreateChatContext';
-export * from './Chat/hooks/useIsOnline';
-export * from './Chat/hooks/useMutedUsers';
-export * from './Chat/hooks/useSyncDatabase';
+export * from './Chat/hooks';
 
 export * from './ImageGallery/ImageGallery';
 export * from './ImageGallery/components/AnimatedGalleryImage';

@@ -7,11 +7,11 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useMessagePreviewIcon, useMessagePreviewText } from '../../hooks';
 import { primitives } from '../../theme';
 
-export type ChannelMessagePreviewProps = {
+export type ChannelLastMessagePreviewProps = {
   message: LocalMessage | MessageResponse | DraftMessage;
 };
 
-export const ChannelMessagePreview = ({ message }: ChannelMessagePreviewProps) => {
+export const ChannelLastMessagePreview = ({ message }: ChannelLastMessagePreviewProps) => {
   const isMessageDeleted = message?.type === 'deleted';
   const {
     theme: { semantics },

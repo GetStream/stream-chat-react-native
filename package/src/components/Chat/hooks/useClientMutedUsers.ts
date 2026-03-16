@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { Event, Mute, StreamChat } from 'stream-chat';
 
-export const useMutedUsers = (client: StreamChat) => {
+export const useClientMutedUsers = (client: StreamChat) => {
   const [mutedUsers, setMutedUsers] = useState<Mute[]>(client?.mutedUsers || []);
 
   useEffect(() => {

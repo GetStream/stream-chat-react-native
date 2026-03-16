@@ -51,7 +51,10 @@ export type ChannelListProps = Partial<
     | 'PreviewMutedStatus'
     | 'PreviewStatus'
     | 'PreviewTitle'
+    | 'PreviewLastMessage'
     | 'PreviewUnreadCount'
+    | 'PreviewTypingIndicator'
+    | 'PreviewMessageDeliveryStatus'
     | 'ChannelDetailsBottomSheet'
     | 'getChannelActionItems'
     | 'swipeActionsEnabled'
@@ -284,9 +287,12 @@ export const ChannelList = (props: ChannelListProps) => {
     PreviewAvatar,
     PreviewMessage,
     PreviewMutedStatus,
+    PreviewLastMessage,
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    PreviewTypingIndicator,
+    PreviewMessageDeliveryStatus,
     ChannelDetailsBottomSheet,
     setFlatListRef,
     Skeleton = SkeletonDefault,
@@ -417,7 +423,10 @@ export const ChannelList = (props: ChannelListProps) => {
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
+    PreviewTypingIndicator,
+    PreviewMessageDeliveryStatus,
     ChannelDetailsBottomSheet,
+    PreviewLastMessage,
     swipeActionsEnabled,
     refreshing,
     refreshList,
