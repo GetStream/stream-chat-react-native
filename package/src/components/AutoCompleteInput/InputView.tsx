@@ -6,7 +6,7 @@ import { AutoCompleteInput } from './AutoCompleteInput';
 import { CommandChip } from '../MessageInput/CommandChip';
 import { ShowThreadMessageInChannelButton } from '../MessageInput/ShowThreadMessageInChannelButton';
 
-type InputViewProps = React.ComponentProps<typeof AutoCompleteInput>;
+export type InputViewProps = React.ComponentProps<typeof AutoCompleteInput>;
 
 export const InputView = (props: InputViewProps) => (
   <View style={styles.container}>

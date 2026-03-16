@@ -131,6 +131,7 @@ import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent }
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
+import { InputView as InputViewDefault } from '../AutoCompleteInput/InputView';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import {
   LoadingErrorIndicator as LoadingErrorIndicatorDefault,
@@ -667,6 +668,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
+    InputView = InputViewDefault,
     InputButtons = InputButtonsDefault,
     MessageComposerLeadingView = MessageComposerLeadingViewDefault,
     MessageComposerTrailingView = MessageComposerTrailingViewDefault,
@@ -1886,6 +1888,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasImagePicker,
     ImageAttachmentUploadPreview,
     Input,
+    InputView,
     InputButtons,
     MessageComposerLeadingView,
     MessageComposerTrailingView,

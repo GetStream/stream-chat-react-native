@@ -55,7 +55,6 @@ import { AudioRecorderManagerState } from '../../state-store/audio-recorder-mana
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { type TextInputOverrideComponent } from '../AutoCompleteInput/AutoCompleteInput';
-import { InputView } from '../AutoCompleteInput/InputView';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
@@ -170,6 +169,7 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
     | 'Input'
+    | 'InputView'
     | 'inputBoxRef'
     | 'InputButtons'
     | 'MessageComposerLeadingView'
@@ -220,6 +220,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     CreatePollContent,
     createPollOptionGap,
     editing,
+    InputView,
     MessageComposerLeadingView,
     MessageComposerTrailingView,
     messageInputFloating,
@@ -674,6 +675,7 @@ export const MessageInput = (props: MessageInputProps) => {
     compressImageQuality,
     CreatePollContent,
     Input,
+    InputView,
     inputBoxRef,
     InputButtons,
     MessageComposerLeadingView,
@@ -741,6 +743,7 @@ export const MessageInput = (props: MessageInputProps) => {
         CreatePollContent,
         editing,
         Input,
+        InputView,
         inputBoxRef,
         InputButtons,
         MessageComposerLeadingView,
