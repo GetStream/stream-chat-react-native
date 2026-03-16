@@ -56,6 +56,11 @@ export type MessageContextValue = {
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: LocalMessage;
+  /**
+   * Stable UI-instance identifier for the rendered message.
+   * Used for overlay state so two rendered instances of the same message do not collide.
+   */
+  messageOverlayId: string;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
