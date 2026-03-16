@@ -58,6 +58,7 @@ describe('PortalWhileClosingView', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
   });
@@ -72,6 +73,7 @@ describe('PortalWhileClosingView', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
 

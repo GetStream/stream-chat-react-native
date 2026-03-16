@@ -10,7 +10,13 @@ import { useStateStore } from '../hooks';
 type OverlayState = {
   closingPortalHostBlacklist: string[];
   id: string | undefined;
+  messageId: string | undefined;
   closing: boolean;
+};
+
+type OpenOverlayParams = {
+  id: string;
+  messageId?: string;
 };
 
 export type Rect = { x: number; y: number; w: number; h: number } | undefined;
@@ -26,6 +32,7 @@ const DefaultState = {
   closingPortalHostBlacklist: [],
   closing: false,
   id: undefined,
+  messageId: undefined,
 };
 const DefaultClosingPortalLayoutsState: ClosingPortalLayoutsState = {
   layouts: {},
@@ -71,12 +78,14 @@ export const bumpOverlayLayoutRevision = (closeCorrectionDeltaY = 0) => {
   sharedValueController?.incrementCloseCorrectionY(closeCorrectionDeltaY);
 };
 
-export const openOverlay = (id: string) => {
+export const openOverlay = (params: OpenOverlayParams | string) => {
+  const overlayPayload = typeof params === 'string' ? { id: params, messageId: undefined } : params;
+
   sharedValueController?.resetCloseCorrectionY();
   overlayStore.partialNext({
     closing: false,
     closingPortalHostBlacklist: getCurrentClosingPortalHostBlacklist(),
-    id,
+    ...overlayPayload,
   });
 };
 
@@ -216,6 +225,7 @@ overlayStore.subscribeWithSelector(actionQueueSelector, async ({ active }) => {
 const selector = (nextState: OverlayState) => ({
   closing: nextState.closing,
   id: nextState.id,
+  messageId: nextState.messageId,
 });
 
 export const useOverlayController = () => {
@@ -323,11 +333,11 @@ export const useClosingPortalLayouts = () => {
 
 const noOpObject = { active: false, closing: false };
 
-export const useIsOverlayActive = (messageId: string) => {
+export const useIsOverlayActive = (id: string) => {
   const messageOverlaySelector = useCallback(
     (nextState: OverlayState) =>
-      nextState.id === messageId ? { active: true, closing: nextState.closing } : noOpObject,
-    [messageId],
+      nextState.id === id ? { active: true, closing: nextState.closing } : noOpObject,
+    [id],
   );
 
   return useStateStore(overlayStore, messageOverlaySelector);

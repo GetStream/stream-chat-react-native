@@ -351,7 +351,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       const layout = await measureInWindow(messageWrapperRef, insets);
       setRect(layout);
       setOverlayMessageH(layout);
-      openOverlay(messageOverlayId);
+      openOverlay({ id: messageOverlayId, messageId: message.id });
     } catch (e) {
       console.error(e);
     }

@@ -66,6 +66,7 @@ describe('useShouldUseOverlayStyles', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
   });
@@ -79,6 +80,7 @@ describe('useShouldUseOverlayStyles', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
   });
