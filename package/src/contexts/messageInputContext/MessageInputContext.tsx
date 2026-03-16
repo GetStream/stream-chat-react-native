@@ -33,6 +33,7 @@ import {
   PollContentProps,
   StopMessageStreamingButtonProps,
 } from '../../components';
+import type { InputViewProps } from '../../components/AutoCompleteInput/InputView';
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
 import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
@@ -261,6 +262,10 @@ export type InputMessageInputContextValue = {
    */
   MessageInputHeaderView: React.ComponentType;
   /**
+   * Custom UI component to override message input footer content.
+   */
+  MessageInputFooterView: React.ComponentType;
+  /**
    * Custom UI component to override leading side of input row.
    */
   MessageInputLeadingView: React.ComponentType;
@@ -333,6 +338,12 @@ export type InputMessageInputContextValue = {
         getUsers: () => UserResponse[];
       }
   >;
+  /**
+   * Custom UI component to override the combined input body view.
+   * Defaults to
+   * [InputView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AutoCompleteInput/InputView.tsx)
+   */
+  InputView: React.ComponentType<InputViewProps>;
   /**
    * Custom UI component to override buttons on left side of input box
    * Defaults to

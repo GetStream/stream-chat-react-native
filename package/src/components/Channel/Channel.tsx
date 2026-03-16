@@ -131,6 +131,7 @@ import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent }
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
+import { InputView as InputViewDefault } from '../AutoCompleteInput/InputView';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import {
   LoadingErrorIndicator as LoadingErrorIndicatorDefault,
@@ -190,6 +191,7 @@ import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/component
 import { SendButton as SendButtonDefault } from '../MessageInput/components/OutputButtons/SendButton';
 import { MessageComposerLeadingView as MessageComposerLeadingViewDefault } from '../MessageInput/MessageComposerLeadingView';
 import { MessageComposerTrailingView as MessageComposerTrailingViewDefault } from '../MessageInput/MessageComposerTrailingView';
+import { MessageInputFooterView as MessageInputFooterViewDefault } from '../MessageInput/MessageInputFooterView';
 import { MessageInputHeaderView as MessageInputHeaderViewDefault } from '../MessageInput/MessageInputHeaderView';
 import { MessageInputLeadingView as MessageInputLeadingViewDefault } from '../MessageInput/MessageInputLeadingView';
 import { MessageInputTrailingView as MessageInputTrailingViewDefault } from '../MessageInput/MessageInputTrailingView';
@@ -666,6 +668,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
+    InputView = InputViewDefault,
     InputButtons = InputButtonsDefault,
     MessageComposerLeadingView = MessageComposerLeadingViewDefault,
     MessageComposerTrailingView = MessageComposerTrailingViewDefault,
@@ -702,6 +705,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageDeleted = MessageDeletedDefault,
     MessageError = MessageErrorDefault,
     messageInputFloating = false,
+    MessageInputFooterView = MessageInputFooterViewDefault,
     MessageInputHeaderView = MessageInputHeaderViewDefault,
     MessageInputLeadingView = MessageInputLeadingViewDefault,
     MessageInputTrailingView = MessageInputTrailingViewDefault,
@@ -1884,11 +1888,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasImagePicker,
     ImageAttachmentUploadPreview,
     Input,
+    InputView,
     InputButtons,
     MessageComposerLeadingView,
     MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
+    MessageInputFooterView,
     MessageInputHeaderView,
     MessageInputLeadingView,
     MessageInputTrailingView,

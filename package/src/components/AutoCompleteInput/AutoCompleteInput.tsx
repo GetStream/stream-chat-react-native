@@ -252,6 +252,7 @@ const useStyles = () => {
         paddingLeft: 16,
         paddingVertical: 12,
         textAlignVertical: 'center', // for android vertical text centering
+        alignSelf: 'center',
       },
     });
   }, [semantics]);

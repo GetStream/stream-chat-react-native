@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
@@ -76,7 +76,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     additionalMessageInputProps,
     additionalMessageListProps,
     additionalMessageFlashListProps,
-    autoFocus = true,
+    autoFocus = false,
     closeThread,
     closeThreadOnDismount = true,
     disabled,
@@ -121,6 +121,14 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     [parentMessagePreventPress],
   );
 
+  const additionalTextInputProps = useMemo(
+    () => ({
+      editable: !disabled,
+      autoFocus,
+    }),
+    [disabled, autoFocus],
+  );
+
   if (!thread?.id) {
     return null;
   }
@@ -141,10 +149,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
         />
       )}
       <MessageInput
-        additionalTextInputProps={{
-          autoFocus,
-          editable: !disabled,
-        }}
+        additionalTextInputProps={additionalTextInputProps}
         threadList
         {...additionalMessageInputProps}
       />

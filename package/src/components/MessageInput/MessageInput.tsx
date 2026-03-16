@@ -54,10 +54,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import {
-  AutoCompleteInput,
-  type TextInputOverrideComponent,
-} from '../AutoCompleteInput/AutoCompleteInput';
+import { type TextInputOverrideComponent } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
@@ -153,7 +150,7 @@ const useStyles = () => {
 };
 
 type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'channel' | 'members' | 'threadList' | 'watchers'> &
+  Pick<ChannelContextValue, 'channel' | 'members' | 'watchers'> &
   Pick<
     MessageInputContextValue,
     | 'audioRecorderManager'
@@ -172,6 +169,7 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
     | 'Input'
+    | 'InputView'
     | 'inputBoxRef'
     | 'InputButtons'
     | 'MessageComposerLeadingView'
@@ -179,10 +177,8 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
     | 'messageInputFloating'
     | 'messageInputHeightStore'
     | 'MessageInputHeaderView'
-    | 'MessageInputLeadingView'
     | 'MessageInputTrailingView'
     | 'SendButton'
-    | 'ShowThreadMessageInChannelButton'
     | 'StartAudioRecordingButton'
     | 'uploadNewFile'
     | 'openPollCreationDialog'
@@ -199,6 +195,7 @@ type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
   Pick<AudioRecorderManagerState, 'micLocked'> & {
     editing: boolean;
     isKeyboardVisible: boolean;
+    threadList?: boolean;
     TextInputComponent?: TextInputOverrideComponent;
     isRecordingStateIdle?: boolean;
     recordingStatus?: string;
@@ -223,21 +220,19 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
     CreatePollContent,
     createPollOptionGap,
     editing,
+    InputView,
     MessageComposerLeadingView,
     MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
     MessageInputHeaderView,
-    MessageInputLeadingView,
     MessageInputTrailingView,
     Input,
     inputBoxRef,
     isKeyboardVisible,
     members,
-    threadList,
     sendMessage,
     showPollCreationDialog,
-    ShowThreadMessageInChannelButton,
     TextInputComponent,
     watchers,
     micLocked,
@@ -451,14 +446,10 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                       {!isRecordingStateIdle ? (
                         <AudioRecorder slideToCancelStyle={slideToCancelAnimatedStyle} />
                       ) : (
-                        <>
-                          <MessageInputLeadingView />
-
-                          <AutoCompleteInput
-                            TextInputComponent={TextInputComponent}
-                            {...additionalTextInputProps}
-                          />
-                        </>
+                        <InputView
+                          TextInputComponent={TextInputComponent}
+                          {...additionalTextInputProps}
+                        />
                       )}
 
                       <MessageInputTrailingView />
@@ -467,7 +458,6 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                 </Animated.View>
               </View>
             )}
-            <ShowThreadMessageInChannelButton threadList={threadList} />
             {!isRecordingStateIdle ? (
               <View
                 style={[
@@ -538,7 +528,6 @@ const areEqual = (
     openPollCreationDialog: prevOpenPollCreationDialog,
     showPollCreationDialog: prevShowPollCreationDialog,
     t: prevT,
-    threadList: prevThreadList,
     micLocked: prevMicLocked,
     isRecordingStateIdle: prevIsRecordingStateIdle,
     recordingStatus: prevRecordingStatus,
@@ -558,7 +547,6 @@ const areEqual = (
     openPollCreationDialog: nextOpenPollCreationDialog,
     showPollCreationDialog: nextShowPollCreationDialog,
     t: nextT,
-    threadList: nextThreadList,
     micLocked: nextMicLocked,
     isRecordingStateIdle: nextIsRecordingStateIdle,
     recordingStatus: nextRecordingStatus,
@@ -627,11 +615,6 @@ const areEqual = (
     return false;
   }
 
-  const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) {
-    return false;
-  }
-
   const micLockedEqual = prevMicLocked === nextMicLocked;
   if (!micLockedEqual) {
     return false;
@@ -670,7 +653,7 @@ export const MessageInput = (props: MessageInputProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { channel, members, threadList, watchers } = useChannelContext();
+  const { channel, members, watchers } = useChannelContext();
 
   const {
     audioRecorderManager,
@@ -692,6 +675,7 @@ export const MessageInput = (props: MessageInputProps) => {
     compressImageQuality,
     CreatePollContent,
     Input,
+    InputView,
     inputBoxRef,
     InputButtons,
     MessageComposerLeadingView,
@@ -699,14 +683,12 @@ export const MessageInput = (props: MessageInputProps) => {
     messageInputFloating,
     messageInputHeightStore,
     MessageInputHeaderView,
-    MessageInputLeadingView,
     MessageInputTrailingView,
     openPollCreationDialog,
     SendButton,
     sendMessage,
     SendMessageDisallowedIndicator,
     showPollCreationDialog,
-    ShowThreadMessageInChannelButton,
     StartAudioRecordingButton,
     StopMessageStreamingButton,
     uploadNewFile,
@@ -761,6 +743,7 @@ export const MessageInput = (props: MessageInputProps) => {
         CreatePollContent,
         editing,
         Input,
+        InputView,
         inputBoxRef,
         InputButtons,
         MessageComposerLeadingView,
@@ -771,7 +754,6 @@ export const MessageInput = (props: MessageInputProps) => {
         messageInputFloating,
         messageInputHeightStore,
         MessageInputHeaderView,
-        MessageInputLeadingView,
         MessageInputTrailingView,
         openPollCreationDialog,
         Reply,
@@ -779,11 +761,9 @@ export const MessageInput = (props: MessageInputProps) => {
         sendMessage,
         SendMessageDisallowedIndicator,
         showPollCreationDialog,
-        ShowThreadMessageInChannelButton,
         StartAudioRecordingButton,
         StopMessageStreamingButton,
         t,
-        threadList,
         uploadNewFile,
         watchers,
       }}

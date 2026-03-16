@@ -62,6 +62,7 @@ import {
 import { FileTypes } from '../../types/types';
 import {
   checkMessageEquality,
+  generateRandomId,
   hasOnlyEmojis,
   isBlockedMessage,
   isBouncedMessage,
@@ -70,6 +71,9 @@ import {
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
 import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { BottomSheetModal } from '../UIComponents';
+
+const createMessageOverlayId = (messageId?: string) =>
+  `message-overlay-${messageId ?? 'unknown'}-${generateRandomId()}`;
 
 export type TouchableEmitter =
   | 'failed-image'
@@ -325,6 +329,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     () => isMessageAIGenerated(message),
     [message, isMessageAIGenerated],
   );
+  const messageOverlayId = useMemo(() => createMessageOverlayId(message.id), [message.id]);
   const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
 
@@ -339,7 +344,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       const layout = await measureInWindow(messageWrapperRef, insets);
       setRect(layout);
       setOverlayMessageH(layout);
-      openOverlay(message.id);
+      openOverlay({ id: messageOverlayId, messageId: message.id });
     } catch (e) {
       console.error(e);
     }
@@ -685,7 +690,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   };
 
   const frozenMessage = useRef(message);
-  const { active: overlayActive } = useIsOverlayActive(message.id);
+  const { active: overlayActive } = useIsOverlayActive(messageOverlayId);
 
   const messageHasOnlySingleAttachment =
     !message.text && !message.quoted_message && message.attachments?.length === 1;
@@ -709,6 +714,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     members,
     message: overlayActive ? frozenMessage.current : message,
+    messageOverlayId,
     messageContentOrder,
     messageHasOnlySingleAttachment,
     myMessageTheme: messagesContext.myMessageTheme,

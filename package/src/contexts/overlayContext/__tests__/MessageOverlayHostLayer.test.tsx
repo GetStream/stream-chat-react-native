@@ -111,6 +111,7 @@ describe('MessageOverlayHostLayer', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
   });
@@ -124,6 +125,7 @@ describe('MessageOverlayHostLayer', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
 
