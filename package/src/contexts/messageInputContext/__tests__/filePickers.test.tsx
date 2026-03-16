@@ -122,7 +122,6 @@ describe("MessageInputContext's pickFile", () => {
       });
     },
   );
-
 });
 
 describe("MessageInputContext's pickAndUploadImageFromNativePicker", () => {

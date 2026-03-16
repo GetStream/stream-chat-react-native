@@ -64,7 +64,7 @@ export const getPhotos = MediaLibrary
               name: asset.filename,
               size: 0,
               thumb_url: asset.mediaType === 'photo' ? undefined : asset.uri,
-              type: undefined,
+              type: mimeType,
               uri: localUri || asset.uri,
               width: asset.width,
             };
