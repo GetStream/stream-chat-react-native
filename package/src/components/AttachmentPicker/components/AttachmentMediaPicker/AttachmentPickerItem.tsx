@@ -180,7 +180,7 @@ export const renderAttachmentPickerItem = ({ item }: { item: PhotoContentItemTyp
    * Native iOS - Gives `image` or `video`
    * Expo Android/iOS - Gives `photo` or `video`
    **/
-  const isVideoType = item.type.includes('video');
+  const isVideoType = item.type?.includes('video');
 
   if (isVideoType) {
     return <AttachmentVideo asset={item} />;

@@ -1,5 +1,7 @@
 import { Image, Platform } from 'react-native';
 
+import mime from 'mime';
+
 let ImagePicker;
 
 try {
@@ -54,7 +56,9 @@ export const takePhoto = ImagePicker
           if (!photo) {
             return { cancelled: true };
           }
-          if (photo.mimeType.includes('video')) {
+          const mimeType =
+            photo.mimeType || mime.getType(photo.uri) || (photo.duration ? 'video/*' : 'image/*');
+          if (mimeType.includes('video')) {
             const clearFilter = new RegExp('[.:]', 'g');
             const date = new Date().toISOString().replace(clearFilter, '_');
             return {
@@ -63,7 +67,7 @@ export const takePhoto = ImagePicker
               duration: photo.duration, // in milliseconds
               name: 'video_recording_' + date + '.' + photo.uri.split('.').pop(),
               size: photo.fileSize,
-              type: photo.mimeType,
+              type: mimeType,
               uri: photo.uri,
             };
           } else {
@@ -96,7 +100,7 @@ export const takePhoto = ImagePicker
                 cancelled: false,
                 name: 'image_' + date + '.' + photo.uri.split('.').pop(),
                 size: photo.fileSize,
-                type: photo.mimeType,
+                type: mimeType,
                 uri: photo.uri,
                 ...size,
               };
