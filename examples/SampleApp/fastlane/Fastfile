@@ -36,11 +36,12 @@ platform :ios do
     version_codes = []
     livestates.each do |livestate|
       vc = app_store_build_number(
+        api_key: appstore_api_key,
         live: livestate,
         app_identifier: bundle_id
       )
-    rescue StandardError
-      puts("No app store build found for liveState: #{livestate} bundle_id: #{bundle_id}")
+    rescue StandardError => e
+      UI.user_error!("app_store_build_number failed for liveState: #{livestate} bundle_id: #{bundle_id}. #{e.message}")
     else
       version_codes.append(vc)
     end
@@ -63,6 +64,10 @@ platform :ios do
       current_build_number = latest_appstore_version_code
 
       puts("Current build number: #{current_build_number}")
+
+      if current_build_number.nil?
+        UI.user_error!("No App Store build number found for bundle_id: #{bundle_id}")
+      end
 
       increment_build_number(
         build_number: current_build_number + 1,
