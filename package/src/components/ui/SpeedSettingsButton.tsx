@@ -35,7 +35,7 @@ export const SpeedSettingsButton = ({
       style={({ pressed }) => [
         styles.container,
         {
-          backgroundColor: pressed ? semantics.backgroundCorePressed : 'transparent',
+          backgroundColor: pressed ? semantics.backgroundUtilityPressed : 'transparent',
         },
         containerStyle,
       ]}

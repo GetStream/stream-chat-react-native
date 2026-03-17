@@ -232,7 +232,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-      backgroundColor: pressed.value ? semantics.backgroundCorePressed : 'transparent',
+      backgroundColor: pressed.value ? semantics.backgroundUtilityPressed : 'transparent',
     };
   });
 

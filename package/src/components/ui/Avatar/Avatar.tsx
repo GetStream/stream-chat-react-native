@@ -65,12 +65,12 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { borderCoreOpacity10 } = semantics;
+  const { borderCoreOpacitySubtle } = semantics;
   return useMemo(
     () =>
       StyleSheet.create({
         border: {
-          borderColor: borderCoreOpacity10,
+          borderColor: borderCoreOpacitySubtle,
           borderWidth: 1,
         },
         container: {
@@ -81,6 +81,6 @@ const useStyles = () => {
         },
         image: {},
       }),
-    [borderCoreOpacity10],
+    [borderCoreOpacitySubtle],
   );
 };

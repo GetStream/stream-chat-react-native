@@ -62,7 +62,7 @@ export const ThreadListUnreadBanner = () => {
         styles.container,
         {
           backgroundColor: pressed
-            ? semantics.backgroundCorePressed
+            ? semantics.backgroundUtilityPressed
             : semantics.backgroundCoreSurface,
         },
       ]}

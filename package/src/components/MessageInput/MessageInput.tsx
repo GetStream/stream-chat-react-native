@@ -74,11 +74,11 @@ const useStyles = () => {
         alignItems: 'center',
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
       },
       pollSafeArea: {
         flex: 1,
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
       },
       container: {
         alignItems: 'center',
@@ -107,7 +107,7 @@ const useStyles = () => {
         borderWidth: 1,
         flex: 1,
         flexDirection: 'row',
-        backgroundColor: semantics.composerBg,
+        backgroundColor: semantics.backgroundCoreElevation1,
         borderColor: semantics.borderCoreDefault,
       },
       inputButtonsContainer: {
@@ -132,7 +132,7 @@ const useStyles = () => {
         shadowRadius: 12,
       },
       suggestionsListContainer: {
-        backgroundColor: semantics.composerBg,
+        backgroundColor: semantics.backgroundCoreElevation1,
         position: 'absolute',
         width: '100%',
       },
@@ -404,7 +404,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
                     styles.wrapper,
                     {
                       borderTopWidth: 1,
-                      backgroundColor: semantics.composerBg,
+                      backgroundColor: semantics.backgroundCoreElevation1,
                       borderColor: semantics.borderCoreDefault,
                       // paddingBottom: BOTTOM_OFFSET,
                       paddingBottom:

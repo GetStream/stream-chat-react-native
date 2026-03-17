@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, StyleSheet } from 'react-native';
 
 import { renderAttachmentPickerItem } from './AttachmentPickerItem';
@@ -31,12 +31,16 @@ const useMediaPickerStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return StyleSheet.create({
-    container: {
-      flexGrow: 1,
-      backgroundColor: semantics.composerBg,
-    },
-  });
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flexGrow: 1,
+          backgroundColor: semantics.backgroundCoreElevation1,
+        },
+      }),
+    [semantics.backgroundCoreElevation1],
+  );
 };
 
 export const AttachmentMediaPickerIcon = () => {

@@ -64,7 +64,7 @@ const useStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       multipleAnswersWrapper: {
-        backgroundColor: semantics.inputOptionCardBg,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
         padding: primitives.spacingMd,
         borderRadius: primitives.radiusLg,
         gap: primitives.spacingMd,

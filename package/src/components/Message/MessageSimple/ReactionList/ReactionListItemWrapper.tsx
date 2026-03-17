@@ -23,9 +23,9 @@ export const ReactionListItemWrapper = (props: ReactionListItemWrapperProps) => 
           styles.container,
           {
             backgroundColor: selected
-              ? semantics.backgroundCoreSelected
+              ? semantics.backgroundUtilitySelected
               : pressed
-                ? semantics.backgroundCorePressed
+                ? semantics.backgroundUtilityPressed
                 : semantics.reactionBg,
           },
           style,

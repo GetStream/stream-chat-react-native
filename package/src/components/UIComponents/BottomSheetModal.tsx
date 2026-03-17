@@ -418,7 +418,7 @@ const useStyles = () => {
         container: {
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
         },
         contentContainer: {
           flex: 1,
@@ -444,6 +444,6 @@ const useStyles = () => {
           flex: 1,
         },
       }),
-    [semantics.backgroundCoreScrim, semantics.backgroundElevationElevation1],
+    [semantics.backgroundCoreScrim, semantics.backgroundCoreElevation1],
   );
 };

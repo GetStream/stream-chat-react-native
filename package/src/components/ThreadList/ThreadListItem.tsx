@@ -73,7 +73,7 @@ export const ThreadListItemComponent = () => {
         }}
         style={({ pressed }) => [
           styles.container,
-          { backgroundColor: pressed ? semantics.backgroundCorePressed : 'transparent' },
+          { backgroundColor: pressed ? semantics.backgroundUtilityPressed : 'transparent' },
         ]}
         testID='thread-list-item'
       >

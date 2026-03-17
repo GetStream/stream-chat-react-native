@@ -38,7 +38,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
         style={[
           styles.floatingButtonContainer,
           primitives.lightElevation1,
-          { backgroundColor: semantics.backgroundElevationElevation1 },
+          { backgroundColor: semantics.backgroundCoreElevation1 },
         ]}
       >
         <Button

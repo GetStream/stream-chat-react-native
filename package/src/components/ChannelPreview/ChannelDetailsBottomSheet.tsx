@@ -125,14 +125,14 @@ const useStyles = () => {
       StyleSheet.create({
         contentContainer: {
           flexGrow: 1,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           ...contentContainer,
         },
         headerContainer: {
           flexDirection: 'row',
           padding: primitives.spacingSm,
           gap: primitives.spacingSm,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           ...header.container,
         },
         headerMeta: {
@@ -174,7 +174,7 @@ const useStyles = () => {
       item.destructiveText,
       item.standardText,
       semantics.accentError,
-      semantics.backgroundElevationElevation1,
+      semantics.backgroundCoreElevation1,
       semantics.textPrimary,
       semantics.textTertiary,
     ],

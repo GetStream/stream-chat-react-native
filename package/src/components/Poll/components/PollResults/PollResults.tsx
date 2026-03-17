@@ -88,7 +88,7 @@ const useStyles = () => {
         scrollView: {
           flex: 1,
           padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
         },
         resultsContainer: {
           paddingVertical: primitives.spacing2xl,

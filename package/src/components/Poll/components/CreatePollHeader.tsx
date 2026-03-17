@@ -86,7 +86,7 @@ const useStyles = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: primitives.spacingMd,
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
       },
       title: {
         color: semantics.textPrimary,

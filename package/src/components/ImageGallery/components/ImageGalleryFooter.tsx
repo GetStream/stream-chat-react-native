@@ -216,7 +216,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderTopWidth: 1,
           borderTopColor: semantics.borderCoreDefault,
           ...footer.container,

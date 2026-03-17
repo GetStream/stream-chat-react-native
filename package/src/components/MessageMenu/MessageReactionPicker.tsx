@@ -196,7 +196,7 @@ const useStyles = () => {
           marginVertical: 8,
           overflow: 'visible',
           ...(isDark ? primitives.darkElevation3 : primitives.lightElevation3),
-          backgroundColor: semantics.backgroundElevationElevation2,
+          backgroundColor: semantics.backgroundCoreElevation2,
         },
         reactionListContent: {
           flexGrow: 1,
@@ -212,6 +212,6 @@ const useStyles = () => {
           paddingLeft: primitives.spacingXs,
         },
       }),
-    [isDark, semantics.backgroundElevationElevation2],
+    [isDark, semantics.backgroundCoreElevation2],
   );
 };

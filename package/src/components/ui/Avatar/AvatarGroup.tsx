@@ -216,7 +216,7 @@ const useUserAvatarGroupStyles = () => {
       StyleSheet.create({
         userAvatarWrapper: {
           borderWidth: 2,
-          borderColor: semantics.borderCoreOnDark,
+          borderColor: semantics.borderCoreInverse,
           borderRadius: primitives.radiusMax,
         },
         onlineIndicatorWrapper: {

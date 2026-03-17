@@ -32,7 +32,7 @@ const useStyles = () => {
         container: {
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           paddingHorizontal: primitives.spacing2xl,
           paddingBottom: primitives.spacing3xl,
         },
@@ -46,7 +46,7 @@ const useStyles = () => {
           maxWidth: 200,
         },
       }),
-    [semantics.backgroundElevationElevation1, semantics.textSecondary],
+    [semantics.backgroundCoreElevation1, semantics.textSecondary],
   );
 };
 
@@ -117,7 +117,7 @@ const AttachmentCommandPickerItemUI = ({
   return (
     <Pressable
       style={({ pressed }) => ({
-        backgroundColor: pressed ? semantics.backgroundCorePressed : undefined,
+        backgroundColor: pressed ? semantics.backgroundUtilityPressed : undefined,
         borderRadius: primitives.radiusSm,
       })}
       onPress={onPress}
@@ -175,10 +175,10 @@ const useCommandPickerStyle = () => {
           flexGrow: 1,
           paddingHorizontal: primitives.spacingXxs,
           paddingBottom: primitives.spacing2xl,
-          backgroundColor: semantics.composerBg,
+          backgroundColor: semantics.backgroundCoreElevation1,
         },
         title: {
-          backgroundColor: semantics.composerBg,
+          backgroundColor: semantics.backgroundCoreElevation1,
           fontWeight: primitives.typographyFontWeightSemiBold,
           fontSize: primitives.typographyFontSizeMd,
           color: semantics.textPrimary,
@@ -186,7 +186,7 @@ const useCommandPickerStyle = () => {
           paddingBottom: primitives.spacingMd,
         },
       }),
-    [semantics.composerBg, semantics.textPrimary],
+    [semantics.backgroundCoreElevation1, semantics.textPrimary],
   );
 };
 
