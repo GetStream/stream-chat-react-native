@@ -126,13 +126,13 @@ const useStyles = () => {
       StyleSheet.create({
         container: {
           maxHeight: DEFAULT_LIST_HEIGHT,
-          backgroundColor: semantics.composerBg,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderTopWidth: 1,
           borderColor: semantics.borderCoreDefault,
         },
         flatlist: {
-          backgroundColor: semantics.composerBg,
-          shadowColor: semantics.accentBlack,
+          backgroundColor: semantics.backgroundCoreElevation1,
+          shadowColor: semantics.textOnAccent,
           borderRadius: 8,
           elevation: 3,
           marginHorizontal: 8,

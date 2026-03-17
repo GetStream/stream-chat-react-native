@@ -258,7 +258,7 @@ const useStyles = () => {
       scrollView: {
         flex: 1,
         padding: primitives.spacingMd,
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
       },
       contentContainerStyle: { paddingBottom: 70 },
       title: {

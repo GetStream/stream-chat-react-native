@@ -273,7 +273,7 @@ const useStyles = () => {
           : semantics.chatBorderOnChatIncoming,
       },
       safeArea: {
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
         flex: 1,
       },
     });

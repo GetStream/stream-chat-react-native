@@ -80,7 +80,7 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
       onPress={onActionPress}
       style={({ pressed }) => [
         styles.buttonContainer,
-        { backgroundColor: pressed ? semantics.backgroundCorePressed : 'transparent' },
+        { backgroundColor: pressed ? semantics.backgroundUtilityPressed : 'transparent' },
       ]}
     >
       <View

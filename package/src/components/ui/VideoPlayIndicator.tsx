@@ -40,7 +40,7 @@ export const VideoPlayIndicator = (props: VideoPlayIndicatorProps) => {
   return (
     <View style={[styles.container, sizes[size]]}>
       <Play
-        fill={semantics.controlPlayControlIcon}
+        fill={semantics.controlPlayButtonIcon}
         height={iconSizes[size]}
         width={iconSizes[size]}
       />
@@ -53,16 +53,16 @@ const useStyles = () => {
     theme: { semantics },
   } = useTheme();
 
-  const { controlPlayControlBg } = semantics;
+  const { controlPlayButtonBg } = semantics;
 
   return useMemo(() => {
     return StyleSheet.create({
       container: {
         alignItems: 'center',
-        backgroundColor: controlPlayControlBg,
+        backgroundColor: controlPlayButtonBg,
         borderRadius: primitives.radiusMax,
         justifyContent: 'center',
       },
     });
-  }, [controlPlayControlBg]);
+  }, [controlPlayButtonBg]);
 };

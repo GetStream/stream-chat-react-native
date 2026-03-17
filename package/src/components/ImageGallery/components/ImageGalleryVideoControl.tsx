@@ -120,7 +120,7 @@ const useStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       container: {
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-evenly',

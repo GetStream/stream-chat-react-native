@@ -164,7 +164,7 @@ const useStyles = () => {
           marginLeft: primitives.spacingMd,
         },
         safeArea: {
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           flex: 1,
         },
       }),

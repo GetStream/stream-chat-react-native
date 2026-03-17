@@ -89,7 +89,7 @@ const useStyles = () => {
     theme: { semantics },
   } = useTheme();
 
-  const { borderCoreOpacity10 } = semantics;
+  const { borderCoreOpacitySubtle } = semantics;
 
   return useMemo(
     () =>
@@ -101,7 +101,7 @@ const useStyles = () => {
           justifyContent: 'center',
           alignItems: 'center',
           borderRadius: primitives.radiusLg,
-          borderColor: borderCoreOpacity10,
+          borderColor: borderCoreOpacitySubtle,
           borderWidth: 1,
           overflow: 'hidden',
         },
@@ -109,6 +109,6 @@ const useStyles = () => {
           padding: primitives.spacingXxs,
         },
       }),
-    [borderCoreOpacity10],
+    [borderCoreOpacitySubtle],
   );
 };

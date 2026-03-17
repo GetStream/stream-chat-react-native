@@ -109,9 +109,9 @@ const useStyles = () => {
           textAlign: 'center',
         },
         selectedEmoji: {
-          backgroundColor: semantics.backgroundCoreSelected,
+          backgroundColor: semantics.backgroundUtilitySelected,
         },
       }),
-    [semantics.backgroundCoreSelected],
+    [semantics.backgroundUtilitySelected],
   );
 };

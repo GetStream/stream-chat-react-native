@@ -169,7 +169,7 @@ const useImageUploadNotSupportedIndicatorStyles = () => {
   } = useTheme();
   return StyleSheet.create({
     container: {
-      backgroundColor: semantics.backgroundElevationElevation0,
+      backgroundColor: semantics.backgroundCoreElevation0,
       borderRadius: primitives.radiusMax,
       position: 'absolute',
       left: primitives.spacingXxs,

@@ -46,7 +46,7 @@ export const useButtonStyles = ({ variant, type }: ButtonStylesConfig) => {
         backgroundColor: semantics.buttonPrimaryBg,
         borderColor: undefined,
         disabledForegroundColor: semantics.textDisabled,
-        disabledBackgroundColor: semantics.backgroundCoreDisabled,
+        disabledBackgroundColor: semantics.backgroundUtilityDisabled,
         disabledBorderColor: undefined,
       },
       primaryOutline: {
@@ -70,7 +70,7 @@ export const useButtonStyles = ({ variant, type }: ButtonStylesConfig) => {
         backgroundColor: semantics.buttonSecondaryBg,
         borderColor: undefined,
         disabledForegroundColor: semantics.textDisabled,
-        disabledBackgroundColor: semantics.backgroundCoreDisabled,
+        disabledBackgroundColor: semantics.backgroundUtilityDisabled,
         disabledBorderColor: undefined,
       },
       secondaryOutline: {
@@ -94,7 +94,7 @@ export const useButtonStyles = ({ variant, type }: ButtonStylesConfig) => {
         backgroundColor: semantics.buttonDestructiveBg,
         borderColor: undefined,
         disabledForegroundColor: semantics.textDisabled,
-        disabledBackgroundColor: semantics.backgroundCoreDisabled,
+        disabledBackgroundColor: semantics.backgroundUtilityDisabled,
         disabledBorderColor: undefined,
       },
       destructiveOutline: {

@@ -98,9 +98,9 @@ export const Button = ({
         style={({ pressed }) => [
           {
             backgroundColor: pressed
-              ? semantics.backgroundCorePressed
+              ? semantics.backgroundUtilityPressed
               : selected
-                ? semantics.backgroundCoreSelected
+                ? semantics.backgroundUtilitySelected
                 : 'transparent',
             paddingHorizontal: iconOnly ? 0 : buttonPadding[size],
           },

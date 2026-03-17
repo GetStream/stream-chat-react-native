@@ -270,7 +270,7 @@ const useStyles = () => {
           width: 40,
         },
         contentBorder: {
-          borderColor: semantics.borderCoreOpacity10,
+          borderColor: semantics.borderCoreOpacitySubtle,
         },
         dismissWrapper: {
           position: 'absolute',
