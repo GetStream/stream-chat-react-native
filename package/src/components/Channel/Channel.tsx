@@ -1102,7 +1102,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       const parentID = thread.id;
 
       const limit = 50;
-      channel.state.threads[parentID] = [];
+      // channel.state.threads[parentID] = [];
       const queryResponse = await channel.getReplies(parentID, {
         limit,
       });
