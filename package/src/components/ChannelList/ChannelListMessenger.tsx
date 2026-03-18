@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 // RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
 // See https://github.com/software-mansion/react-native-gesture-handler/issues/598
 import { FlatList, StyleSheet, View } from 'react-native';
@@ -15,12 +15,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { useStableCallback } from '../../hooks';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
-
-const styles = StyleSheet.create({
-  flatList: { flex: 1 },
-  flatListContentContainer: { flexGrow: 1 },
-  statusIndicator: { left: 0, position: 'absolute', right: 0, top: 0 },
-});
 
 export type ChannelListMessengerPropsWithContext = Omit<
   ChannelsContextValue,
@@ -39,6 +33,7 @@ export type ChannelListMessengerPropsWithContext = Omit<
 
 const StatusIndicator = () => {
   const { isOnline } = useChatContext();
+  const styles = useStyles();
   const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
     useChannelsContext();
 
@@ -90,13 +85,6 @@ const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithCon
     setFlatListRef,
   } = props;
 
-  const {
-    theme: {
-      channelListMessenger: { flatList, flatListContent },
-      colors: { white_snow },
-    },
-  } = useTheme();
-
   /**
    * In order to prevent the EmptyStateIndicator component from showing up briefly on mount,
    * we set the loading state one cycle behind to ensure the channels are set before the
@@ -104,6 +92,7 @@ const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithCon
    */
   const [loading, setLoading] = useState(true);
   const debugRef = useDebugContext();
+  const styles = useStyles();
 
   useEffect(() => {
     if (!!loadingChannels !== loading) {
@@ -149,11 +138,7 @@ const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithCon
   return (
     <>
       <FlatList
-        contentContainerStyle={[
-          styles.flatListContentContainer,
-          { backgroundColor: white_snow },
-          flatListContent,
-        ]}
+        contentContainerStyle={styles.flatListContentContainer}
         data={channels}
         extraData={forceUpdate}
         keyExtractor={keyExtractor}
@@ -173,7 +158,7 @@ const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithCon
         ref={setFlatListRef}
         refreshing={refreshing}
         renderItem={renderItem}
-        style={[styles.flatList, { backgroundColor: white_snow }, flatList]}
+        style={styles.flatList}
         testID='channel-list-messenger'
         {...additionalFlatListProps}
       />
@@ -242,3 +227,21 @@ export const ChannelListMessenger = (props: ChannelListMessengerProps) => {
 };
 
 ChannelListMessenger.displayName = 'ChannelListMessenger{channelListMessenger}';
+
+const useStyles = () => {
+  const {
+    theme: {
+      channelListMessenger: { flatList, flatListContent },
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      flatList: { flex: 1, ...flatList },
+      flatListContentContainer: {
+        flexGrow: 1,
+        ...flatListContent,
+      },
+      statusIndicator: { left: 0, position: 'absolute', right: 0, top: 0 },
+    });
+  }, [flatList, flatListContent]);
+};

@@ -20,9 +20,7 @@ export const InlineLoadingMoreIndicatorWithContext = ({
 }: InlineLoadingMoreIndicatorPropsWithContext) => {
   const { theme } = useTheme();
 
-  const {
-    colors: { accent_blue },
-  } = theme;
+  const { semantics } = theme;
 
   if (!loadingMore) {
     return null;
@@ -30,7 +28,7 @@ export const InlineLoadingMoreIndicatorWithContext = ({
 
   return (
     <View style={styles.activityIndicatorContainer}>
-      <ActivityIndicator color={accent_blue} size='small' />
+      <ActivityIndicator color={semantics.accentPrimary} size='small' />
     </View>
   );
 };

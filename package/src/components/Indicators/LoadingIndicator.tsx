@@ -1,24 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { primitives } from '../../theme';
 import { Spinner } from '../UIComponents/Spinner';
 
 type LoadingIndicatorWrapperProps = { text: string };
 
 const LoadingIndicatorWrapper = ({ text }: LoadingIndicatorWrapperProps) => {
-  const {
-    theme: {
-      colors: { black, white_snow },
-      loadingIndicator: { container, loadingText },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, { backgroundColor: white_snow }, container]}>
+    <View style={styles.container}>
       <Spinner height={20} width={20} />
-      <Text style={[styles.loadingText, { color: black }, loadingText]} testID='loading'>
+      <Text style={styles.loadingText} testID='loading'>
         {text}
       </Text>
     </View>
@@ -56,15 +52,23 @@ export const LoadingIndicator = (props: LoadingProps) => {
 
 LoadingIndicator.displayName = 'LoadingIndicator{loadingIndicator}';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  loadingText: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 20,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      loadingIndicator: { container, loadingText },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: { alignItems: 'center', flex: 1, justifyContent: 'center', ...container },
+      loadingText: {
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        marginTop: primitives.spacingSm,
+        color: semantics.textPrimary,
+        ...loadingText,
+      },
+    });
+  }, [container, loadingText, semantics]);
+};

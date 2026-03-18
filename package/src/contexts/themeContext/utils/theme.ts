@@ -280,7 +280,7 @@ export type Theme = {
       contentContainer: ViewStyle;
       gridAvatar: ImageStyle;
       gridAvatarWrapper: ViewStyle;
-      gridImage: ViewStyle;
+      gridImage: ImageStyle;
       handle: ViewStyle;
       handleText: TextStyle;
       overlay: ViewStyle;
@@ -495,6 +495,7 @@ export type Theme = {
     };
   };
   messageList: {
+    systemMessageContainer: ViewStyle;
     container: ViewStyle;
     contentContainer: ViewStyle;
     errorNotification: ViewStyle;
@@ -581,6 +582,7 @@ export type Theme = {
     message: TextStyle;
   };
   messageSimple: {
+    blockedMessageContainer: ViewStyle;
     actions: {
       button: ViewStyle & {
         defaultBackgroundColor?: ViewStyle['backgroundColor'];
@@ -724,9 +726,7 @@ export type Theme = {
     messageGroupedTopContainer: ViewStyle;
     messageBlocked: {
       container: ViewStyle;
-      line: ViewStyle;
       text: TextStyle;
-      textContainer: ViewStyle;
     };
     bubble: {
       reactionListTopContainer: ViewStyle;
@@ -806,7 +806,6 @@ export type Theme = {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
-    unreadUnderlayColor?: ColorValue;
     wrapper: ViewStyle;
   };
   poll: {
@@ -1415,6 +1414,7 @@ export const defaultTheme: Theme = {
     },
   },
   messageList: {
+    systemMessageContainer: {},
     container: {},
     contentContainer: {},
     errorNotification: {},
@@ -1490,6 +1490,7 @@ export const defaultTheme: Theme = {
     message: {},
   },
   messageSimple: {
+    blockedMessageContainer: {},
     actions: {
       button: {},
       buttonText: {},
@@ -1632,9 +1633,7 @@ export const defaultTheme: Theme = {
     },
     messageBlocked: {
       container: {},
-      line: {},
       text: {},
-      textContainer: {},
     },
     bubble: {
       reactionListTopContainer: {},

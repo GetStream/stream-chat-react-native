@@ -99,6 +99,7 @@ import {
   ChannelUnreadStateStoreType,
 } from '../../state-store/channel-unread-state';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
+import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
@@ -231,10 +232,6 @@ export type MarkReadFunctionOptions = {
    */
   updateChannelUnreadState?: boolean;
 };
-
-const styles = StyleSheet.create({
-  selectChannel: { fontWeight: 'bold', padding: 16 },
-});
 
 export const reactionData: ReactionData[] = [
   {
@@ -794,12 +791,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       ? DefaultStopMessageStreamingButton
       : StopMessageStreamingButtonOverride;
 
-  const {
-    theme: {
-      channel: { selectChannel },
-      colors: { black },
-    },
-  } = useTheme();
+  const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<Date | undefined>();
@@ -2080,7 +2072,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   if (!channel?.cid || !channel.watch) {
     return (
-      <Text style={[styles.selectChannel, { color: black }, selectChannel]} testID='no-channel'>
+      <Text style={styles.selectChannel} testID='no-channel'>
         {t('Please select a channel first')}
       </Text>
     );
@@ -2172,4 +2164,25 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       }}
     />
   );
+};
+
+const useStyles = () => {
+  const {
+    theme: {
+      channel: { selectChannel },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      selectChannel: {
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        padding: primitives.spacingMd,
+        color: semantics.textPrimary,
+        ...selectChannel,
+      },
+    });
+  }, [selectChannel, semantics]);
 };
