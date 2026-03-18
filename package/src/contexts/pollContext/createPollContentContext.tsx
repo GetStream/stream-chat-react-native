@@ -1,15 +1,21 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import { StateStore } from 'stream-chat';
+
 import { MessageInputContextValue } from '../messageInputContext/MessageInputContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
+export type CreatePollModalState = {
+  isClosing: boolean;
+};
+
 export type CreatePollContentContextValue = {
   createAndSendPoll: () => Promise<void>;
   sendMessage: MessageInputContextValue['sendMessage'];
   closePollCreationDialog?: () => void;
-  isClosing?: boolean;
+  modalStateStore?: StateStore<CreatePollModalState>;
   /**
    * Vertical gap between poll options in the poll creation screen.
    *

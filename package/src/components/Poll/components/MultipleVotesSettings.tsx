@@ -17,6 +17,10 @@ const pollComposerStateSelector = (state: PollComposerState) => ({
   max_votes_allowed: state.data.max_votes_allowed,
 });
 
+const modalStateSelector = (state: { isClosing: boolean }) => ({
+  isClosing: state.isClosing,
+});
+
 const MaxVotesTextInput = () => {
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
@@ -91,7 +95,8 @@ const MaxVotesTextInput = () => {
 export const MultipleVotesSettings = () => {
   const [allowMaxVotesPerPerson, setAllowMaxVotesPerPerson] = useState<boolean>(false);
   const { t } = useTranslationContext();
-  const { isClosing } = useCreatePollContentContext();
+  const { modalStateStore } = useCreatePollContentContext();
+  const { isClosing = false } = useStateStore(modalStateStore, modalStateSelector) ?? {};
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
   const { updateFields } = pollComposer;
