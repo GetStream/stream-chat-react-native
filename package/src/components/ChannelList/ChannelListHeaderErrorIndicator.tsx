@@ -1,41 +1,21 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 3,
-    width: '100%',
-  },
-  errorText: {
-    fontSize: 12,
-    padding: 3,
-  },
-});
+import { primitives } from '../../theme';
 
 export type HeaderErrorProps = {
   onPress?: (event: GestureResponderEvent) => void;
 };
 
 export const ChannelListHeaderErrorIndicator = ({ onPress = () => null }: HeaderErrorProps) => {
-  const {
-    theme: {
-      channelListHeaderErrorIndicator: { container, errorText },
-      colors: { grey_dark, white },
-    },
-  } = useTheme();
+  const styles = useStyles();
   const { t } = useTranslationContext();
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.container, { backgroundColor: `${grey_dark}E6` }, container]}
-    >
-      <Text style={[styles.errorText, { color: white }, errorText]} testID='channel-loading-error'>
+    <TouchableOpacity onPress={onPress} style={styles.container}>
+      <Text style={styles.errorText} testID='channel-loading-error'>
         {t('Error while loading, please reload/refresh')}
       </Text>
     </TouchableOpacity>
@@ -44,3 +24,32 @@ export const ChannelListHeaderErrorIndicator = ({ onPress = () => null }: Header
 
 ChannelListHeaderErrorIndicator.displayName =
   'ChannelListHeaderErrorIndicator{channelListHeaderErrorIndicator}';
+
+const useStyles = () => {
+  const {
+    theme: {
+      channelListHeaderErrorIndicator: { container, errorText },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        backgroundColor: semantics.backgroundCoreSurface,
+        paddingVertical: primitives.spacingXs,
+        paddingHorizontal: primitives.spacingSm,
+        ...container,
+      },
+      errorText: {
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightTight,
+        color: semantics.chatTextSystem,
+        ...errorText,
+      },
+    });
+  }, [container, errorText, semantics]);
+};

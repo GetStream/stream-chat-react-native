@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -22,6 +22,7 @@ export const CommandsHeader: React.FC<AutoCompleteSuggestionHeaderProps> = () =>
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
     <View style={[styles.container, container]}>
@@ -38,19 +39,20 @@ export const CommandsHeader: React.FC<AutoCompleteSuggestionHeaderProps> = () =>
 export const EmojiHeader: React.FC<AutoCompleteSuggestionHeaderProps> = ({ queryText }) => {
   const {
     theme: {
-      colors: { accent_blue, grey },
       messageInput: {
         suggestions: {
           header: { container, title },
         },
       },
+      semantics,
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
     <View style={[styles.container, container]}>
-      <Smile pathFill={accent_blue} />
-      <Text style={[styles.title, { color: grey }, title]} testID='emojis-header-title'>
+      <Smile pathFill={semantics.accentPrimary} />
+      <Text style={[styles.title, title]} testID='emojis-header-title'>
         {`Emoji matching "${queryText}"`}
       </Text>
     </View>
@@ -102,16 +104,24 @@ export const AutoCompleteSuggestionHeader = (props: AutoCompleteSuggestionHeader
 AutoCompleteSuggestionHeader.displayName =
   'AutoCompleteSuggestionHeader{messageInput{suggestions{Header}}}';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    padding: 8,
-  },
-  title: {
-    fontSize: primitives.typographyFontSizeSm,
-    lineHeight: primitives.typographyLineHeightNormal,
-    fontWeight: primitives.typographyFontWeightMedium,
-    paddingLeft: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        padding: 8,
+      },
+      title: {
+        fontSize: primitives.typographyFontSizeSm,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightMedium,
+        paddingLeft: 8,
+        color: semantics.textSecondary,
+      },
+    });
+  }, [semantics]);
+};

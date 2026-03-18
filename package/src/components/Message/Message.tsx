@@ -307,7 +307,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     setEditingState,
     showAvatar,
     showMessageStatus,
-    showUnreadUnderlay,
     style,
     supportedReactions,
     t,
@@ -814,7 +813,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   }, [overlayActive, message]);
 
   const styles = useStyles({
-    showUnreadUnderlay,
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
   });
 
@@ -823,7 +821,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   }
 
   if (isBlockedMessage(message)) {
-    return <MessageBlocked message={message} />;
+    return (
+      <View style={styles.blockedMessageContainer}>
+        <MessageBlocked message={message} />
+      </View>
+    );
   }
 
   return (
@@ -1127,17 +1129,10 @@ export const Message = (props: MessageProps) => {
   );
 };
 
-const useStyles = ({
-  showUnreadUnderlay,
-  highlightedMessage,
-}: {
-  showUnreadUnderlay?: boolean;
-  highlightedMessage?: boolean;
-}) => {
+const useStyles = ({ highlightedMessage }: { highlightedMessage?: boolean }) => {
   const {
     theme: {
-      colors: { bg_gradient_start },
-      messageSimple: { wrapper, unreadUnderlayColor = bg_gradient_start, targetedMessageContainer },
+      messageSimple: { wrapper, targetedMessageContainer, blockedMessageContainer },
       screenPadding,
       semantics,
     },
@@ -1146,20 +1141,22 @@ const useStyles = ({
     return StyleSheet.create({
       wrapper: {
         paddingHorizontal: screenPadding,
-        backgroundColor: showUnreadUnderlay ? unreadUnderlayColor : undefined,
         ...(highlightedMessage
           ? { backgroundColor: semantics.backgroundCoreHighlight, ...targetedMessageContainer }
           : {}),
         ...wrapper,
       },
+      blockedMessageContainer: {
+        alignItems: 'center',
+        ...blockedMessageContainer,
+      },
     });
   }, [
     wrapper,
     screenPadding,
-    showUnreadUnderlay,
-    unreadUnderlayColor,
     highlightedMessage,
     semantics,
     targetedMessageContainer,
+    blockedMessageContainer,
   ]);
 };

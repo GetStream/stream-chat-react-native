@@ -31,9 +31,10 @@ import type { LocalMessage, UserResponse } from 'stream-chat';
 import { generateMarkdownText } from './generateMarkdownText';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
-import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
+import type { MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 
 import { primitives } from '../../../../theme';
+import { semantics } from '../../../../theme/generated/dark/StreamTokens';
 import { escapeRegExp } from '../../../../utils/utils';
 
 type ReactNodeOutput = NodeOutput<React.ReactNode>;
@@ -95,19 +96,19 @@ const defaultMarkdownStyles: MarkdownStyle = {
   codeBlock: {
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
     fontWeight: '500',
-    marginVertical: 8,
+    marginVertical: primitives.spacingXs,
     fontSize: primitives.typographyFontSizeMd,
     lineHeight: primitives.typographyLineHeightNormal,
   },
   inlineCode: {
-    padding: 3,
-    paddingHorizontal: 5,
+    padding: primitives.spacingXxs,
+    paddingHorizontal: primitives.spacingXxs,
     fontSize: primitives.typographyFontSizeMd,
     lineHeight: primitives.typographyLineHeightNormal,
   },
   list: {
-    marginBottom: 8,
-    marginTop: 8,
+    marginBottom: primitives.spacingXs,
+    marginTop: primitives.spacingXs,
   },
   listItemNumber: {
     fontWeight: 'bold',
@@ -124,21 +125,21 @@ const defaultMarkdownStyles: MarkdownStyle = {
     lineHeight: primitives.typographyLineHeightNormal,
   },
   paragraph: {
-    marginBottom: 8,
+    marginBottom: primitives.spacingXs,
     fontSize: primitives.typographyFontSizeMd,
-    marginTop: 8,
+    marginTop: primitives.spacingXs,
   },
   paragraphCenter: {
-    marginBottom: 8,
+    marginBottom: primitives.spacingXs,
     fontSize: primitives.typographyFontSizeMd,
-    marginTop: 8,
+    marginTop: primitives.spacingXs,
   },
   paragraphWithImage: {
-    marginBottom: 8,
-    marginTop: 8,
+    marginBottom: primitives.spacingXs,
+    marginTop: primitives.spacingXs,
   },
   table: {
-    borderRadius: 3,
+    borderRadius: primitives.radiusXxs,
     borderWidth: 1,
     flex: 1,
     flexDirection: 'row',
@@ -168,7 +169,7 @@ export type MarkdownRules = Partial<DefaultRules>;
 export type RenderTextParams = Partial<
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'preventPress'>
 > & {
-  colors: typeof Colors;
+  semantics: typeof semantics;
   message: LocalMessage;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
@@ -176,11 +177,12 @@ export type RenderTextParams = Partial<
   messageTextNumberOfLines?: number;
   onLink?: (url: string) => Promise<void>;
   onlyEmojis?: boolean;
+  isMyMessage?: boolean;
 };
 
 export const renderText = (params: RenderTextParams) => {
   const {
-    colors,
+    semantics,
     markdownRules,
     markdownStyles,
     message,
@@ -191,6 +193,7 @@ export const renderText = (params: RenderTextParams) => {
     onlyEmojis,
     onPress: onPressParam,
     preventPress,
+    isMyMessage,
   } = params;
   const { text } = message;
 
@@ -213,19 +216,19 @@ export const renderText = (params: RenderTextParams) => {
       fontSize: primitives.typographyFontSizeMd,
       lineHeight: primitives.typographyLineHeightNormal,
       ...defaultMarkdownStyles.autolink,
-      color: colors.accent_blue,
+      color: semantics.textLink,
       ...markdownStyles?.autolink,
     },
     blockQuoteSection: {
       ...defaultMarkdownStyles.blockQuoteSection,
       flexDirection: 'row',
-      padding: 8,
+      padding: primitives.spacingXs,
       ...markdownStyles?.blockQuoteSection,
     },
     blockQuoteSectionBar: {
       ...defaultMarkdownStyles.blockQuoteSectionBar,
-      backgroundColor: colors.grey_gainsboro,
-      marginRight: 8,
+      backgroundColor: semantics.borderCoreStrong,
+      marginRight: primitives.spacingXs,
       width: 2,
       ...markdownStyles?.blockQuoteSectionBar,
     },
@@ -237,39 +240,39 @@ export const renderText = (params: RenderTextParams) => {
     },
     codeBlock: {
       ...defaultMarkdownStyles.codeBlock,
-      backgroundColor: colors.code_block,
-      color: colors.black,
-      padding: 8,
+      backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+      color: semantics.textPrimary,
+      padding: primitives.spacingXs,
       ...markdownStyles?.codeBlock,
     },
     inlineCode: {
       ...defaultMarkdownStyles.inlineCode,
-      backgroundColor: colors.white_smoke,
-      borderColor: colors.grey_gainsboro,
-      color: colors.accent_red,
+      backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+      borderColor: semantics.borderCoreSubtle,
+      color: semantics.accentError,
       ...markdownStyles?.inlineCode,
     },
     mentions: {
       ...defaultMarkdownStyles.mentions,
-      color: colors.accent_blue,
+      color: semantics.accentPrimary,
       ...markdownStyles?.mentions,
     },
     table: {
       ...defaultMarkdownStyles.table,
-      borderColor: colors.grey_dark,
-      marginVertical: 8,
+      borderColor: semantics.borderCoreStrong,
+      marginVertical: primitives.spacingXs,
       ...markdownStyles?.table,
     },
     tableHeader: {
       ...defaultMarkdownStyles.tableHeader,
-      backgroundColor: colors.grey,
+      backgroundColor: semantics.backgroundCoreSurfaceSubtle,
       ...markdownStyles?.tableHeader,
     },
     tableHeaderCell: {
       fontSize: primitives.typographyFontSizeMd,
       lineHeight: primitives.typographyLineHeightNormal,
       ...defaultMarkdownStyles.tableHeaderCell,
-      padding: 5,
+      padding: primitives.spacingXxs,
       ...markdownStyles?.tableHeaderCell,
     },
     tableRow: {
@@ -278,8 +281,8 @@ export const renderText = (params: RenderTextParams) => {
     },
     tableRowCell: {
       ...defaultMarkdownStyles.tableRowCell,
-      borderColor: colors.grey_dark,
-      padding: 5,
+      borderColor: semantics.borderCoreStrong,
+      padding: primitives.spacingXxs,
       ...markdownStyles?.tableRowCell,
     },
     tableRowLast: {
@@ -289,7 +292,7 @@ export const renderText = (params: RenderTextParams) => {
       fontSize: primitives.typographyFontSizeMd,
       ...(onlyEmojis ? {} : { lineHeight: primitives.typographyLineHeightNormal }),
       ...defaultMarkdownStyles.text,
-      color: colors.black,
+      color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
       ...markdownStyles?.text,
     },
   };
@@ -473,7 +476,7 @@ export const renderText = (params: RenderTextParams) => {
     <Markdown
       key={`${JSON.stringify(mentioned_users)}-${onlyEmojis}-${
         messageOverlay ? JSON.stringify(markdownStyles) : undefined
-      }-${JSON.stringify(colors)}`}
+      }-${JSON.stringify(semantics)}`}
       onLink={onLink}
       rules={{
         ...customRules,

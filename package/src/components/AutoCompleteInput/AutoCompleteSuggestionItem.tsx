@@ -21,7 +21,6 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
   const { id, name, online } = item;
   const {
     theme: {
-      colors: { black },
       messageInput: {
         suggestions: {
           mention: { column, container: mentionContainer, name: nameStyle },
@@ -35,7 +34,7 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
     <View style={[styles.container, mentionContainer]}>
       <UserAvatar user={item} size='md' showOnlineIndicator={online} />
       <View style={[styles.column, column]}>
-        <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
+        <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
           {name || id}
         </Text>
       </View>
@@ -47,7 +46,6 @@ export const EmojiSuggestionItem = (item: Emoji) => {
   const { native, name } = item;
   const {
     theme: {
-      colors: { black },
       messageInput: {
         suggestions: {
           emoji: { container: emojiContainer, text },
@@ -59,10 +57,10 @@ export const EmojiSuggestionItem = (item: Emoji) => {
 
   return (
     <View style={[styles.container, emojiContainer]}>
-      <Text style={[styles.text, { color: black }, text]} testID='emojis-item-unicode'>
+      <Text style={[styles.text, text]} testID='emojis-item-unicode'>
         {native}
       </Text>
-      <Text style={[styles.text, { color: black }, text]} testID='emojis-item-name'>
+      <Text style={[styles.text, text]} testID='emojis-item-name'>
         {` ${name}`}
       </Text>
     </View>
@@ -217,7 +215,10 @@ const useStyles = () => {
           fontWeight: '600',
         },
         text: {
-          fontSize: 14,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightRegular,
+          color: semantics.textPrimary,
+          lineHeight: primitives.typographyLineHeightNormal,
         },
         title: {
           fontSize: primitives.typographyFontSizeMd,

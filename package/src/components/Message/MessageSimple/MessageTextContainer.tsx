@@ -30,7 +30,7 @@ export type MessageTextProps = MessageTextContainerProps & {
 
 export type MessageTextContainerPropsWithContext = Pick<
   MessageContextValue,
-  'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress'
+  'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress' | 'isMyMessage'
 > &
   Pick<
     MessagesContextValue,
@@ -47,6 +47,7 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
   const theme = useTheme();
 
   const {
+    isMyMessage,
     markdownRules,
     markdownStyles: markdownStylesProp = {},
     message,
@@ -62,13 +63,13 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
 
   const {
     theme: {
-      colors,
       messageSimple: {
         content: {
           markdown,
           textContainer: { onlyEmojiMarkdown, ...textContainer },
         },
       },
+      semantics,
     },
   } = theme;
 
@@ -89,7 +90,8 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
         <MessageText {...props} renderText={renderText} theme={theme} />
       ) : (
         renderText({
-          colors,
+          isMyMessage,
+          semantics,
           markdownRules,
           markdownStyles: {
             ...markdownStyles,
@@ -182,7 +184,8 @@ const MemoizedMessageTextContainer = React.memo(
 export type MessageTextContainerProps = Partial<MessageTextContainerPropsWithContext>;
 
 export const MessageTextContainer = (props: MessageTextContainerProps) => {
-  const { message, onLongPress, onlyEmojis, onPress, preventPress } = useMessageContext();
+  const { message, onLongPress, onlyEmojis, onPress, preventPress, isMyMessage } =
+    useMessageContext();
   const { markdownRules, MessageText, messageTextNumberOfLines, myMessageTheme } =
     useMessagesContext();
 
@@ -191,6 +194,7 @@ export const MessageTextContainer = (props: MessageTextContainerProps) => {
       {...{
         markdownRules,
         message,
+        isMyMessage,
         MessageText,
         messageTextNumberOfLines,
         myMessageTheme,

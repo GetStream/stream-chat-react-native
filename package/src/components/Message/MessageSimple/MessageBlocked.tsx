@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { LocalMessage } from 'stream-chat';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../theme';
 
 export type MessageBlockedProps = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
@@ -20,48 +21,47 @@ export type MessageBlockedProps = {
 export const MessageBlocked = (props: MessageBlockedProps) => {
   const { message, style } = props;
 
-  const {
-    theme: {
-      colors: { grey, grey_whisper },
-      messageSimple: {
-        messageBlocked: { container, line, text, textContainer },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, style, container]} testID='message-system'>
-      <View style={[styles.line, { backgroundColor: grey_whisper }, line]} />
-      <View style={[styles.textContainer, textContainer]}>
-        <Text style={[styles.text, { color: grey }, text]}>
-          {message.text?.toUpperCase() || ''}
-        </Text>
-      </View>
-      <View style={[styles.line, { backgroundColor: grey_whisper }, line]} />
+    <View style={[styles.container, style]} testID='message-system'>
+      <Text style={styles.text}>{message.text}</Text>
     </View>
   );
 };
 
 MessageBlocked.displayName = 'MessageBlocked{messageList{messageBlocked}}';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  line: {
-    flex: 1,
-    height: 0.5,
-  },
-  text: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  textContainer: {
-    flex: 3,
-    marginTop: 10,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      messageSimple: {
+        messageBlocked: { container, text },
+      },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        borderRadius: primitives.radiusXl,
+        borderWidth: 1,
+        borderColor: semantics.borderCoreSubtle,
+        backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+        paddingVertical: primitives.spacingXs,
+        paddingHorizontal: primitives.spacingSm,
+        marginVertical: primitives.spacingXs,
+        ...container,
+      },
+      text: {
+        color: semantics.chatTextSystem,
+        textAlign: 'center',
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+        ...text,
+      },
+    });
+  }, [container, text, semantics]);
+};

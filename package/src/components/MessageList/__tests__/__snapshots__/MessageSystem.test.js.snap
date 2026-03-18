@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`MessageSystem should match the snapshot for message system 1`] = `
 <View
@@ -6,89 +6,50 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
     [
       {
         "alignItems": "center",
+        "backgroundColor": "$chrome50",
+        "borderColor": "$chrome100",
+        "borderRadius": 16,
+        "borderWidth": 1,
         "flexDirection": "row",
+        "gap": 8,
         "justifyContent": "center",
-        "marginBottom": 10,
+        "marginVertical": 8,
+        "paddingHorizontal": 12,
+        "paddingVertical": 8,
       },
       undefined,
-      {},
     ]
   }
   testID="message-system"
 >
-  <View
+  <Text
     style={
-      [
-        {
-          "flex": 1,
-          "height": 0.5,
-        },
-        {
-          "backgroundColor": "#ECEBEB",
-        },
-        {},
-      ]
+      {
+        "color": "$textSecondary",
+        "fontSize": 13,
+        "fontWeight": 400,
+        "lineHeight": 16,
+        "textAlign": "center",
+      }
     }
-  />
-  <View
+  >
+    Hello World
+  </Text>
+  <Text
     style={
       [
         {
-          "flex": 3,
-          "marginTop": 10,
+          "color": "$textSecondary",
+          "fontSize": 13,
+          "fontWeight": 400,
+          "lineHeight": 16,
+          "textAlign": "center",
         },
         {},
       ]
     }
   >
-    <Text
-      style={
-        [
-          {
-            "fontSize": 10,
-            "fontWeight": "bold",
-            "textAlign": "center",
-          },
-          {
-            "color": "#7A7A7A",
-          },
-          {},
-        ]
-      }
-    >
-      HELLO WORLD
-    </Text>
-    <Text
-      style={
-        [
-          {
-            "fontSize": 10,
-            "fontWeight": "bold",
-            "textAlign": "center",
-          },
-          {
-            "color": "#7A7A7A",
-          },
-          {},
-        ]
-      }
-    >
-      04/27/2020
-    </Text>
-  </View>
-  <View
-    style={
-      [
-        {
-          "flex": 1,
-          "height": 0.5,
-        },
-        {
-          "backgroundColor": "#ECEBEB",
-        },
-        {},
-      ]
-    }
-  />
+    04/27/2020
+  </Text>
 </View>
 `;

@@ -77,16 +77,13 @@ export const AudioRecordingLockIndicator = ({
 
 const useStyles = () => {
   const {
-    theme: {
-      colors: { white },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: white,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderColor: semantics.borderCoreDefault,
           borderWidth: 1,
           borderRadius: primitives.radiusMax,
@@ -105,6 +102,6 @@ const useStyles = () => {
           elevation: 5,
         },
       }),
-    [white, semantics.borderCoreDefault],
+    [semantics.borderCoreDefault, semantics.backgroundCoreElevation1],
   );
 };

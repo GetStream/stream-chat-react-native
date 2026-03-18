@@ -248,6 +248,7 @@ const useStyles = () => {
         gap: primitives.spacingXs,
       },
       headerText: {
+        color: semantics.chatTextOutgoing,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
