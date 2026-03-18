@@ -133,6 +133,7 @@ const useStyles = () => {
           borderWidth: 1,
           fontSize: primitives.typographyFontSizeMd,
           padding: primitives.spacingSm,
+          color: semantics.textPrimary,
         },
         title: {
           color: semantics.textPrimary,
