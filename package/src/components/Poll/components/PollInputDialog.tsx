@@ -77,14 +77,6 @@ export const PollInputDialog = ({
                 onPress={closeDialog}
                 style={styles.button}
               />
-              {/*<Pressable*/}
-              {/*  onPress={closeDialog}*/}
-              {/*  style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}*/}
-              {/*>*/}
-              {/*  <Text style={[styles.button, { color: accent_dark_blue }, button]}>*/}
-              {/*    {t('Cancel')}*/}
-              {/*  </Text>*/}
-              {/*</Pressable>*/}
               <Button
                 variant={'secondary'}
                 type={'solid'}
@@ -97,17 +89,6 @@ export const PollInputDialog = ({
                 style={styles.button}
                 disabled={!dialogInput}
               />
-              {/*<Pressable*/}
-              {/*  onPress={() => {*/}
-              {/*    onSubmit(dialogInput);*/}
-              {/*    closeDialog();*/}
-              {/*  }}*/}
-              {/*  style={({ pressed }) => ({ marginLeft: 32, opacity: pressed ? 0.5 : 1 })}*/}
-              {/*>*/}
-              {/*  <Text style={[styles.button, { color: accent_dark_blue }, button]}>*/}
-              {/*    {t('SEND')}*/}
-              {/*  </Text>*/}
-              {/*</Pressable>*/}
             </View>
           </Animated.View>
         </KeyboardAvoidingView>
@@ -147,7 +128,7 @@ const useStyles = () => {
         },
         input: {
           alignItems: 'center',
-          borderColor: semantics.borderCoreDefault,
+          borderColor: semantics.borderUtilityActive,
           borderRadius: primitives.radiusMd,
           borderWidth: 1,
           fontSize: primitives.typographyFontSizeMd,
