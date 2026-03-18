@@ -75,19 +75,14 @@ export const ShowThreadMessageInChannelButtonWithContext = (
               styles.checkBox,
               showReplyInChannel
                 ? {
-                    backgroundColor: semantics.controlRadiocheckBgSelected,
+                    backgroundColor: semantics.controlRadioCheckBgSelected,
                     ...checkBoxActive,
                   }
                 : { ...checkBoxInactive },
             ]}
           >
             {showReplyInChannel && (
-              <Check
-                width={16}
-                height={16}
-                stroke={semantics.controlRadiocheckIconSelected}
-                {...check}
-              />
+              <Check width={16} height={16} stroke={semantics.controlRadioCheckIcon} {...check} />
             )}
           </View>
           <Text style={[styles.text, text]}>{t('Also send to channel')}</Text>
@@ -169,7 +164,7 @@ const useStyles = () => {
         checkBox: {
           alignItems: 'center',
           borderRadius: primitives.radiusSm,
-          borderColor: semantics.controlRadiocheckBorder,
+          borderColor: semantics.controlRadioCheckBorder,
           borderWidth: 1,
           height: 20,
           justifyContent: 'center',

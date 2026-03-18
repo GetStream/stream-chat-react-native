@@ -6,8 +6,8 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
     [
       {
         "alignItems": "center",
-        "backgroundColor": "#1c1c1c",
-        "borderColor": "#323232",
+        "backgroundColor": "$chrome50",
+        "borderColor": "$chrome100",
         "borderRadius": 16,
         "borderWidth": 1,
         "flexDirection": "row",

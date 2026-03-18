@@ -83,7 +83,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: semantics.composerBg,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderColor: semantics.borderCoreDefault,
           borderWidth: 1,
           borderRadius: primitives.radiusMax,
@@ -102,6 +102,6 @@ const useStyles = () => {
           elevation: 5,
         },
       }),
-    [semantics.borderCoreDefault, semantics.composerBg],
+    [semantics.borderCoreDefault, semantics.backgroundCoreElevation1],
   );
 };
