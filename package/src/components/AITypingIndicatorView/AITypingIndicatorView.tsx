@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -7,6 +7,7 @@ import { Channel } from 'stream-chat';
 import { AIStates, useAIState } from './hooks/useAIState';
 
 import { useChannelContext, useTheme, useTranslationContext } from '../../contexts';
+import { primitives } from '../../theme';
 
 export type AITypingIndicatorViewProps = {
   channel?: Channel;
@@ -24,22 +25,39 @@ export const AITypingIndicatorView = ({
     [AIStates.Generating]: t('Generating...'),
   };
 
-  const {
-    theme: {
-      aiTypingIndicatorView: { container, text },
-      colors: { black, grey_gainsboro },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   return aiState in allowedStates ? (
-    <View style={[styles.container, { backgroundColor: grey_gainsboro }, container]}>
-      <Text style={[{ color: black }, text]}>{allowedStates[aiState]}</Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>{allowedStates[aiState]}</Text>
     </View>
   ) : null;
 };
 
 AITypingIndicatorView.displayName = 'AITypingIndicatorView{messageSimple{content}}';
 
-const styles = StyleSheet.create({
-  container: { paddingHorizontal: 16, paddingVertical: 18 },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      aiTypingIndicatorView: { container, text },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        backgroundColor: semantics.backgroundCoreSurface,
+        paddingHorizontal: primitives.spacingMd,
+        paddingVertical: primitives.spacingLg,
+        ...container,
+      },
+      text: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+        ...text,
+      },
+    });
+  }, [container, text, semantics]);
+};

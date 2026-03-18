@@ -40,7 +40,6 @@ export const ShowThreadMessageInChannelButtonWithContext = (
 
   const {
     theme: {
-      colors: { accent_blue, grey, white },
       messageInput: {
         showThreadMessageInChannelButton: {
           check,
@@ -51,6 +50,7 @@ export const ShowThreadMessageInChannelButtonWithContext = (
           text,
         },
       },
+      semantics,
     },
   } = useTheme();
 
@@ -75,16 +75,22 @@ export const ShowThreadMessageInChannelButtonWithContext = (
               styles.checkBox,
               showReplyInChannel
                 ? {
-                    backgroundColor: accent_blue,
-                    borderColor: accent_blue,
+                    backgroundColor: semantics.controlRadiocheckBgSelected,
                     ...checkBoxActive,
                   }
-                : { borderColor: grey, ...checkBoxInactive },
+                : { ...checkBoxInactive },
             ]}
           >
-            {showReplyInChannel && <Check width={16} height={16} stroke={white} {...check} />}
+            {showReplyInChannel && (
+              <Check
+                width={16}
+                height={16}
+                stroke={semantics.controlRadiocheckIconSelected}
+                {...check}
+              />
+            )}
           </View>
-          <Text style={[styles.text, { color: grey }, text]}>{t('Also send to channel')}</Text>
+          <Text style={[styles.text, text]}>{t('Also send to channel')}</Text>
         </View>
       </Pressable>
     </Animated.View>
@@ -163,6 +169,7 @@ const useStyles = () => {
         checkBox: {
           alignItems: 'center',
           borderRadius: primitives.radiusSm,
+          borderColor: semantics.controlRadiocheckBorder,
           borderWidth: 1,
           height: 20,
           justifyContent: 'center',
@@ -176,14 +183,14 @@ const useStyles = () => {
         innerContainer: {
           flexDirection: 'row',
           alignItems: 'center',
+          gap: primitives.spacingXs,
         },
         text: {
           fontSize: primitives.typographyFontSizeXs,
           lineHeight: primitives.typographyLineHeightTight,
           color: semantics.textTertiary,
-          paddingLeft: 12,
         },
       }),
-    [semantics.textTertiary],
+    [semantics],
   );
 };

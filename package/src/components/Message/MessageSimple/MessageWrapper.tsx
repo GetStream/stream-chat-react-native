@@ -73,7 +73,6 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
   const {
     theme: {
       messageList: { messageContainer },
-      screenPadding,
     },
   } = useTheme();
   const styles = useStyles();
@@ -117,10 +116,7 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
   return (
     <View testID={`message-list-item-${message.id}`}>
       {message.type === 'system' ? (
-        <MessageSystem
-          message={message}
-          style={[{ paddingHorizontal: screenPadding }, messageContainer]}
-        />
+        <MessageSystem message={message} style={messageContainer} />
       ) : wrapMessageInTheme ? (
         <ThemeProvider mergedStyle={modifiedTheme}>
           <View testID={`message-list-item-${message.id}`}>
@@ -146,7 +142,11 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
 const useStyles = () => {
   const {
     theme: {
-      messageList: { unreadUnderlayContainer, inlineDateSeparatorContainer },
+      messageList: {
+        unreadUnderlayContainer,
+        inlineDateSeparatorContainer,
+        systemMessageContainer,
+      },
     },
   } = useTheme();
   return useMemo(
@@ -160,7 +160,11 @@ const useStyles = () => {
           paddingVertical: primitives.spacingXs,
           ...unreadUnderlayContainer,
         },
+        systemMessageContainer: {
+          alignItems: 'center',
+          ...systemMessageContainer,
+        },
       }),
-    [unreadUnderlayContainer, inlineDateSeparatorContainer],
+    [unreadUnderlayContainer, inlineDateSeparatorContainer, systemMessageContainer],
   );
 };

@@ -234,7 +234,6 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
   const {
     theme: {
       semantics,
-      colors: { blue_alice, grey_gainsboro, transparent },
       messageSimple: {
         content: { errorContainer },
       },
@@ -276,12 +275,10 @@ const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>
 
   let backgroundColor = semantics.chatBgOutgoing;
   if (onlyEmojis && !message.quoted_message) {
-    backgroundColor = transparent;
+    backgroundColor = 'transparent';
   } else if (otherAttachments.length) {
     if (otherAttachments[0].type === 'giphy') {
-      backgroundColor = message.quoted_message ? grey_gainsboro : transparent;
-    } else {
-      backgroundColor = blue_alice;
+      backgroundColor = 'transparent';
     }
   } else if (isMessageReceivedOrErrorType) {
     backgroundColor = semantics.chatBgIncoming;

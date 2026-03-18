@@ -25,7 +25,6 @@ export const MessageActionList = (props: MessageActionListProps) => {
   const { MessageActionListItem, messageActions } = props;
   const {
     theme: {
-      colors: { white },
       messageMenu: {
         actionList: { container, contentContainer },
       },
@@ -44,12 +43,8 @@ export const MessageActionList = (props: MessageActionListProps) => {
   return (
     <ScrollView
       accessibilityLabel='Message action list'
-      contentContainerStyle={[
-        styles.contentContainer,
-        { backgroundColor: white },
-        contentContainer,
-      ]}
-      style={[styles.container, { backgroundColor: white }, container]}
+      contentContainerStyle={[styles.contentContainer, contentContainer]}
+      style={[styles.container, container]}
     >
       {standardActions?.map((messageAction, index) => (
         <MessageActionListItem
@@ -87,6 +82,7 @@ const useStyles = () => {
       flexGrow: 1,
       minWidth: 250,
       padding: primitives.spacingXxs,
+      backgroundColor: semantics.backgroundElevationElevation2,
     },
     separatorContainer: {
       paddingVertical: primitives.spacingXxs,

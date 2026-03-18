@@ -14,7 +14,7 @@ export const StopMessageStreamingButton = (props: StopMessageStreamingButtonProp
 
   const {
     theme: {
-      colors: { accent_blue },
+      semantics,
       messageInput: { stopMessageStreamingButton, stopMessageStreamingIcon },
     },
   } = useTheme();
@@ -26,7 +26,7 @@ export const StopMessageStreamingButton = (props: StopMessageStreamingButtonProp
       style={[stopMessageStreamingButton]}
       testID='more-options-button'
     >
-      <CircleStop fill={accent_blue} size={32} {...stopMessageStreamingIcon} />
+      <CircleStop fill={semantics.accentPrimary} size={32} {...stopMessageStreamingIcon} />
     </Pressable>
   );
 };

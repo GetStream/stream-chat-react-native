@@ -360,7 +360,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         {},
                       ],
                       {
-                        "backgroundColor": undefined,
                         "paddingHorizontal": 16,
                       },
                     ]
@@ -526,14 +525,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                           {
                                             "borderTopLeftRadius": 20,
                                             "borderTopRightRadius": 20,
-                                            "borderWidth": 1,
                                             "overflow": "hidden",
                                           },
                                           {
                                             "backgroundColor": "#ebeef1",
                                             "borderBottomLeftRadius": 0,
                                             "borderBottomRightRadius": 20,
-                                            "borderColor": "#ECEBEB",
                                           },
                                           {},
                                           {},
@@ -595,7 +592,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             <Text
                                               style={
                                                 {
-                                                  "color": "#000000",
+                                                  "color": "#1a1b25",
                                                   "fontSize": 17,
                                                   "lineHeight": 20,
                                                 }
@@ -690,7 +687,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         {},
                       ],
                       {
-                        "backgroundColor": undefined,
                         "paddingHorizontal": 16,
                       },
                     ]
@@ -856,14 +852,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                           {
                                             "borderTopLeftRadius": 20,
                                             "borderTopRightRadius": 20,
-                                            "borderWidth": 1,
                                             "overflow": "hidden",
                                           },
                                           {
                                             "backgroundColor": "#ebeef1",
                                             "borderBottomLeftRadius": 0,
                                             "borderBottomRightRadius": 20,
-                                            "borderColor": "#ECEBEB",
                                           },
                                           {},
                                           {},
@@ -925,7 +919,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             <Text
                                               style={
                                                 {
-                                                  "color": "#000000",
+                                                  "color": "#1a1b25",
                                                   "fontSize": 17,
                                                   "lineHeight": 20,
                                                 }
@@ -1053,7 +1047,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         {},
                       ],
                       {
-                        "backgroundColor": undefined,
                         "paddingHorizontal": 16,
                       },
                     ]
@@ -1219,14 +1212,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                           {
                                             "borderTopLeftRadius": 20,
                                             "borderTopRightRadius": 20,
-                                            "borderWidth": 1,
                                             "overflow": "hidden",
                                           },
                                           {
                                             "backgroundColor": "#ebeef1",
                                             "borderBottomLeftRadius": 0,
                                             "borderBottomRightRadius": 20,
-                                            "borderColor": "#ECEBEB",
                                           },
                                           {},
                                           {},
@@ -1288,7 +1279,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                             <Text
                                               style={
                                                 {
-                                                  "color": "#000000",
+                                                  "color": "#1a1b25",
                                                   "fontSize": 17,
                                                   "lineHeight": 20,
                                                 }
@@ -1373,7 +1364,6 @@ exports[`Thread should match thread snapshot 1`] = `
                   [
                     undefined,
                     {
-                      "backgroundColor": undefined,
                       "paddingHorizontal": 16,
                     },
                   ]
@@ -1540,14 +1530,12 @@ exports[`Thread should match thread snapshot 1`] = `
                                         {
                                           "borderTopLeftRadius": 20,
                                           "borderTopRightRadius": 20,
-                                          "borderWidth": 1,
                                           "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#ebeef1",
                                           "borderBottomLeftRadius": 0,
                                           "borderBottomRightRadius": 20,
-                                          "borderColor": "#ECEBEB",
                                         },
                                         {},
                                         {},
@@ -1609,7 +1597,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                           <Text
                                             style={
                                               {
-                                                "color": "#000000",
+                                                "color": "#1a1b25",
                                                 "fontSize": 17,
                                                 "lineHeight": 20,
                                               }
@@ -2092,6 +2080,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "center",
                                   "flexDirection": "row",
+                                  "gap": 8,
                                 },
                                 {},
                               ]
@@ -2102,15 +2091,14 @@ exports[`Thread should match thread snapshot 1`] = `
                                 [
                                   {
                                     "alignItems": "center",
+                                    "borderColor": "#d5dbe1",
                                     "borderRadius": 6,
                                     "borderWidth": 1,
                                     "height": 20,
                                     "justifyContent": "center",
                                     "width": 20,
                                   },
-                                  {
-                                    "borderColor": "#7A7A7A",
-                                  },
+                                  {},
                                 ]
                               }
                             />
@@ -2121,10 +2109,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "color": "#687385",
                                     "fontSize": 13,
                                     "lineHeight": 16,
-                                    "paddingLeft": 12,
-                                  },
-                                  {
-                                    "color": "#7A7A7A",
                                   },
                                   {},
                                 ]

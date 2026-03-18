@@ -30,7 +30,6 @@ import { components, primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { Poll } from '../../Poll/Poll';
-import { useMessageData } from '../hooks/useMessageData';
 
 const useReplyStyles = () => {
   const {
@@ -110,7 +109,6 @@ export type MessageContentPropsWithContext = Pick<
     hidePaddingTop?: boolean;
     hidePaddingHorizontal?: boolean;
     hidePaddingBottom?: boolean;
-    isMessageReceivedOrErrorType?: boolean;
   };
 
 /**
@@ -127,7 +125,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     groupStyles,
     isMessageAIGenerated,
     isMyMessage,
-    isMessageReceivedOrErrorType,
     isVeryLastMessage,
     message,
     messageContentOrder,
@@ -152,7 +149,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   const {
     theme: {
-      colors: { grey_whisper },
       messageSimple: {
         content: {
           container: {
@@ -275,7 +271,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
             styles.containerInner,
             {
               backgroundColor,
-              borderColor: isMessageReceivedOrErrorType ? grey_whisper : backgroundColor,
               ...getBorderRadius(),
               ...getBorderRadiusFromTheme(),
             },
@@ -594,15 +589,12 @@ export const MessageContent = (props: MessageContentProps) => {
     (messageContentOrder.length > 1 &&
       messageContentOrder[messageContentOrder.length - 1] === 'text');
 
-  const { isMessageReceivedOrErrorType } = useMessageData({});
-
   return (
     <MemoizedMessageContent
       {...{
         additionalPressableProps,
         Attachment,
         enableMessageGroupingByUser,
-        isMessageReceivedOrErrorType,
         FileAttachmentGroup,
         Gallery,
         goToMessage,
@@ -639,7 +631,6 @@ const styles = StyleSheet.create({
   containerInner: {
     borderTopLeftRadius: components.messageBubbleRadiusGroupBottom,
     borderTopRightRadius: components.messageBubbleRadiusGroupBottom,
-    borderWidth: 1,
     overflow: 'hidden',
   },
   leftAlignContent: {

@@ -83,8 +83,8 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   const [isGridViewVisible, setIsGridViewVisible] = useState(false);
   const {
     theme: {
-      colors: { white_snow },
       imageGallery: { backgroundColor, pager, slide },
+      semantics,
     },
   } = useTheme();
   const { imageGalleryStateStore } = useImageGalleryContext();
@@ -240,7 +240,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
    */
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
-      backgroundColor: backgroundColor || white_snow,
+      backgroundColor: backgroundColor || semantics.backgroundCoreApp,
       opacity: headerFooterOpacity.value,
     }),
     [headerFooterOpacity],
