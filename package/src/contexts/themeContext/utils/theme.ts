@@ -206,7 +206,6 @@ export type Theme = {
     textContainer: ViewStyle;
     timestamp: ViewStyle;
   };
-  colors: typeof Colors;
   channelPreview: {
     container: ViewStyle;
     contentContainer: ViewStyle;
@@ -1172,7 +1171,6 @@ export const defaultTheme: Theme = {
       subtitle: {},
     },
   },
-  colors: Colors,
   dateHeader: {
     container: {},
     text: {},
