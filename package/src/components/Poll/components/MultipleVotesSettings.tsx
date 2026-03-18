@@ -5,7 +5,7 @@ import Animated, { LinearTransition, StretchInY, StretchOutY } from 'react-nativ
 
 import { PollComposerState } from 'stream-chat';
 
-import { useTheme, useTranslationContext } from '../../../contexts';
+import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks/useStateStore';
@@ -91,6 +91,7 @@ const MaxVotesTextInput = () => {
 export const MultipleVotesSettings = () => {
   const [allowMaxVotesPerPerson, setAllowMaxVotesPerPerson] = useState<boolean>(false);
   const { t } = useTranslationContext();
+  const { isClosing } = useCreatePollContentContext();
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
   const { updateFields } = pollComposer;
@@ -133,7 +134,7 @@ export const MultipleVotesSettings = () => {
     <Animated.View
       layout={LinearTransition.duration(200)}
       entering={StretchInY.duration(200)}
-      exiting={StretchOutY.duration(200)}
+      exiting={isClosing ? undefined : StretchOutY.duration(200)}
       style={[styles.settingsWrapper, multipleAnswers.settingsWrapper]}
     >
       <View style={[styles.optionCard, multipleAnswers.optionCard]}>
@@ -152,7 +153,7 @@ export const MultipleVotesSettings = () => {
       {allowMaxVotesPerPerson ? (
         <Animated.View
           entering={StretchInY.duration(200)}
-          exiting={StretchOutY.duration(200)}
+          exiting={isClosing ? undefined : StretchOutY.duration(200)}
           style={[styles.row, multipleAnswers.row]}
         >
           <Button

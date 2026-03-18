@@ -9,6 +9,7 @@ export type CreatePollContentContextValue = {
   createAndSendPoll: () => Promise<void>;
   sendMessage: MessageInputContextValue['sendMessage'];
   closePollCreationDialog?: () => void;
+  isClosing?: boolean;
   /**
    * Vertical gap between poll options in the poll creation screen.
    *

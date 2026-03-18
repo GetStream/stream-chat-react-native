@@ -107,9 +107,8 @@ export const CreatePollContent = () => {
   }, [currentOptionPositions, normalizedCreatePollOptionGap, optionIdsKey]);
 
   const onBackPressHandler = useCallback(() => {
-    pollComposer.initState();
     closePollCreationDialog?.();
-  }, [pollComposer, closePollCreationDialog]);
+  }, [closePollCreationDialog]);
 
   const onCreatePollPressHandler = useCallback(async () => {
     await createAndSendPoll();
@@ -220,27 +219,49 @@ export const CreatePoll = ({
 > &
   Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
   const messageComposer = useMessageComposer();
+  const [isClosing, setIsClosing] = useState(false);
+  const closeFrameRef = useRef<number | null>(null);
+
+  const closeCreatePollDialog = useCallback(() => {
+    if (closeFrameRef.current !== null) {
+      return;
+    }
+
+    setIsClosing(true);
+    // Let the modal render once with exit animations disabled before we dismiss it.
+    closeFrameRef.current = requestAnimationFrame(() => {
+      closeFrameRef.current = null;
+      closePollCreationDialog?.();
+    });
+  }, [closePollCreationDialog]);
+
+  useEffect(() => {
+    return () => {
+      if (closeFrameRef.current !== null) {
+        cancelAnimationFrame(closeFrameRef.current);
+      }
+      // Reset after teardown so poll field exit animations do not delay modal dismissal.
+      messageComposer.pollComposer.initState();
+    };
+  }, [messageComposer]);
 
   const createAndSendPoll = useCallback(async () => {
     try {
       await messageComposer.createPoll();
       await sendMessage();
-      closePollCreationDialog?.();
-      // it's important that the reset of the pollComposer state happens
-      // after we've already closed the modal; as otherwise we'd get weird
-      // UI behaviour.
-      messageComposer.pollComposer.initState();
+      closeCreatePollDialog();
     } catch (error) {
       console.log('Error creating a poll and sending a message:', error);
     }
-  }, [messageComposer, sendMessage, closePollCreationDialog]);
+  }, [closeCreatePollDialog, messageComposer, sendMessage]);
 
   return (
     <CreatePollContentProvider
       value={{
-        closePollCreationDialog,
+        closePollCreationDialog: closeCreatePollDialog,
         createAndSendPoll,
         createPollOptionGap,
+        isClosing,
         sendMessage,
       }}
     >
