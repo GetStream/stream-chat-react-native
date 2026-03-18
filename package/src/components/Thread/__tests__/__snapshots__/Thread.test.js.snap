@@ -405,7 +405,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "backgroundColor": "#fcd579",
                                   },
                                   {
-                                    "borderColor": "rgba(0, 0, 0, 0.1)",
+                                    "borderColor": "rgba(26, 27, 37, 0.1)",
                                     "borderWidth": 1,
                                   },
                                   undefined,
@@ -732,7 +732,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "backgroundColor": "#8febbd",
                                   },
                                   {
-                                    "borderColor": "rgba(0, 0, 0, 0.1)",
+                                    "borderColor": "rgba(26, 27, 37, 0.1)",
                                     "borderWidth": 1,
                                   },
                                   undefined,
@@ -1092,7 +1092,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "backgroundColor": "#fcd579",
                                   },
                                   {
-                                    "borderColor": "rgba(0, 0, 0, 0.1)",
+                                    "borderColor": "rgba(26, 27, 37, 0.1)",
                                     "borderWidth": 1,
                                   },
                                   undefined,
@@ -1410,7 +1410,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "backgroundColor": "#8febbd",
                                 },
                                 {
-                                  "borderColor": "rgba(0, 0, 0, 0.1)",
+                                  "borderColor": "rgba(26, 27, 37, 0.1)",
                                   "borderWidth": 1,
                                 },
                                 undefined,

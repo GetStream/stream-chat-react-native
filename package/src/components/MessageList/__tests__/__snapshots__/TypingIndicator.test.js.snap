@@ -78,7 +78,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
                     "backgroundColor": "#fcd579",
                   },
                   {
-                    "borderColor": "rgba(0, 0, 0, 0.1)",
+                    "borderColor": "rgba(26, 27, 37, 0.1)",
                     "borderWidth": 1,
                   },
                   undefined,
@@ -138,7 +138,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
                     "backgroundColor": "#8febbd",
                   },
                   {
-                    "borderColor": "rgba(0, 0, 0, 0.1)",
+                    "borderColor": "rgba(26, 27, 37, 0.1)",
                     "borderWidth": 1,
                   },
                   undefined,
@@ -200,7 +200,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
         style={
           [
             {
-              "backgroundColor": "#687385",
+              "backgroundColor": "#1a1b25",
               "borderRadius": 2.5,
               "height": 5,
               "width": 5,
@@ -219,7 +219,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
         style={
           [
             {
-              "backgroundColor": "#687385",
+              "backgroundColor": "#1a1b25",
               "borderRadius": 2.5,
               "height": 5,
               "width": 5,
@@ -238,7 +238,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
         style={
           [
             {
-              "backgroundColor": "#687385",
+              "backgroundColor": "#1a1b25",
               "borderRadius": 2.5,
               "height": 5,
               "width": 5,

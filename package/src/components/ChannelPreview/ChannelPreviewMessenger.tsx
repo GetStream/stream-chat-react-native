@@ -104,7 +104,7 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
           {
             backgroundColor:
               pressed && !swipeRegistry?.hasOpen()
-                ? semantics.backgroundCorePressed
+                ? semantics.backgroundUtilityPressed
                 : 'transparent',
           },
           container,

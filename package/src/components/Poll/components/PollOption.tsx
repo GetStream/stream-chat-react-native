@@ -191,7 +191,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
         styles.voteContainer,
         {
           borderWidth: hasVote ? 0 : 1,
-          backgroundColor: hasVote ? semantics.controlRadiocheckBgSelected : 'transparent',
+          backgroundColor: hasVote ? semantics.accentPrimary : 'transparent',
           borderColor: isPollCreatedByClient
             ? semantics.chatBorderOnChatOutgoing
             : semantics.chatBorderOnChatIncoming,
@@ -199,9 +199,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
         voteButtonContainer,
       ]}
     >
-      {hasVote ? (
-        <Check height={20} stroke={semantics.controlRadiocheckIconSelected} width={20} />
-      ) : null}
+      {hasVote ? <Check height={20} stroke={semantics.textOnAccent} width={20} /> : null}
     </Pressable>
   ) : null;
 };
@@ -279,7 +277,7 @@ const useAllOptionStyles = () => {
         allOptionsWrapper: {
           flex: 1,
           padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
         },
         optionWrapper: {
           paddingVertical: primitives.spacingMd,

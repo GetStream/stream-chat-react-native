@@ -116,7 +116,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           gap: primitives.spacingXs,
           ...header.container,
         },

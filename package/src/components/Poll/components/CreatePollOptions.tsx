@@ -763,7 +763,7 @@ const useStyles = () => {
       optionWrapper: {
         width: '100%',
         borderWidth: 1,
-        borderColor: semantics.inputBorderDefault,
+        borderColor: semantics.borderCoreDefault,
         borderRadius: primitives.radiusLg,
       },
       optionContent: {

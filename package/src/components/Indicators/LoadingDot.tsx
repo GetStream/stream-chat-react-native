@@ -56,7 +56,7 @@ export const LoadingDot = (props: Props) => {
     <Animated.View
       style={[
         {
-          backgroundColor: semantics.chatBgTypingIndicator,
+          backgroundColor: semantics.chatTextTypingIndicator,
           borderRadius: diameter / 2,
           height: diameter,
           width: diameter,
