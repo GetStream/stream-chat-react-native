@@ -16,6 +16,7 @@ import { useThreadsContext } from '../../contexts/threadsContext/ThreadsContext'
 import { useStateStore } from '../../hooks';
 import { primitives } from '../../theme';
 import { getDateString } from '../../utils/i18n/getDateString';
+import { useChannelPreviewDisplayPresence } from '../ChannelPreview/hooks';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { BadgeNotification, UserAvatarStack } from '../ui';
 import { UserAvatar } from '../ui/Avatar/UserAvatar';
@@ -43,6 +44,7 @@ export const ThreadListItemComponent = () => {
     parentMessage,
     thread,
   } = useThreadListItemContext();
+  const online = useChannelPreviewDisplayPresence(channel);
   const displayName = useChannelPreviewDisplayName(channel);
   const {
     onThreadSelect,
@@ -78,7 +80,7 @@ export const ThreadListItemComponent = () => {
         testID='thread-list-item'
       >
         {lastReply?.user ? (
-          <UserAvatar user={lastReply?.user} size='xl' showOnlineIndicator showBorder />
+          <UserAvatar user={lastReply?.user} size='xl' showOnlineIndicator={online} showBorder />
         ) : null}
 
         <View style={styles.content}>
