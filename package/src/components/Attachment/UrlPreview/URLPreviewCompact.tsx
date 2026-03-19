@@ -240,10 +240,7 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        wrapper: {
-          paddingHorizontal: primitives.spacingXs,
-          paddingTop: primitives.spacingXs,
-        },
+        wrapper: {},
         container: {
           maxWidth: 256, // TODO: Fix this
           borderRadius: primitives.radiusLg,

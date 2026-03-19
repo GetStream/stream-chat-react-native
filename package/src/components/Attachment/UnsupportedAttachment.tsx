@@ -6,6 +6,10 @@ import type { Attachment } from 'stream-chat';
 import { FileIconProps } from './FileIcon';
 
 import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
+import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -14,7 +18,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { primitives } from '../../theme';
 
 export type UnsupportedAttachmentProps = Partial<
-  Pick<MessagesContextValue, 'FileAttachmentIcon'>
+  Pick<MessagesContextValue, 'FileAttachmentIcon'> & Pick<MessageContextValue, 'isMyMessage'>
 > & {
   /** The attachment to render */
   attachment: Attachment;
@@ -23,9 +27,10 @@ export type UnsupportedAttachmentProps = Partial<
 
 export const UnsupportedAttachment = (props: UnsupportedAttachmentProps) => {
   const { FileAttachmentIcon: FileAttachmentIconDefault } = useMessagesContext();
+  const { isMyMessage } = useMessageContext();
   const { attachment, attachmentIconSize, FileAttachmentIcon = FileAttachmentIconDefault } = props;
 
-  const styles = useStyles();
+  const styles = useStyles({ isMyMessage });
 
   const {
     theme: {
@@ -50,7 +55,7 @@ export const UnsupportedAttachment = (props: UnsupportedAttachmentProps) => {
 
 UnsupportedAttachment.displayName = 'UnsupportedAttachment{messageSimple{file}}';
 
-const useStyles = () => {
+const useStyles = ({ isMyMessage }: { isMyMessage: boolean }) => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -62,6 +67,9 @@ const useStyles = () => {
         padding: primitives.spacingSm,
         gap: primitives.spacingSm,
         width: 256, // TODO: Fix this
+        backgroundColor: isMyMessage
+          ? semantics.chatBgAttachmentOutgoing
+          : semantics.chatBgAttachmentIncoming,
       },
       details: {
         flexShrink: 1,
@@ -74,5 +82,5 @@ const useStyles = () => {
         lineHeight: primitives.typographyLineHeightTight,
       },
     });
-  }, [semantics]);
+  }, [semantics, isMyMessage]);
 };
