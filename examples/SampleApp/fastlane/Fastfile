@@ -31,6 +31,14 @@ end
 #######################
 
 platform :ios do
+  private_lane :missing_appstore_build_error? do |options|
+    message = options[:message].to_s
+
+    message.include?('Could not find a live-version') ||
+      message.include?('Could not find a beta-version') ||
+      message.include?('Could not find a build')
+  end
+
   private_lane :latest_appstore_version_code do |options|
     livestates = [true, false]
     version_codes = []
@@ -41,11 +49,19 @@ platform :ios do
         app_identifier: bundle_id
       )
     rescue StandardError => e
-      UI.user_error!("app_store_build_number failed for liveState: #{livestate} bundle_id: #{bundle_id}. #{e.message}")
+      if missing_appstore_build_error?(message: e.message)
+        UI.message(
+          "No App Store Connect build found for liveState: #{livestate} bundle_id: #{bundle_id}",
+        )
+      else
+        UI.user_error!(
+          "app_store_build_number failed for liveState: #{livestate} bundle_id: #{bundle_id}. #{e.message}",
+        )
+      end
     else
       version_codes.append(vc)
     end
-    version_codes.max
+    version_codes.compact.max
   end
 
   lane :deploy_to_testflight_qa do |options|
@@ -61,13 +77,11 @@ platform :ios do
         xcodeproj: xcode_project
       )
 
-      current_build_number = latest_appstore_version_code
+      current_build_number = latest_appstore_version_code || get_build_number(
+        xcodeproj: xcode_project,
+      ).to_i
 
       puts("Current build number: #{current_build_number}")
-
-      if current_build_number.nil?
-        UI.user_error!("No App Store build number found for bundle_id: #{bundle_id}")
-      end
 
       increment_build_number(
         build_number: current_build_number + 1,
