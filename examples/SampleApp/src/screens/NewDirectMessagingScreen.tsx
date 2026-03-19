@@ -340,7 +340,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
           <MessageList />
         )}
-        {selectedUsers.length > 0 && <MessageInput />}
+        <MessageInput />
       </Channel>
     </SafeAreaView>
   );
