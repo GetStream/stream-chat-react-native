@@ -63,7 +63,7 @@ const baseFilters = {
   type: 'messaging',
 };
 
-const sort: ChannelSort = [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }];
+const sort: ChannelSort = [{ last_message_at: -1 }, { updated_at: -1 }];
 
 const options = {
   presence: true,
@@ -116,17 +116,17 @@ export const ChannelListScreen: React.FC = () => {
     </View>
   );
 
-  const additionalFlatListProps = useMemo<Partial<FlatListProps<Channel>>>(
-    () => ({
-      getItemLayout: (_: unknown, index: number) => ({
-        index,
-        length: 80,
-        offset: 80 * index,
-      }),
-      keyboardDismissMode: 'on-drag',
-    }),
-    [],
-  );
+  // const additionalFlatListProps = useMemo<Partial<FlatListProps<Channel>>>(
+  //   () => ({
+  //     getItemLayout: (_: unknown, index: number) => ({
+  //       index,
+  //       length: 80,
+  //       offset: 80 * index,
+  //     }),
+  //     keyboardDismissMode: 'on-drag',
+  //   }),
+  //   [],
+  // );
 
   const onSelect = useCallback(
     (channel: Channel) => {
@@ -190,71 +190,71 @@ export const ChannelListScreen: React.FC = () => {
       <ChatScreenHeader />
 
       <View style={styles.flex}>
-        <View
-          style={[
-            styles.searchContainer,
-            {
-              backgroundColor: white,
-              borderColor: grey_whisper,
-            },
-          ]}
-        >
-          <Search pathFill={black} />
-          <TextInput
-            onChangeText={(text) => {
-              setSearchInputText(text);
-              if (!text) {
-                reset();
-                setSearchQuery('');
-              }
-            }}
-            onSubmitEditing={({ nativeEvent: { text } }) => {
-              setSearchQuery(text);
-            }}
-            placeholder='Search'
-            placeholderTextColor={grey}
-            ref={searchInputRef}
-            returnKeyType='search'
-            style={[styles.searchInput, { color: black }]}
-            value={searchInputText}
-          />
-          {!!searchInputText && (
-            <TouchableOpacity
-              onPress={() => {
-                setSearchInputText('');
-                setSearchQuery('');
-                if (searchInputRef.current) {
-                  searchInputRef.current.blur();
-                }
-                reset();
-              }}
-            >
-              <CircleClose pathFill={grey} />
-            </TouchableOpacity>
-          )}
-        </View>
-        {(!!searchQuery || (messages && messages.length > 0)) && (
-          <MessageSearchList
-            EmptySearchIndicator={EmptySearchIndicator}
-            loading={loading}
-            loadMore={loadMore}
-            messages={messages}
-            ref={scrollRef}
-            refreshing={refreshing}
-            refreshList={refreshList}
-            showResultCount
-          />
-        )}
+        {/*<View*/}
+        {/*  style={[*/}
+        {/*    styles.searchContainer,*/}
+        {/*    {*/}
+        {/*      backgroundColor: white,*/}
+        {/*      borderColor: grey_whisper,*/}
+        {/*    },*/}
+        {/*  ]}*/}
+        {/*>*/}
+        {/*  <Search pathFill={black} />*/}
+        {/*  <TextInput*/}
+        {/*    onChangeText={(text) => {*/}
+        {/*      setSearchInputText(text);*/}
+        {/*      if (!text) {*/}
+        {/*        reset();*/}
+        {/*        setSearchQuery('');*/}
+        {/*      }*/}
+        {/*    }}*/}
+        {/*    onSubmitEditing={({ nativeEvent: { text } }) => {*/}
+        {/*      setSearchQuery(text);*/}
+        {/*    }}*/}
+        {/*    placeholder='Search'*/}
+        {/*    placeholderTextColor={grey}*/}
+        {/*    ref={searchInputRef}*/}
+        {/*    returnKeyType='search'*/}
+        {/*    style={[styles.searchInput, { color: black }]}*/}
+        {/*    value={searchInputText}*/}
+        {/*  />*/}
+        {/*  {!!searchInputText && (*/}
+        {/*    <TouchableOpacity*/}
+        {/*      onPress={() => {*/}
+        {/*        setSearchInputText('');*/}
+        {/*        setSearchQuery('');*/}
+        {/*        if (searchInputRef.current) {*/}
+        {/*          searchInputRef.current.blur();*/}
+        {/*        }*/}
+        {/*        reset();*/}
+        {/*      }}*/}
+        {/*    >*/}
+        {/*      <CircleClose pathFill={grey} />*/}
+        {/*    </TouchableOpacity>*/}
+        {/*  )}*/}
+        {/*</View>*/}
+        {/*{(!!searchQuery || (messages && messages.length > 0)) && (*/}
+        {/*  <MessageSearchList*/}
+        {/*    EmptySearchIndicator={EmptySearchIndicator}*/}
+        {/*    loading={loading}*/}
+        {/*    loadMore={loadMore}*/}
+        {/*    messages={messages}*/}
+        {/*    ref={scrollRef}*/}
+        {/*    refreshing={refreshing}*/}
+        {/*    refreshList={refreshList}*/}
+        {/*    showResultCount*/}
+        {/*  />*/}
+        {/*)}*/}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <ChannelList
-              additionalFlatListProps={additionalFlatListProps}
+              // additionalFlatListProps={additionalFlatListProps}
               filters={filters}
               HeaderNetworkDownIndicator={HeaderNetworkDownIndicator}
               maxUnreadCount={99}
               onSelect={onSelect}
               options={options}
-              Preview={ChannelPreview}
+              // Preview={ChannelPreview}
               setFlatListRef={setScrollRef}
               getChannelActionItems={getChannelActionItems}
               sort={sort}
