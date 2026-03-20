@@ -3,9 +3,12 @@ const configPromise = require('./release.config.js');
 
 const execa = require('execa');
 
+const dryRun = true;
+
 configPromise.then((config) => {
   return semanticRelease({
     ...config,
+    dryRun,
     branches: [
       'main',
       {
@@ -18,6 +21,7 @@ configPromise.then((config) => {
     // This logics avoid a overflow of next tags in github by removing the last
     // tag before pushing the current one for each next release
     return (
+      !dryRun &&
       result &&
       result.nextRelease.gitTag &&
       execa('git', ['ls-remote', 'origin', `refs/tags/${result.lastRelease.gitTag}`])
