@@ -8,6 +8,7 @@ export * from './Camera';
 export * from './Check';
 export * from './CheckAll';
 export * from './CircleStop';
+export * from './CircleBan';
 export * from './Close';
 export * from './Copy';
 export * from './CurveLineLeftUp';

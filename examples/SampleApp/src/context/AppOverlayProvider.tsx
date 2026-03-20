@@ -9,10 +9,8 @@ import Animated, {
 
 import { AppOverlayContext, AppOverlayContextValue } from './AppOverlayContext';
 
-import { BottomSheetOverlay } from '../components/BottomSheetOverlay';
 import { ChannelInfoOverlay } from '../components/ChannelInfoOverlay';
 import { UserInfoOverlay } from '../components/UserInfoOverlay';
-import { BottomSheetOverlayProvider } from './BottomSheetOverlayContext';
 import { ChannelInfoOverlayProvider } from './ChannelInfoOverlayContext';
 import { UserInfoOverlayProvider } from './UserInfoOverlayContext';
 import { OverlayBackdrop } from '../components/OverlayBackdrop';
@@ -68,28 +66,22 @@ export const AppOverlayProvider = (
 
   return (
     <AppOverlayContext.Provider value={overlayContext}>
-      <BottomSheetOverlayProvider>
-        <ChannelInfoOverlayProvider>
-          <UserInfoOverlayProvider>
-            {children}
-            <Animated.View
-              pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-              style={[StyleSheet.absoluteFill, overlayStyle]}
-            >
-              <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
-            </Animated.View>
-            <UserInfoOverlay overlayOpacity={overlayOpacity} visible={overlay === 'userInfo'} />
-            <ChannelInfoOverlay
-              overlayOpacity={overlayOpacity}
-              visible={overlay === 'channelInfo'}
-            />
-            <BottomSheetOverlay
-              overlayOpacity={overlayOpacity}
-              visible={overlay === 'addMembers' || overlay === 'confirmation'}
-            />
-          </UserInfoOverlayProvider>
-        </ChannelInfoOverlayProvider>
-      </BottomSheetOverlayProvider>
+      <ChannelInfoOverlayProvider>
+        <UserInfoOverlayProvider>
+          {children}
+          <Animated.View
+            pointerEvents={overlay === 'none' ? 'none' : 'auto'}
+            style={[StyleSheet.absoluteFill, overlayStyle]}
+          >
+            <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
+          </Animated.View>
+          <UserInfoOverlay overlayOpacity={overlayOpacity} visible={overlay === 'userInfo'} />
+          <ChannelInfoOverlay
+            overlayOpacity={overlayOpacity}
+            visible={overlay === 'channelInfo'}
+          />
+        </UserInfoOverlayProvider>
+      </ChannelInfoOverlayProvider>
     </AppOverlayContext.Provider>
   );
 };

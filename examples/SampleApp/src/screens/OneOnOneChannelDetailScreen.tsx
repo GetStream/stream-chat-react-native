@@ -1,97 +1,23 @@
-import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
-import { Delete, useTheme } from 'stream-chat-react-native';
+import React, { useCallback, useState } from 'react';
+import { ScrollView, StyleSheet, Switch } from 'react-native';
+import { ChannelAvatar, Delete, useTheme, Pin, CircleBan } from 'stream-chat-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ChannelDetailProfileSection } from '../components/ChannelDetailProfileSection';
+import { ConfirmationBottomSheet } from '../components/ConfirmationBottomSheet';
+import { ListItem } from '../components/ListItem';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { SectionCard } from '../components/SectionCard';
 import { useAppContext } from '../context/AppContext';
-import { useAppOverlayContext } from '../context/AppOverlayContext';
-import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
-import { Contacts } from '../icons/Contacts';
 import { File } from '../icons/File';
-import { GoBack } from '../icons/GoBack';
 import { GoForward } from '../icons/GoForward';
 import { Mute } from '../icons/Mute';
-import { Notification } from '../icons/Notification';
 import { Picture } from '../icons/Picture';
-import { Pin } from '../icons/Pin';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import type { StackNavigatorParamList } from '../types';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-const styles = StyleSheet.create({
-  actionContainer: {
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-  },
-  actionLabelContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  avatar: {
-    borderRadius: 36,
-    height: 72,
-    width: 72,
-  },
-  backButton: {
-    left: 0,
-    paddingLeft: 16,
-    position: 'absolute',
-    top: 0,
-  },
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    flexGrow: 1,
-  },
-  displayName: {
-    fontSize: 16,
-    fontWeight: '600',
-    paddingTop: 16,
-  },
-  itemText: {
-    fontSize: 14,
-    paddingLeft: 16,
-  },
-  onlineIndicator: {
-    borderRadius: 4,
-    height: 8,
-    width: 8,
-  },
-  onlineStatus: {
-    fontSize: 12,
-    paddingLeft: 8,
-  },
-  onlineStatusContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingBottom: 16,
-    paddingTop: 8,
-  },
-  spacer: {
-    height: 8,
-  },
-  userInfoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 20,
-  },
-  userName: {
-    fontSize: 14,
-  },
-  userNameContainer: {
-    alignSelf: 'stretch',
-    borderTopWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-  },
-});
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -108,24 +34,6 @@ type Props = {
   route: OneOnOneChannelDetailScreenRouteProp;
 };
 
-const Spacer = () => {
-  const {
-    theme: {
-      colors: { grey_gainsboro },
-    },
-  } = useTheme();
-  return (
-    <View
-      style={[
-        styles.spacer,
-        {
-          backgroundColor: grey_gainsboro,
-        },
-      ]}
-    />
-  );
-};
-
 export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   navigation,
   route: {
@@ -133,14 +41,12 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   },
 }) => {
   const {
-    theme: {
-      colors: { accent_green, accent_red, black, grey, white, white_smoke },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   const { chatClient } = useAppContext();
-  const { setOverlay } = useAppOverlayContext();
-  const { setData } = useBottomSheetOverlayContext();
+
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const [blockUserConfirmationVisible, setBlockUserConfirmationVisible] = useState(false);
 
   const member = Object.values(channel.state.members).find(
     (channelMember) => channelMember.user?.id !== chatClient?.user?.id,
@@ -149,345 +55,180 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   const user = member?.user;
   const [muted, setMuted] = useState(
     chatClient?.mutedUsers &&
-      chatClient?.mutedUsers?.findIndex((mutedUser) => mutedUser.target.id === user?.id) > -1,
-  );
-  const [notificationsEnabled, setNotificationsEnabled] = useState(
-    chatClient?.mutedChannels &&
-      chatClient.mutedChannels.findIndex(
-        (mutedChannel) => mutedChannel.channel?.id === channel.id,
-      ) > -1,
+      chatClient.mutedUsers.findIndex((mutedUser) => mutedUser.target.id === user?.id) > -1,
   );
 
-  /**
-   * Opens confirmation sheet for deleting the conversation
-   */
-  const openDeleteConversationConfirmationSheet = () => {
+  const deleteConversation = useCallback(async () => {
+    try {
+      await channel.delete();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MessagingScreen' }],
+      });
+    } catch (error) {
+      console.error('Error deleting conversation', error);
+    }
+  }, [channel, navigation]);
+
+  const handleBlockUser = useCallback(async () => {
+    try {
+      if (!user?.id) {
+        return;
+      }
+      await chatClient?.blockUser(user.id);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MessagingScreen' }],
+      });
+    } catch (error) {
+      console.error('Error blocking user', error);
+    }
+  }, [chatClient, navigation, user?.id]);
+
+  const openDeleteConversationConfirmationSheet = useCallback(() => {
     if (!chatClient?.user?.id) {
       return;
     }
-    setData({
-      confirmText: 'DELETE',
-      onConfirm: deleteConversation,
-      subtext: 'Are you sure you want to delete this conversation?',
-      title: 'Delete Conversation',
-    });
-    setOverlay('confirmation');
-  };
+    setConfirmationVisible(true);
+  }, [chatClient?.user?.id]);
 
-  /**
-   * Leave the group/channel
-   */
-  const deleteConversation = async () => {
-    await channel.delete();
-    setOverlay('none');
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: 'MessagingScreen',
-        },
-      ],
-    });
-  };
+  const openBlockUserConfirmationSheet = useCallback(() => {
+    if (!user?.id) {
+      return;
+    }
+    setBlockUserConfirmationVisible(true);
+  }, [user?.id]);
+
+  const closeConfirmation = useCallback(() => {
+    setConfirmationVisible(false);
+  }, []);
+
+  const closeBlockUserConfirmation = useCallback(() => {
+    setBlockUserConfirmationVisible(false);
+  }, []);
+
+  const handleMuteToggle = useCallback(async () => {
+    if (muted) {
+      await chatClient?.unmuteUser(user!.id);
+    } else {
+      await chatClient?.muteUser(user!.id);
+    }
+    setMuted((prev) => !prev);
+  }, [chatClient, muted, user]);
+
+  const navigateToPinnedMessages = useCallback(() => {
+    navigation.navigate('ChannelPinnedMessagesScreen', { channel });
+  }, [channel, navigation]);
+
+  const navigateToImages = useCallback(() => {
+    navigation.navigate('ChannelImagesScreen', { channel });
+  }, [channel, navigation]);
+
+  const navigateToFiles = useCallback(() => {
+    navigation.navigate('ChannelFilesScreen', { channel });
+  }, [channel, navigation]);
 
   if (!user) {
     return null;
   }
 
+  const activityStatus = getUserActivityStatus(user);
+  const chevronRight = <GoForward height={20} width={20} stroke={semantics.textSecondary} />;
+
   return (
-    <SafeAreaView style={[{ backgroundColor: white }, styles.container]}>
-      <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
-        <View style={styles.userInfoContainer}>
-          <Image source={{ uri: user.image }} style={styles.avatar} />
-          <Text
-            style={[
-              styles.displayName,
-              {
-                color: black,
-              },
-            ]}
-          >
-            {user.name}
-          </Text>
-          <View style={styles.onlineStatusContainer}>
-            {user.online && (
-              <View style={[{ backgroundColor: accent_green }, styles.onlineIndicator]} />
-            )}
-            <Text
-              style={[
-                styles.onlineStatus,
-                {
-                  color: black,
-                },
-              ]}
-            >
-              {user?.online ? 'Online' : getUserActivityStatus(user)}
-            </Text>
-          </View>
-          <View
-            style={[
-              styles.userNameContainer,
-              {
-                borderTopColor: semantics.borderCoreDefault,
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.userName,
-                {
-                  color: black,
-                },
-              ]}
-            >
-              @{user.id}
-            </Text>
-            <Text
-              style={[
-                styles.userName,
-                {
-                  color: grey,
-                },
-              ]}
-            >
-              {user.name}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={styles.backButton}
-          >
-            <GoBack height={24} width={24} />
-          </TouchableOpacity>
-        </View>
-        <Spacer />
-        <TouchableOpacity
-          style={[
-            styles.actionContainer,
-            {
-              borderBottomColor: semantics.borderCoreDefault,
-            },
-          ]}
-        >
-          <View style={styles.actionLabelContainer}>
-            <Notification fill={grey} height={24} width={24} />
-            <Text
-              style={[
-                styles.itemText,
-                {
-                  color: black,
-                },
-              ]}
-            >
-              Notifications
-            </Text>
-          </View>
-          <View>
-            <Switch
-              onValueChange={async () => {
-                if (notificationsEnabled) {
-                  await channel.unmute();
-                } else {
-                  await channel.mute();
-                }
-                setNotificationsEnabled((previousState) => !previousState);
-              }}
-              trackColor={{
-                false: white_smoke,
-                true: accent_green,
-              }}
-              value={notificationsEnabled}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.actionContainer,
-            {
-              borderBottomColor: semantics.borderCoreDefault,
-            },
-          ]}
-        >
-          <View style={styles.actionLabelContainer}>
-            <Mute height={24} width={24} />
-            <Text
-              style={[
-                styles.itemText,
-                {
-                  color: black,
-                },
-              ]}
-            >
-              Mute user
-            </Text>
-          </View>
-          <View>
-            <Switch
-              onValueChange={async () => {
-                if (muted) {
-                  const r = await chatClient?.unmuteUser(user.id);
-                  console.warn(r);
-                } else {
-                  const r = await chatClient?.muteUser(user.id);
-                  console.warn(r);
-                }
-                setMuted((previousState) => !previousState);
-              }}
-              trackColor={{
-                false: white_smoke,
-                true: accent_green,
-              }}
-              value={muted}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('ChannelPinnedMessagesScreen', {
-              channel,
-            });
-          }}
-          style={[
-            styles.actionContainer,
-            {
-              borderBottomColor: semantics.borderCoreDefault,
-            },
-          ]}
-        >
-          <View style={styles.actionLabelContainer}>
-            <Pin height={24} width={24} stroke={grey} />
-            <Text
-              style={[
-                styles.itemText,
-                {
-                  color: black,
-                },
-              ]}
-            >
-              Pinned Messages
-            </Text>
-          </View>
-          <View>
-            <GoForward fill={grey} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('ChannelImagesScreen', {
-              channel,
-            });
-          }}
-          style={[
-            styles.actionContainer,
-            {
-              borderBottomColor: semantics.borderCoreDefault,
-            },
-          ]}
-        >
-          <View style={styles.actionLabelContainer}>
-            <Picture fill={grey} />
-            <Text
-              style={[
-                styles.itemText,
-                {
-                  color: black,
-                },
-              ]}
-            >
-              Photos and Videos
-            </Text>
-          </View>
-          <View>
-            <GoForward fill={grey} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('ChannelFilesScreen', {
-              channel,
-            });
-          }}
-          style={[
-            styles.actionContainer,
-            {
-              borderBottomColor: semantics.borderCoreDefault,
-            },
-          ]}
-        >
-          <View style={styles.actionLabelContainer}>
-            <File pathFill={grey} />
-            <Text
-              style={[
-                styles.itemText,
-                {
-                  color: black,
-                },
-              ]}
-            >
-              Files
-            </Text>
-          </View>
-          <View>
-            <GoForward fill={grey} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('SharedGroupsScreen', {
-              user,
-            });
-          }}
-          style={[
-            styles.actionContainer,
-            {
-              borderBottomColor: semantics.borderCoreDefault,
-            },
-          ]}
-        >
-          <View style={styles.actionLabelContainer}>
-            <Contacts fill={grey} />
-            <Text
-              style={[
-                styles.itemText,
-                {
-                  color: black,
-                },
-              ]}
-            >
-              Shared Groups
-            </Text>
-          </View>
-          <View>
-            <GoForward fill={grey} />
-          </View>
-        </TouchableOpacity>
-        <Spacer />
-        <TouchableOpacity
-          onPress={openDeleteConversationConfirmationSheet}
-          style={[
-            styles.actionContainer,
-            {
-              borderBottomColor: semantics.borderCoreDefault,
-            },
-          ]}
-        >
-          <View style={styles.actionLabelContainer}>
-            <Delete fill={accent_red} width={24} height={24} />
-            <Text
-              style={[
-                styles.itemText,
-                {
-                  color: accent_red,
-                },
-              ]}
-            >
-              Delete contact
-            </Text>
-          </View>
-        </TouchableOpacity>
+    <SafeAreaView style={[styles.container, { backgroundColor: semantics.backgroundCoreApp }]}>
+      <ScreenHeader inSafeArea titleText='Contact Info' />
+      <ScrollView contentContainerStyle={styles.scrollContent} style={styles.container}>
+        <ChannelDetailProfileSection
+          avatar={<ChannelAvatar channel={channel} size='2xl' />}
+          title={user.name || user.id}
+          subtitle={activityStatus}
+        />
+
+        <SectionCard>
+          <ListItem
+            icon={<Pin height={20} width={20} stroke={semantics.textSecondary} />}
+            label='Pinned Messages'
+            trailing={chevronRight}
+            onPress={navigateToPinnedMessages}
+          />
+          <ListItem
+            icon={<Picture height={20} width={20} fill={semantics.textSecondary} />}
+            label='Photos & Videos'
+            trailing={chevronRight}
+            onPress={navigateToImages}
+          />
+          <ListItem
+            icon={<File height={20} width={20} stroke={semantics.textSecondary} />}
+            label='Files'
+            trailing={chevronRight}
+            onPress={navigateToFiles}
+          />
+        </SectionCard>
+
+        <SectionCard>
+          <ListItem
+            icon={<Mute height={20} width={20} fill={semantics.textSecondary} />}
+            label='Mute User'
+            trailing={
+              <Switch
+                onValueChange={handleMuteToggle}
+                trackColor={{
+                  false: semantics.controlToggleSwitchBg,
+                  true: semantics.accentPrimary,
+                }}
+                value={muted ?? false}
+              />
+            }
+          />
+          <ListItem
+            icon={<CircleBan height={20} width={20} stroke={semantics.textSecondary} />}
+            label='Block User'
+            onPress={openBlockUserConfirmationSheet}
+          />
+          <ListItem
+            icon={
+              <Delete
+                height={20}
+                width={20}
+                fill={semantics.accentError}
+                stroke={semantics.accentError}
+              />
+            }
+            label='Delete Conversation'
+            destructive
+            onPress={openDeleteConversationConfirmationSheet}
+          />
+        </SectionCard>
       </ScrollView>
+      <ConfirmationBottomSheet
+        confirmText='DELETE'
+        onClose={closeConfirmation}
+        onConfirm={deleteConversation}
+        subtext='Are you sure you want to delete this conversation?'
+        title='Delete Conversation'
+        visible={confirmationVisible}
+      />
+      <ConfirmationBottomSheet
+        confirmText='BLOCK'
+        onClose={closeBlockUserConfirmation}
+        onConfirm={handleBlockUser}
+        subtext='Are you sure you want to block this user?'
+        title='Block User'
+        visible={blockUserConfirmationVisible}
+      />
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    gap: 16,
+    paddingBottom: 40,
+    paddingHorizontal: 16,
+    paddingTop: 32,
+  },
+});

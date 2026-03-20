@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -23,6 +23,7 @@ import {
   UserAvatar,
 } from 'stream-chat-react-native';
 
+import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
 
@@ -32,6 +33,8 @@ import { useUserInfoOverlayActions } from '../hooks/useUserInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserMinus } from '../icons/UserMinus';
 import { CircleClose } from '../icons/CircleClose';
+
+import type { ConfirmationData } from './ConfirmationBottomSheet';
 
 dayjs.extend(relativeTime);
 
@@ -221,7 +224,19 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
       )
     : undefined;
 
-  const { viewInfo, messageUser, removeFromGroup, cancel } = useUserInfoOverlayActions();
+  const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
+
+  const showConfirmation = useCallback((data: ConfirmationData) => {
+    setConfirmationData(data);
+  }, []);
+
+  const closeConfirmation = useCallback(() => {
+    setConfirmationData(null);
+  }, []);
+
+  const { viewInfo, messageUser, removeFromGroup, cancel } = useUserInfoOverlayActions({
+    showConfirmation,
+  });
 
   if (!self || !member) {
     return null;
@@ -346,6 +361,15 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
           </GestureDetector>
         </Animated.View>
       </GestureDetector>
+      <ConfirmationBottomSheet
+        cancelText={confirmationData?.cancelText}
+        confirmText={confirmationData?.confirmText}
+        onClose={closeConfirmation}
+        onConfirm={confirmationData?.onConfirm}
+        subtext={confirmationData?.subtext}
+        title={confirmationData?.title}
+        visible={!!confirmationData}
+      />
     </Animated.View>
   );
 };
