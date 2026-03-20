@@ -287,23 +287,29 @@ const UnMemoizedAttachmentUploadPreviewList = (
       ) : null}
 
       {nonAudioAttachments.length ? (
-        <Animated.View style={animatedListWrapperStyle}>
-          <FlatList
-            data={nonAudioAttachments}
-            horizontal
-            ItemSeparatorComponent={ItemSeparatorComponent}
-            keyExtractor={(item) => item.localMetadata.id}
-            onContentSizeChange={onContentSizeChangeHandler}
-            onLayout={onLayoutHandler}
-            onScroll={onScrollHandler}
-            removeClippedSubviews={false}
-            ref={attachmentListRef}
-            renderItem={renderItem}
-            scrollEventThrottle={16}
-            showsHorizontalScrollIndicator={false}
-            style={[styles.flatList, flatList]}
-            testID={'attachment-upload-preview-list'}
-          />
+        <Animated.View
+          entering={ZoomIn.duration(200)}
+          exiting={ZoomOut.duration(200)}
+          layout={LinearTransition.duration(200)}
+        >
+          <Animated.View style={animatedListWrapperStyle}>
+            <FlatList
+              data={nonAudioAttachments}
+              horizontal
+              ItemSeparatorComponent={ItemSeparatorComponent}
+              keyExtractor={(item) => item.localMetadata.id}
+              onContentSizeChange={onContentSizeChangeHandler}
+              onLayout={onLayoutHandler}
+              onScroll={onScrollHandler}
+              removeClippedSubviews={false}
+              ref={attachmentListRef}
+              renderItem={renderItem}
+              scrollEventThrottle={16}
+              showsHorizontalScrollIndicator={false}
+              style={[styles.flatList, flatList]}
+              testID={'attachment-upload-preview-list'}
+            />
+          </Animated.View>
         </Animated.View>
       ) : null}
     </>
