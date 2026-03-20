@@ -325,6 +325,7 @@ export type Theme = {
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
     attachmentUploadPreviewList: {
+      audioAttachmentsContainer: ViewStyle;
       flatList: ViewStyle;
       itemSeparator: ViewStyle;
     };
@@ -1253,6 +1254,7 @@ export const defaultTheme: Theme = {
     attachButtonContainer: {},
     attachmentSelectionBar: {},
     attachmentUploadPreviewList: {
+      audioAttachmentsContainer: {},
       flatList: {},
       itemSeparator: {},
     },

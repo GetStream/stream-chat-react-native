@@ -104,12 +104,13 @@ const useStyles = () => {
         },
         wrapper: {
           padding: primitives.spacingXxs,
+          width: '100%',
         },
         audioAttachmentContainer: {
           borderRadius: primitives.radiusLg,
           borderColor: semantics.borderCoreDefault,
           borderWidth: 1,
-          width: 274, // TODO: Fix this
+          width: '100%',
         },
       }),
     [semantics.borderCoreDefault],
