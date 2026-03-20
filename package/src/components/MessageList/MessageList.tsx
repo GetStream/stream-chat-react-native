@@ -1314,7 +1314,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           style={[
             {
               bottom: messageInputFloating
-                ? messageInputHeight + primitives.spacingMd
+                ? messageInputHeight + primitives.spacingMd + 16
                 : primitives.spacingMd,
             },
             styles.scrollToBottomButtonContainer,

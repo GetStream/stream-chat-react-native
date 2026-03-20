@@ -363,8 +363,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
           style={{
             paddingBottom:
               selectedPicker && !isKeyboardVisible
-                ? attachmentPickerBottomSheetHeight - bottomInset + 16
-                : 16,
+                ? attachmentPickerBottomSheetHeight - bottomInset
+                : 0,
           }}
         />
       ) : null}
