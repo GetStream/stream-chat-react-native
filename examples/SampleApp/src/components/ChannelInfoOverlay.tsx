@@ -143,8 +143,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
 
   const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
 
-  const showConfirmation = useCallback((data: ConfirmationData) => {
-    setConfirmationData(data);
+  const showConfirmation = useCallback((_data: ConfirmationData) => {
+    setConfirmationData(_data);
   }, []);
 
   const closeConfirmation = useCallback(() => {

@@ -73,8 +73,8 @@ export const ContactDetailBottomSheet = React.memo(
       if (!user?.id) return;
 
       try {
-        const isMuted = client.mutedUsers?.some((m) => m.target.id === user.id);
-        if (isMuted) {
+        const _isMuted = client.mutedUsers?.some((m) => m.target.id === user.id);
+        if (_isMuted) {
           await client.unmuteUser(user.id);
         } else {
           await client.muteUser(user.id);

@@ -127,10 +127,6 @@ export const AllMembersBottomSheet = React.memo(
 AllMembersBottomSheet.displayName = 'AllMembersBottomSheet';
 
 const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
   return useMemo(
     () =>
       StyleSheet.create({
@@ -168,6 +164,6 @@ const useStyles = () => {
           paddingBottom: 40,
         },
       }),
-    [semantics],
+    [],
   );
 };

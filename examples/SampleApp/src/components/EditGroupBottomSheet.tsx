@@ -146,10 +146,6 @@ export const EditGroupBottomSheet = React.memo(
 EditGroupBottomSheet.displayName = 'EditGroupBottomSheet';
 
 const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
   return useMemo(
     () =>
       StyleSheet.create({
@@ -220,6 +216,6 @@ const useStyles = () => {
           lineHeight: 20,
         },
       }),
-    [semantics],
+    [],
   );
 };

@@ -85,10 +85,6 @@ export const ConfirmationBottomSheet = React.memo(
 );
 
 const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
   return useMemo(
     () =>
       StyleSheet.create({
@@ -126,6 +122,6 @@ const useStyles = () => {
           paddingHorizontal: 16,
         },
       }),
-    [semantics],
+    [],
   );
 };

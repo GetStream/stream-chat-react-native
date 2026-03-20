@@ -226,8 +226,8 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
 
   const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
 
-  const showConfirmation = useCallback((data: ConfirmationData) => {
-    setConfirmationData(data);
+  const showConfirmation = useCallback((_data: ConfirmationData) => {
+    setConfirmationData(_data);
   }, []);
 
   const closeConfirmation = useCallback(() => {
