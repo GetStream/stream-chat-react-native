@@ -25,6 +25,8 @@ import {
   isLocalVoiceRecordingAttachment,
   isVideoAttachment,
   LocalAttachment,
+  LocalAudioAttachment,
+  LocalVoiceRecordingAttachment,
 } from 'stream-chat';
 
 import { useMessageComposer } from '../../../../contexts';
@@ -69,6 +71,14 @@ const ItemSeparatorComponent = () => {
   return <View style={[styles.itemSeparator, itemSeparator]} />;
 };
 
+const getIsAudioAttachmentPreview =
+  (soundPackageAvailable: boolean) =>
+  (
+    attachment: LocalAttachment,
+  ): attachment is LocalAudioAttachment | LocalVoiceRecordingAttachment =>
+    isLocalVoiceRecordingAttachment(attachment) ||
+    (soundPackageAvailable && isLocalAudioAttachment(attachment));
+
 /**
  * AttachmentUploadPreviewList
  * UI Component to preview the files set for upload
@@ -85,11 +95,17 @@ const UnMemoizedAttachmentUploadPreviewList = (
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
   const attachmentListRef = useRef<FlatList<LocalAttachment>>(null);
-  const previousAttachmentsLengthRef = useRef(attachments.length);
+  const soundPackageAvailable = isSoundPackageAvailable();
+  const isAudioAttachmentPreview = getIsAudioAttachmentPreview(soundPackageAvailable);
+  const previousNonAudioAttachmentsLengthRef = useRef(0);
   const contentWidthRef = useRef(0);
   const viewportWidthRef = useRef(0);
   const scrollOffsetXRef = useRef(0);
   const endShrinkCompensationX = useSharedValue(0);
+  const audioAttachments = attachments.filter(isAudioAttachmentPreview);
+  const nonAudioAttachments = attachments.filter(
+    (attachment) => !isAudioAttachmentPreview(attachment),
+  );
 
   const {
     theme: {
@@ -224,10 +240,10 @@ const UnMemoizedAttachmentUploadPreviewList = (
   );
 
   useEffect(() => {
-    const previousLength = previousAttachmentsLengthRef.current;
-    const nextLength = attachments.length;
+    const previousLength = previousNonAudioAttachmentsLengthRef.current;
+    const nextLength = nonAudioAttachments.length;
     const didAddAttachment = nextLength > previousLength;
-    previousAttachmentsLengthRef.current = nextLength;
+    previousNonAudioAttachmentsLengthRef.current = nextLength;
 
     if (!didAddAttachment) {
       return;
@@ -238,7 +254,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
     requestAnimationFrame(() => {
       attachmentListRef.current?.scrollToEnd({ animated: true });
     });
-  }, [attachments.length, endShrinkCompensationX]);
+  }, [endShrinkCompensationX, nonAudioAttachments.length]);
 
   const animatedListWrapperStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: endShrinkCompensationX.value }],
@@ -249,24 +265,47 @@ const UnMemoizedAttachmentUploadPreviewList = (
   }
 
   return (
-    <Animated.View style={animatedListWrapperStyle}>
-      <FlatList
-        data={attachments}
-        horizontal
-        ItemSeparatorComponent={ItemSeparatorComponent}
-        keyExtractor={(item) => item.localMetadata.id}
-        onContentSizeChange={onContentSizeChangeHandler}
-        onLayout={onLayoutHandler}
-        onScroll={onScrollHandler}
-        removeClippedSubviews={false}
-        ref={attachmentListRef}
-        renderItem={renderItem}
-        scrollEventThrottle={16}
-        showsHorizontalScrollIndicator={false}
-        style={[styles.flatList, flatList]}
-        testID={'attachment-upload-preview-list'}
-      />
-    </Animated.View>
+    <>
+      {audioAttachments.length ? (
+        <Animated.View
+          entering={ZoomIn.duration(200)}
+          exiting={ZoomOut.duration(200)}
+          layout={LinearTransition.duration(200)}
+          style={styles.audioAttachmentsContainer}
+        >
+          {audioAttachments.map((attachment) => (
+            <AttachmentPreviewCell key={attachment.localMetadata.id}>
+              <AudioAttachmentUploadPreview
+                attachment={attachment}
+                handleRetry={attachmentManager.uploadAttachment}
+                removeAttachments={attachmentManager.removeAttachments}
+              />
+            </AttachmentPreviewCell>
+          ))}
+        </Animated.View>
+      ) : null}
+
+      {nonAudioAttachments.length ? (
+        <Animated.View style={animatedListWrapperStyle}>
+          <FlatList
+            data={nonAudioAttachments}
+            horizontal
+            ItemSeparatorComponent={ItemSeparatorComponent}
+            keyExtractor={(item) => item.localMetadata.id}
+            onContentSizeChange={onContentSizeChangeHandler}
+            onLayout={onLayoutHandler}
+            onScroll={onScrollHandler}
+            removeClippedSubviews={false}
+            ref={attachmentListRef}
+            renderItem={renderItem}
+            scrollEventThrottle={16}
+            showsHorizontalScrollIndicator={false}
+            style={[styles.flatList, flatList]}
+            testID={'attachment-upload-preview-list'}
+          />
+        </Animated.View>
+      ) : null}
+    </>
   );
 };
 
@@ -301,6 +340,9 @@ export const AttachmentUploadPreviewList = (props: AttachmentUploadPreviewListPr
 };
 
 const styles = StyleSheet.create({
+  audioAttachmentsContainer: {
+    width: '100%',
+  },
   flatList: {
     overflow: 'visible',
   },
