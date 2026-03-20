@@ -109,7 +109,7 @@ const useStyles = () => {
           borderRadius: primitives.radiusLg,
           borderColor: semantics.borderCoreDefault,
           borderWidth: 1,
-          maxWidth: 256, // TODO: Fix this
+          width: 274, // TODO: Fix this
         },
       }),
     [semantics.borderCoreDefault],
