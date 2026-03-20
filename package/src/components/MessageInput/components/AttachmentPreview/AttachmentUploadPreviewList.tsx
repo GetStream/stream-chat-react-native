@@ -41,6 +41,7 @@ import { primitives } from '../../../../theme';
 
 const END_ANCHOR_THRESHOLD = 16;
 const END_SHRINK_COMPENSATION_DURATION = 200;
+const MAX_AUDIO_ATTACHMENTS_CONTAINER_WIDTH = 560;
 
 export type AttachmentUploadListPreviewPropsWithContext = Pick<
   MessageInputContextValue,
@@ -110,7 +111,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
   const {
     theme: {
       messageInput: {
-        attachmentUploadPreviewList: { flatList },
+        attachmentUploadPreviewList: { audioAttachmentsContainer, flatList },
       },
     },
   } = useTheme();
@@ -271,7 +272,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
           entering={ZoomIn.duration(200)}
           exiting={ZoomOut.duration(200)}
           layout={LinearTransition.duration(200)}
-          style={styles.audioAttachmentsContainer}
+          style={[styles.audioAttachmentsContainer, audioAttachmentsContainer]}
         >
           {audioAttachments.map((attachment) => (
             <AttachmentPreviewCell key={attachment.localMetadata.id}>
@@ -341,6 +342,7 @@ export const AttachmentUploadPreviewList = (props: AttachmentUploadPreviewListPr
 
 const styles = StyleSheet.create({
   audioAttachmentsContainer: {
+    maxWidth: MAX_AUDIO_ATTACHMENTS_CONTAINER_WIDTH,
     width: '100%',
   },
   flatList: {
