@@ -3,7 +3,7 @@ const configPromise = require('./release.config.js');
 
 const execa = require('execa');
 
-const dryRun = true;
+const dryRun = false;
 
 configPromise.then((config) => {
   return semanticRelease({
