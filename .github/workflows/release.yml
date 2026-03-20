@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   publish:
-    runs-on: public
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [24.x]
