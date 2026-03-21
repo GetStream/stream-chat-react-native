@@ -63,7 +63,7 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         content: {
           markdown,
           textContainer: { onlyEmojiMarkdown, ...textContainer },
@@ -208,4 +208,4 @@ export const MessageTextContainer = (props: MessageTextContainerProps) => {
   );
 };
 
-MessageTextContainer.displayName = 'MessageTextContainer{messageSimple{content}}';
+MessageTextContainer.displayName = 'MessageTextContainer{messageItemView{content}}';

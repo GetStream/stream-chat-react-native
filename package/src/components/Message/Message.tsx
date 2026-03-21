@@ -209,7 +209,7 @@ export type MessagePropsWithContext = Pick<
     | 'messageContentOrder'
     | 'MessageBounce'
     | 'MessageBlocked'
-    | 'MessageSimple'
+    | 'MessageItemView'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
@@ -293,7 +293,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     MessageBounce,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
-    MessageSimple,
+    MessageItemView,
     onLongPressMessage: onLongPressMessageProp,
     onPressInMessage: onPressInMessageProp,
     onPressMessage: onPressMessageProp,
@@ -865,7 +865,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           hostName={overlayActive ? 'message-overlay' : undefined}
           style={overlayActive && rect ? { width: rect.w } : undefined}
         >
-          <MessageSimple ref={messageWrapperRef} />
+          <MessageItemView ref={messageWrapperRef} />
         </Portal>
         {showMessageReactions ? (
           <BottomSheetModal
@@ -1132,7 +1132,7 @@ export const Message = (props: MessageProps) => {
 const useStyles = ({ highlightedMessage }: { highlightedMessage?: boolean }) => {
   const {
     theme: {
-      messageSimple: { wrapper, targetedMessageContainer, blockedMessageContainer },
+      messageItemView: { wrapper, targetedMessageContainer, blockedMessageContainer },
       screenPadding,
       semantics,
     },

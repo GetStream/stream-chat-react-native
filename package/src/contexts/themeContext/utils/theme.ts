@@ -581,7 +581,7 @@ export type Theme = {
   messagePreview: {
     message: TextStyle;
   };
-  messageSimple: {
+  messageItemView: {
     blockedMessageContainer: ViewStyle;
     actions: {
       button: ViewStyle & {
@@ -1489,7 +1489,7 @@ export const defaultTheme: Theme = {
   messagePreview: {
     message: {},
   },
-  messageSimple: {
+  messageItemView: {
     blockedMessageContainer: {},
     actions: {
       button: {},

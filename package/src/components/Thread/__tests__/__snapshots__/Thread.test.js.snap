@@ -379,7 +379,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "paddingVertical": 8,
                           }
                         }
-                        testID="message-simple-wrapper"
+                        testID="message-item-view-wrapper"
                       >
                         <View
                           style={{}}
@@ -706,7 +706,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "paddingVertical": 8,
                           }
                         }
-                        testID="message-simple-wrapper"
+                        testID="message-item-view-wrapper"
                       >
                         <View
                           style={{}}
@@ -1066,7 +1066,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "paddingVertical": 8,
                           }
                         }
-                        testID="message-simple-wrapper"
+                        testID="message-item-view-wrapper"
                       >
                         <View
                           style={{}}
@@ -1384,7 +1384,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           "paddingVertical": 8,
                         }
                       }
-                      testID="message-simple-wrapper"
+                      testID="message-item-view-wrapper"
                     >
                       <View
                         style={{}}

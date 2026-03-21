@@ -21,7 +21,7 @@ export const MessageSwipeContent = () => {
 const useStyles = () => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         swipeLeftContent: { container },
       },
       semantics,

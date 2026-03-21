@@ -17,7 +17,7 @@ import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { Message } from '../../Message';
 
-describe('MessageSimple', () => {
+describe('MessageItemView', () => {
   let channel;
   let chatClient;
   let renderMessage;
@@ -53,14 +53,14 @@ describe('MessageSimple', () => {
     cleanup();
   });
 
-  it('renders the MessageSimple component', async () => {
+  it('renders the MessageItemView component', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
     renderMessage({ message });
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-simple-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-item-view-wrapper')).toBeTruthy();
     });
   });
 
@@ -160,7 +160,7 @@ describe('MessageSimple', () => {
     renderMessage({ groupStyles: ['top'], message });
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-simple-wrapper').props.style).toMatchObject({
+      expect(screen.getByTestId('message-item-view-wrapper').props.style).toMatchObject({
         alignItems: 'flex-end',
         gap: 8,
         flexDirection: 'row',
@@ -177,7 +177,7 @@ describe('MessageSimple', () => {
     renderMessage({ message });
 
     await waitFor(() => {
-      const data = screen.getByTestId('message-simple-wrapper').props.style;
+      const data = screen.getByTestId('message-item-view-wrapper').props.style;
 
       expect(data).toMatchObject({
         alignItems: 'flex-end',

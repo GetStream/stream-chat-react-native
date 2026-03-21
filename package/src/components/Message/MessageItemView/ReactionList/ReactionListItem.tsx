@@ -60,7 +60,7 @@ export const ReactionListItem = (props: ReactionListItemProps) => {
   } = props;
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         reactionListItem: { icon },
       },
     },
@@ -200,7 +200,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         reactionListItem: { reactionCount },
       },
     },

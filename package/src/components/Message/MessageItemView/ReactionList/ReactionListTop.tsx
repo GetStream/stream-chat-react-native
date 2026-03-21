@@ -157,7 +157,7 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
 const useStyles = ({ alignment }: { alignment: 'left' | 'right' }) => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         reactionListTop: { container, position, contentContainer, list },
       },
     },

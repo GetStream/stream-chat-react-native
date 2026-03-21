@@ -26,7 +26,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         savedForLaterHeader: { container, label },
       },
     },

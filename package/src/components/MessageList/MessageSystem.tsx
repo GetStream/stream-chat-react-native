@@ -65,7 +65,7 @@ MessageSystem.displayName = 'MessageSystem{messageList{messageSystem}}';
 const useStyles = () => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         messageBlocked: { container, text },
       },
       semantics,

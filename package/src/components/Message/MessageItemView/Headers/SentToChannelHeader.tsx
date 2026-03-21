@@ -111,7 +111,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         sentToChannelHeader: { container, label, dot, link },
       },
     },

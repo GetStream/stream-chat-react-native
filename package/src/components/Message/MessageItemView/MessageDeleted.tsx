@@ -28,7 +28,7 @@ const MessageDeletedWithContext = (props: MessageDeletedPropsWithContext) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         deleted: { containerInner, deletedText, container },
       },
       semantics,
@@ -125,13 +125,13 @@ export const MessageDeleted = (props: MessageDeletedProps) => {
   );
 };
 
-MessageDeleted.displayName = 'MessageDeleted{messageSimple{content}}';
+MessageDeleted.displayName = 'MessageDeleted{messageItemView{content}}';
 
 const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         deleted: { containerInner, deletedText, container },
       },
     },

@@ -42,7 +42,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         reactionListItemWrapper: { wrapper, container },
       },
     },

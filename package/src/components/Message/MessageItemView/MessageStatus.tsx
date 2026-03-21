@@ -34,7 +34,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         status: { checkAllIcon, checkIcon, container, timeIcon },
       },
       semantics,
@@ -174,7 +174,7 @@ export const MessageStatus = (props: MessageStatusProps) => {
   );
 };
 
-MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';
+MessageStatus.displayName = 'MessageStatus{messageItemView{status}}';
 
 const useStyles = () => {
   const {

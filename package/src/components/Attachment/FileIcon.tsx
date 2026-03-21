@@ -421,7 +421,7 @@ const sizeToNumber = (size?: 'sm' | 'md' | 'lg') => {
 export const FileIcon = ({ mimeType, size = 'md' }: FileIconProps) => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         file: { icon },
       },
     },
@@ -432,4 +432,4 @@ export const FileIcon = ({ mimeType, size = 'md' }: FileIconProps) => {
   return <Icon {...(size ? sizeToNumber(size) : {})} {...icon} />;
 };
 
-FileIcon.displayName = 'FileIcon{messageSimple{file{icon}}}';
+FileIcon.displayName = 'FileIcon{messageItemView{file{icon}}}';

@@ -57,14 +57,14 @@ describe('Message', () => {
     cleanup();
   });
 
-  it('renders the Message and MessageSimple components', async () => {
+  it('renders the Message and MessageItemView components', async () => {
     const message = generateMessage({ user });
 
     const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
-      expect(getByTestId('message-simple-wrapper')).toBeTruthy();
+      expect(getByTestId('message-item-view-wrapper')).toBeTruthy();
     });
   });
 

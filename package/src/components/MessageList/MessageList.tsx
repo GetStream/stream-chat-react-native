@@ -68,7 +68,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
+import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
 // TODO: Think if we really need this and strive to remove it if we can.

@@ -62,7 +62,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         content: { timestampText },
       },
     },

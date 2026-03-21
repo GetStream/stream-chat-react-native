@@ -65,7 +65,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         reminderHeader: { container, label, dot, time },
       },
     },

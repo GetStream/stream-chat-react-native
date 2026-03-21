@@ -35,7 +35,7 @@ MessageBlocked.displayName = 'MessageBlocked{messageList{messageBlocked}}';
 const useStyles = () => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         messageBlocked: { container, text },
       },
       semantics,

@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { MessageContentProps } from './MessageContent';
-import { MessageSimplePropsWithContext } from './MessageSimple';
+import { MessageItemViewPropsWithContext } from './MessageItemView';
 
 import { MessagesContextValue, useTheme } from '../../../contexts';
 
@@ -36,7 +36,7 @@ export type MessageBubbleProps = Pick<
     | 'message'
     | 'setMessageContentWidth'
   > &
-  Pick<MessageSimplePropsWithContext, 'alignment'> & {
+  Pick<MessageItemViewPropsWithContext, 'alignment'> & {
     messageContentWidth: number;
   };
 
@@ -93,7 +93,7 @@ export const SwipableMessageBubble = React.memo(
     props: MessageBubbleProps &
       Pick<MessagesContextValue, 'MessageSwipeContent'> &
       Pick<
-        MessageSimplePropsWithContext,
+        MessageItemViewPropsWithContext,
         'shouldRenderSwipeableWrapper' | 'messageSwipeToReplyHitSlop'
       > & { onSwipe: () => void },
   ) => {
@@ -216,7 +216,7 @@ export const SwipableMessageBubble = React.memo(
 const useStyles = ({ alignment }: { alignment?: 'left' | 'right' }) => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         bubble: { contentContainer, errorContainer, reactionListTopContainer, wrapper },
         contentWrapper,
         swipeContentContainer,

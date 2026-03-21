@@ -15,7 +15,7 @@ export const MessageRepliesAvatarsWithContext = (props: MessageRepliesAvatarsPro
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         replies: { avatarStackContainer },
       },
     },

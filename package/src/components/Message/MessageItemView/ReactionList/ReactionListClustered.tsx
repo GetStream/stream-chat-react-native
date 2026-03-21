@@ -59,7 +59,7 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         reactionListClustered: { icon },
       },
     },
@@ -181,7 +181,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         reactionListClustered: { contentContainer, reactionCount, iconStyle },
       },
     },

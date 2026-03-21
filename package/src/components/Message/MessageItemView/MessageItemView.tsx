@@ -41,7 +41,7 @@ const useStyles = ({
 }) => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         container,
         contentContainer,
         repliesContainer,
@@ -157,7 +157,7 @@ const useStyles = ({
   };
 };
 
-export type MessageSimplePropsWithContext = Pick<
+export type MessageItemViewPropsWithContext = Pick<
   MessageContextValue,
   | 'alignment'
   | 'channel'
@@ -200,170 +200,172 @@ export type MessageSimplePropsWithContext = Pick<
     shouldRenderSwipeableWrapper: boolean;
   };
 
-const MessageSimpleWithContext = forwardRef<View, MessageSimplePropsWithContext>((props, ref) => {
-  const [messageContentWidth, setMessageContentWidth] = useState(0);
-  const { width } = Dimensions.get('screen');
-  const {
-    alignment,
-    channel,
-    customMessageSwipeAction,
-    enableMessageGroupingByUser,
-    enableSwipeToReply,
-    groupStyles,
-    isMyMessage,
-    message,
-    MessageAvatar,
-    MessageContent,
-    MessageDeleted,
-    MessageError,
-    MessageFooter,
-    MessageHeader,
-    MessageReplies,
-    MessageSwipeContent,
-    messageSwipeToReplyHitSlop = { left: width, right: width },
-    onlyEmojis,
-    otherAttachments,
-    ReactionListBottom,
-    reactionListPosition,
-    reactionListType,
-    ReactionListTop,
-    shouldRenderSwipeableWrapper,
-    setQuotedMessage,
-  } = props;
+const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithContext>(
+  (props, ref) => {
+    const [messageContentWidth, setMessageContentWidth] = useState(0);
+    const { width } = Dimensions.get('screen');
+    const {
+      alignment,
+      channel,
+      customMessageSwipeAction,
+      enableMessageGroupingByUser,
+      enableSwipeToReply,
+      groupStyles,
+      isMyMessage,
+      message,
+      MessageAvatar,
+      MessageContent,
+      MessageDeleted,
+      MessageError,
+      MessageFooter,
+      MessageHeader,
+      MessageReplies,
+      MessageSwipeContent,
+      messageSwipeToReplyHitSlop = { left: width, right: width },
+      onlyEmojis,
+      otherAttachments,
+      ReactionListBottom,
+      reactionListPosition,
+      reactionListType,
+      ReactionListTop,
+      shouldRenderSwipeableWrapper,
+      setQuotedMessage,
+    } = props;
 
-  const {
-    theme: {
-      semantics,
-      messageSimple: {
-        content: { errorContainer },
+    const {
+      theme: {
+        semantics,
+        messageItemView: {
+          content: { errorContainer },
+        },
       },
-    },
-  } = useTheme();
+    } = useTheme();
 
-  const {
-    isMessageErrorType,
-    isMessageReceivedOrErrorType,
-    isMessageTypeDeleted,
-    isVeryLastMessage,
-    messageGroupedSingle,
-    messageGroupedBottom,
-    messageGroupedTop,
-    messageGroupedSingleOrBottom,
-    messageGroupedMiddle,
-  } = useMessageData({});
+    const {
+      isMessageErrorType,
+      isMessageReceivedOrErrorType,
+      isMessageTypeDeleted,
+      isVeryLastMessage,
+      messageGroupedSingle,
+      messageGroupedBottom,
+      messageGroupedTop,
+      messageGroupedSingleOrBottom,
+      messageGroupedMiddle,
+    } = useMessageData({});
 
-  const styles = useStyles({
-    alignment,
-    isVeryLastMessage,
-    messageGroupedSingle,
-    messageGroupedBottom,
-    messageGroupedTop,
-    messageGroupedMiddle,
-    enableMessageGroupingByUser,
-  });
+    const styles = useStyles({
+      alignment,
+      isVeryLastMessage,
+      messageGroupedSingle,
+      messageGroupedBottom,
+      messageGroupedTop,
+      messageGroupedMiddle,
+      enableMessageGroupingByUser,
+    });
 
-  const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
+    const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 
-  let noBorder = onlyEmojis && !message.quoted_message;
-  if (otherAttachments.length) {
-    if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
-      noBorder = false;
-    } else {
-      noBorder = true;
+    let noBorder = onlyEmojis && !message.quoted_message;
+    if (otherAttachments.length) {
+      if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
+        noBorder = false;
+      } else {
+        noBorder = true;
+      }
     }
-  }
 
-  let backgroundColor = semantics.chatBgOutgoing;
-  if (onlyEmojis && !message.quoted_message) {
-    backgroundColor = 'transparent';
-  } else if (otherAttachments.length) {
-    if (otherAttachments[0].type === 'giphy') {
+    let backgroundColor = semantics.chatBgOutgoing;
+    if (onlyEmojis && !message.quoted_message) {
       backgroundColor = 'transparent';
+    } else if (otherAttachments.length) {
+      if (otherAttachments[0].type === 'giphy') {
+        backgroundColor = 'transparent';
+      }
+    } else if (isMessageReceivedOrErrorType) {
+      backgroundColor = semantics.chatBgIncoming;
     }
-  } else if (isMessageReceivedOrErrorType) {
-    backgroundColor = semantics.chatBgIncoming;
-  }
 
-  const onSwipeActionHandler = useStableCallback(() => {
-    if (customMessageSwipeAction) {
-      customMessageSwipeAction({ channel, message });
-      return;
-    }
-    setQuotedMessage(message);
-  });
+    const onSwipeActionHandler = useStableCallback(() => {
+      if (customMessageSwipeAction) {
+        customMessageSwipeAction({ channel, message });
+        return;
+      }
+      setQuotedMessage(message);
+    });
 
-  return (
-    <View ref={ref}>
-      <View pointerEvents='box-none' style={styles.container} testID='message-simple-wrapper'>
-        {alignment === 'left' ? <MessageAvatar /> : null}
-        {isMessageTypeDeleted ? (
-          <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
-        ) : (
-          <View
-            style={[
-              styles.contentContainer,
-              isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
-              isMessageErrorType ? errorContainer : {},
-            ]}
-            testID='message-components'
-          >
-            <MessageHeader />
-            {enableSwipeToReply ? (
-              <SwipableMessageBubble
-                alignment={alignment}
-                backgroundColor={backgroundColor}
-                isVeryLastMessage={isVeryLastMessage}
-                MessageContent={MessageContent}
-                messageContentWidth={messageContentWidth}
-                messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-                MessageSwipeContent={MessageSwipeContent}
-                MessageError={MessageError}
-                messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
-                noBorder={noBorder}
-                onSwipe={onSwipeActionHandler}
-                reactionListPosition={reactionListPosition}
-                reactionListType={reactionListType}
-                ReactionListTop={ReactionListTop}
-                setMessageContentWidth={setMessageContentWidth}
-                shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
-                message={message}
-              />
-            ) : (
-              <MessageBubble
-                alignment={alignment}
-                backgroundColor={backgroundColor}
-                isVeryLastMessage={isVeryLastMessage}
-                MessageContent={MessageContent}
-                MessageError={MessageError}
-                messageContentWidth={messageContentWidth}
-                messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-                noBorder={noBorder}
-                reactionListPosition={reactionListPosition}
-                ReactionListTop={ReactionListTop}
-                reactionListType={reactionListType}
-                setMessageContentWidth={setMessageContentWidth}
-                message={message}
-              />
-            )}
+    return (
+      <View ref={ref}>
+        <View pointerEvents='box-none' style={styles.container} testID='message-item-view-wrapper'>
+          {alignment === 'left' ? <MessageAvatar /> : null}
+          {isMessageTypeDeleted ? (
+            <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
+          ) : (
+            <View
+              style={[
+                styles.contentContainer,
+                isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
+                isMessageErrorType ? errorContainer : {},
+              ]}
+              testID='message-components'
+            >
+              <MessageHeader />
+              {enableSwipeToReply ? (
+                <SwipableMessageBubble
+                  alignment={alignment}
+                  backgroundColor={backgroundColor}
+                  isVeryLastMessage={isVeryLastMessage}
+                  MessageContent={MessageContent}
+                  messageContentWidth={messageContentWidth}
+                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+                  MessageSwipeContent={MessageSwipeContent}
+                  MessageError={MessageError}
+                  messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
+                  noBorder={noBorder}
+                  onSwipe={onSwipeActionHandler}
+                  reactionListPosition={reactionListPosition}
+                  reactionListType={reactionListType}
+                  ReactionListTop={ReactionListTop}
+                  setMessageContentWidth={setMessageContentWidth}
+                  shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
+                  message={message}
+                />
+              ) : (
+                <MessageBubble
+                  alignment={alignment}
+                  backgroundColor={backgroundColor}
+                  isVeryLastMessage={isVeryLastMessage}
+                  MessageContent={MessageContent}
+                  MessageError={MessageError}
+                  messageContentWidth={messageContentWidth}
+                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+                  noBorder={noBorder}
+                  reactionListPosition={reactionListPosition}
+                  ReactionListTop={ReactionListTop}
+                  reactionListType={reactionListType}
+                  setMessageContentWidth={setMessageContentWidth}
+                  message={message}
+                />
+              )}
 
-            <View style={styles.repliesContainer}>
-              <MessageReplies />
+              <View style={styles.repliesContainer}>
+                <MessageReplies />
+              </View>
+
+              {reactionListPosition === 'bottom' && ReactionListBottom ? (
+                <ReactionListBottom type={reactionListType} />
+              ) : null}
+              <MessageFooter date={message.created_at} />
             </View>
-
-            {reactionListPosition === 'bottom' && ReactionListBottom ? (
-              <ReactionListBottom type={reactionListType} />
-            ) : null}
-            <MessageFooter date={message.created_at} />
-          </View>
-        )}
+          )}
+        </View>
       </View>
-    </View>
-  );
-});
+    );
+  },
+);
 
 const areEqual = (
-  prevProps: MessageSimplePropsWithContext,
-  nextProps: MessageSimplePropsWithContext,
+  prevProps: MessageItemViewPropsWithContext,
+  nextProps: MessageItemViewPropsWithContext,
 ) => {
   const {
     channel: prevChannel,
@@ -479,18 +481,18 @@ const areEqual = (
   return true;
 };
 
-const MemoizedMessageSimple = React.memo(
-  MessageSimpleWithContext,
+const MemoizedMessageItemView = React.memo(
+  MessageItemViewWithContext,
   areEqual,
-) as typeof MessageSimpleWithContext;
+) as typeof MessageItemViewWithContext;
 
-export type MessageSimpleProps = Partial<MessageSimplePropsWithContext>;
+export type MessageItemViewProps = Partial<MessageItemViewPropsWithContext>;
 
 /**
  *
  * Message UI component
  */
-export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) => {
+export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, ref) => {
   const {
     alignment,
     channel,
@@ -531,7 +533,7 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
   const shouldRenderSwipeableWrapper = (message?.attachments || []).length > 0 || isAIGenerated;
 
   return (
-    <MemoizedMessageSimple
+    <MemoizedMessageItemView
       {...{
         alignment,
         channel,
@@ -568,4 +570,4 @@ export const MessageSimple = forwardRef<View, MessageSimpleProps>((props, ref) =
   );
 });
 
-MessageSimple.displayName = 'MessageSimple{messageSimple{container}}';
+MessageItemView.displayName = 'MessageItemView{messageItemView{container}}';

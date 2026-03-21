@@ -161,7 +161,7 @@ const useStyles = ({
 }) => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         reactionListBottom: { contentContainer, columnWrapper, rowSeparator },
       },
     },

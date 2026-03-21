@@ -112,7 +112,7 @@ export type MessageContentPropsWithContext = Pick<
   };
 
 /**
- * Child of MessageSimple that displays a message's content
+ * Child of MessageItemView that displays a message's content
  */
 const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   const {
@@ -149,7 +149,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         content: {
           container: {
             borderBottomLeftRadius,
@@ -523,7 +523,7 @@ export type MessageContentProps = Partial<
   Pick<MessageContentPropsWithContext, 'setMessageContentWidth'>;
 
 /**
- * Child of MessageSimple that displays a message's content
+ * Child of MessageItemView that displays a message's content
  */
 export const MessageContent = (props: MessageContentProps) => {
   const {

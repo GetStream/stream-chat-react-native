@@ -49,7 +49,7 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         replies: { container, messageRepliesText, content },
       },
       semantics,
@@ -201,7 +201,7 @@ export const MessageReplies = (props: MessageRepliesProps) => {
   );
 };
 
-MessageReplies.displayName = 'MessageReplies{messageSimple{replies}}';
+MessageReplies.displayName = 'MessageReplies{messageItemView{replies}}';
 
 const useStyles = () => {
   const {

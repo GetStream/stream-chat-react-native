@@ -41,7 +41,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageSimple: {
+      messageItemView: {
         pinnedHeader: { container, label },
       },
     },

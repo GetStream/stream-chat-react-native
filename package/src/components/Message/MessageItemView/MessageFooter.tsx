@@ -56,7 +56,7 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         footer: { container, name, editedText },
       },
     },

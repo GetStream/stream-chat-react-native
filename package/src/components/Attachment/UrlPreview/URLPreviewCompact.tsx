@@ -69,7 +69,7 @@ const URLPreviewCompactWithContext = (props: URLPreviewCompactPropsWithContext) 
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         compactUrlPreview: {
           wrapper,
           container,
@@ -296,4 +296,4 @@ const useStyles = () => {
   );
 };
 
-URLPreviewCompact.displayName = 'URLPreviewCompact{messageSimple{urlPreviewCompact}}';
+URLPreviewCompact.displayName = 'URLPreviewCompact{messageItemView{urlPreviewCompact}}';

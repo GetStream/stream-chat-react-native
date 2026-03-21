@@ -36,7 +36,7 @@ import {
 } from '../../components';
 import type { InputViewProps } from '../../components/AutoCompleteInput/InputView';
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
-import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
+import { parseLinksFromText } from '../../components/Message/MessageItemView/utils/parseLinks';
 import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
 import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';

@@ -19,7 +19,7 @@ const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
   const { lastGroupMessage, message, showAvatar, size } = props;
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         avatarWrapper: { container },
       },
     },
@@ -83,4 +83,4 @@ export const MessageAvatar = (props: MessageAvatarProps) => {
   );
 };
 
-MessageAvatar.displayName = 'MessageAvatar{messageSimple{avatarWrapper}}';
+MessageAvatar.displayName = 'MessageAvatar{messageItemView{avatarWrapper}}';

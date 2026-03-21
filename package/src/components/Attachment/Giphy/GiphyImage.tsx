@@ -49,7 +49,7 @@ const GiphyImageWithContext = (props: GiphyImagePropsWithContext) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         giphy: { giphyMask, giphy, imageIndicatorContainer },
       },
     },
