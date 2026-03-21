@@ -11,16 +11,16 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
-import { ChannelPreviewMessenger } from '../ChannelPreviewMessenger';
+import { ChannelPreviewView } from '../ChannelPreviewView';
 
-describe('ChannelPreviewMessenger', () => {
+describe('ChannelPreviewView', () => {
   const clientUser = generateUser();
   let chatClient;
   let channel;
 
   const getComponent = (props = {}) => (
     <Chat client={chatClient}>
-      <ChannelPreviewMessenger
+      <ChannelPreviewView
         channel={channel}
         client={chatClient}
         latestMessagePreview={{

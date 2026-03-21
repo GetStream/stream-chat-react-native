@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
-  ChannelPreviewMessenger,
-  ChannelPreviewMessengerProps,
+  ChannelPreviewView,
+  ChannelPreviewViewProps,
   ChannelPreviewStatus,
   ChannelPreviewStatusProps,
   Pin,
@@ -54,6 +54,6 @@ const CustomChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
   );
 };
 
-export const ChannelPreview: React.FC<ChannelPreviewMessengerProps> = (props) => {
-  return <ChannelPreviewMessenger {...props} PreviewStatus={CustomChannelPreviewStatus} />;
+export const ChannelPreview: React.FC<ChannelPreviewViewProps> = (props) => {
+  return <ChannelPreviewView {...props} PreviewStatus={CustomChannelPreviewStatus} />;
 };

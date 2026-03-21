@@ -20,7 +20,7 @@ import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
 
-export type ChannelPreviewMessengerPropsWithContext = Pick<ChannelPreviewProps, 'channel'> &
+export type ChannelPreviewViewPropsWithContext = Pick<ChannelPreviewProps, 'channel'> &
   Pick<
     ChannelsContextValue,
     | 'maxUnreadCount'
@@ -50,7 +50,7 @@ export type ChannelPreviewMessengerPropsWithContext = Pick<ChannelPreviewProps, 
     lastMessage?: LastMessageType;
   };
 
-const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsWithContext) => {
+const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext) => {
   const {
     channel,
     formatLatestMessageDate,
@@ -146,20 +146,18 @@ const ChannelPreviewMessengerWithContext = (props: ChannelPreviewMessengerPropsW
   );
 };
 
-export type ChannelPreviewMessengerProps = Partial<
-  Omit<ChannelPreviewMessengerPropsWithContext, 'channel'>
-> &
-  Pick<ChannelPreviewMessengerPropsWithContext, 'channel'>;
+export type ChannelPreviewViewProps = Partial<Omit<ChannelPreviewViewPropsWithContext, 'channel'>> &
+  Pick<ChannelPreviewViewPropsWithContext, 'channel'>;
 
-const MemoizedChannelPreviewMessengerWithContext = React.memo(
-  ChannelPreviewMessengerWithContext,
-) as typeof ChannelPreviewMessengerWithContext;
+const MemoizedChannelPreviewViewWithContext = React.memo(
+  ChannelPreviewViewWithContext,
+) as typeof ChannelPreviewViewWithContext;
 
 /**
  * This UI component displays an individual preview item for each channel in a list. It also receives all props
  * from the ChannelPreview component.
  */
-export const ChannelPreviewMessenger = (props: ChannelPreviewMessengerProps) => {
+export const ChannelPreviewView = (props: ChannelPreviewViewProps) => {
   const {
     forceUpdate,
     maxUnreadCount,
@@ -172,7 +170,7 @@ export const ChannelPreviewMessenger = (props: ChannelPreviewMessengerProps) => 
     mutedStatusPosition,
   } = useChannelsContext();
   return (
-    <MemoizedChannelPreviewMessengerWithContext
+    <MemoizedChannelPreviewViewWithContext
       {...{
         forceUpdate,
         maxUnreadCount,
@@ -189,7 +187,7 @@ export const ChannelPreviewMessenger = (props: ChannelPreviewMessengerProps) => 
   );
 };
 
-ChannelPreviewMessenger.displayName = 'ChannelPreviewMessenger{channelPreview}';
+ChannelPreviewView.displayName = 'ChannelPreviewView{channelPreview}';
 
 const useStyles = () => {
   const {

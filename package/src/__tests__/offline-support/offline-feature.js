@@ -44,7 +44,7 @@ import { BetterSqlite } from '../../test-utils/BetterSqlite';
 
 /**
  * We are gonna use following custom UI components for preview and list.
- * If we use ChannelPreviewMessenger or ChannelPreviewLastMessage here, then changes
+ * If we use ChannelPreviewView or ChannelPreviewLastMessage here, then changes
  * to those components might end up breaking tests for ChannelList, which will be quite painful
  * to debug.
  */

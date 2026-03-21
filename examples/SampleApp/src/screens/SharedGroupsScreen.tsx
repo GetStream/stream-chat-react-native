@@ -5,7 +5,7 @@ import {
   ChannelList,
   ChannelListView,
   ChannelListViewProps,
-  ChannelPreviewMessengerProps,
+  ChannelPreviewViewProps,
   getChannelPreviewDisplayAvatar,
   GroupAvatar,
   useChannelPreviewDisplayName,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type CustomPreviewProps = ChannelPreviewMessengerProps;
+type CustomPreviewProps = ChannelPreviewViewProps;
 
 const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
