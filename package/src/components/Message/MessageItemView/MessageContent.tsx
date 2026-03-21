@@ -57,6 +57,7 @@ const useReplyStyles = () => {
 
 export type MessageContentPropsWithContext = Pick<
   MessageContextValue,
+  | 'alignment'
   | 'goToMessage'
   | 'groupStyles'
   | 'isMyMessage'
@@ -121,6 +122,7 @@ export type MessageContentPropsWithContext = Pick<
 const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   const {
     additionalPressableProps,
+    alignment,
     Attachment,
     backgroundColor,
     enableMessageGroupingByUser,
@@ -371,7 +373,13 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
         >
           {MessageContentTopView ? <MessageContentTopView /> : null}
           {hasContentSideViews ? (
-            <View style={styles.contentRow}>
+            <View
+              style={[
+                styles.contentRow,
+                alignment === 'right' ? styles.rightAlignContentRow : undefined,
+              ]}
+              testID='message-content-row'
+            >
               {MessageContentLeadingView ? <MessageContentLeadingView /> : null}
               <View style={styles.contentBody}>{contentBody}</View>
               {MessageContentTrailingView ? <MessageContentTrailingView /> : null}
@@ -391,6 +399,7 @@ const areEqual = (
   nextProps: MessageContentPropsWithContext,
 ) => {
   const {
+    alignment: prevAlignment,
     backgroundColor: prevBackgroundColor,
     preventPress: prevPreventPress,
     goToMessage: prevGoToMessage,
@@ -403,6 +412,7 @@ const areEqual = (
     t: prevT,
   } = prevProps;
   const {
+    alignment: nextAlignment,
     backgroundColor: nextBackgroundColor,
     preventPress: nextPreventPress,
     goToMessage: nextGoToMessage,
@@ -415,6 +425,10 @@ const areEqual = (
   } = nextProps;
 
   if (prevBackgroundColor !== nextBackgroundColor) {
+    return false;
+  }
+
+  if (prevAlignment !== nextAlignment) {
     return false;
   }
 
@@ -547,6 +561,7 @@ export type MessageContentProps = Partial<
  */
 export const MessageContent = (props: MessageContentProps) => {
   const {
+    alignment,
     goToMessage,
     groupStyles,
     isMessageAIGenerated,
@@ -617,6 +632,7 @@ export const MessageContent = (props: MessageContentProps) => {
     <MemoizedMessageContent
       {...{
         additionalPressableProps,
+        alignment,
         Attachment,
         enableMessageGroupingByUser,
         FileAttachmentGroup,
@@ -667,6 +683,9 @@ const styles = StyleSheet.create({
   },
   contentRow: {
     flexDirection: 'row',
+  },
+  rightAlignContentRow: {
+    flexDirection: 'row-reverse',
   },
   leftAlignContent: {
     justifyContent: 'flex-start',

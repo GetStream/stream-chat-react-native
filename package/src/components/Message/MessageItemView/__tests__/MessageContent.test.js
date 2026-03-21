@@ -199,6 +199,56 @@ describe('MessageContent', () => {
     });
   });
 
+  it('orders leading and trailing content views based on alignment', async () => {
+    const otherUser = generateUser({ id: 'other-user' });
+    const leftAlignedMessage = generateMessage({ user: otherUser });
+    const rightAlignedMessage = generateMessage({ user });
+
+    const { rerender } = render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel
+            channel={channel}
+            MessageContentLeadingView={() => <View testID='message-content-leading-view' />}
+            MessageContentTrailingView={() => <View testID='message-content-trailing-view' />}
+          >
+            <Message groupStyles={['bottom']} message={leftAlignedMessage} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('message-content-leading-view')).toBeTruthy();
+      expect(screen.getByTestId('message-content-trailing-view')).toBeTruthy();
+    });
+
+    let contentRowStyle = StyleSheet.flatten(screen.getByTestId('message-content-row').props.style);
+    expect(contentRowStyle?.flexDirection).toBe('row');
+
+    rerender(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel
+            channel={channel}
+            MessageContentLeadingView={() => <View testID='message-content-leading-view' />}
+            MessageContentTrailingView={() => <View testID='message-content-trailing-view' />}
+          >
+            <Message groupStyles={['bottom']} message={rightAlignedMessage} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('message-content-leading-view')).toBeTruthy();
+      expect(screen.getByTestId('message-content-trailing-view')).toBeTruthy();
+    });
+
+    contentRowStyle = StyleSheet.flatten(screen.getByTestId('message-content-row').props.style);
+    expect(contentRowStyle?.flexDirection).toBe('row-reverse');
+  });
+
   it('renders a time component when MessageFooter does not exist', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
