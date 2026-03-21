@@ -74,7 +74,7 @@ export const AudioRecordingPreview = () => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         audioRecordingPreview: {
           container,
           currentTime,
@@ -177,4 +177,4 @@ const useStyles = () => {
   );
 };
 
-AudioRecordingPreview.displayName = 'AudioRecordingPreview{messageInput}';
+AudioRecordingPreview.displayName = 'AudioRecordingPreview{messageComposer}';

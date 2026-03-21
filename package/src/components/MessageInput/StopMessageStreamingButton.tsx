@@ -15,7 +15,7 @@ export const StopMessageStreamingButton = (props: StopMessageStreamingButtonProp
   const {
     theme: {
       semantics,
-      messageInput: { stopMessageStreamingButton, stopMessageStreamingIcon },
+      messageComposer: { stopMessageStreamingButton, stopMessageStreamingIcon },
     },
   } = useTheme();
 
@@ -31,4 +31,4 @@ export const StopMessageStreamingButton = (props: StopMessageStreamingButtonProp
   );
 };
 
-StopMessageStreamingButton.displayName = 'StopMessageStreamingButton{messageInput}';
+StopMessageStreamingButton.displayName = 'StopMessageStreamingButton{messageComposer}';

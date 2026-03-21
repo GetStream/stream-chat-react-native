@@ -38,4 +38,4 @@ export const SendButton = (props: SendButtonProps) => {
   );
 };
 
-SendButton.displayName = 'SendButton{messageInput}';
+SendButton.displayName = 'SendButton{messageComposer}';

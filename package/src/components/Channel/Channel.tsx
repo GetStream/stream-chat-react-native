@@ -2134,7 +2134,7 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
 /**
  *
  * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
- * to receive the StreamChat client instance. MessageList, Thread, and MessageInput must be
+ * to receive the StreamChat client instance. MessageList, Thread, and MessageComposer must be
  * children of the Channel component to receive the ChannelContext.
  *
  * @example ./Channel.md

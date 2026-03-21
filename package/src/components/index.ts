@@ -113,7 +113,7 @@ export * from './MessageInput/components/InputButtons/AttachButton';
 export * from './MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
 export * from './MessageInput/components/OutputButtons/CooldownTimer';
 export * from './MessageInput/components/InputButtons';
-export * from './MessageInput/MessageInput';
+export * from './MessageInput/MessageComposer';
 export * from './MessageInput/MessageComposerLeadingView';
 export * from './MessageInput/MessageComposerTrailingView';
 export * from './MessageInput/MessageInputFooterView';

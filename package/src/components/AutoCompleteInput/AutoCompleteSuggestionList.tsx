@@ -62,7 +62,7 @@ export const AutoCompleteSuggestionList = ({
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         container: { maxHeight },
       },
     },
@@ -116,7 +116,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         suggestionsListContainer: { flatlist },
       },
     },
@@ -150,4 +150,4 @@ const useStyles = () => {
 };
 
 AutoCompleteSuggestionList.displayName =
-  'AutoCompleteSuggestionList{messageInput{suggestions{List}}}';
+  'AutoCompleteSuggestionList{messageComposer{suggestions{List}}}';

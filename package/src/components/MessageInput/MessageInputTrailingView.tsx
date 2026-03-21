@@ -15,7 +15,7 @@ import { primitives } from '../../theme';
 export const MessageInputTrailingView = () => {
   const {
     theme: {
-      messageInput: { outputButtonsContainer },
+      messageComposer: { outputButtonsContainer },
     },
   } = useTheme();
   const { audioRecorderManager } = useMessageInputContext();

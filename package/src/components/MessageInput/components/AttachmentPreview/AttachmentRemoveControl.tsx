@@ -12,7 +12,7 @@ export const AttachmentRemoveControl = ({ onPress }: AttachmentRemoveControlProp
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         dismissAttachmentUpload: { dismiss, dismissIcon, dismissIconColor },
       },
     },

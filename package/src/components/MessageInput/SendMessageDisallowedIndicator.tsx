@@ -21,7 +21,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         sendMessageDisallowedIndicator: { container, text },
       },
     },

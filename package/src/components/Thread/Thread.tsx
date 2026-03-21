@@ -11,9 +11,9 @@ import {
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import {
-  MessageInput as DefaultMessageInput,
-  MessageInputProps,
-} from '../MessageInput/MessageInput';
+  MessageComposer as DefaultMessageComposer,
+  MessageComposerProps,
+} from '../MessageInput/MessageComposer';
 import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
 import { MessageListProps } from '../MessageList/MessageList';
 
@@ -37,10 +37,10 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
     | 'threadInstance'
   > & {
     /**
-     * Additional props for underlying MessageInput component.
+     * Additional props for underlying MessageComposer component.
      * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-input/#props
      * */
-    additionalMessageInputProps?: Partial<MessageInputProps>;
+    additionalMessageComposerProps?: Partial<MessageComposerProps>;
     /**
      * Additional props for underlying MessageList component.
      * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-list/#props
@@ -57,13 +57,13 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
     autoFocus?: boolean;
     /** Closes thread on dismount, defaults to true */
     closeThreadOnDismount?: boolean;
-    /** Disables the thread UI. So MessageInput and MessageList will be disabled. */
+    /** Disables the thread UI. So MessageComposer and MessageList will be disabled. */
     disabled?: boolean;
     /**
-     * **Customized MessageInput component to used within Thread instead of default MessageInput
-     * **Available from [MessageInput](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-input)**
+     * **Customized MessageComposer component to used within Thread instead of default MessageComposer
+     * **Available from [MessageComposer](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-input)**
      */
-    MessageInput?: React.ComponentType<MessageInputProps>;
+    MessageComposer?: React.ComponentType<MessageComposerProps>;
     /**
      * Call custom function on closing thread if handling thread state elsewhere
      */
@@ -73,7 +73,7 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
 
 const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const {
-    additionalMessageInputProps,
+    additionalMessageComposerProps,
     additionalMessageListProps,
     additionalMessageFlashListProps,
     autoFocus = false,
@@ -81,7 +81,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     closeThreadOnDismount = true,
     disabled,
     loadMoreThread,
-    MessageInput = DefaultMessageInput,
+    MessageComposer = DefaultMessageComposer,
     MessageList,
     onThreadDismount,
     parentMessagePreventPress = true,
@@ -148,10 +148,10 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
           {...additionalMessageListProps}
         />
       )}
-      <MessageInput
+      <MessageComposer
         additionalTextInputProps={additionalTextInputProps}
         threadList
-        {...additionalMessageInputProps}
+        {...additionalMessageComposerProps}
       />
     </React.Fragment>
   );
@@ -164,9 +164,9 @@ export type ThreadProps = Partial<ThreadPropsWithContext>;
  * The thread is only used for the list of replies to a message.
  *
  * Thread is a consumer of [channel context](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/)
- * Underlying MessageList, MessageInput and Message components can be customized using props:
+ * Underlying MessageList, MessageComposer and Message components can be customized using props:
  * - additionalMessageListProps
- * - additionalMessageInputProps
+ * - additionalMessageComposerProps
  */
 export const Thread = (props: ThreadProps) => {
   const { client } = useChatContext();

@@ -149,7 +149,7 @@ const useStyles = () => {
   }, [semantics]);
 };
 
-type MessageInputPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
+type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel' | 'members' | 'watchers'> &
   Pick<
     MessageInputContextValue,
@@ -205,7 +205,7 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
 
-const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
+const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   const {
     additionalTextInputProps,
     asyncMessagesLockDistance,
@@ -250,7 +250,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         container,
         floatingWrapper,
         focusedInputBoxContainer,
@@ -385,10 +385,7 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
         }
         layout={LinearTransition.duration(200)}
       >
-        <PortalWhileClosingView
-          portalHostName='overlay-composer'
-          portalName='message-input-composer'
-        >
+        <PortalWhileClosingView portalHostName='overlay-composer' portalName='message-composer'>
           <View
             onLayout={({
               nativeEvent: {
@@ -510,8 +507,8 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
 };
 
 const areEqual = (
-  prevProps: MessageInputPropsWithContext,
-  nextProps: MessageInputPropsWithContext,
+  prevProps: MessageComposerPropsWithContext,
+  nextProps: MessageComposerPropsWithContext,
 ) => {
   const {
     additionalTextInputProps: prevAdditionalTextInputProps,
@@ -633,15 +630,15 @@ const areEqual = (
   return true;
 };
 
-const MemoizedMessageInput = React.memo(
-  MessageInputWithContext,
+const MemoizedMessageComposer = React.memo(
+  MessageComposerWithContext,
   areEqual,
-) as typeof MessageInputWithContext;
+) as typeof MessageComposerWithContext;
 
-export type MessageInputProps = Partial<MessageInputPropsWithContext>;
+export type MessageComposerProps = Partial<MessageComposerPropsWithContext>;
 
 /**
- * UI Component for message input
+ * UI Component for message composer
  * It's a consumer of
  * [Channel Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/),
  * [Chat Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/chat-context/),
@@ -649,7 +646,7 @@ export type MessageInputProps = Partial<MessageInputPropsWithContext>;
  * [Suggestions Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/suggestions-context/), and
  * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
-export const MessageInput = (props: MessageInputProps) => {
+export const MessageComposer = (props: MessageComposerProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -716,7 +713,7 @@ export const MessageInput = (props: MessageInputProps) => {
   }
 
   return (
-    <MemoizedMessageInput
+    <MemoizedMessageComposer
       {...{
         audioRecorderManager,
         isRecordingStateIdle,
@@ -772,4 +769,4 @@ export const MessageInput = (props: MessageInputProps) => {
   );
 };
 
-MessageInput.displayName = 'MessageInput{messageInput}';
+MessageComposer.displayName = 'MessageComposer{messageComposer}';

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import {
   Channel,
-  MessageInput,
+  MessageComposer,
   useChatContext,
   ThreadContextValue,
   MessageList,
@@ -84,7 +84,7 @@ export default function ChannelScreen() {
             router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
           }}
         />
-        <MessageInput InputButtons={InputButtons} />
+        <MessageComposer InputButtons={InputButtons} />
       </Channel>
     </View>
   );

@@ -21,7 +21,7 @@ import { primitives } from '../../theme';
 export const MessageInputHeaderView = () => {
   const {
     theme: {
-      messageInput: { contentContainer },
+      messageComposer: { contentContainer },
     },
   } = useTheme();
   const messageComposer = useMessageComposer();

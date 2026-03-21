@@ -17,7 +17,7 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { registerNativeHandlers } from '../../../native';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { MessageInput } from '../../MessageInput/MessageInput';
+import { MessageComposer } from '../../MessageInput/MessageComposer';
 import { MessageList } from '../../MessageList/MessageList';
 
 describe('Own capabilities', () => {
@@ -54,7 +54,7 @@ describe('Own capabilities', () => {
         <Chat client={chatClient}>
           <Channel channel={channel} {...props}>
             <MessageList FlatList={FlatList} />
-            <MessageInput />
+            <MessageComposer />
           </Channel>
         </Chat>
       </OverlayProvider>

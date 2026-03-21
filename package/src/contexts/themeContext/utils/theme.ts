@@ -320,7 +320,7 @@ export type Theme = {
     loadingText: TextStyle;
   };
 
-  messageInput: {
+  messageComposer: {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
@@ -1249,7 +1249,7 @@ export const defaultTheme: Theme = {
     container: {},
     loadingText: {},
   },
-  messageInput: {
+  messageComposer: {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},

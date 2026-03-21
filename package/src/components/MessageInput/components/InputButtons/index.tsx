@@ -42,7 +42,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
 
   const {
     theme: {
-      messageInput: { attachButtonContainer },
+      messageComposer: { attachButtonContainer },
     },
   } = useTheme();
 

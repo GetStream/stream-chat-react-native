@@ -187,7 +187,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
         rightContainer,
       },
       semantics,
-      messageInput: {
+      messageComposer: {
         fileAttachmentUploadPreview: { filenameText },
       },
     },
@@ -354,4 +354,4 @@ const useStyles = () => {
   }, [semantics]);
 };
 
-AudioAttachment.displayName = 'AudioAttachment{messageInput{audioAttachment}}';
+AudioAttachment.displayName = 'AudioAttachment{messageComposer{audioAttachment}}';

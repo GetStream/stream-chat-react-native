@@ -15,7 +15,7 @@ import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
-import { MessageInput } from '../../../MessageInput/MessageInput';
+import { MessageComposer } from '../../../MessageInput/MessageComposer';
 import { Message } from '../../Message';
 
 describe('Message', () => {
@@ -44,7 +44,7 @@ describe('Message', () => {
             <Chat client={chatClient}>
               <Channel channel={channel}>
                 <Message groupStyles={['bottom']} {...options} />
-                <MessageInput />
+                <MessageComposer />
               </Channel>
             </Chat>
           </OverlayProvider>

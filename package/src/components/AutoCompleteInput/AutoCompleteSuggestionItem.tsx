@@ -21,7 +21,7 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
   const { id, name, online } = item;
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         suggestions: {
           mention: { column, container: mentionContainer, name: nameStyle },
         },
@@ -46,7 +46,7 @@ export const EmojiSuggestionItem = (item: Emoji) => {
   const { native, name } = item;
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         suggestions: {
           emoji: { container: emojiContainer, text },
         },
@@ -72,7 +72,7 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         suggestions: {
           command: { args: argsStyle, container: commandContainer, title },
         },
@@ -128,7 +128,7 @@ const UnMemoizedAutoCompleteSuggestionItem = ({
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         suggestions: { item: itemStyle },
       },
     },

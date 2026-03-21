@@ -63,7 +63,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } = props;
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         audioRecordingButtonContainer,
         cooldownButtonContainer,
         editButtonContainer,

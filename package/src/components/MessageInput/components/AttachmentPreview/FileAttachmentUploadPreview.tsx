@@ -40,7 +40,7 @@ export const FileAttachmentUploadPreview = ({
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         fileAttachmentUploadPreview: { wrapper },
       },
     },

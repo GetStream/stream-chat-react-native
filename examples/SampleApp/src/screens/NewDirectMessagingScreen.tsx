@@ -3,7 +3,7 @@ import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
-  MessageInput,
+  MessageComposer,
   MessageList,
   User,
   UserAdd,
@@ -340,7 +340,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
           <MessageList />
         )}
-        <MessageInput />
+        <MessageComposer />
       </Channel>
     </SafeAreaView>
   );

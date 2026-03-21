@@ -36,7 +36,7 @@ export const ImageAttachmentUploadPreview = ({
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         imageAttachmentUploadPreview: { upload, wrapper },
       },
     },

@@ -32,7 +32,7 @@ const AudioRecordingInProgressWithContext = (props: AudioRecordingInProgressProp
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         audioRecordingInProgress: { container, durationText },
       },
     },
@@ -115,4 +115,4 @@ const useStyles = () => {
   );
 };
 
-AudioRecordingInProgress.displayName = 'AudioRecordingInProgress{messageInput}';
+AudioRecordingInProgress.displayName = 'AudioRecordingInProgress{messageComposer}';

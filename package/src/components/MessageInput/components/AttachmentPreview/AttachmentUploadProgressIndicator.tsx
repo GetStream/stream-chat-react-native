@@ -13,7 +13,7 @@ export const FileUploadInProgressIndicator = () => {
   const {
     theme: {
       semantics,
-      messageInput: { fileUploadInProgressIndicator },
+      messageComposer: { fileUploadInProgressIndicator },
     },
   } = useTheme();
 
@@ -38,7 +38,7 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
   const {
     theme: {
       semantics,
-      messageInput: { fileUploadRetryIndicator },
+      messageComposer: { fileUploadRetryIndicator },
     },
   } = useTheme();
   const styles = useFileUploadRetryStyles();
@@ -83,7 +83,7 @@ export const FileUploadNotSupportedIndicator = ({
   const {
     theme: {
       semantics,
-      messageInput: { fileUploadNotSupportedIndicator },
+      messageComposer: { fileUploadNotSupportedIndicator },
     },
   } = useTheme();
 
@@ -107,7 +107,7 @@ export const ImageUploadInProgressIndicator = () => {
   const {
     theme: {
       semantics,
-      messageInput: { imageUploadInProgressIndicator },
+      messageComposer: { imageUploadInProgressIndicator },
     },
   } = useTheme();
   const styles = useImageUploadInProgressIndicatorStyles();
@@ -140,7 +140,7 @@ export const ImageUploadNotSupportedIndicator = () => {
   const {
     theme: {
       semantics,
-      messageInput: { imageUploadNotSupportedIndicator },
+      messageComposer: { imageUploadNotSupportedIndicator },
     },
   } = useTheme();
   return (

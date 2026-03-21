@@ -50,7 +50,7 @@ type AutoCompleteInputPropsWithContext = TextInputProps &
   Pick<MessageInputContextValue, 'setInputBoxRef'> &
   Pick<TranslationContextValue, 't'> & {
     /**
-     * This is currently passed in from MessageInput to avoid rerenders
+     * This is currently passed in from MessageComposer to avoid rerenders
      * that would happen if we put this in the MessageInputContext
      */
     cooldownRemainingSeconds?: number;
@@ -134,7 +134,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   const {
     theme: {
-      messageInput: { inputBox },
+      messageComposer: { inputBox },
       semantics,
     },
   } = useTheme();
@@ -258,4 +258,4 @@ const useStyles = () => {
   }, [semantics]);
 };
 
-AutoCompleteInput.displayName = 'AutoCompleteInput{messageInput{inputBox}}';
+AutoCompleteInput.displayName = 'AutoCompleteInput{messageComposer{inputBox}}';

@@ -14,7 +14,7 @@ import { AttachmentPickerContent } from '../../AttachmentPicker/components/Attac
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { MessageInput } from '../MessageInput';
+import { MessageComposer } from '../MessageComposer';
 
 jest.spyOn(Alert, 'alert');
 jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
@@ -38,14 +38,14 @@ const renderComponent = ({ channelProps, client, props }) => {
     <OverlayProvider>
       <Chat client={client}>
         <Channel {...channelProps}>
-          <MessageInput {...props} />
+          <MessageComposer {...props} />
         </Channel>
       </Chat>
     </OverlayProvider>,
   );
 };
 
-describe('MessageInput', () => {
+describe('MessageComposer', () => {
   let client;
   let channel;
 
@@ -63,7 +63,7 @@ describe('MessageInput', () => {
     });
   });
 
-  it('should render MessageInput', async () => {
+  it('should render MessageComposer', async () => {
     const channelProps = { channel };
 
     renderComponent({
