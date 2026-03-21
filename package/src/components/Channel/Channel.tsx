@@ -371,7 +371,11 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'MessageBounce'
       | 'MessageBlocked'
       | 'MessageContent'
+      | 'MessageContentBottomView'
+      | 'MessageContentLeadingView'
       | 'messageContentOrder'
+      | 'MessageContentTrailingView'
+      | 'MessageContentTopView'
       | 'MessageDeleted'
       | 'MessageError'
       | 'MessageFooter'
@@ -690,6 +694,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageBlocked = MessageBlockedDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
+    MessageContentBottomView,
+    MessageContentLeadingView,
     messageContentOrder = [
       'quoted_reply',
       'gallery',
@@ -700,6 +706,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'text',
       'location',
     ],
+    MessageContentTrailingView,
+    MessageContentTopView,
     MessageDeleted = MessageDeletedDefault,
     MessageError = MessageErrorDefault,
     messageInputFloating = false,
@@ -1974,7 +1982,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageBlocked,
     MessageBounce,
     MessageContent,
+    MessageContentBottomView,
+    MessageContentLeadingView,
     messageContentOrder,
+    MessageContentTrailingView,
+    MessageContentTopView,
     MessageDeleted,
     MessageError,
     MessageFooter,

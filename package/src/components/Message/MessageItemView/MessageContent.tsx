@@ -78,7 +78,11 @@ export type MessageContentPropsWithContext = Pick<
     | 'FileAttachmentGroup'
     | 'Gallery'
     | 'isAttachmentEqual'
+    | 'MessageContentBottomView'
+    | 'MessageContentLeadingView'
     | 'MessageLocation'
+    | 'MessageContentTrailingView'
+    | 'MessageContentTopView'
     | 'myMessageTheme'
     | 'Reply'
     | 'StreamingMessageView'
@@ -128,8 +132,12 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     isVeryLastMessage,
     message,
     messageContentOrder,
+    MessageContentBottomView,
+    MessageContentLeadingView,
     messageGroupedSingleOrBottom = false,
     MessageLocation,
+    MessageContentTrailingView,
+    MessageContentTopView,
     noBorder,
     onLongPress,
     onPress,
@@ -227,6 +235,83 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   };
 
   const { setNativeScrollability } = useMessageListItemContext();
+  const hasContentSideViews = !!(MessageContentLeadingView || MessageContentTrailingView);
+
+  const contentBody = (
+    <>
+      <View
+        style={[
+          {
+            gap: primitives.spacingXs,
+            paddingTop: hidePaddingTop ? 0 : primitives.spacingXs,
+            paddingHorizontal: hidePaddingHorizontal ? 0 : primitives.spacingXs,
+            paddingBottom: hidePaddingBottom ? 0 : primitives.spacingXs,
+          },
+          contentContainer,
+        ]}
+      >
+        {messageContentOrder.map((messageContentType, messageContentOrderIndex) => {
+          switch (messageContentType) {
+            case 'quoted_reply':
+              return (
+                message.quoted_message && (
+                  <View
+                    key={`quoted_reply_${messageContentOrderIndex}`}
+                    style={[styles.replyContainer, replyContainer]}
+                  >
+                    <Reply mode='reply' styles={replyStyles} />
+                  </View>
+                )
+              );
+            case 'attachments':
+              return otherAttachments.map((attachment, attachmentIndex) => (
+                <Attachment attachment={attachment} key={`${message.id}-${attachmentIndex}`} />
+              ));
+            case 'files':
+              return (
+                <FileAttachmentGroup key={`file_attachment_group_${messageContentOrderIndex}`} />
+              );
+            case 'gallery':
+              return (
+                <View key={`gallery_${messageContentOrderIndex}`} style={styles.galleryContainer}>
+                  <Gallery />
+                </View>
+              );
+            case 'poll': {
+              const pollId = message.poll_id;
+              const poll = pollId && client.polls.fromState(pollId);
+              return pollId && poll ? (
+                <Poll
+                  key={`poll_${message.poll_id}`}
+                  message={message}
+                  poll={poll}
+                  PollContent={PollContentOverride}
+                />
+              ) : null;
+            }
+            case 'location':
+              return MessageLocation ? (
+                <MessageLocation
+                  key={`message_location_${messageContentOrderIndex}`}
+                  message={message}
+                />
+              ) : null;
+            case 'ai_text':
+              return isAIGenerated ? (
+                <StreamingMessageView
+                  key={`ai_message_text_container_${messageContentOrderIndex}`}
+                />
+              ) : null;
+            default:
+              return null;
+          }
+        })}
+      </View>
+      {(otherAttachments.length && otherAttachments[0].actions) || isAIGenerated ? null : (
+        <MessageTextContainer />
+      )}
+    </>
+  );
 
   return (
     <Pressable
@@ -284,82 +369,17 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           ]}
           testID='message-content-wrapper'
         >
-          <View
-            style={[
-              {
-                gap: primitives.spacingXs,
-                paddingTop: hidePaddingTop ? 0 : primitives.spacingXs,
-                paddingHorizontal: hidePaddingHorizontal ? 0 : primitives.spacingXs,
-                paddingBottom: hidePaddingBottom ? 0 : primitives.spacingXs,
-              },
-              contentContainer,
-            ]}
-          >
-            {messageContentOrder.map((messageContentType, messageContentOrderIndex) => {
-              switch (messageContentType) {
-                case 'quoted_reply':
-                  return (
-                    message.quoted_message && (
-                      <View
-                        key={`quoted_reply_${messageContentOrderIndex}`}
-                        style={[styles.replyContainer, replyContainer]}
-                      >
-                        <Reply mode='reply' styles={replyStyles} />
-                      </View>
-                    )
-                  );
-                case 'attachments':
-                  return otherAttachments.map((attachment, attachmentIndex) => (
-                    <Attachment attachment={attachment} key={`${message.id}-${attachmentIndex}`} />
-                  ));
-                case 'files':
-                  return (
-                    <FileAttachmentGroup
-                      key={`file_attachment_group_${messageContentOrderIndex}`}
-                    />
-                  );
-                case 'gallery':
-                  return (
-                    <View
-                      key={`gallery_${messageContentOrderIndex}`}
-                      style={styles.galleryContainer}
-                    >
-                      <Gallery />
-                    </View>
-                  );
-                case 'poll': {
-                  const pollId = message.poll_id;
-                  const poll = pollId && client.polls.fromState(pollId);
-                  return pollId && poll ? (
-                    <Poll
-                      key={`poll_${message.poll_id}`}
-                      message={message}
-                      poll={poll}
-                      PollContent={PollContentOverride}
-                    />
-                  ) : null;
-                }
-                case 'location':
-                  return MessageLocation ? (
-                    <MessageLocation
-                      key={`message_location_${messageContentOrderIndex}`}
-                      message={message}
-                    />
-                  ) : null;
-                case 'ai_text':
-                  return isAIGenerated ? (
-                    <StreamingMessageView
-                      key={`ai_message_text_container_${messageContentOrderIndex}`}
-                    />
-                  ) : null;
-                default:
-                  return null;
-              }
-            })}
-          </View>
-          {(otherAttachments.length && otherAttachments[0].actions) || isAIGenerated ? null : (
-            <MessageTextContainer />
+          {MessageContentTopView ? <MessageContentTopView /> : null}
+          {hasContentSideViews ? (
+            <View style={styles.contentRow}>
+              {MessageContentLeadingView ? <MessageContentLeadingView /> : null}
+              <View style={styles.contentBody}>{contentBody}</View>
+              {MessageContentTrailingView ? <MessageContentTrailingView /> : null}
+            </View>
+          ) : (
+            contentBody
           )}
+          {MessageContentBottomView ? <MessageContentBottomView /> : null}
         </View>
       </View>
     </Pressable>
@@ -550,7 +570,11 @@ export const MessageContent = (props: MessageContentProps) => {
     FileAttachmentGroup,
     Gallery,
     isAttachmentEqual,
+    MessageContentBottomView,
+    MessageContentLeadingView,
     MessageLocation,
+    MessageContentTrailingView,
+    MessageContentTopView,
     myMessageTheme,
     Reply,
     StreamingMessageView,
@@ -604,7 +628,11 @@ export const MessageContent = (props: MessageContentProps) => {
         isMyMessage,
         message,
         messageContentOrder,
+        MessageContentBottomView,
+        MessageContentLeadingView,
         MessageLocation,
+        MessageContentTrailingView,
+        MessageContentTopView,
         myMessageTheme,
         onLongPress,
         onPress,
@@ -632,6 +660,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: components.messageBubbleRadiusGroupBottom,
     borderTopRightRadius: components.messageBubbleRadiusGroupBottom,
     overflow: 'hidden',
+  },
+  contentBody: {
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  contentRow: {
+    flexDirection: 'row',
   },
   leftAlignContent: {
     justifyContent: 'flex-start',

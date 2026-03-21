@@ -241,6 +241,22 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageContent.tsx)
    */
   MessageContent: React.ComponentType<MessageContentProps>;
+  /**
+   * Optional UI component rendered above the message content body.
+   */
+  MessageContentTopView?: React.ComponentType;
+  /**
+   * Optional UI component rendered to the left of the message content body.
+   */
+  MessageContentLeadingView?: React.ComponentType;
+  /**
+   * Optional UI component rendered to the right of the message content body.
+   */
+  MessageContentTrailingView?: React.ComponentType;
+  /**
+   * Optional UI component rendered below the message content body.
+   */
+  MessageContentBottomView?: React.ComponentType;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**

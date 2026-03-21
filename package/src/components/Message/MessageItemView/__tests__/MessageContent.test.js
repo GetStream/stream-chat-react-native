@@ -149,6 +149,56 @@ describe('MessageContent', () => {
     });
   });
 
+  it('renders MessageContentTopView and MessageContentBottomView when provided', async () => {
+    const user = generateUser();
+    const message = generateMessage({ user });
+
+    render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel
+            channel={channel}
+            MessageContentBottomView={() => <View testID='message-content-bottom-view' />}
+            MessageContentTopView={() => <View testID='message-content-top-view' />}
+          >
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-content-top-view')).toBeTruthy();
+      expect(screen.getByTestId('message-content-bottom-view')).toBeTruthy();
+    });
+  });
+
+  it('renders MessageContentLeadingView and MessageContentTrailingView when provided', async () => {
+    const user = generateUser();
+    const message = generateMessage({ user });
+
+    render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel
+            channel={channel}
+            MessageContentLeadingView={() => <View testID='message-content-leading-view' />}
+            MessageContentTrailingView={() => <View testID='message-content-trailing-view' />}
+          >
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('message-content-leading-view')).toBeTruthy();
+      expect(screen.getByTestId('message-content-trailing-view')).toBeTruthy();
+    });
+  });
+
   it('renders a time component when MessageFooter does not exist', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
