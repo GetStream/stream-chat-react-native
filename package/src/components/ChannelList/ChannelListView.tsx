@@ -16,7 +16,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 
-export type ChannelListMessengerPropsWithContext = Omit<
+export type ChannelListViewPropsWithContext = Omit<
   ChannelsContextValue,
   | 'HeaderErrorIndicator'
   | 'HeaderNetworkDownIndicator'
@@ -61,7 +61,7 @@ const renderItem = ({ item }: { item: Channel }) => <ChannelPreview channel={ite
 
 const keyExtractor = (item: Channel) => item.cid;
 
-const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithContext) => {
+const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
   const onEndReachedCalledDuringCurrentScrollRef = useRef<boolean>(false);
   const {
     additionalFlatListProps,
@@ -159,7 +159,7 @@ const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithCon
         refreshing={refreshing}
         renderItem={renderItem}
         style={styles.flatList}
-        testID='channel-list-messenger'
+        testID='channel-list-view'
         {...additionalFlatListProps}
       />
       <StatusIndicator />
@@ -167,15 +167,15 @@ const ChannelListMessengerWithContext = (props: ChannelListMessengerPropsWithCon
   );
 };
 
-export type ChannelListMessengerProps = Partial<ChannelListMessengerPropsWithContext>;
+export type ChannelListViewProps = Partial<ChannelListViewPropsWithContext>;
 
 /**
  * This UI component displays the preview list of channels and handles Channel navigation. It
  * receives all props from the ChannelList component.
  *
- * @example ./ChannelListMessenger.md
+ * @example ./ChannelListView.md
  */
-export const ChannelListMessenger = (props: ChannelListMessengerProps) => {
+export const ChannelListView = (props: ChannelListViewProps) => {
   const {
     additionalFlatListProps,
     channelListInitialized,
@@ -199,7 +199,7 @@ export const ChannelListMessenger = (props: ChannelListMessengerProps) => {
   } = useChannelsContext();
 
   return (
-    <ChannelListMessengerWithContext
+    <ChannelListViewWithContext
       {...{
         additionalFlatListProps,
         channelListInitialized,
@@ -226,12 +226,12 @@ export const ChannelListMessenger = (props: ChannelListMessengerProps) => {
   );
 };
 
-ChannelListMessenger.displayName = 'ChannelListMessenger{channelListMessenger}';
+ChannelListView.displayName = 'ChannelListView{channelListView}';
 
 const useStyles = () => {
   const {
     theme: {
-      channelListMessenger: { flatList, flatListContent },
+      channelListView: { flatList, flatListContent },
     },
   } = useTheme();
   return useMemo(() => {

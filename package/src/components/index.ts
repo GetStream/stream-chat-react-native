@@ -38,7 +38,7 @@ export * from './ChannelList/ChannelListFooterLoadingIndicator';
 export * from './ChannelList/ChannelListHeaderErrorIndicator';
 export * from './ChannelList/ChannelListHeaderNetworkDownIndicator';
 export * from './ChannelList/ChannelListLoadingIndicator';
-export * from './ChannelList/ChannelListMessenger';
+export * from './ChannelList/ChannelListView';
 export * from './ChannelList/Skeleton';
 export * from './ChannelList/hooks';
 

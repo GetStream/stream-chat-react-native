@@ -28,7 +28,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelsContextValue = {
   /**
-   * Besides the existing default behavior of the ChannelListMessenger component, you can attach
+   * Besides the existing default behavior of the ChannelListView component, you can attach
    * additional props to the underlying React Native FlatList.
    *
    * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
@@ -36,7 +36,7 @@ export type ChannelsContextValue = {
    * **EXAMPLE:**
    *
    * ```
-   * <ChannelListMessenger
+   * <ChannelListView
    *  channels={channels}
    *  additionalFlatListProps={{ bounces: true }}
    * />
@@ -152,7 +152,7 @@ export type ChannelsContextValue = {
    * **Example:**
    *
    * ```
-   * <ChannelListMessenger
+   * <ChannelListView
    *  setFlatListRef={(ref) => {
    *    // Use ref for your own good
    *  }}

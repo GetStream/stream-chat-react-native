@@ -427,7 +427,7 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list-messenger')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         const newMessage = sendNewMessageOnChannel3();

@@ -14,7 +14,7 @@ import { generateChannelResponse } from '../../../mock-builders/generator/channe
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
-import { ChannelListMessenger } from '../ChannelListMessenger';
+import { ChannelListView } from '../ChannelListView';
 
 let mockChannels;
 let chatClient;
@@ -24,7 +24,7 @@ const ListMessenger = ({ error, loadingChannels, ...props }) => {
 
   return (
     <ChannelsProvider value={{ ...channelsContext, error, loadingChannels }}>
-      <ChannelListMessenger {...props} />
+      <ChannelListView {...props} />
     </ChannelsProvider>
   );
 };
@@ -54,7 +54,7 @@ const Component = ({ error = false, loadingChannels = false }) => {
   );
 };
 
-describe('ChannelListMessenger', () => {
+describe('ChannelListView', () => {
   beforeAll(async () => {
     chatClient = await getTestClientWithUser({ id: 'vishal' });
     const c1 = generateChannelResponse();
@@ -71,7 +71,7 @@ describe('ChannelListMessenger', () => {
   it('renders without crashing', async () => {
     const { getByTestId } = render(<Component />);
     await waitFor(() => {
-      expect(getByTestId('channel-list-messenger')).toBeTruthy();
+      expect(getByTestId('channel-list-view')).toBeTruthy();
     });
   });
 
