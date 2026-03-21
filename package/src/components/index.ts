@@ -97,7 +97,6 @@ export * from './Message/MessageItemView/Headers';
 export * from './Message/MessageItemView/MessageReplies';
 export * from './Message/MessageItemView/MessageRepliesAvatars';
 export * from './Message/MessageItemView/MessageItemView';
-export * from './Message/MessageItemView/MessageSpacer';
 export * from './Message/MessageItemView/MessageStatus';
 export * from './Message/MessageItemView/MessageTextContainer';
 export * from './Message/MessageItemView/MessageTimestamp';

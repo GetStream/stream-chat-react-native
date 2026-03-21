@@ -359,7 +359,7 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
               <MessageFooter date={message.created_at} />
             </View>
           )}
-          <MessageSpacer />
+          {MessageSpacer ? <MessageSpacer /> : null}
         </View>
       </View>
     );

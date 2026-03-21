@@ -159,7 +159,6 @@ import { MessageHeader as MessageHeaderDefault } from '../Message/MessageItemVie
 import { MessageItemView as MessageItemViewDefault } from '../Message/MessageItemView/MessageItemView';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageItemView/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageItemView/MessageRepliesAvatars';
-import { MessageSpacer as MessageSpacerDefault } from '../Message/MessageItemView/MessageSpacer';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageItemView/MessageStatus';
 import { MessageSwipeContent as MessageSwipeContentDefault } from '../Message/MessageItemView/MessageSwipeContent';
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageItemView/MessageTimestamp';
@@ -721,7 +720,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageReactionPicker = MessageReactionPickerDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
-    MessageSpacer = MessageSpacerDefault,
+    MessageSpacer,
     MessageItemView = MessageItemViewDefault,
     MessageStatus = MessageStatusDefault,
     MessageSwipeContent = MessageSwipeContentDefault,

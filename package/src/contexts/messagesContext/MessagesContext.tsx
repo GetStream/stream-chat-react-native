@@ -293,10 +293,9 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps>;
   /**
-   * UI component for overriding the empty space on a message row. If the message is left aligned, it will be to the right of it - otherwise left.
-   * Defaults to: [MessageSpacer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageSpacer.tsx)
+   * Optional UI component for overriding the empty space on a message row. If the message is left aligned, it will be to the right of it - otherwise left.
    */
-  MessageSpacer: React.ComponentType;
+  MessageSpacer?: React.ComponentType;
   /**
    * UI component for MessageItemView. It encapsulates the entirety of a message row.
    * Defaults to: [MessageItemView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageItemView.tsx)
