@@ -10,35 +10,35 @@ import {
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Chat } from '../../../Chat/Chat';
-import { MessageAvatar } from '../MessageAvatar';
+import { MessageAuthor } from '../MessageAuthor';
 
 afterEach(cleanup);
 
-describe('MessageAvatar', () => {
+describe('MessageAuthor', () => {
   let chatClient;
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser({ id: 'me' });
   });
 
-  it('should render message avatar', async () => {
+  it('should render message author', async () => {
     const staticUser = generateStaticUser(0);
     const message = generateMessage({
       user: { ...staticUser, image: undefined },
     });
     render(
       <Chat client={chatClient} style={defaultTheme}>
-        <MessageAvatar alignment='right' groupStyles={['bottom']} message={message} />
+        <MessageAuthor alignment='right' groupStyles={['bottom']} message={message} />
       </Chat>,
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-avatar')).toBeTruthy();
+      expect(screen.getByTestId('message-author')).toBeTruthy();
     });
 
     screen.rerender(
       <Chat client={chatClient} style={defaultTheme}>
-        <MessageAvatar alignment='right' groupStyles={[]} message={message} />
+        <MessageAuthor alignment='right' groupStyles={[]} message={message} />
       </Chat>,
     );
 
@@ -53,7 +53,7 @@ describe('MessageAvatar', () => {
 
     screen.rerender(
       <Chat client={chatClient} style={defaultTheme}>
-        <MessageAvatar
+        <MessageAuthor
           alignment='left'
           groupStyles={['single']}
           message={staticMessage}
@@ -63,7 +63,7 @@ describe('MessageAvatar', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-avatar')).toBeTruthy();
+      expect(screen.getByTestId('message-author')).toBeTruthy();
       expect(screen.getByTestId('user-avatar')).toBeTruthy();
       expect(screen.toJSON()).toMatchSnapshot();
     });

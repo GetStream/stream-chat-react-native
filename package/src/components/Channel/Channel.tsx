@@ -148,7 +148,7 @@ import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/Me
 import { MessageReminderHeader as MessageReminderHeaderDefault } from '../Message/MessageItemView/Headers/MessageReminderHeader';
 import { MessageSavedForLaterHeader as MessageSavedForLaterHeaderDefault } from '../Message/MessageItemView/Headers/MessageSavedForLaterHeader';
 import { SentToChannelHeader as SentToChannelHeaderDefault } from '../Message/MessageItemView/Headers/SentToChannelHeader';
-import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageItemView/MessageAvatar';
+import { MessageAuthor as MessageAuthorDefault } from '../Message/MessageItemView/MessageAuthor';
 import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageItemView/MessageBlocked';
 import { MessageBounce as MessageBounceDefault } from '../Message/MessageItemView/MessageBounce';
 import { MessageContent as MessageContentDefault } from '../Message/MessageItemView/MessageContent';
@@ -159,6 +159,7 @@ import { MessageHeader as MessageHeaderDefault } from '../Message/MessageItemVie
 import { MessageItemView as MessageItemViewDefault } from '../Message/MessageItemView/MessageItemView';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageItemView/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageItemView/MessageRepliesAvatars';
+import { MessageSpacer as MessageSpacerDefault } from '../Message/MessageItemView/MessageSpacer';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageItemView/MessageStatus';
 import { MessageSwipeContent as MessageSwipeContentDefault } from '../Message/MessageItemView/MessageSwipeContent';
 import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageItemView/MessageTimestamp';
@@ -367,7 +368,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'MessageActionList'
       | 'MessageActionListItem'
       | 'messageActions'
-      | 'MessageAvatar'
+      | 'MessageAuthor'
       | 'MessageBounce'
       | 'MessageBlocked'
       | 'MessageContent'
@@ -385,6 +386,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'SentToChannelHeader'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
+      | 'MessageSpacer'
       | 'MessageItemView'
       | 'MessageStatus'
       | 'MessageSystem'
@@ -685,7 +687,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionList = MessageActionListDefault,
     MessageActionListItem = MessageActionListItemDefault,
     messageActions,
-    MessageAvatar = MessageAvatarDefault,
+    MessageAuthor = MessageAuthorDefault,
     MessageBlocked = MessageBlockedDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
@@ -719,6 +721,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageReactionPicker = MessageReactionPickerDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
+    MessageSpacer = MessageSpacerDefault,
     MessageItemView = MessageItemViewDefault,
     MessageStatus = MessageStatusDefault,
     MessageSwipeContent = MessageSwipeContentDefault,
@@ -1968,7 +1971,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionList,
     MessageActionListItem,
     messageActions,
-    MessageAvatar,
+    MessageAuthor,
     MessageBlocked,
     MessageBounce,
     MessageContent,
@@ -1987,6 +1990,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageReactionPicker,
     MessageReplies,
     MessageRepliesAvatars,
+    MessageSpacer,
     MessageItemView,
     MessageStatus,
     MessageSwipeContent,

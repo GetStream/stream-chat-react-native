@@ -40,7 +40,7 @@ import type { MessagePinnedHeaderProps } from '../../components/Message/MessageI
 import type { MessageReminderHeaderProps } from '../../components/Message/MessageItemView/Headers/MessageReminderHeader';
 import type { MessageSavedForLaterHeaderProps } from '../../components/Message/MessageItemView/Headers/MessageSavedForLaterHeader';
 import type { SentToChannelHeaderProps } from '../../components/Message/MessageItemView/Headers/SentToChannelHeader';
-import type { MessageAvatarProps } from '../../components/Message/MessageItemView/MessageAvatar';
+import type { MessageAuthorProps } from '../../components/Message/MessageItemView/MessageAuthor';
 import type { MessageBlockedProps } from '../../components/Message/MessageItemView/MessageBlocked';
 import type { MessageBounceProps } from '../../components/Message/MessageItemView/MessageBounce';
 import type { MessageContentProps } from '../../components/Message/MessageItemView/MessageContent';
@@ -223,10 +223,10 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
   /**
-   * UI component for MessageAvatar
-   * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageAvatar.tsx)
+   * UI component for MessageAuthor
+   * Defaults to: [MessageAuthor](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageAuthor.tsx)
    **/
-  MessageAvatar: React.ComponentType<MessageAvatarProps>;
+  MessageAuthor: React.ComponentType<MessageAuthorProps>;
   /**
    * UI component for MessageBlocked
    * Defaults to: [MessageBlocked](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageBlocked.tsx)
@@ -293,7 +293,12 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps>;
   /**
-   * UI component for MessageItemView
+   * UI component for overriding the empty space on a message row. If the message is left aligned, it will be to the right of it - otherwise left.
+   * Defaults to: [MessageSpacer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageSpacer.tsx)
+   */
+  MessageSpacer: React.ComponentType;
+  /**
+   * UI component for MessageItemView. It encapsulates the entirety of a message row.
    * Defaults to: [MessageItemView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageItemView.tsx)
    */
   MessageItemView: React.ComponentType<

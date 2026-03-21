@@ -176,13 +176,14 @@ export type MessageItemViewPropsWithContext = Pick<
     | 'enableMessageGroupingByUser'
     | 'enableSwipeToReply'
     | 'myMessageTheme'
-    | 'MessageAvatar'
+    | 'MessageAuthor'
     | 'MessageContent'
     | 'MessageDeleted'
     | 'MessageError'
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageReplies'
+    | 'MessageSpacer'
     | 'MessageSwipeContent'
     | 'messageSwipeToReplyHitSlop'
     | 'ReactionListBottom'
@@ -213,13 +214,14 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
       groupStyles,
       isMyMessage,
       message,
-      MessageAvatar,
+      MessageAuthor,
       MessageContent,
       MessageDeleted,
       MessageError,
       MessageFooter,
       MessageHeader,
       MessageReplies,
+      MessageSpacer,
       MessageSwipeContent,
       messageSwipeToReplyHitSlop = { left: width, right: width },
       onlyEmojis,
@@ -296,7 +298,7 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
     return (
       <View ref={ref}>
         <View pointerEvents='box-none' style={styles.container} testID='message-item-view-wrapper'>
-          {alignment === 'left' ? <MessageAvatar /> : null}
+          {alignment === 'left' ? <MessageAuthor /> : null}
           {isMessageTypeDeleted ? (
             <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
           ) : (
@@ -357,6 +359,7 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
               <MessageFooter date={message.created_at} />
             </View>
           )}
+          <MessageSpacer />
         </View>
       </View>
     );
@@ -511,13 +514,14 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
     customMessageSwipeAction,
     enableMessageGroupingByUser,
     enableSwipeToReply,
-    MessageAvatar,
+    MessageAuthor,
     MessageContent,
     MessageDeleted,
     MessageError,
     MessageFooter,
     MessageHeader,
     MessageReplies,
+    MessageSpacer,
     MessageSwipeContent,
     messageSwipeToReplyHitSlop,
     myMessageTheme,
@@ -543,13 +547,14 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
         groupStyles,
         isMyMessage,
         message,
-        MessageAvatar,
+        MessageAuthor,
         MessageContent,
         MessageDeleted,
         MessageError,
         MessageFooter,
         MessageHeader,
         MessageReplies,
+        MessageSpacer,
         MessageSwipeContent,
         messageSwipeToReplyHitSlop,
         myMessageTheme,

@@ -64,24 +64,24 @@ describe('MessageItemView', () => {
     });
   });
 
-  it('renders MessageAvatar when alignment is left', async () => {
+  it('renders MessageAuthor when alignment is left', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
     renderMessage({ message });
 
     await waitFor(() => {
-      expect(screen.queryByTestId('message-avatar')).toBeDefined();
+      expect(screen.queryByTestId('message-author')).toBeDefined();
     });
   });
 
-  it('do not renders MessageAvatar when alignment is right', async () => {
+  it('do not renders MessageAuthor when alignment is right', async () => {
     const user = generateUser({ id: 'id', name: 'name' });
     const message = generateMessage({ user });
     renderMessage({ message });
 
     await waitFor(() => {
-      expect(screen.queryByTestId('message-avatar')).toBeNull();
+      expect(screen.queryByTestId('message-author')).toBeNull();
     });
   });
 
@@ -104,6 +104,17 @@ describe('MessageItemView', () => {
 
     await waitFor(() => {
       expect(screen.queryByTestId('message-components')).toBeDefined();
+    });
+  });
+
+  it('renders MessageSpacer component if defined', async () => {
+    const user = generateUser();
+    const message = generateMessage({ user });
+
+    renderMessage({ message }, { MessageSpacer: () => <Text>Message Spacer</Text> });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Message Spacer')).not.toBeNull();
     });
   });
 

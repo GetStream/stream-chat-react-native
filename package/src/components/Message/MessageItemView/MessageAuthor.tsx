@@ -9,18 +9,18 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { AvatarProps, UserAvatar } from '../../ui';
 import { avatarSizes } from '../../ui/Avatar/constants';
 
-export type MessageAvatarPropsWithContext = Pick<
+export type MessageAuthorPropsWithContext = Pick<
   MessageContextValue,
   'lastGroupMessage' | 'message' | 'showAvatar'
 > &
   Partial<Pick<AvatarProps, 'size'>>;
 
-const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
+const MessageAuthorWithContext = (props: MessageAuthorPropsWithContext) => {
   const { lastGroupMessage, message, showAvatar, size } = props;
   const {
     theme: {
       messageItemView: {
-        avatarWrapper: { container },
+        authorWrapper: { container },
       },
     },
   } = useTheme();
@@ -28,7 +28,7 @@ const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
   const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
   return (
-    <View style={container} testID='message-avatar'>
+    <View style={container} testID='message-author'>
       {visible && message.user ? (
         <UserAvatar user={message.user} size={size ?? 'md'} />
       ) : (
@@ -39,8 +39,8 @@ const MessageAvatarWithContext = (props: MessageAvatarPropsWithContext) => {
 };
 
 const areEqual = (
-  prevProps: MessageAvatarPropsWithContext,
-  nextProps: MessageAvatarPropsWithContext,
+  prevProps: MessageAuthorPropsWithContext,
+  nextProps: MessageAuthorPropsWithContext,
 ) => {
   const { lastGroupMessage: prevLastGroupMessage, message: prevMessage } = prevProps;
   const { lastGroupMessage: nextLastGroupMessage, message: nextMessage } = nextProps;
@@ -61,18 +61,18 @@ const areEqual = (
   return true;
 };
 
-const MemoizedMessageAvatar = React.memo(
-  MessageAvatarWithContext,
+const MemoizedMessageAuthor = React.memo(
+  MessageAuthorWithContext,
   areEqual,
-) as typeof MessageAvatarWithContext;
+) as typeof MessageAuthorWithContext;
 
-export type MessageAvatarProps = Partial<MessageAvatarPropsWithContext>;
+export type MessageAuthorProps = Partial<MessageAuthorPropsWithContext>;
 
-export const MessageAvatar = (props: MessageAvatarProps) => {
+export const MessageAuthor = (props: MessageAuthorProps) => {
   const { lastGroupMessage, message, showAvatar } = useMessageContext();
 
   return (
-    <MemoizedMessageAvatar
+    <MemoizedMessageAuthor
       {...{
         lastGroupMessage,
         message,
@@ -83,4 +83,4 @@ export const MessageAvatar = (props: MessageAvatarProps) => {
   );
 };
 
-MessageAvatar.displayName = 'MessageAvatar{messageItemView{avatarWrapper}}';
+MessageAuthor.displayName = 'MessageAuthor{messageItemView{authorWrapper}}';

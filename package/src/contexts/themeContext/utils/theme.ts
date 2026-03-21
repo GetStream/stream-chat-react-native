@@ -596,7 +596,7 @@ export type Theme = {
       };
       container: ViewStyle;
     };
-    avatarWrapper: {
+    authorWrapper: {
       container: ViewStyle;
       spacer: ViewStyle;
     };
@@ -1496,7 +1496,7 @@ export const defaultTheme: Theme = {
       buttonText: {},
       container: {},
     },
-    avatarWrapper: {
+    authorWrapper: {
       container: {},
       spacer: {
         height: BASE_AVATAR_SIZE,

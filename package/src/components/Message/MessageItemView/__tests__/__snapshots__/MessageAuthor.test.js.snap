@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`MessageAvatar should render message avatar 1`] = `
+exports[`MessageAuthor should render message author 1`] = `
 <View
   style={{}}
-  testID="message-avatar"
+  testID="message-author"
 >
   <View
     testID="user-avatar"
