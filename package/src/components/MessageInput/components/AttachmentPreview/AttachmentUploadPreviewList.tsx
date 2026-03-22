@@ -93,6 +93,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
     ImageAttachmentUploadPreview,
     VideoAttachmentUploadPreview,
   } = props;
+  const { audioRecordingSendOnComplete } = useMessageInputContext();
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
   const attachmentListRef = useRef<FlatList<LocalAttachment>>(null);
@@ -103,8 +104,11 @@ const UnMemoizedAttachmentUploadPreviewList = (
   const viewportWidthRef = useRef(0);
   const scrollOffsetXRef = useRef(0);
   const endShrinkCompensationX = useSharedValue(0);
-  const audioAttachments = attachments.filter(isAudioAttachmentPreview);
-  const nonAudioAttachments = attachments.filter(
+  const previewAttachments = attachments.filter(
+    (attachment) => !(audioRecordingSendOnComplete && isLocalVoiceRecordingAttachment(attachment)),
+  );
+  const audioAttachments = previewAttachments.filter(isAudioAttachmentPreview);
+  const nonAudioAttachments = previewAttachments.filter(
     (attachment) => !isAudioAttachmentPreview(attachment),
   );
 
@@ -261,7 +265,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
     transform: [{ translateX: endShrinkCompensationX.value }],
   }));
 
-  if (!attachments.length) {
+  if (!previewAttachments.length) {
     return null;
   }
 
