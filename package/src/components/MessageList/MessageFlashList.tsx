@@ -10,7 +10,7 @@ import {
 
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
-import { FlashListProps, FlashListRef, useFlashListContext } from '@shopify/flash-list';
+import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
@@ -53,14 +53,20 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
+import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
+type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
+
 let FlashList;
+let useFlashListContext: () => FlashListContextApi = () => undefined;
 
 try {
-  FlashList = require('@shopify/flash-list').FlashList;
+  const flashListModule = require('@shopify/flash-list');
+  FlashList = flashListModule.FlashList;
+  useFlashListContext = flashListModule.useFlashListContext;
 } catch {
   FlashList = undefined;
 }
@@ -996,6 +1002,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       return;
     }
 
+    const closeCorrectionDeltaY = height - currentListHeightRef.current;
+    bumpOverlayLayoutRevision(closeCorrectionDeltaY);
+
     const changedBy = currentListHeightRef.current - height;
     flashListRef.current?.getNativeScrollRef()?.setNativeProps({
       contentOffset: { x: 0, y: flashListRef.current?.getAbsoluteLastScrollOffset() + changedBy },
@@ -1132,7 +1141,7 @@ const FlashListFooterTypingAdapter = ({
   const typingUsersLengthRef = useRef<number>(typingUsers.length);
 
   useEffect(() => {
-    const listApi = api?.getRef();
+    const listApi = api?.getRef?.();
 
     if (!enabled || !listApi) {
       return;
