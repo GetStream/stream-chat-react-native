@@ -53,6 +53,7 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
+import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
@@ -1000,6 +1001,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       currentListHeightRef.current = height;
       return;
     }
+
+    const closeCorrectionDeltaY = height - currentListHeightRef.current;
+    bumpOverlayLayoutRevision(closeCorrectionDeltaY);
 
     const changedBy = currentListHeightRef.current - height;
     flashListRef.current?.getNativeScrollRef()?.setNativeProps({
