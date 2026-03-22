@@ -43,12 +43,10 @@ const useStyles = ({
     theme: {
       messageItemView: {
         container,
-        bubble: {
-          contentContainer: bubbleContentContainer,
-          errorContainer: bubbleErrorContainer,
-          reactionListTopContainer: bubbleReactionListTopContainer,
-          wrapper: bubbleWrapper,
-        },
+        bubbleContentContainer,
+        bubbleErrorContainer,
+        bubbleReactionListTopContainer,
+        bubbleWrapper,
         contentContainer,
         repliesContainer,
         leftAlignItems,
