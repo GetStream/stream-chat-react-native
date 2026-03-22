@@ -10,7 +10,7 @@ import {
 
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
-import { FlashListProps, FlashListRef, useFlashListContext } from '@shopify/flash-list';
+import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
@@ -57,10 +57,15 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
+type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
+
 let FlashList;
+let useFlashListContext: () => FlashListContextApi = () => undefined;
 
 try {
-  FlashList = require('@shopify/flash-list').FlashList;
+  const flashListModule = require('@shopify/flash-list');
+  FlashList = flashListModule.FlashList;
+  useFlashListContext = flashListModule.useFlashListContext;
 } catch {
   FlashList = undefined;
 }
@@ -1132,7 +1137,7 @@ const FlashListFooterTypingAdapter = ({
   const typingUsersLengthRef = useRef<number>(typingUsers.length);
 
   useEffect(() => {
-    const listApi = api?.getRef();
+    const listApi = api?.getRef?.();
 
     if (!enabled || !listApi) {
       return;
