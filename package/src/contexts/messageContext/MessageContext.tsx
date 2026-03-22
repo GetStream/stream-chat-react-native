@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useContext } from 'react';
+import type { View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
@@ -56,6 +57,11 @@ export type MessageContextValue = {
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: LocalMessage;
+  /**
+   * Ref to the view that the message context menu should align with.
+   * Custom message renderers can attach this to a different subview if needed.
+   */
+  contextMenuAnchorRef: React.RefObject<View | null>;
   /**
    * Stable UI-instance identifier for the rendered message.
    * Used for overlay state so two rendered instances of the same message do not collide.

@@ -6,6 +6,7 @@ import { GestureDetector } from 'react-native-gesture-handler';
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
+import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
@@ -118,6 +119,23 @@ describe('MessageItemView', () => {
       const gestureDetector = screen.UNSAFE_getByType(GestureDetector);
 
       expect(gestureDetector.findByProps({ testID: 'message-item-view-wrapper' })).toBeTruthy();
+    });
+  });
+
+  it('exposes contextMenuAnchorRef through MessageContext for custom renderers', async () => {
+    const user = generateUser();
+    const message = generateMessage({ user });
+
+    const CustomMessageItemView = () => {
+      const { contextMenuAnchorRef } = useMessageContext();
+
+      return <Text ref={contextMenuAnchorRef}>Custom Message Item</Text>;
+    };
+
+    renderMessage({ message }, { MessageItemView: CustomMessageItemView });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Custom Message Item')).not.toBeNull();
     });
   });
 

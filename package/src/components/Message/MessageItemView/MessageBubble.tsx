@@ -14,6 +14,7 @@ import { MessageContentProps } from './MessageContent';
 import { MessageItemViewPropsWithContext } from './MessageItemView';
 
 import { MessagesContextValue, useTheme } from '../../../contexts';
+import { useMessageContext } from '../../../contexts/messageContext/MessageContext';
 
 import { NativeHandlers } from '../../../native';
 import { MessageStatusTypes } from '../../../utils/utils';
@@ -51,6 +52,7 @@ export const MessageBubble = React.memo(
     message,
   }: MessageBubbleProps) => {
     const styles = useStyles({ alignment });
+    const { contextMenuAnchorRef } = useMessageContext();
     const isMessageErrorType =
       message?.type === 'error' || message?.status === MessageStatusTypes.FAILED;
 
@@ -61,7 +63,7 @@ export const MessageBubble = React.memo(
             <ReactionListTop type={reactionListType} />
           </View>
         ) : null}
-        <View style={styles.contentContainer}>
+        <View ref={contextMenuAnchorRef} style={styles.contentContainer}>
           <MessageContent
             backgroundColor={backgroundColor}
             isVeryLastMessage={isVeryLastMessage}
