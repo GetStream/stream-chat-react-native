@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Text } from 'react-native';
+import { GestureDetector } from 'react-native-gesture-handler';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
@@ -104,6 +105,19 @@ describe('MessageItemView', () => {
 
     await waitFor(() => {
       expect(screen.queryByTestId('message-components')).toBeDefined();
+    });
+  });
+
+  it('wraps the full MessageItemView with swipe-to-reply', async () => {
+    const user = generateUser();
+    const message = generateMessage({ user });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      const gestureDetector = screen.UNSAFE_getByType(GestureDetector);
+
+      expect(gestureDetector.findByProps({ testID: 'message-item-view-wrapper' })).toBeTruthy();
     });
   });
 

@@ -89,7 +89,7 @@ export type MessageContentPropsWithContext = Pick<
     | 'StreamingMessageView'
   > &
   Pick<TranslationContextValue, 't'> & {
-    setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
+    setMessageContentWidth?: React.Dispatch<React.SetStateAction<number>>;
     /**
      * Background color for the message content
      */
@@ -181,13 +181,15 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     },
   } = useTheme();
 
-  const onLayout: (event: LayoutChangeEvent) => void = ({
-    nativeEvent: {
-      layout: { width },
-    },
-  }) => {
-    setMessageContentWidth(width);
-  };
+  const onLayout: ((event: LayoutChangeEvent) => void) | undefined = setMessageContentWidth
+    ? ({
+        nativeEvent: {
+          layout: { width },
+        },
+      }) => {
+        setMessageContentWidth(width);
+      }
+    : undefined;
 
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),

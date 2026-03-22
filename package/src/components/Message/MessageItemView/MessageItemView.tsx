@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo, useState } from 'react';
 import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { MessageBubble, SwipableMessageBubble } from './MessageBubble';
+import { MessageBubble, SwipableMessageWrapper } from './MessageBubble';
 
 import {
   Alignment,
@@ -71,6 +71,7 @@ const useStyles = ({
           alignItems: 'flex-end',
           gap: primitives.spacingXs,
           flexDirection: alignment === 'left' ? 'row' : 'row-reverse',
+          width: '100%',
           ...container,
         },
         contentContainer: {
@@ -190,16 +191,7 @@ export type MessageItemViewPropsWithContext = Pick<
     | 'reactionListPosition'
     | 'reactionListType'
     | 'ReactionListTop'
-  > & {
-    /**
-     * Will determine whether the swipeable wrapper is always rendered for each
-     * message. If set to false, the animated wrapper will be rendered only when
-     * a swiping gesture is active and not otherwise.
-     * Since stateful components would lose their state if we remount them while
-     * an animation is happening, this should always be set to true in those instances.
-     */
-    shouldRenderSwipeableWrapper: boolean;
-  };
+  >;
 
 const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithContext>(
   (props, ref) => {
@@ -230,7 +222,6 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
       reactionListPosition,
       reactionListType,
       ReactionListTop,
-      shouldRenderSwipeableWrapper,
       setQuotedMessage,
     } = props;
 
@@ -295,72 +286,65 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
       setQuotedMessage(message);
     });
 
+    const itemViewContent = (
+      <View pointerEvents='box-none' style={styles.container} testID='message-item-view-wrapper'>
+        {alignment === 'left' ? <MessageAuthor /> : null}
+        {isMessageTypeDeleted ? (
+          <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
+        ) : (
+          <View
+            style={[
+              styles.contentContainer,
+              isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
+              isMessageErrorType ? errorContainer : {},
+            ]}
+            testID='message-components'
+          >
+            <MessageHeader />
+            <MessageBubble
+              alignment={alignment}
+              backgroundColor={backgroundColor}
+              isVeryLastMessage={isVeryLastMessage}
+              MessageContent={MessageContent}
+              MessageError={MessageError}
+              messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+              noBorder={noBorder}
+              reactionListPosition={reactionListPosition}
+              ReactionListTop={ReactionListTop}
+              reactionListType={reactionListType}
+              message={message}
+            />
+
+            <View style={styles.repliesContainer}>
+              <MessageReplies />
+            </View>
+
+            {reactionListPosition === 'bottom' && ReactionListBottom ? (
+              <ReactionListBottom type={reactionListType} />
+            ) : null}
+            <MessageFooter date={message.created_at} />
+          </View>
+        )}
+        {MessageSpacer ? <MessageSpacer /> : null}
+      </View>
+    );
+
     return (
       <View ref={ref}>
-        <View pointerEvents='box-none' style={styles.container} testID='message-item-view-wrapper'>
-          {alignment === 'left' ? <MessageAuthor /> : null}
-          {isMessageTypeDeleted ? (
-            <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
-          ) : (
-            <View
-              style={[
-                styles.contentContainer,
-                isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
-                isMessageErrorType ? errorContainer : {},
-              ]}
-              testID='message-components'
-            >
-              <MessageHeader />
-              {enableSwipeToReply ? (
-                <SwipableMessageBubble
-                  alignment={alignment}
-                  backgroundColor={backgroundColor}
-                  isVeryLastMessage={isVeryLastMessage}
-                  MessageContent={MessageContent}
-                  messageContentWidth={messageContentWidth}
-                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-                  MessageSwipeContent={MessageSwipeContent}
-                  MessageError={MessageError}
-                  messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
-                  noBorder={noBorder}
-                  onSwipe={onSwipeActionHandler}
-                  reactionListPosition={reactionListPosition}
-                  reactionListType={reactionListType}
-                  ReactionListTop={ReactionListTop}
-                  setMessageContentWidth={setMessageContentWidth}
-                  shouldRenderSwipeableWrapper={shouldRenderSwipeableWrapper}
-                  message={message}
-                />
-              ) : (
-                <MessageBubble
-                  alignment={alignment}
-                  backgroundColor={backgroundColor}
-                  isVeryLastMessage={isVeryLastMessage}
-                  MessageContent={MessageContent}
-                  MessageError={MessageError}
-                  messageContentWidth={messageContentWidth}
-                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-                  noBorder={noBorder}
-                  reactionListPosition={reactionListPosition}
-                  ReactionListTop={ReactionListTop}
-                  reactionListType={reactionListType}
-                  setMessageContentWidth={setMessageContentWidth}
-                  message={message}
-                />
-              )}
-
-              <View style={styles.repliesContainer}>
-                <MessageReplies />
-              </View>
-
-              {reactionListPosition === 'bottom' && ReactionListBottom ? (
-                <ReactionListBottom type={reactionListType} />
-              ) : null}
-              <MessageFooter date={message.created_at} />
-            </View>
-          )}
-          {MessageSpacer ? <MessageSpacer /> : null}
-        </View>
+        {enableSwipeToReply && !isMessageTypeDeleted ? (
+          <SwipableMessageWrapper
+            alignment={alignment}
+            messageContentWidth={messageContentWidth}
+            MessageSwipeContent={MessageSwipeContent}
+            messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
+            onSwipe={onSwipeActionHandler}
+            setMessageContentWidth={setMessageContentWidth}
+          >
+            {itemViewContent}
+          </SwipableMessageWrapper>
+        ) : (
+          itemViewContent
+        )}
       </View>
     );
   },
@@ -504,7 +488,6 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
     message,
     onlyEmojis,
     otherAttachments,
-    isMessageAIGenerated,
     setQuotedMessage,
     lastGroupMessage,
     members,
@@ -530,11 +513,6 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
     reactionListType,
     ReactionListTop,
   } = useMessagesContext();
-  const isAIGenerated = useMemo(
-    () => isMessageAIGenerated(message),
-    [message, isMessageAIGenerated],
-  );
-  const shouldRenderSwipeableWrapper = (message?.attachments || []).length > 0 || isAIGenerated;
 
   return (
     <MemoizedMessageItemView
@@ -565,7 +543,6 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
         reactionListType,
         ReactionListTop,
         setQuotedMessage,
-        shouldRenderSwipeableWrapper,
         lastGroupMessage,
         members,
       }}
