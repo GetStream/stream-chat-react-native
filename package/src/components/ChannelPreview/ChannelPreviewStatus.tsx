@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { ChannelPreviewProps } from './ChannelPreview';
-import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
+import type { ChannelPreviewViewPropsWithContext } from './ChannelPreviewView';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -11,7 +11,7 @@ import { primitives } from '../../theme';
 import { getDateString } from '../../utils/i18n/getDateString';
 
 export type ChannelPreviewStatusProps = Pick<
-  ChannelPreviewMessengerPropsWithContext,
+  ChannelPreviewViewPropsWithContext,
   'formatLatestMessageDate' | 'lastMessage'
 > &
   Pick<ChannelPreviewProps, 'channel'>;

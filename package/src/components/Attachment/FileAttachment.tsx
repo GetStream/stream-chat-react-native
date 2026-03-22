@@ -120,7 +120,7 @@ export const FileAttachment = (props: FileAttachmentProps) => {
   );
 };
 
-FileAttachment.displayName = 'FileAttachment{messageSimple{file}}';
+FileAttachment.displayName = 'FileAttachment{messageItemView{file}}';
 
 const useStyles = () => {
   const {

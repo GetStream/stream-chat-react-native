@@ -144,31 +144,31 @@ import {
   KeyboardCompatibleViewProps,
 } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { Message as MessageDefault } from '../Message/Message';
-import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/Headers/MessagePinnedHeader';
-import { MessageReminderHeader as MessageReminderHeaderDefault } from '../Message/MessageSimple/Headers/MessageReminderHeader';
-import { MessageSavedForLaterHeader as MessageSavedForLaterHeaderDefault } from '../Message/MessageSimple/Headers/MessageSavedForLaterHeader';
-import { SentToChannelHeader as SentToChannelHeaderDefault } from '../Message/MessageSimple/Headers/SentToChannelHeader';
-import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
-import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
-import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
-import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
-import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
-import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
-import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
-import { MessageHeader as MessageHeaderDefault } from '../Message/MessageSimple/MessageHeader';
-import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
-import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
-import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
-import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
-import { MessageSwipeContent as MessageSwipeContentDefault } from '../Message/MessageSimple/MessageSwipeContent';
-import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
-import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
-import { ReactionListClustered as ReactionListClusteredDefault } from '../Message/MessageSimple/ReactionList/ReactionListClustered';
-import { ReactionListCountItem as ReactionListCountItemDefault } from '../Message/MessageSimple/ReactionList/ReactionListItem';
-import { ReactionListItem as ReactionListItemDefault } from '../Message/MessageSimple/ReactionList/ReactionListItem';
-import { ReactionListItemWrapper as ReactionListItemWrapperDefault } from '../Message/MessageSimple/ReactionList/ReactionListItemWrapper';
-import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
-import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
+import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageItemView/Headers/MessagePinnedHeader';
+import { MessageReminderHeader as MessageReminderHeaderDefault } from '../Message/MessageItemView/Headers/MessageReminderHeader';
+import { MessageSavedForLaterHeader as MessageSavedForLaterHeaderDefault } from '../Message/MessageItemView/Headers/MessageSavedForLaterHeader';
+import { SentToChannelHeader as SentToChannelHeaderDefault } from '../Message/MessageItemView/Headers/SentToChannelHeader';
+import { MessageAuthor as MessageAuthorDefault } from '../Message/MessageItemView/MessageAuthor';
+import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageItemView/MessageBlocked';
+import { MessageBounce as MessageBounceDefault } from '../Message/MessageItemView/MessageBounce';
+import { MessageContent as MessageContentDefault } from '../Message/MessageItemView/MessageContent';
+import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageItemView/MessageDeleted';
+import { MessageError as MessageErrorDefault } from '../Message/MessageItemView/MessageError';
+import { MessageFooter as MessageFooterDefault } from '../Message/MessageItemView/MessageFooter';
+import { MessageHeader as MessageHeaderDefault } from '../Message/MessageItemView/MessageHeader';
+import { MessageItemView as MessageItemViewDefault } from '../Message/MessageItemView/MessageItemView';
+import { MessageReplies as MessageRepliesDefault } from '../Message/MessageItemView/MessageReplies';
+import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageItemView/MessageRepliesAvatars';
+import { MessageStatus as MessageStatusDefault } from '../Message/MessageItemView/MessageStatus';
+import { MessageSwipeContent as MessageSwipeContentDefault } from '../Message/MessageItemView/MessageSwipeContent';
+import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageItemView/MessageTimestamp';
+import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageItemView/ReactionList/ReactionListBottom';
+import { ReactionListClustered as ReactionListClusteredDefault } from '../Message/MessageItemView/ReactionList/ReactionListClustered';
+import { ReactionListCountItem as ReactionListCountItemDefault } from '../Message/MessageItemView/ReactionList/ReactionListItem';
+import { ReactionListItem as ReactionListItemDefault } from '../Message/MessageItemView/ReactionList/ReactionListItem';
+import { ReactionListItemWrapper as ReactionListItemWrapperDefault } from '../Message/MessageItemView/ReactionList/ReactionListItemWrapper';
+import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageItemView/ReactionList/ReactionListTop';
+import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageItemView/StreamingMessageView';
 import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
 import { FileUploadInProgressIndicator as FileUploadInProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
 import { FileUploadRetryIndicator as FileUploadRetryIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
@@ -367,11 +367,15 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'MessageActionList'
       | 'MessageActionListItem'
       | 'messageActions'
-      | 'MessageAvatar'
+      | 'MessageAuthor'
       | 'MessageBounce'
       | 'MessageBlocked'
       | 'MessageContent'
+      | 'MessageContentBottomView'
+      | 'MessageContentLeadingView'
       | 'messageContentOrder'
+      | 'MessageContentTrailingView'
+      | 'MessageContentTopView'
       | 'MessageDeleted'
       | 'MessageError'
       | 'MessageFooter'
@@ -385,7 +389,8 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'SentToChannelHeader'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
-      | 'MessageSimple'
+      | 'MessageSpacer'
+      | 'MessageItemView'
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
@@ -685,10 +690,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionList = MessageActionListDefault,
     MessageActionListItem = MessageActionListItemDefault,
     messageActions,
-    MessageAvatar = MessageAvatarDefault,
+    MessageAuthor = MessageAuthorDefault,
     MessageBlocked = MessageBlockedDefault,
     MessageBounce = MessageBounceDefault,
     MessageContent = MessageContentDefault,
+    MessageContentBottomView,
+    MessageContentLeadingView,
     messageContentOrder = [
       'quoted_reply',
       'gallery',
@@ -699,6 +706,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'text',
       'location',
     ],
+    MessageContentTrailingView,
+    MessageContentTopView,
     MessageDeleted = MessageDeletedDefault,
     MessageError = MessageErrorDefault,
     messageInputFloating = false,
@@ -719,7 +728,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageReactionPicker = MessageReactionPickerDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
-    MessageSimple = MessageSimpleDefault,
+    MessageSpacer,
+    MessageItemView = MessageItemViewDefault,
     MessageStatus = MessageStatusDefault,
     MessageSwipeContent = MessageSwipeContentDefault,
     messageSwipeToReplyHitSlop,
@@ -1968,11 +1978,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageActionList,
     MessageActionListItem,
     messageActions,
-    MessageAvatar,
+    MessageAuthor,
     MessageBlocked,
     MessageBounce,
     MessageContent,
+    MessageContentBottomView,
+    MessageContentLeadingView,
     messageContentOrder,
+    MessageContentTrailingView,
+    MessageContentTopView,
     MessageDeleted,
     MessageError,
     MessageFooter,
@@ -1987,7 +2001,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageReactionPicker,
     MessageReplies,
     MessageRepliesAvatars,
-    MessageSimple,
+    MessageSpacer,
+    MessageItemView,
     MessageStatus,
     MessageSwipeContent,
     messageSwipeToReplyHitSlop,
@@ -2119,7 +2134,7 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
 /**
  *
  * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
- * to receive the StreamChat client instance. MessageList, Thread, and MessageInput must be
+ * to receive the StreamChat client instance. MessageList, Thread, and MessageComposer must be
  * children of the Channel component to receive the ChannelContext.
  *
  * @example ./Channel.md

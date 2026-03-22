@@ -15,7 +15,7 @@ export const CommandsHeader: React.FC<AutoCompleteSuggestionHeaderProps> = () =>
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         suggestions: {
           header: { container, title },
         },
@@ -39,7 +39,7 @@ export const CommandsHeader: React.FC<AutoCompleteSuggestionHeaderProps> = () =>
 export const EmojiHeader: React.FC<AutoCompleteSuggestionHeaderProps> = ({ queryText }) => {
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         suggestions: {
           header: { container, title },
         },
@@ -102,7 +102,7 @@ export const AutoCompleteSuggestionHeader = (props: AutoCompleteSuggestionHeader
 );
 
 AutoCompleteSuggestionHeader.displayName =
-  'AutoCompleteSuggestionHeader{messageInput{suggestions{Header}}}';
+  'AutoCompleteSuggestionHeader{messageComposer{suggestions{Header}}}';
 
 const useStyles = () => {
   const {

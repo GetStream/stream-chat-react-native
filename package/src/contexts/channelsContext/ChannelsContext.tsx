@@ -12,11 +12,11 @@ import type { ChannelDetailsBottomSheetProps } from '../../components/ChannelPre
 import { ChannelLastMessagePreviewProps } from '../../components/ChannelPreview/ChannelLastMessagePreview';
 import { ChannelMessagePreviewDeliveryStatusProps } from '../../components/ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
-import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
 import type { ChannelPreviewStatusProps } from '../../components/ChannelPreview/ChannelPreviewStatus';
 import type { ChannelPreviewTitleProps } from '../../components/ChannelPreview/ChannelPreviewTitle';
 import { ChannelPreviewTypingIndicatorProps } from '../../components/ChannelPreview/ChannelPreviewTypingIndicator';
 import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPreview/ChannelPreviewUnreadCount';
+import type { ChannelPreviewViewProps } from '../../components/ChannelPreview/ChannelPreviewView';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
@@ -28,7 +28,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelsContextValue = {
   /**
-   * Besides the existing default behavior of the ChannelListMessenger component, you can attach
+   * Besides the existing default behavior of the ChannelListView component, you can attach
    * additional props to the underlying React Native FlatList.
    *
    * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
@@ -36,7 +36,7 @@ export type ChannelsContextValue = {
    * **EXAMPLE:**
    *
    * ```
-   * <ChannelListMessenger
+   * <ChannelListView
    *  channels={channels}
    *  additionalFlatListProps={{ bounces: true }}
    * />
@@ -124,9 +124,9 @@ export type ChannelsContextValue = {
   /**
    * Custom UI component to display individual channel list items
    *
-   * Default: [ChannelPreviewMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-preview-messenger/)
+   * Default: [ChannelPreviewView](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-preview-view/)
    */
-  Preview: React.ComponentType<ChannelPreviewMessengerProps>;
+  Preview: React.ComponentType<ChannelPreviewViewProps>;
   /**
    * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
    */
@@ -152,7 +152,7 @@ export type ChannelsContextValue = {
    * **Example:**
    *
    * ```
-   * <ChannelListMessenger
+   * <ChannelListView
    *  setFlatListRef={(ref) => {
    *    // Use ref for your own good
    *  }}

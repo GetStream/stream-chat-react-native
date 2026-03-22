@@ -22,7 +22,7 @@ export type VideoThumbnailProps = {
 export const VideoThumbnail = (props: VideoThumbnailProps) => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         videoThumbnail: { container },
       },
     },

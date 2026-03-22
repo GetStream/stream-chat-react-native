@@ -36,32 +36,32 @@ import type {
   MessagePressableHandlerPayload,
   MessageProps,
 } from '../../components/Message/Message';
-import type { MessagePinnedHeaderProps } from '../../components/Message/MessageSimple/Headers/MessagePinnedHeader';
-import type { MessageReminderHeaderProps } from '../../components/Message/MessageSimple/Headers/MessageReminderHeader';
-import type { MessageSavedForLaterHeaderProps } from '../../components/Message/MessageSimple/Headers/MessageSavedForLaterHeader';
-import type { SentToChannelHeaderProps } from '../../components/Message/MessageSimple/Headers/SentToChannelHeader';
-import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
-import type { MessageBlockedProps } from '../../components/Message/MessageSimple/MessageBlocked';
-import type { MessageBounceProps } from '../../components/Message/MessageSimple/MessageBounce';
-import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
-import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
-import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
-import { MessageHeaderProps } from '../../components/Message/MessageSimple/MessageHeader';
-import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
-import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
-import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
-import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
-import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
-import { MessageTimestampProps } from '../../components/Message/MessageSimple/MessageTimestamp';
-import { ReactionListBottomProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListBottom';
-import { ReactionListClusteredProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListClustered';
+import type { MessagePinnedHeaderProps } from '../../components/Message/MessageItemView/Headers/MessagePinnedHeader';
+import type { MessageReminderHeaderProps } from '../../components/Message/MessageItemView/Headers/MessageReminderHeader';
+import type { MessageSavedForLaterHeaderProps } from '../../components/Message/MessageItemView/Headers/MessageSavedForLaterHeader';
+import type { SentToChannelHeaderProps } from '../../components/Message/MessageItemView/Headers/SentToChannelHeader';
+import type { MessageAuthorProps } from '../../components/Message/MessageItemView/MessageAuthor';
+import type { MessageBlockedProps } from '../../components/Message/MessageItemView/MessageBlocked';
+import type { MessageBounceProps } from '../../components/Message/MessageItemView/MessageBounce';
+import type { MessageContentProps } from '../../components/Message/MessageItemView/MessageContent';
+import type { MessageDeletedProps } from '../../components/Message/MessageItemView/MessageDeleted';
+import type { MessageFooterProps } from '../../components/Message/MessageItemView/MessageFooter';
+import { MessageHeaderProps } from '../../components/Message/MessageItemView/MessageHeader';
+import type { MessageItemViewProps } from '../../components/Message/MessageItemView/MessageItemView';
+import type { MessageRepliesProps } from '../../components/Message/MessageItemView/MessageReplies';
+import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageItemView/MessageRepliesAvatars';
+import type { MessageStatusProps } from '../../components/Message/MessageItemView/MessageStatus';
+import type { MessageTextProps } from '../../components/Message/MessageItemView/MessageTextContainer';
+import { MessageTimestampProps } from '../../components/Message/MessageItemView/MessageTimestamp';
+import { ReactionListBottomProps } from '../../components/Message/MessageItemView/ReactionList/ReactionListBottom';
+import { ReactionListClusteredProps } from '../../components/Message/MessageItemView/ReactionList/ReactionListClustered';
 import {
   ReactionListItemProps,
   ReactionListCountItemProps,
-} from '../../components/Message/MessageSimple/ReactionList/ReactionListItem';
-import { ReactionListItemWrapperProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListItemWrapper';
-import type { ReactionListTopProps } from '../../components/Message/MessageSimple/ReactionList/ReactionListTop';
-import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
+} from '../../components/Message/MessageItemView/ReactionList/ReactionListItem';
+import { ReactionListItemWrapperProps } from '../../components/Message/MessageItemView/ReactionList/ReactionListItemWrapper';
+import type { ReactionListTopProps } from '../../components/Message/MessageItemView/ReactionList/ReactionListTop';
+import type { MarkdownRules } from '../../components/Message/MessageItemView/utils/renderText';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
 import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';
@@ -223,13 +223,13 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
   /**
-   * UI component for MessageAvatar
-   * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
+   * UI component for MessageAuthor
+   * Defaults to: [MessageAuthor](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageAuthor.tsx)
    **/
-  MessageAvatar: React.ComponentType<MessageAvatarProps>;
+  MessageAuthor: React.ComponentType<MessageAuthorProps>;
   /**
    * UI component for MessageBlocked
-   * Defaults to: [MessageBlocked](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageBlocked.tsx)
+   * Defaults to: [MessageBlocked](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageBlocked.tsx)
    */
   MessageBlocked: React.ComponentType<MessageBlockedProps>;
   /**
@@ -238,14 +238,30 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   MessageBounce: React.ComponentType<MessageBounceProps>;
   /**
    * UI component for MessageContent
-   * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageContent.tsx)
+   * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageContent.tsx)
    */
   MessageContent: React.ComponentType<MessageContentProps>;
+  /**
+   * Optional UI component rendered above the message content body.
+   */
+  MessageContentTopView?: React.ComponentType;
+  /**
+   * Optional UI component rendered to the left of the message content body.
+   */
+  MessageContentLeadingView?: React.ComponentType;
+  /**
+   * Optional UI component rendered to the right of the message content body.
+   */
+  MessageContentTrailingView?: React.ComponentType;
+  /**
+   * Optional UI component rendered below the message content body.
+   */
+  MessageContentBottomView?: React.ComponentType;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
    * UI component for MessageDeleted
-   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageDeleted.tsx)
+   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageDeleted.tsx)
    */
   MessageDeleted: React.ComponentType<MessageDeletedProps>;
   /**
@@ -284,22 +300,28 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   MessageReactionPicker: React.ComponentType<MessageReactionPickerProps>;
   /**
    * UI component for MessageReplies
-   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageReplies.tsx)
+   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageReplies.tsx)
    */
   MessageReplies: React.ComponentType<MessageRepliesProps>;
   /**
    * UI Component for MessageRepliesAvatars
-   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageRepliesAvatars.tsx)
+   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageRepliesAvatars.tsx)
    */
   MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps>;
   /**
-   * UI component for MessageSimple
-   * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageSimple.tsx)
+   * Optional UI component for overriding the empty space on a message row. If the message is left aligned, it will be to the right of it - otherwise left.
    */
-  MessageSimple: React.ComponentType<MessageSimpleProps & { ref?: React.RefObject<View | null> }>;
+  MessageSpacer?: React.ComponentType;
+  /**
+   * UI component for MessageItemView. It encapsulates the entirety of a message row.
+   * Defaults to: [MessageItemView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageItemView.tsx)
+   */
+  MessageItemView: React.ComponentType<
+    MessageItemViewProps & { ref?: React.RefObject<View | null> }
+  >;
   /**
    * UI component for MessageStatus (delivered/read)
-   * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageStatus.tsx)
+   * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageStatus.tsx)
    */
   MessageStatus: React.ComponentType<MessageStatusProps>;
   /**
@@ -309,7 +331,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   MessageSystem: React.ComponentType<MessageSystemProps>;
   /**
    * UI component for MessageTimestamp
-   * Defaults to: [MessageTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/Message/MessageSimple/MessageTimestamp.tsx)
+   * Defaults to: [MessageTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/Message/MessageItemView/MessageTimestamp.tsx)
    */
   MessageTimestamp: React.ComponentType<MessageTimestampProps>;
   /**

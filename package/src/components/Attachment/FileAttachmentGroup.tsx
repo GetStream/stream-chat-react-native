@@ -28,7 +28,7 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         fileAttachmentGroup: { attachmentContainer, container },
       },
     },
@@ -106,4 +106,4 @@ const styles = StyleSheet.create({
   },
 });
 
-FileAttachmentGroup.displayName = 'FileAttachmentGroup{messageSimple{fileAttachmentGroup}}';
+FileAttachmentGroup.displayName = 'FileAttachmentGroup{messageItemView{fileAttachmentGroup}}';

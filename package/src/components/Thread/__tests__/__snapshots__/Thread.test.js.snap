@@ -379,11 +379,11 @@ exports[`Thread should match thread snapshot 1`] = `
                             "paddingVertical": 8,
                           }
                         }
-                        testID="message-simple-wrapper"
+                        testID="message-item-view-wrapper"
                       >
                         <View
                           style={{}}
-                          testID="message-avatar"
+                          testID="message-author"
                         >
                           <View
                             testID="user-avatar"
@@ -706,11 +706,11 @@ exports[`Thread should match thread snapshot 1`] = `
                             "paddingVertical": 8,
                           }
                         }
-                        testID="message-simple-wrapper"
+                        testID="message-item-view-wrapper"
                       >
                         <View
                           style={{}}
-                          testID="message-avatar"
+                          testID="message-author"
                         >
                           <View
                             testID="user-avatar"
@@ -1066,11 +1066,11 @@ exports[`Thread should match thread snapshot 1`] = `
                             "paddingVertical": 8,
                           }
                         }
-                        testID="message-simple-wrapper"
+                        testID="message-item-view-wrapper"
                       >
                         <View
                           style={{}}
-                          testID="message-avatar"
+                          testID="message-author"
                         >
                           <View
                             testID="user-avatar"
@@ -1384,11 +1384,11 @@ exports[`Thread should match thread snapshot 1`] = `
                           "paddingVertical": 8,
                         }
                       }
-                      testID="message-simple-wrapper"
+                      testID="message-item-view-wrapper"
                     >
                       <View
                         style={{}}
-                        testID="message-avatar"
+                        testID="message-author"
                       >
                         <View
                           testID="user-avatar"
@@ -1706,7 +1706,7 @@ exports[`Thread should match thread snapshot 1`] = `
       style={null}
     >
       <View
-        name="message-input-composer"
+        name="message-composer"
       >
         <View
           collapsable={false}

@@ -131,7 +131,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         audioRecorder: { arrowLeftIcon, micContainer, micIcon, slideToCancelContainer },
       },
     },
@@ -275,4 +275,4 @@ const useStyles = () => {
   );
 };
 
-AudioRecorder.displayName = 'AudioRecorder{messageInput}';
+AudioRecorder.displayName = 'AudioRecorder{messageComposer}';

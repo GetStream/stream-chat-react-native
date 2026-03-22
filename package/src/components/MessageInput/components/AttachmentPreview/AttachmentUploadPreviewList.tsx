@@ -64,7 +64,7 @@ const AttachmentPreviewCell = ({ children }: { children: React.ReactNode }) => (
 const ItemSeparatorComponent = () => {
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         attachmentUploadPreviewList: { itemSeparator },
       },
     },
@@ -110,7 +110,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         attachmentUploadPreviewList: { audioAttachmentsContainer, flatList },
       },
     },
@@ -360,4 +360,4 @@ const styles = StyleSheet.create({
 });
 
 AttachmentUploadPreviewList.displayName =
-  'AttachmentUploadPreviewList{messageInput{attachmentUploadPreviewList}}';
+  'AttachmentUploadPreviewList{messageComposer{attachmentUploadPreviewList}}';

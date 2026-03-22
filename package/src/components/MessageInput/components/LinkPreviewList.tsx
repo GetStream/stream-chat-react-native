@@ -97,7 +97,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageInput: { linkPreviewList },
+      messageComposer: { linkPreviewList },
     },
   } = useTheme();
 

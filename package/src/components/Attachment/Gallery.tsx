@@ -89,7 +89,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
   const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         gallery: {
           galleryContainer,
           galleryItemColumn,
@@ -261,7 +261,7 @@ const GalleryThumbnail = ({
 }: GalleryThumbnailProps) => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         gallery: { image, imageBorderRadius, imageContainer, moreImagesContainer, moreImagesText },
       },
       semantics,
@@ -389,7 +389,7 @@ const GalleryImageThumbnail = ({
 
   const {
     theme: {
-      messageSimple: { gallery },
+      messageItemView: { gallery },
     },
   } = useTheme();
 
@@ -667,4 +667,4 @@ const useStyles = () => {
   }, [semantics, isMyMessage]);
 };
 
-Gallery.displayName = 'Gallery{messageSimple{gallery}}';
+Gallery.displayName = 'Gallery{messageItemView{gallery}}';

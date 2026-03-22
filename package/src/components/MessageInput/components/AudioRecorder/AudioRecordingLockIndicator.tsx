@@ -48,7 +48,7 @@ export const AudioRecordingLockIndicator = ({
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         audioRecordingLockIndicator: { arrowUpIcon, container, lockIcon },
       },
     },

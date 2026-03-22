@@ -109,7 +109,7 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * import type { DeepPartial, Theme } from 'stream-chat-react-native';
      *
      * const theme: DeepPartial<Theme> = {
-     *   messageSimple: {
+     *   messageItemView: {
      *     file: {
      *       container: {
      *         backgroundColor: 'red',

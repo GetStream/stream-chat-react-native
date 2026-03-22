@@ -34,7 +34,7 @@ export const UnsupportedAttachment = (props: UnsupportedAttachmentProps) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         unsupportedAttachment: { container, details, title },
       },
     },
@@ -53,7 +53,7 @@ export const UnsupportedAttachment = (props: UnsupportedAttachmentProps) => {
   );
 };
 
-UnsupportedAttachment.displayName = 'UnsupportedAttachment{messageSimple{file}}';
+UnsupportedAttachment.displayName = 'UnsupportedAttachment{messageItemView{file}}';
 
 const useStyles = ({ isMyMessage }: { isMyMessage: boolean }) => {
   const {

@@ -15,7 +15,7 @@ import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingInd
 import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
 import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
-import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
+import { ChannelListView, ChannelListViewProps } from './ChannelListView';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
@@ -28,7 +28,7 @@ import {
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import type { ChannelListEventListenerOptions } from '../../types/types';
-import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
+import { ChannelPreviewView } from '../ChannelPreview/ChannelPreviewView';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 
@@ -78,9 +78,9 @@ export type ChannelListProps = Partial<
   /**
    * Custom UI component to display the list of channels
    *
-   * Default: [ChannelListMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-list-messenger/)
+   * Default: [ChannelListView](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-list-view/)
    */
-  List?: React.ComponentType<ChannelListMessengerProps>;
+  List?: React.ComponentType<ChannelListViewProps>;
   /**
    * If set to true, channels won't dynamically sort by most recent message, defaults to false
    */
@@ -248,7 +248,7 @@ const DEFAULT_SORT = {};
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
  * The ChannelList doesn't provide any UI for the underlying React Native FlatList. UI is determined by the `List` component which is
- * provided to the ChannelList component as a prop. By default, the ChannelListMessenger component is used as the list UI.
+ * provided to the ChannelList component as a prop. By default, the ChannelListView component is used as the list UI.
  *
  * @example ./ChannelList.md
  */
@@ -261,7 +261,7 @@ export const ChannelList = (props: ChannelListProps) => {
     FooterLoadingIndicator = ChannelListFooterLoadingIndicator,
     HeaderErrorIndicator = ChannelListHeaderErrorIndicator,
     HeaderNetworkDownIndicator = ChannelListHeaderNetworkDownIndicator,
-    List = ChannelListMessenger,
+    List = ChannelListView,
     ListHeaderComponent,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = ChannelListLoadingIndicator,
@@ -282,7 +282,7 @@ export const ChannelList = (props: ChannelListProps) => {
     onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
-    Preview = ChannelPreviewMessenger,
+    Preview = ChannelPreviewView,
     getChannelActionItems,
     PreviewAvatar,
     PreviewMessage,

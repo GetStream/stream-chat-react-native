@@ -22,7 +22,7 @@ export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
   const styles = useStyles();
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         audioRecordingWaveform: { container, waveform: waveformTheme },
       },
     },
@@ -70,4 +70,4 @@ const useStyles = () => {
   );
 };
 
-AudioRecordingWaveform.displayName = 'AudioRecordingWaveform{messageInput}';
+AudioRecordingWaveform.displayName = 'AudioRecordingWaveform{messageComposer}';

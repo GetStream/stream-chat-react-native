@@ -30,7 +30,7 @@ const SendButtonWithContext = (props: NewDirectMessagingSendButtonPropsWithConte
   const {
     theme: {
       colors: { accent_blue, grey_gainsboro },
-      messageInput: { sendButton },
+      messageComposer: { sendButton },
     },
   } = useTheme();
 
@@ -89,7 +89,7 @@ const MemoizedNewDirectMessagingSendButton = React.memo(
 export type SendButtonProps = Partial<NewDirectMessagingSendButtonPropsWithContext>;
 
 /**
- * UI Component for send button in MessageInput component.
+ * UI Component for send button in MessageComposer component.
  */
 export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
   const { chatClient } = useAppContext();

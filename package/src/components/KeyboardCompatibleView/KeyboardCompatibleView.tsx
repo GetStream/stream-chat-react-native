@@ -41,7 +41,7 @@ export class KeyboardCompatibleView extends React.Component<
   > = {
     behavior: Platform.OS === 'ios' ? 'padding' : 'position',
     enabled: true,
-    keyboardVerticalOffset: Platform.OS === 'ios' ? 86.5 : -300, // default MessageInput height
+    keyboardVerticalOffset: Platform.OS === 'ios' ? 86.5 : -300, // default MessageComposer height
   };
 
   _frame: LayoutRectangle | null = null;

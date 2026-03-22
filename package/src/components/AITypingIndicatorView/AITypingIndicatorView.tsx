@@ -34,7 +34,7 @@ export const AITypingIndicatorView = ({
   ) : null;
 };
 
-AITypingIndicatorView.displayName = 'AITypingIndicatorView{messageSimple{content}}';
+AITypingIndicatorView.displayName = 'AITypingIndicatorView{messageItemView{content}}';
 
 const useStyles = () => {
   const {

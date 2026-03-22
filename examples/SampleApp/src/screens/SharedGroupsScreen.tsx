@@ -3,9 +3,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
 import {
   ChannelList,
-  ChannelListMessenger,
-  ChannelListMessengerProps,
-  ChannelPreviewMessengerProps,
+  ChannelListView,
+  ChannelListViewProps,
+  ChannelPreviewViewProps,
   getChannelPreviewDisplayAvatar,
   GroupAvatar,
   useChannelPreviewDisplayName,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type CustomPreviewProps = ChannelPreviewMessengerProps;
+type CustomPreviewProps = ChannelPreviewViewProps;
 
 const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
@@ -150,7 +150,7 @@ const EmptyListComponent = () => {
   );
 };
 
-type ListComponentProps = ChannelListMessengerProps;
+type ListComponentProps = ChannelListViewProps;
 
 // If the length of channels is 1, which means we only got 1:1-distinct channel,
 // And we don't want to show 1:1-distinct channel in this list.
@@ -161,7 +161,7 @@ const ListComponent: React.FC<ListComponentProps> = (props) => {
     return <EmptyListComponent />;
   }
 
-  return <ChannelListMessenger {...props} />;
+  return <ChannelListView {...props} />;
 };
 
 type SharedGroupsScreenRouteProp = RouteProp<StackNavigatorParamList, 'SharedGroupsScreen'>;

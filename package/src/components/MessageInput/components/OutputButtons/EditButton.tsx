@@ -38,4 +38,4 @@ export const EditButton = (props: EditButtonProps) => {
   );
 };
 
-EditButton.displayName = 'EditButton{messageInput}';
+EditButton.displayName = 'EditButton{messageComposer}';

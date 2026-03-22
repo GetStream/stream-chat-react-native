@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
-import { MessageComposer } from 'stream-chat';
+import { MessageComposer as StreamMessageComposer } from 'stream-chat';
 
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import * as UseMessageComposerHooks from '../../../contexts/messageInputContext/hooks/useMessageComposer';
@@ -21,7 +21,7 @@ import { AttachmentPickerContent } from '../../AttachmentPicker/components/Attac
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { MessageInput } from '../MessageInput';
+import { MessageComposer } from '../MessageComposer';
 
 jest.spyOn(Alert, 'alert');
 jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
@@ -45,7 +45,7 @@ const renderComponent = ({ channelProps, client, props }) => {
     <OverlayProvider>
       <Chat client={client}>
         <Channel {...channelProps}>
-          <MessageInput {...props} />
+          <MessageComposer {...props} />
         </Channel>
       </Chat>
     </OverlayProvider>,
@@ -56,7 +56,7 @@ const editedMessageSetup = async ({ composerConfig, composition } = {}) => {
   const { client: chatClient, channels } = await initiateClientWithChannels();
   const channel = channels[0];
 
-  const messageComposer = new MessageComposer({
+  const messageComposer = new StreamMessageComposer({
     client: chatClient,
     composition,
     compositionContext: composition,

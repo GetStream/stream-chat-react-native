@@ -35,7 +35,7 @@ export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
 export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         suggestions: {
           command: { iconContainer },
         },

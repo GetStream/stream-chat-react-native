@@ -45,7 +45,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         giphy: {
           actionButtonContainer,
           actionButton,
@@ -210,7 +210,7 @@ export const Giphy = (props: GiphyProps) => {
   );
 };
 
-Giphy.displayName = 'Giphy{messageSimple{giphy}}';
+Giphy.displayName = 'Giphy{messageItemView{giphy}}';
 
 const useStyles = () => {
   const {

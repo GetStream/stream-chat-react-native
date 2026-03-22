@@ -43,7 +43,7 @@ export const FilePreview = (props: FilePreviewProps) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         file: { container, details, fileSize, title },
       },
     },
@@ -70,7 +70,7 @@ export const FilePreview = (props: FilePreviewProps) => {
   );
 };
 
-FilePreview.displayName = 'FilePreview{messageSimple{file}}';
+FilePreview.displayName = 'FilePreview{messageItemView{file}}';
 
 const useStyles = () => {
   const {

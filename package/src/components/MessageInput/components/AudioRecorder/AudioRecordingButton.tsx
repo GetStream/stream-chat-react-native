@@ -85,7 +85,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   const { t } = useTranslationContext();
   const {
     theme: {
-      messageInput: { micButtonContainer },
+      messageComposer: { micButtonContainer },
       semantics,
     },
   } = useTheme();
@@ -294,7 +294,7 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
   );
 };
 
-AudioRecordingButton.displayName = 'AudioRecordingButton{messageInput}';
+AudioRecordingButton.displayName = 'AudioRecordingButton{messageComposer}';
 
 const styles = StyleSheet.create({
   container: {

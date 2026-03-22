@@ -80,7 +80,7 @@ const MemoizedAttachButton = React.memo(
 export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
 
 /**
- * UI Component for attach button in MessageInput component.
+ * UI Component for attach button in MessageComposer component.
  */
 export const AttachButton = (props: AttachButtonProps) => {
   const { disableAttachmentPicker } = useAttachmentPickerContext();
@@ -107,4 +107,4 @@ export const AttachButton = (props: AttachButtonProps) => {
   );
 };
 
-AttachButton.displayName = 'AttachButton{messageInput}';
+AttachButton.displayName = 'AttachButton{messageComposer}';

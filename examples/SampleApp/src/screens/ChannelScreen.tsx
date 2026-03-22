@@ -4,7 +4,7 @@ import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/nati
 import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
-  MessageInput,
+  MessageComposer,
   MessageList,
   MessageFlashList,
   ThreadContextValue,
@@ -301,7 +301,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           />
         )}
         <AITypingIndicatorView channel={channel} />
-        <MessageInput />
+        <MessageComposer />
         {modalVisible && (
           <MessageInfoBottomSheet
             visible={modalVisible}

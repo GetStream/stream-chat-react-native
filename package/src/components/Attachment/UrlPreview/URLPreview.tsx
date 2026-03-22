@@ -73,7 +73,7 @@ const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         card: {
           container,
           cover,
@@ -292,4 +292,4 @@ const useStyles = () => {
   );
 };
 
-URLPreview.displayName = 'URLPreview{messageSimple{card}}';
+URLPreview.displayName = 'URLPreview{messageItemView{card}}';

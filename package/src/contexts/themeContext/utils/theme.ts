@@ -164,7 +164,7 @@ export type Theme = {
   channelListLoadingIndicator: {
     container: ViewStyle;
   };
-  channelListMessenger: {
+  channelListView: {
     flatList: ViewStyle;
     flatListContent: ViewStyle;
   };
@@ -320,7 +320,7 @@ export type Theme = {
     loadingText: TextStyle;
   };
 
-  messageInput: {
+  messageComposer: {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
@@ -581,7 +581,7 @@ export type Theme = {
   messagePreview: {
     message: TextStyle;
   };
-  messageSimple: {
+  messageItemView: {
     blockedMessageContainer: ViewStyle;
     actions: {
       button: ViewStyle & {
@@ -596,7 +596,7 @@ export type Theme = {
       };
       container: ViewStyle;
     };
-    avatarWrapper: {
+    authorWrapper: {
       container: ViewStyle;
       spacer: ViewStyle;
     };
@@ -1095,7 +1095,7 @@ export const defaultTheme: Theme = {
   channelListLoadingIndicator: {
     container: {},
   },
-  channelListMessenger: {
+  channelListView: {
     flatList: {},
     flatListContent: {},
   },
@@ -1249,7 +1249,7 @@ export const defaultTheme: Theme = {
     container: {},
     loadingText: {},
   },
-  messageInput: {
+  messageComposer: {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},
@@ -1489,14 +1489,14 @@ export const defaultTheme: Theme = {
   messagePreview: {
     message: {},
   },
-  messageSimple: {
+  messageItemView: {
     blockedMessageContainer: {},
     actions: {
       button: {},
       buttonText: {},
       container: {},
     },
-    avatarWrapper: {
+    authorWrapper: {
       container: {},
       spacer: {
         height: BASE_AVATAR_SIZE,

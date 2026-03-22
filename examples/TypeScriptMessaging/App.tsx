@@ -16,7 +16,7 @@ import {
   Channel,
   ChannelList,
   Chat,
-  MessageInput,
+  MessageComposer,
   MessageList,
   OverlayProvider,
   SqliteClient,
@@ -132,7 +132,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
               }
             }}
           />
-          <MessageInput />
+          <MessageComposer />
         </View>
       </Channel>
     </SafeAreaView>

@@ -40,7 +40,7 @@ export const ShowThreadMessageInChannelButtonWithContext = (
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         showThreadMessageInChannelButton: {
           check,
           checkBoxActive,
@@ -152,7 +152,7 @@ export const ShowThreadMessageInChannelButton = (props: ShowThreadMessageInChann
 };
 
 ShowThreadMessageInChannelButton.displayName =
-  'ShowThreadMessageInChannelButton{messageInput{showThreadMessageInChannelButton}}';
+  'ShowThreadMessageInChannelButton{messageComposer{showThreadMessageInChannelButton}}';
 
 const useStyles = () => {
   const {

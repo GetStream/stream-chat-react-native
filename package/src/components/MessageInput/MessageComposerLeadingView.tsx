@@ -13,7 +13,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 export const MessageComposerLeadingView = () => {
   const {
     theme: {
-      messageInput: { inputButtonsContainer },
+      messageComposer: { inputButtonsContainer },
     },
   } = useTheme();
   const { audioRecorderManager, messageInputFloating } = useMessageInputContext();

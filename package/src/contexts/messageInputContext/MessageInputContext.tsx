@@ -36,7 +36,7 @@ import {
 } from '../../components';
 import type { InputViewProps } from '../../components/AutoCompleteInput/InputView';
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
-import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
+import { parseLinksFromText } from '../../components/Message/MessageItemView/utils/parseLinks';
 import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
 import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
 import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
@@ -51,7 +51,7 @@ import type { AttachButtonProps } from '../../components/MessageInput/components
 import type { InputButtonsProps } from '../../components/MessageInput/components/InputButtons/index';
 import type { SendButtonProps } from '../../components/MessageInput/components/OutputButtons/SendButton';
 import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
-import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
+import type { MessageComposerProps } from '../../components/MessageInput/MessageComposer';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import {
   createAttachmentsCompositionMiddleware,
@@ -210,7 +210,7 @@ export type InputMessageInputContextValue = {
   /**
    * Custom UI component to display the remaining cooldown a user will have to wait before
    * being allowed to send another message. This component is displayed in place of the
-   * send button for the MessageInput component.
+   * send button for the MessageComposer component.
    *
    * **default**
    * [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
@@ -334,7 +334,7 @@ export type InputMessageInputContextValue = {
    * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
-    Omit<MessageInputProps, 'Input'> &
+    Omit<MessageComposerProps, 'Input'> &
       InputButtonsProps & {
         getUsers: () => UserResponse[];
       }

@@ -43,7 +43,7 @@ jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
 
 /**
  * We are gonna use following custom UI components for preview and list.
- * If we use ChannelPreviewMessenger or ChannelPreviewLastMessage here, then changes
+ * If we use ChannelPreviewView or ChannelPreviewLastMessage here, then changes
  * to those components might end up breaking tests for ChannelList, which will be quite painful
  * to debug.
  */
@@ -427,7 +427,7 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list-messenger')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         const newMessage = sendNewMessageOnChannel3();

@@ -75,7 +75,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         videoAttachmentUploadPreview: { durationContainer, durationText },
       },
     },
