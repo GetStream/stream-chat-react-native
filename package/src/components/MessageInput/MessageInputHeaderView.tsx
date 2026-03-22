@@ -63,7 +63,7 @@ export const MessageInputHeaderView = () => {
           />
         </Animated.View>
       ) : null}
-      {quotedMessage ? (
+      {quotedMessage && !editing ? (
         <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
           <Reply onDismiss={editing ? undefined : onDismissReply} mode='reply' />
         </Animated.View>
