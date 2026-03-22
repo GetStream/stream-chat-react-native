@@ -868,7 +868,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           hostName={overlayActive ? 'message-overlay' : undefined}
           style={overlayActive && rect ? { width: rect.w } : undefined}
         >
-          <MessageItemView ref={messageWrapperRef} />
+          <View ref={messageWrapperRef}>
+            <MessageItemView />
+          </View>
         </Portal>
         {showMessageReactions ? (
           <BottomSheetModal
