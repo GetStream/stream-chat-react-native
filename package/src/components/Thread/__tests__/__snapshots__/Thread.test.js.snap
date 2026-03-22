@@ -370,101 +370,99 @@ exports[`Thread should match thread snapshot 1`] = `
                   <View>
                     <View>
                       <View
-                        pointerEvents="box-none"
-                        style={
+                        collapsable={false}
+                        hitSlop={
                           {
-                            "alignItems": "flex-end",
-                            "flexDirection": "row",
-                            "gap": 8,
-                            "paddingVertical": 8,
+                            "left": 750,
+                            "right": 750,
                           }
                         }
-                        testID="message-item-view-wrapper"
+                        style={
+                          {
+                            "alignItems": "center",
+                            "flexDirection": "row",
+                            "zIndex": 1,
+                          }
+                        }
                       >
                         <View
-                          style={{}}
-                          testID="message-author"
+                          pointerEvents="box-none"
+                          style={
+                            {
+                              "alignItems": "flex-end",
+                              "flexDirection": "row",
+                              "gap": 8,
+                              "paddingVertical": 8,
+                              "width": "100%",
+                            }
+                          }
+                          testID="message-item-view-wrapper"
                         >
                           <View
-                            testID="user-avatar"
+                            style={{}}
+                            testID="message-author"
                           >
                             <View
-                              style={
-                                [
-                                  {
-                                    "alignItems": "center",
-                                    "borderRadius": 9999,
-                                    "justifyContent": "center",
-                                    "overflow": "hidden",
-                                  },
-                                  {
-                                    "height": 32,
-                                    "width": 32,
-                                  },
-                                  {
-                                    "backgroundColor": "#fcd579",
-                                  },
-                                  {
-                                    "borderColor": "rgba(26, 27, 37, 0.1)",
-                                    "borderWidth": 1,
-                                  },
-                                  undefined,
-                                ]
-                              }
-                              testID="avatar-image"
+                              testID="user-avatar"
                             >
-                              <Image
-                                onError={[Function]}
-                                source={
-                                  {
-                                    "uri": "https://i.imgur.com/LuuGvh0.png",
-                                  }
-                                }
+                              <View
                                 style={
                                   [
-                                    {},
+                                    {
+                                      "alignItems": "center",
+                                      "borderRadius": 9999,
+                                      "justifyContent": "center",
+                                      "overflow": "hidden",
+                                    },
                                     {
                                       "height": 32,
                                       "width": 32,
                                     },
+                                    {
+                                      "backgroundColor": "#fcd579",
+                                    },
+                                    {
+                                      "borderColor": "rgba(26, 27, 37, 0.1)",
+                                      "borderWidth": 1,
+                                    },
+                                    undefined,
                                   ]
                                 }
-                              />
+                                testID="avatar-image"
+                              >
+                                <Image
+                                  onError={[Function]}
+                                  source={
+                                    {
+                                      "uri": "https://i.imgur.com/LuuGvh0.png",
+                                    }
+                                  }
+                                  style={
+                                    [
+                                      {},
+                                      {
+                                        "height": 32,
+                                        "width": 32,
+                                      },
+                                    ]
+                                  }
+                                />
+                              </View>
                             </View>
                           </View>
-                        </View>
-                        <View
-                          style={
-                            [
-                              {
-                                "gap": 4,
-                              },
-                              {
-                                "alignItems": "flex-start",
-                              },
-                              {},
-                            ]
-                          }
-                          testID="message-components"
-                        >
                           <View
-                            collapsable={false}
-                            hitSlop={
-                              {
-                                "left": 750,
-                                "right": 750,
-                              }
-                            }
                             style={
                               [
                                 {
-                                  "alignItems": "center",
-                                  "flexDirection": "row",
-                                  "zIndex": 1,
+                                  "gap": 4,
+                                },
+                                {
+                                  "alignItems": "flex-start",
                                 },
                                 {},
                               ]
                             }
+                            testID="message-components"
                           >
                             <View
                               style={{}}
@@ -516,7 +514,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                   style={{}}
                                 >
                                   <View
-                                    onLayout={[Function]}
                                     style={{}}
                                   >
                                     <View
@@ -608,44 +605,44 @@ exports[`Thread should match thread snapshot 1`] = `
                                 </View>
                               </View>
                             </View>
-                          </View>
-                          <View
-                            style={
-                              {
-                                "marginTop": -4,
-                              }
-                            }
-                          />
-                          <View
-                            style={
-                              [
+                            <View
+                              style={
                                 {
-                                  "alignItems": "center",
-                                  "flexDirection": "row",
-                                  "gap": 8,
-                                  "justifyContent": "center",
-                                  "paddingVertical": 4,
-                                },
-                                {},
-                              ]
-                            }
-                            testID="message-status-time"
-                          >
-                            <Text
+                                  "marginTop": -4,
+                                }
+                              }
+                            />
+                            <View
                               style={
                                 [
                                   {
-                                    "color": "#687385",
-                                    "fontSize": 13,
-                                    "fontWeight": 400,
-                                    "lineHeight": 16,
+                                    "alignItems": "center",
+                                    "flexDirection": "row",
+                                    "gap": 8,
+                                    "justifyContent": "center",
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
                               }
+                              testID="message-status-time"
                             >
-                              Edited
-                            </Text>
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#687385",
+                                      "fontSize": 13,
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
+                                    },
+                                    {},
+                                  ]
+                                }
+                              >
+                                Edited
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -697,101 +694,99 @@ exports[`Thread should match thread snapshot 1`] = `
                   <View>
                     <View>
                       <View
-                        pointerEvents="box-none"
-                        style={
+                        collapsable={false}
+                        hitSlop={
                           {
-                            "alignItems": "flex-end",
-                            "flexDirection": "row",
-                            "gap": 8,
-                            "paddingVertical": 8,
+                            "left": 750,
+                            "right": 750,
                           }
                         }
-                        testID="message-item-view-wrapper"
+                        style={
+                          {
+                            "alignItems": "center",
+                            "flexDirection": "row",
+                            "zIndex": 1,
+                          }
+                        }
                       >
                         <View
-                          style={{}}
-                          testID="message-author"
+                          pointerEvents="box-none"
+                          style={
+                            {
+                              "alignItems": "flex-end",
+                              "flexDirection": "row",
+                              "gap": 8,
+                              "paddingVertical": 8,
+                              "width": "100%",
+                            }
+                          }
+                          testID="message-item-view-wrapper"
                         >
                           <View
-                            testID="user-avatar"
+                            style={{}}
+                            testID="message-author"
                           >
                             <View
-                              style={
-                                [
-                                  {
-                                    "alignItems": "center",
-                                    "borderRadius": 9999,
-                                    "justifyContent": "center",
-                                    "overflow": "hidden",
-                                  },
-                                  {
-                                    "height": 32,
-                                    "width": 32,
-                                  },
-                                  {
-                                    "backgroundColor": "#8febbd",
-                                  },
-                                  {
-                                    "borderColor": "rgba(26, 27, 37, 0.1)",
-                                    "borderWidth": 1,
-                                  },
-                                  undefined,
-                                ]
-                              }
-                              testID="avatar-image"
+                              testID="user-avatar"
                             >
-                              <Image
-                                onError={[Function]}
-                                source={
-                                  {
-                                    "uri": "https://i.imgur.com/spueyAP.png",
-                                  }
-                                }
+                              <View
                                 style={
                                   [
-                                    {},
+                                    {
+                                      "alignItems": "center",
+                                      "borderRadius": 9999,
+                                      "justifyContent": "center",
+                                      "overflow": "hidden",
+                                    },
                                     {
                                       "height": 32,
                                       "width": 32,
                                     },
+                                    {
+                                      "backgroundColor": "#8febbd",
+                                    },
+                                    {
+                                      "borderColor": "rgba(26, 27, 37, 0.1)",
+                                      "borderWidth": 1,
+                                    },
+                                    undefined,
                                   ]
                                 }
-                              />
+                                testID="avatar-image"
+                              >
+                                <Image
+                                  onError={[Function]}
+                                  source={
+                                    {
+                                      "uri": "https://i.imgur.com/spueyAP.png",
+                                    }
+                                  }
+                                  style={
+                                    [
+                                      {},
+                                      {
+                                        "height": 32,
+                                        "width": 32,
+                                      },
+                                    ]
+                                  }
+                                />
+                              </View>
                             </View>
                           </View>
-                        </View>
-                        <View
-                          style={
-                            [
-                              {
-                                "gap": 4,
-                              },
-                              {
-                                "alignItems": "flex-start",
-                              },
-                              {},
-                            ]
-                          }
-                          testID="message-components"
-                        >
                           <View
-                            collapsable={false}
-                            hitSlop={
-                              {
-                                "left": 750,
-                                "right": 750,
-                              }
-                            }
                             style={
                               [
                                 {
-                                  "alignItems": "center",
-                                  "flexDirection": "row",
-                                  "zIndex": 1,
+                                  "gap": 4,
+                                },
+                                {
+                                  "alignItems": "flex-start",
                                 },
                                 {},
                               ]
                             }
+                            testID="message-components"
                           >
                             <View
                               style={{}}
@@ -843,7 +838,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                   style={{}}
                                 >
                                   <View
-                                    onLayout={[Function]}
                                     style={{}}
                                   >
                                     <View
@@ -935,44 +929,44 @@ exports[`Thread should match thread snapshot 1`] = `
                                 </View>
                               </View>
                             </View>
-                          </View>
-                          <View
-                            style={
-                              {
-                                "marginTop": -4,
-                              }
-                            }
-                          />
-                          <View
-                            style={
-                              [
+                            <View
+                              style={
                                 {
-                                  "alignItems": "center",
-                                  "flexDirection": "row",
-                                  "gap": 8,
-                                  "justifyContent": "center",
-                                  "paddingVertical": 4,
-                                },
-                                {},
-                              ]
-                            }
-                            testID="message-status-time"
-                          >
-                            <Text
+                                  "marginTop": -4,
+                                }
+                              }
+                            />
+                            <View
                               style={
                                 [
                                   {
-                                    "color": "#687385",
-                                    "fontSize": 13,
-                                    "fontWeight": 400,
-                                    "lineHeight": 16,
+                                    "alignItems": "center",
+                                    "flexDirection": "row",
+                                    "gap": 8,
+                                    "justifyContent": "center",
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
                               }
+                              testID="message-status-time"
                             >
-                              Edited
-                            </Text>
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#687385",
+                                      "fontSize": 13,
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
+                                    },
+                                    {},
+                                  ]
+                                }
+                              >
+                                Edited
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -1057,101 +1051,99 @@ exports[`Thread should match thread snapshot 1`] = `
                   <View>
                     <View>
                       <View
-                        pointerEvents="box-none"
-                        style={
+                        collapsable={false}
+                        hitSlop={
                           {
-                            "alignItems": "flex-end",
-                            "flexDirection": "row",
-                            "gap": 8,
-                            "paddingVertical": 8,
+                            "left": 750,
+                            "right": 750,
                           }
                         }
-                        testID="message-item-view-wrapper"
+                        style={
+                          {
+                            "alignItems": "center",
+                            "flexDirection": "row",
+                            "zIndex": 1,
+                          }
+                        }
                       >
                         <View
-                          style={{}}
-                          testID="message-author"
+                          pointerEvents="box-none"
+                          style={
+                            {
+                              "alignItems": "flex-end",
+                              "flexDirection": "row",
+                              "gap": 8,
+                              "paddingVertical": 8,
+                              "width": "100%",
+                            }
+                          }
+                          testID="message-item-view-wrapper"
                         >
                           <View
-                            testID="user-avatar"
+                            style={{}}
+                            testID="message-author"
                           >
                             <View
-                              style={
-                                [
-                                  {
-                                    "alignItems": "center",
-                                    "borderRadius": 9999,
-                                    "justifyContent": "center",
-                                    "overflow": "hidden",
-                                  },
-                                  {
-                                    "height": 32,
-                                    "width": 32,
-                                  },
-                                  {
-                                    "backgroundColor": "#fcd579",
-                                  },
-                                  {
-                                    "borderColor": "rgba(26, 27, 37, 0.1)",
-                                    "borderWidth": 1,
-                                  },
-                                  undefined,
-                                ]
-                              }
-                              testID="avatar-image"
+                              testID="user-avatar"
                             >
-                              <Image
-                                onError={[Function]}
-                                source={
-                                  {
-                                    "uri": "https://i.imgur.com/LuuGvh0.png",
-                                  }
-                                }
+                              <View
                                 style={
                                   [
-                                    {},
+                                    {
+                                      "alignItems": "center",
+                                      "borderRadius": 9999,
+                                      "justifyContent": "center",
+                                      "overflow": "hidden",
+                                    },
                                     {
                                       "height": 32,
                                       "width": 32,
                                     },
+                                    {
+                                      "backgroundColor": "#fcd579",
+                                    },
+                                    {
+                                      "borderColor": "rgba(26, 27, 37, 0.1)",
+                                      "borderWidth": 1,
+                                    },
+                                    undefined,
                                   ]
                                 }
-                              />
+                                testID="avatar-image"
+                              >
+                                <Image
+                                  onError={[Function]}
+                                  source={
+                                    {
+                                      "uri": "https://i.imgur.com/LuuGvh0.png",
+                                    }
+                                  }
+                                  style={
+                                    [
+                                      {},
+                                      {
+                                        "height": 32,
+                                        "width": 32,
+                                      },
+                                    ]
+                                  }
+                                />
+                              </View>
                             </View>
                           </View>
-                        </View>
-                        <View
-                          style={
-                            [
-                              {
-                                "gap": 4,
-                              },
-                              {
-                                "alignItems": "flex-start",
-                              },
-                              {},
-                            ]
-                          }
-                          testID="message-components"
-                        >
                           <View
-                            collapsable={false}
-                            hitSlop={
-                              {
-                                "left": 750,
-                                "right": 750,
-                              }
-                            }
                             style={
                               [
                                 {
-                                  "alignItems": "center",
-                                  "flexDirection": "row",
-                                  "zIndex": 1,
+                                  "gap": 4,
+                                },
+                                {
+                                  "alignItems": "flex-start",
                                 },
                                 {},
                               ]
                             }
+                            testID="message-components"
                           >
                             <View
                               style={{}}
@@ -1203,7 +1195,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                   style={{}}
                                 >
                                   <View
-                                    onLayout={[Function]}
                                     style={{}}
                                   >
                                     <View
@@ -1295,44 +1286,44 @@ exports[`Thread should match thread snapshot 1`] = `
                                 </View>
                               </View>
                             </View>
-                          </View>
-                          <View
-                            style={
-                              {
-                                "marginTop": -4,
-                              }
-                            }
-                          />
-                          <View
-                            style={
-                              [
+                            <View
+                              style={
                                 {
-                                  "alignItems": "center",
-                                  "flexDirection": "row",
-                                  "gap": 8,
-                                  "justifyContent": "center",
-                                  "paddingVertical": 4,
-                                },
-                                {},
-                              ]
-                            }
-                            testID="message-status-time"
-                          >
-                            <Text
+                                  "marginTop": -4,
+                                }
+                              }
+                            />
+                            <View
                               style={
                                 [
                                   {
-                                    "color": "#687385",
-                                    "fontSize": 13,
-                                    "fontWeight": 400,
-                                    "lineHeight": 16,
+                                    "alignItems": "center",
+                                    "flexDirection": "row",
+                                    "gap": 8,
+                                    "justifyContent": "center",
+                                    "paddingVertical": 4,
                                   },
                                   {},
                                 ]
                               }
+                              testID="message-status-time"
                             >
-                              Edited
-                            </Text>
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#687385",
+                                      "fontSize": 13,
+                                      "fontWeight": 400,
+                                      "lineHeight": 16,
+                                    },
+                                    {},
+                                  ]
+                                }
+                              >
+                                Edited
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -1374,102 +1365,100 @@ exports[`Thread should match thread snapshot 1`] = `
                 <View>
                   <View>
                     <View
-                      pointerEvents="box-none"
-                      style={
+                      collapsable={false}
+                      hitSlop={
                         {
-                          "alignItems": "flex-end",
-                          "flexDirection": "row",
-                          "gap": 8,
-                          "marginBottom": 12,
-                          "paddingVertical": 8,
+                          "left": 750,
+                          "right": 750,
                         }
                       }
-                      testID="message-item-view-wrapper"
+                      style={
+                        {
+                          "alignItems": "center",
+                          "flexDirection": "row",
+                          "zIndex": 1,
+                        }
+                      }
                     >
                       <View
-                        style={{}}
-                        testID="message-author"
+                        pointerEvents="box-none"
+                        style={
+                          {
+                            "alignItems": "flex-end",
+                            "flexDirection": "row",
+                            "gap": 8,
+                            "marginBottom": 12,
+                            "paddingVertical": 8,
+                            "width": "100%",
+                          }
+                        }
+                        testID="message-item-view-wrapper"
                       >
                         <View
-                          testID="user-avatar"
+                          style={{}}
+                          testID="message-author"
                         >
                           <View
-                            style={
-                              [
-                                {
-                                  "alignItems": "center",
-                                  "borderRadius": 9999,
-                                  "justifyContent": "center",
-                                  "overflow": "hidden",
-                                },
-                                {
-                                  "height": 32,
-                                  "width": 32,
-                                },
-                                {
-                                  "backgroundColor": "#8febbd",
-                                },
-                                {
-                                  "borderColor": "rgba(26, 27, 37, 0.1)",
-                                  "borderWidth": 1,
-                                },
-                                undefined,
-                              ]
-                            }
-                            testID="avatar-image"
+                            testID="user-avatar"
                           >
-                            <Image
-                              onError={[Function]}
-                              source={
-                                {
-                                  "uri": "https://i.imgur.com/spueyAP.png",
-                                }
-                              }
+                            <View
                               style={
                                 [
-                                  {},
+                                  {
+                                    "alignItems": "center",
+                                    "borderRadius": 9999,
+                                    "justifyContent": "center",
+                                    "overflow": "hidden",
+                                  },
                                   {
                                     "height": 32,
                                     "width": 32,
                                   },
+                                  {
+                                    "backgroundColor": "#8febbd",
+                                  },
+                                  {
+                                    "borderColor": "rgba(26, 27, 37, 0.1)",
+                                    "borderWidth": 1,
+                                  },
+                                  undefined,
                                 ]
                               }
-                            />
+                              testID="avatar-image"
+                            >
+                              <Image
+                                onError={[Function]}
+                                source={
+                                  {
+                                    "uri": "https://i.imgur.com/spueyAP.png",
+                                  }
+                                }
+                                style={
+                                  [
+                                    {},
+                                    {
+                                      "height": 32,
+                                      "width": 32,
+                                    },
+                                  ]
+                                }
+                              />
+                            </View>
                           </View>
                         </View>
-                      </View>
-                      <View
-                        style={
-                          [
-                            {
-                              "gap": 4,
-                            },
-                            {
-                              "alignItems": "flex-start",
-                            },
-                            {},
-                          ]
-                        }
-                        testID="message-components"
-                      >
                         <View
-                          collapsable={false}
-                          hitSlop={
-                            {
-                              "left": 750,
-                              "right": 750,
-                            }
-                          }
                           style={
                             [
                               {
-                                "alignItems": "center",
-                                "flexDirection": "row",
-                                "zIndex": 1,
+                                "gap": 4,
+                              },
+                              {
+                                "alignItems": "flex-start",
                               },
                               {},
                             ]
                           }
+                          testID="message-components"
                         >
                           <View
                             style={{}}
@@ -1521,7 +1510,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                 style={{}}
                               >
                                 <View
-                                  onLayout={[Function]}
                                   style={{}}
                                 >
                                   <View
@@ -1613,44 +1601,44 @@ exports[`Thread should match thread snapshot 1`] = `
                               </View>
                             </View>
                           </View>
-                        </View>
-                        <View
-                          style={
-                            {
-                              "marginTop": -4,
-                            }
-                          }
-                        />
-                        <View
-                          style={
-                            [
+                          <View
+                            style={
                               {
-                                "alignItems": "center",
-                                "flexDirection": "row",
-                                "gap": 8,
-                                "justifyContent": "center",
-                                "paddingVertical": 4,
-                              },
-                              {},
-                            ]
-                          }
-                          testID="message-status-time"
-                        >
-                          <Text
+                                "marginTop": -4,
+                              }
+                            }
+                          />
+                          <View
                             style={
                               [
                                 {
-                                  "color": "#687385",
-                                  "fontSize": 13,
-                                  "fontWeight": 400,
-                                  "lineHeight": 16,
+                                  "alignItems": "center",
+                                  "flexDirection": "row",
+                                  "gap": 8,
+                                  "justifyContent": "center",
+                                  "paddingVertical": 4,
                                 },
                                 {},
                               ]
                             }
+                            testID="message-status-time"
                           >
-                            Edited
-                          </Text>
+                            <Text
+                              style={
+                                [
+                                  {
+                                    "color": "#687385",
+                                    "fontSize": 13,
+                                    "fontWeight": 400,
+                                    "lineHeight": 16,
+                                  },
+                                  {},
+                                ]
+                              }
+                            >
+                              Edited
+                            </Text>
+                          </View>
                         </View>
                       </View>
                     </View>
