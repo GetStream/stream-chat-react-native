@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo } from 'react';
 import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { MessageBubble, SwipableMessageWrapper } from './MessageBubble';
+import { SwipableMessageWrapper } from './MessageBubble';
 
 import {
   Alignment,
@@ -43,6 +43,12 @@ const useStyles = ({
     theme: {
       messageItemView: {
         container,
+        bubble: {
+          contentContainer: bubbleContentContainer,
+          errorContainer: bubbleErrorContainer,
+          reactionListTopContainer: bubbleReactionListTopContainer,
+          wrapper: bubbleWrapper,
+        },
         contentContainer,
         repliesContainer,
         leftAlignItems,
@@ -78,6 +84,23 @@ const useStyles = ({
           gap: primitives.spacingXxs,
           ...contentContainer,
         },
+        bubbleContentContainer: {
+          alignSelf: alignment === 'left' ? 'flex-start' : 'flex-end',
+          ...bubbleContentContainer,
+        },
+        bubbleErrorContainer: {
+          position: 'absolute',
+          top: 8,
+          right: -12,
+          ...bubbleErrorContainer,
+        },
+        bubbleReactionListTopContainer: {
+          alignSelf: alignment === 'left' ? 'flex-end' : 'flex-start',
+          ...bubbleReactionListTopContainer,
+        },
+        bubbleWrapper: {
+          ...bubbleWrapper,
+        },
         repliesContainer: {
           marginTop: -primitives.spacingXxs, // Reducing the margin to account the gap added in the content container
           ...repliesContainer,
@@ -91,7 +114,18 @@ const useStyles = ({
           ...rightAlignItems,
         },
       }),
-    [alignment, container, contentContainer, leftAlignItems, repliesContainer, rightAlignItems],
+    [
+      alignment,
+      bubbleContentContainer,
+      bubbleErrorContainer,
+      bubbleReactionListTopContainer,
+      bubbleWrapper,
+      container,
+      contentContainer,
+      leftAlignItems,
+      repliesContainer,
+      rightAlignItems,
+    ],
   );
 
   const groupStylesMap = useMemo(() => {
@@ -151,6 +185,10 @@ const useStyles = ({
 
   return {
     container: containerStyle,
+    bubbleContentContainer: styles.bubbleContentContainer,
+    bubbleErrorContainer: styles.bubbleErrorContainer,
+    bubbleReactionListTopContainer: styles.bubbleReactionListTopContainer,
+    bubbleWrapper: styles.bubbleWrapper,
     contentContainer: styles.contentContainer,
     repliesContainer: styles.repliesContainer,
     leftAlignItems: styles.leftAlignItems,
@@ -169,6 +207,7 @@ export type MessageItemViewPropsWithContext = Pick<
   | 'otherAttachments'
   | 'setQuotedMessage'
   | 'lastGroupMessage'
+  | 'contextMenuAnchorRef'
   | 'members'
 > &
   Pick<
@@ -199,6 +238,7 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
     const {
       alignment,
       channel,
+      contextMenuAnchorRef,
       customMessageSwipeAction,
       enableMessageGroupingByUser,
       enableSwipeToReply,
@@ -300,19 +340,26 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
             testID='message-components'
           >
             <MessageHeader />
-            <MessageBubble
-              alignment={alignment}
-              backgroundColor={backgroundColor}
-              isVeryLastMessage={isVeryLastMessage}
-              MessageContent={MessageContent}
-              MessageError={MessageError}
-              messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-              noBorder={noBorder}
-              reactionListPosition={reactionListPosition}
-              ReactionListTop={ReactionListTop}
-              reactionListType={reactionListType}
-              message={message}
-            />
+            <View style={styles.bubbleWrapper}>
+              {reactionListPosition === 'top' && ReactionListTop ? (
+                <View style={styles.bubbleReactionListTopContainer}>
+                  <ReactionListTop type={reactionListType} />
+                </View>
+              ) : null}
+              <View ref={contextMenuAnchorRef} style={styles.bubbleContentContainer}>
+                <MessageContent
+                  backgroundColor={backgroundColor}
+                  isVeryLastMessage={isVeryLastMessage}
+                  messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+                  noBorder={noBorder}
+                />
+                {isMessageErrorType ? (
+                  <View style={styles.bubbleErrorContainer}>
+                    <MessageError />
+                  </View>
+                ) : null}
+              </View>
+            </View>
 
             <View style={styles.repliesContainer}>
               <MessageReplies />
@@ -332,7 +379,6 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
       <View ref={ref}>
         {enableSwipeToReply && !isMessageTypeDeleted ? (
           <SwipableMessageWrapper
-            alignment={alignment}
             MessageSwipeContent={MessageSwipeContent}
             messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
             onSwipe={onSwipeActionHandler}
@@ -483,6 +529,7 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
     groupStyles,
     isMyMessage,
     message,
+    contextMenuAnchorRef,
     onlyEmojis,
     otherAttachments,
     setQuotedMessage,
@@ -516,6 +563,7 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
       {...{
         alignment,
         channel,
+        contextMenuAnchorRef,
         customMessageSwipeAction,
         enableMessageGroupingByUser,
         enableSwipeToReply,

@@ -10,82 +10,16 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { MessageContentProps } from './MessageContent';
 import { MessageItemViewPropsWithContext } from './MessageItemView';
 
 import { MessagesContextValue, useTheme } from '../../../contexts';
-import { useMessageContext } from '../../../contexts/messageContext/MessageContext';
 
 import { NativeHandlers } from '../../../native';
-import { MessageStatusTypes } from '../../../utils/utils';
-
-export type MessageBubbleProps = Pick<
-  MessagesContextValue,
-  | 'reactionListPosition'
-  | 'MessageContent'
-  | 'ReactionListTop'
-  | 'MessageError'
-  | 'reactionListType'
-> &
-  Pick<
-    MessageContentProps,
-    | 'isVeryLastMessage'
-    | 'backgroundColor'
-    | 'messageGroupedSingleOrBottom'
-    | 'noBorder'
-    | 'message'
-  > &
-  Pick<MessageItemViewPropsWithContext, 'alignment'>;
-
-export const MessageBubble = React.memo(
-  ({
-    alignment,
-    reactionListPosition,
-    reactionListType,
-    MessageContent,
-    ReactionListTop,
-    backgroundColor,
-    isVeryLastMessage,
-    messageGroupedSingleOrBottom,
-    noBorder,
-    MessageError,
-    message,
-  }: MessageBubbleProps) => {
-    const styles = useStyles({ alignment });
-    const { contextMenuAnchorRef } = useMessageContext();
-    const isMessageErrorType =
-      message?.type === 'error' || message?.status === MessageStatusTypes.FAILED;
-
-    return (
-      <View style={styles.wrapper}>
-        {reactionListPosition === 'top' && ReactionListTop ? (
-          <View style={styles.reactionListTopContainer}>
-            <ReactionListTop type={reactionListType} />
-          </View>
-        ) : null}
-        <View ref={contextMenuAnchorRef} style={styles.contentContainer}>
-          <MessageContent
-            backgroundColor={backgroundColor}
-            isVeryLastMessage={isVeryLastMessage}
-            messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-            noBorder={noBorder}
-          />
-
-          {isMessageErrorType ? (
-            <View style={styles.errorContainer}>
-              <MessageError />
-            </View>
-          ) : null}
-        </View>
-      </View>
-    );
-  },
-);
 
 const AnimatedWrapper = Animated.createAnimatedComponent(View);
 
 type SwipableMessageWrapperProps = Pick<MessagesContextValue, 'MessageSwipeContent'> &
-  Pick<MessageItemViewPropsWithContext, 'alignment' | 'messageSwipeToReplyHitSlop'> & {
+  Pick<MessageItemViewPropsWithContext, 'messageSwipeToReplyHitSlop'> & {
     children: ReactNode;
     onSwipe: () => void;
   };
@@ -93,7 +27,7 @@ type SwipableMessageWrapperProps = Pick<MessagesContextValue, 'MessageSwipeConte
 export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperProps) => {
   const { MessageSwipeContent, children, messageSwipeToReplyHitSlop, onSwipe } = props;
 
-  const styles = useStyles({ alignment: props.alignment });
+  const styles = useStyles();
 
   const translateX = useSharedValue(0);
   const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
@@ -189,14 +123,10 @@ export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperP
   );
 });
 
-const useStyles = ({ alignment }: { alignment?: 'left' | 'right' }) => {
+const useStyles = () => {
   const {
     theme: {
-      messageItemView: {
-        bubble: { contentContainer, errorContainer, reactionListTopContainer, wrapper },
-        contentWrapper,
-        swipeContentContainer,
-      },
+      messageItemView: { contentWrapper, swipeContentContainer },
     },
   } = useTheme();
   return useMemo(() => {
@@ -207,34 +137,9 @@ const useStyles = ({ alignment }: { alignment?: 'left' | 'right' }) => {
         zIndex: 1, // To hide the stick inside the message content
         ...contentWrapper,
       },
-      contentContainer: {
-        alignSelf: alignment === 'left' ? 'flex-start' : 'flex-end',
-        ...contentContainer,
-      },
       swipeContentContainer: {
         ...swipeContentContainer,
       },
-      errorContainer: {
-        position: 'absolute',
-        top: 8,
-        right: -12,
-        ...errorContainer,
-      },
-      reactionListTopContainer: {
-        alignSelf: alignment === 'left' ? 'flex-end' : 'flex-start',
-        ...reactionListTopContainer,
-      },
-      wrapper: {
-        ...wrapper,
-      },
     });
-  }, [
-    alignment,
-    contentContainer,
-    contentWrapper,
-    errorContainer,
-    reactionListTopContainer,
-    swipeContentContainer,
-    wrapper,
-  ]);
+  }, [contentWrapper, swipeContentContainer]);
 };
