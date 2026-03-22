@@ -326,9 +326,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
 
-  const [rect, setRect] = useState<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
-  );
+  const rectRef = useRef<Rect>(undefined);
   const bubbleRect = useRef<Rect>(undefined);
   const contextMenuAnchorRef = useRef<View>(null);
 
@@ -338,8 +336,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       const layout = await measureInWindow(messageWrapperRef, insets);
       const bubbleLayout = await measureInWindow(contextMenuAnchorRef, insets).catch(() => layout);
 
+      rectRef.current = layout;
       bubbleRect.current = bubbleLayout;
-      setRect(layout);
       setOverlayMessageH(layout);
       openOverlay({ id: messageOverlayId, messageId: message.id });
     } catch (e) {
@@ -814,6 +812,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const styles = useStyles({
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
   });
+  const rect = rectRef.current;
   const overlayItemsAnchorRect = bubbleRect.current ?? rect;
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
