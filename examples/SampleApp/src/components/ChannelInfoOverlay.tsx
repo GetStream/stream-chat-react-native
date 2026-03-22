@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Pressable } from 'react-native-gesture-handler';
-import Animated, {
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import {
   CircleClose,
   Delete,
@@ -18,12 +17,15 @@ import {
 } from 'stream-chat-react-native';
 import { ChannelMemberResponse } from 'stream-chat';
 
+import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
 import { Archive } from '../icons/Archive';
 import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pin } from '../icons/Pin.tsx';
+
+import type { ConfirmationData } from './ConfirmationBottomSheet';
 
 dayjs.extend(relativeTime);
 
@@ -139,8 +141,18 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
       )
     : [];
 
+  const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
+
+  const showConfirmation = useCallback((_data: ConfirmationData) => {
+    setConfirmationData(_data);
+  }, []);
+
+  const closeConfirmation = useCallback(() => {
+    setConfirmationData(null);
+  }, []);
+
   const { viewInfo, pinUnpin, archiveUnarchive, leaveGroup, deleteConversation, cancel } =
-    useChannelInfoOverlayActions({ channel, navigation, otherMembers });
+    useChannelInfoOverlayActions({ channel, navigation, otherMembers, showConfirmation });
 
   const onClose = useStableCallback(() => {
     setOverlay('none');
@@ -289,6 +301,15 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
           </>
         )}
       </SafeAreaView>
+      <ConfirmationBottomSheet
+        cancelText={confirmationData?.cancelText}
+        confirmText={confirmationData?.confirmText}
+        onClose={closeConfirmation}
+        onConfirm={confirmationData?.onConfirm}
+        subtext={confirmationData?.subtext}
+        title={confirmationData?.title}
+        visible={!!confirmationData}
+      />
     </BottomSheetModal>
   );
 };

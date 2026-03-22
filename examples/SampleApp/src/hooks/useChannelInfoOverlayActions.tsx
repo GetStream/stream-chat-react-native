@@ -3,19 +3,20 @@ import {
   useChannelInfoOverlayContext,
 } from '../context/ChannelInfoOverlayContext';
 import { Channel, ChannelMemberResponse } from 'stream-chat';
-import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 
+import type { ConfirmationData } from '../components/ConfirmationBottomSheet';
+
 export type UseChannelInfoOverlayGesturesParams = {
-  navigation?: ChannelListScreenNavigationProp;
+  showConfirmation: (data: ConfirmationData) => void;
   channel?: Channel;
+  navigation?: ChannelListScreenNavigationProp;
   otherMembers?: ChannelMemberResponse[];
 };
 
 export const useChannelInfoOverlayActions = (params: UseChannelInfoOverlayGesturesParams) => {
-  const { navigation, channel, otherMembers } = params;
+  const { navigation, channel, otherMembers, showConfirmation } = params;
   const { data } = useChannelInfoOverlayContext();
-  const { setData } = useBottomSheetOverlayContext();
   const { setOverlay } = useAppOverlayContext();
 
   const { clientId, membership } = data || {};
@@ -86,7 +87,7 @@ export const useChannelInfoOverlayActions = (params: UseChannelInfoOverlayGestur
     if (!channel) {
       return;
     }
-    setData({
+    showConfirmation({
       confirmText: 'DELETE',
       onConfirm: () => {
         channel.delete();
@@ -97,7 +98,6 @@ export const useChannelInfoOverlayActions = (params: UseChannelInfoOverlayGestur
       }?`,
       title: `Delete ${otherMembers?.length === 1 ? 'Conversation' : 'Group'}`,
     });
-    setOverlay('confirmation');
   };
 
   const cancel = () => {

@@ -24,7 +24,7 @@ export function channelMessageActions({
   handleMessageInfo: (message: LocalMessage) => void;
   semantics: Theme['semantics'];
 }) {
-  const { dismissOverlay, error, /*deleteForMeMessage*/ } = params;
+  const { dismissOverlay, error /*deleteForMeMessage*/ } = params;
   const actions = messageActions(params);
 
   // We cannot use the useMessageReminder hook here because it is a hook.
@@ -79,8 +79,8 @@ export function channelMessageActions({
                     messageId: params.message.id,
                     remind_at: new Date(new Date().getTime() + offsetMs).toISOString(),
                   })
-                  .catch((error) => {
-                    console.error('Error creating reminder:', error);
+                  .catch((_error) => {
+                    console.error('Error creating reminder:', _error);
                   });
               },
               style: 'default',

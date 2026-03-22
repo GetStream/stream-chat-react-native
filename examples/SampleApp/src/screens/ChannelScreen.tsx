@@ -115,10 +115,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 };
 
 // Either provide channel or channelId.
-export const ChannelScreen: React.FC<ChannelScreenProps> = ({
-  navigation,
-  route,
-}) => {
+export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route }) => {
   const { channel: channelFromProp, channelId, messageId } = route.params;
   const {
     chatClient,
@@ -216,7 +213,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         if (stackRoute.name !== 'ThreadScreen') {
           return false;
         }
-        const routeParams = stackRoute.params as StackNavigatorParamList['ThreadScreen'] | undefined;
+        const routeParams = stackRoute.params as
+          | StackNavigatorParamList['ThreadScreen']
+          | undefined;
         const routeThreadId =
           (routeParams?.thread as LocalMessage)?.id ??
           (routeParams?.thread as ThreadType)?.thread?.id;
@@ -283,10 +282,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
         maximumMessageLimit={messageListPruning}
       >
-        <PortalWhileClosingView
-          portalHostName='overlay-header'
-          portalName='channel-header'
-        >
+        <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ChannelHeader channel={channel} />
         </PortalWhileClosingView>
         {messageListImplementation === 'flashlist' ? (
