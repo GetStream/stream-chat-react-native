@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  GestureResponderEvent,
-  StyleProp,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { GestureResponderEvent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
@@ -54,6 +47,7 @@ import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import {
   closeOverlay,
   openOverlay,
+  Rect,
   setOverlayBottomH,
   setOverlayMessageH,
   setOverlayTopH,
@@ -332,16 +326,18 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
 
-  const [rect, setRect] = useState<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
-  );
-  const { width: screenW } = useWindowDimensions();
+  const rectRef = useRef<Rect>(undefined);
+  const bubbleRect = useRef<Rect>(undefined);
+  const contextMenuAnchorRef = useRef<View>(null);
 
   const showMessageOverlay = useStableCallback(async () => {
     dismissKeyboard();
     try {
       const layout = await measureInWindow(messageWrapperRef, insets);
-      setRect(layout);
+      const bubbleLayout = await measureInWindow(contextMenuAnchorRef, insets).catch(() => layout);
+
+      rectRef.current = layout;
+      bubbleRect.current = bubbleLayout;
       setOverlayMessageH(layout);
       openOverlay({ id: messageOverlayId, messageId: message.id });
     } catch (e) {
@@ -698,6 +694,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     actionsEnabled,
     alignment,
     channel,
+    contextMenuAnchorRef,
     deliveredToCount,
     dismissOverlay,
     files: attachments.files,
@@ -815,6 +812,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const styles = useStyles({
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
   });
+  const rect = rectRef.current;
+  const overlayItemsAnchorRect = bubbleRect.current ?? rect;
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
@@ -841,7 +840,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
         ) : null}
         {/*TODO: V9: Find a way to separate these in a dedicated file*/}
         <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
-          {overlayActive && rect ? (
+          {overlayActive && rect && overlayItemsAnchorRect ? (
             <View
               onLayout={(e) => {
                 const { width: w, height: h } = e.nativeEvent.layout;
@@ -849,7 +848,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                 setOverlayTopH({
                   h,
                   w,
-                  x: isMyMessage ? screenW - rect.x - w : rect.x,
+                  x:
+                    alignment === 'right'
+                      ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
+                      : overlayItemsAnchorRect.x,
                   y: rect.y - h,
                 });
               }}
@@ -865,7 +867,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           hostName={overlayActive ? 'message-overlay' : undefined}
           style={overlayActive && rect ? { width: rect.w } : undefined}
         >
-          <MessageItemView ref={messageWrapperRef} />
+          <View ref={messageWrapperRef}>
+            <MessageItemView />
+          </View>
         </Portal>
         {showMessageReactions ? (
           <BottomSheetModal
@@ -883,14 +887,17 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           </BottomSheetModal>
         ) : null}
         <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
-          {overlayActive && rect ? (
+          {overlayActive && rect && overlayItemsAnchorRect ? (
             <View
               onLayout={(e) => {
                 const { width: w, height: h } = e.nativeEvent.layout;
                 setOverlayBottomH({
                   h,
                   w,
-                  x: isMyMessage ? screenW - rect.x - w : rect.x,
+                  x:
+                    alignment === 'right'
+                      ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
+                      : overlayItemsAnchorRect.x,
                   y: rect.y + rect.h,
                 });
               }}

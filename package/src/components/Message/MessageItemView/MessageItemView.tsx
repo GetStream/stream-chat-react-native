@@ -1,7 +1,7 @@
-import React, { forwardRef, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { MessageBubble, SwipableMessageWrapper } from './MessageBubble';
+import { SwipableMessageWrapper } from './MessageBubble';
 
 import {
   Alignment,
@@ -43,6 +43,10 @@ const useStyles = ({
     theme: {
       messageItemView: {
         container,
+        bubbleContentContainer,
+        bubbleErrorContainer,
+        bubbleReactionListTopContainer,
+        bubbleWrapper,
         contentContainer,
         repliesContainer,
         leftAlignItems,
@@ -78,6 +82,23 @@ const useStyles = ({
           gap: primitives.spacingXxs,
           ...contentContainer,
         },
+        bubbleContentContainer: {
+          alignSelf: alignment === 'left' ? 'flex-start' : 'flex-end',
+          ...bubbleContentContainer,
+        },
+        bubbleErrorContainer: {
+          position: 'absolute',
+          top: 8,
+          right: -12,
+          ...bubbleErrorContainer,
+        },
+        bubbleReactionListTopContainer: {
+          alignSelf: alignment === 'left' ? 'flex-end' : 'flex-start',
+          ...bubbleReactionListTopContainer,
+        },
+        bubbleWrapper: {
+          ...bubbleWrapper,
+        },
         repliesContainer: {
           marginTop: -primitives.spacingXxs, // Reducing the margin to account the gap added in the content container
           ...repliesContainer,
@@ -91,7 +112,18 @@ const useStyles = ({
           ...rightAlignItems,
         },
       }),
-    [alignment, container, contentContainer, leftAlignItems, repliesContainer, rightAlignItems],
+    [
+      alignment,
+      bubbleContentContainer,
+      bubbleErrorContainer,
+      bubbleReactionListTopContainer,
+      bubbleWrapper,
+      container,
+      contentContainer,
+      leftAlignItems,
+      repliesContainer,
+      rightAlignItems,
+    ],
   );
 
   const groupStylesMap = useMemo(() => {
@@ -151,6 +183,10 @@ const useStyles = ({
 
   return {
     container: containerStyle,
+    bubbleContentContainer: styles.bubbleContentContainer,
+    bubbleErrorContainer: styles.bubbleErrorContainer,
+    bubbleReactionListTopContainer: styles.bubbleReactionListTopContainer,
+    bubbleWrapper: styles.bubbleWrapper,
     contentContainer: styles.contentContainer,
     repliesContainer: styles.repliesContainer,
     leftAlignItems: styles.leftAlignItems,
@@ -169,6 +205,7 @@ export type MessageItemViewPropsWithContext = Pick<
   | 'otherAttachments'
   | 'setQuotedMessage'
   | 'lastGroupMessage'
+  | 'contextMenuAnchorRef'
   | 'members'
 > &
   Pick<
@@ -193,159 +230,160 @@ export type MessageItemViewPropsWithContext = Pick<
     | 'ReactionListTop'
   >;
 
-const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithContext>(
-  (props, ref) => {
-    const { width } = Dimensions.get('screen');
-    const {
-      alignment,
-      channel,
-      customMessageSwipeAction,
-      enableMessageGroupingByUser,
-      enableSwipeToReply,
-      groupStyles,
-      isMyMessage,
-      message,
-      MessageAuthor,
-      MessageContent,
-      MessageDeleted,
-      MessageError,
-      MessageFooter,
-      MessageHeader,
-      MessageReplies,
-      MessageSpacer,
-      MessageSwipeContent,
-      messageSwipeToReplyHitSlop = { left: width, right: width },
-      onlyEmojis,
-      otherAttachments,
-      ReactionListBottom,
-      reactionListPosition,
-      reactionListType,
-      ReactionListTop,
-      setQuotedMessage,
-    } = props;
+const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
+  const { width } = Dimensions.get('screen');
+  const {
+    alignment,
+    channel,
+    contextMenuAnchorRef,
+    customMessageSwipeAction,
+    enableMessageGroupingByUser,
+    enableSwipeToReply,
+    groupStyles,
+    isMyMessage,
+    message,
+    MessageAuthor,
+    MessageContent,
+    MessageDeleted,
+    MessageError,
+    MessageFooter,
+    MessageHeader,
+    MessageReplies,
+    MessageSpacer,
+    MessageSwipeContent,
+    messageSwipeToReplyHitSlop = { left: width, right: width },
+    onlyEmojis,
+    otherAttachments,
+    ReactionListBottom,
+    reactionListPosition,
+    reactionListType,
+    ReactionListTop,
+    setQuotedMessage,
+  } = props;
 
-    const {
-      theme: {
-        semantics,
-        messageItemView: {
-          content: { errorContainer },
-        },
+  const {
+    theme: {
+      semantics,
+      messageItemView: {
+        content: { errorContainer },
       },
-    } = useTheme();
+    },
+  } = useTheme();
 
-    const {
-      isMessageErrorType,
-      isMessageReceivedOrErrorType,
-      isMessageTypeDeleted,
-      isVeryLastMessage,
-      messageGroupedSingle,
-      messageGroupedBottom,
-      messageGroupedTop,
-      messageGroupedSingleOrBottom,
-      messageGroupedMiddle,
-    } = useMessageData({});
+  const {
+    isMessageErrorType,
+    isMessageReceivedOrErrorType,
+    isMessageTypeDeleted,
+    isVeryLastMessage,
+    messageGroupedSingle,
+    messageGroupedBottom,
+    messageGroupedTop,
+    messageGroupedSingleOrBottom,
+    messageGroupedMiddle,
+  } = useMessageData({});
 
-    const styles = useStyles({
-      alignment,
-      isVeryLastMessage,
-      messageGroupedSingle,
-      messageGroupedBottom,
-      messageGroupedTop,
-      messageGroupedMiddle,
-      enableMessageGroupingByUser,
-    });
+  const styles = useStyles({
+    alignment,
+    isVeryLastMessage,
+    messageGroupedSingle,
+    messageGroupedBottom,
+    messageGroupedTop,
+    messageGroupedMiddle,
+    enableMessageGroupingByUser,
+  });
 
-    const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
+  const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 
-    let noBorder = onlyEmojis && !message.quoted_message;
-    if (otherAttachments.length) {
-      if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
-        noBorder = false;
-      } else {
-        noBorder = true;
-      }
+  let noBorder = onlyEmojis && !message.quoted_message;
+  if (otherAttachments.length) {
+    if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
+      noBorder = false;
+    } else {
+      noBorder = true;
     }
+  }
 
-    let backgroundColor = semantics.chatBgOutgoing;
-    if (onlyEmojis && !message.quoted_message) {
+  let backgroundColor = semantics.chatBgOutgoing;
+  if (onlyEmojis && !message.quoted_message) {
+    backgroundColor = 'transparent';
+  } else if (otherAttachments.length) {
+    if (otherAttachments[0].type === 'giphy') {
       backgroundColor = 'transparent';
-    } else if (otherAttachments.length) {
-      if (otherAttachments[0].type === 'giphy') {
-        backgroundColor = 'transparent';
-      }
-    } else if (isMessageReceivedOrErrorType) {
-      backgroundColor = semantics.chatBgIncoming;
     }
+  } else if (isMessageReceivedOrErrorType) {
+    backgroundColor = semantics.chatBgIncoming;
+  }
 
-    const onSwipeActionHandler = useStableCallback(() => {
-      if (customMessageSwipeAction) {
-        customMessageSwipeAction({ channel, message });
-        return;
-      }
-      setQuotedMessage(message);
-    });
+  const onSwipeActionHandler = useStableCallback(() => {
+    if (customMessageSwipeAction) {
+      customMessageSwipeAction({ channel, message });
+      return;
+    }
+    setQuotedMessage(message);
+  });
 
-    const itemViewContent = (
-      <View pointerEvents='box-none' style={styles.container} testID='message-item-view-wrapper'>
-        {alignment === 'left' ? <MessageAuthor /> : null}
-        {isMessageTypeDeleted ? (
-          <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
-        ) : (
-          <View
-            style={[
-              styles.contentContainer,
-              isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
-              isMessageErrorType ? errorContainer : {},
-            ]}
-            testID='message-components'
-          >
-            <MessageHeader />
-            <MessageBubble
-              alignment={alignment}
-              backgroundColor={backgroundColor}
-              isVeryLastMessage={isVeryLastMessage}
-              MessageContent={MessageContent}
-              MessageError={MessageError}
-              messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
-              noBorder={noBorder}
-              reactionListPosition={reactionListPosition}
-              ReactionListTop={ReactionListTop}
-              reactionListType={reactionListType}
-              message={message}
-            />
-
-            <View style={styles.repliesContainer}>
-              <MessageReplies />
-            </View>
-
-            {reactionListPosition === 'bottom' && ReactionListBottom ? (
-              <ReactionListBottom type={reactionListType} />
+  const itemViewContent = (
+    <View pointerEvents='box-none' style={styles.container} testID='message-item-view-wrapper'>
+      {alignment === 'left' ? <MessageAuthor /> : null}
+      {isMessageTypeDeleted ? (
+        <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
+      ) : (
+        <View
+          style={[
+            styles.contentContainer,
+            isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
+            isMessageErrorType ? errorContainer : {},
+          ]}
+          testID='message-components'
+        >
+          <MessageHeader />
+          <View style={styles.bubbleWrapper}>
+            {reactionListPosition === 'top' && ReactionListTop ? (
+              <View style={styles.bubbleReactionListTopContainer}>
+                <ReactionListTop type={reactionListType} />
+              </View>
             ) : null}
-            <MessageFooter date={message.created_at} />
+            <View ref={contextMenuAnchorRef} style={styles.bubbleContentContainer}>
+              <MessageContent
+                backgroundColor={backgroundColor}
+                isVeryLastMessage={isVeryLastMessage}
+                messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
+                noBorder={noBorder}
+              />
+              {isMessageErrorType ? (
+                <View style={styles.bubbleErrorContainer}>
+                  <MessageError />
+                </View>
+              ) : null}
+            </View>
           </View>
-        )}
-        {MessageSpacer ? <MessageSpacer /> : null}
-      </View>
-    );
 
-    return (
-      <View ref={ref}>
-        {enableSwipeToReply && !isMessageTypeDeleted ? (
-          <SwipableMessageWrapper
-            alignment={alignment}
-            MessageSwipeContent={MessageSwipeContent}
-            messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
-            onSwipe={onSwipeActionHandler}
-          >
-            {itemViewContent}
-          </SwipableMessageWrapper>
-        ) : (
-          itemViewContent
-        )}
-      </View>
-    );
-  },
-);
+          <View style={styles.repliesContainer}>
+            <MessageReplies />
+          </View>
+
+          {reactionListPosition === 'bottom' && ReactionListBottom ? (
+            <ReactionListBottom type={reactionListType} />
+          ) : null}
+          <MessageFooter date={message.created_at} />
+        </View>
+      )}
+      {MessageSpacer ? <MessageSpacer /> : null}
+    </View>
+  );
+
+  return enableSwipeToReply && !isMessageTypeDeleted ? (
+    <SwipableMessageWrapper
+      MessageSwipeContent={MessageSwipeContent}
+      messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
+      onSwipe={onSwipeActionHandler}
+    >
+      {itemViewContent}
+    </SwipableMessageWrapper>
+  ) : (
+    itemViewContent
+  );
+};
 
 const areEqual = (
   prevProps: MessageItemViewPropsWithContext,
@@ -476,13 +514,14 @@ export type MessageItemViewProps = Partial<MessageItemViewPropsWithContext>;
  *
  * Message UI component
  */
-export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, ref) => {
+export const MessageItemView = (props: MessageItemViewProps) => {
   const {
     alignment,
     channel,
     groupStyles,
     isMyMessage,
     message,
+    contextMenuAnchorRef,
     onlyEmojis,
     otherAttachments,
     setQuotedMessage,
@@ -516,6 +555,7 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
       {...{
         alignment,
         channel,
+        contextMenuAnchorRef,
         customMessageSwipeAction,
         enableMessageGroupingByUser,
         enableSwipeToReply,
@@ -543,10 +583,9 @@ export const MessageItemView = forwardRef<View, MessageItemViewProps>((props, re
         lastGroupMessage,
         members,
       }}
-      ref={ref}
       {...props}
     />
   );
-});
+};
 
 MessageItemView.displayName = 'MessageItemView{messageItemView{container}}';

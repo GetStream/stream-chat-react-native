@@ -583,6 +583,10 @@ export type Theme = {
   };
   messageItemView: {
     blockedMessageContainer: ViewStyle;
+    bubbleContentContainer: ViewStyle;
+    bubbleErrorContainer: ViewStyle;
+    bubbleReactionListTopContainer: ViewStyle;
+    bubbleWrapper: ViewStyle;
     actions: {
       button: ViewStyle & {
         defaultBackgroundColor?: ViewStyle['backgroundColor'];
@@ -727,12 +731,6 @@ export type Theme = {
     messageBlocked: {
       container: ViewStyle;
       text: TextStyle;
-    };
-    bubble: {
-      reactionListTopContainer: ViewStyle;
-      contentContainer: ViewStyle;
-      wrapper: ViewStyle;
-      errorContainer: ViewStyle;
     };
     pinnedHeader: {
       container: ViewStyle;
@@ -1491,6 +1489,10 @@ export const defaultTheme: Theme = {
   },
   messageItemView: {
     blockedMessageContainer: {},
+    bubbleContentContainer: {},
+    bubbleErrorContainer: {},
+    bubbleReactionListTopContainer: {},
+    bubbleWrapper: {},
     actions: {
       button: {},
       buttonText: {},
@@ -1634,12 +1636,6 @@ export const defaultTheme: Theme = {
     messageBlocked: {
       container: {},
       text: {},
-    },
-    bubble: {
-      reactionListTopContainer: {},
-      contentContainer: {},
-      wrapper: {},
-      errorContainer: {},
     },
     messageGroupedSingleOrBottomContainer: {},
     messageGroupedTopContainer: {},
