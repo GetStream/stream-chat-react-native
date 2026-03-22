@@ -33,7 +33,7 @@ export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
     | 'asyncMessagesLockDistance'
-    | 'asyncMessagesMultiSendEnabled'
+    | 'audioRecordingSendOnComplete'
     | 'audioRecordingEnabled'
     | 'CooldownTimer'
     | 'SendButton'
@@ -178,7 +178,7 @@ export const OutputButtons = (props: OutputButtonsProps) => {
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
     asyncMessagesLockDistance,
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     CooldownTimer,
     SendButton,
     StopMessageStreamingButton,
@@ -192,7 +192,7 @@ export const OutputButtons = (props: OutputButtonsProps) => {
       {...{
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
-        asyncMessagesMultiSendEnabled,
+        audioRecordingSendOnComplete,
         asyncMessagesSlideToCancelDistance,
         audioRecordingEnabled,
         channel,

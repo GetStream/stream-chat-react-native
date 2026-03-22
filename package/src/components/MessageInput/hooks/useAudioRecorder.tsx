@@ -68,10 +68,10 @@ export const useAudioRecorder = ({
 
   /**
    * Function to upload or send voice recording.
-   * @param multiSendEnabled boolean
+   * @param sendOnComplete boolean
    */
   const uploadVoiceRecording = useCallback(
-    async (multiSendEnabled: boolean) => {
+    async (sendOnComplete: boolean) => {
       try {
         const { recording, duration, waveformData } = audioRecorderManager.state.getLatestValue();
         await stopVoiceRecording();
@@ -112,12 +112,11 @@ export const useAudioRecorder = ({
 
         audioRecorderManager.reset();
 
-        if (multiSendEnabled) {
-          await attachmentManager.uploadAttachment(audioFile);
-        } else {
-          // FIXME: cannot call handleSubmit() directly as the function has stale reference to file uploads
+        if (sendOnComplete) {
           await attachmentManager.uploadAttachment(audioFile);
           setIsScheduleForSubmit(true);
+        } else {
+          await attachmentManager.uploadAttachment(audioFile);
         }
       } catch (error) {
         console.log('Error uploading voice recording: ', error);

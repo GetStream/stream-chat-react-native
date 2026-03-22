@@ -31,7 +31,7 @@ export type AudioRecordingButtonPropsWithContext = Pick<
   | 'asyncMessagesMinimumPressDuration'
   | 'asyncMessagesSlideToCancelDistance'
   | 'asyncMessagesLockDistance'
-  | 'asyncMessagesMultiSendEnabled'
+  | 'audioRecordingSendOnComplete'
   | 'audioRecorderManager'
   | 'startVoiceRecording'
   | 'deleteVoiceRecording'
@@ -67,7 +67,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
     asyncMessagesLockDistance,
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     startVoiceRecording,
     deleteVoiceRecording,
     uploadVoiceRecording,
@@ -156,7 +156,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       return;
     }
     if (status === 'recording') {
-      uploadVoiceRecording(asyncMessagesMultiSendEnabled);
+      uploadVoiceRecording(audioRecordingSendOnComplete);
     } else {
       resetAudioRecording();
     }
@@ -263,7 +263,7 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
     asyncMessagesLockDistance,
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     startVoiceRecording,
     deleteVoiceRecording,
     uploadVoiceRecording,
@@ -281,7 +281,7 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
         asyncMessagesMinimumPressDuration,
         asyncMessagesSlideToCancelDistance,
         asyncMessagesLockDistance,
-        asyncMessagesMultiSendEnabled,
+        audioRecordingSendOnComplete,
         startVoiceRecording,
         deleteVoiceRecording,
         uploadVoiceRecording,

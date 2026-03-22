@@ -27,7 +27,7 @@ import { primitives } from '../../../../theme';
 type AudioRecorderPropsWithContext = Pick<
   MessageInputContextValue,
   | 'audioRecorderManager'
-  | 'asyncMessagesMultiSendEnabled'
+  | 'audioRecordingSendOnComplete'
   | 'stopVoiceRecording'
   | 'deleteVoiceRecording'
   | 'uploadVoiceRecording'
@@ -70,15 +70,15 @@ const StopRecording = ({
 };
 
 const UploadRecording = ({
-  asyncMessagesMultiSendEnabled,
+  audioRecordingSendOnComplete,
   uploadVoiceRecordingHandler,
 }: {
-  asyncMessagesMultiSendEnabled: boolean;
-  uploadVoiceRecordingHandler: (multiSendEnabled: boolean) => Promise<void>;
+  audioRecordingSendOnComplete: boolean;
+  uploadVoiceRecordingHandler: (sendOnComplete: boolean) => Promise<void>;
 }) => {
   const onUploadVoiceRecording = () => {
     NativeHandlers.triggerHaptic('impactMedium');
-    uploadVoiceRecordingHandler(asyncMessagesMultiSendEnabled);
+    uploadVoiceRecordingHandler(audioRecordingSendOnComplete);
   };
 
   return (
@@ -116,7 +116,7 @@ const DeleteRecording = ({
 
 const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
   const {
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     slideToCancelStyle,
     deleteVoiceRecording,
     stopVoiceRecording,
@@ -144,7 +144,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
         <View style={styles.container}>
           <DeleteRecording deleteVoiceRecordingHandler={deleteVoiceRecording} />
           <UploadRecording
-            asyncMessagesMultiSendEnabled={asyncMessagesMultiSendEnabled}
+            audioRecordingSendOnComplete={audioRecordingSendOnComplete}
             uploadVoiceRecordingHandler={uploadVoiceRecording}
           />
         </View>
@@ -155,7 +155,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
           <DeleteRecording deleteVoiceRecordingHandler={deleteVoiceRecording} />
           <StopRecording stopVoiceRecordingHandler={stopVoiceRecording} />
           <UploadRecording
-            asyncMessagesMultiSendEnabled={asyncMessagesMultiSendEnabled}
+            audioRecordingSendOnComplete={audioRecordingSendOnComplete}
             uploadVoiceRecordingHandler={uploadVoiceRecording}
           />
         </View>
@@ -201,7 +201,7 @@ const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
 export const AudioRecorder = (props: AudioRecorderProps) => {
   const {
     audioRecorderManager,
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     stopVoiceRecording,
     deleteVoiceRecording,
     uploadVoiceRecording,
@@ -216,7 +216,7 @@ export const AudioRecorder = (props: AudioRecorderProps) => {
     <MemoizedAudioRecorder
       {...{
         audioRecorderManager,
-        asyncMessagesMultiSendEnabled,
+        audioRecordingSendOnComplete,
         stopVoiceRecording,
         deleteVoiceRecording,
         uploadVoiceRecording,
