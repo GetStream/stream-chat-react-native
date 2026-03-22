@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
@@ -17,8 +17,6 @@ import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { Message } from '../../Message';
-import { MessageContent } from '../MessageContent';
-
 describe('MessageContent', () => {
   let channel;
   let chatClient;
@@ -359,19 +357,10 @@ describe('MessageContent', () => {
       user,
     });
 
-    // This needs to be mocked like that cause native onLayout on MessageContent would never
-    // trigger.
-    const MessageContentWithMockedMessageContentWidth = (props) => {
-      useEffect(() => {
-        props.setMessageContentWidth(100);
-      }, [props]);
-      return <MessageContent {...props} />;
-    };
-
     render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <Channel channel={channel} MessageContent={MessageContentWithMockedMessageContentWidth}>
+          <Channel channel={channel}>
             <Message groupStyles={['bottom']} message={message} reactionsEnabled />
           </Channel>
         </Chat>

@@ -1,4 +1,4 @@
-import React, { SetStateAction, useMemo, useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
@@ -15,7 +15,6 @@ import { MessageItemViewPropsWithContext } from './MessageItemView';
 
 import { MessagesContextValue, useTheme } from '../../../contexts';
 
-import { useStableCallback } from '../../../hooks';
 import { NativeHandlers } from '../../../native';
 import { MessageStatusTypes } from '../../../utils/utils';
 
@@ -34,18 +33,14 @@ export type MessageBubbleProps = Pick<
     | 'messageGroupedSingleOrBottom'
     | 'noBorder'
     | 'message'
-    | 'setMessageContentWidth'
   > &
-  Pick<MessageItemViewPropsWithContext, 'alignment'> & {
-    messageContentWidth: number;
-  };
+  Pick<MessageItemViewPropsWithContext, 'alignment'>;
 
 export const MessageBubble = React.memo(
   ({
     alignment,
     reactionListPosition,
     reactionListType,
-    setMessageContentWidth,
     MessageContent,
     ReactionListTop,
     backgroundColor,
@@ -72,7 +67,6 @@ export const MessageBubble = React.memo(
             isVeryLastMessage={isVeryLastMessage}
             messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
             noBorder={noBorder}
-            setMessageContentWidth={setMessageContentWidth}
           />
 
           {isMessageErrorType ? (
@@ -88,130 +82,110 @@ export const MessageBubble = React.memo(
 
 const AnimatedWrapper = Animated.createAnimatedComponent(View);
 
-export const SwipableMessageBubble = React.memo(
-  (
-    props: MessageBubbleProps &
-      Pick<MessagesContextValue, 'MessageSwipeContent'> &
-      Pick<
-        MessageItemViewPropsWithContext,
-        'shouldRenderSwipeableWrapper' | 'messageSwipeToReplyHitSlop'
-      > & { onSwipe: () => void },
-  ) => {
-    const { MessageSwipeContent, messageSwipeToReplyHitSlop, onSwipe, ...messageBubbleProps } =
-      props;
+type SwipableMessageWrapperProps = Pick<MessagesContextValue, 'MessageSwipeContent'> &
+  Pick<MessageItemViewPropsWithContext, 'alignment' | 'messageSwipeToReplyHitSlop'> & {
+    children: ReactNode;
+    onSwipe: () => void;
+  };
 
-    const styles = useStyles({ alignment: props.alignment });
+export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperProps) => {
+  const { MessageSwipeContent, children, messageSwipeToReplyHitSlop, onSwipe } = props;
 
-    const translateX = useSharedValue(0);
-    const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
-    const isSwiping = useSharedValue<boolean>(false);
-    const [shouldRenderAnimatedWrapper, setShouldRenderAnimatedWrapper] = useState<boolean>(false);
+  const styles = useStyles({ alignment: props.alignment });
 
-    const SWIPABLE_THRESHOLD = 25;
-    const MINIMUM_DISTANCE = 8;
+  const translateX = useSharedValue(0);
+  const touchStart = useSharedValue<{ x: number; y: number } | null>(null);
+  const isSwiping = useSharedValue<boolean>(false);
+  const [shouldRenderAnimatedWrapper, setShouldRenderAnimatedWrapper] = useState<boolean>(false);
 
-    const triggerHaptic = NativeHandlers.triggerHaptic;
+  const SWIPABLE_THRESHOLD = 25;
+  const MINIMUM_DISTANCE = 8;
 
-    const setMessageContentWidth = useStableCallback((valueOrCallback: SetStateAction<number>) => {
-      if (typeof valueOrCallback === 'number') {
-        props.setMessageContentWidth(Math.ceil(valueOrCallback));
-        return;
-      }
-      props.setMessageContentWidth(valueOrCallback);
-    });
+  const triggerHaptic = NativeHandlers.triggerHaptic;
 
-    const swipeGesture = useMemo(
-      () =>
-        Gesture.Pan()
-          .hitSlop(messageSwipeToReplyHitSlop)
-          .onBegin((event) => {
-            touchStart.value = { x: event.x, y: event.y };
-          })
-          .onTouchesMove((event, state) => {
-            if (!touchStart.value || !event.changedTouches.length) {
-              state.fail();
-              return;
+  const swipeGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .hitSlop(messageSwipeToReplyHitSlop)
+        .onBegin((event) => {
+          touchStart.value = { x: event.x, y: event.y };
+        })
+        .onTouchesMove((event, state) => {
+          if (!touchStart.value || !event.changedTouches.length) {
+            state.fail();
+            return;
+          }
+
+          const xDiff = Math.abs(event.changedTouches[0].x - touchStart.value.x);
+          const yDiff = Math.abs(event.changedTouches[0].y - touchStart.value.y);
+          const isHorizontalPanning = xDiff > yDiff;
+          const hasMinimumDistance = xDiff > MINIMUM_DISTANCE || yDiff > MINIMUM_DISTANCE;
+
+          // Only activate if there's significant horizontal movement
+          if (isHorizontalPanning && hasMinimumDistance) {
+            state.activate();
+            if (!isSwiping.value) {
+              runOnJS(setShouldRenderAnimatedWrapper)(true);
             }
-
-            const xDiff = Math.abs(event.changedTouches[0].x - touchStart.value.x);
-            const yDiff = Math.abs(event.changedTouches[0].y - touchStart.value.y);
-            const isHorizontalPanning = xDiff > yDiff;
-            const hasMinimumDistance = xDiff > MINIMUM_DISTANCE || yDiff > MINIMUM_DISTANCE;
-
-            // Only activate if there's significant horizontal movement
-            if (isHorizontalPanning && hasMinimumDistance) {
-              state.activate();
-              if (!isSwiping.value) {
-                runOnJS(setShouldRenderAnimatedWrapper)(true);
-              }
-              isSwiping.value = true;
-            } else if (hasMinimumDistance) {
-              // If there's significant movement but not horizontal, fail the gesture
-              state.fail();
+            isSwiping.value = true;
+          } else if (hasMinimumDistance) {
+            // If there's significant movement but not horizontal, fail the gesture
+            state.fail();
+          }
+        })
+        .onStart(() => {
+          translateX.value = 0;
+        })
+        .onChange(({ translationX }) => {
+          if (translationX > 0) {
+            translateX.value = translationX;
+          }
+        })
+        .onEnd(() => {
+          if (translateX.value >= SWIPABLE_THRESHOLD) {
+            runOnJS(onSwipe)();
+            if (triggerHaptic) {
+              runOnJS(triggerHaptic)('impactMedium');
             }
-          })
-          .onStart(() => {
-            translateX.value = 0;
-          })
-          .onChange(({ translationX }) => {
-            if (translationX > 0) {
-              translateX.value = translationX;
-            }
-          })
-          .onEnd(() => {
-            if (translateX.value >= SWIPABLE_THRESHOLD) {
-              runOnJS(onSwipe)();
-              if (triggerHaptic) {
-                runOnJS(triggerHaptic)('impactMedium');
-              }
-            }
-            isSwiping.value = false;
-            translateX.value = withSpring(
-              0,
-              {
-                dampingRatio: 1,
-                duration: 500,
-                overshootClamping: true,
-                stiffness: 1,
-              },
-              () => {
-                runOnJS(setShouldRenderAnimatedWrapper)(false);
-              },
-            );
-          }),
-      [messageSwipeToReplyHitSlop, touchStart, isSwiping, translateX, onSwipe, triggerHaptic],
-    );
+          }
+          isSwiping.value = false;
+          translateX.value = withSpring(
+            0,
+            {
+              dampingRatio: 1,
+              duration: 500,
+              overshootClamping: true,
+              stiffness: 1,
+            },
+            () => {
+              runOnJS(setShouldRenderAnimatedWrapper)(false);
+            },
+          );
+        }),
+    [messageSwipeToReplyHitSlop, touchStart, isSwiping, translateX, onSwipe, triggerHaptic],
+  );
 
-    const swipeContentAnimatedStyle = useAnimatedStyle(
-      () => ({
-        opacity: interpolate(translateX.value, [0, SWIPABLE_THRESHOLD], [0, 1]),
-        width: translateX.value,
-      }),
-      [],
-    );
+  const swipeContentAnimatedStyle = useAnimatedStyle(
+    () => ({
+      opacity: interpolate(translateX.value, [0, SWIPABLE_THRESHOLD], [0, 1]),
+      width: translateX.value,
+    }),
+    [],
+  );
 
-    return (
-      <GestureDetector gesture={swipeGesture}>
-        <View
-          hitSlop={messageSwipeToReplyHitSlop}
-          style={[
-            styles.contentWrapper,
-            props.messageContentWidth > 0 && shouldRenderAnimatedWrapper
-              ? { width: props.messageContentWidth }
-              : {},
-          ]}
-        >
-          {shouldRenderAnimatedWrapper ? (
-            <AnimatedWrapper style={[styles.swipeContentContainer, swipeContentAnimatedStyle]}>
-              {MessageSwipeContent ? <MessageSwipeContent /> : null}
-            </AnimatedWrapper>
-          ) : null}
-          <MessageBubble {...messageBubbleProps} setMessageContentWidth={setMessageContentWidth} />
-        </View>
-      </GestureDetector>
-    );
-  },
-);
+  return (
+    <GestureDetector gesture={swipeGesture}>
+      <View hitSlop={messageSwipeToReplyHitSlop} style={styles.contentWrapper}>
+        {shouldRenderAnimatedWrapper ? (
+          <AnimatedWrapper style={[styles.swipeContentContainer, swipeContentAnimatedStyle]}>
+            {MessageSwipeContent ? <MessageSwipeContent /> : null}
+          </AnimatedWrapper>
+        ) : null}
+        {children}
+      </View>
+    </GestureDetector>
+  );
+});
 
 const useStyles = ({ alignment }: { alignment?: 'left' | 'right' }) => {
   const {

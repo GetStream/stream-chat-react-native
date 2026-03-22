@@ -1,12 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  AnimatableNumericValue,
-  ColorValue,
-  LayoutChangeEvent,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { AnimatableNumericValue, ColorValue, Pressable, StyleSheet, View } from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -89,7 +82,6 @@ export type MessageContentPropsWithContext = Pick<
     | 'StreamingMessageView'
   > &
   Pick<TranslationContextValue, 't'> & {
-    setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
     /**
      * Background color for the message content
      */
@@ -147,7 +139,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     otherAttachments,
     preventPress,
     Reply,
-    setMessageContentWidth,
     StreamingMessageView,
     hidePaddingTop,
     hidePaddingHorizontal,
@@ -180,14 +171,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       },
     },
   } = useTheme();
-
-  const onLayout: (event: LayoutChangeEvent) => void = ({
-    nativeEvent: {
-      layout: { width },
-    },
-  }) => {
-    setMessageContentWidth(width);
-  };
 
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
@@ -352,7 +335,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
         }
       }}
     >
-      <View onLayout={onLayout} style={wrapper}>
+      <View style={wrapper}>
         <View
           style={[
             styles.containerInner,
@@ -551,10 +534,7 @@ const MemoizedMessageContent = React.memo(
   areEqual,
 ) as typeof MessageContentWithContext;
 
-export type MessageContentProps = Partial<
-  Omit<MessageContentPropsWithContext, 'setMessageContentWidth'>
-> &
-  Pick<MessageContentPropsWithContext, 'setMessageContentWidth'>;
+export type MessageContentProps = Partial<MessageContentPropsWithContext>;
 
 /**
  * Child of MessageItemView that displays a message's content
