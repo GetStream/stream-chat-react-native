@@ -1,5 +1,5 @@
-import React, { ReactNode, SetStateAction, useMemo, useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import React, { ReactNode, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
@@ -15,7 +15,6 @@ import { MessageItemViewPropsWithContext } from './MessageItemView';
 
 import { MessagesContextValue, useTheme } from '../../../contexts';
 
-import { useStableCallback } from '../../../hooks';
 import { NativeHandlers } from '../../../native';
 import { MessageStatusTypes } from '../../../utils/utils';
 
@@ -34,7 +33,6 @@ export type MessageBubbleProps = Pick<
     | 'messageGroupedSingleOrBottom'
     | 'noBorder'
     | 'message'
-    | 'setMessageContentWidth'
   > &
   Pick<MessageItemViewPropsWithContext, 'alignment'>;
 
@@ -43,7 +41,6 @@ export const MessageBubble = React.memo(
     alignment,
     reactionListPosition,
     reactionListType,
-    setMessageContentWidth,
     MessageContent,
     ReactionListTop,
     backgroundColor,
@@ -70,7 +67,6 @@ export const MessageBubble = React.memo(
             isVeryLastMessage={isVeryLastMessage}
             messageGroupedSingleOrBottom={messageGroupedSingleOrBottom}
             noBorder={noBorder}
-            setMessageContentWidth={setMessageContentWidth}
           />
 
           {isMessageErrorType ? (
@@ -89,9 +85,7 @@ const AnimatedWrapper = Animated.createAnimatedComponent(View);
 type SwipableMessageWrapperProps = Pick<MessagesContextValue, 'MessageSwipeContent'> &
   Pick<MessageItemViewPropsWithContext, 'alignment' | 'messageSwipeToReplyHitSlop'> & {
     children: ReactNode;
-    messageContentWidth: number;
     onSwipe: () => void;
-    setMessageContentWidth: React.Dispatch<SetStateAction<number>>;
   };
 
 export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperProps) => {
@@ -108,24 +102,6 @@ export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperP
   const MINIMUM_DISTANCE = 8;
 
   const triggerHaptic = NativeHandlers.triggerHaptic;
-
-  const setMessageContentWidth = useStableCallback((valueOrCallback: SetStateAction<number>) => {
-    if (typeof valueOrCallback === 'number') {
-      props.setMessageContentWidth(Math.ceil(valueOrCallback));
-      return;
-    }
-    props.setMessageContentWidth(valueOrCallback);
-  });
-
-  const onLayout = useStableCallback(
-    ({
-      nativeEvent: {
-        layout: { width },
-      },
-    }: LayoutChangeEvent) => {
-      setMessageContentWidth(width);
-    },
-  );
 
   const swipeGesture = useMemo(
     () =>
@@ -199,16 +175,7 @@ export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperP
 
   return (
     <GestureDetector gesture={swipeGesture}>
-      <View
-        hitSlop={messageSwipeToReplyHitSlop}
-        onLayout={onLayout}
-        style={[
-          styles.contentWrapper,
-          props.messageContentWidth > 0 && shouldRenderAnimatedWrapper
-            ? { width: props.messageContentWidth }
-            : {},
-        ]}
-      >
+      <View hitSlop={messageSwipeToReplyHitSlop} style={styles.contentWrapper}>
         {shouldRenderAnimatedWrapper ? (
           <AnimatedWrapper style={[styles.swipeContentContainer, swipeContentAnimatedStyle]}>
             {MessageSwipeContent ? <MessageSwipeContent /> : null}

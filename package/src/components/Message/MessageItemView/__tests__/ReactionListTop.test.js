@@ -51,7 +51,6 @@ describe('ReactionListTop', () => {
   it('renders the ReactionListTop component', async () => {
     renderMessage({
       hasReactions: true,
-      messageContentWidth: 100,
       reactions: [{ count: 1, own: true, type: 'love' }],
     });
 
@@ -63,7 +62,6 @@ describe('ReactionListTop', () => {
   it('return null in ReactionListTop component when hasReactions false', async () => {
     renderMessage({
       hasReactions: false,
-      messageContentWidth: 100,
       reactions: [{ count: 1, own: true, type: 'love' }],
     });
 
@@ -76,7 +74,6 @@ describe('ReactionListTop', () => {
     renderMessage(
       {
         hasReactions: false,
-        messageContentWidth: 100,
         reactions: [{ count: 1, own: true, type: 'love' }],
       },
       { supportedReactions: [] },

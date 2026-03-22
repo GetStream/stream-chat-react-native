@@ -1,4 +1,4 @@
-import React, { forwardRef, useMemo, useState } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { MessageBubble, SwipableMessageWrapper } from './MessageBubble';
@@ -195,7 +195,6 @@ export type MessageItemViewPropsWithContext = Pick<
 
 const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithContext>(
   (props, ref) => {
-    const [messageContentWidth, setMessageContentWidth] = useState(0);
     const { width } = Dimensions.get('screen');
     const {
       alignment,
@@ -334,11 +333,9 @@ const MessageItemViewWithContext = forwardRef<View, MessageItemViewPropsWithCont
         {enableSwipeToReply && !isMessageTypeDeleted ? (
           <SwipableMessageWrapper
             alignment={alignment}
-            messageContentWidth={messageContentWidth}
             MessageSwipeContent={MessageSwipeContent}
             messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
             onSwipe={onSwipeActionHandler}
-            setMessageContentWidth={setMessageContentWidth}
           >
             {itemViewContent}
           </SwipableMessageWrapper>
