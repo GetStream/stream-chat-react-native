@@ -1,6 +1,6 @@
 import { useStateStore } from './useStateStore';
 
-import { useAttachmentPickerContext } from '../contexts';
+import { useAttachmentPickerContext } from '../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { AttachmentPickerState } from '../state-store/attachment-picker-store';
 
 const selector = (nextState: AttachmentPickerState) => ({

@@ -5,9 +5,9 @@ import { Pressable } from 'react-native-gesture-handler';
 import { emojis } from './emojis';
 
 import { useHasOwnReaction } from './hooks/useHasOwnReaction';
-import { toUnicodeScalarString } from './MessageReactionPicker';
+import { toUnicodeScalarString } from './utils/toUnicodeScalarString';
 
-import { useTheme } from '../../contexts';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';

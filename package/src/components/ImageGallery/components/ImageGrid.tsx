@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
+import type { ImageGalleryGridProps } from './types';
+
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
-import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { useViewport } from '../../../hooks/useViewport';
@@ -11,7 +13,7 @@ import type {
   ImageGalleryState,
 } from '../../../state-store/image-gallery-state-store';
 import { FileTypes } from '../../../types/types';
-import { StreamBottomSheetModalFlatList } from '../../UIComponents';
+import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 
 export type ImageGalleryGridImageComponent = ({
   item,
@@ -50,11 +52,6 @@ const GridImage = ({ item }: { item: GridImageItem }) => {
 };
 
 const renderItem = ({ item }: { item: GridImageItem }) => <GridImage item={item} />;
-
-export type ImageGalleryGridProps = {
-  closeGridView: () => void;
-  numberOfImageGalleryGridColumns?: number;
-};
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   assets: state.assets,

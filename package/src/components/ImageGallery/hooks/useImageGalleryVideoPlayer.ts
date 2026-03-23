@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { VideoPlayerOptions } from '../../../state-store/video-player';
 
 export type UseImageGalleryVideoPlayerProps = VideoPlayerOptions;

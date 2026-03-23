@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../contexts';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons/Play';
 import { primitives } from '../../theme';
 

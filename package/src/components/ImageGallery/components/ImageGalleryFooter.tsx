@@ -1,16 +1,10 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
-import {
-  ImageGalleryProviderProps,
-  useImageGalleryContext,
-} from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import type { ImageGalleryFooterProps, ImageGalleryVideoControlProps } from './types';
+
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
@@ -38,23 +32,9 @@ export type ImageGalleryFooterCustomComponent = ({
   shareMenuOpen: boolean;
 }) => React.ReactElement | null;
 
-export type ImageGalleryVideoControlProps = {
-  attachmentId: string;
-};
-
 export type ImageGalleryVideoControlComponent = ({
   attachmentId,
 }: ImageGalleryVideoControlProps) => React.ReactElement | null;
-
-export type ImageGalleryFooterProps = Pick<
-  ImageGalleryProviderProps,
-  'ImageGalleryVideoControls'
-> & {
-  accessibilityLabel: string;
-  opacity: SharedValue<number>;
-  openGridView: () => void;
-  visible: SharedValue<number>;
-};
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   asset: state.assets[state.currentIndex],

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { Pressable, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
 
-import { useTheme } from '../../contexts';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type SpeedSettingsButtonProps = {
