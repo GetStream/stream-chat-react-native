@@ -12,8 +12,6 @@ import { resampleWaveformData } from '../utils/audioSampling';
 
 /**
  * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
- *
- * FIXME: Change the name to `useAudioRecorder` in the next major version as the hook will only be used for audio recording.
  */
 export const useAudioRecorder = ({
   audioRecorderManager,

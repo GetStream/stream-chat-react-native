@@ -1,7 +1,14 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { LocalMessage, Thread, ThreadState } from 'stream-chat';
+import {
+  AttachmentManagerState,
+  DraftMessage,
+  LocalMessage,
+  TextComposerState,
+  Thread,
+  ThreadState,
+} from 'stream-chat';
 
 import { ThreadListItemMessagePreview as ThreadListItemMessagePreviewDefault } from './ThreadListItemMessagePreview';
 
@@ -34,11 +41,20 @@ export const attachmentTypeIconMap = {
   voiceRecording: '🎙️',
 } as const;
 
+const textComposerStateSelector = (state: TextComposerState) => ({
+  text: state.text,
+});
+
+const attachmentManagerStateSelector = (state: AttachmentManagerState) => ({
+  attachments: state.attachments,
+});
+
 export const ThreadListItemComponent = () => {
   const {
     channel,
     dateString,
     deletedAtDateString,
+    draftMessage,
     lastReply,
     ownUnreadMessageCount,
     parentMessage,
@@ -57,10 +73,7 @@ export const ThreadListItemComponent = () => {
   const styles = useStyles();
   const { t } = useTranslationContext();
 
-  useEffect(() => {
-    const unsubscribe = thread.messageComposer.registerDraftEventSubscriptions();
-    return () => unsubscribe();
-  }, [thread.messageComposer]);
+  const shouldRenderPreview = !!draftMessage || !!lastReply;
 
   return (
     <View style={styles.wrapper}>
@@ -87,12 +100,14 @@ export const ThreadListItemComponent = () => {
           <Text numberOfLines={1} style={styles.channelName}>
             {displayName || 'N/A'}
           </Text>
-          {lastReply ? (
+          {shouldRenderPreview ? (
             <View style={styles.previewMessageContainer}>
-              <ThreadMessagePreviewDeliveryStatus
-                channel={channel}
-                message={parentMessage as LocalMessage}
-              />
+              {!draftMessage ? (
+                <ThreadMessagePreviewDeliveryStatus
+                  channel={channel}
+                  message={parentMessage as LocalMessage}
+                />
+              ) : null}
               <ThreadListItemMessagePreview message={parentMessage as LocalMessage} />
             </View>
           ) : null}
@@ -129,6 +144,14 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const { t, tDateTimeParser } = useTranslationContext();
   const { thread, timestampTranslationKey = 'timestamp/ThreadListItem' } = props;
   const { ThreadListItem = ThreadListItemComponent } = useThreadsContext();
+  const { text: draftText } = useStateStore(
+    thread.messageComposer.textComposer.state,
+    textComposerStateSelector,
+  );
+  const { attachments } = useStateStore(
+    thread.messageComposer.attachmentManager.state,
+    attachmentManagerStateSelector,
+  );
 
   const selector = useCallback(
     (nextValue: ThreadState) =>
@@ -149,6 +172,27 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   );
 
   const timestamp = lastReply?.created_at;
+
+  useEffect(() => {
+    const unsubscribe = thread.messageComposer.registerDraftEventSubscriptions();
+    return () => unsubscribe();
+  }, [thread.messageComposer]);
+
+  const draftMessage = useMemo<DraftMessage | undefined>(() => {
+    if (thread.messageComposer.compositionIsEmpty) {
+      return undefined;
+    }
+
+    if (!draftText && !attachments?.length) {
+      return undefined;
+    }
+
+    return {
+      attachments,
+      id: thread.messageComposer.id,
+      text: draftText ?? '',
+    };
+  }, [attachments, draftText, thread.messageComposer]);
 
   // TODO: Please rethink this, we have the same line of code in about 5 places in the SDK.
   const dateString = useMemo(
@@ -178,6 +222,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         channel,
         dateString,
         deletedAtDateString,
+        draftMessage,
         lastReply,
         ownUnreadMessageCount,
         parentMessage,
@@ -224,6 +269,7 @@ const useStyles = () => {
         },
         previewMessageContainer: {
           flexDirection: 'row',
+          alignItems: 'center',
           gap: primitives.spacingXxs,
           ...threadListItem.previewMessageContainer,
         },
