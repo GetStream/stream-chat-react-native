@@ -2,7 +2,7 @@ import React from 'react';
 import { ImageBackground, ImageStyle, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { VideoPlayIndicator } from '../ui';
+import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
 const styles = StyleSheet.create({
   container: {

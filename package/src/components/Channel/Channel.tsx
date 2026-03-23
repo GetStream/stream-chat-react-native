@@ -215,13 +215,11 @@ import { emojis } from '../MessageMenu/emojis';
 import { MessageActionList as MessageActionListDefault } from '../MessageMenu/MessageActionList';
 import { MessageActionListItem as MessageActionListItemDefault } from '../MessageMenu/MessageActionListItem';
 import { MessageMenu as MessageMenuDefault } from '../MessageMenu/MessageMenu';
-import {
-  MessageReactionPicker as MessageReactionPickerDefault,
-  toUnicodeScalarString,
-} from '../MessageMenu/MessageReactionPicker';
+import { MessageReactionPicker as MessageReactionPickerDefault } from '../MessageMenu/MessageReactionPicker';
 import { MessageUserReactions as MessageUserReactionsDefault } from '../MessageMenu/MessageUserReactions';
 import { MessageUserReactionsAvatar as MessageUserReactionsAvatarDefault } from '../MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItem as MessageUserReactionsItemDefault } from '../MessageMenu/MessageUserReactionsItem';
+import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
 import { Reply as ReplyDefault } from '../Reply/Reply';
 
 export type MarkReadFunctionOptions = {

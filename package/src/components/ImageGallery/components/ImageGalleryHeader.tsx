@@ -2,14 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
-import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import type { ImageGalleryHeaderProps } from './types';
+
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -25,11 +22,6 @@ import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
   : SafeAreaView;
-
-export type ImageGalleryHeaderProps = {
-  opacity: SharedValue<number>;
-  visible: SharedValue<number>;
-};
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   asset: state.assets[state.currentIndex],

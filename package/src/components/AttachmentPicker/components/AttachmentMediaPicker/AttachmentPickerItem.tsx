@@ -4,7 +4,7 @@ import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 'stream-chat';
 
-import { isIosLimited, PhotoContentItemType } from './AttachmentMediaPicker';
+import { isIosLimited, type PhotoContentItemType } from './shared';
 
 import { useAttachmentPickerContext } from '../../../../contexts';
 import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';

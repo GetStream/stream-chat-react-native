@@ -10,7 +10,7 @@ import {
 import { useGroupedAttachments } from './useGroupedAttachments';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { useStateStore } from '../../hooks';
+import { useStateStore } from '../../hooks/useStateStore';
 
 const selector = (nextValue: PollState) => ({
   name: nextValue.name,

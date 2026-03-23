@@ -13,6 +13,7 @@ export * from './Attachment/utils/buildGallery/buildGallery';
 export * from './AttachmentPicker/AttachmentPicker';
 export * from './AttachmentPicker/components/AttachmentPickerContent';
 export * from './AttachmentPicker/components/AttachmentMediaPicker';
+export * from './AttachmentPicker/components/AttachmentMediaPicker/shared';
 export * from './AttachmentPicker/components/AttachmentPickerSelectionBar';
 export * from './AttachmentPicker/components/AttachmentTypePickerButton';
 export * from './AttachmentPicker/components/ImageOverlaySelectedComponent';
@@ -68,6 +69,7 @@ export * from './ImageGallery/components/ImageGalleryFooter';
 export * from './ImageGallery/components/ImageGalleryHeader';
 export * from './ImageGallery/components/ImageGrid';
 export * from './ImageGallery/components/ImageGalleryVideoControl';
+export * from './ImageGallery/components/types';
 export * from './ImageGallery/hooks/useImageGalleryVideoPlayer';
 
 export * from './Indicators/EmptyStateIndicator';
@@ -165,6 +167,7 @@ export * from './MessageMenu/MessageMenu';
 export * from './MessageMenu/MessageUserReactions';
 export * from './MessageMenu/MessageUserReactionsAvatar';
 export * from './MessageMenu/MessageReactionPicker';
+export * from './MessageMenu/utils/toUnicodeScalarString';
 export * from './MessageMenu/hooks/useFetchReactions';
 
 export * from './ProgressControl/ProgressControl';

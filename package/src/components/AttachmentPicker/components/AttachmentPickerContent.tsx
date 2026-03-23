@@ -1,11 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Text } from 'react-native';
 
 import { FlatList } from 'react-native-gesture-handler';
 
 import { CommandSearchSource, CommandSuggestion } from 'stream-chat';
 
 import { AttachmentMediaPicker } from './AttachmentMediaPicker/AttachmentMediaPicker';
+
+import {
+  AttachmentPickerGenericContent,
+  type AttachmentPickerContentProps,
+} from './AttachmentPickerGenericContent';
 
 import {
   useAttachmentPickerContext,
@@ -16,90 +21,9 @@ import {
 } from '../../../contexts';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
-import { Camera, FilePickerIcon, IconProps, PollThumbnail, Recorder } from '../../../icons';
+import { Camera, FilePickerIcon, PollThumbnail, Recorder } from '../../../icons';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
-import { Button } from '../../ui';
-
-const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: semantics.backgroundCoreElevation1,
-          paddingHorizontal: primitives.spacing2xl,
-          paddingBottom: primitives.spacing3xl,
-        },
-        infoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-        text: {
-          fontSize: primitives.typographyFontSizeMd,
-          color: semantics.textSecondary,
-          marginTop: 8,
-          marginHorizontal: 24,
-          textAlign: 'center',
-          maxWidth: 200,
-        },
-      }),
-    [semantics.backgroundCoreElevation1, semantics.textSecondary],
-  );
-};
-
-export type AttachmentPickerGenericContentProps = {
-  Icon: React.ComponentType<IconProps>;
-  onPress: () => void;
-  height?: number;
-  buttonText?: string;
-  description?: string;
-};
-
-export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericContentProps) => {
-  const { height, buttonText, Icon, description, onPress } = props;
-  const styles = useStyles();
-
-  const {
-    theme: {
-      semantics,
-      attachmentPicker: {
-        content: { container, text, infoContainer },
-      },
-    },
-  } = useTheme();
-
-  const ThemedIcon = useCallback(
-    () => <Icon width={22} height={22} stroke={semantics.textTertiary} />,
-    [Icon, semantics.textTertiary],
-  );
-
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          height,
-        },
-        container,
-      ]}
-    >
-      <View style={[styles.infoContainer, infoContainer]}>
-        <ThemedIcon />
-        <Text style={[styles.text, text]}>{description}</Text>
-      </View>
-      <Button
-        variant={'secondary'}
-        type={'outline'}
-        size={'lg'}
-        label={buttonText}
-        onPress={onPress}
-      />
-    </View>
-  );
-};
 
 const keyExtractor = (item: { id: string }) => item.id;
 
@@ -298,7 +222,7 @@ export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
   );
 };
 
-export type AttachmentPickerContentProps = Pick<AttachmentPickerGenericContentProps, 'height'>;
+export type { AttachmentPickerContentProps } from './AttachmentPickerGenericContent';
 
 export const AttachmentPickerContent = (props: AttachmentPickerContentProps) => {
   const { height } = props;

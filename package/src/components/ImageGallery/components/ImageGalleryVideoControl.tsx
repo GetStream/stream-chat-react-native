@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ImageGalleryVideoControlProps } from './ImageGalleryFooter';
+import type { ImageGalleryVideoControlProps } from './types';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
