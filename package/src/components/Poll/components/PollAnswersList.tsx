@@ -9,6 +9,7 @@ import { PollInputDialog } from './PollInputDialog';
 import {
   PollContextProvider,
   PollContextValue,
+  useChatContext,
   usePollContext,
   useTheme,
   useTranslationContext,
@@ -27,6 +28,8 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
   const { onPress } = props;
 
+  const styles = useStyles();
+
   const onPressHandler = useCallback(() => {
     if (onPress) {
       onPress({ message, poll });
@@ -37,10 +40,10 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
   }, [message, onPress, poll]);
 
   return (
-    <>
+    <View style={styles.inlineButton}>
       <Button
         variant={'secondary'}
-        type={'outline'}
+        type={'ghost'}
         size={'lg'}
         label={ownAnswer ? t('Update your comment') : t('Add a comment')}
         onPress={onPressHandler}
@@ -54,7 +57,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
           visible={showAddCommentDialog}
         />
       ) : null}
-    </>
+    </View>
   );
 };
 
@@ -64,8 +67,11 @@ export type PollAnswersListProps = PollContextValue & {
 };
 
 export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
+  const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
   const { votingVisibility } = usePollState();
+
+  const isMyAnswer = client.userID === answer.user?.id;
 
   const {
     theme: {
@@ -93,19 +99,22 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   );
 
   return (
-    <View style={[styles.listItemContainer, itemStyle.container]}>
-      <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>{answer.answer_text}</Text>
-      <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
-        <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
-          {!isAnonymous && answer.user?.image ? (
-            <UserAvatar user={answer.user} size='md' showBorder />
-          ) : null}
-          <Text style={styles.listItemInfoUserName}>
-            {isAnonymous ? t('Anonymous') : answer.user?.name}
-          </Text>
+    <View style={[styles.listItemWrapper, itemStyle.wrapper]}>
+      <View style={[styles.listItemContainer, itemStyle.container]}>
+        <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>{answer.answer_text}</Text>
+        <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
+          <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
+            {!isAnonymous && answer.user?.image ? (
+              <UserAvatar user={answer.user} size='sm' showBorder />
+            ) : null}
+            <Text style={styles.listItemInfoUserName}>
+              {isAnonymous ? t('Anonymous') : answer.user?.name}
+            </Text>
+            <Text style={styles.listItemInfoDate}>{dateString}</Text>
+          </View>
         </View>
-        <Text style={styles.listItemInfoDate}>{dateString}</Text>
       </View>
+      {isMyAnswer ? <AnswerListAddCommentButton /> : null}
     </View>
   );
 };
@@ -137,7 +146,6 @@ export const PollAnswersListContent = ({
         renderItem={renderPollAnswerListItem}
         {...additionalFlatListProps}
       />
-      <AnswerListAddCommentButton />
     </View>
   );
 };
@@ -164,14 +172,7 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        addCommentButtonContainer: {
-          alignItems: 'center',
-          borderRadius: 12,
-          paddingHorizontal: 16,
-          paddingVertical: 18,
-        },
         contentContainer: { gap: primitives.spacingMd },
-        addCommentButtonText: { fontSize: 16 },
         container: {
           flex: 1,
           padding: primitives.spacingMd,
@@ -179,31 +180,41 @@ const useStyles = () => {
         },
         listItemAnswerText: {
           fontSize: primitives.typographyFontSizeMd,
-          lineHeight: primitives.typographyLineHeightRelaxed,
-          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
           color: semantics.textPrimary,
         },
-        listItemContainer: {
+        listItemWrapper: {
           borderRadius: primitives.radiusLg,
-          padding: primitives.spacingMd,
           backgroundColor: semantics.backgroundCoreSurfaceCard,
+        },
+        listItemContainer: {
+          padding: primitives.spacingMd,
+          gap: primitives.spacingXs,
         },
         listItemInfoContainer: {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginTop: 24,
         },
         listItemInfoUserName: {
-          color: semantics.textPrimary,
+          color: semantics.chatTextUsername,
           fontSize: primitives.typographyFontSizeSm,
-          marginLeft: primitives.spacingXxs,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
         },
         listItemInfoDate: {
           fontSize: primitives.typographyFontSizeSm,
           color: semantics.textTertiary,
         },
-        listItemUserInfoContainer: { alignItems: 'center', flexDirection: 'row' },
+        listItemUserInfoContainer: {
+          gap: primitives.spacingXs,
+          alignItems: 'center',
+          flexDirection: 'row',
+        },
+        inlineButton: {
+          borderColor: semantics.borderCoreDefault,
+          borderTopWidth: 1,
+        },
       }),
     [semantics],
   );
