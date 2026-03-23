@@ -822,6 +822,7 @@ export type Theme = {
         container: ViewStyle;
         infoContainer: ViewStyle;
         userInfoContainer: ViewStyle;
+        wrapper: ViewStyle;
       };
     };
     button: { container: ViewStyle; text: TextStyle };
@@ -1731,6 +1732,7 @@ export const defaultTheme: Theme = {
         container: {},
         infoContainer: {},
         userInfoContainer: {},
+        wrapper: {},
       },
     },
     button: { container: {}, text: {} },

@@ -291,6 +291,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
           </Text>
           <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
             <FlatList
+              showsHorizontalScrollIndicator={false}
               contentContainerStyle={[styles.contentContainer, contentContainer]}
               data={selectorReactions}
               getItemLayout={getItemLayout}

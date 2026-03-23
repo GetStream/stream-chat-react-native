@@ -112,7 +112,9 @@ const useStyles = () => {
           backgroundColor: semantics.backgroundCoreSurfaceCard,
           borderRadius: primitives.radiusLg,
           marginBottom: primitives.spacingMd,
-          padding: primitives.spacingMd,
+          paddingHorizontal: primitives.spacingMd,
+          paddingTop: primitives.spacingMd,
+          paddingBottom: primitives.spacingXs,
         },
         headerContainer: {
           flexDirection: 'row',
@@ -133,6 +135,7 @@ const useStyles = () => {
           lineHeight: primitives.typographyLineHeightNormal,
           fontWeight: primitives.typographyFontWeightSemiBold,
           color: semantics.textPrimary,
+          paddingTop: primitives.spacingXs,
           marginLeft: primitives.spacingMd,
         },
       }),
