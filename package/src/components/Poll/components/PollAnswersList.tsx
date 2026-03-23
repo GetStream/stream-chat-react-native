@@ -71,8 +71,6 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   const { t, tDateTimeParser } = useTranslationContext();
   const { votingVisibility } = usePollState();
 
-  const isMyAnswer = client.userID === answer.user?.id;
-
   const {
     theme: {
       poll: {
@@ -93,10 +91,14 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
     [answer.updated_at, t, tDateTimeParser],
   );
 
+  const isMyAnswer = client.userID === answer.user?.id;
+
   const isAnonymous = useMemo(
-    () => votingVisibility === VotingVisibility.anonymous,
-    [votingVisibility],
+    () => votingVisibility === VotingVisibility.anonymous && !isMyAnswer,
+    [votingVisibility, isMyAnswer],
   );
+
+  const answerAuthorName = isMyAnswer ? t('You') : answer.user?.name;
 
   return (
     <View style={[styles.listItemWrapper, itemStyle.wrapper]}>
@@ -108,7 +110,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
               <UserAvatar user={answer.user} size='sm' showBorder />
             ) : null}
             <Text style={styles.listItemInfoUserName}>
-              {isAnonymous ? t('Anonymous') : answer.user?.name}
+              {isAnonymous ? t('Anonymous') : answerAuthorName}
             </Text>
             <Text style={styles.listItemInfoDate}>{dateString}</Text>
           </View>
