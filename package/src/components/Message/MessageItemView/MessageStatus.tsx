@@ -6,10 +6,6 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
@@ -21,14 +17,10 @@ import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 export type MessageStatusPropsWithContext = Pick<
   MessageContextValue,
   'deliveredToCount' | 'message' | 'readBy'
-> &
-  Pick<MessagesContextValue, 'MessageTimestamp'> & {
-    formattedDate?: string | Date;
-    timestamp?: string | Date;
-  };
+>;
 
 const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
-  const { deliveredToCount, formattedDate, message, readBy, timestamp, MessageTimestamp } = props;
+  const { deliveredToCount, message, readBy } = props;
 
   const styles = useStyles();
 
@@ -92,7 +84,6 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
           {...checkIcon}
         />
       ) : null}
-      <MessageTimestamp formattedDate={formattedDate} timestamp={timestamp} />
     </View>
   );
 };
@@ -101,20 +92,8 @@ const areEqual = (
   prevProps: MessageStatusPropsWithContext,
   nextProps: MessageStatusPropsWithContext,
 ) => {
-  const {
-    deliveredToCount: prevDeliveredBy,
-    message: prevMessage,
-    readBy: prevReadBy,
-    formattedDate: prevFormattedDate,
-    timestamp: prevTimestamp,
-  } = prevProps;
-  const {
-    deliveredToCount: nextDeliveredBy,
-    message: nextMessage,
-    readBy: nextReadBy,
-    formattedDate: nextFormattedDate,
-    timestamp: nextTimestamp,
-  } = nextProps;
+  const { deliveredToCount: prevDeliveredBy, message: prevMessage, readBy: prevReadBy } = prevProps;
+  const { deliveredToCount: nextDeliveredBy, message: nextMessage, readBy: nextReadBy } = nextProps;
 
   const deliveredByEqual = prevDeliveredBy === nextDeliveredBy;
   if (!deliveredByEqual) {
@@ -132,16 +111,6 @@ const areEqual = (
     return false;
   }
 
-  const timestampEqual = prevTimestamp === nextTimestamp;
-  if (!timestampEqual) {
-    return false;
-  }
-
-  const formattedDateEqual = prevFormattedDate === nextFormattedDate;
-  if (!formattedDateEqual) {
-    return false;
-  }
-
   return true;
 };
 
@@ -155,7 +124,6 @@ export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 export const MessageStatus = (props: MessageStatusProps) => {
   const { channel } = useChannelContext();
   const { deliveredToCount, message, readBy } = useMessageContext();
-  const { MessageTimestamp } = useMessagesContext();
 
   const channelMembersCount = Object.keys(channel?.state.members).length;
 
@@ -167,7 +135,6 @@ export const MessageStatus = (props: MessageStatusProps) => {
         deliveredToCount,
         message,
         readBy,
-        MessageTimestamp,
       }}
       {...props}
     />

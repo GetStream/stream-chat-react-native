@@ -37,7 +37,7 @@ type MessageFooterPropsWithContext = Pick<
   | 'lastGroupMessage'
   | 'isMessageAIGenerated'
 > &
-  Pick<MessagesContextValue, 'MessageStatus'> &
+  Pick<MessagesContextValue, 'MessageStatus' | 'MessageTimestamp'> &
   MessageFooterComponentProps;
 
 const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
@@ -50,6 +50,7 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
     members,
     message,
     MessageStatus,
+    MessageTimestamp,
     showMessageStatus,
   } = props;
   const styles = useStyles();
@@ -77,9 +78,12 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
   return (
     <View style={[styles.container, container]} testID='message-status-time'>
       {Object.keys(members).length > 2 && alignment === 'left' && message.user?.name ? (
-        <Text style={[styles.name, name]}>{message.user.name}</Text>
+        <Text numberOfLines={1} ellipsizeMode='tail' style={[styles.name, name]}>
+          {message.user.name}
+        </Text>
       ) : null}
-      {showMessageStatus && <MessageStatus formattedDate={formattedDate} timestamp={date} />}
+      {showMessageStatus ? <MessageStatus /> : null}
+      <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
       {isEdited ? <Text style={[styles.editedText, editedText]}>{t('Edited')}</Text> : null}
     </View>
   );
@@ -201,6 +205,7 @@ const useStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       container: {
+        maxWidth: '100%',
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'center',
@@ -208,6 +213,7 @@ const useStyles = () => {
         gap: primitives.spacingXs,
       },
       name: {
+        flexShrink: 1,
         color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.chatTextUsername,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightSemiBold,
