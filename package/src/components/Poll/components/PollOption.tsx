@@ -14,6 +14,7 @@ import {
   useOwnCapabilitiesContext,
   usePollContext,
   useTheme,
+  useTranslationContext,
 } from '../../../contexts';
 
 import { Check } from '../../../icons';
@@ -26,6 +27,7 @@ import { usePollState } from '../hooks/usePollState';
 export type PollOptionProps = {
   option: PollOptionClass;
   showProgressBar?: boolean;
+  forceIncoming?: boolean;
 };
 
 export type PollAllOptionsContentProps = PollContextValue & {
@@ -36,6 +38,7 @@ export type PollAllOptionsContentProps = PollContextValue & {
 export const PollAllOptionsContent = ({
   additionalScrollViewProps,
 }: Pick<PollAllOptionsContentProps, 'additionalScrollViewProps'>) => {
+  const { t } = useTranslationContext();
   const { name, options } = usePollState();
 
   const {
@@ -50,12 +53,13 @@ export const PollAllOptionsContent = ({
   return (
     <ScrollView style={[styles.allOptionsWrapper, wrapper]} {...additionalScrollViewProps}>
       <View style={[styles.allOptionsTitleContainer, titleContainer]}>
+        <Text style={styles.allOptionsTitleMeta}>{t('Question')}</Text>
         <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
       </View>
       <View style={[styles.allOptionsListContainer, listContainer]}>
         {options?.map((option: PollOptionClass) => (
           <View key={`full_poll_options_${option.id}`} style={styles.optionWrapper}>
-            <PollOption key={option.id} option={option} showProgressBar={false} />
+            <PollOption key={option.id} option={option} forceIncoming />
           </View>
         ))}
       </View>
@@ -78,19 +82,15 @@ export const PollAllOptions = ({
   </PollContextProvider>
 );
 
-export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { latestVotesByOption, maxVotedOptionIds, voteCountsByOption } = usePollState();
+export const PollOption = ({ option, showProgressBar = true, forceIncoming }: PollOptionProps) => {
+  const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();
   const styles = useStyles();
 
   const relevantVotes = useMemo(
     () => latestVotesByOption?.[option.id] || [],
     [latestVotesByOption, option.id],
   );
-  const maxVotes = useMemo(
-    () =>
-      maxVotedOptionIds?.[0] && voteCountsByOption ? voteCountsByOption[maxVotedOptionIds[0]] : 0,
-    [maxVotedOptionIds, voteCountsByOption],
-  );
+
   const votes = voteCountsByOption[option.id] || 0;
 
   const {
@@ -105,13 +105,15 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
   } = useTheme();
   const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
 
-  const unFilledColor = isPollCreatedByClient
-    ? semantics.chatPollProgressTrackOutgoing
-    : semantics.chatPollProgressTrackIncoming;
+  const unFilledColor =
+    isPollCreatedByClient && !forceIncoming
+      ? semantics.chatPollProgressTrackOutgoing
+      : semantics.chatPollProgressTrackIncoming;
 
-  const filledColor = isPollCreatedByClient
-    ? semantics.chatPollProgressFillOutgoing
-    : semantics.chatPollProgressFillIncoming;
+  const filledColor =
+    isPollCreatedByClient && !forceIncoming
+      ? semantics.chatPollProgressFillOutgoing
+      : semantics.chatPollProgressFillIncoming;
 
   return (
     <View style={[styles.container, container]}>
@@ -133,7 +135,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
         {showProgressBar ? (
           <View style={styles.progressBarContainer}>
             <ProgressBar
-              progress={votes / maxVotes}
+              progress={votes / voteCount}
               filledColor={filledColor}
               emptyColor={unFilledColor}
             />
@@ -273,6 +275,13 @@ const useAllOptionStyles = () => {
           lineHeight: primitives.typographyLineHeightRelaxed,
           fontWeight: primitives.typographyFontWeightSemiBold,
           color: semantics.textPrimary,
+          paddingTop: primitives.spacingXs,
+        },
+        allOptionsTitleMeta: {
+          fontSize: primitives.typographyFontSizeSm,
+          color: semantics.textTertiary,
+          lineHeight: primitives.typographyLineHeightNormal,
+          fontWeight: primitives.typographyFontWeightMedium,
         },
         allOptionsWrapper: {
           flex: 1,
