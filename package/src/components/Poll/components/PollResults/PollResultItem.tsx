@@ -103,18 +103,24 @@ export const PollResultsItem = ({ option, index }: PollResultItemProps) => {
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.titleMeta, titleMeta]}>
-        {t('Option {{count}}', { count: index + 1 })}
-      </Text>
-      <View style={[styles.headerContainer, headerContainer]}>
-        <Text style={[styles.title, title]}>{option.text}</Text>
-        <Text style={[styles.voteCount, voteCount]}>
-          {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+      <View style={styles.metaContainer}>
+        <Text style={[styles.titleMeta, titleMeta]}>
+          {t('Option {{count}}', { count: index + 1 })}
         </Text>
+        <View style={[styles.headerContainer, headerContainer]}>
+          <Text style={[styles.title, title]}>{option.text}</Text>
+          <Text style={[styles.voteCount, voteCount]}>
+            {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+          </Text>
+        </View>
       </View>
-      {latestVotesByOption?.[option.id]?.length > 0
-        ? (latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollResultsVoteItem)
-        : null}
+      {latestVotesByOption?.[option.id]?.length > 0 ? (
+        <View style={styles.votesContainer}>
+          {(latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollResultsVoteItem)}
+        </View>
+      ) : (
+        <View style={styles.spacer} />
+      )}
       <ShowAllVotesButton option={option} />
     </View>
   );
@@ -127,11 +133,22 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
+        spacer: {
+          paddingBottom: primitives.spacingXs,
+        },
         container: {
           backgroundColor: semantics.backgroundCoreSurfaceCard,
           borderRadius: primitives.radiusLg,
           marginBottom: primitives.spacingMd,
-          padding: primitives.spacingMd,
+          // padding: primitives.spacingMd,
+        },
+        metaContainer: {
+          paddingTop: primitives.spacingMd,
+          paddingHorizontal: primitives.spacingMd,
+        },
+        votesContainer: {
+          paddingHorizontal: primitives.spacingMd,
+          paddingVertical: primitives.spacingXs,
         },
         headerContainer: {
           flexDirection: 'row',
