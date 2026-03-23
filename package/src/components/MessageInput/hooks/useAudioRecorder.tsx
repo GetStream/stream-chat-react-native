@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { LocalVoiceRecordingAttachment } from 'stream-chat';
 
@@ -19,7 +19,6 @@ export const useAudioRecorder = ({
   audioRecorderManager,
   sendMessage,
 }: Pick<MessageInputContextValue, 'audioRecorderManager' | 'sendMessage'>) => {
-  const [isScheduledForSubmit, setIsScheduleForSubmit] = useState(false);
   const { attachmentManager } = useMessageComposer();
 
   /**
@@ -42,13 +41,6 @@ export const useAudioRecorder = ({
     },
     [stopVoiceRecording],
   );
-
-  useEffect(() => {
-    if (isScheduledForSubmit) {
-      sendMessage();
-      setIsScheduleForSubmit(false);
-    }
-  }, [isScheduledForSubmit, sendMessage]);
 
   /**
    * Function to start voice recording. Will return whether access is granted
@@ -113,8 +105,8 @@ export const useAudioRecorder = ({
         audioRecorderManager.reset();
 
         if (sendOnComplete) {
-          await attachmentManager.uploadAttachment(audioFile);
-          setIsScheduleForSubmit(true);
+          attachmentManager.upsertAttachments([audioFile]);
+          sendMessage();
         } else {
           await attachmentManager.uploadAttachment(audioFile);
         }
