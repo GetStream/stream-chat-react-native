@@ -168,7 +168,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   const dragEnd = async (currentProgress: number) => {
     const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
     await audioPlayer.seek(positionInSeconds);
-    audioPlayer.play();
   };
 
   const onSpeedChangeHandler = async () => {

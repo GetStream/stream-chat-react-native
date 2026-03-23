@@ -114,7 +114,7 @@ export const useAudioRecorder = ({
         console.log('Error uploading voice recording: ', error);
       }
     },
-    [audioRecorderManager, attachmentManager, stopVoiceRecording],
+    [audioRecorderManager, attachmentManager, sendMessage, stopVoiceRecording],
   );
 
   return {
