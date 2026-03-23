@@ -155,11 +155,11 @@ type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
     MessageInputContextValue,
     | 'audioRecorderManager'
     | 'additionalTextInputProps'
+    | 'audioRecordingSendOnComplete'
     | 'audioRecordingEnabled'
     | 'asyncMessagesLockDistance'
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
-    | 'asyncMessagesMultiSendEnabled'
     | 'AttachmentUploadPreviewList'
     | 'AudioRecorder'
     | 'AudioRecordingInProgress'
@@ -515,6 +515,7 @@ const areEqual = (
     asyncMessagesLockDistance: prevAsyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration: prevAsyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance: prevAsyncMessagesSlideToCancelDistance,
+    audioRecordingSendOnComplete: prevAudioRecordingSendOnComplete,
     audioRecordingEnabled: prevAsyncMessagesEnabled,
     channel: prevChannel,
     closePollCreationDialog: prevClosePollCreationDialog,
@@ -534,6 +535,7 @@ const areEqual = (
     asyncMessagesLockDistance: nextAsyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration: nextAsyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance: nextAsyncMessagesSlideToCancelDistance,
+    audioRecordingSendOnComplete: nextAudioRecordingSendOnComplete,
     audioRecordingEnabled: nextAsyncMessagesEnabled,
     channel: nextChannel,
     closePollCreationDialog: nextClosePollCreationDialog,
@@ -597,6 +599,12 @@ const areEqual = (
     return false;
   }
 
+  const audioRecordingSendOnCompleteEqual =
+    prevAudioRecordingSendOnComplete === nextAudioRecordingSendOnComplete;
+  if (!audioRecordingSendOnCompleteEqual) {
+    return false;
+  }
+
   const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) {
     return false;
@@ -655,9 +663,9 @@ export const MessageComposer = (props: MessageComposerProps) => {
   const {
     audioRecorderManager,
     additionalTextInputProps,
+    audioRecordingSendOnComplete,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
-    asyncMessagesMultiSendEnabled,
     asyncMessagesSlideToCancelDistance,
     AttachmentUploadPreviewList,
     AudioRecorder,
@@ -720,9 +728,9 @@ export const MessageComposer = (props: MessageComposerProps) => {
         recordingStatus,
         micLocked,
         additionalTextInputProps,
+        audioRecordingSendOnComplete,
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
-        asyncMessagesMultiSendEnabled,
         asyncMessagesSlideToCancelDistance,
         AttachmentUploadPreviewList,
         AudioRecorder,

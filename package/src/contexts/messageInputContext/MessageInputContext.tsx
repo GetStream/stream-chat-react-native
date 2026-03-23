@@ -98,7 +98,7 @@ export type LocalMessageInputContext = {
   audioRecorderManager: AudioRecorderManager;
   startVoiceRecording: () => Promise<boolean | undefined>;
   deleteVoiceRecording: () => Promise<void>;
-  uploadVoiceRecording: (multiSendEnabled: boolean) => Promise<void>;
+  uploadVoiceRecording: (sendOnComplete: boolean) => Promise<void>;
   stopVoiceRecording: () => Promise<void>;
 };
 
@@ -114,10 +114,11 @@ export type InputMessageInputContextValue = {
    */
   asyncMessagesMinimumPressDuration: number;
   /**
-   * When it’s enabled, recorded messages won’t be sent immediately. Instead they will “stack up” in the composer
-   * allowing the user to send multiple voice recording as part of the same message.
+   * Controls whether a completed voice recording is sent immediately or added to the composer first.
+   * When true, the recording is sent immediately on completion.
+   * When false, the recording is added to the composer and only sent if the user decides to.
    */
-  asyncMessagesMultiSendEnabled: boolean;
+  audioRecordingSendOnComplete: boolean;
   /**
    * Controls how many pixels to the leading side the user has to scroll in order to cancel the recording of a voice
    * message.
