@@ -57,7 +57,9 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
       {ownCapabilities.queryPollVotes &&
       voteCountsByOption &&
       voteCountsByOption?.[option.id] > 5 ? (
-        <GenericPollButton onPress={onPressHandler} label={t('Show All')} />
+        <View style={styles.inlineButton}>
+          <GenericPollButton onPress={onPressHandler} label={t('Show All')} />
+        </View>
       ) : null}
       {showAllVotes ? (
         <Modal
@@ -140,7 +142,6 @@ const useStyles = () => {
           backgroundColor: semantics.backgroundCoreSurfaceCard,
           borderRadius: primitives.radiusLg,
           marginBottom: primitives.spacingMd,
-          // padding: primitives.spacingMd,
         },
         metaContainer: {
           paddingTop: primitives.spacingMd,
@@ -183,6 +184,12 @@ const useStyles = () => {
         safeArea: {
           backgroundColor: semantics.backgroundCoreElevation1,
           flex: 1,
+        },
+        inlineButton: {
+          borderColor: semantics.borderCoreDefault,
+          borderTopWidth: 1,
+          paddingHorizontal: primitives.spacingMd,
+          paddingVertical: primitives.spacingXs,
         },
       }),
     [semantics],
