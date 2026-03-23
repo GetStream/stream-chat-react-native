@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { LocalVoiceRecordingAttachment } from 'stream-chat';
 
@@ -12,14 +12,11 @@ import { resampleWaveformData } from '../utils/audioSampling';
 
 /**
  * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
- *
- * FIXME: Change the name to `useAudioRecorder` in the next major version as the hook will only be used for audio recording.
  */
 export const useAudioRecorder = ({
   audioRecorderManager,
   sendMessage,
 }: Pick<MessageInputContextValue, 'audioRecorderManager' | 'sendMessage'>) => {
-  const [isScheduledForSubmit, setIsScheduleForSubmit] = useState(false);
   const { attachmentManager } = useMessageComposer();
 
   /**
@@ -42,13 +39,6 @@ export const useAudioRecorder = ({
     },
     [stopVoiceRecording],
   );
-
-  useEffect(() => {
-    if (isScheduledForSubmit) {
-      sendMessage();
-      setIsScheduleForSubmit(false);
-    }
-  }, [isScheduledForSubmit, sendMessage]);
 
   /**
    * Function to start voice recording. Will return whether access is granted
@@ -113,8 +103,8 @@ export const useAudioRecorder = ({
         audioRecorderManager.reset();
 
         if (sendOnComplete) {
-          await attachmentManager.uploadAttachment(audioFile);
-          setIsScheduleForSubmit(true);
+          attachmentManager.upsertAttachments([audioFile]);
+          sendMessage();
         } else {
           await attachmentManager.uploadAttachment(audioFile);
         }
@@ -122,7 +112,7 @@ export const useAudioRecorder = ({
         console.log('Error uploading voice recording: ', error);
       }
     },
-    [audioRecorderManager, attachmentManager, stopVoiceRecording],
+    [audioRecorderManager, attachmentManager, sendMessage, stopVoiceRecording],
   );
 
   return {

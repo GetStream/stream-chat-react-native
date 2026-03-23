@@ -238,6 +238,7 @@ export type Theme = {
     };
     messagePreview: {
       container: ViewStyle;
+      draftText: TextStyle;
       subtitle: TextStyle;
     };
   };
@@ -989,6 +990,7 @@ export type Theme = {
     unreadBubbleWrapper: ViewStyle;
     messagePreview: {
       container: ViewStyle;
+      draftText: TextStyle;
       subtitle: TextStyle;
     };
     messagePreviewDeliveryStatus: {
@@ -1167,6 +1169,7 @@ export const defaultTheme: Theme = {
     wrapper: {},
     messagePreview: {
       container: {},
+      draftText: {},
       subtitle: {},
     },
   },
@@ -1893,6 +1896,7 @@ export const defaultTheme: Theme = {
     messageRepliesText: {},
     messagePreview: {
       container: {},
+      draftText: {},
       subtitle: {},
     },
     messagePreviewDeliveryStatus: {

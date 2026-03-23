@@ -108,7 +108,6 @@ export const AudioRecordingPreview = () => {
   const dragEnd = useStableCallback(async (currentProgress: number) => {
     const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
     await audioPlayer.seek(positionInSeconds);
-    audioPlayer.play();
   });
 
   return (

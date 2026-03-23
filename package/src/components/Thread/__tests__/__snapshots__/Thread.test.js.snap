@@ -620,6 +620,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "flexDirection": "row",
                                     "gap": 8,
                                     "justifyContent": "center",
+                                    "maxWidth": "100%",
                                     "paddingVertical": 4,
                                   },
                                   {},
@@ -627,6 +628,18 @@ exports[`Thread should match thread snapshot 1`] = `
                               }
                               testID="message-status-time"
                             >
+                              <Text
+                                style={
+                                  {
+                                    "color": "#687385",
+                                    "fontSize": 13,
+                                    "fontWeight": 400,
+                                    "lineHeight": 16,
+                                  }
+                                }
+                              >
+                                2:50 PM
+                              </Text>
                               <Text
                                 style={
                                   [
@@ -944,6 +957,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "flexDirection": "row",
                                     "gap": 8,
                                     "justifyContent": "center",
+                                    "maxWidth": "100%",
                                     "paddingVertical": 4,
                                   },
                                   {},
@@ -951,6 +965,18 @@ exports[`Thread should match thread snapshot 1`] = `
                               }
                               testID="message-status-time"
                             >
+                              <Text
+                                style={
+                                  {
+                                    "color": "#687385",
+                                    "fontSize": 13,
+                                    "fontWeight": 400,
+                                    "lineHeight": 16,
+                                  }
+                                }
+                              >
+                                2:50 PM
+                              </Text>
                               <Text
                                 style={
                                   [
@@ -1301,6 +1327,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "flexDirection": "row",
                                     "gap": 8,
                                     "justifyContent": "center",
+                                    "maxWidth": "100%",
                                     "paddingVertical": 4,
                                   },
                                   {},
@@ -1308,6 +1335,18 @@ exports[`Thread should match thread snapshot 1`] = `
                               }
                               testID="message-status-time"
                             >
+                              <Text
+                                style={
+                                  {
+                                    "color": "#687385",
+                                    "fontSize": 13,
+                                    "fontWeight": 400,
+                                    "lineHeight": 16,
+                                  }
+                                }
+                              >
+                                2:50 PM
+                              </Text>
                               <Text
                                 style={
                                   [
@@ -1616,6 +1655,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "flexDirection": "row",
                                   "gap": 8,
                                   "justifyContent": "center",
+                                  "maxWidth": "100%",
                                   "paddingVertical": 4,
                                 },
                                 {},
@@ -1623,6 +1663,18 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                             testID="message-status-time"
                           >
+                            <Text
+                              style={
+                                {
+                                  "color": "#687385",
+                                  "fontSize": 13,
+                                  "fontWeight": 400,
+                                  "lineHeight": 16,
+                                }
+                              }
+                            >
+                              2:50 PM
+                            </Text>
                             <Text
                               style={
                                 [
