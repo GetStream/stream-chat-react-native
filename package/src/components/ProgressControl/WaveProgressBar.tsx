@@ -100,6 +100,7 @@ export const WaveProgressBar = React.memo(
     );
     const eachWaveformWidth = WAVEFORM_WIDTH + WAVEFORM_GAP;
     const fullWidth = (amplitudesCount - 1) * eachWaveformWidth;
+    const maxThumbTranslateX = Math.max(fullWidth - eachWaveformWidth, 0);
     const maxProgressWidth = fullWidth + WAVEFORM_WIDTH;
     const dragStartProgress = useSharedValue(0);
     const isDragging = useSharedValue(false);
@@ -217,9 +218,16 @@ export const WaveProgressBar = React.memo(
     const thumbStyles = useAnimatedStyle(
       () => ({
         position: 'absolute',
-        transform: [{ translateX: clampProgress(visualProgress.value) * fullWidth }],
+        transform: [
+          {
+            translateX: Math.min(
+              clampProgress(visualProgress.value) * fullWidth,
+              maxThumbTranslateX,
+            ),
+          },
+        ],
       }),
-      [fullWidth],
+      [fullWidth, maxThumbTranslateX],
     );
 
     return (
