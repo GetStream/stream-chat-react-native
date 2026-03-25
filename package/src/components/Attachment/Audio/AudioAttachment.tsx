@@ -15,6 +15,7 @@ import {
 import { PlayPauseButton } from './PlayPauseButton';
 
 import { useTheme } from '../../../contexts';
+import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks';
 import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
 import {
@@ -168,14 +169,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     await audioPlayer.stop();
   };
 
-  const dragStart = () => {
+  const dragStart = useStableCallback(() => {
     audioPlayer.pause();
-  };
+  });
 
-  const dragEnd = async (currentProgress: number) => {
+  const dragEnd = useStableCallback(async (currentProgress: number) => {
     const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
     await audioPlayer.seek(positionInSeconds);
-  };
+  });
 
   const onSpeedChangeHandler = async () => {
     await audioPlayer.changePlaybackRate();
