@@ -161,10 +161,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     audioPlayer.pause();
   };
 
-  const dragProgress = (currentProgress: number) => {
-    audioPlayer.progress = currentProgress;
-  };
-
   const dragEnd = async (currentProgress: number) => {
     const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
     await audioPlayer.seek(positionInSeconds);
@@ -262,7 +258,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                   <WaveProgressBar
                     isPlaying={isPlaying}
                     onEndDrag={dragEnd}
-                    onProgressDrag={dragProgress}
                     onStartDrag={dragStart}
                     progress={progress}
                     waveformData={item.waveform_data}
