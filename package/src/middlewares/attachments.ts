@@ -11,11 +11,13 @@ import {
   MiddlewareHandlerParams,
 } from 'stream-chat';
 
-const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
+import { isLocalUrl } from '../utils/utils';
+
+export const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
   const { localMetadata, ...attachment } = localAttachment;
 
   if (isLocalImageAttachment(localAttachment)) {
-    const isRemoteUri = !!attachment.image_url;
+    const isRemoteUri = !!attachment.image_url && !isLocalUrl(attachment.image_url);
 
     if (isRemoteUri) return attachment as Attachment;
 
@@ -25,7 +27,7 @@ const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
       originalFile: localMetadata.file,
     } as Attachment;
   } else {
-    const isRemoteUri = !!attachment.asset_url;
+    const isRemoteUri = !!attachment.asset_url && !isLocalUrl(attachment.asset_url);
     if (isRemoteUri) return attachment as Attachment;
 
     return {
