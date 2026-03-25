@@ -271,6 +271,13 @@ class NativeAudioSoundAdapter implements SoundReturnType {
 
     if (this.playbackInstance?.setPlaybackSpeed && this.isLoaded) {
       await this.playbackInstance.setPlaybackSpeed(rate);
+
+      // Some Android backends resume playback as a side effect of changing speed.
+      // Preserve the previous paused state explicitly so rate changes stay silent.
+      if (!this.isPlaying) {
+        await this.playbackInstance.pausePlayer();
+        this.emitPlaybackStatus();
+      }
     }
   };
 
@@ -315,7 +322,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
 
 const initializeSound =
   createNitroSound || LegacyAudioRecorderPlayer
-    ? async (
+    ? (
         source?: { uri: string },
         initialStatus?: Partial<AVPlaybackStatusToSet>,
         onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
