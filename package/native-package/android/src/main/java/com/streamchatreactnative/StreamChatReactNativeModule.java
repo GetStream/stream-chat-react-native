@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 
@@ -36,7 +34,7 @@ public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
   }
 
   @ReactMethod
-  public void createResizedImage(String uri, double width, double height, String format, double quality, String mode, boolean onlyScaleDown, Double rotation, @Nullable String outputPath, Boolean keepMeta, Promise promise) {
+  public void createResizedImage(String uri, double width, double height, String format, double quality, String mode, boolean onlyScaleDown, Double rotation, @Nullable String outputPath, Promise promise) {
     WritableMap options = Arguments.createMap();
     options.putString("mode", mode);
     options.putBoolean("onlyScaleDown", onlyScaleDown);
@@ -46,7 +44,7 @@ public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
       @Override
       protected void doInBackgroundGuarded(Void... params) {
         try {
-          Object response = createResizedImageWithExceptions(uri, (int) width, (int) height, format, (int) quality, rotation.intValue(), outputPath, keepMeta, options);
+          Object response = createResizedImageWithExceptions(uri, (int) width, (int) height, format, (int) quality, rotation.intValue(), outputPath, options);
           promise.resolve(response);
         }
         catch (IOException e) {
@@ -59,7 +57,6 @@ public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
   @SuppressLint("LongLogTag")
   private Object createResizedImageWithExceptions(String imagePath, int newWidth, int newHeight,
                                                   String compressFormatString, int quality, int rotation, String outputPath,
-                                                  final boolean keepMeta,
                                                   final ReadableMap options) throws IOException {
 
     Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.valueOf(compressFormatString);
@@ -89,16 +86,6 @@ public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
       response.putDouble("size", resizedImage.length());
       response.putDouble("width", scaledImage.getWidth());
       response.putDouble("height", scaledImage.getHeight());
-
-      // Copy file's metadata/exif info if required
-      if(keepMeta){
-        try{
-          StreamChatReactNative.copyExif(this.getReactApplicationContext(), imageUri, resizedImage.getAbsolutePath());
-        }
-        catch(Exception ignored){
-          Log.e("StreamChatReactNative::createResizedImageWithExceptions", "EXIF copy failed", ignored);
-        }
-      }
     } else {
       throw new IOException("Error getting resized image path");
     }
