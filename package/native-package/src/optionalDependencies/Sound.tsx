@@ -1,11 +1,15 @@
-import type {
-  AVPlaybackStatusToSet,
-  PlaybackStatus,
-  SoundReturnType,
-} from 'stream-chat-react-native-core';
+import type { PlaybackStatus, SoundReturnType } from 'stream-chat-react-native-core';
 
-let LegacyAudioRecorderPlayer;
-let createNitroSound;
+type InitialPlaybackStatus = {
+  positionMillis?: number;
+  progressUpdateIntervalMillis?: number;
+  rate?: number;
+};
+
+type LegacyAudioRecorderPlayerConstructor = new () => NativePlaybackInstance;
+
+let LegacyAudioRecorderPlayer: LegacyAudioRecorderPlayerConstructor | undefined;
+let createNitroSound: (() => NativePlaybackInstance) | undefined;
 
 try {
   ({ createSound: createNitroSound } = require('react-native-nitro-sound'));
@@ -62,14 +66,14 @@ const createPlaybackInstance = (): NativePlaybackInstance | null => {
 const createPlaybackStatus = ({
   didJustFinish = false,
   durationMillis,
-  error = null,
+  error = '',
   isLoaded,
   isPlaying,
   positionMillis,
 }: {
   didJustFinish?: boolean;
   durationMillis: number;
-  error?: string | null;
+  error?: string;
   isLoaded: boolean;
   isPlaying: boolean;
   positionMillis: number;
@@ -91,12 +95,12 @@ const createPlaybackStatus = ({
 
 class NativeAudioSoundAdapter implements SoundReturnType {
   testID = 'native-audio-sound';
+  onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   private playbackInstance: NativePlaybackInstance | null;
   private sourceUri?: string;
-  private onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   private isDisposed = false;
   private isLoaded = false;
-  private isPlaying = false;
+  private playing = false;
   private durationMillis = 0;
   private positionMillis = 0;
   private playbackRate = 1;
@@ -109,7 +113,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
     onPlaybackStatusUpdate,
   }: {
     source?: { uri: string };
-    initialStatus?: Partial<AVPlaybackStatusToSet>;
+    initialStatus?: InitialPlaybackStatus;
     onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   }) {
     this.playbackInstance = createPlaybackInstance();
@@ -125,10 +129,10 @@ class NativeAudioSoundAdapter implements SoundReturnType {
 
   private emitPlaybackStatus({
     didJustFinish = false,
-    error = null,
+    error = '',
   }: {
     didJustFinish?: boolean;
-    error?: string | null;
+    error?: string;
   } = {}) {
     this.onPlaybackStatusUpdate?.(
       createPlaybackStatus({
@@ -136,7 +140,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
         durationMillis: this.durationMillis,
         error,
         isLoaded: this.isLoaded,
-        isPlaying: this.isPlaying,
+        isPlaying: this.playing,
         positionMillis: this.positionMillis,
       }),
     );
@@ -172,17 +176,19 @@ class NativeAudioSoundAdapter implements SoundReturnType {
     }
   }
 
-  private handlePlaybackProgress = ({ currentPosition, duration, isFinished }: NativePlaybackMeta) => {
+  private handlePlaybackProgress = ({
+    currentPosition,
+    duration,
+    isFinished,
+  }: NativePlaybackMeta) => {
     this.positionMillis = currentPosition ?? this.positionMillis;
     this.durationMillis = duration ?? this.durationMillis;
 
     const didJustFinish =
-      isFinished === true &&
-      this.durationMillis > 0 &&
-      this.positionMillis >= this.durationMillis;
+      isFinished === true && this.durationMillis > 0 && this.positionMillis >= this.durationMillis;
 
     if (didJustFinish) {
-      this.isPlaying = false;
+      this.playing = false;
     }
 
     this.emitPlaybackStatus({ didJustFinish });
@@ -191,7 +197,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
   private handlePlaybackEnd = ({ currentPosition, duration }: NativePlaybackEndMeta) => {
     this.positionMillis = currentPosition ?? this.positionMillis;
     this.durationMillis = duration ?? this.durationMillis;
-    this.isPlaying = false;
+    this.playing = false;
     this.emitPlaybackStatus({ didJustFinish: true });
   };
 
@@ -229,7 +235,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
       return;
     }
 
-    this.isPlaying = true;
+    this.playing = true;
     this.emitPlaybackStatus();
   };
 
@@ -243,7 +249,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
     }
 
     await this.playbackInstance.pausePlayer();
-    this.isPlaying = false;
+    this.playing = false;
     this.emitPlaybackStatus();
   };
 
@@ -274,7 +280,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
 
       // Some Android backends resume playback as a side effect of changing speed.
       // Preserve the previous paused state explicitly so rate changes stay silent.
-      if (!this.isPlaying) {
+      if (!this.playing) {
         await this.playbackInstance.pausePlayer();
         this.emitPlaybackStatus();
       }
@@ -294,7 +300,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
 
     await this.playbackInstance.stopPlayer();
     this.isLoaded = false;
-    this.isPlaying = false;
+    this.playing = false;
     this.positionMillis = 0;
     this.emitPlaybackStatus();
   };
@@ -315,7 +321,7 @@ class NativeAudioSoundAdapter implements SoundReturnType {
     this.detachListeners();
     this.playbackInstance?.dispose?.();
     this.isLoaded = false;
-    this.isPlaying = false;
+    this.playing = false;
     this.isDisposed = true;
   };
 }
@@ -324,7 +330,7 @@ const initializeSound =
   createNitroSound || LegacyAudioRecorderPlayer
     ? (
         source?: { uri: string },
-        initialStatus?: Partial<AVPlaybackStatusToSet>,
+        initialStatus?: InitialPlaybackStatus,
         onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
       ) => {
         if (!source?.uri) {
