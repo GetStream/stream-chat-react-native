@@ -45,6 +45,12 @@ const WAVEFORM_WIDTH = 2;
 const WAVEFORM_GAP = 2;
 const WAVE_MAX_HEIGHT = 20;
 const WAVE_MIN_HEIGHT = 2;
+const DRAG_HIT_SLOP = {
+  bottom: 12,
+  left: 12,
+  right: 12,
+  top: 12,
+};
 
 const clampProgress = (progress: number) => {
   'worklet';
@@ -141,6 +147,7 @@ export const WaveProgressBar = React.memo(
     const pan = useMemo(
       () =>
         Gesture.Pan()
+          .hitSlop(DRAG_HIT_SLOP)
           .maxPointers(1)
           .onStart(() => {
             const nextProgress = clampProgress(visualProgress.value);
