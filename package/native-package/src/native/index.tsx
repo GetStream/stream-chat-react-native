@@ -24,7 +24,6 @@ async function createResizedImage(
   quality: number,
   rotation: number = 0,
   outputPath?: string | null,
-  keepMeta = false,
   options: Options = defaultOptions,
 ): Promise<Response> {
   const { mode, onlyScaleDown } = { ...defaultOptions, ...options };
@@ -39,7 +38,6 @@ async function createResizedImage(
     onlyScaleDown,
     rotation,
     outputPath,
-    keepMeta,
   );
 }
 

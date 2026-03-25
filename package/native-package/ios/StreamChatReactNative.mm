@@ -1,7 +1,5 @@
 #import "StreamChatReactNative.h"
 #import <React/RCTLog.h>
-#import <AssetsLibrary/AssetsLibrary.h>
-#import <MobileCoreServices/MobileCoreServices.h>
 
 #if __has_include(<React/RCTLog.h>)
 #import <React/RCTLog.h>
@@ -19,12 +17,12 @@ NSString *moduleName = @"StreamChatReactNative";
 
 RCT_EXPORT_MODULE()
 
-RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width height:(double)height format:(NSString *)format quality:(double)quality mode:(NSString *)mode onlyScaleDown:(BOOL)onlyScaleDown rotation:(nonnull NSNumber *)rotation outputPath:(NSString *)outputPath keepMeta:(nonnull NSNumber *)keepMeta resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width height:(double)height format:(NSString *)format quality:(double)quality mode:(NSString *)mode onlyScaleDown:(BOOL)onlyScaleDown rotation:(nonnull NSNumber *)rotation outputPath:(NSString *)outputPath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
-    [self createResizedImage:uri width:width height:height format:format quality:quality mode:mode onlyScaleDown:onlyScaleDown rotation:rotation outputPath:outputPath keepMeta:keepMeta resolve:resolve reject:reject];
+    [self createResizedImage:uri width:width height:height format:format quality:quality mode:mode onlyScaleDown:onlyScaleDown rotation:rotation outputPath:outputPath resolve:resolve reject:reject];
 }
 
-- (void)createResizedImage:(NSString *)uri width:(double)width height:(double)height format:(NSString *)format quality:(double)quality mode:(NSString *)mode onlyScaleDown:(BOOL)onlyScaleDown rotation:(nonnull NSNumber *)rotation outputPath:(NSString *)outputPath keepMeta:(nonnull NSNumber *)keepMeta resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)createResizedImage:(NSString *)uri width:(double)width height:(double)height format:(NSString *)format quality:(double)quality mode:(NSString *)mode onlyScaleDown:(BOOL)onlyScaleDown rotation:(nonnull NSNumber *)rotation outputPath:(NSString *)outputPath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @try {
             CGSize newSize = CGSizeMake(width, height);
@@ -57,7 +55,7 @@ RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width hei
                     reject([NSString stringWithFormat: @"%ld", (long)error.code], error.description, nil);
                     return;
                 }
-                NSDictionary * response =  transformImage(image, uri, [rotation integerValue], newSize, fullPath, format, (int)quality, [keepMeta boolValue], @{@"mode": mode, @"onlyScaleDown": [NSNumber numberWithBool:onlyScaleDown]});
+                NSDictionary * response =  transformImage(image, [rotation integerValue], newSize, fullPath, format, (int)quality, @{@"mode": mode, @"onlyScaleDown": [NSNumber numberWithBool:onlyScaleDown]});
                 resolve(response);
             }];
         } @catch (NSException *exception) {
@@ -69,65 +67,21 @@ RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width hei
 
 
 
-bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float quality, NSMutableDictionary *metadata)
+bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float quality)
 {
-    if(metadata == nil){
-        NSData* data = nil;
-        if ([format isEqualToString:@"JPEG"]) {
-            data = UIImageJPEGRepresentation(image, quality / 100.0);
-        } else if ([format isEqualToString:@"PNG"]) {
-            data = UIImagePNGRepresentation(image);
-        }
-
-        if (data == nil) {
-            return NO;
-        }
-
-        NSFileManager* fileManager = [NSFileManager defaultManager];
-        return [fileManager createFileAtPath:fullPath contents:data attributes:nil];
+    NSData* data = nil;
+    if ([format isEqualToString:@"JPEG"]) {
+        data = UIImageJPEGRepresentation(image, quality / 100.0);
+    } else if ([format isEqualToString:@"PNG"]) {
+        data = UIImagePNGRepresentation(image);
     }
 
-    // process / write metadata together with image data
-    else{
-
-        CFStringRef imgType = kUTTypeJPEG;
-
-        if ([format isEqualToString:@"JPEG"]) {
-            [metadata setObject:@(quality / 100.0) forKey:(__bridge NSString *)kCGImageDestinationLossyCompressionQuality];
-        }
-        else if([format isEqualToString:@"PNG"]){
-            imgType = kUTTypePNG;
-        }
-        else{
-            return NO;
-        }
-
-        NSMutableData * destData = [NSMutableData data];
-
-        CGImageDestinationRef destination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)destData, imgType, 1, NULL);
-
-        @try{
-            CGImageDestinationAddImage(destination, image.CGImage, (__bridge CFDictionaryRef) metadata);
-
-            // write final image data with metadata to our destination
-            if (CGImageDestinationFinalize(destination)){
-
-                NSFileManager* fileManager = [NSFileManager defaultManager];
-                return [fileManager createFileAtPath:fullPath contents:destData attributes:nil];
-            }
-            else{
-                return NO;
-            }
-        }
-        @finally{
-            @try{
-                CFRelease(destination);
-            }
-            @catch(NSException *exception){
-                NSLog(@"Failed to release CGImageDestinationRef: %@", exception);
-            }
-        }
+    if (data == nil) {
+        return NO;
     }
+
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    return [fileManager createFileAtPath:fullPath contents:data attributes:nil];
 }
 
 NSString * generateFilePath(NSString * ext, NSString * outputPath)
@@ -268,81 +222,12 @@ UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlySca
     return newImage;
 }
 
-// Returns the image's metadata, or nil if failed to retrieve it.
-NSMutableDictionary * getImageMeta(NSString * path)
-{
-    if([path hasPrefix:@"assets-library"]) {
-
-        __block NSMutableDictionary* res = nil;
-
-        ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
-        {
-
-            NSDictionary *exif = [[myasset defaultRepresentation] metadata];
-            res = [exif mutableCopy];
-
-        };
-
-        ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
-        NSURL *url = [NSURL URLWithString:[path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-
-        [assetslibrary assetForURL:url resultBlock:resultblock failureBlock:^(NSError *error) { NSLog(@"error couldn't image from assets library"); }];
-
-        return res;
-
-    } else {
-
-        NSData* imageData = nil;
-
-        if ([path hasPrefix:@"data:"] || [path hasPrefix:@"file:"]) {
-            NSURL *imageUrl = [[NSURL alloc] initWithString:path];
-            imageData = [NSData dataWithContentsOfURL:imageUrl];
-
-        } else {
-            imageData = [NSData dataWithContentsOfFile:path];
-        }
-
-        if(imageData == nil){
-            NSLog(@"Could not get image file data to extract metadata.");
-            return nil;
-        }
-
-        CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
-
-
-        if(source != nil){
-
-            CFDictionaryRef metaRef = CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
-
-            // release CF image
-            CFRelease(source);
-
-            CFMutableDictionaryRef metaRefMutable = CFDictionaryCreateMutableCopy(NULL, 0, metaRef);
-
-            // release the source meta ref now that we've copie it
-            CFRelease(metaRef);
-
-            // bridge CF object so it auto releases
-            NSMutableDictionary* res = (NSMutableDictionary *)CFBridgingRelease(metaRefMutable);
-
-            return res;
-
-        }
-        else{
-            return nil;
-        }
-
-    }
-}
-
 NSDictionary * transformImage(UIImage *image,
-                              NSString * originalPath,
                               int rotation,
                               CGSize newSize,
                               NSString* fullPath,
                               NSString* format,
                               int quality,
-                              BOOL keepMeta,
                               NSDictionary* options)
 {
     if (image == nil) {
@@ -368,25 +253,8 @@ NSDictionary * transformImage(UIImage *image,
     if (scaledImage == nil) {
         [NSException raise:moduleName format:@"Can't resize the image."];
     }
-
-
-    NSMutableDictionary *metadata = nil;
-
-    // to be consistent with Android, we will only allow JPEG
-    // to do this.
-    if(keepMeta && [format isEqualToString:@"JPEG"]){
-
-        metadata = getImageMeta(originalPath);
-
-        // remove orientation (since we fix it)
-        // width/height meta is adjusted automatically
-        // NOTE: This might still leave some stale values due to resize
-        metadata[(NSString*)kCGImagePropertyOrientation] = @(1);
-
-    }
-
     // Compress and save the image
-    if (!saveImage(fullPath, scaledImage, format, quality, metadata)) {
+    if (!saveImage(fullPath, scaledImage, format, quality)) {
         [NSException raise:moduleName format:@"Can't save the image. Check your compression format and your output path"];
     }
 
