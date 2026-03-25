@@ -28,6 +28,7 @@ import { AudioPlayerState } from '../../../state-store/audio-player';
 import { primitives } from '../../../theme';
 import { AudioConfig } from '../../../types/types';
 import { ProgressControl } from '../../ProgressControl/ProgressControl';
+import { StableDurationLabel } from '../../ProgressControl/StableDurationLabel';
 import { WaveProgressBar } from '../../ProgressControl/WaveProgressBar';
 import { SpeedSettingsButton } from '../../ui/SpeedSettingsButton';
 
@@ -35,6 +36,16 @@ const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
 const ONE_SECOND_IN_MILLISECONDS = 1000;
 
 dayjs.extend(duration);
+
+const getAudioDurationLabel = (durationInMilliseconds: number) => {
+  if (!durationInMilliseconds) {
+    return '00:00';
+  }
+
+  return durationInMilliseconds / ONE_HOUR_IN_MILLISECONDS >= 1
+    ? dayjs.duration(durationInMilliseconds, 'milliseconds').format('HH:mm:ss')
+    : dayjs.duration(durationInMilliseconds, 'milliseconds').format('mm:ss');
+};
 
 export type AudioAttachmentType = AudioConfig &
   Pick<
@@ -188,13 +199,10 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     },
   } = useTheme();
 
+  const maxDurationLabel = useMemo(() => getAudioDurationLabel(duration), [duration]);
+
   const progressDuration = useMemo(
-    () =>
-      position
-        ? position / ONE_HOUR_IN_MILLISECONDS >= 1
-          ? dayjs.duration(position, 'milliseconds').format('HH:mm:ss')
-          : dayjs.duration(position, 'milliseconds').format('mm:ss')
-        : dayjs.duration(duration, 'milliseconds').format('mm:ss'),
+    () => getAudioDurationLabel(position || duration),
     [duration, position],
   );
 
@@ -242,16 +250,15 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           indicator
         ) : (
           <View style={[styles.audioInfo, audioInfo]}>
-            <Text
-              style={[
-                styles.progressDurationText,
-                { color: isPlaying ? semantics.accentPrimary : semantics.textSecondary },
-                progressDurationText,
-                stylesProps?.durationText,
-              ]}
-            >
-              {progressDuration}
-            </Text>
+            <StableDurationLabel
+              accessibilityLabel='Progress Duration'
+              reserveLabel={maxDurationLabel}
+              label={progressDuration}
+              style={[styles.progressDurationText, progressDurationText, stylesProps?.durationText]}
+              visibleStyle={{
+                color: isPlaying ? semantics.accentPrimary : semantics.textSecondary,
+              }}
+            />
             {!hideProgressBar && (
               <View style={[styles.progressControlContainer, progressControlContainer]}>
                 {item.waveform_data ? (
@@ -339,6 +346,7 @@ const useStyles = () => {
       },
       progressDurationText: {
         color: semantics.textPrimary,
+        fontVariant: ['tabular-nums'],
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,

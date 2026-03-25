@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import dayjs from 'dayjs';
 
@@ -14,10 +14,21 @@ import { Play } from '../../../../icons/Play';
 import { AudioPlayerState } from '../../../../state-store/audio-player';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
+import { StableDurationLabel } from '../../../ProgressControl/StableDurationLabel';
 import { WaveProgressBar } from '../../../ProgressControl/WaveProgressBar';
 
 const ONE_SECOND_IN_MILLISECONDS = 1000;
 const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
+
+const getAudioDurationLabel = (durationInMilliseconds: number) => {
+  if (!durationInMilliseconds) {
+    return '00:00';
+  }
+
+  return durationInMilliseconds / ONE_HOUR_IN_MILLISECONDS >= 1
+    ? dayjs.duration(durationInMilliseconds, 'milliseconds').format('HH:mm:ss')
+    : dayjs.duration(durationInMilliseconds, 'milliseconds').format('mm:ss');
+};
 
 const audioPlayerSelector = (state: AudioPlayerState) => ({
   duration: state.duration,
@@ -90,13 +101,10 @@ export const AudioRecordingPreview = () => {
     audioPlayer.toggle();
   };
 
+  const maxDurationLabel = useMemo(() => getAudioDurationLabel(duration), [duration]);
+
   const progressDuration = useMemo(
-    () =>
-      position
-        ? position / ONE_HOUR_IN_MILLISECONDS >= 1
-          ? dayjs.duration(position, 'milliseconds').format('HH:mm:ss')
-          : dayjs.duration(position, 'milliseconds').format('mm:ss')
-        : dayjs.duration(duration, 'milliseconds').format('mm:ss'),
+    () => getAudioDurationLabel(position || duration),
     [duration, position],
   );
 
@@ -120,15 +128,15 @@ export const AudioRecordingPreview = () => {
           )}
         </Pressable>
         {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
-        <Text
-          style={[
-            styles.durationText,
-            currentTime,
-            { color: isPlaying ? semantics.accentPrimary : semantics.textPrimary },
-          ]}
-        >
-          {progressDuration}
-        </Text>
+        <StableDurationLabel
+          accessibilityLabel='Progress Duration'
+          reserveLabel={maxDurationLabel}
+          label={progressDuration}
+          style={[styles.durationText, currentTime]}
+          visibleStyle={{
+            color: isPlaying ? semantics.accentPrimary : semantics.textPrimary,
+          }}
+        />
       </View>
       <View style={[styles.progressBar, progressBar]}>
         {/* Since the progress is in range 0-1 we convert it in terms of 100% */}
@@ -158,6 +166,7 @@ const useStyles = () => {
           gap: primitives.spacingMd,
         },
         durationText: {
+          fontVariant: ['tabular-nums'],
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
