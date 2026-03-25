@@ -342,3 +342,11 @@ export const useIsOverlayActive = (id: string) => {
 
   return useStateStore(overlayStore, messageOverlaySelector);
 };
+
+export const activeIdSelector = (nextState: OverlayState) => ({ id: nextState.id });
+
+export const useHasActiveId = () => {
+  const { id } = useStateStore(overlayStore, activeIdSelector);
+
+  return !!id;
+};

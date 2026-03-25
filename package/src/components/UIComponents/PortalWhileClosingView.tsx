@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef } from 'react';
 import { Platform, View } from 'react-native';
 
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -11,6 +11,7 @@ import {
   createClosingPortalLayoutRegistrationId,
   setClosingPortalLayout,
   useShouldTeleportToClosingPortal,
+  useHasActiveId,
 } from '../../state-store';
 
 type PortalWhileClosingViewProps = {
@@ -67,53 +68,25 @@ export const PortalWhileClosingView = ({
   portalHostName,
   portalName,
 }: PortalWhileClosingViewProps) => {
-  const containerRef = useRef<View | null>(null);
   const registrationIdRef = useRef<string | null>(null);
-  const placeholderLayout = useSharedValue({ h: 0, w: 0 });
-  const insets = useSafeAreaInsets();
 
   if (!registrationIdRef.current) {
     registrationIdRef.current = createClosingPortalLayoutRegistrationId();
   }
 
   const registrationId = registrationIdRef.current;
+
+  const { syncPortalLayout, containerRef, placeholderLayout } = useSyncingApi(
+    portalHostName,
+    registrationId,
+  );
   const shouldTeleport = useShouldTeleportToClosingPortal(portalHostName, registrationId);
-
-  const syncPortalLayout = useStableCallback(() => {
-    containerRef.current?.measureInWindow((x, y, width, height) => {
-      const absolute = {
-        x,
-        y: y + (Platform.OS === 'android' ? insets.top : 0),
-      };
-
-      if (!width || !height) {
-        return;
-      }
-
-      placeholderLayout.value = { h: height, w: width };
-
-      setClosingPortalLayout(portalHostName, registrationId, {
-        ...absolute,
-        h: height,
-        w: width,
-      });
-    });
-  });
 
   useEffect(() => {
     return () => {
       clearClosingPortalLayout(portalHostName, registrationId);
     };
   }, [portalHostName, registrationId]);
-
-  useEffect(() => {
-    // Measure once after mount and layout settle.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        syncPortalLayout();
-      });
-    });
-  }, [insets.top, portalHostName, syncPortalLayout]);
 
   const placeholderStyle = useAnimatedStyle(() => ({
     height: placeholderLayout.value.h,
@@ -135,5 +108,48 @@ export const PortalWhileClosingView = ({
         />
       ) : null}
     </>
+  );
+};
+
+const useSyncingApi = (portalHostName: string, registrationId: string) => {
+  const containerRef = useRef<View | null>(null);
+  const placeholderLayout = useSharedValue({ h: 0, w: 0 });
+  const insets = useSafeAreaInsets();
+  const hasActiveId = useHasActiveId();
+
+  const syncPortalLayout = useStableCallback(() => {
+    if (!hasActiveId) {
+      return;
+    }
+
+    containerRef.current?.measureInWindow((x, y, width, height) => {
+      const absolute = {
+        x,
+        y: y + (Platform.OS === 'android' ? insets.top : 0),
+      };
+
+      if (!width || !height) {
+        return;
+      }
+
+      placeholderLayout.value = { h: height, w: width };
+
+      setClosingPortalLayout(portalHostName, registrationId, {
+        ...absolute,
+        h: height,
+        w: width,
+      });
+    });
+  });
+
+  useEffect(() => {
+    if (hasActiveId) {
+      syncPortalLayout();
+    }
+  }, [insets.bottom, hasActiveId, syncPortalLayout]);
+
+  return useMemo(
+    () => ({ syncPortalLayout, containerRef, placeholderLayout }),
+    [placeholderLayout, syncPortalLayout],
   );
 };
