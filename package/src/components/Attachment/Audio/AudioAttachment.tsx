@@ -131,7 +131,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
-    // If the attachment is a voice recording, we rely on the duration from the attachment as the one from the react-native-video is incorrect.
+    // Voice recordings already carry the canonical duration in the attachment payload.
     if (isVoiceRecording) {
       return;
     }

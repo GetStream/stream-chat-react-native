@@ -52,8 +52,8 @@ export const AudioRecordingPreview = () => {
   const audioPlayer = useAudioPlayer({
     duration: recordingDuration / ONE_SECOND_IN_MILLISECONDS,
     mimeType: 'audio/aac',
-    // This is a temporary flag to manage audio player for voice recording in preview as the one in message list uses react-native-video.
-    previewVoiceRecording: !(NativeHandlers.SDK === 'stream-chat-expo'),
+    // The preview still uses the recorder-backed player until both playback paths are unified.
+    previewVoiceRecording: false,
     type: 'voiceRecording',
     uri,
   });
