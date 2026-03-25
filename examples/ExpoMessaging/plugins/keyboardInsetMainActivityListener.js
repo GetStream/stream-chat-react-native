@@ -4,6 +4,7 @@ const requiredImports = [
   'import android.os.Build',
   'import android.os.Bundle',
   'import android.view.View',
+  'import androidx.core.graphics.Insets',
   'import androidx.core.view.ViewCompat',
   'import androidx.core.view.WindowInsetsCompat',
   'import androidx.core.view.updatePadding',
@@ -13,19 +14,22 @@ const customInsetHandler = `
     if (Build.VERSION.SDK_INT >= 35) {
         val rootView = findViewById<View>(android.R.id.content)
 
+        val initial = Insets.of(
+            rootView.paddingLeft,
+            rootView.paddingTop,
+            rootView.paddingRight,
+            rootView.paddingBottom
+        )
+
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-            val bars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
-                        or WindowInsetsCompat.Type.ime()
-            )
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
             rootView.updatePadding(
-                left = bars.left,
-                top = bars.top,
-                right = bars.right,
-                bottom = bars.bottom
+                left = initial.left,
+                top = initial.top,
+                right = initial.right,
+                bottom = initial.bottom + ime.bottom
             )
-            WindowInsetsCompat.CONSUMED
+            insets
         }
     }
 `;
