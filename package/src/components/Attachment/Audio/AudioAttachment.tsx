@@ -15,6 +15,7 @@ import {
 import { PlayPauseButton } from './PlayPauseButton';
 
 import { useTheme } from '../../../contexts';
+import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks';
 import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
 import {
@@ -28,6 +29,7 @@ import { AudioPlayerState } from '../../../state-store/audio-player';
 import { primitives } from '../../../theme';
 import { AudioConfig } from '../../../types/types';
 import { ProgressControl } from '../../ProgressControl/ProgressControl';
+import { StableDurationLabel } from '../../ProgressControl/StableDurationLabel';
 import { WaveProgressBar } from '../../ProgressControl/WaveProgressBar';
 import { SpeedSettingsButton } from '../../ui/SpeedSettingsButton';
 
@@ -35,6 +37,16 @@ const ONE_HOUR_IN_MILLISECONDS = 3600 * 1000;
 const ONE_SECOND_IN_MILLISECONDS = 1000;
 
 dayjs.extend(duration);
+
+const getAudioDurationLabel = (durationInMilliseconds: number) => {
+  if (!durationInMilliseconds) {
+    return '00:00';
+  }
+
+  return durationInMilliseconds / ONE_HOUR_IN_MILLISECONDS >= 1
+    ? dayjs.duration(durationInMilliseconds, 'milliseconds').format('HH:mm:ss')
+    : dayjs.duration(durationInMilliseconds, 'milliseconds').format('mm:ss');
+};
 
 export type AudioAttachmentType = AudioConfig &
   Pick<
@@ -131,7 +143,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 
   /** This is for Native CLI Apps */
   const handleLoad = (payload: VideoPayloadData) => {
-    // If the attachment is a voice recording, we rely on the duration from the attachment as the one from the react-native-video is incorrect.
+    // Voice recordings already carry the canonical duration in the attachment payload.
     if (isVoiceRecording) {
       return;
     }
@@ -157,18 +169,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     await audioPlayer.stop();
   };
 
-  const dragStart = () => {
+  const dragStart = useStableCallback(() => {
     audioPlayer.pause();
-  };
+  });
 
-  const dragProgress = (currentProgress: number) => {
-    audioPlayer.progress = currentProgress;
-  };
-
-  const dragEnd = async (currentProgress: number) => {
+  const dragEnd = useStableCallback(async (currentProgress: number) => {
     const positionInSeconds = (currentProgress * duration) / ONE_SECOND_IN_MILLISECONDS;
     await audioPlayer.seek(positionInSeconds);
-  };
+  });
 
   const onSpeedChangeHandler = async () => {
     await audioPlayer.changePlaybackRate();
@@ -192,13 +200,10 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     },
   } = useTheme();
 
+  const maxDurationLabel = useMemo(() => getAudioDurationLabel(duration), [duration]);
+
   const progressDuration = useMemo(
-    () =>
-      position
-        ? position / ONE_HOUR_IN_MILLISECONDS >= 1
-          ? dayjs.duration(position, 'milliseconds').format('HH:mm:ss')
-          : dayjs.duration(position, 'milliseconds').format('mm:ss')
-        : dayjs.duration(duration, 'milliseconds').format('mm:ss'),
+    () => getAudioDurationLabel(position || duration),
     [duration, position],
   );
 
@@ -246,23 +251,21 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
           indicator
         ) : (
           <View style={[styles.audioInfo, audioInfo]}>
-            <Text
-              style={[
-                styles.progressDurationText,
-                { color: isPlaying ? semantics.accentPrimary : semantics.textSecondary },
-                progressDurationText,
-                stylesProps?.durationText,
-              ]}
-            >
-              {progressDuration}
-            </Text>
+            <StableDurationLabel
+              accessibilityLabel='Progress Duration'
+              reserveLabel={maxDurationLabel}
+              label={progressDuration}
+              style={[styles.progressDurationText, progressDurationText, stylesProps?.durationText]}
+              visibleStyle={{
+                color: isPlaying ? semantics.accentPrimary : semantics.textSecondary,
+              }}
+            />
             {!hideProgressBar && (
               <View style={[styles.progressControlContainer, progressControlContainer]}>
                 {item.waveform_data ? (
                   <WaveProgressBar
                     isPlaying={isPlaying}
                     onEndDrag={dragEnd}
-                    onProgressDrag={dragProgress}
                     onStartDrag={dragStart}
                     progress={progress}
                     waveformData={item.waveform_data}
@@ -344,6 +347,7 @@ const useStyles = () => {
       },
       progressDurationText: {
         color: semantics.textPrimary,
+        fontVariant: ['tabular-nums'],
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,

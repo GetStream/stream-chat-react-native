@@ -1,12 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import { ProgressControlThumb } from './ProgressThumb';
 
@@ -49,6 +45,43 @@ const WAVEFORM_WIDTH = 2;
 const WAVEFORM_GAP = 2;
 const WAVE_MAX_HEIGHT = 20;
 const WAVE_MIN_HEIGHT = 2;
+const DRAG_HIT_SLOP = {
+  bottom: 12,
+  left: 12,
+  right: 12,
+  top: 12,
+};
+
+const clampProgress = (progress: number) => {
+  'worklet';
+  return Math.max(0, Math.min(progress, 1));
+};
+
+type WaveformBarsProps = {
+  color: ColorValue;
+  heights: number[];
+  waveformStyle?: StyleProp<ViewStyle>;
+};
+
+const WaveformBars = React.memo(({ color, heights, waveformStyle }: WaveformBarsProps) => (
+  <View style={styles.waveformLayer}>
+    {heights.map((height, index) => (
+      <View
+        key={index}
+        style={[
+          styles.waveform,
+          {
+            backgroundColor: color,
+            height,
+          },
+          waveformStyle,
+        ]}
+      />
+    ))}
+  </View>
+));
+
+WaveformBars.displayName = 'WaveformBars';
 
 export const WaveProgressBar = React.memo(
   (props: WaveProgressBarProps) => {
@@ -62,30 +95,16 @@ export const WaveProgressBar = React.memo(
       progress,
       waveformData,
     } = props;
+    const [showInteractiveLayer, setShowInteractiveLayer] = useState(
+      () => progress > 0 || isPlaying,
+    );
     const eachWaveformWidth = WAVEFORM_WIDTH + WAVEFORM_GAP;
     const fullWidth = (amplitudesCount - 1) * eachWaveformWidth;
-    const state = useSharedValue(progress);
-    const [currentWaveformProgress, setCurrentWaveformProgress] = useState<number>(0);
-
-    const waveFormNumberFromProgress = useCallback(
-      (progress: number) => {
-        'worklet';
-        const progressInPrecision = Number(progress.toFixed(2));
-        const progressInWaveformWidth = Number((progressInPrecision * fullWidth).toFixed(0));
-        const progressInWaveformNumber = Math.floor(progressInWaveformWidth / 4);
-        runOnJS(setCurrentWaveformProgress)(progressInWaveformNumber);
-      },
-      [fullWidth],
-    );
-
-    useAnimatedReaction(
-      () => progress,
-      (newProgress) => {
-        state.value = newProgress;
-        waveFormNumberFromProgress(newProgress);
-      },
-      [progress],
-    );
+    const maxThumbTranslateX = Math.max(fullWidth - eachWaveformWidth, 0);
+    const maxProgressWidth = fullWidth + WAVEFORM_WIDTH;
+    const dragStartProgress = useSharedValue(0);
+    const isDragging = useSharedValue(false);
+    const visualProgress = useSharedValue(progress);
 
     const {
       theme: {
@@ -94,29 +113,84 @@ export const WaveProgressBar = React.memo(
       },
     } = useTheme();
 
+    useEffect(() => {
+      if (!isDragging.value) {
+        visualProgress.value = progress;
+      }
+    }, [isDragging, progress, visualProgress]);
+
+    useEffect(() => {
+      setShowInteractiveLayer(progress > 0 || isPlaying);
+    }, [isPlaying, progress]);
+
+    const handleStartDrag = useCallback(
+      (nextProgress: number) => {
+        setShowInteractiveLayer(true);
+        onStartDrag?.(nextProgress);
+      },
+      [onStartDrag],
+    );
+
+    const handleProgressDrag = useCallback(
+      (nextProgress: number) => {
+        onProgressDrag?.(nextProgress);
+      },
+      [onProgressDrag],
+    );
+
+    const handleEndDrag = useCallback(
+      (nextProgress: number) => {
+        onEndDrag?.(nextProgress);
+      },
+      [onEndDrag],
+    );
+
     const pan = useMemo(
       () =>
         Gesture.Pan()
+          .hitSlop(DRAG_HIT_SLOP)
           .maxPointers(1)
           .onStart(() => {
+            const nextProgress = clampProgress(visualProgress.value);
+            dragStartProgress.value = nextProgress;
+            isDragging.value = true;
             if (onStartDrag) {
-              runOnJS(onStartDrag)(state.value);
+              runOnJS(handleStartDrag)(nextProgress);
             }
           })
           .onUpdate((event) => {
-            const newProgress = Math.max(0, Math.min((state.value + event.x) / fullWidth, 1));
-            state.value = newProgress;
-            waveFormNumberFromProgress(newProgress);
+            if (fullWidth <= 0) {
+              return;
+            }
+            const nextProgress = clampProgress(
+              dragStartProgress.value + event.translationX / fullWidth,
+            );
+            visualProgress.value = nextProgress;
+            if (onProgressDrag) {
+              runOnJS(handleProgressDrag)(nextProgress);
+            }
           })
           .onEnd(() => {
+            isDragging.value = false;
             if (onEndDrag) {
-              runOnJS(onEndDrag)(state.value);
+              runOnJS(handleEndDrag)(visualProgress.value);
             }
           }),
-      [fullWidth, onEndDrag, onStartDrag, state, waveFormNumberFromProgress],
+      [
+        dragStartProgress,
+        fullWidth,
+        handleEndDrag,
+        handleProgressDrag,
+        handleStartDrag,
+        isDragging,
+        onEndDrag,
+        onProgressDrag,
+        onStartDrag,
+        visualProgress,
+      ],
     );
 
-    const stringifiedWaveformData = waveformData.toString();
+    const stringifiedWaveformData = useMemo(() => waveformData.toString(), [waveformData]);
 
     const resampledWaveformData = useMemo(
       () => resampleWaveformData(waveformData, amplitudesCount),
@@ -124,12 +198,36 @@ export const WaveProgressBar = React.memo(
       [amplitudesCount, stringifiedWaveformData],
     );
 
+    const waveformHeights = useMemo(
+      () =>
+        resampledWaveformData.map((waveform) =>
+          waveform * WAVE_MAX_HEIGHT > WAVE_MIN_HEIGHT
+            ? waveform * WAVE_MAX_HEIGHT
+            : WAVE_MIN_HEIGHT,
+        ),
+      [resampledWaveformData],
+    );
+
+    const progressOverlayStyles = useAnimatedStyle(
+      () => ({
+        width: clampProgress(visualProgress.value) * maxProgressWidth,
+      }),
+      [maxProgressWidth],
+    );
+
     const thumbStyles = useAnimatedStyle(
       () => ({
         position: 'absolute',
-        transform: [{ translateX: currentWaveformProgress * eachWaveformWidth }],
+        transform: [
+          {
+            translateX: Math.min(
+              clampProgress(visualProgress.value) * fullWidth,
+              maxThumbTranslateX,
+            ),
+          },
+        ],
       }),
-      [currentWaveformProgress, fullWidth],
+      [fullWidth, maxThumbTranslateX],
     );
 
     return (
@@ -140,36 +238,42 @@ export const WaveProgressBar = React.memo(
           }}
           style={[styles.container, container]}
         >
-          {resampledWaveformData.map((waveform, index) => (
+          <WaveformBars
+            color={semantics.chatWaveformBar}
+            heights={waveformHeights}
+            waveformStyle={waveformTheme}
+          />
+          {showInteractiveLayer ? (
             <Animated.View
-              key={index}
-              style={[
-                styles.waveform,
-                {
-                  backgroundColor:
-                    index < currentWaveformProgress
-                      ? semantics.chatWaveformBarPlaying
-                      : semantics.chatWaveformBar,
-                  height:
-                    waveform * WAVE_MAX_HEIGHT > WAVE_MIN_HEIGHT
-                      ? waveform * WAVE_MAX_HEIGHT
-                      : WAVE_MIN_HEIGHT,
-                },
-                waveformTheme,
-              ]}
-            />
-          ))}
-          {(onEndDrag || onProgressDrag) && (
-            <Animated.View style={[thumbStyles, thumb]}>
-              <ProgressControlThumb isPlaying={isPlaying} />
+              pointerEvents='none'
+              style={[styles.progressOverlay, progressOverlayStyles]}
+            >
+              <WaveformBars
+                color={semantics.chatWaveformBarPlaying}
+                heights={waveformHeights}
+                waveformStyle={waveformTheme}
+              />
             </Animated.View>
-          )}
+          ) : null}
+          {(onEndDrag || onProgressDrag) &&
+            (showInteractiveLayer ? (
+              <Animated.View style={[thumbStyles, thumb]}>
+                <ProgressControlThumb isPlaying={isPlaying} />
+              </Animated.View>
+            ) : (
+              <View style={[styles.idleThumb, thumb]}>
+                <ProgressControlThumb isPlaying={isPlaying} />
+              </View>
+            ))}
         </View>
       </GestureDetector>
     );
   },
   (prevProps, nextProps) => {
     if (prevProps.amplitudesCount !== nextProps.amplitudesCount) {
+      return false;
+    }
+    if (prevProps.isPlaying !== nextProps.isPlaying) {
       return false;
     }
     if (prevProps.progress !== nextProps.progress) {
@@ -182,6 +286,21 @@ export const WaveProgressBar = React.memo(
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    position: 'relative',
+  },
+  idleThumb: {
+    left: 0,
+    position: 'absolute',
+  },
+  progressOverlay: {
+    left: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    top: 0,
+  },
+  waveformLayer: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: WAVEFORM_GAP,
