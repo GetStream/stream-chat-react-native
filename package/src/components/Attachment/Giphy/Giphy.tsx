@@ -80,6 +80,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
               variant={isPrimaryAction ? 'primary' : 'secondary'}
               type='ghost'
               size='sm'
+              testID={`${action.value}-action-button`}
               onPress={() => {
                 if (action?.name && action?.value && handleAction) {
                   handleAction(action.name, action.value);

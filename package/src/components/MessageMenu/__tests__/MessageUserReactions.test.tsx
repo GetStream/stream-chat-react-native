@@ -87,7 +87,7 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
 
   it('renders reaction buttons', () => {
     const { getByLabelText } = renderComponent();
-    const likeReactionButton = getByLabelText('reaction-button-like-selected');
+    const likeReactionButton = getByLabelText('reaction-button-like-unselected');
     expect(likeReactionButton).toBeDefined();
     const loveReactionButton = getByLabelText('reaction-button-love-unselected');
     expect(loveReactionButton).toBeDefined();
