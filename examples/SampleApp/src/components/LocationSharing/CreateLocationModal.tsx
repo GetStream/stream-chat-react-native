@@ -1,8 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   AlertButton,
+  Linking,
   Modal,
+  PermissionsAndroid,
   Text,
   View,
   Pressable,
@@ -11,7 +14,10 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import Geolocation, { GeolocationResponse } from '@react-native-community/geolocation';
+import Geolocation, {
+  GeolocationError,
+  GeolocationResponse,
+} from '@react-native-community/geolocation';
 import {
   useChatContext,
   useMessageComposer,
@@ -26,12 +32,18 @@ type LiveLocationCreateModalProps = {
 };
 
 const endedAtDurations = [60000, 600000, 3600000]; // 1 min, 10 mins, 1 hour
+const LOCATION_PERMISSION_ERROR = 'Location permission is required.';
+const LOCATION_SETTINGS_ERROR = 'Location permission is blocked. Enable it in Settings.';
 
 export const LiveLocationCreateModal = ({
   visible,
   onRequestClose,
 }: LiveLocationCreateModalProps) => {
   const [location, setLocation] = useState<GeolocationResponse>();
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [locationPermissionIssue, setLocationPermissionIssue] = useState(false);
+  const [permissionBlocked, setPermissionBlocked] = useState(false);
+  const [locationSetupAttempt, setLocationSetupAttempt] = useState(0);
   const messageComposer = useMessageComposer();
   const { width, height } = useWindowDimensions();
   const { client } = useChatContext();
@@ -43,6 +55,7 @@ export const LiveLocationCreateModal = ({
   const { t } = useTranslationContext();
   const mapRef = useRef<MapView | null>(null);
   const markerRef = useRef<MapMarker | null>(null);
+  const watchIdRef = useRef<number | null>(null);
 
   const aspect_ratio = width / height;
 
@@ -59,10 +72,75 @@ export const LiveLocationCreateModal = ({
     }
   }, [aspect_ratio, location]);
 
+  const ensureAndroidLocationPermission = async (): Promise<{
+    blocked: boolean;
+    granted: boolean;
+  }> => {
+    if (Platform.OS !== 'android') {
+      return { blocked: false, granted: true };
+    }
+
+    const finePermission = PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
+    const coarsePermission = PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION;
+    const [hasFinePermission, hasCoarsePermission] = await Promise.all([
+      PermissionsAndroid.check(finePermission),
+      PermissionsAndroid.check(coarsePermission),
+    ]);
+
+    if (hasFinePermission || hasCoarsePermission) {
+      setPermissionBlocked(false);
+      return { blocked: false, granted: true };
+    }
+
+    const result = await PermissionsAndroid.requestMultiple([finePermission, coarsePermission]);
+    const fineResult = result[finePermission];
+    const coarseResult = result[coarsePermission];
+    const granted =
+      fineResult === PermissionsAndroid.RESULTS.GRANTED ||
+      coarseResult === PermissionsAndroid.RESULTS.GRANTED;
+
+    if (granted) {
+      setPermissionBlocked(false);
+      return { blocked: false, granted: true };
+    }
+
+    const blocked =
+      fineResult === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
+      coarseResult === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN;
+    setPermissionBlocked(blocked);
+    return { blocked, granted: false };
+  };
+
+  const isPermissionError = (error: GeolocationError) =>
+    error.code === error.PERMISSION_DENIED || error.code === 1;
+
+  const retryLocationSetup = () => {
+    setLocation(undefined);
+    setPermissionBlocked(false);
+    setLocationPermissionIssue(false);
+    setLocationError(null);
+    setLocationSetupAttempt((current) => current + 1);
+  };
+
+  const openSettings = async () => {
+    try {
+      await Linking.openSettings();
+    } catch (error) {
+      console.error('openSettings', error);
+    }
+  };
+
   useEffect(() => {
-    let watchId: number | null = null;
-    const watchLocationHandler = async () => {
-      watchId = await Geolocation.watchPosition(
+    if (!visible) {
+      return;
+    }
+
+    let isMounted = true;
+    const startWatchingLocation = () => {
+      setLocationError(null);
+      setLocationPermissionIssue(false);
+
+      watchIdRef.current = Geolocation.watchPosition(
         (position) => {
           setLocation(position);
           const newPosition = {
@@ -74,12 +152,16 @@ export const LiveLocationCreateModal = ({
           if (mapRef.current?.animateToRegion) {
             mapRef.current.animateToRegion(newPosition, 500);
           }
-          // This is android only
           if (Platform.OS === 'android' && markerRef.current?.animateMarkerToCoordinate) {
             markerRef.current.animateMarkerToCoordinate(newPosition, 500);
           }
         },
         (error) => {
+          if (!isMounted) {
+            return;
+          }
+          setLocationPermissionIssue(isPermissionError(error));
+          setLocationError(error.message || 'Unable to fetch your current location.');
           console.error('watchPosition', error);
         },
         {
@@ -90,13 +172,41 @@ export const LiveLocationCreateModal = ({
         },
       );
     };
+
+    const watchLocationHandler = async () => {
+      const { blocked, granted } = await ensureAndroidLocationPermission();
+      if (!granted) {
+        if (isMounted) {
+          setLocationPermissionIssue(true);
+          setLocationError(blocked ? LOCATION_SETTINGS_ERROR : LOCATION_PERMISSION_ERROR);
+        }
+        return;
+      }
+
+      if (Platform.OS === 'android') {
+        startWatchingLocation();
+        return;
+      }
+
+      Geolocation.requestAuthorization(undefined, (error) => {
+        if (!isMounted) {
+          return;
+        }
+        setLocationPermissionIssue(isPermissionError(error));
+        setLocationError(error.message || 'Location permission is required.');
+        console.error('requestAuthorization', error);
+      });
+      startWatchingLocation();
+    };
     watchLocationHandler();
     return () => {
-      if (watchId) {
-        Geolocation.clearWatch(watchId);
+      isMounted = false;
+      if (watchIdRef.current !== null) {
+        Geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
       }
     };
-  }, [aspect_ratio]);
+  }, [aspect_ratio, locationSetupAttempt, visible]);
 
   const buttons = [
     {
@@ -132,23 +242,33 @@ export const LiveLocationCreateModal = ({
       text: 'Share Current Location',
       description: 'Share your current location once',
       onPress: async () => {
-        Geolocation.getCurrentPosition(async (position) => {
-          if (position.coords) {
-            await messageComposer.locationComposer.setData({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            });
-            await messageComposer.sendLocation();
-            onRequestClose();
-          }
-        });
+        const { blocked, granted } = await ensureAndroidLocationPermission();
+        if (!granted) {
+          setLocationPermissionIssue(true);
+          setLocationError(blocked ? LOCATION_SETTINGS_ERROR : LOCATION_PERMISSION_ERROR);
+          return;
+        }
+
+        setLocationPermissionIssue(false);
+        Geolocation.getCurrentPosition(
+          async (position) => {
+            if (position.coords) {
+              await messageComposer.locationComposer.setData({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              });
+              await messageComposer.sendLocation();
+              onRequestClose();
+            }
+          },
+          (error) => {
+            setLocationPermissionIssue(isPermissionError(error));
+            setLocationError(error.message || 'Unable to fetch your current location.');
+          },
+        );
       },
     },
   ];
-
-  if (!location && client) {
-    return null;
-  }
 
   return (
     <Modal
@@ -165,13 +285,13 @@ export const LiveLocationCreateModal = ({
         <View style={styles.rightContent} />
       </View>
 
-      <MapView
-        cameraZoomRange={{ maxCenterCoordinateDistance: 2000 }}
-        initialRegion={region}
-        ref={mapRef}
-        style={styles.mapView}
-      >
-        {location && (
+      {location && region ? (
+        <MapView
+          cameraZoomRange={{ maxCenterCoordinateDistance: 2000 }}
+          initialRegion={region}
+          ref={mapRef}
+          style={styles.mapView}
+        >
           <Marker
             coordinate={{
               latitude: location.coords.latitude,
@@ -183,13 +303,45 @@ export const LiveLocationCreateModal = ({
           >
             <View style={styles.markerWrapper}>
               <Image
-                source={{ uri: client.user?.image || '' }}
+                source={{ uri: client?.user?.image || '' }}
                 style={[styles.markerImage, { borderColor: accent_blue }]}
               />
             </View>
           </Marker>
-        )}
-      </MapView>
+        </MapView>
+      ) : (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator color={accent_blue} />
+          <Text style={[styles.loadingText, { color: grey }]}>
+            {locationError || t('Fetching your current location...')}
+          </Text>
+          {permissionBlocked ? (
+            <Pressable
+              onPress={openSettings}
+              style={({ pressed }) => [
+                styles.settingsButton,
+                { borderColor: pressed ? accent_blue : grey_whisper },
+              ]}
+            >
+              <Text style={[styles.settingsButtonText, { color: accent_blue }]}>
+                {t('Open Settings')}
+              </Text>
+            </Pressable>
+          ) : locationPermissionIssue && Platform.OS === 'android' ? (
+            <Pressable
+              onPress={retryLocationSetup}
+              style={({ pressed }) => [
+                styles.settingsButton,
+                { borderColor: pressed ? accent_blue : grey_whisper },
+              ]}
+            >
+              <Text style={[styles.settingsButtonText, { color: accent_blue }]}>
+                {t('Allow Location')}
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
+      )}
       <View style={styles.buttons}>
         {buttons.map((button, index) => (
           <Pressable
@@ -217,6 +369,26 @@ const styles = StyleSheet.create({
   mapView: {
     width: 'auto',
     flex: 3,
+  },
+  loadingContainer: {
+    flex: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    fontSize: 14,
+  },
+  settingsButton: {
+    borderWidth: 1,
+    borderRadius: 8,
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  settingsButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   textStyle: {
     fontSize: 12,
