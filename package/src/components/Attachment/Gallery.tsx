@@ -327,14 +327,7 @@ const GalleryThumbnail = ({
           });
         }
       }}
-      style={({ pressed }) => [
-        styles.imageContainer,
-        {
-          opacity: pressed ? 0.8 : 1,
-          flex: thumbnail.flex,
-        },
-        imageContainer,
-      ]}
+      style={[styles.imageContainer, { flex: thumbnail.flex }, imageContainer]}
       testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}-item-${rowIndex}`}
       {...additionalPressableProps}
     >
