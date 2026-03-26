@@ -315,7 +315,7 @@ export const LiveLocationCreateModal = ({
           <Text style={[styles.loadingText, { color: grey }]}>
             {locationError || t('Fetching your current location...')}
           </Text>
-          {permissionBlocked ? (
+          {permissionBlocked || (Platform.OS === 'ios' && locationPermissionIssue) ? (
             <Pressable
               onPress={openSettings}
               style={({ pressed }) => [
