@@ -342,7 +342,7 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
           color: semantics.textPrimary,
-          paddingBottom: primitives.spacingXxs,
+          paddingVertical: primitives.spacingSm,
           textAlign: 'center',
         },
         showMoreReactionsButton: { paddingHorizontal: primitives.spacingXs },
