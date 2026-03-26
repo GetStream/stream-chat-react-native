@@ -248,7 +248,6 @@ export type MessagePropsWithContext = Pick<
  * each individual Message component.
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
-  const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [showMessageReactions, setShowMessageReactions] = useState<boolean>(false);
   const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
@@ -391,7 +390,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     }
     const quotedMessage = message.quoted_message;
     if (error) {
-      setIsErrorInMessage(true);
       /**
        * If its a Blocked message, we don't do anything as per specs.
        */
@@ -634,7 +632,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           deleteMessage,
           dismissOverlay,
           editMessage,
-          error: isErrorInMessage,
+          error: errorOrFailed,
           flagMessage,
           isMyMessage,
           isThreadMessage,
