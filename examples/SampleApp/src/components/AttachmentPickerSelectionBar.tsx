@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   AttachmentTypePickerButton,
@@ -13,22 +13,15 @@ import {
   useTheme,
 } from 'stream-chat-react-native';
 import { ShareLocationIcon } from '../icons/ShareLocationIcon';
-import { LiveLocationCreateModal } from './LocationSharing/CreateLocationModal';
 
 export const CustomAttachmentPickerSelectionBar = () => {
-  const [modalVisible, setModalVisible] = useState(false);
   const { attachmentPickerStore } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const styles = useStyles();
 
-  const onRequestClose = () => {
-    setModalVisible(false);
-  };
-
   const onOpenModal = useStableCallback(() => {
     attachmentPickerStore.setSelectedPicker('location');
-    setModalVisible(true);
   });
 
   return (
@@ -43,9 +36,6 @@ export const CustomAttachmentPickerSelectionBar = () => {
         onPress={onOpenModal}
         selected={selectedPicker === 'location'}
       />
-      {modalVisible ? (
-        <LiveLocationCreateModal visible={modalVisible} onRequestClose={onRequestClose} />
-      ) : null}
     </View>
   );
 };

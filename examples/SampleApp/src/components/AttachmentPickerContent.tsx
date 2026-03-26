@@ -1,11 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import {
   useAttachmentPickerState,
   AttachmentPickerContentProps,
   AttachmentPickerContent,
   AttachmentPickerGenericContent,
   useStableCallback,
-  useTheme,
   useTranslationContext,
 } from 'stream-chat-react-native';
 import { ShareLocationIcon } from '../icons/ShareLocationIcon.tsx';
@@ -15,14 +14,6 @@ export const CustomAttachmentPickerContent = (props: AttachmentPickerContentProp
   const [modalVisible, setModalVisible] = useState(false);
   const { selectedPicker } = useAttachmentPickerState();
   const { t } = useTranslationContext();
-  const {
-    theme: { semantics },
-  } = useTheme();
-
-  const Icon = useCallback(
-    () => <ShareLocationIcon stroke={semantics.textTertiary} />,
-    [semantics.textTertiary],
-  );
 
   const onRequestClose = () => {
     setModalVisible(false);
@@ -36,7 +27,7 @@ export const CustomAttachmentPickerContent = (props: AttachmentPickerContentProp
     return (
       <>
         <AttachmentPickerGenericContent
-          Icon={Icon}
+          Icon={ShareLocationIcon}
           onPress={onOpenModal}
           height={props.height}
           buttonText={t('Share Location')}
