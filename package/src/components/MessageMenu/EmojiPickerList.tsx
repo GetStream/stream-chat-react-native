@@ -98,7 +98,7 @@ const useStyles = () => {
           width: '100%',
           height: 54,
         },
-        bottomSheetContentContainer: { paddingVertical: 16 },
+        bottomSheetContentContainer: { paddingBottom: 16 },
         emojiContainer: {
           alignItems: 'center',
           justifyContent: 'center',

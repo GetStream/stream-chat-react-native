@@ -66,6 +66,10 @@ const RightContent = React.memo(
       );
     }
 
+    if (attachment?.type === FileTypes.VoiceRecording) {
+      return null;
+    }
+
     if (attachment && isFileAttachment(attachment)) {
       return <FileIcon mimeType={attachment.mime_type} />;
     }

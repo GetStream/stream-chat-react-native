@@ -26,6 +26,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
+import { primitives } from '../../theme';
 import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 export type BottomSheetModalProps = {
@@ -416,13 +417,12 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
+          borderTopLeftRadius: primitives.radius4xl,
+          borderTopRightRadius: primitives.radius4xl,
           backgroundColor: semantics.backgroundCoreElevation1,
         },
         contentContainer: {
           flex: 1,
-          marginTop: 8,
         },
         handle: {
           alignSelf: 'center',

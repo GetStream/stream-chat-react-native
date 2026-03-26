@@ -17,7 +17,8 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import { EyeOpen } from '../../../icons/EyeOpen';
-import { primitives } from '../../../theme';
+import { components, primitives } from '../../../theme';
+import { Button } from '../../ui/';
 
 export type GiphyPropsWithContext = Pick<
   MessageContextValue,
@@ -46,14 +47,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
   const {
     theme: {
       messageItemView: {
-        giphy: {
-          actionButtonContainer,
-          actionButton,
-          actionButtonText,
-          container,
-          giphyHeaderText,
-          header,
-        },
+        giphy: { actionButtonContainer, actionButton, container, giphyHeaderText, header },
       },
       semantics,
     },
@@ -68,7 +62,10 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
   }
 
   return actions ? (
-    <View style={[styles.container, container]} testID='giphy-action-attachment'>
+    <View
+      style={[styles.container, styles.actionContainer, container]}
+      testID='giphy-action-attachment'
+    >
       <View style={[styles.header, header]}>
         <EyeOpen height={16} width={16} fill={semantics.chatTextOutgoing} />
         <Text style={[styles.headerText, giphyHeaderText]}>{t('Only visible to you')}</Text>
@@ -76,33 +73,23 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
       <GiphyImage attachment={attachment} giphyVersion={giphyVersion} preview />
       <View style={[styles.actionButtonContainer, actionButtonContainer]}>
         {actions.map((action) => {
+          const isPrimaryAction = action.text === 'Send';
           return (
-            <Pressable
+            <Button
               key={action.value}
+              variant={isPrimaryAction ? 'primary' : 'secondary'}
+              type='ghost'
+              size='sm'
+              testID={`${action.value}-action-button`}
               onPress={() => {
                 if (action?.name && action?.value && handleAction) {
                   handleAction(action.name, action.value);
                 }
               }}
+              iconOnly={false}
+              label={action.text}
               style={[styles.actionButton, actionButton]}
-              testID={`${action.value}-action-button`}
-            >
-              <Text
-                numberOfLines={1}
-                style={[
-                  styles.actionButtonText,
-                  {
-                    color:
-                      action.text === 'Send'
-                        ? semantics.buttonPrimaryText
-                        : semantics.buttonSecondaryText,
-                  },
-                  actionButtonText,
-                ]}
-              >
-                {action.text}
-              </Text>
-            </Pressable>
+            />
           );
         })}
       </View>
@@ -225,20 +212,19 @@ const useStyles = () => {
         overflow: 'hidden',
       },
       actionButtonContainer: {
+        alignSelf: 'center',
         flexDirection: 'row',
         gap: primitives.spacingXs,
-      },
-      actionButton: {
-        alignItems: 'center',
-        flex: 1,
+        paddingHorizontal: primitives.spacingXxs,
         justifyContent: 'center',
-        paddingVertical: primitives.spacingSm,
       },
-      actionButtonText: {
-        fontSize: primitives.typographyFontSizeMd,
-        fontWeight: primitives.typographyFontWeightSemiBold,
-        lineHeight: primitives.typographyLineHeightNormal,
-        color: semantics.buttonSecondaryText,
+      actionContainer: {},
+      actionButton: {
+        alignSelf: 'flex-start',
+        flexGrow: 0,
+        flexShrink: 0,
+        width: undefined,
+        minHeight: components.buttonHitTargetMinHeight,
       },
       header: {
         alignItems: 'center',

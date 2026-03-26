@@ -87,16 +87,16 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
 
   it('renders reaction buttons', () => {
     const { getByLabelText } = renderComponent();
-    const likeReactionButton = getByLabelText('reaction-button-like-selected');
+    const likeReactionButton = getByLabelText('reaction-button-like-unselected');
     expect(likeReactionButton).toBeDefined();
     const loveReactionButton = getByLabelText('reaction-button-love-unselected');
     expect(loveReactionButton).toBeDefined();
   });
 
-  it('selects the first reaction by default', () => {
+  it('starts with no reaction filter selected by default', () => {
     const { getAllByLabelText } = renderComponent();
     const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-selected');
+    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
     expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
   });
 
@@ -114,6 +114,7 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
     const { getByText } = renderComponent();
     const reactionItems = getByText('1 like');
     expect(reactionItems).toBeDefined();
+    expect(getByText('2 love')).toBeDefined();
   });
 
   it('uses provided reactions when passed as a prop', () => {

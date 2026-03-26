@@ -223,6 +223,7 @@ export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
 };
 
 export type { AttachmentPickerContentProps } from './AttachmentPickerGenericContent';
+export { AttachmentPickerGenericContent } from './AttachmentPickerGenericContent';
 
 export const AttachmentPickerContent = (props: AttachmentPickerContentProps) => {
   const { height } = props;

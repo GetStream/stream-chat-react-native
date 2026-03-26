@@ -55,6 +55,7 @@ import { watchLocation } from './src/utils/watchLocation';
 Geolocation.setRNConfiguration({
   skipPermissionRequests: false,
   authorizationLevel: 'always',
+  locationProvider: 'playServices',
 });
 
 import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-chat';

@@ -11,6 +11,81 @@ export type UseFetchReactionParams = {
   sort?: ReactionSort;
 };
 
+const isSameReaction = (left: ReactionResponse, right: ReactionResponse) =>
+  left.user_id === right.user_id && left.type === right.type;
+
+export const upsertReactionInList = ({
+  prevReactions,
+  reaction,
+  reactionType,
+}: {
+  prevReactions: ReactionResponse[];
+  reaction: ReactionResponse;
+  reactionType?: string;
+}) => {
+  if (!reactionType) {
+    return [
+      reaction,
+      ...prevReactions.filter((currentReaction) => !isSameReaction(currentReaction, reaction)),
+    ];
+  }
+
+  if (reaction.type !== reactionType) {
+    return prevReactions;
+  }
+
+  return [
+    reaction,
+    ...prevReactions.filter((currentReaction) => currentReaction.user_id !== reaction.user_id),
+  ];
+};
+
+export const reconcileUpdatedReactionInList = ({
+  prevReactions,
+  reaction,
+  reactionType,
+}: {
+  prevReactions: ReactionResponse[];
+  reaction: ReactionResponse;
+  reactionType?: string;
+}) => {
+  if (!reactionType) {
+    return [
+      reaction,
+      ...prevReactions.filter((currentReaction) => !isSameReaction(currentReaction, reaction)),
+    ];
+  }
+
+  if (reaction.type !== reactionType) {
+    return prevReactions.filter((currentReaction) => currentReaction.user_id !== reaction.user_id);
+  }
+
+  return [
+    reaction,
+    ...prevReactions.filter((currentReaction) => currentReaction.user_id !== reaction.user_id),
+  ];
+};
+
+export const removeReactionFromList = ({
+  prevReactions,
+  reaction,
+  reactionType,
+}: {
+  prevReactions: ReactionResponse[];
+  reaction: ReactionResponse;
+  reactionType?: string;
+}) => {
+  if (!reactionType) {
+    return prevReactions.filter((currentReaction) => !isSameReaction(currentReaction, reaction));
+  }
+
+  if (reaction.type !== reactionType) {
+    return prevReactions;
+  }
+
+  return prevReactions.filter((currentReaction) => currentReaction.user_id !== reaction.user_id);
+};
+
 export const useFetchReactions = ({
   limit = 25,
   message,
@@ -82,8 +157,14 @@ export const useFetchReactions = ({
       client.on('reaction.new', (event) => {
         const { reaction } = event;
 
-        if (reaction && reaction.type === reactionType) {
-          setReactions((prevReactions) => [reaction, ...prevReactions]);
+        if (reaction) {
+          setReactions((prevReactions) =>
+            upsertReactionInList({
+              prevReactions,
+              reaction,
+              reactionType,
+            }),
+          );
         }
       }),
     );
@@ -93,13 +174,13 @@ export const useFetchReactions = ({
         const { reaction } = event;
 
         if (reaction) {
-          if (reaction.type === reactionType) {
-            setReactions((prevReactions) => [reaction, ...prevReactions]);
-          } else {
-            setReactions((prevReactions) =>
-              prevReactions.filter((r) => r.user_id !== reaction.user_id),
-            );
-          }
+          setReactions((prevReactions) =>
+            reconcileUpdatedReactionInList({
+              prevReactions,
+              reaction,
+              reactionType,
+            }),
+          );
         }
       }),
     );
@@ -108,9 +189,13 @@ export const useFetchReactions = ({
       client.on('reaction.deleted', (event) => {
         const { reaction } = event;
 
-        if (reaction && reaction.type === reactionType) {
+        if (reaction) {
           setReactions((prevReactions) =>
-            prevReactions.filter((r) => r.user_id !== reaction.user_id),
+            removeReactionFromList({
+              prevReactions,
+              reaction,
+              reactionType,
+            }),
           );
         }
       }),

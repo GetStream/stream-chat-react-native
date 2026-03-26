@@ -202,9 +202,11 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
 
   const maxDurationLabel = useMemo(() => getAudioDurationLabel(duration), [duration]);
 
+  const remainingDuration = useMemo(() => Math.max(duration - position, 0), [duration, position]);
+
   const progressDuration = useMemo(
-    () => getAudioDurationLabel(position || duration),
-    [duration, position],
+    () => getAudioDurationLabel(remainingDuration || duration),
+    [duration, remainingDuration],
   );
 
   return (
