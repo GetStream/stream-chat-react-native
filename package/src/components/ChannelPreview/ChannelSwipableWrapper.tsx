@@ -57,9 +57,9 @@ export const ChannelSwipableWrapper = ({
   const Icon = useCallback(
     () =>
       isDirectChannel ? (
-        <Mute width={20} height={20} fill={semantics.textOnAccent} />
-      ) : (
         <Archive width={20} height={20} stroke={semantics.textOnAccent} />
+      ) : (
+        <Mute width={20} height={20} fill={semantics.textOnAccent} />
       ),
     [isDirectChannel, semantics.textOnAccent],
   );
@@ -74,7 +74,7 @@ export const ChannelSwipableWrapper = ({
       },
     ];
 
-    const extraItem = isDirectChannel ? channelActionsById.mute : channelActionsById.archive;
+    const extraItem = isDirectChannel ? channelActionsById.archive : channelActionsById.mute;
 
     if (extraItem) {
       const { id, action } = extraItem;
