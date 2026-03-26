@@ -93,7 +93,7 @@ const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSele
   />
 );
 
-const reactionsKeyExtractor = (item: Reaction) => item.id;
+const reactionsKeyExtractor = (item: Reaction) => `${item.id}-${item.type}`;
 const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.type;
 
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
@@ -104,7 +104,6 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
     MessageUserReactionsItem: propMessageUserReactionsItem,
     reactions: propReactions,
-    selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
   } = props;
   const selectorListRef = useRef<FlatList>(null);
@@ -113,9 +112,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     () => Object.keys(message?.reaction_groups ?? {}),
     [message?.reaction_groups],
   );
-  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(
-    propSelectedReaction ?? reactionTypes[0],
-  );
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const {
     MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
     MessageUserReactionsItem: contextMessageUserReactionsItem,
@@ -133,7 +130,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   useEffect(() => {
     if (selectedReaction && reactionTypes.length > 0 && !reactionTypes.includes(selectedReaction)) {
-      setSelectedReaction(reactionTypes[0]);
+      setSelectedReaction(undefined);
     }
   }, [reactionTypes, selectedReaction]);
 
@@ -163,16 +160,16 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   );
 
   const selectedIndex = useMemo(() => {
-    if (!propSelectedReaction) {
+    if (!selectedReaction) {
       return -1;
     }
-    return selectorReactions.findIndex((reaction) => reaction.type === propSelectedReaction);
-  }, [propSelectedReaction, selectorReactions]);
+    return selectorReactions.findIndex((reaction) => reaction.type === selectedReaction);
+  }, [selectedReaction, selectorReactions]);
 
   useEffect(() => {
     if (selectedIndex !== -1 && selectorListRef.current) {
       selectorListRef.current?.scrollToIndex({
-        index: selectedIndex + 1, // +1 to account for the show more reactions button
+        index: selectedIndex,
         animated: true,
       });
     }
