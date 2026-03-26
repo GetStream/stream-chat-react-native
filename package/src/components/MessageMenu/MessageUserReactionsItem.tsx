@@ -64,10 +64,10 @@ export const MessageUserReactionsItem = ({
       style={[styles.avatarContainer, avatarContainer]}
       onPress={onPress}
     >
-      <MessageUserReactionsAvatar reaction={reaction} size={'lg'} />
+      <MessageUserReactionsAvatar reaction={reaction} size={'md'} />
       <View style={[styles.avatarNameContainer, avatarNameContainer]}>
         <Text numberOfLines={1} style={[styles.avatarName, avatarName]}>
-          {name}
+          {isOwnReaction ? t('You') : name}
         </Text>
         {isOwnReaction ? (
           <Text numberOfLines={1} style={[styles.avatarSubtitle, null]}>
@@ -105,7 +105,7 @@ const useStyles = () => {
           textAlign: 'left',
         },
         avatarSubtitle: {
-          fontSize: primitives.typographyFontSizeSm,
+          fontSize: primitives.typographyFontSizeXs,
           color: semantics.textTertiary,
         },
         avatarNameContainer: {
