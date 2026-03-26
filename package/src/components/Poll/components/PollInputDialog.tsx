@@ -19,6 +19,7 @@ import { Button } from '../../ui';
 export type PollInputDialogProps = {
   closeDialog: () => void;
   onSubmit: (text: string) => void;
+  placeholder: string;
   title: string;
   visible: boolean;
   initialValue?: string;
@@ -28,6 +29,7 @@ export const PollInputDialog = ({
   closeDialog,
   initialValue = '',
   onSubmit,
+  placeholder,
   title,
   visible,
 }: PollInputDialogProps) => {
@@ -62,7 +64,7 @@ export const PollInputDialog = ({
               <TextInput
                 autoFocus={true}
                 onChangeText={setDialogInput}
-                placeholder={t('Ask a question')}
+                placeholder={placeholder}
                 placeholderTextColor={semantics.inputTextPlaceholder}
                 style={[styles.input, input]}
                 value={dialogInput}

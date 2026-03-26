@@ -53,6 +53,7 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
           closeDialog={() => setShowAddCommentDialog(false)}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
+          placeholder={t('Your comment')}
           title={t('Add a comment')}
           visible={showAddCommentDialog}
         />
