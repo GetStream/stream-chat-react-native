@@ -4,6 +4,9 @@ import mime from 'mime';
 
 import type { File } from 'stream-chat-react-native-core';
 
+import { generateThumbnail } from './generateThumbnail';
+import { getLocalAssetUri } from './getLocalAssetUri';
+
 let MediaLibrary;
 
 try {
@@ -17,8 +20,6 @@ if (!MediaLibrary) {
     'expo-media-library is not installed. Please install it or you can choose to install expo-image-picker for native image picker.',
   );
 }
-
-import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
   assets: File[];
@@ -58,12 +59,18 @@ export const getPhotos = MediaLibrary
             const mimeType =
               mime.getType(asset.filename || asset.uri) ||
               (asset.mediaType === MediaLibrary.MediaType.video ? 'video/*' : 'image/*');
+            const thumbnailUri =
+              asset.mediaType === MediaLibrary.MediaType.video
+                ? await generateThumbnail?.({
+                    uri: localUri || asset.uri,
+                  })
+                : undefined;
             return {
               duration: asset.duration * 1000,
               height: asset.height,
               name: asset.filename,
               size: 0,
-              thumb_url: asset.mediaType === 'photo' ? undefined : asset.uri,
+              thumb_url: asset.mediaType === 'photo' ? undefined : thumbnailUri,
               type: mimeType,
               uri: localUri || asset.uri,
               width: asset.width,

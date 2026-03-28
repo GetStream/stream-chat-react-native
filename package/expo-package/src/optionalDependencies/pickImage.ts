@@ -1,6 +1,11 @@
 import { Platform } from 'react-native';
+
 import mime from 'mime';
+
 import { PickImageOptions } from 'stream-chat-react-native-core';
+
+import { generateThumbnail } from './generateThumbnail';
+
 let ImagePicker;
 
 try {
@@ -43,17 +48,29 @@ export const pickImage = ImagePicker
           const canceled = result.canceled;
 
           if (!canceled) {
-            const assets = result.assets.map((asset) => ({
-              ...asset,
-              duration: asset.duration,
-              name: asset.fileName,
-              size: asset.fileSize,
-              type:
-                asset.mimeType ||
-                mime.getType(asset.fileName || asset.uri) ||
-                (asset.duration ? 'video/*' : 'image/*'),
-              uri: asset.uri,
-            }));
+            const assets = await Promise.all(
+              result.assets.map(async (asset) => {
+                const type =
+                  asset.mimeType ||
+                  mime.getType(asset.fileName || asset.uri) ||
+                  (asset.duration ? 'video/*' : 'image/*');
+                const thumb_url = type.includes('video')
+                  ? await generateThumbnail?.({
+                      uri: asset.uri,
+                    })
+                  : undefined;
+
+                return {
+                  ...asset,
+                  duration: asset.duration,
+                  name: asset.fileName,
+                  size: asset.fileSize,
+                  thumb_url,
+                  type,
+                  uri: asset.uri,
+                };
+              }),
+            );
             return { assets, cancelled: false };
           } else {
             return { cancelled: true };

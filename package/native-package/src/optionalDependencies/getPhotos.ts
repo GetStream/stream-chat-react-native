@@ -1,7 +1,11 @@
 import { PermissionsAndroid, Platform } from 'react-native';
+
 import mime from 'mime';
 
 import type { File } from 'stream-chat-react-native-core';
+
+import { generateThumbnail } from './generateThumbnail';
+import { getLocalAssetUri } from './getLocalAssetUri';
 
 let CameraRollDependency;
 
@@ -13,8 +17,6 @@ try {
     '@react-native-camera-roll/camera-roll is not installed. Please install it or you can choose to install react-native-image-picker for native image picker.',
   );
 }
-
-import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
   assets: File[];
@@ -102,12 +104,17 @@ export const getPhotos = CameraRollDependency
 
             const uri =
               isImage && getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri;
+            const thumbnailUri = !isImage
+              ? await generateThumbnail?.({
+                  uri: originalUri,
+                })
+              : undefined;
 
             return {
               ...edge.node.image,
               name: edge.node.image.filename as string,
               duration: edge.node.image.playableDuration * 1000,
-              thumb_url: isImage ? undefined : originalUri,
+              thumb_url: isImage ? undefined : thumbnailUri,
               size: edge.node.image.fileSize as number,
               type,
               uri,

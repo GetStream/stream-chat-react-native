@@ -14,12 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 public class StreamChatReactNativePackage extends TurboReactPackage {
+  private static final String STREAM_VIDEO_THUMBNAIL_MODULE = "StreamVideoThumbnail";
 
   @Nullable
   @Override
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
     if (name.equals(StreamChatReactNativeModule.NAME)) {
         return new StreamChatReactNativeModule(reactContext);
+    } else if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE) && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+        return createNewArchModule(
+                "com.streamchatreactnative.StreamVideoThumbnailModule",
+                reactContext
+        );
     } else {
         return null;
     }
@@ -41,6 +47,17 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
                       false, // isCxxModule
                       isTurboModule // isTurboModule
       ));
+      moduleInfos.put(
+              STREAM_VIDEO_THUMBNAIL_MODULE,
+              new ReactModuleInfo(
+                      STREAM_VIDEO_THUMBNAIL_MODULE,
+                      STREAM_VIDEO_THUMBNAIL_MODULE,
+                      false, // canOverrideExistingModule
+                      false, // needsEagerInit
+                      false, // hasConstants
+                      false, // isCxxModule
+                      isTurboModule // isTurboModule
+      ));
       return moduleInfos;
     };
   }
@@ -48,5 +65,20 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     return Collections.<ViewManager>singletonList(new StreamShimmerViewManager());
+  }
+
+  @Nullable
+  private NativeModule createNewArchModule(
+          String className,
+          ReactApplicationContext reactContext
+  ) {
+    try {
+      Class<?> moduleClass = Class.forName(className);
+      return (NativeModule) moduleClass
+              .getConstructor(ReactApplicationContext.class)
+              .newInstance(reactContext);
+    } catch (Throwable ignored) {
+      return null;
+    }
   }
 }

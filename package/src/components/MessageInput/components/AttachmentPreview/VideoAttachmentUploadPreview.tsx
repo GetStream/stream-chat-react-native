@@ -21,10 +21,20 @@ export const VideoAttachmentUploadPreview = ({
   handleRetry,
   removeAttachments,
 }: VideoAttachmentUploadPreviewProps) => {
-  return attachment.localMetadata.previewUri ? (
+  const previewUri = attachment.thumb_url ?? attachment.localMetadata.previewUri;
+
+  return previewUri ? (
     <>
       <ImageAttachmentUploadPreview
-        attachment={attachment as unknown as LocalImageAttachment}
+        attachment={
+          {
+            ...attachment,
+            localMetadata: {
+              ...attachment.localMetadata,
+              previewUri,
+            },
+          } as unknown as LocalImageAttachment
+        }
         handleRetry={handleRetry}
         removeAttachments={removeAttachments}
       />

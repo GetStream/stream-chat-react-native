@@ -69,6 +69,9 @@
     "expo-image-picker": {
       "optional": true
     },
+    "expo-image-manipulator": {
+      "optional": true
+    },
     "expo-sharing": {
       "optional": true
     },
@@ -91,6 +94,9 @@
     "type": "all",
     "jsSrcsDir": "src/native",
     "ios": {
+      "modulesProvider": {
+        "StreamVideoThumbnail": "StreamVideoThumbnail"
+      },
       "componentProvider": {
         "StreamShimmerView": "StreamShimmerViewComponentView"
       }
