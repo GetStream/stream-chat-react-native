@@ -11,12 +11,12 @@ export const Cross = ({ fill, height, pathFill, size, stroke, width, ...rest }: 
     <Svg
       fill={'none'}
       height={height ?? size}
-      viewBox={'0 0 16 16'}
+      viewBox={'0 0 20 20'}
       width={width ?? size}
       {...rest}
     >
       <Path
-        d='M4.1665 4.1665L11.8332 11.8332M11.8332 4.1665L4.1665 11.8332'
+        d='M15.625 4.375L4.375 15.625M15.625 15.625L4.375 4.375'
         stroke={color}
         strokeLinecap='round'
         strokeLinejoin='round'

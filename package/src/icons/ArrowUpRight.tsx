@@ -7,13 +7,13 @@ export const ArrowUpRight = ({ height, size, width, ...rest }: IconProps) => {
   return (
     <Svg
       height={height ?? size ?? 16}
-      viewBox={'0 0 16 16'}
+      viewBox={'0 0 20 20'}
       width={width ?? size ?? 16}
       fill={'none'}
       {...rest}
     >
       <Path
-        d='M12.1667 10.1673V3.83398M12.1667 3.83398H5.83333M12.1667 3.83398L4 12.0007'
+        d='M5 15L15 5M15 5H6.875M15 5V13.125'
         strokeLinecap='round'
         strokeLinejoin='round'
         strokeWidth={1.5}
