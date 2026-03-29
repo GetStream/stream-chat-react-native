@@ -16,13 +16,7 @@ export const PollThumbnail = ({
   const color = stroke ?? pathFill ?? fill ?? 'black';
 
   return (
-    <Svg
-      viewBox='1.75 2.25 16.5 15'
-      fill='none'
-      height={height ?? size}
-      width={width ?? size}
-      {...rest}
-    >
+    <Svg viewBox='0 0 20 20' fill='none' height={height ?? size} width={width ?? size} {...rest}>
       <Path
         d='M3.75 16.25V10.625H7.5M17.5 16.25H2.5M7.5 16.25V6.875H11.875M11.875 16.25V3.125H16.25V16.25'
         stroke={color}

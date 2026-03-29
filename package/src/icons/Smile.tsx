@@ -8,7 +8,7 @@ export const Smile = ({ fill, height, pathFill, size, stroke, width, ...rest }: 
   const color = pathFill ?? fill ?? stroke ?? 'black';
 
   return (
-    <Svg fill='none' height={height ?? size} viewBox='0 0 24 24' width={width ?? size} {...rest}>
+    <Svg fill='none' height={height ?? size} viewBox='0 0 20 20' width={width ?? size} {...rest}>
       <Path
         d='M16.75 10C16.75 6.27208 13.7279 3.25 10 3.25C6.27208 3.25 3.25 6.27208 3.25 10C3.25 13.7279 6.27208 16.75 10 16.75C13.7279 16.75 16.75 13.7279 16.75 10ZM18.25 10C18.25 14.5563 14.5563 18.25 10 18.25C5.44365 18.25 1.75 14.5563 1.75 10C1.75 5.44365 5.44365 1.75 10 1.75C14.5563 1.75 18.25 5.44365 18.25 10Z'
         fill={color}

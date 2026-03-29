@@ -17,7 +17,7 @@ export const MenuPointHorizontal = ({
 
   return (
     <Svg
-      viewBox='3 8 14 4'
+      viewBox='0 0 20 20'
       fill='none'
       height={height ?? size ?? 20}
       width={width ?? size ?? 20}

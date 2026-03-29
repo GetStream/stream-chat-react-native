@@ -8,7 +8,7 @@ export const Grid = ({ fill, height, pathFill, size, stroke, width, ...rest }: I
   const color = stroke ?? pathFill ?? fill ?? 'black';
 
   return (
-    <Svg fill='none' height={height ?? size} viewBox='0 0 24 24' width={width ?? size} {...rest}>
+    <Svg fill='none' height={height ?? size} viewBox='0 0 20 20' width={width ?? size} {...rest}>
       <Path
         d='M8.125 3.75H4.375C4.02982 3.75 3.75 4.02982 3.75 4.375V8.125C3.75 8.47018 4.02982 8.75 4.375 8.75H8.125C8.47018 8.75 8.75 8.47018 8.75 8.125V4.375C8.75 4.02982 8.47018 3.75 8.125 3.75Z'
         stroke={color}

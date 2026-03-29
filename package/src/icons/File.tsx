@@ -11,7 +11,7 @@ export const File = ({ fill, height, pathFill, size, stroke, width, ...rest }: I
     <Svg
       fill={'none'}
       height={height ?? size}
-      viewBox={'3 2 14 16'}
+      viewBox={'0 0 20 20'}
       width={width ?? size}
       {...rest}
     >

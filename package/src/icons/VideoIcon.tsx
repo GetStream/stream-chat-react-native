@@ -11,7 +11,7 @@ export const VideoIcon = ({ fill, height, pathFill, size, stroke, width, ...rest
     <Svg
       fill={'none'}
       height={height ?? size}
-      viewBox={`0 0 12 12`}
+      viewBox={`0 0 20 20`}
       width={width ?? size}
       {...rest}
     >

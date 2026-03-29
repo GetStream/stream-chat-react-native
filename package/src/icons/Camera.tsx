@@ -9,7 +9,7 @@ export const Camera = ({ height, size, width, ...props }: IconProps) => (
     fill='none'
     height={height ?? size}
     width={width ?? size}
-    viewBox={'1.75 1.75 16.5 16.5'}
+    viewBox={'0 0 20 20'}
     strokeWidth={1.5}
     strokeLinejoin='round'
     {...props}

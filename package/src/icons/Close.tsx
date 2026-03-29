@@ -8,7 +8,7 @@ export const Close = ({ fill, height, pathFill, size, stroke, width, ...rest }: 
   const color = pathFill ?? fill ?? stroke ?? 'black';
 
   return (
-    <Svg fill='none' height={height ?? size} viewBox='0 0 24 24' width={width ?? size} {...rest}>
+    <Svg fill='none' height={height ?? size} viewBox='0 0 20 20' width={width ?? size} {...rest}>
       <Path
         d='M15.625 4.375L4.375 15.625M15.625 15.625L4.375 4.375'
         stroke={color}

@@ -11,7 +11,7 @@ export const Warning = ({ fill, height, pathFill, size, stroke, width, ...rest }
     <Svg
       fill={'none'}
       height={height ?? size}
-      viewBox={'0 0 16 16'}
+      viewBox={'0 0 20 20'}
       width={width ?? size}
       {...rest}
     >
