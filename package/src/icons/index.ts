@@ -43,6 +43,7 @@ export * from './Stop';
 export * from './ThreadReply';
 export * from './Time';
 export * from './Unknown';
+export * from './Unpin';
 export * from './Recorder';
 export * from './User';
 export * from './UserAdd';

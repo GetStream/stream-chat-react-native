@@ -26,7 +26,7 @@ import {
   Pin,
   Resend,
   ThreadReply,
-  // Unpin,
+  Unpin,
   UnreadIndicator,
   UserDelete,
 } from '../../../icons';
@@ -330,8 +330,7 @@ export const useMessageActions = ({
     const unpinMessage: MessageActionType = {
       action: onTogglePinMessage,
       actionType: 'unpinMessage',
-      // TODO: V9: This icon does not exist yet, replace the old when when we get a new one
-      icon: <Pin width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <Unpin width={20} height={20} stroke={semantics.textSecondary} />,
       title: t('Unpin from Conversation'),
       type: 'standard',
     };
