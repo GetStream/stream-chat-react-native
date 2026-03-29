@@ -4,14 +4,37 @@ import { Path, Svg } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const Lock = ({ height, width, ...rest }: IconProps) => (
-  <Svg fill={'none'} height={height} viewBox={'0 0 20 20'} width={width} {...rest}>
-    <Path
-      d='M13.5418 8.125V6.04167C13.5418 4.08566 11.9562 2.5 10.0002 2.5C8.04415 2.5 6.4585 4.08566 6.4585 6.04167V8.125M10.0002 11.6667V14.1667M3.9585 9.79167C3.9585 8.87117 4.70469 8.125 5.62516 8.125H14.3752C15.2957 8.125 16.0418 8.87117 16.0418 9.79167V16.0417C16.0418 16.9622 15.2957 17.7083 14.3752 17.7083H5.62516C4.70469 17.7083 3.9585 16.9622 3.9585 16.0417V9.79167Z'
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      strokeWidth={1.5}
+export const Lock = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg
+      fill={'none'}
+      height={height ?? size}
+      viewBox={'0 0 20 20'}
+      width={width ?? size}
       {...rest}
-    />
-  </Svg>
-);
+    >
+      <Path
+        d='M16.25 6.875H3.75C3.40482 6.875 3.125 7.15482 3.125 7.5V16.25C3.125 16.5952 3.40482 16.875 3.75 16.875H16.25C16.5952 16.875 16.875 16.5952 16.875 16.25V7.5C16.875 7.15482 16.5952 6.875 16.25 6.875Z'
+        fill='none'
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+      <Path
+        d='M10 12.8125C10.5178 12.8125 10.9375 12.3928 10.9375 11.875C10.9375 11.3572 10.5178 10.9375 10 10.9375C9.48223 10.9375 9.0625 11.3572 9.0625 11.875C9.0625 12.3928 9.48223 12.8125 10 12.8125Z'
+        fill={color}
+      />
+      <Path
+        d='M6.875 6.875V4.375C6.875 3.5462 7.20424 2.75134 7.79029 2.16529C8.37634 1.57924 9.1712 1.25 10 1.25C10.8288 1.25 11.6237 1.57924 12.2097 2.16529C12.7958 2.75134 13.125 3.5462 13.125 4.375V6.875'
+        fill='none'
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+    </Svg>
+  );
+};

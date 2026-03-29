@@ -4,14 +4,18 @@ import Svg, { Path } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const NewClose = ({ height, width, ...rest }: IconProps) => (
-  <Svg height={height} viewBox={`0 0 16 16`} width={width} {...rest}>
-    <Path
-      d='M5.1665 5.1665L10.8332 10.8332M10.8332 5.1665L5.1665 10.8332'
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      strokeWidth={2}
-      {...rest}
-    />
-  </Svg>
-);
+export const NewClose = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg height={height ?? size} viewBox={'0 0 20 20'} width={width ?? size} fill='none' {...rest}>
+      <Path
+        d='M15.625 4.375L4.375 15.625M15.625 15.625L4.375 4.375'
+        stroke={color}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth={1.5}
+      />
+    </Svg>
+  );
+};

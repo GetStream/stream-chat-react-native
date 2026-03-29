@@ -4,10 +4,10 @@ import Svg, { Path } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const Flag = (props: IconProps) => (
-  <Svg viewBox='0 0 20 20' fill='none' {...props}>
+export const Flag = ({ height, size, width, ...props }: IconProps) => (
+  <Svg viewBox={'0 0 20 20'} fill='none' height={height ?? size} width={width ?? size} {...props}>
     <Path
-      d='M3.9585 12.5697V3.66616C3.9585 3.34908 4.13787 3.05423 4.43262 2.93733C8.15655 1.46041 11.1564 4.48816 14.7842 3.60906C15.3846 3.46357 16.0418 3.87178 16.0418 4.48952V12.0519C16.0418 12.369 15.8625 12.6638 15.5677 12.7807C11.4224 14.4247 8.17433 10.487 3.9585 12.5697ZM3.9585 12.5697V17.7086'
+      d='M3.75 17.5001V4.3751C8.75 0.0446299 12.5 8.70557 17.5 4.3751V13.7501C12.5 18.0806 8.75 9.41963 3.75 13.7501'
       strokeWidth={1.5}
       strokeLinecap='round'
       strokeLinejoin='round'

@@ -4,8 +4,8 @@ import { Path, Svg } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const Down = ({ height, width, ...rest }: IconProps) => (
-  <Svg fill={'none'} height={height} viewBox={`0 0 20 20`} width={width} {...rest}>
+export const Down = ({ height, size, width, ...rest }: IconProps) => (
+  <Svg fill={'none'} height={height ?? size} viewBox={'0 0 20 20'} width={width ?? size} {...rest}>
     <Path
       d='M15.2084 11.6667L10.0001 16.875L4.79175 11.6667M10.0001 16.25V3.125'
       strokeLinecap='round'

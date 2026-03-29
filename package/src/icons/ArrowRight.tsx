@@ -1,17 +1,23 @@
 import React from 'react';
 
-import { IconProps, RootPath, RootSvg } from './utils/base';
+import { G, Path, Svg } from 'react-native-svg';
 
-export const ArrowRight = (props: IconProps) => (
-  <RootSvg {...props}>
-    <RootPath d='M3 12a1 1 0 011-1h16a1 1 0 110 2H4a1 1 0 01-1-1z' {...props} />
-    <RootPath
-      d='M15.293 7.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414z'
-      {...props}
-    />
-    <RootPath
-      d='M20.707 11.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0z'
-      {...props}
-    />
-  </RootSvg>
-);
+import { IconProps } from './utils/base';
+
+export const ArrowRight = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = pathFill ?? fill ?? stroke ?? 'black';
+
+  return (
+    <Svg fill='none' height={height ?? size} viewBox='0 0 24 24' width={width ?? size} {...rest}>
+      <G transform='matrix(-1 0 0 1 20 0)'>
+        <Path
+          d='M16.875 10H3.125M3.125 10L8.75 4.375M3.125 10L8.75 15.625'
+          stroke={color}
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          strokeWidth={1.5}
+        />
+      </G>
+    </Svg>
+  );
+};

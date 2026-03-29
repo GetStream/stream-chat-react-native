@@ -1,12 +1,21 @@
 import React from 'react';
 
-import { IconProps, RootPath, RootSvg } from './utils/base';
+import { Path, Svg } from 'react-native-svg';
 
-export const Refresh = (props: IconProps) => (
-  <RootSvg {...props}>
-    <RootPath
-      d='M12.868 4.221a8 8 0 102.834 14.251 1 1 0 00-1.175-1.618A6 6 0 1112.4 6.166c1.31.314 2.52.803 3.31 2.12.154.254.266.485.348.708h-1.152a1 1 0 00-.81 1.585l2.375 3.291a1 1 0 001.621 0l2.376-3.291a1 1 0 00-.811-1.585h-1.509c-.128-.639-.377-1.24-.867-1.947a8 8 0 00-4.414-2.826z'
-      {...props}
-    />
-  </RootSvg>
-);
+import { IconProps } from './utils/base';
+
+export const Refresh = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg fill='none' height={height ?? size} viewBox='0 0 24 24' width={width ?? size} {...rest}>
+      <Path
+        d='M13.125 7.49978H16.875M16.875 7.49978V3.74978M16.875 7.49978L14.6656 5.29041C13.3861 4.01095 11.6538 3.2875 9.84437 3.27697C8.03494 3.26644 6.29431 3.96968 5 5.23416M6.875 12.4998H3.125M3.125 12.4998V16.2498M3.125 12.4998L5.33437 14.7092C6.61388 15.9886 8.34621 16.7121 10.1556 16.7226C11.9651 16.7331 13.7057 16.0299 15 14.7654'
+        stroke={color}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth={1.5}
+      />
+    </Svg>
+  );
+};

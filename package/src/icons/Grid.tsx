@@ -1,12 +1,42 @@
 import React from 'react';
 
-import { IconProps, RootPath, RootSvg } from './utils/base';
+import { Path, Svg } from 'react-native-svg';
 
-export const Grid = (props: IconProps) => (
-  <RootSvg {...props}>
-    <RootPath
-      d='M4 5a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM10 5a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1V5zM17 4a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1V5a1 1 0 00-1-1h-2zM4 11a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zM11 10a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2zM16 11a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zM5 16a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1H5zM10 17a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zM17 16a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2z'
-      {...props}
-    />
-  </RootSvg>
-);
+import { IconProps } from './utils/base';
+
+export const Grid = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg fill='none' height={height ?? size} viewBox='0 0 24 24' width={width ?? size} {...rest}>
+      <Path
+        d='M8.125 3.75H4.375C4.02982 3.75 3.75 4.02982 3.75 4.375V8.125C3.75 8.47018 4.02982 8.75 4.375 8.75H8.125C8.47018 8.75 8.75 8.47018 8.75 8.125V4.375C8.75 4.02982 8.47018 3.75 8.125 3.75Z'
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+      <Path
+        d='M15.625 3.75H11.875C11.5298 3.75 11.25 4.02982 11.25 4.375V8.125C11.25 8.47018 11.5298 8.75 11.875 8.75H15.625C15.9702 8.75 16.25 8.47018 16.25 8.125V4.375C16.25 4.02982 15.9702 3.75 15.625 3.75Z'
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+      <Path
+        d='M8.125 11.25H4.375C4.02982 11.25 3.75 11.5298 3.75 11.875V15.625C3.75 15.9702 4.02982 16.25 4.375 16.25H8.125C8.47018 16.25 8.75 15.9702 8.75 15.625V11.875C8.75 11.5298 8.47018 11.25 8.125 11.25Z'
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+      <Path
+        d='M15.625 11.25H11.875C11.5298 11.25 11.25 11.5298 11.25 11.875V15.625C11.25 15.9702 11.5298 16.25 11.875 16.25H15.625C15.9702 16.25 16.25 15.9702 16.25 15.625V11.875C16.25 11.5298 15.9702 11.25 15.625 11.25Z'
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+    </Svg>
+  );
+};

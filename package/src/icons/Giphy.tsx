@@ -1,23 +1,32 @@
 import React from 'react';
 
-import { Path, Svg } from 'react-native-svg';
+import { Path, Rect, Svg } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
 export const Giphy = ({ height, width, ...rest }: IconProps) => (
-  <Svg fill={'none'} height={height} viewBox={'0 0 24 24'} width={width} {...rest}>
+  <Svg fill={'none'} height={height} viewBox={'0 0 20 20'} width={width} {...rest}>
+    <Rect width={20} height={20} rx={10} fill='black' />
     <Path
-      fill-rule='evenodd'
-      clip-rule='evenodd'
-      d='M5.00523 2.7432H18.996V21.2568H5.00403L5.00523 2.7432Z'
+      fillRule='evenodd'
+      clipRule='evenodd'
+      d='M6.5997 5.50024H13.4008V14.4999H6.59912L6.5997 5.50024Z'
       fill='black'
     />
-    <Path d='M2.20801 2.0568H5.00521V21.9432H2.20801V2.0568Z' fill='#04FF8E' />
-    <Path d='M18.9948 7.5432H21.792V21.9432H18.9948V7.5432Z' fill='#8E2EFF' />
-    <Path d='M2.20801 21.2568H21.792V24H2.20801V21.2568Z' fill='#00C5FF' />
-    <Path d='M2.20801 0H13.3992V2.7432H2.20801V0Z' fill='#FFF152' />
-    <Path d='M18.9948 5.4852V2.7432H16.1964V0H13.3992V8.2284H21.792V5.4852' fill='#FF5B5B' />
-    <Path d='M18.9948 10.9716V8.2284H21.792' fill='#551C99' />
-    <Path fillRule='evenodd' clipRule='evenodd' d='M13.3992 0V2.7432H10.6008' fill='#999131' />
+    <Path d='M5.24023 5.1665H6.59998V14.8335H5.24023V5.1665Z' fill='#04FF8E' />
+    <Path d='M13.4004 7.8335H14.7601V14.8335H13.4004V7.8335Z' fill='#8E2EFF' />
+    <Path d='M5.24023 14.4998H14.7602V15.8333H5.24023V14.4998Z' fill='#00C5FF' />
+    <Path d='M5.24023 4.16675H10.6804V5.50025H5.24023V4.16675Z' fill='#FFF152' />
+    <Path
+      d='M13.4003 6.83316V5.50025H12.0399V4.16675H10.6802V8.16666H14.76V6.83316'
+      fill='#FF5B5B'
+    />
+    <Path d='M13.4004 9.5V8.1665H14.7601' fill='#551C99' />
+    <Path
+      fillRule='evenodd'
+      clipRule='evenodd'
+      d='M10.6802 4.16675V5.50025H9.31982'
+      fill='#999131'
+    />
   </Svg>
 );

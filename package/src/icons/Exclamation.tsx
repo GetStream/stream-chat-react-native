@@ -4,15 +4,33 @@ import { Path, Svg } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const Exclamation = ({ height, width, ...rest }: IconProps) => (
-  <Svg fill={'none'} height={height} viewBox={`0 0 ${width} ${height}`} width={width} {...rest}>
-    <Path
-      d='M0 9C0 8.33724 0.53724 7.8 1.2 7.8C1.86276 7.8 2.4 8.33724 2.4 9C2.39987 9.66253 1.86268 10.2 1.2 10.2C0.537322 10.2 0.000132352 9.66253 0 9Z'
+export const Exclamation = ({
+  fill,
+  height,
+  pathFill,
+  size,
+  stroke,
+  width,
+  ...rest
+}: IconProps) => {
+  const color = pathFill ?? fill ?? stroke ?? 'black';
+
+  return (
+    <Svg
+      fill={'none'}
+      height={height ?? size}
+      viewBox={'0 0 20 20'}
+      width={width ?? size}
       {...rest}
-    />
-    <Path
-      d='M0.3 0.9C0.3 0.402936 0.70296 0 1.2 0C1.69704 0 2.1 0.402936 2.1 0.9V5.7C2.09987 6.19693 1.69696 6.6 1.2 6.6C0.703041 6.6 0.300133 6.19693 0.3 5.7V0.9Z'
-      {...rest}
-    />
-  </Svg>
-);
+    >
+      <Path
+        d='M10 16.875C10.6904 16.875 11.25 16.3154 11.25 15.625C11.25 14.9346 10.6904 14.375 10 14.375C9.30964 14.375 8.75 14.9346 8.75 15.625C8.75 16.3154 9.30964 16.875 10 16.875Z'
+        fill={color}
+      />
+      <Path
+        d='M9 11.875V3.75C9 3.19772 9.44772 2.75 10 2.75C10.5523 2.75 11 3.19772 11 3.75V11.875C11 12.4273 10.5523 12.875 10 12.875C9.44772 12.875 9 12.4273 9 11.875Z'
+        fill={color}
+      />
+    </Svg>
+  );
+};

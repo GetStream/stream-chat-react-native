@@ -1,12 +1,21 @@
 import React from 'react';
 
-import { IconProps, RootPath, RootSvg } from './utils/base';
+import { Path, Svg } from 'react-native-svg';
 
-export const Close = (props: IconProps) => (
-  <RootSvg {...props}>
-    <RootPath
-      d='M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z'
-      {...props}
-    />
-  </RootSvg>
-);
+import { IconProps } from './utils/base';
+
+export const Close = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = pathFill ?? fill ?? stroke ?? 'black';
+
+  return (
+    <Svg fill='none' height={height ?? size} viewBox='0 0 24 24' width={width ?? size} {...rest}>
+      <Path
+        d='M15.625 4.375L4.375 15.625M15.625 15.625L4.375 4.375'
+        stroke={color}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth={1.5}
+      />
+    </Svg>
+  );
+};

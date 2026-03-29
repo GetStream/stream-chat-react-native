@@ -7,7 +7,7 @@ import { IconProps } from './utils/base';
 export const ChevronTop = ({ height, width, ...rest }: IconProps) => (
   <Svg fill={'none'} height={height} viewBox={'0 0 20 20'} width={width} {...rest}>
     <Path
-      d='M4.79175 12.0833L10.0001 6.875L15.2084 12.0833'
+      d='M16.25 12.5L10 6.25L3.75 12.5'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.5}

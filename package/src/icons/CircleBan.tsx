@@ -4,13 +4,23 @@ import { Path, Svg } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const CircleBan = ({ height, width, ...rest }: IconProps) => (
-  <Svg fill={'none'} height={height} viewBox={'0 0 16 16'} width={width} {...rest}>
-    <Path
-      d='M12.3604 3.64016C11.2445 2.52421 9.70285 1.83398 7.99998 1.83398C4.59423 1.83398 1.83331 4.5949 1.83331 8.00065C1.83331 9.70352 2.52354 11.2452 3.63949 12.3611M12.3604 3.64016C13.4764 4.7561 14.1666 6.29777 14.1666 8.00065C14.1666 11.4064 11.4057 14.1673 7.99998 14.1673C6.2971 14.1673 4.75543 13.4771 3.63949 12.3611M12.3604 3.64016L3.63949 12.3611'
-      strokeLinecap='round'
-      strokeWidth={1.5}
+export const CircleBan = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg
+      fill={'none'}
+      height={height ?? size}
+      viewBox={'0 0 20 20'}
+      width={width ?? size}
       {...rest}
-    />
-  </Svg>
-);
+    >
+      <Path
+        d='M15.3031 15.3031L4.69688 4.69688M17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10Z'
+        stroke={color}
+        strokeLinecap='round'
+        strokeWidth={1.5}
+      />
+    </Svg>
+  );
+};

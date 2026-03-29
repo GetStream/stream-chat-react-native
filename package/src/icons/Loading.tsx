@@ -1,7 +1,7 @@
 import React from 'react';
-import { Defs, LinearGradient, Stop, StopProps } from 'react-native-svg';
+import { Path, StopProps, Svg } from 'react-native-svg';
 
-import { IconProps, RootPath, RootSvg } from './utils/base';
+import { IconProps } from './utils/base';
 
 type LoadingProps = IconProps &
   Partial<Pick<StopProps, 'stopOpacity'>> & {
@@ -14,29 +14,24 @@ export const Loading = (props: LoadingProps) => {
     height = 16,
     startColor = '#0169F6',
     stopColor = '#006CFF',
-    stopOpacity = 0.01,
-    viewBox = '0 0 16 16',
+    stopOpacity = 0.3,
+    viewBox = '0 0 20 20',
     width = 16,
   } = props;
   return (
-    <RootSvg height={height} viewBox={viewBox} width={width} {...props}>
-      <RootPath
-        d='M16 8a8 8 0 01-14.657 4.438l2.527-1.685A5 5 0 108 2.933V0a8 8 0 018 8z'
-        pathFill='url(#gradient)'
+    <Svg height={height} viewBox={viewBox} width={width} {...props}>
+      <Path
+        d='M17.5 10C17.5 14.1422 14.1422 17.5 10 17.5C5.85787 17.5 2.5 14.1422 2.5 10C2.5 5.85787 5.85787 2.5 10 2.5C14.1422 2.5 17.5 5.85787 17.5 10Z'
+        stroke={startColor}
+        strokeOpacity={stopOpacity}
+        strokeWidth={2}
       />
-      <Defs>
-        <LinearGradient
-          gradientUnits='userSpaceOnUse'
-          id='gradient'
-          x1={1.3429}
-          x2={1.3429}
-          y1={0}
-          y2={height}
-        >
-          <Stop stopColor={startColor} stopOpacity={stopOpacity} />
-          <Stop offset={1} stopColor={stopColor} />
-        </LinearGradient>
-      </Defs>
-    </RootSvg>
+      <Path
+        d='M17.4544 10.8334C17.0701 14.3097 14.3098 17.07 10.8335 17.4543'
+        stroke={stopColor}
+        strokeWidth={2}
+        strokeLinecap='round'
+      />
+    </Svg>
   );
 };

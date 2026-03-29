@@ -4,11 +4,26 @@ import Svg, { Path } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const Search = ({ height, width, ...props }: IconProps) => (
-  <Svg height={height} width={width} {...props} testID={'search-icon'}>
-    <Path
-      d='M11 2c4.968 0 9 4.032 9 9s-4.032 9-9 9-9-4.032-9-9 4.032-9 9-9zm0 16c3.867 0 7-3.133 7-7 0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7zm11.314 2.899l-2.829-2.828-1.414 1.414 2.828 2.829 1.415-1.415z'
-      {...props}
-    />
-  </Svg>
-);
+export const Search = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg
+      fill='none'
+      height={height ?? size}
+      viewBox='0 0 20 20'
+      width={width ?? size}
+      {...rest}
+      testID={'search-icon'}
+    >
+      <Path
+        d='M13.1695 13.1695L17.5 17.5M15 8.75C15 12.2018 12.2018 15 8.75 15C5.29822 15 2.5 12.2018 2.5 8.75C2.5 5.29822 5.29822 2.5 8.75 2.5C12.2018 2.5 15 5.29822 15 8.75Z'
+        fill='none'
+        stroke={color}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth={1.5}
+      />
+    </Svg>
+  );
+};

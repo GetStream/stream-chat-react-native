@@ -4,13 +4,32 @@ import { Path, Svg } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const ArrowShareLeft = ({ height, width, ...rest }: IconProps) => (
-  <Svg fill={'none'} height={height} viewBox={'0 0 20 20'} width={width} {...rest}>
-    <Path
-      d='M1.53764 9.54198L8.32555 3.26313C8.72579 2.89294 9.37496 3.17678 9.37496 3.72194V6.66743C9.37496 6.89755 9.56496 7.08372 9.79504 7.08738C16.5328 7.19454 18.3333 9.93457 18.3333 16.8757C17.1085 14.4262 16.4838 12.9767 9.79588 12.9192C9.56571 12.9172 9.37496 13.104 9.37496 13.3341V16.2796C9.37496 16.8247 8.72579 17.1086 8.32555 16.7384L1.53764 10.4596C1.27017 10.2121 1.27017 9.7894 1.53764 9.54198Z'
-      strokeLinejoin='round'
-      strokeWidth={1.5}
+export const ArrowShareLeft = ({
+  fill,
+  height,
+  pathFill,
+  size,
+  stroke,
+  width,
+  ...rest
+}: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg
+      fill={'none'}
+      height={height ?? size}
+      viewBox={'0 0 20 20'}
+      width={width ?? size}
       {...rest}
-    />
-  </Svg>
-);
+    >
+      <Path
+        d='M17.5812 15.525C16.2953 14.1555 12.9195 11.25 8.12265 11.25V15L1.87265 8.75L8.12265 2.5V6.25C12.2476 6.25 17.5359 10.1914 18.1226 15.2766C18.1308 15.3424 18.1177 15.4091 18.0854 15.4671C18.0531 15.525 18.0031 15.5712 17.9428 15.5988C17.8825 15.6265 17.815 15.6343 17.75 15.621C17.685 15.6077 17.6259 15.5741 17.5812 15.525Z'
+        stroke={color}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth={1.5}
+      />
+    </Svg>
+  );
+};

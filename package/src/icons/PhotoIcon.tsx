@@ -4,21 +4,24 @@ import { Path, Svg } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const PhotoIcon = ({ height, width, ...rest }: IconProps) => (
-  <Svg fill={'none'} height={height} viewBox={`0 0 12 12`} width={width} {...rest}>
-    <Path
-      d='M2.375 3.375H3.21481C3.54917 3.375 3.8614 3.2079 4.04686 2.9297L4.45313 2.3203C4.6386 2.0421 4.95083 1.875 5.2852 1.875H6.7148C7.04915 1.875 7.3614 2.0421 7.54685 2.3203L7.95315 2.9297C8.1386 3.2079 8.45085 3.375 8.7852 3.375H9.625C10.1773 3.375 10.625 3.82272 10.625 4.375V9.125C10.625 9.6773 10.1773 10.125 9.625 10.125H2.375C1.82271 10.125 1.375 9.6773 1.375 9.125V4.375C1.375 3.82272 1.82271 3.375 2.375 3.375Z'
-      strokeLinecap='square'
-      strokeLinejoin='round'
-      strokeWidth={1.2}
+export const PhotoIcon = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg
+      fill={'none'}
+      height={height ?? size}
+      viewBox={`0 0 20 20`}
+      width={width ?? size}
       {...rest}
-    />
-    <Path
-      d='M7.625 6.5C7.625 7.39745 6.89745 8.125 6 8.125C5.10255 8.125 4.375 7.39745 4.375 6.5C4.375 5.60255 5.10255 4.875 6 4.875C6.89745 4.875 7.625 5.60255 7.625 6.5Z'
-      strokeLinecap='square'
-      strokeLinejoin='round'
-      strokeWidth={1.2}
-      {...rest}
-    />
-  </Svg>
-);
+    >
+      <Path
+        d='M4.42891 16.875L12.9953 8.30781C13.0534 8.2497 13.1223 8.2036 13.1982 8.17215C13.274 8.1407 13.3554 8.12451 13.4375 8.12451C13.5196 8.12451 13.601 8.1407 13.6768 8.17215C13.7527 8.2036 13.8216 8.2497 13.8797 8.30781L16.875 11.3039M3.75 3.125H16.25C16.5952 3.125 16.875 3.40482 16.875 3.75V16.25C16.875 16.5952 16.5952 16.875 16.25 16.875H3.75C3.40482 16.875 3.125 16.5952 3.125 16.25V3.75C3.125 3.40482 3.40482 3.125 3.75 3.125ZM8.75 7.5C8.75 8.19036 8.19036 8.75 7.5 8.75C6.80964 8.75 6.25 8.19036 6.25 7.5C6.25 6.80964 6.80964 6.25 7.5 6.25C8.19036 6.25 8.75 6.80964 8.75 7.5Z'
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+    </Svg>
+  );
+};

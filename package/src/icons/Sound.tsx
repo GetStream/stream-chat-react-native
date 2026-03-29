@@ -4,14 +4,18 @@ import Svg, { Path } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const Sound = (props: IconProps) => (
-  <Svg viewBox='0 0 20 20' fill='none' {...props}>
-    <Path
-      d='M16.04 3.96009C17.5857 5.50583 18.5418 7.64125 18.5418 9.99997C18.5418 12.3586 17.5857 14.4941 16.04 16.0398M13.2411 6.75957C14.0705 7.58899 14.5835 8.73481 14.5835 10.0005C14.5835 11.2661 14.0705 12.412 13.2411 13.2414M3.12516 6.45846H4.46259C4.8121 6.45846 5.15278 6.34858 5.43643 6.14436L9.54833 3.18376C9.824 2.98531 10.2085 3.18227 10.2085 3.5219V16.4784C10.2085 16.818 9.824 17.015 9.54833 16.8165L5.43643 13.8559C5.15278 13.6516 4.8121 13.5418 4.46259 13.5418H3.12516C2.20469 13.5418 1.4585 12.7956 1.4585 11.8751V8.12513C1.4585 7.20466 2.20469 6.45846 3.12516 6.45846Z'
-      strokeWidth={1.5}
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      {...props}
-    />
-  </Svg>
-);
+export const Sound = ({ fill, height, pathFill, size, stroke, width, ...props }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg viewBox='0 0 20 20' fill='none' height={height ?? size} width={width ?? size} {...props}>
+      <Path
+        d='M15.625 8.125V11.875M18.125 6.875V13.125M6.875 13.125H3.125C2.95924 13.125 2.80027 13.0592 2.68306 12.9419C2.56585 12.8247 2.5 12.6658 2.5 12.5V7.5C2.5 7.33424 2.56585 7.17527 2.68306 7.05806C2.80027 6.94085 2.95924 6.875 3.125 6.875H6.875L12.5 2.5V17.5L6.875 13.125Z'
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+    </Svg>
+  );
+};

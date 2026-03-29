@@ -4,14 +4,24 @@ import { Path, Svg } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const Mic = ({ height, width, ...rest }: IconProps) => (
-  <Svg fill={'none'} height={height} viewBox={'0 0 20 20'} width={width} {...rest}>
-    <Path
-      d='M10.0007 15.8334C12.5636 15.8334 14.7662 14.2908 15.7307 12.0834M10.0007 15.8334C7.4378 15.8334 5.23519 14.2908 4.27075 12.0834M10.0007 15.8334V17.7084M10.0007 13.1251C8.04469 13.1251 6.45903 11.5394 6.45903 9.58341V5.83341C6.45903 3.87741 8.04469 2.29175 10.0007 2.29175C11.9567 2.29175 13.5423 3.87741 13.5423 5.83341V9.58341C13.5423 11.5394 11.9567 13.1251 10.0007 13.1251Z'
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      strokeWidth={1.5}
+export const Mic = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+  const color = stroke ?? pathFill ?? fill ?? 'black';
+
+  return (
+    <Svg
+      fill={'none'}
+      height={height ?? size}
+      viewBox={'0 0 20 20'}
+      width={width ?? size}
       {...rest}
-    />
-  </Svg>
-);
+    >
+      <Path
+        d='M10 15.625V18.75M10 15.625C11.4918 15.625 12.9226 15.0324 13.9775 13.9775C15.0324 12.9226 15.625 11.4918 15.625 10M10 15.625C8.50816 15.625 7.07742 15.0324 6.02252 13.9775C4.96763 12.9226 4.375 11.4918 4.375 10M10 1.875C11.7259 1.875 13.125 3.27411 13.125 5V10C13.125 11.7259 11.7259 13.125 10 13.125C8.27411 13.125 6.875 11.7259 6.875 10V5C6.875 3.27411 8.27411 1.875 10 1.875Z'
+        stroke={color}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth={1.5}
+      />
+    </Svg>
+  );
+};

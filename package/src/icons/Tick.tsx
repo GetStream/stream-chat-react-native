@@ -7,7 +7,7 @@ import { IconProps } from './utils/base';
 export const Tick = ({ height, width, ...rest }: IconProps) => (
   <Svg fill={'none'} height={height} viewBox={`0 0 20 20`} width={width} {...rest}>
     <Path
-      d='M5.625 10.8853L8.25 13.5416L14.375 6.45825'
+      d='M3.125 11.25L7.5 15.625L17.5 5.625'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.5}
