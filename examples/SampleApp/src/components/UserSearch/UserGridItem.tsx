@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
-import { Close, useTheme, UserAvatar } from 'stream-chat-react-native';
+import { useTheme, UserAvatar } from 'stream-chat-react-native';
 
 import type { UserResponse } from 'stream-chat';
+
+import { Close } from '../../icons/Close';
 
 const styles = StyleSheet.create({
   presenceIndicatorContainer: {

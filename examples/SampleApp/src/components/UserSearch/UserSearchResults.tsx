@@ -9,12 +9,13 @@ import {
 } from 'react-native';
 import dayjs from 'dayjs';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Close, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
+import { useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
 import { useUserSearchContext } from '../../context/UserSearchContext';
 
 import type { UserResponse } from 'stream-chat';
 
+import { Close } from '../../icons/Close';
 import { Search } from '../../icons/Search';
 import calendar from 'dayjs/plugin/calendar';
 import { CheckSend } from '../../icons/CheckSend';
