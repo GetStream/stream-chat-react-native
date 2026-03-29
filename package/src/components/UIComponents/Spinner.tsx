@@ -46,7 +46,12 @@ export const Spinner = (props: SpinnerProps) => {
 
   return (
     <Animated.View style={[style, styles.spinner, animatedStyle, spinner, { height, width }]}>
-      <Loading height={height} stopColor={semantics.accentPrimary} width={width} />
+      <Loading
+        height={height}
+        startColor={semantics.accentPrimary}
+        stopColor={semantics.accentPrimary}
+        width={width}
+      />
     </Animated.View>
   );
 };

@@ -20,21 +20,6 @@ const sizes = {
   },
 };
 
-const iconSizes = {
-  xs: {
-    height: 8,
-    width: 2,
-  },
-  sm: {
-    height: 9,
-    width: 2,
-  },
-  md: {
-    height: 11,
-    width: 3,
-  },
-};
-
 export type ErrorBadgeProps = ViewProps & {
   /**
    * The size of the badge
@@ -59,8 +44,8 @@ export const ErrorBadge = (props: ErrorBadgeProps) => {
   return (
     <View style={[styles.container, sizes[size], style]} {...rest}>
       <Exclamation
-        height={iconSizes[size].height}
-        width={iconSizes[size].width}
+        height={sizes[size].height}
+        width={sizes[size].width}
         fill={semantics.textOnAccent}
       />
     </View>
