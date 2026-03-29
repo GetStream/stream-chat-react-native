@@ -15,10 +15,10 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { useStateStore } from '../../../../hooks/useStateStore';
 
 import { ChevronLeft } from '../../../../icons/ChevronLeft';
+import { Delete } from '../../../../icons/Delete';
 import { Mic } from '../../../../icons/Mic';
 import { Stop } from '../../../../icons/Stop';
 import { Tick } from '../../../../icons/Tick';
-import { Trash } from '../../../../icons/Trash';
 import { IconProps } from '../../../../icons/utils/base';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
@@ -109,7 +109,7 @@ const DeleteRecording = ({
       size='sm'
       iconOnly
       onPress={onDeleteVoiceRecording}
-      LeadingIcon={Trash}
+      LeadingIcon={Delete}
     />
   );
 };
