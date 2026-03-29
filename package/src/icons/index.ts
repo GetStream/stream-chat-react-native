@@ -38,7 +38,6 @@ export * from './Resend';
 export * from './Search';
 export * from './SendRight';
 export * from './Share';
-export * from './ShareRightArrow';
 export * from './Smile';
 export * from './Sound';
 export * from './Stop';
