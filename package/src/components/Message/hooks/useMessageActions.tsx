@@ -25,6 +25,7 @@ import {
   Mute,
   Pin,
   Resend,
+  Sound,
   ThreadReply,
   Unpin,
   UnreadIndicator,
@@ -338,7 +339,11 @@ export const useMessageActions = ({
     const muteUser: MessageActionType = {
       action: onMuteUser,
       actionType: 'muteUser',
-      icon: <Mute fill={semantics.textSecondary} height={20} width={20} />,
+      icon: isMuted ? (
+        <Sound height={20} stroke={semantics.textSecondary} width={20} />
+      ) : (
+        <Mute fill={semantics.textSecondary} height={20} width={20} />
+      ),
       title: isMuted ? t('Unmute User') : t('Mute User'),
       type: 'standard',
     };

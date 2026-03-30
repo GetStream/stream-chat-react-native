@@ -10,10 +10,11 @@ import type { ChannelDetailsBottomSheetProps } from './ChannelDetailsBottomSheet
 
 import { useTheme } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
-import { Archive, MenuPointHorizontal, Mute } from '../../icons';
+import { Archive, MenuPointHorizontal, Mute, Sound } from '../../icons';
 import { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActionItemsById } from '../ChannelList/hooks/useChannelActionItemsById';
+import { useChannelMuteActive } from '../ChannelList/hooks/useChannelMuteActive';
 import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
 import {
   BottomSheetModal,
@@ -53,15 +54,18 @@ export const ChannelSwipableWrapper = ({
   const styles = useStyles();
 
   const isDirectChannel = useIsDirectChat(channel);
+  const muteActive = useChannelMuteActive(channel);
 
   const Icon = useCallback(
     () =>
       isDirectChannel ? (
         <Archive width={20} height={20} stroke={semantics.textOnAccent} />
+      ) : muteActive ? (
+        <Sound width={20} height={20} stroke={semantics.textOnAccent} />
       ) : (
         <Mute width={20} height={20} fill={semantics.textOnAccent} />
       ),
-    [isDirectChannel, semantics.textOnAccent],
+    [isDirectChannel, muteActive, semantics.textOnAccent],
   );
 
   const swipableActions = useMemo<SwipableActionItem[]>(() => {
