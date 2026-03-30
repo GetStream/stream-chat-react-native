@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import {
   FlatList,
+  I18nManager,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -111,6 +112,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
   const nonAudioAttachments = previewAttachments.filter(
     (attachment) => !isAudioAttachmentPreview(attachment),
   );
+  const data = I18nManager.isRTL ? nonAudioAttachments.toReversed() : nonAudioAttachments;
 
   const {
     theme: {
@@ -290,7 +292,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
         </Animated.View>
       ) : null}
 
-      {nonAudioAttachments.length ? (
+      {data.length ? (
         <Animated.View
           entering={ZoomIn.duration(200)}
           exiting={ZoomOut.duration(200)}
@@ -298,7 +300,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
         >
           <Animated.View style={animatedListWrapperStyle}>
             <FlatList
-              data={nonAudioAttachments}
+              data={data}
               horizontal
               ItemSeparatorComponent={ItemSeparatorComponent}
               keyExtractor={(item) => item.localMetadata.id}
@@ -357,6 +359,7 @@ const styles = StyleSheet.create({
   },
   flatList: {
     overflow: 'visible',
+    direction: 'ltr',
   },
   itemSeparator: {
     width: primitives.spacingXs,
