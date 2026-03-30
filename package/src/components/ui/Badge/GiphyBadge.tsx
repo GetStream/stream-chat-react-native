@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Giphy } from '../../../icons/Giphy';
+import { Giphy } from '../../../icons/giphy';
 import { primitives } from '../../../theme';
 
 export const GiphyBadge = () => {

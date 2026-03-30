@@ -4,7 +4,7 @@ import Svg, { Path } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const Check = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
+export const Checkmark = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
   const color = stroke ?? pathFill ?? fill ?? 'black';
 
   return (

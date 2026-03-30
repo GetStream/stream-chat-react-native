@@ -26,3 +26,5 @@ export const File = ({ fill, height, pathFill, size, stroke, width, ...rest }: I
     </Svg>
   );
 };
+
+export const FilePickerIcon = (props: IconProps) => <File {...props} />;

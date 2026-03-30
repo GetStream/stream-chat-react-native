@@ -19,7 +19,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../../hooks';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Mic } from '../../../../icons/Mic';
+import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';

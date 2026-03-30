@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Exclamation } from '../../../icons/Exclamation';
+import { Exclamation } from '../../../icons/exclamation-mark-fill';
 import { primitives } from '../../../theme';
 
 const sizes = {

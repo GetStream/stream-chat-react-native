@@ -15,7 +15,7 @@ import {
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
-import { Plus } from '../../icons/Plus';
+import { Plus } from '../../icons/plus';
 import { NativeHandlers } from '../../native';
 import { scheduleActionOnClose } from '../../state-store';
 

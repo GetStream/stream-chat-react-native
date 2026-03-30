@@ -13,7 +13,7 @@ import { useIsDirectChat } from './useIsDirectChat';
 import { useTheme, useTranslationContext } from '../../../contexts';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { Archive, IconProps, Mute, BlockUser, Delete, Sound } from '../../../icons';
-import { ArrowBoxLeft } from '../../../icons/ArrowBoxLeft';
+import { ArrowBoxLeft } from '../../../icons/leave';
 
 export type ChannelActionHandler = () => Promise<void> | void;
 

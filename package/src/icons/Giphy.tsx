@@ -30,3 +30,5 @@ export const Giphy = ({ height, width, ...rest }: IconProps) => (
     />
   </Svg>
 );
+
+export const GiphyIcon = (props: IconProps) => <Giphy {...props} />;

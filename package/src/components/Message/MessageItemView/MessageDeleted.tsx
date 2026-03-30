@@ -11,7 +11,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { CircleBan } from '../../../icons/CircleBan';
+import { CircleBan } from '../../../icons/no-sign';
 import { components, primitives } from '../../../theme';
 
 type MessageDeletedComponentProps = {

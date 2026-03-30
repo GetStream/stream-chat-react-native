@@ -13,7 +13,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../../hooks';
-import { ArrowUpRight } from '../../../../icons/ArrowUpRight';
+import { ArrowUpRight } from '../../../../icons/arrow-up-right';
 import { primitives } from '../../../../theme';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 

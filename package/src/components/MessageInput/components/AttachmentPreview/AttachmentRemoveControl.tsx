@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { Pressable, PressableProps, StyleSheet } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { NewClose } from '../../../../icons/NewClose';
+import { NewClose } from '../../../../icons/xmark';
 import { primitives } from '../../../../theme';
 
 type AttachmentRemoveControlProps = PressableProps;

@@ -9,8 +9,8 @@ import { useStableCallback } from '../../../../hooks';
 import { useAudioPlayer } from '../../../../hooks/useAudioPlayer';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
-import { Pause } from '../../../../icons/Pause';
-import { Play } from '../../../../icons/Play';
+import { Pause } from '../../../../icons/pause-fill';
+import { Play } from '../../../../icons/play-fill';
 import { AudioPlayerState } from '../../../../state-store/audio-player';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';

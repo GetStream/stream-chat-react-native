@@ -1,8 +1,9 @@
-import React from 'react';
-import { Pressable } from 'react-native';
+import React, { useMemo } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { CircleStop } from '../../icons';
+import { Stop } from '../../icons';
+import { primitives } from '../../theme';
 
 export type StopMessageStreamingButtonProps = {
   /** Function that opens attachment options bottom sheet */
@@ -18,16 +19,35 @@ export const StopMessageStreamingButton = (props: StopMessageStreamingButtonProp
       messageComposer: { stopMessageStreamingButton, stopMessageStreamingIcon },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
     <Pressable
       hitSlop={{ bottom: 15, left: 15, right: 15, top: 15 }}
       onPress={onPress}
-      style={[stopMessageStreamingButton]}
+      style={[styles.stopStreamingButton, stopMessageStreamingButton]}
       testID='more-options-button'
     >
-      <CircleStop fill={semantics.accentPrimary} size={32} {...stopMessageStreamingIcon} />
+      <Stop fill={semantics.accentPrimary} size={24} {...stopMessageStreamingIcon} />
     </Pressable>
+  );
+};
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        stopStreamingButton: {
+          borderWidth: 1,
+          borderRadius: primitives.radiusMax,
+          borderColor: semantics.accentPrimary,
+        },
+      }),
+    [semantics],
   );
 };
 

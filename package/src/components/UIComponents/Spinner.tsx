@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Loading } from '../../icons/Loading';
+import { Loading } from '../../icons/loading';
 
 export type SpinnerProps = {
   height?: number;

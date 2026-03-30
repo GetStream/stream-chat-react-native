@@ -24,3 +24,5 @@ export const CircleBan = ({ fill, height, pathFill, size, stroke, width, ...rest
     </Svg>
   );
 };
+
+export const BlockUser = (props: IconProps) => <CircleBan {...props} />;

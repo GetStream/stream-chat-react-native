@@ -15,3 +15,5 @@ export const CurveLineLeftUp = (props: IconProps) => (
     />
   </Svg>
 );
+
+export const ArrowShareLeft = (props: IconProps) => <CurveLineLeftUp {...props} />;

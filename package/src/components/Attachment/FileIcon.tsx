@@ -2,16 +2,16 @@ import React from 'react';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import { Audio } from '../../icons/Audio';
-import { Code } from '../../icons/Code';
-import { DOC } from '../../icons/DOC';
-import { OtherFileIcon } from '../../icons/OtherFileIcon';
-import { PDF } from '../../icons/PDF';
-import { Presentation } from '../../icons/Presentation';
-import { SpreadSheet } from '../../icons/SpreadSheet';
+import { Audio } from '../../icons/filetype-audio-xl';
+import { Code } from '../../icons/filetype-code-xl';
+import { DOC } from '../../icons/filetype-text-xl';
+import { OtherFileIcon } from '../../icons/filetype-other-xl';
+import { PDF } from '../../icons/filetype-pdf-xl';
+import { Presentation } from '../../icons/filetype-presentation-xl';
+import { SpreadSheet } from '../../icons/filetype-spreadsheet-xl';
 import type { IconProps } from '../../icons/utils/base';
-import { Video } from '../../icons/Video';
-import { ZIP } from '../../icons/ZIP';
+import { Video } from '../../icons/filetype-video-xl';
+import { ZIP } from '../../icons/filetype-compression-xl';
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#audio
 const audioFileTypes = [

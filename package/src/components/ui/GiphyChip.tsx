@@ -6,8 +6,8 @@ import { TextComposerState } from 'stream-chat';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { Cross } from '../../icons/Cross';
-import { Lightning } from '../../icons/Lightning';
+import { Cross } from '../../icons/xmark-1';
+import { Lightning } from '../../icons/bolt';
 import { primitives } from '../../theme';
 
 const textComposerStateSelector = (state: TextComposerState) => ({

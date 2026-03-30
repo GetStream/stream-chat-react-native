@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Check, IconProps } from '../../../icons';
-import { Cross } from '../../../icons/Cross';
+import { Cross } from '../../../icons/xmark-1';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 import { useCanCreatePoll } from '../hooks/useCanCreatePoll';

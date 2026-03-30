@@ -5,8 +5,8 @@ import { CommandVariants } from 'stream-chat';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Flag, GiphyIcon, Mute, Sound, UserAdd, UserDelete } from '../../icons';
-import { Imgur } from '../../icons/Imgur';
-import { Lightning } from '../../icons/Lightning';
+import { Imgur } from '../../icons/imgur';
+import { Lightning } from '../../icons/bolt';
 
 export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { Cross } from '../../../icons/Cross';
+import { Cross } from '../../../icons/xmark-1';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 

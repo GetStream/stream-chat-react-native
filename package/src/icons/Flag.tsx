@@ -15,3 +15,5 @@ export const Flag = ({ height, size, width, ...props }: IconProps) => (
     />
   </Svg>
 );
+
+export const MessageFlag = (props: IconProps) => <Flag {...props} />;

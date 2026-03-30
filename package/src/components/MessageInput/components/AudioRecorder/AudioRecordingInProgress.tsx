@@ -9,7 +9,7 @@ import {
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Mic } from '../../../../icons/Mic';
+import { Mic } from '../../../../icons/voice';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
 
