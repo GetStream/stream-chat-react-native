@@ -165,8 +165,7 @@ export const WaveProgressBar = React.memo(
               return;
             }
             const nextProgress = clampProgress(
-              dragStartProgress.value +
-                (event.translationX * thumbDirectionMultiplier) / fullWidth,
+              dragStartProgress.value + (event.translationX * thumbDirectionMultiplier) / fullWidth,
             );
             visualProgress.value = nextProgress;
             if (onProgressDrag) {

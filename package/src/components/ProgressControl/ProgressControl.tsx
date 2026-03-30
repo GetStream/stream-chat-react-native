@@ -84,7 +84,7 @@ export const ProgressControl = (props: ProgressControlProps) => {
           }
         })
         .withTestId(testID),
-    [onEndDrag, onStartDrag, state, testID, widthInNumbers],
+    [isRTL, onEndDrag, onStartDrag, state, testID, widthInNumbers],
   );
 
   const thumbStyles = useAnimatedStyle(
