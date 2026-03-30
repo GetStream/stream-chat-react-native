@@ -5,11 +5,11 @@ import {
   Channel,
   MessageComposer,
   MessageList,
-  User,
   UserAdd,
   useTheme,
 } from 'stream-chat-react-native';
 
+import { User } from '../icons/User';
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';

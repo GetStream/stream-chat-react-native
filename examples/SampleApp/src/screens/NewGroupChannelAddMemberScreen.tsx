@@ -1,7 +1,8 @@
 import React from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { ArrowRight, Search, useTheme } from 'stream-chat-react-native';
+import { Search, useTheme } from 'stream-chat-react-native';
 
+import { RightArrow } from '../icons/RightArrow';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
@@ -58,7 +59,7 @@ const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
 
   return (
     <TouchableOpacity disabled={disabled} onPress={onPress} style={styles.navigationButton}>
-      <ArrowRight pathFill={disabled ? 'transparent' : accent_blue} />
+      <RightArrow height={24} width={24} />
     </TouchableOpacity>
   );
 };

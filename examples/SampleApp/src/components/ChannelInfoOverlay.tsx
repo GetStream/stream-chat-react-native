@@ -7,7 +7,6 @@ import Animated from 'react-native-reanimated';
 import {
   CircleClose,
   Delete,
-  User,
   UserMinus,
   useTheme,
   useViewport,
@@ -24,6 +23,7 @@ import { Archive } from '../icons/Archive';
 import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pin } from '../icons/Pin.tsx';
+import { User } from '../icons/User';
 
 import type { ConfirmationData } from './ConfirmationBottomSheet';
 
