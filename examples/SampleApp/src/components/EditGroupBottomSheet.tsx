@@ -13,11 +13,11 @@ import {
   BottomSheetModal,
   ChannelAvatar,
   Checkmark,
-  Close,
   useStableCallback,
   useTheme,
 } from 'stream-chat-react-native';
 
+import { Close } from '../icons/Close';
 import type { Channel } from 'stream-chat';
 
 type EditGroupBottomSheetProps = {
