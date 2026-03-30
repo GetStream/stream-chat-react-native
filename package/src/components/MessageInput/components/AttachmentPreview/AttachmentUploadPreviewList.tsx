@@ -269,6 +269,10 @@ const UnMemoizedAttachmentUploadPreviewList = (
         scrollOffsetXRef.current = newMaxOffset;
       }
 
+      if (isRTL) {
+        return;
+      }
+
       const compensation = newMaxOffset - oldMaxOffset;
       if (compensation !== 0) {
         cancelAnimation(endShrinkCompensationX);
@@ -294,9 +298,13 @@ const UnMemoizedAttachmentUploadPreviewList = (
     cancelAnimation(endShrinkCompensationX);
     endShrinkCompensationX.value = 0;
     requestAnimationFrame(() => {
+      if (isRTL) {
+        return;
+      }
+
       attachmentListRef.current?.scrollToEnd({ animated: true });
     });
-  }, [endShrinkCompensationX, nonAudioAttachments.length]);
+  }, [endShrinkCompensationX, isRTL, nonAudioAttachments.length]);
 
   const animatedListWrapperStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: endShrinkCompensationX.value }],
