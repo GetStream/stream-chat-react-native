@@ -51,7 +51,11 @@ export const PollAllOptionsContent = ({
   const styles = useAllOptionStyles();
 
   return (
-    <ScrollView style={[styles.allOptionsWrapper, wrapper]} {...additionalScrollViewProps}>
+    <ScrollView
+      contentContainerStyle={styles.allOptionsContentContainer}
+      style={[styles.allOptionsWrapper, wrapper]}
+      {...additionalScrollViewProps}
+    >
       <View style={[styles.allOptionsTitleContainer, titleContainer]}>
         <Text style={styles.allOptionsTitleMeta}>{t('Question')}</Text>
         <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
@@ -259,6 +263,9 @@ const useAllOptionStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
+        allOptionsContentContainer: {
+          padding: primitives.spacingMd,
+        },
         allOptionsListContainer: {
           borderRadius: primitives.radiusLg,
           padding: primitives.spacingMd,
@@ -285,7 +292,6 @@ const useAllOptionStyles = () => {
         },
         allOptionsWrapper: {
           flex: 1,
-          padding: primitives.spacingMd,
           backgroundColor: semantics.backgroundCoreElevation1,
         },
         optionWrapper: {

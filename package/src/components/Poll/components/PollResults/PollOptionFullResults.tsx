@@ -107,11 +107,11 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        container: { flex: 1, padding: primitives.spacingMd },
+        container: { flex: 1, backgroundColor: semantics.backgroundCoreElevation1 },
         contentContainer: {
+          margin: primitives.spacingMd,
           backgroundColor: semantics.backgroundCoreSurfaceCard,
           borderRadius: primitives.radiusLg,
-          marginBottom: primitives.spacingMd,
           paddingHorizontal: primitives.spacingMd,
           paddingTop: primitives.spacingMd,
           paddingBottom: primitives.spacingXs,
@@ -139,6 +139,10 @@ const useStyles = () => {
           marginLeft: primitives.spacingMd,
         },
       }),
-    [semantics.backgroundCoreSurfaceCard, semantics.textPrimary],
+    [
+      semantics.backgroundCoreElevation1,
+      semantics.backgroundCoreSurfaceCard,
+      semantics.textPrimary,
+    ],
   );
 };

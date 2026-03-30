@@ -44,7 +44,11 @@ export const PollResultsContent = ({
   const styles = useStyles();
 
   return (
-    <ScrollView style={[styles.scrollView, scrollView]} {...additionalScrollViewProps}>
+    <ScrollView
+      contentContainerStyle={styles.contentContainer}
+      style={[styles.scrollView, scrollView]}
+      {...additionalScrollViewProps}
+    >
       <View style={[styles.container, container]}>
         <Text style={[styles.titleMeta, titleMeta]}>{t('Question')}</Text>
         <Text style={[styles.title, title]}>{name}</Text>
@@ -80,6 +84,9 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
+        contentContainer: {
+          padding: primitives.spacingMd,
+        },
         container: {
           borderRadius: primitives.radiusLg,
           padding: primitives.spacingMd,
@@ -87,7 +94,6 @@ const useStyles = () => {
         },
         scrollView: {
           flex: 1,
-          padding: primitives.spacingMd,
           backgroundColor: semantics.backgroundCoreElevation1,
         },
         resultsContainer: {

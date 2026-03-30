@@ -281,10 +281,14 @@ const useStyles = () => {
     return StyleSheet.create({
       scrollView: {
         flex: 1,
-        padding: primitives.spacingMd,
         backgroundColor: semantics.backgroundCoreElevation1,
       },
-      contentContainerStyle: { paddingBottom: 70 },
+      contentContainerStyle: {
+        alignItems: 'stretch',
+        padding: primitives.spacingMd,
+        paddingBottom: 70,
+        width: '100%',
+      },
       title: {
         color: semantics.textPrimary,
         fontSize: primitives.typographyFontSizeMd,

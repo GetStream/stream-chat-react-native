@@ -175,10 +175,9 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        contentContainer: { gap: primitives.spacingMd },
+        contentContainer: { gap: primitives.spacingMd, padding: primitives.spacingMd },
         container: {
           flex: 1,
-          padding: primitives.spacingMd,
           backgroundColor: semantics.backgroundCoreElevation1,
         },
         listItemAnswerText: {
