@@ -1,5 +1,5 @@
 import React, { ReactNode, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { I18nManager, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
@@ -26,6 +26,8 @@ type SwipableMessageWrapperProps = Pick<MessagesContextValue, 'MessageSwipeConte
 
 export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperProps) => {
   const { MessageSwipeContent, children, messageSwipeToReplyHitSlop, onSwipe } = props;
+  const isRTL = I18nManager.isRTL;
+  const swipeDirectionMultiplier = isRTL ? -1 : 1;
 
   const styles = useStyles();
 
@@ -73,8 +75,9 @@ export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperP
           translateX.value = 0;
         })
         .onChange(({ translationX }) => {
-          if (translationX > 0) {
-            translateX.value = translationX;
+          const swipeDistance = translationX * swipeDirectionMultiplier;
+          if (swipeDistance > 0) {
+            translateX.value = swipeDistance;
           }
         })
         .onEnd(() => {
@@ -98,7 +101,15 @@ export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperP
             },
           );
         }),
-    [messageSwipeToReplyHitSlop, touchStart, isSwiping, translateX, onSwipe, triggerHaptic],
+    [
+      messageSwipeToReplyHitSlop,
+      onSwipe,
+      swipeDirectionMultiplier,
+      touchStart,
+      isSwiping,
+      translateX,
+      triggerHaptic,
+    ],
   );
 
   const swipeContentAnimatedStyle = useAnimatedStyle(
