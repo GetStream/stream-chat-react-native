@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   MessageContextValue,
@@ -22,6 +22,7 @@ import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 export type MessageRepliesPropsWithContext = Pick<
   MessageContextValue,
   | 'alignment'
+  | 'isMyMessage'
   | 'message'
   | 'onLongPress'
   | 'onPress'
@@ -36,6 +37,7 @@ export type MessageRepliesPropsWithContext = Pick<
 const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
   const {
     alignment,
+    isMyMessage,
     message,
     MessageRepliesAvatars,
     onLongPress,
@@ -57,15 +59,29 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
   } = useTheme();
   const styles = useStyles();
 
+  const physicalAlignment = I18nManager.isRTL
+    ? alignment === 'left'
+      ? 'right'
+      : 'left'
+    : alignment;
+  const connectorStroke = isMyMessage
+    ? semantics.chatThreadConnectorOutgoing
+    : semantics.chatThreadConnectorIncoming;
+
+  const connector =
+    physicalAlignment === 'left' ? (
+      <ReplyConnectorLeft height={48} width={16} stroke={connectorStroke} />
+    ) : (
+      <ReplyConnectorRight height={48} width={16} stroke={connectorStroke} />
+    );
+
   if (threadList || !message.reply_count) {
     return null;
   }
 
   return (
     <View style={[styles.container, container]}>
-      {alignment === 'left' && (
-        <ReplyConnectorLeft height={48} width={16} stroke={semantics.chatThreadConnectorIncoming} />
-      )}
+      {alignment === 'left' ? connector : null}
       <Pressable
         disabled={preventPress}
         onLongPress={(event) => {
@@ -96,7 +112,7 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
         }}
         style={[
           styles.content,
-          { flexDirection: alignment === 'left' ? 'row' : 'row-reverse' },
+          { flexDirection: physicalAlignment === 'left' ? 'row' : 'row-reverse' },
           content,
         ]}
         testID='message-replies'
@@ -110,13 +126,7 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
               })}
         </Text>
       </Pressable>
-      {alignment === 'right' && (
-        <ReplyConnectorRight
-          height={48}
-          width={16}
-          stroke={semantics.chatThreadConnectorOutgoing}
-        />
-      )}
+      {alignment === 'right' ? connector : null}
     </View>
   );
 };
@@ -171,6 +181,7 @@ export type MessageRepliesProps = Partial<MessageRepliesPropsWithContext>;
 export const MessageReplies = (props: MessageRepliesProps) => {
   const {
     alignment,
+    isMyMessage,
     message,
     onLongPress,
     onOpenThread,
@@ -186,6 +197,7 @@ export const MessageReplies = (props: MessageRepliesProps) => {
     <MemoizedMessageReplies
       {...{
         alignment,
+        isMyMessage,
         message,
         MessageRepliesAvatars,
         onLongPress,
