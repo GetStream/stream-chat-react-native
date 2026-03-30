@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   I18nManager,
@@ -97,14 +97,18 @@ const UnMemoizedAttachmentUploadPreviewList = (
   const { audioRecordingSendOnComplete } = useMessageInputContext();
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
+  const isRTL = I18nManager.isRTL;
   const attachmentListRef = useRef<FlatList<LocalAttachment>>(null);
   const soundPackageAvailable = isSoundPackageAvailable();
   const isAudioAttachmentPreview = getIsAudioAttachmentPreview(soundPackageAvailable);
   const previousNonAudioAttachmentsLengthRef = useRef(0);
   const contentWidthRef = useRef(0);
+  const itemsContentWidthRef = useRef(0);
   const viewportWidthRef = useRef(0);
   const scrollOffsetXRef = useRef(0);
+  const rtlLeadingSpacerWidthRef = useRef(0);
   const endShrinkCompensationX = useSharedValue(0);
+  const [rtlLeadingSpacerWidth, setRtlLeadingSpacerWidth] = useState(0);
   const previewAttachments = attachments.filter(
     (attachment) => !(audioRecordingSendOnComplete && isLocalVoiceRecordingAttachment(attachment)),
   );
@@ -112,7 +116,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
   const nonAudioAttachments = previewAttachments.filter(
     (attachment) => !isAudioAttachmentPreview(attachment),
   );
-  const data = I18nManager.isRTL ? nonAudioAttachments.toReversed() : nonAudioAttachments;
+  const data = isRTL ? nonAudioAttachments.toReversed() : nonAudioAttachments;
 
   const {
     theme: {
@@ -121,6 +125,27 @@ const UnMemoizedAttachmentUploadPreviewList = (
       },
     },
   } = useTheme();
+
+  const updateRtlLeadingSpacerWidth = useCallback(
+    (itemsWidth: number, viewportWidth: number) => {
+      if (!isRTL || !viewportWidth) {
+        if (rtlLeadingSpacerWidthRef.current !== 0) {
+          rtlLeadingSpacerWidthRef.current = 0;
+          setRtlLeadingSpacerWidth(0);
+        }
+        return;
+      }
+
+      const nextSpacerWidth = Math.max(0, viewportWidth - itemsWidth);
+      if (rtlLeadingSpacerWidthRef.current === nextSpacerWidth) {
+        return;
+      }
+
+      rtlLeadingSpacerWidthRef.current = nextSpacerWidth;
+      setRtlLeadingSpacerWidth(nextSpacerWidth);
+    },
+    [isRTL],
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: LocalAttachment }) => {
@@ -202,21 +227,31 @@ const UnMemoizedAttachmentUploadPreviewList = (
     scrollOffsetXRef.current = event.nativeEvent.contentOffset.x;
   }, []);
 
-  const onLayoutHandler = useCallback((event: LayoutChangeEvent) => {
-    viewportWidthRef.current = event.nativeEvent.layout.width;
-  }, []);
+  const onLayoutHandler = useCallback(
+    (event: LayoutChangeEvent) => {
+      const viewportWidth = event.nativeEvent.layout.width;
+      viewportWidthRef.current = viewportWidth;
+      updateRtlLeadingSpacerWidth(itemsContentWidthRef.current, viewportWidth);
+    },
+    [updateRtlLeadingSpacerWidth],
+  );
 
   const onContentSizeChangeHandler = useCallback(
     (width: number) => {
+      const itemsContentWidth = isRTL
+        ? Math.max(0, width - rtlLeadingSpacerWidthRef.current)
+        : width;
       const previousContentWidth = contentWidthRef.current;
-      contentWidthRef.current = width;
+      contentWidthRef.current = itemsContentWidth;
+      itemsContentWidthRef.current = itemsContentWidth;
+      updateRtlLeadingSpacerWidth(itemsContentWidth, viewportWidthRef.current);
 
-      if (!previousContentWidth || width >= previousContentWidth) {
+      if (!previousContentWidth || itemsContentWidth >= previousContentWidth) {
         return;
       }
 
       const oldMaxOffset = Math.max(0, previousContentWidth - viewportWidthRef.current);
-      const newMaxOffset = Math.max(0, width - viewportWidthRef.current);
+      const newMaxOffset = Math.max(0, itemsContentWidth - viewportWidthRef.current);
       const offsetBefore = scrollOffsetXRef.current;
       const wasNearEnd = oldMaxOffset - offsetBefore <= END_ANCHOR_THRESHOLD;
       const overshoot = Math.max(0, offsetBefore - newMaxOffset);
@@ -243,7 +278,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
         });
       }
     },
-    [endShrinkCompensationX],
+    [endShrinkCompensationX, isRTL, updateRtlLeadingSpacerWidth],
   );
 
   useEffect(() => {
@@ -304,6 +339,11 @@ const UnMemoizedAttachmentUploadPreviewList = (
               horizontal
               ItemSeparatorComponent={ItemSeparatorComponent}
               keyExtractor={(item) => item.localMetadata.id}
+              ListHeaderComponent={
+                isRTL && rtlLeadingSpacerWidth > 0 ? (
+                  <View style={{ width: rtlLeadingSpacerWidth }} />
+                ) : null
+              }
               onContentSizeChange={onContentSizeChangeHandler}
               onLayout={onLayoutHandler}
               onScroll={onScrollHandler}
