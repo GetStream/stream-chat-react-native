@@ -284,7 +284,10 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
       <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
-          <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
+          <Animated.View
+            testID='image-gallery-pager'
+            style={[styles.animatedContainer, pagerStyle, pager]}
+          >
             {assets.map((photo, i) =>
               photo.type === FileTypes.Video ? (
                 <AnimatedGalleryVideo
@@ -399,6 +402,7 @@ export const clamp = (value: number, lowerBound: number, upperBound: number) => 
 const styles = StyleSheet.create({
   animatedContainer: {
     alignItems: 'center',
+    direction: 'ltr',
     flexDirection: 'row',
   },
 });
