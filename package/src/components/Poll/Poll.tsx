@@ -119,12 +119,14 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
+        textAlign: 'left',
       },
       headerTitle: {
         color: semantics.chatTextIncoming,
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       optionsWrapper: {
         gap: primitives.spacingMd,

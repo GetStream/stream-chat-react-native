@@ -230,6 +230,7 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
+        textAlign: 'left',
       },
       info: {
         flexGrow: 1,
@@ -241,6 +242,7 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
+        textAlign: 'left',
       },
       progressBarContainer: {
         flex: 1,
@@ -260,44 +262,44 @@ const useAllOptionStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        allOptionsContentContainer: {
-          padding: primitives.spacingMd,
-        },
-        allOptionsListContainer: {
-          borderRadius: primitives.radiusLg,
-          padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundCoreSurfaceCard,
-          marginTop: primitives.spacing2xl,
-        },
-        allOptionsTitleContainer: {
-          borderRadius: primitives.radiusLg,
-          padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundCoreSurfaceCard,
-        },
-        allOptionsTitleText: {
-          fontSize: primitives.typographyFontSizeLg,
-          lineHeight: primitives.typographyLineHeightRelaxed,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          color: semantics.textPrimary,
-          paddingTop: primitives.spacingXs,
-        },
-        allOptionsTitleMeta: {
-          fontSize: primitives.typographyFontSizeSm,
-          color: semantics.textTertiary,
-          lineHeight: primitives.typographyLineHeightNormal,
-          fontWeight: primitives.typographyFontWeightMedium,
-        },
-        allOptionsWrapper: {
-          flex: 1,
-          backgroundColor: semantics.backgroundCoreElevation1,
-        },
-        optionWrapper: {
-          paddingVertical: primitives.spacingMd,
-        },
-      }),
-    [semantics],
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      allOptionsContentContainer: {
+        padding: primitives.spacingMd,
+      },
+      allOptionsListContainer: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+        marginTop: primitives.spacing2xl,
+      },
+      allOptionsTitleContainer: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+      },
+      allOptionsTitleText: {
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      allOptionsTitleMeta: {
+        fontSize: primitives.typographyFontSizeSm,
+        color: semantics.textTertiary,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightMedium,
+        textAlign: 'left',
+      },
+      allOptionsWrapper: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreElevation1,
+      },
+      optionWrapper: {
+        paddingVertical: primitives.spacingMd,
+      },
+    });
+  }, [semantics]);
 };

@@ -81,38 +81,38 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        contentContainer: {
-          padding: primitives.spacingMd,
-        },
-        container: {
-          borderRadius: primitives.radiusLg,
-          padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundCoreSurfaceCard,
-        },
-        scrollView: {
-          flex: 1,
-          backgroundColor: semantics.backgroundCoreElevation1,
-        },
-        resultsContainer: {
-          paddingVertical: primitives.spacing2xl,
-        },
-        title: {
-          fontSize: primitives.typographyFontSizeLg,
-          lineHeight: primitives.typographyLineHeightRelaxed,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          color: semantics.textPrimary,
-          paddingTop: primitives.spacingXs,
-        },
-        titleMeta: {
-          fontSize: primitives.typographyFontSizeSm,
-          color: semantics.textTertiary,
-          lineHeight: primitives.typographyLineHeightNormal,
-          fontWeight: primitives.typographyFontWeightMedium,
-        },
-      }),
-    [semantics],
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      contentContainer: {
+        padding: primitives.spacingMd,
+      },
+      container: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+      },
+      scrollView: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreElevation1,
+      },
+      resultsContainer: {
+        paddingVertical: primitives.spacing2xl,
+      },
+      title: {
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      titleMeta: {
+        fontSize: primitives.typographyFontSizeSm,
+        color: semantics.textTertiary,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightMedium,
+        textAlign: 'left',
+      },
+    });
+  }, [semantics]);
 };
