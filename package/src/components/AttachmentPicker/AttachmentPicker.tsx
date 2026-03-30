@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
 import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
@@ -38,6 +39,9 @@ export const AttachmentPicker = () => {
     bottomSheetRef: ref,
     disableAttachmentPicker,
   } = useAttachmentPickerContext();
+  const {
+    theme: { semantics },
+  } = useTheme();
 
   const [currentIndex, setCurrentIndexInternal] = useState(-1);
   const currentIndexRef = useRef<number>(currentIndex);
@@ -105,9 +109,19 @@ export const AttachmentPicker = () => {
   });
 
   const animationConfigs = useBottomSheetSpringConfigs(SPRING_CONFIG);
+  const backgroundStyle = useMemo(
+    () => ({
+      backgroundColor: semantics.backgroundCoreElevation1,
+      borderTopWidth: 0,
+      elevation: Platform.OS === 'android' ? 0 : undefined,
+      shadowOpacity: Platform.OS === 'android' ? 0 : undefined,
+    }),
+    [semantics.backgroundCoreElevation1],
+  );
 
   return (
     <BottomSheet
+      backgroundStyle={backgroundStyle}
       enablePanDownToClose={false}
       enableContentPanningGesture={false}
       enableDynamicSizing={false}
