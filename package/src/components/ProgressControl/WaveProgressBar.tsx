@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { I18nManager, StyleSheet, View } from 'react-native';
 import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -98,6 +98,8 @@ export const WaveProgressBar = React.memo(
     const [showInteractiveLayer, setShowInteractiveLayer] = useState(
       () => progress > 0 || isPlaying,
     );
+    const isRTL = I18nManager.isRTL;
+    const thumbDirectionMultiplier = isRTL ? -1 : 1;
     const eachWaveformWidth = WAVEFORM_WIDTH + WAVEFORM_GAP;
     const fullWidth = (amplitudesCount - 1) * eachWaveformWidth;
     const maxThumbTranslateX = Math.max(fullWidth - eachWaveformWidth, 0);
@@ -163,7 +165,8 @@ export const WaveProgressBar = React.memo(
               return;
             }
             const nextProgress = clampProgress(
-              dragStartProgress.value + event.translationX / fullWidth,
+              dragStartProgress.value +
+                (event.translationX * thumbDirectionMultiplier) / fullWidth,
             );
             visualProgress.value = nextProgress;
             if (onProgressDrag) {
@@ -186,6 +189,7 @@ export const WaveProgressBar = React.memo(
         onEndDrag,
         onProgressDrag,
         onStartDrag,
+        thumbDirectionMultiplier,
         visualProgress,
       ],
     );
@@ -220,14 +224,13 @@ export const WaveProgressBar = React.memo(
         position: 'absolute',
         transform: [
           {
-            translateX: Math.min(
-              clampProgress(visualProgress.value) * fullWidth,
-              maxThumbTranslateX,
-            ),
+            translateX:
+              Math.min(clampProgress(visualProgress.value) * fullWidth, maxThumbTranslateX) *
+              thumbDirectionMultiplier,
           },
         ],
       }),
-      [fullWidth, maxThumbTranslateX],
+      [fullWidth, maxThumbTranslateX, thumbDirectionMultiplier],
     );
 
     return (
