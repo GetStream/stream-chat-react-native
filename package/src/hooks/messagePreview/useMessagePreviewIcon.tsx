@@ -2,14 +2,14 @@ import { DraftMessage, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useGroupedAttachments } from '../../hooks/messagePreview/useGroupedAttachments';
 
-import { CircleBan } from '../../icons/no-sign';
 import { File } from '../../icons/file';
+import { PhotoIcon } from '../../icons/image';
 import { Link } from '../../icons/link';
 import { MapPin } from '../../icons/location';
-import { Mic } from '../../icons/voice';
-import { PhotoIcon } from '../../icons/image';
+import { CircleBan } from '../../icons/no-sign';
 import { PollIcon } from '../../icons/poll';
 import { VideoIcon } from '../../icons/video';
+import { Mic } from '../../icons/voice';
 import { FileTypes } from '../../types/types';
 
 export const useMessagePreviewIcon = ({

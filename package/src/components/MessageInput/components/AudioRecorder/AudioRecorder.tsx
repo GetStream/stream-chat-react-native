@@ -14,12 +14,12 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
+import { Tick } from '../../../../icons/checkmark';
 import { ChevronLeft } from '../../../../icons/chevron-left';
 import { Delete } from '../../../../icons/delete';
-import { Mic } from '../../../../icons/voice';
 import { Stop } from '../../../../icons/stop-fill';
-import { Tick } from '../../../../icons/checkmark';
 import { IconProps } from '../../../../icons/utils/base';
+import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';

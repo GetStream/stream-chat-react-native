@@ -16,13 +16,7 @@ export const ArrowUp = ({ height, size, width, ...rest }: IconProps) => (
 );
 
 export const Down = ({ height, size, width, ...rest }: IconProps) => (
-  <Svg
-    fill={'none'}
-    height={height ?? size}
-    viewBox={'0 0 20 20'}
-    width={width ?? size}
-    {...rest}
-  >
+  <Svg fill={'none'} height={height ?? size} viewBox={'0 0 20 20'} width={width ?? size} {...rest}>
     <Path
       d='M10 16.875V3.125M10 3.125L4.375 8.75M10 3.125L15.625 8.75'
       strokeWidth={1.5}

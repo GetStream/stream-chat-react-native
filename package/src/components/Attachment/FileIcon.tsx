@@ -4,14 +4,14 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { Audio } from '../../icons/filetype-audio-xl';
 import { Code } from '../../icons/filetype-code-xl';
-import { DOC } from '../../icons/filetype-text-xl';
+import { ZIP } from '../../icons/filetype-compression-xl';
 import { OtherFileIcon } from '../../icons/filetype-other-xl';
 import { PDF } from '../../icons/filetype-pdf-xl';
 import { Presentation } from '../../icons/filetype-presentation-xl';
 import { SpreadSheet } from '../../icons/filetype-spreadsheet-xl';
-import type { IconProps } from '../../icons/utils/base';
+import { DOC } from '../../icons/filetype-text-xl';
 import { Video } from '../../icons/filetype-video-xl';
-import { ZIP } from '../../icons/filetype-compression-xl';
+import type { IconProps } from '../../icons/utils/base';
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#audio
 const audioFileTypes = [
