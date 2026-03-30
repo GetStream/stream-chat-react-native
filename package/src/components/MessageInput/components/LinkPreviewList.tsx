@@ -10,7 +10,7 @@ import { LinkPreviewsManager } from 'stream-chat';
 import { AttachmentRemoveControl } from './AttachmentPreview/AttachmentRemoveControl';
 
 import { useChatContext, useMessageComposer, useTheme } from '../../../contexts';
-import { Link } from '../../../icons/Link';
+import { Link } from '../../../icons/link';
 import { components, primitives } from '../../../theme';
 import { useLinkPreviews } from '../hooks/useLinkPreviews';
 

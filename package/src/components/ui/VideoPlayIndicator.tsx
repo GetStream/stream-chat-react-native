@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Play } from '../../icons/Play';
+import { Play } from '../../icons/play-fill';
 import { primitives } from '../../theme';
 
 const sizes = {

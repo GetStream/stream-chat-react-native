@@ -1,15 +1,11 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export const StreamLogo: React.FC<IconProps> = ({ height = 40, width = 80 }) => {
-  const {
-    theme: {
-      colors: { accent_blue },
-    },
-  } = useTheme();
+  const { accent_blue } = useLegacyColors();
 
   return (
     <Svg fill='none' height={height} viewBox={`0 0 ${width} ${height}`} width={width}>

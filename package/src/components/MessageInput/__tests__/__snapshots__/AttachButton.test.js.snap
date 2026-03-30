@@ -133,7 +133,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
               strokeWidth={1.5}
             >
               <RNSVGPath
-                d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
+                d="M3.125 10H16.875M10 3.125V16.875"
                 fill={
                   {
                     "payload": 4278190080,
@@ -250,15 +250,15 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
-                fill="#1a1b25"
+                bbHeight={20}
+                bbWidth={20}
+                fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                strokeWidth={0}
+                strokeWidth={1.5}
                 style={
                   [
                     {
@@ -267,45 +267,50 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={16}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
-                  fill={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
-                  }
+                  fill={null}
                   propList={
                     [
                       "fill",
                       "strokeWidth",
                     ]
                   }
-                  strokeWidth={0}
+                  strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M5.47018 8.8035L6.00051 8.27317L6.00049 8.27316L5.47018 8.8035ZM3.11316 8.8035L2.58284 8.27316L2.58283 8.27317L3.11316 8.8035ZM11.1667 14.5L11.697 13.9697L6.00051 8.27317L5.47018 8.8035L4.93984 9.33383L10.6363 15.0303L11.1667 14.5ZM5.47018 8.8035L6.00049 8.27316C5.05674 7.32945 3.5266 7.32945 2.58284 8.27316L3.11316 8.8035L3.64347 9.33384C4.00145 8.97589 4.58188 8.97589 4.93986 9.33384L5.47018 8.8035ZM3.11316 8.8035L2.58283 8.27317L0.219669 10.6363L0.75 11.1667L1.28033 11.697L3.64349 9.33383L3.11316 8.8035ZM11.1667 14.5V15.25H12.8333V14.5V13.75H11.1667V14.5ZM12.8333 14.5V15.25C14.168 15.25 15.25 14.168 15.25 12.8333H14.5H13.75C13.75 13.3396 13.3396 13.75 12.8333 13.75V14.5ZM14.5 12.8333H15.25V2.41667H14.5H13.75V12.8333H14.5ZM14.5 2.41667H15.25C15.25 1.08199 14.1681 0 12.8333 0V0.75V1.5C13.3396 1.5 13.75 1.9104 13.75 2.41667H14.5ZM12.8333 0.75V0H2.41667V0.75V1.5H12.8333V0.75ZM2.41667 0.75V0C1.08198 0 0 1.08198 0 2.41667H0.75H1.5C1.5 1.91041 1.91041 1.5 2.41667 1.5V0.75ZM0.75 2.41667H0V11.1667H0.75H1.5V2.41667H0.75ZM11.1667 14.5V13.75H2.41667V14.5V15.25H11.1667V14.5ZM2.41667 14.5V13.75C1.9104 13.75 1.5 13.3396 1.5 12.8333H0.75H0C0 14.1681 1.08199 15.25 2.41667 15.25V14.5ZM0.75 12.8333H1.5V11.1667H0.75H0V12.8333H0.75ZM9.70833 7.20833V7.95833C11.043 7.95833 12.125 6.87638 12.125 5.54167H11.375H10.625C10.625 6.04795 10.2146 6.45833 9.70833 6.45833V7.20833ZM11.375 5.54167H12.125C12.125 4.20699 11.0431 3.125 9.70833 3.125V3.875V4.625C10.2146 4.625 10.625 5.0354 10.625 5.54167H11.375ZM9.70833 3.875V3.125C8.37361 3.125 7.29167 4.20699 7.29167 5.54167H8.04167H8.79167C8.79167 5.0354 9.20205 4.625 9.70833 4.625V3.875ZM8.04167 5.54167H7.29167C7.29167 6.87638 8.37362 7.95833 9.70833 7.95833V7.20833V6.45833C9.20205 6.45833 8.79167 6.04795 8.79167 5.54167H8.04167Z"
+                    d="M4.42891 16.875L12.9953 8.30781C13.0534 8.2497 13.1223 8.2036 13.1982 8.17215C13.274 8.1407 13.3554 8.12451 13.4375 8.12451C13.5196 8.12451 13.601 8.1407 13.6768 8.17215C13.7527 8.2036 13.8216 8.2497 13.8797 8.30781L16.875 11.3039M3.75 3.125H16.25C16.5952 3.125 16.875 3.40482 16.875 3.75V16.25C16.875 16.5952 16.5952 16.875 16.25 16.875H3.75C3.40482 16.875 3.125 16.5952 3.125 16.25V3.75C3.125 3.40482 3.40482 3.125 3.75 3.125ZM8.75 7.5C8.75 8.19036 8.19036 8.75 7.5 8.75C6.80964 8.75 6.25 8.19036 6.25 7.5C6.25 6.80964 6.80964 6.25 7.5 6.25C8.19036 6.25 8.75 6.80964 8.75 7.5Z"
                     fill={
                       {
-                        "payload": 4279900965,
+                        "payload": 4278190080,
                         "type": 0,
                       }
                     }
                     propList={
                       [
-                        "fill",
+                        "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
-                    strokeWidth={0}
+                    stroke={
+                      {
+                        "payload": 4279900965,
+                        "type": 0,
+                      }
+                    }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
+                    strokeWidth={1.5}
                   />
                 </RNSVGGroup>
               </RNSVGSvgView>
@@ -384,11 +389,11 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -403,14 +408,14 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={17}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
@@ -432,7 +437,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M2.41667 3.25H3.81636C4.37362 3.25 4.894 2.9715 5.20311 2.50783L5.88022 1.49217C6.18933 1.0285 6.70972 0.75 7.267 0.75H9.64967C10.2069 0.75 10.7273 1.0285 11.0364 1.49217L11.7136 2.50783C12.0227 2.9715 12.5431 3.25 13.1003 3.25H14.5C15.4205 3.25 16.1667 3.99619 16.1667 4.91667V12.8333C16.1667 13.7538 15.4205 14.5 14.5 14.5H2.41667C1.49619 14.5 0.75 13.7538 0.75 12.8333V4.91667C0.75 3.99619 1.49619 3.25 2.41667 3.25Z"
+                    d="M16.25 16.25H3.75C3.41848 16.25 3.10054 16.1183 2.86612 15.8839C2.6317 15.6495 2.5 15.3315 2.5 15V6.25C2.5 5.91848 2.6317 5.60054 2.86612 5.36612C3.10054 5.1317 3.41848 5 3.75 5H6.25L7.5 3.125H12.5L13.75 5H16.25C16.5815 5 16.8995 5.1317 17.1339 5.36612C17.3683 5.60054 17.5 5.91848 17.5 6.25V15C17.5 15.3315 17.3683 15.6495 17.1339 15.8839C16.8995 16.1183 16.5815 16.25 16.25 16.25Z"
                     fill={
                       {
                         "payload": 4278190080,
@@ -454,7 +459,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                     strokeWidth={1.5}
                   />
                   <RNSVGPath
-                    d="M11.1667 8.45833C11.1667 9.95408 9.95408 11.1667 8.45833 11.1667C6.96258 11.1667 5.75 9.95408 5.75 8.45833C5.75 6.96258 6.96258 5.75 8.45833 5.75C9.95408 5.75 11.1667 6.96258 11.1667 8.45833Z"
+                    d="M10 13.125C11.5533 13.125 12.8125 11.8658 12.8125 10.3125C12.8125 8.7592 11.5533 7.5 10 7.5C8.4467 7.5 7.1875 8.7592 7.1875 10.3125C7.1875 11.8658 8.4467 13.125 10 13.125Z"
                     fill={
                       {
                         "payload": 4278190080,
@@ -552,15 +557,14 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                stroke="#1a1b25"
                 strokeWidth={1.5}
                 style={
                   [
@@ -570,44 +574,34 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={17}
-                vbWidth={14}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
                   propList={
                     [
                       "fill",
-                      "stroke",
                       "strokeWidth",
                     ]
-                  }
-                  stroke={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
                   }
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M7.41667 1.16667V4.5C7.41667 5.42047 8.16283 6.16667 9.08333 6.16667H12.4167M6.72633 0.75H2.41667C1.49619 0.75 0.75 1.49619 0.75 2.41667V14.5C0.75 15.4205 1.49619 16.1667 2.41667 16.1667H11.1667C12.0872 16.1667 12.8333 15.4205 12.8333 14.5V6.857C12.8333 6.41499 12.6578 5.99108 12.3452 5.67851L7.90483 1.23816C7.59225 0.925592 7.16833 0.75 6.72633 0.75Z"
-                    fill={
-                      {
-                        "payload": 4278190080,
-                        "type": 0,
-                      }
-                    }
+                    d="M11.875 2.5H4.375C4.20924 2.5 4.05027 2.56585 3.93306 2.68306C3.81585 2.80027 3.75 2.95924 3.75 3.125V16.875C3.75 17.0408 3.81585 17.1997 3.93306 17.3169C4.05027 17.4342 4.20924 17.5 4.375 17.5H15.625C15.7908 17.5 15.9497 17.4342 16.0669 17.3169C16.1842 17.1997 16.25 17.0408 16.25 16.875V6.875M11.875 2.5L16.25 6.875M11.875 2.5V6.875H16.25"
+                    fill={null}
                     propList={
                       [
+                        "fill",
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
                         "strokeLinejoin",
                       ]
                     }
@@ -617,8 +611,9 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
                     strokeLinejoin={1}
-                    strokeWidth={1.5}
+                    strokeWidth={1.2}
                   />
                 </RNSVGGroup>
               </RNSVGSvgView>
@@ -697,11 +692,11 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -715,14 +710,14 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={16}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
@@ -742,7 +737,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M5.75 11.5833L9.5 3.66667M2.41667 0.75H12.8333C13.7538 0.75 14.5 1.49619 14.5 2.41667V12.8333C14.5 13.7538 13.7538 14.5 12.8333 14.5H2.41667C1.49619 14.5 0.75 13.7538 0.75 12.8333V2.41667C0.75 1.49619 1.49619 0.75 2.41667 0.75Z"
+                    d="M6.25 7.5L9.375 10L6.25 12.5M10.625 12.5H13.75M3.125 3.75H16.875C17.2202 3.75 17.5 4.02982 17.5 4.375V15.625C17.5 15.9702 17.2202 16.25 16.875 16.25H3.125C2.77982 16.25 2.5 15.9702 2.5 15.625V4.375C2.5 4.02982 2.77982 3.75 3.125 3.75Z"
                     fill={
                       {
                         "payload": 4278190080,
@@ -1033,7 +1028,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
               strokeWidth={1.5}
             >
               <RNSVGPath
-                d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
+                d="M3.125 10H16.875M10 3.125V16.875"
                 fill={
                   {
                     "payload": 4278190080,
@@ -1150,15 +1145,15 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
-                fill="#1a1b25"
+                bbHeight={20}
+                bbWidth={20}
+                fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                strokeWidth={0}
+                strokeWidth={1.5}
                 style={
                   [
                     {
@@ -1167,45 +1162,50 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={16}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
-                  fill={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
-                  }
+                  fill={null}
                   propList={
                     [
                       "fill",
                       "strokeWidth",
                     ]
                   }
-                  strokeWidth={0}
+                  strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M5.47018 8.8035L6.00051 8.27317L6.00049 8.27316L5.47018 8.8035ZM3.11316 8.8035L2.58284 8.27316L2.58283 8.27317L3.11316 8.8035ZM11.1667 14.5L11.697 13.9697L6.00051 8.27317L5.47018 8.8035L4.93984 9.33383L10.6363 15.0303L11.1667 14.5ZM5.47018 8.8035L6.00049 8.27316C5.05674 7.32945 3.5266 7.32945 2.58284 8.27316L3.11316 8.8035L3.64347 9.33384C4.00145 8.97589 4.58188 8.97589 4.93986 9.33384L5.47018 8.8035ZM3.11316 8.8035L2.58283 8.27317L0.219669 10.6363L0.75 11.1667L1.28033 11.697L3.64349 9.33383L3.11316 8.8035ZM11.1667 14.5V15.25H12.8333V14.5V13.75H11.1667V14.5ZM12.8333 14.5V15.25C14.168 15.25 15.25 14.168 15.25 12.8333H14.5H13.75C13.75 13.3396 13.3396 13.75 12.8333 13.75V14.5ZM14.5 12.8333H15.25V2.41667H14.5H13.75V12.8333H14.5ZM14.5 2.41667H15.25C15.25 1.08199 14.1681 0 12.8333 0V0.75V1.5C13.3396 1.5 13.75 1.9104 13.75 2.41667H14.5ZM12.8333 0.75V0H2.41667V0.75V1.5H12.8333V0.75ZM2.41667 0.75V0C1.08198 0 0 1.08198 0 2.41667H0.75H1.5C1.5 1.91041 1.91041 1.5 2.41667 1.5V0.75ZM0.75 2.41667H0V11.1667H0.75H1.5V2.41667H0.75ZM11.1667 14.5V13.75H2.41667V14.5V15.25H11.1667V14.5ZM2.41667 14.5V13.75C1.9104 13.75 1.5 13.3396 1.5 12.8333H0.75H0C0 14.1681 1.08199 15.25 2.41667 15.25V14.5ZM0.75 12.8333H1.5V11.1667H0.75H0V12.8333H0.75ZM9.70833 7.20833V7.95833C11.043 7.95833 12.125 6.87638 12.125 5.54167H11.375H10.625C10.625 6.04795 10.2146 6.45833 9.70833 6.45833V7.20833ZM11.375 5.54167H12.125C12.125 4.20699 11.0431 3.125 9.70833 3.125V3.875V4.625C10.2146 4.625 10.625 5.0354 10.625 5.54167H11.375ZM9.70833 3.875V3.125C8.37361 3.125 7.29167 4.20699 7.29167 5.54167H8.04167H8.79167C8.79167 5.0354 9.20205 4.625 9.70833 4.625V3.875ZM8.04167 5.54167H7.29167C7.29167 6.87638 8.37362 7.95833 9.70833 7.95833V7.20833V6.45833C9.20205 6.45833 8.79167 6.04795 8.79167 5.54167H8.04167Z"
+                    d="M4.42891 16.875L12.9953 8.30781C13.0534 8.2497 13.1223 8.2036 13.1982 8.17215C13.274 8.1407 13.3554 8.12451 13.4375 8.12451C13.5196 8.12451 13.601 8.1407 13.6768 8.17215C13.7527 8.2036 13.8216 8.2497 13.8797 8.30781L16.875 11.3039M3.75 3.125H16.25C16.5952 3.125 16.875 3.40482 16.875 3.75V16.25C16.875 16.5952 16.5952 16.875 16.25 16.875H3.75C3.40482 16.875 3.125 16.5952 3.125 16.25V3.75C3.125 3.40482 3.40482 3.125 3.75 3.125ZM8.75 7.5C8.75 8.19036 8.19036 8.75 7.5 8.75C6.80964 8.75 6.25 8.19036 6.25 7.5C6.25 6.80964 6.80964 6.25 7.5 6.25C8.19036 6.25 8.75 6.80964 8.75 7.5Z"
                     fill={
                       {
-                        "payload": 4279900965,
+                        "payload": 4278190080,
                         "type": 0,
                       }
                     }
                     propList={
                       [
-                        "fill",
+                        "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
-                    strokeWidth={0}
+                    stroke={
+                      {
+                        "payload": 4279900965,
+                        "type": 0,
+                      }
+                    }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
+                    strokeWidth={1.5}
                   />
                 </RNSVGGroup>
               </RNSVGSvgView>
@@ -1284,11 +1284,11 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -1303,14 +1303,14 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={17}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
@@ -1332,7 +1332,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M2.41667 3.25H3.81636C4.37362 3.25 4.894 2.9715 5.20311 2.50783L5.88022 1.49217C6.18933 1.0285 6.70972 0.75 7.267 0.75H9.64967C10.2069 0.75 10.7273 1.0285 11.0364 1.49217L11.7136 2.50783C12.0227 2.9715 12.5431 3.25 13.1003 3.25H14.5C15.4205 3.25 16.1667 3.99619 16.1667 4.91667V12.8333C16.1667 13.7538 15.4205 14.5 14.5 14.5H2.41667C1.49619 14.5 0.75 13.7538 0.75 12.8333V4.91667C0.75 3.99619 1.49619 3.25 2.41667 3.25Z"
+                    d="M16.25 16.25H3.75C3.41848 16.25 3.10054 16.1183 2.86612 15.8839C2.6317 15.6495 2.5 15.3315 2.5 15V6.25C2.5 5.91848 2.6317 5.60054 2.86612 5.36612C3.10054 5.1317 3.41848 5 3.75 5H6.25L7.5 3.125H12.5L13.75 5H16.25C16.5815 5 16.8995 5.1317 17.1339 5.36612C17.3683 5.60054 17.5 5.91848 17.5 6.25V15C17.5 15.3315 17.3683 15.6495 17.1339 15.8839C16.8995 16.1183 16.5815 16.25 16.25 16.25Z"
                     fill={
                       {
                         "payload": 4278190080,
@@ -1354,7 +1354,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                     strokeWidth={1.5}
                   />
                   <RNSVGPath
-                    d="M11.1667 8.45833C11.1667 9.95408 9.95408 11.1667 8.45833 11.1667C6.96258 11.1667 5.75 9.95408 5.75 8.45833C5.75 6.96258 6.96258 5.75 8.45833 5.75C9.95408 5.75 11.1667 6.96258 11.1667 8.45833Z"
+                    d="M10 13.125C11.5533 13.125 12.8125 11.8658 12.8125 10.3125C12.8125 8.7592 11.5533 7.5 10 7.5C8.4467 7.5 7.1875 8.7592 7.1875 10.3125C7.1875 11.8658 8.4467 13.125 10 13.125Z"
                     fill={
                       {
                         "payload": 4278190080,
@@ -1452,15 +1452,14 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                stroke="#1a1b25"
                 strokeWidth={1.5}
                 style={
                   [
@@ -1470,44 +1469,34 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={17}
-                vbWidth={14}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
                   propList={
                     [
                       "fill",
-                      "stroke",
                       "strokeWidth",
                     ]
-                  }
-                  stroke={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
                   }
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M7.41667 1.16667V4.5C7.41667 5.42047 8.16283 6.16667 9.08333 6.16667H12.4167M6.72633 0.75H2.41667C1.49619 0.75 0.75 1.49619 0.75 2.41667V14.5C0.75 15.4205 1.49619 16.1667 2.41667 16.1667H11.1667C12.0872 16.1667 12.8333 15.4205 12.8333 14.5V6.857C12.8333 6.41499 12.6578 5.99108 12.3452 5.67851L7.90483 1.23816C7.59225 0.925592 7.16833 0.75 6.72633 0.75Z"
-                    fill={
-                      {
-                        "payload": 4278190080,
-                        "type": 0,
-                      }
-                    }
+                    d="M11.875 2.5H4.375C4.20924 2.5 4.05027 2.56585 3.93306 2.68306C3.81585 2.80027 3.75 2.95924 3.75 3.125V16.875C3.75 17.0408 3.81585 17.1997 3.93306 17.3169C4.05027 17.4342 4.20924 17.5 4.375 17.5H15.625C15.7908 17.5 15.9497 17.4342 16.0669 17.3169C16.1842 17.1997 16.25 17.0408 16.25 16.875V6.875M11.875 2.5L16.25 6.875M11.875 2.5V6.875H16.25"
+                    fill={null}
                     propList={
                       [
+                        "fill",
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
                         "strokeLinejoin",
                       ]
                     }
@@ -1517,8 +1506,9 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
                     strokeLinejoin={1}
-                    strokeWidth={1.5}
+                    strokeWidth={1.2}
                   />
                 </RNSVGGroup>
               </RNSVGSvgView>
@@ -1597,11 +1587,11 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -1615,14 +1605,14 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={16}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
@@ -1642,7 +1632,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M5.75 11.5833L9.5 3.66667M2.41667 0.75H12.8333C13.7538 0.75 14.5 1.49619 14.5 2.41667V12.8333C14.5 13.7538 13.7538 14.5 12.8333 14.5H2.41667C1.49619 14.5 0.75 13.7538 0.75 12.8333V2.41667C0.75 1.49619 1.49619 0.75 2.41667 0.75Z"
+                    d="M6.25 7.5L9.375 10L6.25 12.5M10.625 12.5H13.75M3.125 3.75H16.875C17.2202 3.75 17.5 4.02982 17.5 4.375V15.625C17.5 15.9702 17.2202 16.25 16.875 16.25H3.125C2.77982 16.25 2.5 15.9702 2.5 15.625V4.375C2.5 4.02982 2.77982 3.75 3.125 3.75Z"
                     fill={
                       {
                         "payload": 4278190080,
@@ -1933,7 +1923,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
               strokeWidth={1.5}
             >
               <RNSVGPath
-                d="M10 3.125V10M10 10V16.875M10 10H3.125M10 10H16.875"
+                d="M3.125 10H16.875M10 3.125V16.875"
                 fill={
                   {
                     "payload": 4278190080,
@@ -2050,15 +2040,15 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
-                fill="#1a1b25"
+                bbHeight={20}
+                bbWidth={20}
+                fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                strokeWidth={0}
+                strokeWidth={1.5}
                 style={
                   [
                     {
@@ -2067,45 +2057,50 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={16}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
-                  fill={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
-                  }
+                  fill={null}
                   propList={
                     [
                       "fill",
                       "strokeWidth",
                     ]
                   }
-                  strokeWidth={0}
+                  strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M5.47018 8.8035L6.00051 8.27317L6.00049 8.27316L5.47018 8.8035ZM3.11316 8.8035L2.58284 8.27316L2.58283 8.27317L3.11316 8.8035ZM11.1667 14.5L11.697 13.9697L6.00051 8.27317L5.47018 8.8035L4.93984 9.33383L10.6363 15.0303L11.1667 14.5ZM5.47018 8.8035L6.00049 8.27316C5.05674 7.32945 3.5266 7.32945 2.58284 8.27316L3.11316 8.8035L3.64347 9.33384C4.00145 8.97589 4.58188 8.97589 4.93986 9.33384L5.47018 8.8035ZM3.11316 8.8035L2.58283 8.27317L0.219669 10.6363L0.75 11.1667L1.28033 11.697L3.64349 9.33383L3.11316 8.8035ZM11.1667 14.5V15.25H12.8333V14.5V13.75H11.1667V14.5ZM12.8333 14.5V15.25C14.168 15.25 15.25 14.168 15.25 12.8333H14.5H13.75C13.75 13.3396 13.3396 13.75 12.8333 13.75V14.5ZM14.5 12.8333H15.25V2.41667H14.5H13.75V12.8333H14.5ZM14.5 2.41667H15.25C15.25 1.08199 14.1681 0 12.8333 0V0.75V1.5C13.3396 1.5 13.75 1.9104 13.75 2.41667H14.5ZM12.8333 0.75V0H2.41667V0.75V1.5H12.8333V0.75ZM2.41667 0.75V0C1.08198 0 0 1.08198 0 2.41667H0.75H1.5C1.5 1.91041 1.91041 1.5 2.41667 1.5V0.75ZM0.75 2.41667H0V11.1667H0.75H1.5V2.41667H0.75ZM11.1667 14.5V13.75H2.41667V14.5V15.25H11.1667V14.5ZM2.41667 14.5V13.75C1.9104 13.75 1.5 13.3396 1.5 12.8333H0.75H0C0 14.1681 1.08199 15.25 2.41667 15.25V14.5ZM0.75 12.8333H1.5V11.1667H0.75H0V12.8333H0.75ZM9.70833 7.20833V7.95833C11.043 7.95833 12.125 6.87638 12.125 5.54167H11.375H10.625C10.625 6.04795 10.2146 6.45833 9.70833 6.45833V7.20833ZM11.375 5.54167H12.125C12.125 4.20699 11.0431 3.125 9.70833 3.125V3.875V4.625C10.2146 4.625 10.625 5.0354 10.625 5.54167H11.375ZM9.70833 3.875V3.125C8.37361 3.125 7.29167 4.20699 7.29167 5.54167H8.04167H8.79167C8.79167 5.0354 9.20205 4.625 9.70833 4.625V3.875ZM8.04167 5.54167H7.29167C7.29167 6.87638 8.37362 7.95833 9.70833 7.95833V7.20833V6.45833C9.20205 6.45833 8.79167 6.04795 8.79167 5.54167H8.04167Z"
+                    d="M4.42891 16.875L12.9953 8.30781C13.0534 8.2497 13.1223 8.2036 13.1982 8.17215C13.274 8.1407 13.3554 8.12451 13.4375 8.12451C13.5196 8.12451 13.601 8.1407 13.6768 8.17215C13.7527 8.2036 13.8216 8.2497 13.8797 8.30781L16.875 11.3039M3.75 3.125H16.25C16.5952 3.125 16.875 3.40482 16.875 3.75V16.25C16.875 16.5952 16.5952 16.875 16.25 16.875H3.75C3.40482 16.875 3.125 16.5952 3.125 16.25V3.75C3.125 3.40482 3.40482 3.125 3.75 3.125ZM8.75 7.5C8.75 8.19036 8.19036 8.75 7.5 8.75C6.80964 8.75 6.25 8.19036 6.25 7.5C6.25 6.80964 6.80964 6.25 7.5 6.25C8.19036 6.25 8.75 6.80964 8.75 7.5Z"
                     fill={
                       {
-                        "payload": 4279900965,
+                        "payload": 4278190080,
                         "type": 0,
                       }
                     }
                     propList={
                       [
-                        "fill",
+                        "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
-                    strokeWidth={0}
+                    stroke={
+                      {
+                        "payload": 4279900965,
+                        "type": 0,
+                      }
+                    }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
+                    strokeWidth={1.5}
                   />
                 </RNSVGGroup>
               </RNSVGSvgView>
@@ -2184,11 +2179,11 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -2203,14 +2198,14 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={17}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
@@ -2232,7 +2227,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M2.41667 3.25H3.81636C4.37362 3.25 4.894 2.9715 5.20311 2.50783L5.88022 1.49217C6.18933 1.0285 6.70972 0.75 7.267 0.75H9.64967C10.2069 0.75 10.7273 1.0285 11.0364 1.49217L11.7136 2.50783C12.0227 2.9715 12.5431 3.25 13.1003 3.25H14.5C15.4205 3.25 16.1667 3.99619 16.1667 4.91667V12.8333C16.1667 13.7538 15.4205 14.5 14.5 14.5H2.41667C1.49619 14.5 0.75 13.7538 0.75 12.8333V4.91667C0.75 3.99619 1.49619 3.25 2.41667 3.25Z"
+                    d="M16.25 16.25H3.75C3.41848 16.25 3.10054 16.1183 2.86612 15.8839C2.6317 15.6495 2.5 15.3315 2.5 15V6.25C2.5 5.91848 2.6317 5.60054 2.86612 5.36612C3.10054 5.1317 3.41848 5 3.75 5H6.25L7.5 3.125H12.5L13.75 5H16.25C16.5815 5 16.8995 5.1317 17.1339 5.36612C17.3683 5.60054 17.5 5.91848 17.5 6.25V15C17.5 15.3315 17.3683 15.6495 17.1339 15.8839C16.8995 16.1183 16.5815 16.25 16.25 16.25Z"
                     fill={
                       {
                         "payload": 4278190080,
@@ -2254,7 +2249,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                     strokeWidth={1.5}
                   />
                   <RNSVGPath
-                    d="M11.1667 8.45833C11.1667 9.95408 9.95408 11.1667 8.45833 11.1667C6.96258 11.1667 5.75 9.95408 5.75 8.45833C5.75 6.96258 6.96258 5.75 8.45833 5.75C9.95408 5.75 11.1667 6.96258 11.1667 8.45833Z"
+                    d="M10 13.125C11.5533 13.125 12.8125 11.8658 12.8125 10.3125C12.8125 8.7592 11.5533 7.5 10 7.5C8.4467 7.5 7.1875 8.7592 7.1875 10.3125C7.1875 11.8658 8.4467 13.125 10 13.125Z"
                     fill={
                       {
                         "payload": 4278190080,
@@ -2352,15 +2347,14 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                stroke="#1a1b25"
                 strokeWidth={1.5}
                 style={
                   [
@@ -2370,44 +2364,34 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={17}
-                vbWidth={14}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
                   propList={
                     [
                       "fill",
-                      "stroke",
                       "strokeWidth",
                     ]
-                  }
-                  stroke={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
                   }
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M7.41667 1.16667V4.5C7.41667 5.42047 8.16283 6.16667 9.08333 6.16667H12.4167M6.72633 0.75H2.41667C1.49619 0.75 0.75 1.49619 0.75 2.41667V14.5C0.75 15.4205 1.49619 16.1667 2.41667 16.1667H11.1667C12.0872 16.1667 12.8333 15.4205 12.8333 14.5V6.857C12.8333 6.41499 12.6578 5.99108 12.3452 5.67851L7.90483 1.23816C7.59225 0.925592 7.16833 0.75 6.72633 0.75Z"
-                    fill={
-                      {
-                        "payload": 4278190080,
-                        "type": 0,
-                      }
-                    }
+                    d="M11.875 2.5H4.375C4.20924 2.5 4.05027 2.56585 3.93306 2.68306C3.81585 2.80027 3.75 2.95924 3.75 3.125V16.875C3.75 17.0408 3.81585 17.1997 3.93306 17.3169C4.05027 17.4342 4.20924 17.5 4.375 17.5H15.625C15.7908 17.5 15.9497 17.4342 16.0669 17.3169C16.1842 17.1997 16.25 17.0408 16.25 16.875V6.875M11.875 2.5L16.25 6.875M11.875 2.5V6.875H16.25"
+                    fill={null}
                     propList={
                       [
+                        "fill",
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
                         "strokeLinejoin",
                       ]
                     }
@@ -2417,8 +2401,9 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
                     strokeLinejoin={1}
-                    strokeWidth={1.5}
+                    strokeWidth={1.2}
                   />
                 </RNSVGGroup>
               </RNSVGSvgView>
@@ -2497,11 +2482,11 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             >
               <RNSVGSvgView
                 align="xMidYMid"
-                bbHeight={14}
-                bbWidth={14}
+                bbHeight={20}
+                bbWidth={20}
                 fill="none"
                 focusable={false}
-                height={14}
+                height={20}
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
@@ -2515,14 +2500,14 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                     },
                     {
                       "flex": 0,
-                      "height": 14,
-                      "width": 14,
+                      "height": 20,
+                      "width": 20,
                     },
                   ]
                 }
-                vbHeight={16}
-                vbWidth={16}
-                width={14}
+                vbHeight={20}
+                vbWidth={20}
+                width={20}
               >
                 <RNSVGGroup
                   fill={null}
@@ -2542,7 +2527,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
-                    d="M5.75 11.5833L9.5 3.66667M2.41667 0.75H12.8333C13.7538 0.75 14.5 1.49619 14.5 2.41667V12.8333C14.5 13.7538 13.7538 14.5 12.8333 14.5H2.41667C1.49619 14.5 0.75 13.7538 0.75 12.8333V2.41667C0.75 1.49619 1.49619 0.75 2.41667 0.75Z"
+                    d="M6.25 7.5L9.375 10L6.25 12.5M10.625 12.5H13.75M3.125 3.75H16.875C17.2202 3.75 17.5 4.02982 17.5 4.375V15.625C17.5 15.9702 17.2202 16.25 16.875 16.25H3.125C2.77982 16.25 2.5 15.9702 2.5 15.625V4.375C2.5 4.02982 2.77982 3.75 3.125 3.75Z"
                     fill={
                       {
                         "payload": 4278190080,

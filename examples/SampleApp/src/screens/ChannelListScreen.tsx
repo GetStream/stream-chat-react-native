@@ -22,6 +22,7 @@ import { useStreamChatContext } from '../context/StreamChatContext';
 import { Search } from '../icons/Search';
 import { ChannelInfo } from '../icons/ChannelInfo.tsx';
 import { CircleClose } from '../icons/CircleClose.tsx';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -77,11 +78,8 @@ const HeaderNetworkDownIndicator = () => null;
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation();
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro, grey_whisper, white, white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_gainsboro, grey_whisper, white, white_snow } = useLegacyColors();
   const { setChannel } = useStreamChatContext();
 
   const searchInputRef = useRef<TextInput | null>(null);

@@ -4,8 +4,8 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { LocalAttachmentUploadMetadata } from 'stream-chat';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { ExclamationCircle } from '../../../../icons/ExclamationCircle';
-import { Warning } from '../../../../icons/Warning';
+import { ExclamationCircle } from '../../../../icons/exclamation-circle-fill';
+import { Warning } from '../../../../icons/exclamation-triangle-fill';
 import { primitives } from '../../../../theme';
 import { RetryBadge } from '../../../ui/Badge/RetryBadge';
 

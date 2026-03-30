@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { Pressable, PressableProps, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { Pause } from '../../../icons/Pause';
-import { Play } from '../../../icons/Play';
+import { Pause } from '../../../icons/pause-fill';
+import { Play } from '../../../icons/play-fill';
 import { primitives } from '../../../theme';
 import { buttonSizes } from '../../ui/Button/constants';
 

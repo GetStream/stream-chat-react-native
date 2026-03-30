@@ -7,6 +7,7 @@ import { usePaginatedPinnedMessages } from '../hooks/usePaginatedPinnedMessages'
 import { Message } from '../icons/Message';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { RouteProp } from '@react-navigation/native';
 
@@ -76,11 +77,8 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
     params: { channel },
   },
 }) => {
-  const {
-    theme: {
-      colors: { white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { white_snow } = useLegacyColors();
   const { loading, loadMore, messages } = usePaginatedPinnedMessages(channel);
   const insets = useSafeAreaInsets();
   return (
@@ -105,11 +103,8 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
 };
 
 const EmptyListComponent = () => {
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_gainsboro } = useLegacyColors();
   return (
     <View style={styles.emptyContainer}>
       <Message fill={grey_gainsboro} height={110} width={130} />

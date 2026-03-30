@@ -6,8 +6,8 @@ import type { ImageGalleryVideoControlProps } from './types';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { useStateStore } from '../../../hooks/useStateStore';
-import { Pause } from '../../../icons/Pause';
-import { Play } from '../../../icons/Play';
+import { Pause } from '../../../icons/pause-fill';
+import { Play } from '../../../icons/play-fill';
 import { IconProps } from '../../../icons/utils/base';
 import { VideoPlayerState } from '../../../state-store/video-player';
 import { primitives } from '../../../theme';

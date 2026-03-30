@@ -8,7 +8,7 @@ import { Avatar, AvatarProps } from './Avatar';
 import { fontSizes, iconSizes, indicatorSizes, numberOfInitials } from './constants';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { PeopleIcon } from '../../../icons/PeopleIcon';
+import { PeopleIcon } from '../../../icons/users';
 import { getInitialsFromName, hashStringToNumber } from '../../../utils/utils';
 import { OnlineIndicator } from '../Badge';
 

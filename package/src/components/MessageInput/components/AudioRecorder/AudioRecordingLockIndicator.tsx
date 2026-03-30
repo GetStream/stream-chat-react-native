@@ -4,9 +4,9 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { ChevronTop } from '../../../../icons/ChevronTop';
-import { Lock } from '../../../../icons/Lock';
-import { Unlock } from '../../../../icons/Unlock';
+import { ChevronTop } from '../../../../icons/chevron-down';
+import { Lock } from '../../../../icons/lock';
+import { Unlock } from '../../../../icons/unlock';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
 

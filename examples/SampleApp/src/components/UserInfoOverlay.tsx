@@ -15,9 +15,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import {
-  MessageIcon,
   useChatContext,
-  User,
   useTheme,
   useViewport,
   UserAvatar,
@@ -33,6 +31,9 @@ import { useUserInfoOverlayActions } from '../hooks/useUserInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserMinus } from '../icons/UserMinus';
 import { CircleClose } from '../icons/CircleClose';
+import { Message } from '../icons/Message';
+import { User } from '../icons/User';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { ConfirmationData } from './ConfirmationBottomSheet';
 
@@ -107,11 +108,9 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { channel, member } = data || {};
 
   const {
-    theme: {
-      colors: { accent_red, black, grey, white },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
+  const { accent_red, black, grey, white } = useLegacyColors();
 
   const offsetY = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -313,7 +312,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           ]}
                         >
                           <View style={styles.rowInner}>
-                            <MessageIcon pathFill={grey} />
+                            <Message pathFill={grey} />
                           </View>
                           <Text style={[styles.rowText, { color: black }]}>Message</Text>
                         </View>

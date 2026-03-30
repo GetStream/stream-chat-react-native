@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { Checkmark } from '../../../icons/Checkmark';
-import { InfoTooltip } from '../../../icons/InfoTooltip';
+import { Checkmark } from '../../../icons/checkmark-1';
+import { InfoTooltip } from '../../../icons/info';
 import { primitives } from '../../../theme';
 import { IconRenderer } from '../Button';
 

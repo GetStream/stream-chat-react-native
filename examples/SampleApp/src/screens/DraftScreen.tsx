@@ -5,17 +5,15 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme } from 'stream-chat-react-native';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { DraftsList } from '../components/DraftsList';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export type DraftsScreenProps = {
   navigation: NativeStackNavigationProp<BottomTabNavigatorParamList, 'DraftsScreen'>;
 };
 
 export const DraftsScreen: React.FC<DraftsScreenProps> = () => {
-  const {
-    theme: {
-      colors: { white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { white_snow } = useLegacyColors();
 
   return (
     <View

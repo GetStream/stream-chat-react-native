@@ -76,6 +76,8 @@ export const Button = ({
 
   const LeftIcon = isRTL ? TrailingIcon : LeadingIcon;
   const RightIcon = isRTL ? LeadingIcon : TrailingIcon;
+  const IconOnlyIcon = LeadingIcon ?? TrailingIcon;
+  const PrimaryIcon = iconOnly ? IconOnlyIcon : LeftIcon;
 
   return (
     <View
@@ -109,8 +111,8 @@ export const Button = ({
         disabled={disabled}
         {...rest}
       >
-        {LeftIcon ? (
-          <LeftIcon
+        {PrimaryIcon ? (
+          <PrimaryIcon
             height={20}
             width={20}
             strokeWidth={1.5}

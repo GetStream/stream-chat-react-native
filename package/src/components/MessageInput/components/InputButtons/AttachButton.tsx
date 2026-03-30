@@ -10,7 +10,7 @@ import {
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStableCallback } from '../../../../hooks';
-import { Plus } from '../../../../icons/Plus';
+import { Plus } from '../../../../icons/plus';
 import { Button } from '../../../ui/';
 
 type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttachButtonPress'> &

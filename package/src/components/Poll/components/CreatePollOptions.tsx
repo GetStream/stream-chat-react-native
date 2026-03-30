@@ -19,9 +19,9 @@ import { PollComposerOption, PollComposerState } from 'stream-chat';
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { CircleMinus } from '../../../icons/CircleMinus';
-import { DotGrid } from '../../../icons/DotGrid';
-import { InfoTooltip } from '../../../icons/InfoTooltip';
+import { InfoTooltip } from '../../../icons/info';
+import { CircleMinus } from '../../../icons/minus-circle';
+import { DotGrid } from '../../../icons/reorder';
 import { primitives } from '../../../theme';
 
 export type CurrentOptionPositionsCache = {

@@ -11,7 +11,7 @@ import { useOverlayContext } from '../../../contexts/overlayContext/OverlayConte
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { ChevronLeft } from '../../../icons/ChevronLeft';
+import { ChevronLeft } from '../../../icons/chevron-left';
 
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 import { primitives } from '../../../theme';

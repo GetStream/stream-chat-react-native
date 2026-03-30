@@ -12,6 +12,7 @@ import {
 } from 'stream-chat-react-native';
 import { ReminderBanner } from './ReminderBanner';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 export const ReminderItem = (
   item: ReminderResponse & { onDeleteHandler?: (id: string) => void },
@@ -23,10 +24,10 @@ export const ReminderItem = (
   const channelName = channel?.name ? channel.name : 'Channel';
   const {
     theme: {
-      colors: { accent_red, white_smoke, grey_gainsboro },
       semantics,
     },
   } = useTheme();
+  const { accent_red, white_smoke, grey_gainsboro } = useLegacyColors();
   const messagePreviewText = useMessagePreviewText({ message });
   const MessagePreviewIcon = useMessagePreviewIcon({ message });
 

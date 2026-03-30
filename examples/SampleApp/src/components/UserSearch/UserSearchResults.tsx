@@ -9,15 +9,17 @@ import {
 } from 'react-native';
 import dayjs from 'dayjs';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Close, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
+import { useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
 import { useUserSearchContext } from '../../context/UserSearchContext';
 
 import type { UserResponse } from 'stream-chat';
 
+import { Close } from '../../icons/Close';
 import { Search } from '../../icons/Search';
 import calendar from 'dayjs/plugin/calendar';
 import { CheckSend } from '../../icons/CheckSend';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 dayjs.extend(calendar);
 
@@ -92,20 +94,18 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
     }>
   >([]);
   const {
-    theme: {
-      colors: {
-        accent_blue,
-        bg_gradient_end,
-        bg_gradient_start,
-        black,
-        grey,
-        grey_gainsboro,
-        white_smoke,
-        white_snow,
-      },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
+  const {
+    accent_blue,
+    bg_gradient_end,
+    bg_gradient_start,
+    black,
+    grey,
+    grey_gainsboro,
+    white_smoke,
+    white_snow,
+  } = useLegacyColors();
   const { vw } = useViewport();
 
   const results = resultsProp || resultsContext;

@@ -7,9 +7,9 @@ import {
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Check } from '../../../icons/Check';
-import { CheckAll } from '../../../icons/CheckAll';
-import { Time } from '../../../icons/Time';
+import { Check } from '../../../icons/checkmark';
+import { CheckAll } from '../../../icons/checks';
+import { Time } from '../../../icons/clock';
 import { primitives } from '../../../theme';
 import { MessageStatusTypes } from '../../../utils/utils';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';

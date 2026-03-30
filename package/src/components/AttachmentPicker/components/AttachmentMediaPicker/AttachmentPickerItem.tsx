@@ -13,7 +13,7 @@ import { useMessageInputContext } from '../../../../contexts/messageInputContext
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../../hooks/useViewport';
-import { Plus } from '../../../../icons/Plus';
+import { Plus } from '../../../../icons/plus';
 import { NativeHandlers } from '../../../../native';
 import { primitives } from '../../../../theme';
 import type { File } from '../../../../types/types';

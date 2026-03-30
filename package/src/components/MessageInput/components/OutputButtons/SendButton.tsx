@@ -4,7 +4,7 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { SendRight } from '../../../../icons/SendRight';
+import { SendRight } from '../../../../icons/send';
 import { Button } from '../../../ui';
 
 export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {

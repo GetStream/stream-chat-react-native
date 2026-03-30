@@ -24,7 +24,7 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Link } from '../../../icons/Link';
+import { Link } from '../../../icons/link';
 import { primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
 import { makeImageCompatibleUrl } from '../../../utils/utils';

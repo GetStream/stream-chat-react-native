@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import { Smile } from '../../icons/Smile';
+import { Smile } from '../../icons/emoji';
 import { primitives } from '../../theme';
 
 export type AutoCompleteSuggestionHeaderProps = {

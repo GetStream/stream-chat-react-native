@@ -90,7 +90,7 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
       <Animated.View
         entering={ZoomIn.duration(200)}
         exiting={ZoomOut.duration(200)}
-        key='cooldown-timer'
+        key='edit-button'
         style={editButtonContainer}
       >
         <EditButton disabled={messageComposer.compositionIsEmpty} />

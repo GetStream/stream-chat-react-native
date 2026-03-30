@@ -42,7 +42,7 @@ export const AttachmentTypePickerButton = ({
 }: AttachmentTypePickerButtonProps) => {
   const { disableAttachmentPicker } = useAttachmentPickerContext();
   const ButtonIcon = useCallback(
-    (props: IconProps) => Icon && <Icon {...props} width={14} height={14} />,
+    (props: IconProps) => Icon && <Icon {...props} width={20} height={20} />,
     [Icon],
   );
 

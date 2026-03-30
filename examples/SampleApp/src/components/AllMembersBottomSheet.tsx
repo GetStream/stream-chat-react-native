@@ -3,7 +3,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   BottomSheetModal,
-  Close,
   StreamBottomSheetModalFlatList,
   UserAdd,
   useStableCallback,
@@ -12,6 +11,7 @@ import {
 
 import { ContactDetailBottomSheet } from './ContactDetailBottomSheet';
 import { MemberListItem } from './MemberListItem';
+import { Close } from '../icons/Close';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
