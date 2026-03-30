@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
-import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import {
+  I18nManager,
+  Platform,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   clamp,
@@ -151,12 +158,13 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
 
   const topItemStyle = useAnimatedStyle(() => {
     if (!topH.value) return { height: 0 };
+    const horizontalPosition = I18nManager.isRTL ? { right: topH.value.x } : { left: topH.value.x };
     return {
       height: topH.value.h,
-      left: topH.value.x,
       position: 'absolute',
       top: topH.value.y,
       width: topH.value.w,
+      ...horizontalPosition,
     };
   });
 
@@ -172,12 +180,15 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
 
   const bottomItemStyle = useAnimatedStyle(() => {
     if (!bottomH.value) return { height: 0 };
+    const horizontalPosition = I18nManager.isRTL
+      ? { right: bottomH.value.x }
+      : { left: bottomH.value.x };
     return {
       height: bottomH.value.h,
-      left: bottomH.value.x,
       position: 'absolute',
       top: bottomH.value.y,
       width: bottomH.value.w,
+      ...horizontalPosition,
     };
   });
 
