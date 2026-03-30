@@ -9,6 +9,7 @@ import type { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Group } from '../icons/Group.tsx';
 import { User } from '../icons/User';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export const styles = StyleSheet.create({
   avatar: {
@@ -50,12 +51,8 @@ export const styles = StyleSheet.create({
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   const [secretMenuPressCounter, setSecretMenuPressCounter] = useState(0);
   const [secretMenuVisible, setSecretMenuVisible] = useState(false);
-
-  const {
-    theme: {
-      colors: { black, grey, white },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, white } = useLegacyColors();
 
   useEffect(() => {
     if (!secretMenuVisible && secretMenuPressCounter >= 7) {

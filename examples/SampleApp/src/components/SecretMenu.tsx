@@ -22,6 +22,7 @@ import { LabeledTextInput } from '../screens/AdvancedUserSelectorScreen.tsx';
 import { Close } from '../icons/Close.tsx';
 import { Notification } from '../icons/Notification.tsx';
 import { Folder } from '../icons/Folder.tsx';
+import { useLegacyColors } from '../theme/useLegacyColors.ts';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -275,11 +276,8 @@ export const SecretMenu = ({
   const [selectedMessageOverlayBackdrop, setSelectedMessageOverlayBackdrop] = useState<
     MessageOverlayBackdropConfigItem['value'] | null
   >(null);
-  const {
-    theme: {
-      colors: { black, grey },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey } = useLegacyColors();
 
   const notificationConfigItems = useMemo(
     () => [

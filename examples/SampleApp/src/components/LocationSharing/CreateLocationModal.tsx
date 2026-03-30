@@ -25,6 +25,7 @@ import {
   useTranslationContext,
 } from 'stream-chat-react-native';
 import MapView, { MapMarker, Marker } from 'react-native-maps';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 type LiveLocationCreateModalProps = {
   visible: boolean;
@@ -47,11 +48,8 @@ export const LiveLocationCreateModal = ({
   const messageComposer = useMessageComposer();
   const { width, height } = useWindowDimensions();
   const { client } = useChatContext();
-  const {
-    theme: {
-      colors: { accent_blue, grey, grey_whisper },
-    },
-  } = useTheme();
+  useTheme();
+  const { accent_blue, grey, grey_whisper } = useLegacyColors();
   const { t } = useTranslationContext();
   const mapRef = useRef<MapView | null>(null);
   const markerRef = useRef<MapMarker | null>(null);

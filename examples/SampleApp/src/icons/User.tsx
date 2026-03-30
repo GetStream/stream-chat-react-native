@@ -5,7 +5,7 @@ import { IconProps } from '../utils/base';
 
 export const User = ({ fill, height, pathFill, scale, stroke, width, ...rest }: IconProps) => {
   const color = pathFill ?? fill ?? stroke ?? 'black';
-  const size = scale ? 20 * scale : undefined;
+  const size = scale ? 20 * scale : 20;
 
   return (
     <Svg fill='none' height={height ?? size} viewBox='0 0 20 20' width={width ?? size} {...rest}>

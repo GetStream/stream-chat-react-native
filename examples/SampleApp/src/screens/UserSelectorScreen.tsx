@@ -17,6 +17,7 @@ import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
 import { Settings } from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -90,10 +91,10 @@ type Props = {
 export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
   const {
     theme: {
-      colors: { black, grey, grey_gainsboro, grey_whisper, white_snow },
       semantics,
     },
   } = useTheme();
+  const { black, grey, grey_gainsboro, grey_whisper, white_snow } = useLegacyColors();
   const { switchUser } = useAppContext();
   const { bottom } = useSafeAreaInsets();
 

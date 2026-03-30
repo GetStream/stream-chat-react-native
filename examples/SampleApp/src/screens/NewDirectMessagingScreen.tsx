@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
@@ -16,6 +17,7 @@ import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
@@ -83,11 +85,7 @@ const styles = StyleSheet.create({
 });
 
 const EmptyMessagesIndicator = () => {
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
+  const { grey } = useLegacyColors();
   return (
     <View style={styles.emptyMessageContainer}>
       <Text
@@ -117,11 +115,9 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   navigation,
 }) => {
   const {
-    theme: {
-      colors: { accent_blue, black, grey, white },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
+  const { accent_blue, black, grey, white } = useLegacyColors();
   const { chatClient } = useAppContext();
 
   const {
@@ -148,6 +144,18 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   // When selectedUsers are changed, initiate a channel with those users as members,
   // and set it as a channel on current screen.
   const selectedUsersLength = selectedUsers.length;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (selectedUsersLength === 0) {
+        currentChannel.current = undefined;
+        isDraft.current = true;
+        setFocusOnMessageInput(false);
+        setFocusOnSearchInput(true);
+      }
+    }, [selectedUsersLength]),
+  );
+
   useEffect(() => {
     const initChannel = async () => {
       if (!chatClient?.user?.id) {
@@ -156,7 +164,10 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
       // If there are no selected users, then set dummy channel.
       if (selectedUsersLength === 0) {
+        currentChannel.current = undefined;
+        isDraft.current = true;
         setFocusOnMessageInput(false);
+        setFocusOnSearchInput(true);
         return;
       }
 

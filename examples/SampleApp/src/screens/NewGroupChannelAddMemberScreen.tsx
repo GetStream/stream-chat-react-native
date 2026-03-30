@@ -8,6 +8,7 @@ import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -51,12 +52,6 @@ type RightArrowButtonProps = {
 const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
   const { disabled, onPress } = props;
 
-  const {
-    theme: {
-      colors: { accent_blue },
-    },
-  } = useTheme();
-
   return (
     <TouchableOpacity disabled={disabled} onPress={onPress} style={styles.navigationButton}>
       <RightArrow height={24} width={24} />
@@ -77,11 +72,9 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
   const { chatClient } = useAppContext();
 
   const {
-    theme: {
-      colors: { black, grey, white },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
+  const { black, grey, white } = useLegacyColors();
 
   const { onChangeSearchText, onFocusInput, removeUser, reset, searchText, selectedUsers } =
     useUserSearchContext();

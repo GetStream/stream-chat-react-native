@@ -24,6 +24,7 @@ import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pin } from '../icons/Pin.tsx';
 import { User } from '../icons/User';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { ConfirmationData } from './ConfirmationBottomSheet';
 
@@ -102,11 +103,9 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const { channel, clientId, membership, navigation } = data || {};
 
   const {
-    theme: {
-      colors: { accent_red, black, grey },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
+  const { accent_red, black, grey } = useLegacyColors();
 
   // magic number 8 used as fontSize is 16 so assuming average character width of half
   const maxWidth = channel

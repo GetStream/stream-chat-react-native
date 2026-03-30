@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Spinner, useTheme } from 'stream-chat-react-native';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   networkDownContainer: {
@@ -23,11 +24,8 @@ const styles = StyleSheet.create({
 export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = ({
   titleSize = 'small',
 }) => {
-  const {
-    theme: {
-      colors: { black },
-    },
-  } = useTheme();
+  useTheme();
+  const { black } = useLegacyColors();
 
   return (
     <View style={styles.networkDownContainer} testID='network-down-indicator'>
