@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 'stream-chat';
 
@@ -68,23 +68,22 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
   };
 
   return (
-    <BottomSheetTouchableOpacity onPress={onPressVideo}>
-      <ImageBackground
-        source={{ uri: thumb_url }}
-        style={[
-          {
-            height: size,
-            margin: 1,
-            width: size,
-          },
-          image,
-        ]}
-      >
-        <View style={[styles.overlay, imageOverlay]}>
-          <ImageOverlaySelectedComponent index={selectedIndex} />
-        </View>
-        <VideoAttachmentMetadataPill duration={videoDuration} format='timer' />
-      </ImageBackground>
+    <BottomSheetTouchableOpacity
+      onPress={onPressVideo}
+      style={[
+        {
+          height: size,
+          margin: 1,
+          width: size,
+        },
+        image,
+      ]}
+    >
+      <Image source={{ uri: thumb_url }} style={StyleSheet.absoluteFillObject} />
+      <View style={[styles.overlay, imageOverlay]}>
+        <ImageOverlaySelectedComponent index={selectedIndex} />
+      </View>
+      <VideoAttachmentMetadataPill duration={videoDuration} format='timer' />
     </BottomSheetTouchableOpacity>
   );
 };
@@ -128,22 +127,21 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   };
 
   return (
-    <BottomSheetTouchableOpacity onPress={onPressImage}>
-      <ImageBackground
-        source={{ uri }}
-        style={[
-          {
-            height: size,
-            margin: 1,
-            width: size,
-          },
-          image,
-        ]}
-      >
-        <View style={[styles.overlay, imageOverlay]}>
-          <ImageOverlaySelectedComponent index={selectedIndex} />
-        </View>
-      </ImageBackground>
+    <BottomSheetTouchableOpacity
+      onPress={onPressImage}
+      style={[
+        {
+          height: size,
+          margin: 1,
+          width: size,
+        },
+        image,
+      ]}
+    >
+      <Image source={{ uri }} style={StyleSheet.absoluteFillObject} />
+      <View style={[styles.overlay, imageOverlay]}>
+        <ImageOverlaySelectedComponent index={selectedIndex} />
+      </View>
     </BottomSheetTouchableOpacity>
   );
 };

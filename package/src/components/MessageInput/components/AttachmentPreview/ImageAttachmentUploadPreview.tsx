@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { LocalImageAttachment } from 'stream-chat';
 
@@ -61,13 +61,13 @@ export const ImageAttachmentUploadPreview = ({
 
   return (
     <View style={[styles.wrapper, wrapper]} testID={'image-attachment-upload-preview'}>
-      <ImageBackground
-        onError={onErrorHandler}
-        onLoadEnd={onLoadEndHandler}
-        source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
-        style={[styles.image, upload]}
-        testID={'image-attachment-upload-preview-image'}
-      >
+      <View style={[styles.image, upload]} testID={'image-attachment-upload-preview-image'}>
+        <Image
+          onError={onErrorHandler}
+          onLoadEnd={onLoadEndHandler}
+          source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
+          style={StyleSheet.absoluteFillObject}
+        />
         {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && <ImageUploadInProgressIndicator />}
         {indicatorType === ProgressIndicatorTypes.RETRY && (
           <ImageUploadRetryIndicator onRetryHandler={onRetryHandler} />
@@ -75,7 +75,7 @@ export const ImageAttachmentUploadPreview = ({
         {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED && (
           <ImageUploadNotSupportedIndicator />
         )}
-      </ImageBackground>
+      </View>
 
       <View style={styles.dismissWrapper}>
         <AttachmentRemoveControl onPress={onDismissHandler} />
