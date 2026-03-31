@@ -114,18 +114,22 @@ export const getPhotos = CameraRollDependency
         const videoUris = assetEntries
           .filter(({ isImage, originalUri }) => !isImage && !!originalUri)
           .map(({ originalUri }) => originalUri);
-        const videoThumbnailUris = await generateThumbnails(videoUris);
-        let videoIndex = 0;
+        const videoThumbnailResults = await generateThumbnails(videoUris);
 
-        const assets = assetEntries.map(({ edge, isImage, type, uri }) => ({
-          ...edge.node.image,
-          name: edge.node.image.filename as string,
-          duration: edge.node.image.playableDuration * 1000,
-          thumb_url: isImage ? undefined : videoThumbnailUris[videoIndex++],
-          size: edge.node.image.fileSize as number,
-          type,
-          uri,
-        }));
+        const assets = assetEntries.map(({ edge, isImage, originalUri, type, uri }) => {
+          const thumbnailResult =
+            !isImage && originalUri ? videoThumbnailResults[originalUri] : undefined;
+
+          return {
+            ...edge.node.image,
+            name: edge.node.image.filename as string,
+            duration: edge.node.image.playableDuration * 1000,
+            thumb_url: thumbnailResult?.uri || undefined,
+            size: edge.node.image.fileSize as number,
+            type,
+            uri,
+          };
+        });
         const hasNextPage = results.page_info.has_next_page;
         const endCursor = results.page_info.end_cursor;
         return { assets, endCursor, hasNextPage, iOSLimited: !!results.limited };

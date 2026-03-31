@@ -1,24 +1,9 @@
-import { createVideoThumbnails } from '../native/videoThumbnail';
+import { createGenerateVideoThumbnails } from 'stream-chat-react-native-core/src/utils/createGenerateVideoThumbnails';
 
-export const generateThumbnails = async (uris: string[]): Promise<Array<string | undefined>> => {
-  if (!uris.length) {
-    return [];
-  }
+import { createVideoThumbnails, type VideoThumbnailResult } from '../native/videoThumbnail';
 
-  const uniqueUris: string[] = [];
-  const uriToIndex = new Map<string, number>();
-
-  uris.forEach((uri) => {
-    if (!uriToIndex.has(uri)) {
-      uriToIndex.set(uri, uniqueUris.length);
-      uniqueUris.push(uri);
-    }
-  });
-
-  const uniqueThumbnailUris = await createVideoThumbnails(uniqueUris);
-
-  return uris.map((uri) => {
-    const index = uriToIndex.get(uri);
-    return index === undefined ? undefined : uniqueThumbnailUris[index] || undefined;
-  });
-};
+export const generateThumbnails: (
+  uris: string[],
+) => Promise<Record<string, VideoThumbnailResult>> = createGenerateVideoThumbnails({
+  createVideoThumbnails,
+});

@@ -57,14 +57,16 @@ export const takePhoto = ImagePicker
         if (assetType.includes('video')) {
           const clearFilter = new RegExp('[.:]', 'g');
           const date = new Date().toISOString().replace(clearFilter, '_');
-          const [thumb_url] = await generateThumbnails([asset.uri]);
+          const thumbnailResults = await generateThumbnails([asset.uri]);
+          const thumbnailResult = thumbnailResults[asset.uri];
+
           return {
             ...asset,
             cancelled: false,
             duration: asset.duration * 1000,
             name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
             size: asset.fileSize,
-            thumb_url,
+            thumb_url: thumbnailResult?.uri || undefined,
             type: assetType,
             uri: asset.uri,
           };

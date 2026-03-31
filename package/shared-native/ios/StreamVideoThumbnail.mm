@@ -28,15 +28,18 @@ RCT_REMAP_METHOD(createVideoThumbnails, urls:(NSArray<NSString *> *)urls resolve
                        reject:(RCTPromiseRejectBlock)reject
 {
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    NSError *error = nil;
-    NSArray<NSString *> *thumbnails = [StreamVideoThumbnailGenerator generateThumbnailsWithUrls:urls error:&error];
-    if (error != nil) {
-      reject(@"stream_video_thumbnail_error", error.localizedDescription, error);
-      return;
+    NSArray<StreamVideoThumbnailResult *> *thumbnails = [StreamVideoThumbnailGenerator generateThumbnailsWithUrls:urls];
+    NSMutableArray<NSDictionary<NSString *, id> *> *payload = [NSMutableArray arrayWithCapacity:thumbnails.count];
+
+    for (StreamVideoThumbnailResult *thumbnail in thumbnails) {
+      NSMutableDictionary<NSString *, id> *entry = [NSMutableDictionary dictionaryWithCapacity:2];
+      entry[@"uri"] = thumbnail.uri ?: [NSNull null];
+      entry[@"error"] = thumbnail.error ?: [NSNull null];
+      [payload addObject:entry];
     }
 
     @try {
-      resolve(thumbnails);
+      resolve(payload);
     } @catch (NSException *exception) {
       reject(@"stream_video_thumbnail_error", exception.reason, nil);
     }

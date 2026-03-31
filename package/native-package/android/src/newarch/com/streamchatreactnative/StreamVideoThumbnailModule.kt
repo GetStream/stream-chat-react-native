@@ -22,7 +22,20 @@ class StreamVideoThumbnailModule(
       try {
         val thumbnails = StreamVideoThumbnailGenerator.generateThumbnails(reactApplicationContext, urlList)
         val result = Arguments.createArray()
-        thumbnails.forEach(result::pushString)
+        thumbnails.forEach { thumbnail ->
+          val thumbnailMap = Arguments.createMap()
+          if (thumbnail.uri != null) {
+            thumbnailMap.putString("uri", thumbnail.uri)
+          } else {
+            thumbnailMap.putNull("uri")
+          }
+          if (thumbnail.error != null) {
+            thumbnailMap.putString("error", thumbnail.error)
+          } else {
+            thumbnailMap.putNull("error")
+          }
+          result.pushMap(thumbnailMap)
+        }
         promise.resolve(result)
       } catch (error: Throwable) {
         promise.reject("stream_video_thumbnail_error", error.message, error)

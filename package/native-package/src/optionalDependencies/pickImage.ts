@@ -44,18 +44,22 @@ export const pickImage = ImagePicker
           const videoUris = assetsWithType
             .filter(({ asset, isVideo }) => isVideo && !!asset.uri)
             .map(({ asset }) => asset.uri);
-          const videoThumbnailUris = await generateThumbnails(videoUris);
-          let videoIndex = 0;
+          const videoThumbnailResults = await generateThumbnails(videoUris);
 
-          const assets = assetsWithType.map(({ asset, isVideo, type }) => ({
-            ...asset,
-            duration: asset.duration ? asset.duration * 1000 : undefined, // in milliseconds
-            name: asset.fileName,
-            size: asset.fileSize,
-            thumb_url: isVideo ? videoThumbnailUris[videoIndex++] : undefined,
-            type,
-            uri: asset.uri,
-          }));
+          const assets = assetsWithType.map(({ asset, isVideo, type }) => {
+            const thumbnailResult =
+              isVideo && asset.uri ? videoThumbnailResults[asset.uri] : undefined;
+
+            return {
+              ...asset,
+              duration: asset.duration ? asset.duration * 1000 : undefined, // in milliseconds
+              name: asset.fileName,
+              size: asset.fileSize,
+              thumb_url: thumbnailResult?.uri || undefined,
+              type,
+              uri: asset.uri,
+            };
+          });
           return { assets, cancelled: false };
         } else {
           return { cancelled: true };

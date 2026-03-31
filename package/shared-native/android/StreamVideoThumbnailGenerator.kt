@@ -8,6 +8,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.Executors
 
+data class StreamVideoThumbnailResult(
+  val error: String? = null,
+  val uri: String? = null,
+)
+
 object StreamVideoThumbnailGenerator {
   private const val DEFAULT_COMPRESSION_QUALITY = 80
   private const val DEFAULT_MAX_DIMENSION = 512
@@ -15,9 +20,9 @@ object StreamVideoThumbnailGenerator {
   private const val CACHE_DIRECTORY_NAME = "@stream-io-stream-video-thumbnails"
   private const val MAX_CONCURRENT_GENERATIONS = 5
 
-  fun generateThumbnails(context: Context, urls: List<String>): List<String> {
+  fun generateThumbnails(context: Context, urls: List<String>): List<StreamVideoThumbnailResult> {
     if (urls.size <= 1) {
-      return urls.map { url -> generateThumbnail(context, url) }
+      return urls.map { url -> generateThumbnailResult(context, url) }
     }
 
     val parallelism = minOf(urls.size, MAX_CONCURRENT_GENERATIONS)
@@ -25,13 +30,24 @@ object StreamVideoThumbnailGenerator {
 
     return try {
       val tasks = urls.map { url ->
-        executor.submit<String> {
-          generateThumbnail(context, url)
+        executor.submit<StreamVideoThumbnailResult> {
+          generateThumbnailResult(context, url)
         }
       }
       tasks.map { task -> task.get() }
     } finally {
       executor.shutdown()
+    }
+  }
+
+  private fun generateThumbnailResult(context: Context, url: String): StreamVideoThumbnailResult {
+    return try {
+      StreamVideoThumbnailResult(uri = generateThumbnail(context, url))
+    } catch (error: Throwable) {
+      StreamVideoThumbnailResult(
+        error = error.message ?: "Thumbnail generation failed for $url",
+        uri = null,
+      )
     }
   }
 

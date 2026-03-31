@@ -72,19 +72,22 @@ export const getPhotos = MediaLibrary
         const videoUris = assetEntries
           .filter(({ isVideo, uri }) => isVideo && !!uri)
           .map(({ uri }) => uri);
-        const videoThumbnailUris = await generateThumbnails(videoUris);
-        let videoIndex = 0;
+        const videoThumbnailResults = await generateThumbnails(videoUris);
 
-        const assets = assetEntries.map(({ asset, isVideo, mimeType, uri }) => ({
-          duration: asset.duration * 1000,
-          height: asset.height,
-          name: asset.filename,
-          size: 0,
-          thumb_url: isVideo ? videoThumbnailUris[videoIndex++] : undefined,
-          type: mimeType,
-          uri,
-          width: asset.width,
-        }));
+        const assets = assetEntries.map(({ asset, isVideo, mimeType, uri }) => {
+          const thumbnailResult = isVideo && uri ? videoThumbnailResults[uri] : undefined;
+
+          return {
+            duration: asset.duration * 1000,
+            height: asset.height,
+            name: asset.filename,
+            size: 0,
+            thumb_url: thumbnailResult?.uri || undefined,
+            type: mimeType,
+            uri,
+            width: asset.width,
+          };
+        });
 
         const hasNextPage = results.hasNextPage;
         const endCursor = results.endCursor;
