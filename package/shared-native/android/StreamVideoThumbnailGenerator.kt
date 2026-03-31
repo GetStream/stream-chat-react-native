@@ -6,15 +6,33 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import java.io.File
 import java.io.FileOutputStream
+import java.util.concurrent.Executors
 
 object StreamVideoThumbnailGenerator {
   private const val DEFAULT_COMPRESSION_QUALITY = 80
   private const val DEFAULT_MAX_DIMENSION = 512
   private const val CACHE_VERSION = "v1"
   private const val CACHE_DIRECTORY_NAME = "@stream-io-stream-video-thumbnails"
+  private const val MAX_CONCURRENT_GENERATIONS = 5
 
   fun generateThumbnails(context: Context, urls: List<String>): List<String> {
-    return urls.map { url -> generateThumbnail(context, url) }
+    if (urls.size <= 1) {
+      return urls.map { url -> generateThumbnail(context, url) }
+    }
+
+    val parallelism = minOf(urls.size, MAX_CONCURRENT_GENERATIONS)
+    val executor = Executors.newFixedThreadPool(parallelism)
+
+    return try {
+      val tasks = urls.map { url ->
+        executor.submit<String> {
+          generateThumbnail(context, url)
+        }
+      }
+      tasks.map { task -> task.get() }
+    } finally {
+      executor.shutdown()
+    }
   }
 
   private fun generateThumbnail(context: Context, url: String): String {

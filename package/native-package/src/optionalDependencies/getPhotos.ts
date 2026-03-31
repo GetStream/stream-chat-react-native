@@ -4,7 +4,7 @@ import mime from 'mime';
 
 import type { File } from 'stream-chat-react-native-core';
 
-import { generateThumbnail } from './generateThumbnail';
+import { generateThumbnails } from './generateThumbnail';
 import { getLocalAssetUri } from './getLocalAssetUri';
 
 let CameraRollDependency;
@@ -90,7 +90,7 @@ export const getPhotos = CameraRollDependency
           first,
           include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
         });
-        const assets = await Promise.all(
+        const assetEntries = await Promise.all(
           results.edges.map(async (edge) => {
             const originalUri = edge.node?.image?.uri;
             const type =
@@ -102,25 +102,30 @@ export const getPhotos = CameraRollDependency
               (edge.node.image.playableDuration ? 'video/*' : 'image/*');
             const isImage = type.includes('image');
 
-            const uri =
-              isImage && getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri;
-            const thumbnailUri = !isImage
-              ? await generateThumbnail?.({
-                  uri: originalUri,
-                })
-              : undefined;
-
             return {
-              ...edge.node.image,
-              name: edge.node.image.filename as string,
-              duration: edge.node.image.playableDuration * 1000,
-              thumb_url: isImage ? undefined : thumbnailUri,
-              size: edge.node.image.fileSize as number,
+              edge,
+              isImage,
+              originalUri,
               type,
-              uri,
+              uri: isImage && getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri,
             };
           }),
         );
+        const videoUris = assetEntries
+          .filter(({ isImage, originalUri }) => !isImage && !!originalUri)
+          .map(({ originalUri }) => originalUri);
+        const videoThumbnailUris = await generateThumbnails(videoUris);
+        let videoIndex = 0;
+
+        const assets = assetEntries.map(({ edge, isImage, type, uri }) => ({
+          ...edge.node.image,
+          name: edge.node.image.filename as string,
+          duration: edge.node.image.playableDuration * 1000,
+          thumb_url: isImage ? undefined : videoThumbnailUris[videoIndex++],
+          size: edge.node.image.fileSize as number,
+          type,
+          uri,
+        }));
         const hasNextPage = results.page_info.has_next_page;
         const endCursor = results.page_info.end_cursor;
         return { assets, endCursor, hasNextPage, iOSLimited: !!results.limited };

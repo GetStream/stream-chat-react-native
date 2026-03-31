@@ -2,7 +2,7 @@ import { AppState, Image, PermissionsAndroid, Platform } from 'react-native';
 
 import mime from 'mime';
 
-import { generateThumbnail } from './generateThumbnail';
+import { generateThumbnails } from './generateThumbnail';
 
 let ImagePicker;
 
@@ -57,9 +57,7 @@ export const takePhoto = ImagePicker
         if (assetType.includes('video')) {
           const clearFilter = new RegExp('[.:]', 'g');
           const date = new Date().toISOString().replace(clearFilter, '_');
-          const thumb_url = await generateThumbnail?.({
-            uri: asset.uri,
-          });
+          const [thumb_url] = await generateThumbnails([asset.uri]);
           return {
             ...asset,
             cancelled: false,

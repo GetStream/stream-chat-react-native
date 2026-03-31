@@ -8,11 +8,62 @@ public final class StreamVideoThumbnailGenerator: NSObject {
   private static let maxDimension: CGFloat = 512
   private static let cacheVersion = "v1"
   private static let cacheDirectoryName = "@stream-io-stream-video-thumbnails"
+  private static let maxConcurrentGenerations = 5
 
   @objc(generateThumbnailsWithUrls:error:)
   public static func generateThumbnails(urls: [String]) throws -> [String] {
-    try urls.map { url in
-      try generateThumbnail(url: url)
+    if urls.count <= 1 {
+      return try urls.map { url in
+        try generateThumbnail(url: url)
+      }
+    }
+
+    var thumbnails = Array<String?>(repeating: nil, count: urls.count)
+    var firstError: Error?
+    let lock = NSLock()
+    let group = DispatchGroup()
+    let semaphore = DispatchSemaphore(value: min(maxConcurrentGenerations, urls.count))
+
+    for (index, url) in urls.enumerated() {
+      group.enter()
+      DispatchQueue.global(qos: .userInitiated).async {
+        semaphore.wait()
+        defer {
+          semaphore.signal()
+          group.leave()
+        }
+
+        do {
+          let thumbnail = try generateThumbnail(url: url)
+          lock.lock()
+          thumbnails[index] = thumbnail
+          lock.unlock()
+        } catch {
+          lock.lock()
+          if firstError == nil {
+            firstError = error
+          }
+          lock.unlock()
+        }
+      }
+    }
+
+    group.wait()
+
+    if let firstError {
+      throw firstError
+    }
+
+    return try thumbnails.enumerated().map { index, thumbnail in
+      guard let thumbnail else {
+        throw NSError(
+          domain: "StreamVideoThumbnail",
+          code: 4,
+          userInfo: [NSLocalizedDescriptionKey: "Thumbnail generation produced no output for index \(index)"]
+        )
+      }
+
+      return thumbnail
     }
   }
 
