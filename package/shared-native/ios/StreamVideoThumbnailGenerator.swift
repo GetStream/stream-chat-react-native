@@ -6,6 +6,8 @@ import UIKit
 public final class StreamVideoThumbnailGenerator: NSObject {
   private static let compressionQuality: CGFloat = 0.8
   private static let maxDimension: CGFloat = 512
+  private static let cacheVersion = "v1"
+  private static let cacheDirectoryName = "@stream-io-stream-video-thumbnails"
 
   @objc(generateThumbnailsWithUrls:error:)
   public static func generateThumbnails(urls: [String]) throws -> [String] {
@@ -15,6 +17,20 @@ public final class StreamVideoThumbnailGenerator: NSObject {
   }
 
   private static func generateThumbnail(url: String) throws -> String {
+    let outputDirectory = try thumbnailCacheDirectory()
+    let outputURL = outputDirectory
+      .appendingPathComponent(buildCacheFileName(url: url))
+      .appendingPathExtension("jpg")
+
+    if
+      FileManager.default.fileExists(atPath: outputURL.path),
+      let attributes = try? FileManager.default.attributesOfItem(atPath: outputURL.path),
+      let fileSize = attributes[.size] as? NSNumber,
+      fileSize.intValue > 0
+    {
+      return outputURL.absoluteString
+    }
+
     guard let asset = resolveAsset(url: url) else {
       throw NSError(
         domain: "StreamVideoThumbnail",
@@ -40,16 +56,6 @@ public final class StreamVideoThumbnailGenerator: NSObject {
         )
       }
 
-      let outputDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("stream-video-thumbnails", isDirectory: true)
-      try FileManager.default.createDirectory(
-        at: outputDirectory,
-        withIntermediateDirectories: true
-      )
-
-      let outputURL = outputDirectory
-        .appendingPathComponent("stream-video-thumbnail-\(UUID().uuidString)")
-        .appendingPathExtension("jpg")
       try data.write(to: outputURL, options: .atomic)
       return outputURL.absoluteString
     } catch {
@@ -61,6 +67,33 @@ public final class StreamVideoThumbnailGenerator: NSObject {
         ]
       )
     }
+  }
+
+  private static func thumbnailCacheDirectory() throws -> URL {
+    let outputDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+      .appendingPathComponent(cacheDirectoryName, isDirectory: true)
+    try FileManager.default.createDirectory(
+      at: outputDirectory,
+      withIntermediateDirectories: true
+    )
+    return outputDirectory
+  }
+
+  private static func buildCacheFileName(url: String) -> String {
+    let cacheKey = fnv1a64("\(cacheVersion)|\(Int(maxDimension))|\(compressionQuality)|\(url)")
+    return "stream-video-thumbnail-\(cacheKey)"
+  }
+
+  private static func fnv1a64(_ value: String) -> String {
+    var hash: UInt64 = 0xcbf29ce484222325
+    let prime: UInt64 = 0x100000001b3
+
+    for byte in value.utf8 {
+      hash ^= UInt64(byte)
+      hash &*= prime
+    }
+
+    return String(hash, radix: 16)
   }
 
   private static func thumbnailTime(for asset: AVAsset) -> CMTime {
