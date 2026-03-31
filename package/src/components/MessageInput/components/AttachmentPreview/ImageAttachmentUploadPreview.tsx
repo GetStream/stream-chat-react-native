@@ -61,12 +61,13 @@ export const ImageAttachmentUploadPreview = ({
 
   return (
     <View style={[styles.wrapper, wrapper]} testID={'image-attachment-upload-preview'}>
-      <View style={[styles.image, upload]} testID={'image-attachment-upload-preview-image'}>
+      <View style={[styles.image, upload]}>
         <Image
           onError={onErrorHandler}
           onLoadEnd={onLoadEndHandler}
           source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
           style={StyleSheet.absoluteFillObject}
+          testID={'image-attachment-upload-preview-image'}
         />
         {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && <ImageUploadInProgressIndicator />}
         {indicatorType === ProgressIndicatorTypes.RETRY && (
