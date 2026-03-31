@@ -112,8 +112,11 @@ object StreamVideoThumbnailGenerator {
 
     when {
       scheme.isNullOrEmpty() -> retriever.setDataSource(url)
-      scheme == "http" || scheme == "https" -> retriever.setDataSource(url, emptyMap())
-      else -> retriever.setDataSource(context, uri)
+      scheme == "content" || scheme == "file" -> retriever.setDataSource(context, uri)
+      else ->
+        throw IllegalArgumentException(
+          "Unsupported video URI scheme for thumbnail generation: $scheme. Local assets only.",
+        )
     }
   }
 

@@ -165,7 +165,7 @@ public final class StreamVideoThumbnailGenerator: NSObject {
       return resolvePhotoLibraryAsset(url: url)
     }
 
-    if let normalizedURL = normalizeURL(url) {
+    if let normalizedURL = normalizeLocalURL(url) {
       return AVURLAsset(url: normalizedURL)
     }
 
@@ -220,9 +220,13 @@ public final class StreamVideoThumbnailGenerator: NSObject {
       .trimmingCharacters(in: CharacterSet(charactersIn: "/")) ?? ""
   }
 
-  private static func normalizeURL(_ url: String) -> URL? {
-    if let parsedURL = URL(string: url), parsedURL.scheme != nil {
-      return parsedURL
+  private static func normalizeLocalURL(_ url: String) -> URL? {
+    if let parsedURL = URL(string: url), let scheme = parsedURL.scheme?.lowercased() {
+      if scheme == "file" {
+        return parsedURL
+      }
+
+      return nil
     }
 
     return URL(fileURLWithPath: url)
