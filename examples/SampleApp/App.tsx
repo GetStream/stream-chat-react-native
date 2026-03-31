@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { DevSettings, LogBox, Platform, StyleSheet, useColorScheme, View } from 'react-native';
+import { DevSettings, I18nManager, LogBox, Platform, StyleSheet, useColorScheme, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -99,6 +99,7 @@ notifee.onBackgroundEvent(async ({ detail, type }) => {
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createNativeStackNavigator<UserSelectorParamList>();
+const RTL_STORAGE_KEY = '@stream-rn-sampleapp-rtl-enabled';
 
 const MessageOverlayBlurBackground = () => {
   const {
@@ -131,6 +132,7 @@ const MessageOverlayBlurBackground = () => {
 
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
+  const [rtlEnabled, setRtlEnabled] = useState<boolean | undefined>(undefined);
   const [messageListImplementation, setMessageListImplementation] = useState<
     MessageListImplementationConfigItem['id'] | undefined
   >(undefined);
@@ -149,6 +151,15 @@ const App = () => {
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
   const streami18n = new Streami18n();
+
+  const setRTLEnabled = React.useCallback(async (enabled: boolean) => {
+    await AsyncStore.setItem(RTL_STORAGE_KEY, enabled);
+    I18nManager.allowRTL(enabled);
+    I18nManager.forceRTL(enabled);
+    I18nManager.swapLeftAndRightInRTL(enabled);
+    setRtlEnabled(enabled);
+    DevSettings.reload();
+  }, []);
 
   useEffect(() => {
     const messaging = getMessaging();
@@ -188,7 +199,21 @@ const App = () => {
         }
       }
     });
-    const getMessageListConfig = async () => {
+    const getAppConfig = async () => {
+      const storedRTLEnabled = await AsyncStore.getItem<boolean>(RTL_STORAGE_KEY, false);
+      const nextRTLEnabled = !!storedRTLEnabled;
+
+      I18nManager.allowRTL(nextRTLEnabled);
+      I18nManager.forceRTL(nextRTLEnabled);
+      I18nManager.swapLeftAndRightInRTL(nextRTLEnabled);
+
+      if (I18nManager.isRTL !== nextRTLEnabled) {
+        DevSettings.reload();
+        return;
+      }
+
+      setRtlEnabled(nextRTLEnabled);
+
       const messageListImplementationStoredValue = await AsyncStore.getItem(
         '@stream-rn-sampleapp-messagelist-implementation',
         { id: 'flatlist' },
@@ -223,7 +248,7 @@ const App = () => {
         messageOverlayBackdropStoredValue?.value as MessageOverlayBackdropConfigItem['value'],
       );
     };
-    getMessageListConfig();
+    getAppConfig();
     return () => {
       unsubscribeOnNotificationOpen();
       unsubscribeForegroundEvent();
@@ -258,7 +283,7 @@ const App = () => {
     });
   }, [chatClient]);
 
-  if (!messageListImplementation || !messageListMode) {
+  if (rtlEnabled === undefined || !messageListImplementation || !messageListMode) {
     return;
   }
 
@@ -294,6 +319,8 @@ const App = () => {
                   loginUser,
                   logout,
                   switchUser,
+                  rtlEnabled,
+                  setRTLEnabled,
                   messageListImplementation,
                   messageInputFloating: messageInputFloating ?? false,
                   messageListMode,

@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { GestureResponderEvent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  GestureResponderEvent,
+  I18nManager,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
@@ -415,6 +422,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       : isMyMessage
         ? 'right'
         : 'left';
+  const overlayItemAlignment = I18nManager.isRTL
+    ? alignment === 'right'
+      ? 'left'
+      : 'right'
+    : alignment;
 
   /**
    * attachments contain files/images or other attachments
@@ -847,7 +859,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   h,
                   w,
                   x:
-                    alignment === 'right'
+                    overlayItemAlignment === 'right'
                       ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
                       : overlayItemsAnchorRect.x,
                   y: rect.y - h,
@@ -893,7 +905,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   h,
                   w,
                   x:
-                    alignment === 'right'
+                    overlayItemAlignment === 'right'
                       ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
                       : overlayItemsAnchorRect.x,
                   y: rect.y + rect.h,

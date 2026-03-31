@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { I18nManager, Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import {
   isFileAttachment,
@@ -251,6 +251,7 @@ const useStyles = () => {
   const { client } = useChatContext();
 
   const isMyMessage = client.user?.id === quotedMessageFromComposer?.user?.id;
+  const isRTL = I18nManager.isRTL;
 
   return useMemo(
     () =>
@@ -262,7 +263,7 @@ const useStyles = () => {
         },
         container: {
           borderRadius: primitives.radiusLg,
-          flexDirection: 'row',
+          flexDirection: isRTL ? 'row-reverse' : 'row',
           padding: primitives.spacingXs,
           backgroundColor: isMyMessage ? semantics.chatBgOutgoing : semantics.chatBgIncoming,
         },
@@ -282,14 +283,24 @@ const useStyles = () => {
           top: 0,
         },
         leftContainer: {
-          borderLeftWidth: 2,
           flex: 1,
           justifyContent: 'center',
           paddingHorizontal: primitives.spacingXs,
-          borderLeftColor: isMyMessage
-            ? semantics.chatReplyIndicatorOutgoing
-            : semantics.chatReplyIndicatorIncoming,
           gap: primitives.spacingXxxs,
+          alignItems: 'flex-start',
+          ...(isRTL
+            ? {
+                borderRightColor: isMyMessage
+                  ? semantics.chatReplyIndicatorOutgoing
+                  : semantics.chatReplyIndicatorIncoming,
+                borderRightWidth: 2,
+              }
+            : {
+                borderLeftColor: isMyMessage
+                  ? semantics.chatReplyIndicatorOutgoing
+                  : semantics.chatReplyIndicatorIncoming,
+                borderLeftWidth: 2,
+              }),
         },
         rightContainer: {},
         title: {
@@ -298,11 +309,12 @@ const useStyles = () => {
           fontWeight: primitives.typographyFontWeightSemiBold,
           includeFontPadding: false,
           lineHeight: primitives.typographyLineHeightTight,
+          textAlign: isRTL ? 'right' : 'left',
         },
         wrapper: {
           padding: primitives.spacingXxs,
         },
       }),
-    [isMyMessage, semantics],
+    [isMyMessage, isRTL, semantics],
   );
 };

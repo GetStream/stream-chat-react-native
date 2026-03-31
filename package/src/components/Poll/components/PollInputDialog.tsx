@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
+  I18nManager,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -136,6 +137,7 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeMd,
           padding: primitives.spacingSm,
           color: semantics.textPrimary,
+          textAlign: I18nManager.isRTL ? 'right' : 'left',
         },
         title: {
           color: semantics.textPrimary,

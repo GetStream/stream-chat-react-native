@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { I18nManager, Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import Animated, { LinearTransition, StretchInY, StretchOutY } from 'react-native-reanimated';
 
@@ -200,15 +200,19 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       description: {
         color: semantics.textTertiary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       optionCardContent: {
         gap: primitives.spacingXxs,
+        flex: 1,
+        alignItems: 'flex-start',
       },
       optionCard: {
         alignItems: 'center',
@@ -229,6 +233,7 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeMd,
         paddingHorizontal: primitives.spacingSm,
         paddingVertical: primitives.spacingMd,
+        textAlign: I18nManager.isRTL ? 'right' : 'left',
       },
     });
   }, [semantics]);

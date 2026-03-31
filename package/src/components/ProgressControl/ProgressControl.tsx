@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { I18nManager, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -47,6 +47,8 @@ export const ProgressControl = (props: ProgressControlProps) => {
   const { isPlaying, onEndDrag, onStartDrag, progress, testID } = props;
   const styles = useStyles();
   const [widthInNumbers, setWidthInNumbers] = useState<number>(0);
+  const isRTL = I18nManager.isRTL;
+  const thumbDirectionMultiplier = isRTL ? -1 : 1;
 
   const state = useSharedValue(progress);
   const {
@@ -73,8 +75,8 @@ export const ProgressControl = (props: ProgressControlProps) => {
           }
         })
         .onUpdate((event) => {
-          const newProgress = Math.max(0, Math.min(event.x / widthInNumbers, 1));
-          state.value = newProgress;
+          const nextProgress = isRTL ? 1 - event.x / widthInNumbers : event.x / widthInNumbers;
+          state.value = Math.max(0, Math.min(nextProgress, 1));
         })
         .onEnd(() => {
           if (onEndDrag) {
@@ -82,7 +84,7 @@ export const ProgressControl = (props: ProgressControlProps) => {
           }
         })
         .withTestId(testID),
-    [onEndDrag, onStartDrag, state, testID, widthInNumbers],
+    [isRTL, onEndDrag, onStartDrag, state, testID, widthInNumbers],
   );
 
   const thumbStyles = useAnimatedStyle(
@@ -92,13 +94,13 @@ export const ProgressControl = (props: ProgressControlProps) => {
           translateX: interpolate(
             state.value,
             [0, 1],
-            [0, widthInNumbers - PROGRESS_THUMB_WIDTH / 2],
+            [0, (widthInNumbers - PROGRESS_THUMB_WIDTH / 2) * thumbDirectionMultiplier],
           ),
         },
       ],
       position: 'absolute',
     }),
-    [widthInNumbers],
+    [thumbDirectionMultiplier, widthInNumbers],
   );
 
   const animatedFilledStyles = useAnimatedStyle(
