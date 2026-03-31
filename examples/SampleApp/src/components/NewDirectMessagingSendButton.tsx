@@ -17,6 +17,7 @@ import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMess
 import { useUserSearchContext } from '../context/UserSearchContext';
 import { useAppContext } from '../context/AppContext';
 import { SendUp } from '../icons/SendUp';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 type NewDirectMessagingSendButtonPropsWithContext = Pick<
   MessageInputContextValue,
@@ -29,10 +30,10 @@ const SendButtonWithContext = (props: NewDirectMessagingSendButtonPropsWithConte
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
     theme: {
-      colors: { accent_blue, grey_gainsboro },
       messageComposer: { sendButton },
     },
   } = useTheme();
+  const { accent_blue, grey_gainsboro } = useLegacyColors();
 
   return (
     <TouchableOpacity

@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   BottomSheetModal,
   CircleBan,
-  MessageIcon,
   useChatContext,
   useStableCallback,
   useTheme,
@@ -13,6 +12,7 @@ import {
 
 import { ListItem } from './ListItem';
 
+import { Message } from '../icons/Message';
 import { Mute } from '../icons/Mute';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
@@ -120,7 +120,7 @@ export const ContactDetailBottomSheet = React.memo(
           </View>
 
           <ListItem
-            icon={<MessageIcon height={20} width={20} pathFill={semantics.textPrimary} />}
+            icon={<Message height={20} width={20} fill={semantics.textPrimary} />}
             label='Send Direct Message'
             onPress={sendDirectMessage}
           />

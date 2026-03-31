@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useMemo, useRef } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { I18nManager, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 import Animated, {
@@ -42,6 +42,8 @@ export type SwipableWrapperProps = PropsWithChildren<{
   swipableProps?: SwipeableProps;
 }>;
 
+type ActionSide = 'left' | 'right';
+
 export const getRightActionsLayout = (itemCount: number) => {
   if (!itemCount) {
     return { containerWidth: 0, itemWidth: 0 };
@@ -55,19 +57,27 @@ export const getRightActionsLayout = (itemCount: number) => {
 
 export const RightActions = ({
   items,
+  side,
   translation,
 }: {
   items: SwipableActionItem[];
+  side?: ActionSide;
   translation: SharedValue<number>;
 }) => {
+  const resolvedSide = side ?? (I18nManager.isRTL ? 'left' : 'right');
   const { containerWidth, itemWidth } = useMemo(
     () => getRightActionsLayout(items.length),
     [items.length],
   );
+  const actionItems = useMemo(
+    () => (resolvedSide === 'left' ? [...items].reverse() : items),
+    [items, resolvedSide],
+  );
+  const translationDirection = resolvedSide === 'right' ? -1 : 1;
 
   const animatedActionWidthStyle = useAnimatedStyle(() => ({
     width: interpolate(
-      -translation.value,
+      translationDirection * translation.value,
       [0, containerWidth, containerWidth + 40],
       [0, itemWidth, itemWidth + 8],
       Extrapolation.CLAMP,
@@ -78,7 +88,7 @@ export const RightActions = ({
     transform: [
       {
         scale: interpolate(
-          -translation.value,
+          translationDirection * translation.value,
           [0, containerWidth, containerWidth + 40],
           [0, 1, 1],
           Extrapolation.CLAMP,
@@ -88,8 +98,13 @@ export const RightActions = ({
   }));
 
   return (
-    <Animated.View style={[styles.rightActionsContainer, { width: containerWidth }]}>
-      {items.map((item) => {
+    <Animated.View
+      style={[
+        resolvedSide === 'left' ? styles.leftActionsContainer : styles.rightActionsContainer,
+        { width: containerWidth },
+      ]}
+    >
+      {actionItems.map((item) => {
         const Content = item.Content;
         return (
           <AnimatedPressable
@@ -110,6 +125,7 @@ export const RightActions = ({
 };
 
 export const SwipableWrapper = ({ children, swipeableId, swipableProps }: SwipableWrapperProps) => {
+  const isRTL = I18nManager.isRTL;
   const swipeRegistry = useSwipeRegistryContext();
   const swipeableRef = useRef<SwipeableMethods | null>(null);
 
@@ -128,28 +144,43 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
       if (swipeRegistry && swipeableId) {
         swipeRegistry.notifyWillOpen(swipeableId);
       }
-      swipableProps?.onSwipeableWillOpen?.(direction);
+
+      swipableProps?.onSwipeableOpenStartDrag?.(direction);
     },
   );
 
-  const onSwipeableWillClose = useStableCallback(() => {
-    if (swipeableId) {
-      swipeRegistry?.updateOpenTracker(swipeableId, false);
-    }
-  });
+  const onSwipeableWillClose = useStableCallback(
+    (direction: SwipeDirection.LEFT | SwipeDirection.RIGHT) => {
+      if (swipeableId) {
+        swipeRegistry?.updateOpenTracker(swipeableId, false);
+      }
+
+      swipableProps?.onSwipeableWillClose?.(direction);
+    },
+  );
+
+  const rtlAwareSwipeableProps = useMemo<SwipeableProps>(() => {
+    const { overshootLeft, overshootRight, renderLeftActions, renderRightActions, ...rest } =
+      swipableProps ?? {};
+
+    return {
+      ...rest,
+      overshootLeft: isRTL ? (overshootRight ?? true) : (overshootLeft ?? false),
+      overshootRight: isRTL ? (overshootLeft ?? false) : (overshootRight ?? true),
+      renderLeftActions: isRTL ? renderRightActions : renderLeftActions,
+      renderRightActions: isRTL ? renderLeftActions : renderRightActions,
+    };
+  }, [isRTL, swipableProps]);
 
   return (
     <ReanimatedSwipeable
       ref={swipeableRef}
-      onSwipeableOpenStartDrag={onSwipeableOpenStartDrag}
       animationOptions={animationOptions}
       friction={1.5}
+      onSwipeableOpenStartDrag={onSwipeableOpenStartDrag}
       onSwipeableWillClose={onSwipeableWillClose}
-      overshootLeft={false}
-      overshootRight={true}
       overshootFriction={16}
-      renderLeftActions={undefined}
-      {...swipableProps}
+      {...rtlAwareSwipeableProps}
     >
       {children}
     </ReanimatedSwipeable>
@@ -157,7 +188,14 @@ export const SwipableWrapper = ({ children, swipeableId, swipableProps }: Swipab
 };
 
 const styles = StyleSheet.create({
+  leftActionsContainer: {
+    direction: 'ltr',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    overflow: 'visible',
+  },
   rightActionsContainer: {
+    direction: 'ltr',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     overflow: 'visible',

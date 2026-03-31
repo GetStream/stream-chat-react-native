@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { I18nManager, StyleSheet } from 'react-native';
 
 import type { SharedValue } from 'react-native-reanimated';
 
@@ -79,6 +80,19 @@ const ImageGalleryComponent = (props: ImageGalleryProps & { message: LocalMessag
 };
 
 describe('ImageGallery', () => {
+  const originalIsRTL = I18nManager.isRTL;
+
+  const setRTL = (value: boolean) => {
+    Object.defineProperty(I18nManager, 'isRTL', {
+      configurable: true,
+      value,
+    });
+  };
+
+  afterEach(() => {
+    setRTL(originalIsRTL);
+  });
+
   it('render image gallery component', async () => {
     render(
       <ImageGalleryComponent
@@ -97,6 +111,25 @@ describe('ImageGallery', () => {
     await waitFor(() => {
       expect(screen.queryAllByLabelText('Image Item')).toHaveLength(2);
       expect(screen.queryAllByLabelText('Image Gallery Video')).toHaveLength(1);
+    });
+  });
+
+  it('keeps the pager in ltr coordinates when rtl is enabled', async () => {
+    setRTL(true);
+
+    render(
+      <ImageGalleryComponent
+        message={
+          generateMessage({
+            attachments: [generateImageAttachment()],
+          }) as unknown as LocalMessage
+        }
+      />,
+    );
+
+    await waitFor(() => {
+      const pagerStyle = StyleSheet.flatten(screen.getByTestId('image-gallery-pager').props.style);
+      expect(pagerStyle.direction).toBe('ltr');
     });
   });
 });

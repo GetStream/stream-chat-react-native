@@ -260,6 +260,7 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeSm,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
+          textAlign: 'left',
           ...threadListItem.channelName,
         },
         content: {

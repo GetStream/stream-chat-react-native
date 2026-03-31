@@ -6,17 +6,15 @@ import {
   useTranslationContext,
   useStateStore,
 } from 'stream-chat-react-native';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const reminderStateSelector = (state: ReminderState) => ({
   timeLeftMs: state.timeLeftMs,
 });
 
 export const ReminderBanner = (item: ReminderResponse) => {
-  const {
-    theme: {
-      colors: { accent_blue, accent_red },
-    },
-  } = useTheme();
+  useTheme();
+  const { accent_blue, accent_red } = useLegacyColors();
   const { t } = useTranslationContext();
   const { message_id } = item;
   const reminder = useMessageReminder(message_id);

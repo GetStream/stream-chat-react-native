@@ -18,6 +18,7 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useAppContext } from '../context/AppContext';
 import { Contacts } from '../icons/Contacts';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -61,11 +62,8 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
   const name = useChannelPreviewDisplayName(channel, 30);
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList, 'SharedGroupsScreen'>>();
-  const {
-    theme: {
-      colors: { black, grey, grey_whisper, white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_whisper, white_snow } = useLegacyColors();
 
   const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
 
@@ -133,11 +131,8 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
 };
 
 const EmptyListComponent = () => {
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_gainsboro } = useLegacyColors();
 
   return (
     <View style={styles.emptyListContainer}>

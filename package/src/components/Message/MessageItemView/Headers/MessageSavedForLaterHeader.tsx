@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { Bookmark } from '../../../../icons/Bookmark';
+import { Bookmark } from '../../../../icons/save';
 import { primitives } from '../../../../theme';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 

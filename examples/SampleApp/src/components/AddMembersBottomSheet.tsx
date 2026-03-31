@@ -12,13 +12,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   BottomSheetModal,
   Checkmark,
-  Close,
   StreamBottomSheetModalFlatList,
   UserAvatar,
   useStableCallback,
   useTheme,
 } from 'stream-chat-react-native';
 
+import { Close } from '../icons/Close';
 import { CircleClose } from '../icons/CircleClose';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 
@@ -159,7 +159,7 @@ export const AddMembersBottomSheet = React.memo(
 
     const initialLoadComplete = initialResults !== null;
 
-    const emptyComponent = useMemo(() => {
+    const EmptyComponent = useCallback(() => {
       if (loading && !initialLoadComplete) {
         return (
           <View style={styles.emptyState}>
@@ -248,7 +248,7 @@ export const AddMembersBottomSheet = React.memo(
             keyExtractor={keyExtractor}
             keyboardDismissMode='interactive'
             keyboardShouldPersistTaps='handled'
-            ListEmptyComponent={emptyComponent}
+            ListEmptyComponent={EmptyComponent}
             onEndReached={loadMore}
             renderItem={renderItem}
             contentContainerStyle={styles.listContent}

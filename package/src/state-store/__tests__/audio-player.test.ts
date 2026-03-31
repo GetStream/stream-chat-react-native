@@ -60,7 +60,7 @@ describe('AudioPlayer', () => {
     (NativeHandlers as { Sound: unknown }).Sound = undefined;
   });
 
-  it('initializes native playback through Sound.initializeSound', async () => {
+  it('initializes native playback through Sound.initializeaudio', async () => {
     const playerRef = createMockNativePlayerRef();
     const initializeSound = jest.fn().mockResolvedValue(playerRef);
     (NativeHandlers as { Sound: unknown }).Sound = {

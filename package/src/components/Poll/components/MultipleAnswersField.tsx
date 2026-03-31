@@ -74,15 +74,19 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       description: {
         color: semantics.textTertiary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       optionCardContent: {
         gap: primitives.spacingXxs,
+        flex: 1,
+        alignItems: 'flex-start',
       },
       optionCard: {
         alignItems: 'center',

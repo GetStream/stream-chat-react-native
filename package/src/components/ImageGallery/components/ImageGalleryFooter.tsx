@@ -9,7 +9,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { Share as ShareIconDefault } from '../../../icons';
-import { ImageGrid } from '../../../icons/ImageGrid';
+import { ImageGrid } from '../../../icons/gallery';
 import { isFileSystemAvailable, isShareImageAvailable, NativeHandlers } from '../../../native';
 
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';

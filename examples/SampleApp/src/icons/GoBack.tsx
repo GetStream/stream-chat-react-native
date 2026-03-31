@@ -1,15 +1,11 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export const GoBack: React.FC<IconProps> = ({ height = 24, width = 24 }) => {
-  const {
-    theme: {
-      colors: { black },
-    },
-  } = useTheme();
+  const { black } = useLegacyColors();
   return (
     <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <Path

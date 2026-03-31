@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { LayoutChangeEvent, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  I18nManager,
+  LayoutChangeEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -19,9 +27,9 @@ import { PollComposerOption, PollComposerState } from 'stream-chat';
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { CircleMinus } from '../../../icons/CircleMinus';
-import { DotGrid } from '../../../icons/DotGrid';
-import { InfoTooltip } from '../../../icons/InfoTooltip';
+import { InfoTooltip } from '../../../icons/info';
+import { CircleMinus } from '../../../icons/minus-circle';
+import { DotGrid } from '../../../icons/reorder';
 import { primitives } from '../../../theme';
 
 export type CurrentOptionPositionsCache = {
@@ -746,6 +754,7 @@ const useStyles = () => {
         fontWeight: primitives.typographyFontWeightRegular,
         color: semantics.inputTextDefault,
         paddingVertical: 0, // android is adding extra padding so we remove it
+        textAlign: I18nManager.isRTL ? 'right' : 'left',
       },
       optionValidationErrorContainer: {
         flexDirection: 'row',
@@ -759,6 +768,7 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeSm,
         lineHeight: primitives.typographyLineHeightNormal,
         fontWeight: primitives.typographyFontWeightRegular,
+        textAlign: 'left',
       },
       optionWrapper: {
         width: '100%',
@@ -778,6 +788,7 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
     });
   }, [semantics]);

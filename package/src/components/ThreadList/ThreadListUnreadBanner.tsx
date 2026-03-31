@@ -6,7 +6,7 @@ import { ThreadManagerState } from 'stream-chat';
 import { useChatContext, useTheme, useTranslationContext } from '../../contexts';
 import { useStateStore } from '../../hooks';
 import { Loading, Reload } from '../../icons';
-import { ExclamationCircle } from '../../icons/ExclamationCircle';
+import { ExclamationCircle } from '../../icons/exclamation-circle-fill';
 import { primitives } from '../../theme';
 
 const selector = (nextValue: ThreadManagerState) =>

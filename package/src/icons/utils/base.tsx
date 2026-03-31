@@ -9,13 +9,13 @@ export type IconProps = Partial<SvgProps> &
   };
 
 export const RootSvg = (props: IconProps) => {
-  const { children, height = 24, viewBox = '0 0 24 24', width = 24 } = props;
+  const { children, height, size, viewBox = '0 0 24 24', width } = props;
   return (
     <Svg
       {...{
-        height,
+        height: height ?? size ?? 24,
         viewBox,
-        width,
+        width: width ?? size ?? 24,
       }}
       {...props}
     >

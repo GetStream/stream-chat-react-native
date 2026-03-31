@@ -144,12 +144,22 @@ exports[`ScrollToBottomButton should render the message notification and match s
             strokeWidth={1.5}
           >
             <RNSVGPath
-              d="M15.2084 11.6667L10.0001 16.875L4.79175 11.6667M10.0001 16.25V3.125"
+              d="M10 16.875V3.125M10 3.125L4.375 8.75M10 3.125L15.625 8.75"
               fill={
                 {
                   "payload": 4278190080,
                   "type": 0,
                 }
+              }
+              matrix={
+                [
+                  -1,
+                  1.2246467991473532e-16,
+                  -1.2246467991473532e-16,
+                  -1,
+                  20,
+                  20,
+                ]
               }
               propList={
                 [

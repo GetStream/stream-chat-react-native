@@ -23,7 +23,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks';
 import { IconProps } from '../../icons';
-import { MoreEmojis } from '../../icons/MoreEmojis';
+import { MoreEmojis } from '../../icons/emoji-add-1';
 import { primitives } from '../../theme';
 import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';

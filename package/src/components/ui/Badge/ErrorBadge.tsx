@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Exclamation } from '../../../icons/Exclamation';
+import { Exclamation } from '../../../icons/exclamation-mark-fill';
 import { primitives } from '../../../theme';
 
 const sizes = {
@@ -17,21 +17,6 @@ const sizes = {
   md: {
     height: 24,
     width: 24,
-  },
-};
-
-const iconSizes = {
-  xs: {
-    height: 8,
-    width: 2,
-  },
-  sm: {
-    height: 9,
-    width: 2,
-  },
-  md: {
-    height: 11,
-    width: 3,
   },
 };
 
@@ -59,8 +44,8 @@ export const ErrorBadge = (props: ErrorBadgeProps) => {
   return (
     <View style={[styles.container, sizes[size], style]} {...rest}>
       <Exclamation
-        height={iconSizes[size].height}
-        width={iconSizes[size].width}
+        height={sizes[size].height}
+        width={sizes[size].width}
         fill={semantics.textOnAccent}
       />
     </View>

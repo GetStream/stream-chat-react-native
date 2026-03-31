@@ -12,8 +12,8 @@ import { useIsDirectChat } from './useIsDirectChat';
 
 import { useTheme, useTranslationContext } from '../../../contexts';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
-import { Archive, IconProps, Mute, BlockUser, Delete } from '../../../icons';
-import { ArrowBoxLeft } from '../../../icons/ArrowBoxLeft';
+import { Archive, IconProps, Mute, BlockUser, Delete, Sound } from '../../../icons';
+import { ArrowBoxLeft } from '../../../icons/leave';
 
 export type ChannelActionHandler = () => Promise<void> | void;
 
@@ -92,15 +92,18 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
         : muteActive
           ? unmuteChannel
           : muteChannel,
-      Icon: (props) => (
-        <Mute
-          width={20}
-          height={20}
-          {...props}
-          stroke={undefined}
-          fill={props.fill ?? props.stroke}
-        />
-      ),
+      Icon: (props) =>
+        muteActive ? (
+          <Sound width={20} height={20} {...props} />
+        ) : (
+          <Mute
+            width={20}
+            height={20}
+            {...props}
+            stroke={undefined}
+            fill={props.fill ?? props.stroke}
+          />
+        ),
       id: 'mute',
       label: isDirectChat
         ? muteActive

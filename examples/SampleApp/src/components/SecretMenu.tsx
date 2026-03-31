@@ -14,13 +14,15 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import { Close, Edit, Delete, ZIP, useTheme } from 'stream-chat-react-native';
+import { Edit, Delete, ZIP, useTheme } from 'stream-chat-react-native';
 import { styles as menuDrawerStyles } from './MenuDrawer.tsx';
 import AsyncStore from '../utils/AsyncStore.ts';
 import { StreamChat } from 'stream-chat';
 import { LabeledTextInput } from '../screens/AdvancedUserSelectorScreen.tsx';
+import { Close } from '../icons/Close.tsx';
 import { Notification } from '../icons/Notification.tsx';
 import { Folder } from '../icons/Folder.tsx';
+import { useLegacyColors } from '../theme/useLegacyColors.ts';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -274,11 +276,8 @@ export const SecretMenu = ({
   const [selectedMessageOverlayBackdrop, setSelectedMessageOverlayBackdrop] = useState<
     MessageOverlayBackdropConfigItem['value'] | null
   >(null);
-  const {
-    theme: {
-      colors: { black, grey },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey } = useLegacyColors();
 
   const notificationConfigItems = useMemo(
     () => [

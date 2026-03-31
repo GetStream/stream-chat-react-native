@@ -58,31 +58,31 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        voteContainer: {
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingVertical: primitives.spacingXs,
-        },
-        voteDate: {
-          fontSize: primitives.typographyFontSizeMd,
-          lineHeight: primitives.typographyLineHeightNormal,
-          color: semantics.textTertiary,
-        },
-        voteUserName: {
-          fontSize: primitives.typographyFontSizeMd,
-          lineHeight: primitives.typographyLineHeightNormal,
-          color: semantics.textPrimary,
-          paddingLeft: primitives.spacingXs,
-        },
-        userContainer: {
-          flexDirection: 'row',
-          alignItems: 'center',
-        },
-      }),
-    [semantics],
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      voteContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: primitives.spacingXs,
+      },
+      voteDate: {
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        color: semantics.textTertiary,
+        textAlign: 'left',
+      },
+      voteUserName: {
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        color: semantics.textPrimary,
+        paddingStart: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      userContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+    });
+  }, [semantics]);
 };

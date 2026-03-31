@@ -28,6 +28,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useAppContext } from '../context/AppContext.ts';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -80,9 +81,9 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   const {
     theme: {
       semantics,
-      colors: { white },
     },
   } = useTheme();
+  const { white } = useLegacyColors();
   const { client: chatClient } = useChatContext();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();

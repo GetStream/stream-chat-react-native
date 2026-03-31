@@ -14,12 +14,12 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
-import { ChevronLeft } from '../../../../icons/ChevronLeft';
-import { Mic } from '../../../../icons/Mic';
-import { Stop } from '../../../../icons/Stop';
-import { Tick } from '../../../../icons/Tick';
-import { Trash } from '../../../../icons/Trash';
+import { Tick } from '../../../../icons/checkmark';
+import { ChevronLeft } from '../../../../icons/chevron-left';
+import { Delete } from '../../../../icons/delete';
+import { Stop } from '../../../../icons/stop-fill';
 import { IconProps } from '../../../../icons/utils/base';
+import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
@@ -109,7 +109,7 @@ const DeleteRecording = ({
       size='sm'
       iconOnly
       onPress={onDeleteVoiceRecording}
-      LeadingIcon={Trash}
+      LeadingIcon={Delete}
     />
   );
 };

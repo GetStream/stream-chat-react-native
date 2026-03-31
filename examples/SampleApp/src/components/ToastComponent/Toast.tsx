@@ -3,6 +3,7 @@ import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanim
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useInAppNotificationsState, useTheme } from 'stream-chat-react-native';
 import type { Notification, NotificationState } from 'stream-chat';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const { width } = Dimensions.get('window');
 
@@ -17,11 +18,8 @@ export const Toast = () => {
   const { closeInAppNotification, notifications } = useInAppNotificationsState();
 
   const { top } = useSafeAreaInsets();
-  const {
-    theme: {
-      colors: { overlay, white_smoke },
-    },
-  } = useTheme();
+  useTheme();
+  const { overlay, white_smoke } = useLegacyColors();
 
   // When offline, we upload pending attachments by cleaning up the previous upload, this results in a cancelled/aborted error from the server, so we filter out those notifications.
   const filteredNotifications = notifications.filter(
