@@ -33,13 +33,10 @@ ext.REACT_NATIVE_WORKLETS_NODE_MODULES_DIR =
 subprojects { subproject ->
     if (subproject.path != ":app") {
         evaluationDependsOn(":app")
-    }
-
-    subproject.tasks.matching { it.name == "generateCodegenArtifactsFromSchema" }.configureEach { codegenTask ->
         project(":app").tasks.matching { task ->
             task.name.startsWith("configureCMake")
         }.configureEach {
-            dependsOn(codegenTask)
+            dependsOn(subproject.tasks.matching { it.name == "preBuild" })
         }
     }
 }
