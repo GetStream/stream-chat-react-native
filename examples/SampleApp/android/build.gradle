@@ -26,6 +26,16 @@ buildscript {
     }
 }
 
+ext.REACT_NATIVE_NODE_MODULES_DIR = file("$rootDir/../node_modules/react-native").absolutePath
+ext.REACT_NATIVE_WORKLETS_NODE_MODULES_DIR =
+    file("$rootDir/../node_modules/react-native-worklets").absolutePath
+
+subprojects { subproject ->
+    if (subproject.path != ":app") {
+        evaluationDependsOn(":app")
+    }
+}
+
 allprojects {
     repositories {
         maven {
@@ -39,15 +49,8 @@ allprojects {
 }
 
 project(':app') {
-    afterEvaluate {
-        if (tasks.findByName("preBuild")) {
-            tasks.preBuild.doFirst {
-                exec {
-                    workingDir rootDir
-                    commandLine './gradlew', 'generateCodegenArtifactsFromSchema'
-                }
-            }
-        }
+    tasks.matching { it.name == "preBuild" }.configureEach {
+        dependsOn("generateCodegenArtifactsFromSchema")
     }
 }
 
