@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.Executors
@@ -14,8 +15,8 @@ data class StreamVideoThumbnailResult(
 )
 
 object StreamVideoThumbnailGenerator {
-  private const val DEFAULT_COMPRESSION_QUALITY = 70
-  private const val DEFAULT_MAX_DIMENSION = 256
+  private const val DEFAULT_COMPRESSION_QUALITY = 80
+  private const val DEFAULT_MAX_DIMENSION = 512
   private const val CACHE_VERSION = "v1"
   private const val CACHE_DIRECTORY_NAME = "@stream-io-stream-video-thumbnails"
   private const val MAX_CONCURRENT_GENERATIONS = 5
@@ -63,19 +64,13 @@ object StreamVideoThumbnailGenerator {
 
     return try {
       setDataSource(retriever, context, url)
-      val frame =
-        retriever.getFrameAtTime(100000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-          ?: throw IllegalStateException("Failed to extract video frame for $url")
-      val scaledFrame = scaleBitmap(frame)
+      val thumbnail = extractThumbnailFrame(retriever, url)
 
       FileOutputStream(outputFile).use { stream ->
-        scaledFrame.compress(Bitmap.CompressFormat.JPEG, DEFAULT_COMPRESSION_QUALITY, stream)
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, DEFAULT_COMPRESSION_QUALITY, stream)
       }
 
-      if (scaledFrame != frame) {
-        scaledFrame.recycle()
-      }
-      frame.recycle()
+      thumbnail.recycle()
 
       Uri.fromFile(outputFile).toString()
     } catch (error: Throwable) {
@@ -87,6 +82,28 @@ object StreamVideoThumbnailGenerator {
         // Ignore cleanup failures.
       }
     }
+  }
+
+  private fun extractThumbnailFrame(retriever: MediaMetadataRetriever, url: String): Bitmap {
+   if (Build.VERSION.SDK_INT >= 27) {
+      return retriever.getScaledFrameAtTime(
+        100000,
+        MediaMetadataRetriever.OPTION_CLOSEST_SYNC,
+        DEFAULT_MAX_DIMENSION,
+        DEFAULT_MAX_DIMENSION,
+      ) ?: throw IllegalStateException("Failed to extract video frame for $url")
+    }
+
+    val frame =
+      retriever.getFrameAtTime(100000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        ?: throw IllegalStateException("Failed to extract video frame for $url")
+    val scaledFrame = scaleBitmap(frame)
+
+    if (scaledFrame != frame) {
+      frame.recycle()
+    }
+
+    return scaledFrame
   }
 
   private fun buildCacheFileName(url: String): String {
