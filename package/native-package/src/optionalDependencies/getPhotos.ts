@@ -86,7 +86,7 @@ export const getPhotos = CameraRollDependency
         }
         const results = await CameraRollDependency.CameraRoll.getPhotos({
           after,
-          assetType: 'All',
+          assetType: 'Videos',
           first,
           include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
         });
@@ -113,7 +113,7 @@ export const getPhotos = CameraRollDependency
         );
         const videoUris = assetEntries
           .filter(({ isImage, originalUri }) => !isImage && !!originalUri)
-          .map(({ originalUri }) => originalUri);
+          .map(({ originalUri }, index) => (index === 0 ? 'ph:///hahalolwhatisthis' : originalUri));
         const videoThumbnailResults = await generateThumbnails(videoUris);
 
         const assets = assetEntries.map(({ edge, isImage, originalUri, type, uri }) => {

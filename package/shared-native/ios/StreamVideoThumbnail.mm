@@ -27,8 +27,7 @@ RCT_REMAP_METHOD(createVideoThumbnails, urls:(NSArray<NSString *> *)urls resolve
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject
 {
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    NSArray<StreamVideoThumbnailResult *> *thumbnails = [StreamVideoThumbnailGenerator generateThumbnailsWithUrls:urls];
+  [StreamVideoThumbnailGenerator generateThumbnailsWithUrls:urls completion:^(NSArray<StreamVideoThumbnailResult *> *thumbnails) {
     NSMutableArray<NSDictionary<NSString *, id> *> *payload = [NSMutableArray arrayWithCapacity:thumbnails.count];
 
     for (StreamVideoThumbnailResult *thumbnail in thumbnails) {
@@ -43,7 +42,7 @@ RCT_REMAP_METHOD(createVideoThumbnails, urls:(NSArray<NSString *> *)urls resolve
     } @catch (NSException *exception) {
       reject(@"stream_video_thumbnail_error", exception.reason, nil);
     }
-  });
+  }];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

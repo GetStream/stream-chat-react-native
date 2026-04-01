@@ -2,6 +2,12 @@ import AVFoundation
 import Photos
 import UIKit
 
+private final class StreamPhotoLibraryAssetRequestState: @unchecked Sendable {
+  let lock = NSLock()
+  var didResume = false
+  var requestID: PHImageRequestID = PHInvalidImageRequestID
+}
+
 @objcMembers
 public final class StreamVideoThumbnailResult: NSObject {
   public let error: String?
@@ -20,49 +26,70 @@ public final class StreamVideoThumbnailGenerator: NSObject {
   private static let cacheVersion = "v1"
   private static let cacheDirectoryName = "@stream-io-stream-video-thumbnails"
   private static let maxConcurrentGenerations = 5
+  private static let photoLibraryAssetResolutionTimeout: TimeInterval = 3
 
-  @objc(generateThumbnailsWithUrls:)
-  public static func generateThumbnails(urls: [String]) -> [StreamVideoThumbnailResult] {
-    if urls.count <= 1 {
-      return urls.map { url in
-        generateThumbnailResult(url: url)
-      }
-    }
-
-    var thumbnails = Array<StreamVideoThumbnailResult?>(repeating: nil, count: urls.count)
-    let lock = NSLock()
-    let group = DispatchGroup()
-    let semaphore = DispatchSemaphore(value: min(maxConcurrentGenerations, urls.count))
-
-    for (index, url) in urls.enumerated() {
-      group.enter()
-      DispatchQueue.global(qos: .userInitiated).async {
-        semaphore.wait()
-        defer {
-          semaphore.signal()
-          group.leave()
-        }
-
-        let thumbnail = generateThumbnailResult(url: url)
-        lock.lock()
-        thumbnails[index] = thumbnail
-        lock.unlock()
-      }
-    }
-
-    group.wait()
-
-    return thumbnails.enumerated().map { index, thumbnail in
-      thumbnail ?? StreamVideoThumbnailResult(
-        error: "Thumbnail generation produced no output for index \(index)",
-        uri: nil
-      )
+  @objc(generateThumbnailsWithUrls:completion:)
+  public static func generateThumbnails(
+    urls: [String],
+    completion: @escaping ([StreamVideoThumbnailResult]) -> Void
+  ) {
+    Task(priority: .userInitiated) {
+      completion(await generateThumbnailsAsync(urls: urls))
     }
   }
 
-  private static func generateThumbnailResult(url: String) -> StreamVideoThumbnailResult {
+  private static func generateThumbnailsAsync(urls: [String]) async -> [StreamVideoThumbnailResult] {
+    guard !urls.isEmpty else {
+      return []
+    }
+
+    if urls.count == 1 {
+      return [await generateThumbnailResult(url: urls[0])]
+    }
+
+    let parallelism = min(maxConcurrentGenerations, urls.count)
+
+    return await withTaskGroup(
+      of: (Int, StreamVideoThumbnailResult).self,
+      returning: [StreamVideoThumbnailResult].self
+    ) { group in
+      var thumbnails = Array<StreamVideoThumbnailResult?>(repeating: nil, count: urls.count)
+      var nextIndexToSchedule = 0
+
+      while nextIndexToSchedule < parallelism {
+        let index = nextIndexToSchedule
+        let url = urls[index]
+        group.addTask {
+          (index, await generateThumbnailResult(url: url))
+        }
+        nextIndexToSchedule += 1
+      }
+
+      while let (index, thumbnail) = await group.next() {
+        thumbnails[index] = thumbnail
+
+        if nextIndexToSchedule < urls.count {
+          let nextIndex = nextIndexToSchedule
+          let nextURL = urls[nextIndex]
+          group.addTask {
+            (nextIndex, await generateThumbnailResult(url: nextURL))
+          }
+          nextIndexToSchedule += 1
+        }
+      }
+
+      return thumbnails.enumerated().map { index, thumbnail in
+        thumbnail ?? StreamVideoThumbnailResult(
+          error: "Thumbnail generation produced no output for index \(index)",
+          uri: nil
+        )
+      }
+    }
+  }
+
+  private static func generateThumbnailResult(url: String) async -> StreamVideoThumbnailResult {
     do {
-      return StreamVideoThumbnailResult(uri: try generateThumbnail(url: url))
+      return StreamVideoThumbnailResult(uri: try await generateThumbnail(url: url))
     } catch {
       return StreamVideoThumbnailResult(
         error: error.localizedDescription,
@@ -71,7 +98,7 @@ public final class StreamVideoThumbnailGenerator: NSObject {
     }
   }
 
-  private static func generateThumbnail(url: String) throws -> String {
+  private static func generateThumbnail(url: String) async throws -> String {
     let outputDirectory = try thumbnailCacheDirectory()
     let outputURL = outputDirectory
       .appendingPathComponent(buildCacheFileName(url: url))
@@ -86,14 +113,7 @@ public final class StreamVideoThumbnailGenerator: NSObject {
       return outputURL.absoluteString
     }
 
-    guard let asset = resolveAsset(url: url) else {
-      throw NSError(
-        domain: "StreamVideoThumbnail",
-        code: 1,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to resolve video asset for \(url)"]
-      )
-    }
-
+    let asset = try await resolveAsset(url: url)
     let generator = AVAssetImageGenerator(asset: asset)
     generator.appliesPreferredTrackTransform = true
     generator.maximumSize = CGSize(width: maxDimension, height: maxDimension)
@@ -104,23 +124,13 @@ public final class StreamVideoThumbnailGenerator: NSObject {
       let cgImage = try generator.copyCGImage(at: requestedTime, actualTime: nil)
       let image = UIImage(cgImage: cgImage)
       guard let data = image.jpegData(compressionQuality: compressionQuality) else {
-        throw NSError(
-          domain: "StreamVideoThumbnail",
-          code: 2,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to encode JPEG thumbnail for \(url)"]
-        )
+        throw thumbnailError(code: 2, message: "Failed to encode JPEG thumbnail for \(url)")
       }
 
       try data.write(to: outputURL, options: .atomic)
       return outputURL.absoluteString
     } catch {
-      throw NSError(
-        domain: "StreamVideoThumbnail",
-        code: 3,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Thumbnail generation failed for \(url): \(error.localizedDescription)",
-        ]
-      )
+      throw thumbnailError(error, code: 3, message: "Thumbnail generation failed for \(url)")
     }
   }
 
@@ -160,32 +170,32 @@ public final class StreamVideoThumbnailGenerator: NSObject {
     return .zero
   }
 
-  private static func resolveAsset(url: String) -> AVAsset? {
+  private static func resolveAsset(url: String) async throws -> AVAsset {
     if isPhotoLibraryURL(url) {
-      return resolvePhotoLibraryAsset(url: url)
+      return try await resolvePhotoLibraryAsset(url: url)
     }
 
     if let normalizedURL = normalizeLocalURL(url) {
       return AVURLAsset(url: normalizedURL)
     }
 
-    return nil
+    throw thumbnailError(code: 5, message: "Unsupported video URL for thumbnail generation: \(url)")
   }
 
   private static func isPhotoLibraryURL(_ url: String) -> Bool {
     url.lowercased().hasPrefix("ph://")
   }
 
-  private static func resolvePhotoLibraryAsset(url: String) -> AVAsset? {
+  private static func resolvePhotoLibraryAsset(url: String) async throws -> AVAsset {
     let identifier = photoLibraryIdentifier(from: url)
 
     guard !identifier.isEmpty else {
-      return nil
+      throw thumbnailError(code: 6, message: "Missing photo library identifier for \(url)")
     }
 
     let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil)
     guard let asset = fetchResult.firstObject else {
-      return nil
+      throw thumbnailError(code: 7, message: "Failed to find photo library asset for \(url)")
     }
 
     let options = PHVideoRequestOptions()
@@ -193,16 +203,97 @@ public final class StreamVideoThumbnailGenerator: NSObject {
     options.isNetworkAccessAllowed = true
     options.version = .current
 
-    let semaphore = DispatchSemaphore(value: 0)
-    var resolvedAsset: AVAsset?
+    return try await withThrowingTaskGroup(of: AVAsset.self) { group in
+      group.addTask {
+        try await requestPhotoLibraryAsset(url: url, asset: asset, options: options)
+      }
+      group.addTask {
+        try await Task.sleep(nanoseconds: UInt64(photoLibraryAssetResolutionTimeout * 1_000_000_000))
+        throw thumbnailError(
+          code: 11,
+          message: "Timed out resolving photo library asset for \(url)"
+        )
+      }
 
-    PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
-      resolvedAsset = avAsset
-      semaphore.signal()
+      guard let resolvedAsset = try await group.next() else {
+        throw thumbnailError(
+          code: 10,
+          message: "Failed to resolve photo library asset for \(url)"
+        )
+      }
+
+      group.cancelAll()
+      return resolvedAsset
     }
+  }
 
-    semaphore.wait()
-    return resolvedAsset
+  private static func requestPhotoLibraryAsset(
+    url: String,
+    asset: PHAsset,
+    options: PHVideoRequestOptions
+  ) async throws -> AVAsset {
+    let imageManager = PHImageManager.default()
+    let state = StreamPhotoLibraryAssetRequestState()
+
+    return try await withTaskCancellationHandler(operation: {
+      try await withCheckedThrowingContinuation { continuation in
+        let requestID = imageManager.requestAVAsset(forVideo: asset, options: options) {
+          avAsset, _, info in
+          state.lock.lock()
+          if state.didResume {
+            state.lock.unlock()
+            return
+          }
+          state.didResume = true
+          state.lock.unlock()
+
+          if let isCancelled = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue, isCancelled {
+            continuation.resume(
+              throwing: thumbnailError(
+                code: 8,
+                message: "Photo library asset request was cancelled for \(url)"
+              )
+            )
+            return
+          }
+
+          if let error = info?[PHImageErrorKey] as? Error {
+            continuation.resume(
+              throwing: thumbnailError(
+                error,
+                code: 9,
+                message: "Photo library asset request failed for \(url)"
+              )
+            )
+            return
+          }
+
+          guard let avAsset else {
+            continuation.resume(
+              throwing: thumbnailError(
+                code: 10,
+                message: "Failed to resolve photo library asset for \(url)"
+              )
+            )
+            return
+          }
+
+          continuation.resume(returning: avAsset)
+        }
+
+        state.lock.lock()
+        state.requestID = requestID
+        state.lock.unlock()
+      }
+    }, onCancel: {
+      state.lock.lock()
+      let requestID = state.requestID
+      state.lock.unlock()
+
+      if requestID != PHInvalidImageRequestID {
+        imageManager.cancelImageRequest(requestID)
+      }
+    })
   }
 
   private static func photoLibraryIdentifier(from url: String) -> String {
@@ -230,5 +321,18 @@ public final class StreamVideoThumbnailGenerator: NSObject {
     }
 
     return URL(fileURLWithPath: url)
+  }
+
+  private static func thumbnailError(
+    _ error: Error? = nil,
+    code: Int,
+    message: String
+  ) -> Error {
+    let description = error.map { "\(message): \($0.localizedDescription)" } ?? message
+    return NSError(
+      domain: "StreamVideoThumbnail",
+      code: code,
+      userInfo: [NSLocalizedDescriptionKey: description]
+    )
   }
 }

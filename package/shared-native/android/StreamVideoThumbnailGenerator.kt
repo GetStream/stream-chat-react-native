@@ -66,11 +66,15 @@ object StreamVideoThumbnailGenerator {
       setDataSource(retriever, context, url)
       val thumbnail = extractThumbnailFrame(retriever, url)
 
-      FileOutputStream(outputFile).use { stream ->
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, DEFAULT_COMPRESSION_QUALITY, stream)
+      try {
+        FileOutputStream(outputFile).use { stream ->
+          thumbnail.compress(Bitmap.CompressFormat.JPEG, DEFAULT_COMPRESSION_QUALITY, stream)
+        }
+      } finally {
+        if (!thumbnail.isRecycled) {
+          thumbnail.recycle()
+        }
       }
-
-      thumbnail.recycle()
 
       Uri.fromFile(outputFile).toString()
     } catch (error: Throwable) {
@@ -85,7 +89,7 @@ object StreamVideoThumbnailGenerator {
   }
 
   private fun extractThumbnailFrame(retriever: MediaMetadataRetriever, url: String): Bitmap {
-   if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 27) {
       return retriever.getScaledFrameAtTime(
         100000,
         MediaMetadataRetriever.OPTION_CLOSEST_SYNC,
