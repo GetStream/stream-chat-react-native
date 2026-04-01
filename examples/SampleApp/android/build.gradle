@@ -26,6 +26,10 @@ buildscript {
     }
 }
 
+ext.REACT_NATIVE_NODE_MODULES_DIR = file("$rootDir/../node_modules/react-native").absolutePath
+ext.REACT_NATIVE_WORKLETS_NODE_MODULES_DIR =
+    file("$rootDir/../node_modules/react-native-worklets").absolutePath
+
 allprojects {
     repositories {
         maven {
