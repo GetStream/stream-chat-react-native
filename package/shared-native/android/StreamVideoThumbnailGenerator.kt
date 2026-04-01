@@ -14,8 +14,8 @@ data class StreamVideoThumbnailResult(
 )
 
 object StreamVideoThumbnailGenerator {
-  private const val DEFAULT_COMPRESSION_QUALITY = 80
-  private const val DEFAULT_MAX_DIMENSION = 512
+  private const val DEFAULT_COMPRESSION_QUALITY = 70
+  private const val DEFAULT_MAX_DIMENSION = 256
   private const val CACHE_VERSION = "v1"
   private const val CACHE_DIRECTORY_NAME = "@stream-io-stream-video-thumbnails"
   private const val MAX_CONCURRENT_GENERATIONS = 5
@@ -64,7 +64,7 @@ object StreamVideoThumbnailGenerator {
     return try {
       setDataSource(retriever, context, url)
       val frame =
-        retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        retriever.getFrameAtTime(100000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
           ?: throw IllegalStateException("Failed to extract video frame for $url")
       val scaledFrame = scaleBitmap(frame)
 
