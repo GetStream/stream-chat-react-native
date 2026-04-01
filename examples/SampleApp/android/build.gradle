@@ -34,6 +34,14 @@ subprojects { subproject ->
     if (subproject.path != ":app") {
         evaluationDependsOn(":app")
     }
+
+    subproject.tasks.matching { it.name == "generateCodegenArtifactsFromSchema" }.configureEach { codegenTask ->
+        project(":app").tasks.matching { task ->
+            task.name.startsWith("configureCMake")
+        }.configureEach {
+            dependsOn(codegenTask)
+        }
+    }
 }
 
 allprojects {
@@ -49,7 +57,7 @@ allprojects {
 }
 
 project(':app') {
-    tasks.matching { it.name == "preBuild" }.configureEach {
+    tasks.matching { it.name == "preBuild" || it.name.startsWith("configureCMake") }.configureEach {
         dependsOn("generateCodegenArtifactsFromSchema")
     }
 }
