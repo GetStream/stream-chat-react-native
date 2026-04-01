@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { useEventListener } from 'expo';
 
-import { AudioComponent, VideoComponent as ExpoAVVideoComponent } from './AudioVideo';
+import { AudioComponent } from './AudioVideo';
 
 let videoPackage;
 
@@ -18,8 +18,8 @@ if (!videoPackage) {
   );
 }
 
-const VideoComponent = videoPackage ? videoPackage.VideoView : ExpoAVVideoComponent;
-const useVideoPlayer = videoPackage ? videoPackage.useVideoPlayer : null;
+const VideoComponent = videoPackage?.VideoView;
+const useVideoPlayer = videoPackage?.useVideoPlayer;
 
 let Video = null;
 
@@ -80,34 +80,6 @@ if (videoPackage) {
         nativeControls={false}
         player={player}
         style={[style]}
-      />
-    );
-  };
-}
-// expo-av
-else if (ExpoAVVideoComponent) {
-  Video = ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef, rate }) => {
-    // This is done so that the audio of the video is not muted when the phone is in silent mode for iOS.
-    useEffect(() => {
-      const initializeSound = async () => {
-        await AudioComponent.setAudioModeAsync({
-          playsInSilentModeIOS: true,
-        });
-      };
-      initializeSound();
-    }, []);
-
-    return (
-      <VideoComponent
-        onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-        ref={videoRef}
-        resizeMode={resizeMode}
-        shouldPlay={!paused}
-        source={{
-          uri,
-        }}
-        style={[style]}
-        playbackRate={rate}
       />
     );
   };

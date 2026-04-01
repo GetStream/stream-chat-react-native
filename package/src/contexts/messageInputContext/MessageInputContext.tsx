@@ -56,6 +56,7 @@ import { useStableCallback } from '../../hooks/useStableCallback';
 import {
   createAttachmentsCompositionMiddleware,
   createDraftAttachmentsCompositionMiddleware,
+  setupVideoAttachmentPreviewMiddleware,
 } from '../../middlewares/attachments';
 
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
@@ -423,6 +424,8 @@ export const MessageInputProvider = ({
     if (value.doFileUploadRequest) {
       attachmentManager.setCustomUploadFn(value.doFileUploadRequest);
     }
+
+    setupVideoAttachmentPreviewMiddleware(messageComposer);
 
     if (allowSendBeforeAttachmentsUpload) {
       messageComposer.compositionMiddlewareExecutor.replace([

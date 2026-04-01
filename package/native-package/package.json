@@ -93,6 +93,10 @@
     "type": "all",
     "jsSrcsDir": "src/native",
     "ios": {
+      "modulesProvider": {
+        "StreamChatReactNative": "StreamChatReactNative",
+        "StreamVideoThumbnail": "StreamVideoThumbnail"
+      },
       "componentProvider": {
         "StreamShimmerView": "StreamShimmerViewComponentView"
       }

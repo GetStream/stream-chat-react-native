@@ -1,7 +1,9 @@
 import {
   Attachment,
+  AttachmentPreUploadMiddleware,
   FileReference,
   isLocalImageAttachment,
+  isLocalVideoAttachment,
   LocalAttachment,
   MessageComposer,
   MessageComposerMiddlewareState,
@@ -100,3 +102,35 @@ export const createDraftAttachmentsCompositionMiddleware = (
   },
   id: 'stream-io/message-composer-middleware/draft-attachments',
 });
+
+const createVideoAttachmentPreviewMiddleware = (): AttachmentPreUploadMiddleware => ({
+  id: 'stream-io/message-composer-ui-middleware/video-attachment-preview',
+  handlers: {
+    prepare: ({ next, forward, state }) => {
+      const { attachment } = state;
+
+      if (!attachment || !isLocalVideoAttachment(attachment)) {
+        return forward();
+      }
+
+      return next({
+        ...state,
+        attachment: {
+          ...attachment,
+          localMetadata: {
+            ...attachment.localMetadata,
+            previewUri: attachment.thumb_url,
+          },
+        },
+      });
+    },
+  },
+});
+
+export const setupVideoAttachmentPreviewMiddleware = (messageComposer: MessageComposer) => {
+  messageComposer.attachmentManager.preUploadMiddlewareExecutor.insert({
+    middleware: [createVideoAttachmentPreviewMiddleware()],
+    position: { after: 'stream-io/attachment-manager-middleware/file-upload-config-check' },
+    unique: true,
+  });
+};
