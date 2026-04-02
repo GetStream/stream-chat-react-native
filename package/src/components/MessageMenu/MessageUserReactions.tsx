@@ -125,7 +125,9 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
 
   const onSelectReaction = useStableCallback((reactionType: string) => {
-    setSelectedReaction(reactionType);
+    setSelectedReaction((currentReaction) =>
+      currentReaction === reactionType ? undefined : reactionType,
+    );
   });
 
   useEffect(() => {
