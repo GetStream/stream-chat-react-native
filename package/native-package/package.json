@@ -21,6 +21,7 @@
     "android/gradle",
     "ios",
     "*.podspec",
+    "react-native.config.js",
     "package.json"
   ],
   "license": "SEE LICENSE IN LICENSE",
@@ -92,6 +93,9 @@
     "name": "StreamChatReactNativeSpec",
     "type": "all",
     "jsSrcsDir": "src/native",
+    "android": {
+      "javaPackageName": "com.streamchatreactnative"
+    },
     "ios": {
       "modulesProvider": {
         "StreamChatReactNative": "StreamChatReactNative",

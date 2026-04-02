@@ -93,6 +93,9 @@
     "name": "StreamChatExpoSpec",
     "type": "all",
     "jsSrcsDir": "src/native",
+    "android": {
+      "javaPackageName": "com.streamchatexpo"
+    },
     "ios": {
       "modulesProvider": {
         "StreamVideoThumbnail": "StreamVideoThumbnail"

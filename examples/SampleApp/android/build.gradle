@@ -30,17 +30,6 @@ ext.REACT_NATIVE_NODE_MODULES_DIR = file("$rootDir/../node_modules/react-native"
 ext.REACT_NATIVE_WORKLETS_NODE_MODULES_DIR =
     file("$rootDir/../node_modules/react-native-worklets").absolutePath
 
-subprojects { subproject ->
-    if (subproject.path != ":app") {
-        evaluationDependsOn(":app")
-        project(":app").tasks.matching { task ->
-            task.name.startsWith("configureCMake")
-        }.configureEach {
-            dependsOn(subproject.tasks.matching { it.name == "preBuild" })
-        }
-    }
-}
-
 allprojects {
     repositories {
         maven {
@@ -50,12 +39,6 @@ allprojects {
         maven {
             url "$rootDir/../node_modules/@notifee/react-native/android/libs"
         }
-    }
-}
-
-project(':app') {
-    tasks.matching { it.name == "preBuild" || it.name.startsWith("configureCMake") }.configureEach {
-        dependsOn("generateCodegenArtifactsFromSchema")
     }
 }
 

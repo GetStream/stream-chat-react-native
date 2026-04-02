@@ -155,3 +155,33 @@ if (isNewArchitectureEnabled()) {
     codegenJavaPackageName = "com.streamchatreactnative"
   }
 }
+
+if (isNewArchitectureEnabled()) {
+  gradle.projectsEvaluated {
+    if (rootProject.ext.has("streamChatReactNativeCodegenHookInstalled")) {
+      return
+    }
+
+    def androidAppProject = rootProject.subprojects.find { it.plugins.hasPlugin("com.android.application") }
+    if (androidAppProject == null) {
+      return
+    }
+
+    def dependencyCodegenTasks = rootProject.subprojects
+      .findAll { it != androidAppProject }
+      .collect { it.tasks.findByName("generateCodegenArtifactsFromSchema") }
+      .findAll { it != null }
+
+    if (dependencyCodegenTasks.isEmpty()) {
+      return
+    }
+
+    rootProject.ext.set("streamChatReactNativeCodegenHookInstalled", true)
+
+    androidAppProject.tasks.matching { task ->
+      task.name.startsWith("configureCMake")
+    }.configureEach {
+      dependsOn(dependencyCodegenTasks)
+    }
+  }
+}
