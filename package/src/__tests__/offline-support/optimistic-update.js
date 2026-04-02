@@ -461,9 +461,9 @@ export const OptimisticUpdates = () => {
         });
       });
 
-      it('should rollback the optimistic edit if the request fails and no replayable task exists', async () => {
+      it('should keep the optimistic edit if the request fails', async () => {
         const message = channel.state.messages[0];
-        const originalText = message.text;
+        const editedText = 'should stay optimistic';
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -480,7 +480,7 @@ export const OptimisticUpdates = () => {
                       localMessage: {
                         ...message,
                         cid: channel.cid,
-                        text: 'should rollback',
+                        text: editedText,
                       },
                       options: {},
                     });
@@ -504,9 +504,9 @@ export const OptimisticUpdates = () => {
           const dbMessages = await BetterSqlite.selectFromTable('messages');
           const dbMessage = dbMessages.find((row) => row.id === message.id);
 
-          expect(updatedMessage.text).toBe(originalText);
+          expect(updatedMessage.text).toBe(editedText);
           expect(pendingTasksRows).toHaveLength(0);
-          expect(dbMessage.text).toBe(originalText);
+          expect(dbMessage.text).toBe(editedText);
         });
       });
 
