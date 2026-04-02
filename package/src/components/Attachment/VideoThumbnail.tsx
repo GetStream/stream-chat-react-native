@@ -1,10 +1,21 @@
 import React from 'react';
-import { ImageBackground, ImageStyle, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { ImageBackground, ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+
+import { AttachmentUploadIndicator } from './AttachmentUploadIndicator';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
+import { primitives } from '../../theme';
 import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
 const styles = StyleSheet.create({
+  uploadProgressContainer: {
+    alignItems: 'flex-start',
+    bottom: primitives.spacingXxs,
+    justifyContent: 'flex-start',
+    left: primitives.spacingXxs,
+    position: 'absolute',
+  },
   container: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -15,6 +26,10 @@ const styles = StyleSheet.create({
 
 export type VideoThumbnailProps = {
   imageStyle?: StyleProp<ImageStyle>;
+  /**
+   * When set, upload state is read from `client.uploadManager` for this pending attachment id.
+   */
+  localId?: string;
   style?: StyleProp<ViewStyle>;
   thumb_url?: string;
 };
@@ -27,7 +42,9 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       },
     },
   } = useTheme();
-  const { imageStyle, style, thumb_url } = props;
+  const { imageStyle, localId, style, thumb_url } = props;
+  const { isUploading, uploadProgress } = usePendingAttachmentUpload(localId);
+
   return (
     <ImageBackground
       accessibilityLabel='Video Thumbnail'
@@ -36,6 +53,11 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       style={[styles.container, container, style]}
     >
       <VideoPlayIndicator size='md' />
+      {isUploading ? (
+        <View pointerEvents='none' style={styles.uploadProgressContainer}>
+          <AttachmentUploadIndicator uploadProgress={uploadProgress} />
+        </View>
+      ) : null}
     </ImageBackground>
   );
 };

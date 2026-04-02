@@ -42,7 +42,12 @@ describe('Giphy', () => {
     const message = generateMessage();
     return (
       <ThemeProvider>
-        <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
+        <MessagesProvider
+          value={{
+            ImageLoadingFailedIndicator,
+            ImageLoadingIndicator,
+          }}
+        >
           <MessageProvider value={{ message, ...messageContextValue }}>
             <Giphy {...props} />
           </MessageProvider>

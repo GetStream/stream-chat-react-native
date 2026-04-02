@@ -24,15 +24,22 @@ jest.mock('../../../native.ts', () => ({
   isSoundPackageAvailable: jest.fn(() => false),
 }));
 
+jest.mock('../../../hooks/usePendingAttachmentUpload', () => ({
+  usePendingAttachmentUpload: jest.fn(() => ({
+    isUploading: false,
+    uploadProgress: undefined,
+  })),
+}));
+
 const getAttachmentComponent = (props) => {
   const message = generateMessage();
   return (
     <ThemeProvider>
       <MessagesProvider
         value={{
+          FilePreview: FilePreviewDefault,
           ImageLoadingFailedIndicator,
           ImageLoadingIndicator,
-          FilePreview: FilePreviewDefault,
         }}
       >
         <MessageProvider value={{ message }}>
