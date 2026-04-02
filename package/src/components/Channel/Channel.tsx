@@ -1567,13 +1567,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       const cid = channel.cid;
       const currentMessage = channel.state.findMessage(localMessage.id, localMessage.parent_id);
+      const isFailedMessage =
+        currentMessage?.status === MessageStatusTypes.FAILED ||
+        localMessage.status === MessageStatusTypes.FAILED;
       const optimisticEditedAt = new Date();
       const optimisticEditedAtString = optimisticEditedAt.toISOString();
       const optimisticMessage = {
         ...currentMessage,
         ...localMessage,
         cid,
-        message_text_updated_at: optimisticEditedAtString,
+        message_text_updated_at: isFailedMessage ? undefined : optimisticEditedAtString,
         updated_at: optimisticEditedAt,
       } as unknown as LocalMessage;
 

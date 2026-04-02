@@ -6,9 +6,8 @@ import { SqliteClient } from '../SqliteClient';
 
 export const updatePendingTask = async ({ id, task }: DBUpdatePendingTaskType) => {
   const storableTask = mapTaskToStorable(task);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { createdAt, id: taskId, ...nextTask } = storableTask;
-  void createdAt;
-  void taskId;
 
   const query = createUpdateQuery('pendingTasks', nextTask, {
     id,

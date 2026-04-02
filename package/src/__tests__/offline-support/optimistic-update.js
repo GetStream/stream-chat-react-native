@@ -26,6 +26,7 @@ import { getTestClientWithUser } from '../../mock-builders/mock';
 import { upsertChannels } from '../../store/apis';
 import { SqliteClient } from '../../store/SqliteClient';
 import { BetterSqlite } from '../../test-utils/BetterSqlite';
+import { MessageStatusTypes } from '../../utils/utils';
 
 test('Workaround to allow exporting tests', () => expect(true).toBe(true));
 
@@ -506,6 +507,53 @@ export const OptimisticUpdates = () => {
           expect(updatedMessage.text).toBe(originalText);
           expect(pendingTasksRows).toHaveLength(0);
           expect(dbMessage.text).toBe(originalText);
+        });
+      });
+
+      it('should not set message_text_updated_at during optimistic edit of a failed message', async () => {
+        const message = channel.state.messages[0];
+        const optimisticStateSpy = jest.fn();
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel
+              channel={channel}
+              doUpdateMessageRequest={() => {
+                const optimisticMessage = channel.state.findMessage(message.id);
+                optimisticStateSpy(optimisticMessage);
+
+                return {
+                  message: {
+                    ...optimisticMessage,
+                  },
+                };
+              }}
+            >
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  await editMessage({
+                    localMessage: {
+                      ...message,
+                      cid: channel.cid,
+                      status: MessageStatusTypes.FAILED,
+                      text: 'edited failed message',
+                    },
+                    options: {},
+                  });
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(() => {
+          expect(optimisticStateSpy).toHaveBeenCalled();
+          expect(optimisticStateSpy.mock.calls[0][0].message_text_updated_at).toBeUndefined();
         });
       });
 
