@@ -67,6 +67,8 @@ export class OfflineDB extends AbstractOfflineDB {
 
   addPendingTask = api.addPendingTask;
 
+  updatePendingTask = api.updatePendingTask;
+
   deletePendingTask = api.deletePendingTask;
 
   deleteReaction = api.deleteReaction;

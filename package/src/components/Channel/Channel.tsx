@@ -1560,10 +1560,56 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const editMessage: InputMessageInputContextValue['editMessage'] = useStableCallback(
-    ({ localMessage, options }) =>
-      doUpdateMessageRequest
-        ? doUpdateMessageRequest(channel?.cid || '', localMessage, options)
-        : client.updateMessage(localMessage, undefined, options),
+    async ({ localMessage, options }) => {
+      if (!channel) {
+        throw new Error('Channel has not been initialized');
+      }
+
+      const cid = channel.cid;
+      const currentMessage = channel.state.findMessage(localMessage.id, localMessage.parent_id);
+      const isFailedMessage =
+        currentMessage?.status === MessageStatusTypes.FAILED ||
+        localMessage.status === MessageStatusTypes.FAILED;
+      const optimisticEditedAt = new Date();
+      const optimisticEditedAtString = optimisticEditedAt.toISOString();
+      const optimisticMessage = {
+        ...currentMessage,
+        ...localMessage,
+        cid,
+        message_text_updated_at: isFailedMessage ? undefined : optimisticEditedAtString,
+        updated_at: optimisticEditedAt,
+      } as unknown as LocalMessage;
+
+      updateMessage(optimisticMessage);
+      threadInstance?.updateParentMessageOrReplyLocally(
+        optimisticMessage as unknown as MessageResponse,
+      );
+      client.offlineDb?.executeQuerySafely(
+        (db) =>
+          db.updateMessage({
+            message: { ...optimisticMessage, cid },
+          }),
+        { method: 'updateMessage' },
+      );
+
+      const response = doUpdateMessageRequest
+        ? await doUpdateMessageRequest(cid, localMessage, options)
+        : await client.updateMessage(localMessage, undefined, options);
+
+      if (response?.message) {
+        updateMessage(response.message);
+        threadInstance?.updateParentMessageOrReplyLocally(response.message);
+        client.offlineDb?.executeQuerySafely(
+          (db) =>
+            db.updateMessage({
+              message: { ...response.message, cid },
+            }),
+          { method: 'updateMessage' },
+        );
+      }
+
+      return response;
+    },
   );
 
   /**
