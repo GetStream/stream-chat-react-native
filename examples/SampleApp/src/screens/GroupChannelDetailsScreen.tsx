@@ -1,10 +1,17 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { RouteProp, useNavigation } from '@react-navigation/native';
+
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { ChannelMemberResponse, UserResponse } from 'stream-chat';
+
 import {
   ChannelAvatar,
   useChannelPreviewDisplayName,
+  useIsChannelMuted,
   useOverlayContext,
   useTheme,
   Pin,
@@ -26,9 +33,6 @@ import { GoForward } from '../icons/GoForward';
 import { LeaveGroup } from '../icons/LeaveGroup';
 import { Mute } from '../icons/Mute';
 import { Picture } from '../icons/Picture';
-
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { ChannelMemberResponse, UserResponse } from 'stream-chat';
 import type { StackNavigatorParamList } from '../types';
 
 const MAX_VISIBLE_MEMBERS = 5;
@@ -55,6 +59,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const {
     theme: { semantics },
   } = useTheme();
+  const { muted: channelMuted } = useIsChannelMuted(channel);
 
   const [muted, setMuted] = useState(
     chatClient?.mutedChannels.some((mute) => mute.channel?.id === channel?.id),
@@ -197,6 +202,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
       <ScrollView contentContainerStyle={styles.scrollContent} style={styles.container}>
         <ChannelDetailProfileSection
           avatar={<ChannelAvatar channel={channel} size='2xl' />}
+          muted={channelMuted}
           title={displayName}
           subtitle={memberStatusText}
         />
@@ -317,11 +323,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
         onClose={closeContactDetail}
         visible={selectedMember !== null}
       />
-      <EditGroupBottomSheet
-        channel={channel}
-        onClose={closeEditSheet}
-        visible={editVisible}
-      />
+      <EditGroupBottomSheet channel={channel} onClose={closeEditSheet} visible={editVisible} />
     </SafeAreaView>
   );
 };

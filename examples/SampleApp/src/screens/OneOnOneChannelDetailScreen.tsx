@@ -1,7 +1,18 @@
 import React, { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Switch } from 'react-native';
-import { ChannelAvatar, Delete, useTheme, Pin, CircleBan } from 'stream-chat-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import type { RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import {
+  ChannelAvatar,
+  CircleBan,
+  Delete,
+  useChannelMuteActive,
+  Pin,
+  useTheme,
+} from 'stream-chat-react-native';
 
 import { ChannelDetailProfileSection } from '../components/ChannelDetailProfileSection';
 import { ConfirmationBottomSheet } from '../components/ConfirmationBottomSheet';
@@ -13,11 +24,8 @@ import { File } from '../icons/File';
 import { GoForward } from '../icons/GoForward';
 import { Mute } from '../icons/Mute';
 import { Picture } from '../icons/Picture';
-import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-
-import type { RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StackNavigatorParamList } from '../types';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -44,6 +52,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
     theme: { semantics },
   } = useTheme();
   const { chatClient } = useAppContext();
+  const userMuted = useChannelMuteActive(channel);
 
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const [blockUserConfirmationVisible, setBlockUserConfirmationVisible] = useState(false);
@@ -141,6 +150,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
       <ScrollView contentContainerStyle={styles.scrollContent} style={styles.container}>
         <ChannelDetailProfileSection
           avatar={<ChannelAvatar channel={channel} size='2xl' />}
+          muted={userMuted}
           title={user.name || user.id}
           subtitle={activityStatus}
         />
