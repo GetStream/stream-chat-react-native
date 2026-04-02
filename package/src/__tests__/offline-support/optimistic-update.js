@@ -15,6 +15,7 @@ import { getOrCreateChannelApi } from '../../mock-builders/api/getOrCreateChanne
 import { sendMessageApi } from '../../mock-builders/api/sendMessage';
 import { sendReactionApi } from '../../mock-builders/api/sendReaction';
 import { useMockedApis } from '../../mock-builders/api/useMockedApis';
+import { generateFileReference } from '../../mock-builders/attachments';
 import dispatchConnectionChangedEvent from '../../mock-builders/event/connectionChanged';
 import { generateChannelResponse } from '../../mock-builders/generator/channel';
 import { generateMember } from '../../mock-builders/generator/member';
@@ -393,6 +394,182 @@ export const OptimisticUpdates = () => {
         await waitFor(async () => {
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           expect(pendingTasksRows.length).toBe(0);
+        });
+      });
+    });
+
+    describe('edit message', () => {
+      it('should keep the optimistic edit in state and DB if the LLC queues the edit', async () => {
+        const message = channel.state.messages[0];
+        const editedText = 'edited while offline';
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel
+              channel={channel}
+              doUpdateMessageRequest={async (_channelId, localMessage, options) => {
+                await chatClient.offlineDb.addPendingTask({
+                  channelId: channel.id,
+                  channelType: channel.type,
+                  messageId: message.id,
+                  payload: [localMessage, undefined, options],
+                  type: 'update-message',
+                });
+                return {
+                  message: {
+                    ...localMessage,
+                    message_text_updated_at: new Date(),
+                    updated_at: new Date(),
+                  },
+                };
+              }}
+            >
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  await editMessage({
+                    localMessage: {
+                      ...message,
+                      cid: channel.cid,
+                      text: editedText,
+                    },
+                    options: {},
+                  });
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(async () => {
+          const updatedMessage = channel.state.findMessage(message.id);
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          const dbMessages = await BetterSqlite.selectFromTable('messages');
+          const dbMessage = dbMessages.find((row) => row.id === message.id);
+
+          expect(updatedMessage.text).toBe(editedText);
+          expect(updatedMessage.message_text_updated_at).toBeTruthy();
+          expect(pendingTasksRows).toHaveLength(1);
+          expect(pendingTasksRows[0].type).toBe('update-message');
+          expect(dbMessage.text).toBe(editedText);
+          expect(dbMessage.messageTextUpdatedAt).toBeTruthy();
+        });
+      });
+
+      it('should rollback the optimistic edit if the request fails and no replayable task exists', async () => {
+        const message = channel.state.messages[0];
+        const originalText = message.text;
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel
+              channel={channel}
+              doUpdateMessageRequest={() => {
+                throw new Error('validation');
+              }}
+            >
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  try {
+                    await editMessage({
+                      localMessage: {
+                        ...message,
+                        cid: channel.cid,
+                        text: 'should rollback',
+                      },
+                      options: {},
+                    });
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(async () => {
+          const updatedMessage = channel.state.findMessage(message.id);
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          const dbMessages = await BetterSqlite.selectFromTable('messages');
+          const dbMessage = dbMessages.find((row) => row.id === message.id);
+
+          expect(updatedMessage.text).toBe(originalText);
+          expect(pendingTasksRows).toHaveLength(0);
+          expect(dbMessage.text).toBe(originalText);
+        });
+      });
+
+      it('should keep the optimistic edit for attachment updates without auto-queueing', async () => {
+        const message = channel.state.messages[0];
+        const editedText = 'edited attachment message';
+        const localUri = 'file://edited-attachment.png';
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel
+              channel={channel}
+              doUpdateMessageRequest={() => {
+                throw new Error('offline');
+              }}
+            >
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  try {
+                    await editMessage({
+                      localMessage: {
+                        ...message,
+                        attachments: [
+                          {
+                            asset_url: localUri,
+                            originalFile: generateFileReference({
+                              name: 'edited-attachment.png',
+                              type: 'image/png',
+                              uri: localUri,
+                            }),
+                            type: 'file',
+                          },
+                        ],
+                        cid: channel.cid,
+                        text: editedText,
+                      },
+                      options: {},
+                    });
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(async () => {
+          const updatedMessage = channel.state.findMessage(message.id);
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          const dbMessages = await BetterSqlite.selectFromTable('messages');
+          const dbMessage = dbMessages.find((row) => row.id === message.id);
+          const storedAttachments = JSON.parse(dbMessage.attachments);
+
+          expect(updatedMessage.text).toBe(editedText);
+          expect(updatedMessage.attachments[0].asset_url).toBe(localUri);
+          expect(pendingTasksRows).toHaveLength(0);
+          expect(dbMessage.text).toBe(editedText);
+          expect(storedAttachments[0].asset_url).toBe(localUri);
         });
       });
     });

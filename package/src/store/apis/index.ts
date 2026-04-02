@@ -13,6 +13,7 @@ export * from './getLastSyncedAt';
 export * from './getMembers';
 export * from './getReads';
 export * from './updateMessage';
+export * from './updatePendingTask';
 export * from './updateReaction';
 export * from './insertReaction';
 export * from './deleteReaction';
