@@ -110,7 +110,7 @@ describe('useChannelActionItems', () => {
       'destructive',
     ]);
     expect(result.current.map((item) => item.placement)).toEqual([
-      'both',
+      'swipe',
       'both',
       'sheet',
       'sheet',
@@ -266,7 +266,7 @@ describe('getChannelActionItems', () => {
 
     expect(actionItems[0].action).toBe(channelActions.unmuteChannel);
     expect(actionItems[0].label).toBe('Unmute Group');
-    expect(actionItems[0].placement).toBe('both');
+    expect(actionItems[0].placement).toBe('swipe');
 
     expect(actionItems[1].action).toBe(channelActions.unarchive);
     expect(actionItems[1].label).toBe('Unarchive Group');
