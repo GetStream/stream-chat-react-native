@@ -8,15 +8,9 @@ export const NewClose = ({ fill, height, pathFill, size, stroke, width, ...rest 
   const color = stroke ?? pathFill ?? fill ?? 'black';
 
   return (
-    <Svg
-      height={height ?? size}
-      viewBox={'-2.5 -2.5 25 25'}
-      width={width ?? size}
-      fill='none'
-      {...rest}
-    >
+    <Svg height={height ?? size} viewBox={'0 0 20 20'} width={width ?? size} fill='none' {...rest}>
       <Path
-        d='M15.625 4.375L4.375 15.625M15.625 15.625L4.375 4.375'
+        d='M13.5 6.5L6.5 13.5M13.5 13.5L6.5 6.5'
         stroke={color}
         strokeLinecap='round'
         strokeLinejoin='round'
