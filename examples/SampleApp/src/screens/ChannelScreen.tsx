@@ -18,7 +18,7 @@ import {
   ChannelAvatar,
   PortalWhileClosingView,
 } from 'stream-chat-react-native';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAppContext } from '../context/AppContext';
