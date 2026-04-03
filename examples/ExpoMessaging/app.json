@@ -101,7 +101,6 @@
           }
         }
       ],
-      "./plugins/keyboardInsetMainActivityListener.js",
       "./plugins/opSqliteSwiftPlugin.js",
       "expo-sharing"
     ]
