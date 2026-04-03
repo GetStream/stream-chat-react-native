@@ -1,12 +1,8 @@
 package io.getstream.reactnative.sampleapp
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.view.View
-import androidx.core.graphics.Insets
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -16,6 +12,14 @@ class MainActivity : ReactActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null)
+
+    window.navigationBarColor = Color.TRANSPARENT
+    window.statusBarColor = Color.TRANSPARENT
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      window.isNavigationBarContrastEnforced = false
+      window.isStatusBarContrastEnforced = false
+    }
   }
 
   override fun getMainComponentName(): String = "SampleApp"
