@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Search, useTheme } from 'stream-chat-react-native';
 
@@ -79,6 +79,17 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
   const { onChangeSearchText, onFocusInput, removeUser, reset, searchText, selectedUsers } =
     useUserSearchContext();
 
+  const onBackPress = useCallback(() => {
+    reset();
+
+    if (!navigation.canGoBack()) {
+      navigation.reset({ index: 0, routes: [{ name: 'MessagingScreen' }] });
+      return;
+    }
+
+    navigation.goBack();
+  }, [navigation, reset]);
+
   const onRightArrowPress = () => {
     if (selectedUsers.length === 0) {
       return;
@@ -93,7 +104,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
   return (
     <View style={styles.container}>
       <ScreenHeader
-        onBack={reset}
+        onBack={onBackPress}
         // eslint-disable-next-line react/no-unstable-nested-components
         RightContent={() => (
           <RightArrowButton disabled={selectedUsers.length === 0} onPress={onRightArrowPress} />
