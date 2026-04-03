@@ -21,7 +21,7 @@ import {
 } from '../../../contexts';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
-import { Camera, FilePickerIcon, PollThumbnail, Recorder } from '../../../icons';
+import { Camera, FilePickerIcon, PollThumbnail, VideoIcon } from '../../../icons';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
 
@@ -197,7 +197,7 @@ export const AttachmentCameraPicker = (
     />
   ) : (
     <AttachmentPickerGenericContent
-      Icon={videoOnly ? Recorder : Camera}
+      Icon={videoOnly ? VideoIcon : Camera}
       onPress={openCameraPicker}
       height={height}
       buttonText={t('Open Camera')}

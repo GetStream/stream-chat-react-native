@@ -34,6 +34,7 @@ export * from './clock';
 export * from './Unknown';
 export * from './unpin';
 export * from './video-fill';
+export * from './video';
 export * from './user-add';
 export * from './user-remove';
 export * from './filetype-video-xl';
