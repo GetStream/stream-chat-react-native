@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   AlsoSentToChannelHeaderPressPayload,
@@ -149,11 +149,11 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: white }]}>
       <Channel
-        audioRecordingEnabled={false}
+        audioRecordingEnabled={true}
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
         enforceUniqueReaction
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={0}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
         MessageLocation={MessageLocation}

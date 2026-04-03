@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 
 import {
   Keyboard,
-  Platform,
   KeyboardAvoidingViewProps as ReactNativeKeyboardAvoidingViewProps,
 } from 'react-native';
 
@@ -51,12 +50,7 @@ export const KeyboardCompatibleView = (props: KeyboardCompatibleViewProps) => {
       </KeyboardProvider>
     );
   }
-  const compatibleBehavior =
-    behavior === 'translate-with-padding'
-      ? Platform.OS === 'ios'
-        ? 'padding'
-        : 'position'
-      : behavior;
+  const compatibleBehavior = behavior === 'translate-with-padding' ? 'padding' : behavior;
 
   return (
     <KeyboardCompatibleViewDefault behavior={compatibleBehavior} {...rest}>

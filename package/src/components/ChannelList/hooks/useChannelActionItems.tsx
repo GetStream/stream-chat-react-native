@@ -112,7 +112,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
         : muteActive
           ? t('Unmute Group')
           : t('Mute Group'),
-      placement: isDirectChat ? 'sheet' : 'both',
+      placement: isDirectChat ? 'sheet' : 'swipe',
       type: 'standard',
     },
   ];

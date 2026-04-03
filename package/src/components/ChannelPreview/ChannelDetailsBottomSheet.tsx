@@ -6,7 +6,9 @@ import { Pressable } from 'react-native-gesture-handler';
 
 import { Channel } from 'stream-chat';
 
+import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
+import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
 import { useBottomSheetContext, useTheme, useTranslationContext } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
@@ -14,6 +16,7 @@ import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 import { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelMembersState } from '../ChannelList/hooks/useChannelMembersState';
+import { useChannelMuteActive } from '../ChannelList/hooks/useChannelMuteActive';
 import { useChannelOnlineMemberCount } from '../ChannelList/hooks/useChannelOnlineMemberCount';
 import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
 import { ChannelAvatar } from '../ui';
@@ -35,6 +38,9 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
   const memberCount = useMemo(() => Object.keys(members).length, [members]);
   const onlineCount = useChannelOnlineMemberCount(channel);
   const isDirectChat = useIsDirectChat(channel);
+  const { muted: channelMuted } = useIsChannelMuted(channel);
+  const directChatUserMuted = useChannelMuteActive(channel);
+  const muted = isDirectChat ? directChatUserMuted : channelMuted;
   const displayedMemberCount = memberCount > 9 ? '9+' : `${memberCount}`;
   const displayedOnlineCount = onlineCount > 9 ? '9+' : `${onlineCount}`;
   const membersAndOnlineLabel = useMemo(
@@ -51,7 +57,10 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
     <View style={styles.headerContainer}>
       <ChannelAvatar channel={channel} size={'lg'} />
       <View style={styles.metaContainer}>
-        <ChannelPreviewTitle channel={channel} />
+        <View style={styles.titleContainer}>
+          <ChannelPreviewTitle channel={channel} />
+          {muted ? <ChannelPreviewMutedStatus /> : null}
+        </View>
         <Text style={styles.headerMeta}>
           {isDirectChat ? (onlineCount === 1 ? t('Online') : t('Offline')) : membersAndOnlineLabel}
         </Text>
@@ -144,6 +153,11 @@ const useStyles = () => {
         metaContainer: {
           gap: primitives.spacingXxs,
           ...header.metaContainer,
+        },
+        titleContainer: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: primitives.spacingXxs,
         },
         itemContainer: {
           flexDirection: 'row',

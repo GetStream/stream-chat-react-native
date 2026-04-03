@@ -100,14 +100,21 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
     expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
   });
 
-  it('changes selected reaction when a reaction button is pressed', () => {
+  it('toggles the selected reaction when a reaction button is pressed twice', () => {
     const { getAllByLabelText } = renderComponent();
-    const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+    let reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
 
     fireEvent.press(reactionButtons[1]);
 
     expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
     expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-selected');
+
+    fireEvent.press(reactionButtons[1]);
+
+    reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+
+    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
+    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
   });
 
   it('renders reactions list', () => {

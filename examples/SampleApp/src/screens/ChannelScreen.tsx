@@ -273,7 +273,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         initialScrollToFirstUnreadMessage
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={0}
         messageActions={messageActions}
         MessageLocation={MessageLocation}
         messageId={messageId}

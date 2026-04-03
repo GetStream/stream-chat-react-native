@@ -19,7 +19,7 @@ import { useAttachmentPickerState } from '../../../hooks/useAttachmentPickerStat
 import {
   Camera,
   Picture,
-  Recorder,
+  VideoIcon,
   FilePickerIcon,
   PollThumbnail,
   CommandsIcon,
@@ -121,7 +121,7 @@ export const CameraPickerButton = () => {
       />
       {Platform.OS === 'android' ? (
         <AttachmentTypePickerButton
-          Icon={Recorder}
+          Icon={VideoIcon}
           selected={selectedPicker === 'camera-video'}
           onPress={onVideoRecorderPickerPress}
         />

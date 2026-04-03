@@ -7,15 +7,14 @@ import { Channel } from 'stream-chat';
 
 import { ChannelDetailsBottomSheet as DefaultChannelDetailsBottomSheet } from './ChannelDetailsBottomSheet';
 import type { ChannelDetailsBottomSheetProps } from './ChannelDetailsBottomSheet';
+import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
 import { useTheme } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
-import { Archive, MenuPointHorizontal, Mute, Sound } from '../../icons';
+import { MenuPointHorizontal, Mute, Sound } from '../../icons';
 import { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
-import { useChannelActionItemsById } from '../ChannelList/hooks/useChannelActionItemsById';
-import { useChannelMuteActive } from '../ChannelList/hooks/useChannelMuteActive';
-import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
+import { useChannelActions } from '../ChannelList/hooks/useChannelActions';
 import {
   BottomSheetModal,
   RightActions,
@@ -44,8 +43,12 @@ export const ChannelSwipableWrapper = ({
   swipableProps?: SwipableWrapperProps['swipableProps'];
 }>) => {
   const [channelDetailSheetOpen, setChannelDetailSheetOpen] = useState(false);
-  const channelActionsById = useChannelActionItemsById({ channel, getChannelActionItems });
+  const { muteChannel, unmuteChannel } = useChannelActions(channel);
   const channelActionItems = useChannelActionItems({ channel, getChannelActionItems });
+  const sheetItems = useMemo(
+    () => channelActionItems.filter((item) => item.placement !== 'swipe'),
+    [channelActionItems],
+  );
   const swipableRegistry = useSwipeRegistryContext();
 
   const {
@@ -53,19 +56,17 @@ export const ChannelSwipableWrapper = ({
   } = useTheme();
   const styles = useStyles();
 
-  const isDirectChannel = useIsDirectChat(channel);
-  const muteActive = useChannelMuteActive(channel);
+  const channelMuteState = useIsChannelMuted(channel);
+  const channelMuteActive = channelMuteState.muted;
 
   const Icon = useCallback(
     () =>
-      isDirectChannel ? (
-        <Archive width={20} height={20} stroke={semantics.textOnAccent} />
-      ) : muteActive ? (
+      channelMuteActive ? (
         <Sound width={20} height={20} stroke={semantics.textOnAccent} />
       ) : (
         <Mute width={20} height={20} fill={semantics.textOnAccent} />
       ),
-    [isDirectChannel, muteActive, semantics.textOnAccent],
+    [channelMuteActive, semantics.textOnAccent],
   );
 
   const swipableActions = useMemo<SwipableActionItem[]>(() => {
@@ -78,29 +79,25 @@ export const ChannelSwipableWrapper = ({
       },
     ];
 
-    const extraItem = isDirectChannel ? channelActionsById.archive : channelActionsById.mute;
-
-    if (extraItem) {
-      const { id, action } = extraItem;
-      items.push({
-        id,
-        action: () => {
-          action();
-          swipableRegistry?.closeAll();
-        },
-        Content: Icon,
-        contentContainerStyle: [styles.contentContainerStyle, styles.standard],
-      });
-    }
+    items.push({
+      id: 'mute',
+      action: () => {
+        const action = channelMuteActive ? unmuteChannel : muteChannel;
+        action();
+        swipableRegistry?.closeAll();
+      },
+      Content: Icon,
+      contentContainerStyle: [styles.contentContainerStyle, styles.standard],
+    });
 
     return items;
   }, [
     styles.contentContainerStyle,
     styles.elipsis,
     styles.standard,
-    isDirectChannel,
-    channelActionsById.mute,
-    channelActionsById.archive,
+    channelMuteActive,
+    muteChannel,
+    unmuteChannel,
     Icon,
     swipableRegistry,
   ]);
@@ -127,7 +124,7 @@ export const ChannelSwipableWrapper = ({
         visible={channelDetailSheetOpen}
         height={356}
       >
-        <ChannelDetailsBottomSheetComponent channel={channel} items={channelActionItems} />
+        <ChannelDetailsBottomSheetComponent channel={channel} items={sheetItems} />
       </BottomSheetModal>
     </>
   );
