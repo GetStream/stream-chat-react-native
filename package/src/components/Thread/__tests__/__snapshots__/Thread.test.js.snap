@@ -1883,6 +1883,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           align="xMidYMid"
                           bbHeight={20}
                           bbWidth={20}
+                          fill="none"
                           focusable={false}
                           height={20}
                           meetOrSlice={0}
@@ -1908,14 +1909,10 @@ exports[`Thread should match thread snapshot 1`] = `
                           width={20}
                         >
                           <RNSVGGroup
-                            fill={
-                              {
-                                "payload": 4278190080,
-                                "type": 0,
-                              }
-                            }
+                            fill={null}
                             propList={
                               [
+                                "fill",
                                 "stroke",
                                 "strokeWidth",
                               ]
@@ -1940,6 +1937,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                 [
                                   "stroke",
                                   "strokeWidth",
+                                  "strokeLinecap",
+                                  "strokeLinejoin",
                                 ]
                               }
                               stroke={
@@ -1948,6 +1947,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "type": 0,
                                 }
                               }
+                              strokeLinecap={1}
+                              strokeLinejoin={1}
                               strokeWidth={1.5}
                             />
                           </RNSVGGroup>
@@ -2787,7 +2788,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   }
                   strokeLinecap={1}
                   strokeLinejoin={1}
-                  strokeWidth={1.2}
+                  strokeWidth={1.5}
                 />
               </RNSVGGroup>
             </RNSVGSvgView>
@@ -2922,6 +2923,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     [
                       "stroke",
                       "strokeWidth",
+                      "strokeLinecap",
                       "strokeLinejoin",
                     ]
                   }
@@ -2931,6 +2933,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       "type": 0,
                     }
                   }
+                  strokeLinecap={1}
                   strokeLinejoin={1}
                   strokeWidth={1.5}
                 />
