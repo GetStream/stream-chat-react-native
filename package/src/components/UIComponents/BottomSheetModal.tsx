@@ -242,8 +242,10 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
         KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidHide', keyboardDidHide),
       );
     } else {
-      listeners.push(Keyboard.addListener('keyboardDidShow', keyboardDidShowRN));
-      listeners.push(Keyboard.addListener('keyboardDidHide', keyboardDidHide));
+      if (Platform.OS === 'ios') {
+        listeners.push(Keyboard.addListener('keyboardWillShow', keyboardDidShowRN));
+        listeners.push(Keyboard.addListener('keyboardWillHide', keyboardDidHide));
+      }
     }
 
     return () => listeners.forEach((l) => l.remove());

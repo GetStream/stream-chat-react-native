@@ -153,7 +153,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
         enforceUniqueReaction
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={0}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
         MessageLocation={MessageLocation}

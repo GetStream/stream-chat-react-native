@@ -341,7 +341,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         channel={currentChannel.current}
         EmptyStateIndicator={EmptyMessagesIndicator}
         enforceUniqueReaction
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={0}
         onChangeText={setMessageInputText}
         overrideOwnCapabilities={{ sendMessage: true }}
         SendButton={NewDirectMessagingSendButton}
