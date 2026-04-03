@@ -12,6 +12,7 @@ import {
   setClosingPortalLayout,
   useShouldTeleportToClosingPortal,
   useHasActiveId,
+  useIsOverlayClosing,
 } from '../../state-store';
 
 type PortalWhileClosingViewProps = {
@@ -116,9 +117,10 @@ const useSyncingApi = (portalHostName: string, registrationId: string) => {
   const placeholderLayout = useSharedValue({ h: 0, w: 0 });
   const insets = useSafeAreaInsets();
   const hasActiveId = useHasActiveId();
+  const isClosing = useIsOverlayClosing();
 
   const syncPortalLayout = useStableCallback(() => {
-    if (!hasActiveId) {
+    if (!hasActiveId && !isClosing) {
       return;
     }
 
@@ -143,10 +145,10 @@ const useSyncingApi = (portalHostName: string, registrationId: string) => {
   });
 
   useEffect(() => {
-    if (hasActiveId) {
+    if (hasActiveId || isClosing) {
       syncPortalLayout();
     }
-  }, [insets.bottom, hasActiveId, syncPortalLayout]);
+  }, [insets.bottom, isClosing, hasActiveId, syncPortalLayout]);
 
   return useMemo(
     () => ({ syncPortalLayout, containerRef, placeholderLayout }),

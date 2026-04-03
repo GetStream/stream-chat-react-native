@@ -13,7 +13,7 @@ import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
 import InputButtons from '../../../components/InputButtons';
 import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function ChannelScreen() {
   const { client } = useChatContext();
@@ -74,7 +74,7 @@ export default function ChannelScreen() {
         audioRecordingEnabled={true}
         channel={channel}
         onPressMessage={onPressMessage}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : undefined}
+        keyboardVerticalOffset={headerHeight}
         MessageLocation={MessageLocation}
         thread={thread}
       >
