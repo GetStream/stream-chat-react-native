@@ -46,7 +46,7 @@ const useStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       container: {
-        backgroundColor: semantics.backgroundCoreSurface,
+        backgroundColor: semantics.backgroundCoreSurfaceDefault,
         paddingHorizontal: primitives.spacingMd,
         paddingVertical: primitives.spacingLg,
         ...container,

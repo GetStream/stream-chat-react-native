@@ -63,7 +63,7 @@ export const ThreadListUnreadBanner = () => {
         {
           backgroundColor: pressed
             ? semantics.backgroundUtilityPressed
-            : semantics.backgroundCoreSurface,
+            : semantics.backgroundCoreSurfaceDefault,
         },
       ]}
     >
@@ -90,7 +90,7 @@ const useStyles = () => {
         ...threadListUnreadBanner.text,
       },
       container: {
-        backgroundColor: semantics.backgroundCoreSurface,
+        backgroundColor: semantics.backgroundCoreSurfaceDefault,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

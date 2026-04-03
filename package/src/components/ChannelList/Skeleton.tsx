@@ -16,7 +16,7 @@ const SkeletonBlock = ({ style }: { style: React.ComponentProps<typeof View>['st
   return (
     <View style={style}>
       <NativeShimmerView
-        baseColor={semantics.backgroundCoreSurface}
+        baseColor={semantics.backgroundCoreSurfaceDefault}
         duration={animationTime}
         gradientColor={semantics.skeletonLoadingHighlight}
         style={StyleSheet.absoluteFillObject}

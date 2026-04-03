@@ -32,10 +32,10 @@ export const GiphyChip = () => {
 
   return (
     <View style={styles.container}>
-      <Lightning fill={semantics.textInverse} height={16} width={16} />
+      <Lightning fill={semantics.textOnInverse} height={16} width={16} />
       <Text style={styles.text}>{commandName}</Text>
       <Pressable onPress={onPressHandler}>
-        <Cross stroke={semantics.textInverse} height={16} width={16} />
+        <Cross stroke={semantics.textOnInverse} height={16} width={16} />
       </Pressable>
     </View>
   );
@@ -59,7 +59,7 @@ const useStyles = () => {
           height: 24,
         },
         text: {
-          color: semantics.textInverse,
+          color: semantics.textOnInverse,
           fontSize: primitives.typographyFontSizeSm,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,

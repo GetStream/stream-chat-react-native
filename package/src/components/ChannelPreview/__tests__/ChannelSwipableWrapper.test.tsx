@@ -36,7 +36,7 @@ jest.mock('../../../contexts', () => ({
     theme: {
       semantics: {
         accentPrimary: '#00f',
-        backgroundCoreSurface: '#fff',
+        backgroundCoreSurfaceDefault: '#fff',
         textOnAccent: '#000',
         textPrimary: '#111',
       },
