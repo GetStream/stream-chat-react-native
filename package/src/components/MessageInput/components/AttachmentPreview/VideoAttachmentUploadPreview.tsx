@@ -75,7 +75,7 @@ export const VideoAttachmentMetadataPill = ({
 
   return durationLabel ? (
     <View style={styles.durationContainer}>
-      <Recorder height={12} width={12} pathFill={semantics.textInverse} />
+      <Recorder height={12} width={12} pathFill={semantics.textOnInverse} />
       <Text style={styles.durationText}>{durationLabel}</Text>
     </View>
   ) : null;
@@ -91,7 +91,7 @@ const useStyles = () => {
     },
   } = useTheme();
 
-  const { badgeBgInverse, textInverse } = semantics;
+  const { badgeBgInverse, textOnInverse } = semantics;
 
   return useMemo(
     () =>
@@ -111,11 +111,11 @@ const useStyles = () => {
         durationText: {
           fontSize: primitives.typographyFontSizeXxs,
           fontWeight: primitives.typographyFontWeightBold,
-          color: textInverse,
+          color: textOnInverse,
           marginLeft: primitives.spacingXxs,
           ...durationText,
         },
       }),
-    [badgeBgInverse, textInverse, durationContainer, durationText],
+    [badgeBgInverse, textOnInverse, durationContainer, durationText],
   );
 };

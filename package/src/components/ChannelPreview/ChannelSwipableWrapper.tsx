@@ -143,12 +143,12 @@ const useStyles = () => {
           justifyContent: 'center',
         },
         elipsis: {
-          backgroundColor: semantics.backgroundCoreSurface,
+          backgroundColor: semantics.backgroundCoreSurfaceDefault,
         },
         standard: {
           backgroundColor: semantics.accentPrimary,
         },
       }),
-    [semantics.accentPrimary, semantics.backgroundCoreSurface],
+    [semantics.accentPrimary, semantics.backgroundCoreSurfaceDefault],
   );
 };

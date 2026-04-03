@@ -21,7 +21,7 @@ export const File = ({ fill, height, pathFill, size, stroke, width, ...rest }: I
         stroke={color}
         strokeLinecap='round'
         strokeLinejoin='round'
-        strokeWidth={1.2}
+        strokeWidth={1.5}
       />
     </Svg>
   );

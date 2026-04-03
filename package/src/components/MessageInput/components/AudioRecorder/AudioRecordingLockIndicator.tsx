@@ -4,7 +4,7 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { ChevronTop } from '../../../../icons/chevron-down';
+import { ChevronUp } from '../../../../icons/chevron-up';
 import { Lock } from '../../../../icons/lock';
 import { Unlock } from '../../../../icons/unlock';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
@@ -69,7 +69,7 @@ export const AudioRecordingLockIndicator = ({
         <Unlock stroke={semantics.textPrimary} height={20} width={20} {...lockIcon} />
       )}
       {!micLocked && (
-        <ChevronTop stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
+        <ChevronUp stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
       )}
     </Animated.View>
   );

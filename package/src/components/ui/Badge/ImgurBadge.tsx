@@ -32,7 +32,7 @@ const useStyles = () => {
         alignItems: 'center',
       },
       text: {
-        color: semantics.badgeTextInverse,
+        color: semantics.badgeTextOnInverse,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,

@@ -52,7 +52,7 @@ const useStyles = () => {
         right: 0,
         top: 0,
         justifyContent: 'center',
-        backgroundColor: semantics.backgroundCoreSurface,
+        backgroundColor: semantics.backgroundCoreSurfaceDefault,
         ...errorNotification,
       },
       errorText: {

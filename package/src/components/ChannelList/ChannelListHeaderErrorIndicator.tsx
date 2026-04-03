@@ -38,7 +38,7 @@ const useStyles = () => {
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        backgroundColor: semantics.backgroundCoreSurface,
+        backgroundColor: semantics.backgroundCoreSurfaceDefault,
         paddingVertical: primitives.spacingXs,
         paddingHorizontal: primitives.spacingSm,
         ...container,
