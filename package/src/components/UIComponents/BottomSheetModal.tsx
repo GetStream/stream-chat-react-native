@@ -109,6 +109,23 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     }
   });
 
+  const closeFromGesture = useStableCallback(() => {
+    requestAnimationFrame(() => {
+      isOpen.value = false;
+      isOpening.value = false;
+
+      sheetTranslateY.value = withTiming(
+        maxHeight,
+        { duration: 250, easing: Easing.out(Easing.cubic) },
+        (finished) => {
+          if (finished) {
+            runOnJS(onClose)();
+          }
+        },
+      );
+    });
+  });
+
   const close = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
     if (!visible || !isOpen.value) {
       return;
@@ -274,20 +291,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
           const shouldClose = isAtTopSnap ? shouldCloseFromTopSnap : shouldCloseFromLowerSnap;
 
           if (shouldClose) {
-            isOpen.value = false;
-            isOpening.value = false;
-
-            sheetTranslateY.value = withTiming(
-              maxHeight,
-              { duration: 250, easing: Easing.out(Easing.cubic) },
-              (finished) => {
-                if (!finished) {
-                  return;
-                }
-
-                runOnJS(onClose)();
-              },
-            );
+            runOnJS(closeFromGesture)();
           } else {
             isOpen.value = true;
             let nearestIndex = 0;
@@ -320,9 +324,8 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     [
       currentSnapIndex,
       isOpen,
-      isOpening,
       maxHeight,
-      onClose,
+      closeFromGesture,
       panStartTranslateY,
       renderContent,
       snapPoints,
