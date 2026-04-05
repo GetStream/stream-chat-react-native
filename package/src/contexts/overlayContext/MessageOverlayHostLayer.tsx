@@ -230,7 +230,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
   );
 
   const topItemStyle = useAnimatedStyle(() => {
-    if (!topVisualY.value || !topH.value) return { opacity: 0 };
+    if (!topVisualY.value || !topH.value) return { opacity: 0, height: 0, width: 0 };
     const horizontalPosition = I18nManager.isRTL ? { right: topH.value.x } : { left: topH.value.x };
     return {
       height: topH.value.h,
@@ -249,7 +249,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
   });
 
   const bottomItemStyle = useAnimatedStyle(() => {
-    if (!bottomVisualY.value || !bottomH.value) return { opacity: 0 };
+    if (!bottomVisualY.value || !bottomH.value) return { opacity: 0, height: 0, width: 0 };
     const horizontalPosition = I18nManager.isRTL
       ? { right: bottomH.value.x }
       : { left: bottomH.value.x };

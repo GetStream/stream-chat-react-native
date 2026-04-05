@@ -800,7 +800,9 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
@@ -852,7 +854,9 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
@@ -1683,7 +1687,9 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
@@ -1735,7 +1741,9 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
@@ -2566,7 +2574,9 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
@@ -2618,7 +2628,9 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [

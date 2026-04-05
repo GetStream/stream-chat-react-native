@@ -789,7 +789,9 @@ exports[`SendButton should render a SendButton 1`] = `
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
@@ -841,7 +843,9 @@ exports[`SendButton should render a SendButton 1`] = `
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
@@ -1661,7 +1665,9 @@ exports[`SendButton should render a disabled SendButton 1`] = `
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
@@ -1713,7 +1719,9 @@ exports[`SendButton should render a disabled SendButton 1`] = `
         style={
           [
             {
+              "height": 0,
               "opacity": 0,
+              "width": 0,
             },
             {
               "transform": [
