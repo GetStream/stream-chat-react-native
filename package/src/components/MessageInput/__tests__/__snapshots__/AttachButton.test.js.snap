@@ -800,15 +800,12 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
@@ -832,18 +829,9 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
       <View
         pointerEvents="box-none"
         style={
-          [
-            {
-              "height": 0,
-            },
-            {
-              "transform": [
-                {
-                  "translateY": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+          }
         }
         testID="message-overlay-message"
       >
@@ -864,15 +852,12 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
@@ -1698,15 +1683,12 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
@@ -1730,18 +1712,9 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
       <View
         pointerEvents="box-none"
         style={
-          [
-            {
-              "height": 0,
-            },
-            {
-              "transform": [
-                {
-                  "translateY": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+          }
         }
         testID="message-overlay-message"
       >
@@ -1762,15 +1735,12 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
@@ -2596,15 +2566,12 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
@@ -2628,18 +2595,9 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
       <View
         pointerEvents="box-none"
         style={
-          [
-            {
-              "height": 0,
-            },
-            {
-              "transform": [
-                {
-                  "translateY": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+          }
         }
         testID="message-overlay-message"
       >
@@ -2660,15 +2618,12 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },

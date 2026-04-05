@@ -75,6 +75,12 @@ jest.mock('react-native-reanimated', () => {
     },
     clamp: (value: number, min: number, max: number) => Math.min(Math.max(value, min), max),
     runOnJS: (fn: (...args: unknown[]) => unknown) => fn,
+    useAnimatedReaction: (
+      prepare: () => unknown,
+      react: (current: unknown, previous: unknown) => void,
+    ) => {
+      react(prepare(), undefined);
+    },
     useAnimatedStyle: (updater: () => unknown) => updater(),
     useDerivedValue: (updater: () => unknown) => ({ value: updater() }),
     useSharedValue: useStableSharedValue,
@@ -175,25 +181,26 @@ describe('MessageOverlayHostLayer', () => {
     expect(StyleSheet.flatten(topSlot.props.style)).toMatchObject({
       height: TOP_RECT.h,
       left: TOP_RECT.x,
+      opacity: 1,
       position: 'absolute',
-      top: TOP_RECT.y,
-      transform: [{ scale: 1 }, { translateY: 38 }],
+      top: 38,
+      transform: [{ scale: 1 }],
       width: TOP_RECT.w,
     });
     expect(StyleSheet.flatten(messageSlot.props.style)).toMatchObject({
       height: MESSAGE_RECT.h,
       left: MESSAGE_RECT.x,
       position: 'absolute',
-      top: MESSAGE_RECT.y,
-      transform: [{ translateY: 38 }],
+      top: 38,
       width: MESSAGE_RECT.w,
     });
     expect(StyleSheet.flatten(bottomSlot.props.style)).toMatchObject({
       height: BOTTOM_RECT.h,
       left: BOTTOM_RECT.x,
+      opacity: 1,
       position: 'absolute',
-      top: BOTTOM_RECT.y,
-      transform: [{ scale: 1 }, { translateY: -12 }],
+      top: 88,
+      transform: [{ scale: 1 }],
       width: BOTTOM_RECT.w,
     });
   });
@@ -227,7 +234,8 @@ describe('MessageOverlayHostLayer', () => {
 
     expect(StyleSheet.flatten(screen.getByTestId('message-overlay-top').props.style)).toMatchObject(
       {
-        height: 0,
+        opacity: 0,
+        transform: [{ scale: 0 }],
       },
     );
     expect(
@@ -236,7 +244,8 @@ describe('MessageOverlayHostLayer', () => {
     expect(
       StyleSheet.flatten(screen.getByTestId('message-overlay-bottom').props.style),
     ).toMatchObject({
-      height: 0,
+      opacity: 0,
+      transform: [{ scale: 0 }],
     });
   });
 });

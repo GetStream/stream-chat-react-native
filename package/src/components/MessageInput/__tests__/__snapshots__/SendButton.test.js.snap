@@ -789,15 +789,12 @@ exports[`SendButton should render a SendButton 1`] = `
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
@@ -821,18 +818,9 @@ exports[`SendButton should render a SendButton 1`] = `
       <View
         pointerEvents="box-none"
         style={
-          [
-            {
-              "height": 0,
-            },
-            {
-              "transform": [
-                {
-                  "translateY": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+          }
         }
         testID="message-overlay-message"
       >
@@ -853,15 +841,12 @@ exports[`SendButton should render a SendButton 1`] = `
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
@@ -1676,15 +1661,12 @@ exports[`SendButton should render a disabled SendButton 1`] = `
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
@@ -1708,18 +1690,9 @@ exports[`SendButton should render a disabled SendButton 1`] = `
       <View
         pointerEvents="box-none"
         style={
-          [
-            {
-              "height": 0,
-            },
-            {
-              "transform": [
-                {
-                  "translateY": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+          }
         }
         testID="message-overlay-message"
       >
@@ -1740,15 +1713,12 @@ exports[`SendButton should render a disabled SendButton 1`] = `
         style={
           [
             {
-              "height": 0,
+              "opacity": 0,
             },
             {
               "transform": [
                 {
                   "scale": 0,
-                },
-                {
-                  "translateY": 0,
                 },
               ],
             },
