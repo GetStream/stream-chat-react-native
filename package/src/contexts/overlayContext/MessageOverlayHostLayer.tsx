@@ -11,6 +11,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   clamp,
   runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -64,6 +65,9 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
   const topH = useSharedValue<Rect>(undefined);
   const bottomH = useSharedValue<Rect>(undefined);
   const closeCorrectionY = useSharedValue(0);
+  const topVisualY = useSharedValue(0);
+  const messageVisualY = useSharedValue(0);
+  const bottomVisualY = useSharedValue(0);
 
   const topInset = insets.top;
   // Due to edge-to-edge in combination with various libraries, Android sometimes reports
@@ -95,6 +99,9 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
           topH.value = undefined;
           bottomH.value = undefined;
           closeCorrectionY.value = 0;
+          topVisualY.value = 0;
+          messageVisualY.value = 0;
+          bottomVisualY.value = 0;
         },
         setBottomH: (rect) => {
           bottomH.value = rect;
@@ -106,7 +113,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
           topH.value = rect;
         },
       }),
-    [bottomH, closeCorrectionY, messageH, topH],
+    [bottomH, bottomVisualY, closeCorrectionY, messageH, messageVisualY, topH, topVisualY],
   );
 
   useEffect(() => {
@@ -156,51 +163,111 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     return solvedBottomTop - bottomH.value.y;
   });
 
+  useAnimatedReaction(
+    () => {
+      if (!topH.value) return undefined;
+      const correction = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
+      return topH.value.y + correction;
+    },
+    (next, previous) => {
+      if (next === undefined) {
+        topVisualY.value = 0;
+        return;
+      }
+
+      if (previous === undefined) {
+        topVisualY.value = next;
+        return;
+      }
+
+      topVisualY.value = withSpring(next, { duration: DURATION });
+    },
+    [isActive, closing],
+  );
+
+  useAnimatedReaction(
+    () => {
+      if (!messageH.value) return undefined;
+      const correction = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
+      return messageH.value.y + correction;
+    },
+    (next, previous) => {
+      if (next === undefined) {
+        messageVisualY.value = 0;
+        return;
+      }
+
+      if (previous === undefined) {
+        messageVisualY.value = next;
+        return;
+      }
+
+      messageVisualY.value = withSpring(next, { duration: DURATION });
+    },
+    [isActive, closing],
+  );
+
+  useAnimatedReaction(
+    () => {
+      if (!bottomH.value) return undefined;
+      const correction = isActive ? (closing ? closeCorrectionY.value : bottomShiftY.value) : 0;
+      return bottomH.value.y + correction;
+    },
+    (next, previous) => {
+      if (next === undefined) {
+        bottomVisualY.value = 0;
+        return;
+      }
+
+      if (previous === undefined) {
+        bottomVisualY.value = next;
+        return;
+      }
+
+      bottomVisualY.value = withSpring(next, { duration: DURATION });
+    },
+    [isActive, closing],
+  );
+
   const topItemStyle = useAnimatedStyle(() => {
-    if (!topH.value) return { height: 0 };
+    if (!topVisualY.value || !topH.value) return { opacity: 0 };
     const horizontalPosition = I18nManager.isRTL ? { right: topH.value.x } : { left: topH.value.x };
     return {
       height: topH.value.h,
       position: 'absolute',
-      top: topH.value.y,
+      top: topVisualY.value,
+      opacity: 1,
       width: topH.value.w,
       ...horizontalPosition,
     };
   });
 
   const topItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
     return {
-      transform: [
-        { scale: backdrop.value },
-        { translateY: withSpring(target, { duration: DURATION }) },
-      ],
+      transform: [{ scale: backdrop.value }],
     };
-  }, [isActive, closing]);
+  });
 
   const bottomItemStyle = useAnimatedStyle(() => {
-    if (!bottomH.value) return { height: 0 };
+    if (!bottomVisualY.value || !bottomH.value) return { opacity: 0 };
     const horizontalPosition = I18nManager.isRTL
       ? { right: bottomH.value.x }
       : { left: bottomH.value.x };
     return {
       height: bottomH.value.h,
       position: 'absolute',
-      top: bottomH.value.y,
+      top: bottomVisualY.value,
+      opacity: 1,
       width: bottomH.value.w,
       ...horizontalPosition,
     };
   });
 
   const bottomItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : bottomShiftY.value) : 0;
     return {
-      transform: [
-        { scale: backdrop.value },
-        { translateY: withSpring(target, { duration: DURATION }) },
-      ],
+      transform: [{ scale: backdrop.value }],
     };
-  }, [isActive, closing]);
+  });
 
   const hostStyle = useAnimatedStyle(() => {
     if (!messageH.value) return { height: 0 };
@@ -208,22 +275,10 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
       height: messageH.value.h,
       left: messageH.value.x,
       position: 'absolute',
-      top: messageH.value.y,
+      top: messageVisualY.value,
       width: messageH.value.w,
     };
   });
-
-  const hostTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
-
-    return {
-      transform: [
-        {
-          translateY: withSpring(target, { duration: DURATION }),
-        },
-      ],
-    };
-  }, [isActive, closing]);
 
   const tap = useMemo(
     () =>
@@ -288,7 +343,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
 
           <Animated.View
             pointerEvents='box-none'
-            style={[hostStyle, hostTranslateStyle]}
+            style={hostStyle}
             testID='message-overlay-message'
           >
             <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
