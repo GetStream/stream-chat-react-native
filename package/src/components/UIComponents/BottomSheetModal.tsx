@@ -253,8 +253,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   }, [visible, animateKeyboardOffset, keyboardDidHide, keyboardDidShowRN]);
 
   const sheetViewportAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: sheetTranslateY.value }],
-    paddingBottom: sheetTranslateY.value,
+    transform: [{ translateY: sheetTranslateY.value - keyboardOffset.value }],
   }));
 
   const overlayAnimatedStyle = useAnimatedStyle(() => {
