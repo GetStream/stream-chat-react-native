@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Alert } from 'react-native';
 
-import { UserResponse } from 'stream-chat';
+import { LocalMessage, UserResponse } from 'stream-chat';
 
 import { useUserMuteActive } from './useUserMuteActive';
 
@@ -12,9 +12,19 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { usePortalClosingKeyboardSafeCallback, useStableCallback } from '../../../hooks';
+import {
+  useAfterKeyboardOpenCallback,
+  usePortalSettledCallback,
+  useStableCallback,
+} from '../../../hooks';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import { NativeHandlers } from '../../../native';
+
+const useWithPortalKeyboardSafety = <T extends unknown[]>(callback: (...args: T) => void) => {
+  const callbackAfterKeyboardOpen = useAfterKeyboardOpenCallback(callback);
+
+  return usePortalSettledCallback(callbackAfterKeyboardOpen);
+};
 
 export const useMessageActionHandlers = ({
   channel,
@@ -114,7 +124,10 @@ export const useMessageActionHandlers = ({
     }
   });
 
-  const handleEditMessage = usePortalClosingKeyboardSafeCallback(() => setEditingState(message));
+  const setEditingMessage = useStableCallback((messageToEdit: LocalMessage = message) => {
+    setEditingState(messageToEdit);
+  });
+  const handleEditMessage = useWithPortalKeyboardSafety(setEditingMessage);
 
   const handleFlagMessage = useStableCallback(() => {
     if (!message.id) {
