@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Alert } from 'react-native';
 
-import { LocalMessage, UserResponse } from 'stream-chat';
+import { UserResponse } from 'stream-chat';
 
 import { useUserMuteActive } from './useUserMuteActive';
 
