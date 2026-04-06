@@ -61,6 +61,7 @@ const scheduleAfterFrames = (callback: () => void, frames: number, rafIds: numbe
  */
 export const usePortalSettledCallback = <T extends unknown[]>(callback: (...args: T) => void) => {
   const rafIdsRef = useRef<number[]>([]);
+  // This callback runs from deferred RAF work, so it must stay fresh across rerenders.
   const stableCallback = useStableCallback(callback);
 
   const clearScheduledFrames = useStableCallback(() => {

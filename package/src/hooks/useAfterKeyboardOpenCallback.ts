@@ -21,6 +21,7 @@ export const useAfterKeyboardOpenCallback = <T extends unknown[]>(
   const isKeyboardVisible = useKeyboardVisibility();
   const { inputBoxRef } = useMessageInputContext();
   const keyboardSubscriptionRef = useRef<EventSubscription | undefined>(undefined);
+  // This callback runs from a keyboard event listener, so it must stay fresh across rerenders.
   const stableCallback = useStableCallback(callback);
 
   /** Clears the pending keyboard listener, if any. */

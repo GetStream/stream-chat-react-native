@@ -124,10 +124,9 @@ export const useMessageActionHandlers = ({
     }
   });
 
-  const setEditingMessage = useStableCallback((messageToEdit: LocalMessage = message) => {
-    setEditingState(messageToEdit);
+  const handleEditMessage = useWithPortalKeyboardSafety(() => {
+    setEditingState(message);
   });
-  const handleEditMessage = useWithPortalKeyboardSafety(setEditingMessage);
 
   const handleFlagMessage = useStableCallback(() => {
     if (!message.id) {
