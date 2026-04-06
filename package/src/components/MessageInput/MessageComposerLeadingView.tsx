@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { InputButtons } from './components/InputButtons';
 import { idleRecordingStateSelector } from './utils/audioRecorderSelectors';
@@ -9,6 +9,7 @@ import { idleRecordingStateSelector } from './utils/audioRecorderSelectors';
 import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
+import { transitions } from '../../utils/transitions';
 
 export const MessageComposerLeadingView = () => {
   const {
@@ -24,7 +25,7 @@ export const MessageComposerLeadingView = () => {
 
   return isRecordingStateIdle ? (
     <Animated.View
-      layout={LinearTransition.duration(200)}
+      layout={transitions.layout200}
       style={[
         styles.inputButtonsContainer,
         messageInputFloating ? styles.shadow : null,

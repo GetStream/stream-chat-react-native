@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { TextComposerState } from 'stream-chat';
 
@@ -21,6 +21,7 @@ import {
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
+import { transitions } from '../../../../utils/transitions';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
 import { useIsCooldownActive } from '../../hooks/useIsCooldownActive';
 
@@ -88,8 +89,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } else if (editing || command) {
     return (
       <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
+        entering={transitions.zoomIn200}
+        exiting={transitions.zoomOut200}
         key='edit-button'
         style={editButtonContainer}
       >
@@ -99,8 +100,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } else if (cooldownIsActive) {
     return (
       <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
+        entering={transitions.zoomIn200}
+        exiting={transitions.zoomOut200}
         key='cooldown-timer'
         style={cooldownButtonContainer}
       >
@@ -110,8 +111,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } else if (audioRecordingEnabled && textIsEmpty && !hasAttachments) {
     return (
       <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
+        entering={transitions.zoomIn200}
+        exiting={transitions.zoomOut200}
         key='audio-recording-button'
         style={audioRecordingButtonContainer}
       >
@@ -121,8 +122,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } else {
     return (
       <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
+        entering={transitions.zoomIn200}
+        exiting={transitions.zoomOut200}
         key='send-button'
         style={sendButtonContainer}
       >
