@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Alert } from 'react-native';
+import { useEffect, useMemo, useRef } from 'react';
+import { Alert, EventSubscription, Keyboard, Platform } from 'react-native';
 
 import { UserResponse } from 'stream-chat';
 
@@ -9,12 +9,15 @@ import type { ChannelContextValue } from '../../../contexts/channelContext/Chann
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import { MessageComposerAPIContextValue } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks';
+import { useKeyboardVisibility } from '../../../hooks/useKeyboardVisibility';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import { NativeHandlers } from '../../../native';
+import { KeyboardControllerPackage } from '../../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 export const useMessageActionHandlers = ({
   channel,
@@ -37,8 +40,18 @@ export const useMessageActionHandlers = ({
   const { t } = useTranslationContext();
   const handleResendMessage = useStableCallback(() => retrySendMessage(message));
   const translatedMessage = useTranslatedMessage(message);
+  const { inputBoxRef } = useMessageInputContext();
+  const isKeyboardVisible = useKeyboardVisibility();
+  const keyboardDidShowSubscriptionRef = useRef<EventSubscription | undefined>(undefined);
 
   const isMuted = useUserMuteActive(message.user);
+
+  const clearKeyboardDidShowSubscription = useStableCallback(() => {
+    keyboardDidShowSubscriptionRef.current?.remove();
+    keyboardDidShowSubscriptionRef.current = undefined;
+  });
+
+  useEffect(() => clearKeyboardDidShowSubscription, [clearKeyboardDidShowSubscription]);
 
   const handleQuotedReplyMessage = useStableCallback(() => {
     setQuotedMessage(message);
@@ -115,7 +128,38 @@ export const useMessageActionHandlers = ({
   });
 
   const handleEditMessage = useStableCallback(() => {
-    setEditingState(message);
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        clearKeyboardDidShowSubscription();
+
+        const openEditingState = () => {
+          clearKeyboardDidShowSubscription();
+          setEditingState(message);
+        };
+
+        if (!inputBoxRef.current) {
+          openEditingState();
+          return;
+        }
+
+        if (isKeyboardVisible) {
+          inputBoxRef.current?.focus();
+          openEditingState();
+          return;
+        }
+
+        const event = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+
+        keyboardDidShowSubscriptionRef.current = KeyboardControllerPackage?.KeyboardEvents
+          ? KeyboardControllerPackage.KeyboardEvents.addListener(
+              'keyboardDidShow',
+              openEditingState,
+            )
+          : Keyboard.addListener(event, openEditingState);
+
+        inputBoxRef.current?.focus();
+      }),
+    );
   });
 
   const handleFlagMessage = useStableCallback(() => {
