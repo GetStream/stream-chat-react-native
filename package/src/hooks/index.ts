@@ -9,6 +9,7 @@ export * from './useMessageReminder';
 export * from './useQueryReminders';
 export * from './useClientNotifications';
 export * from './useInAppNotificationsState';
+export * from './usePortalClosingKeyboardSafeCallback';
 export * from './useRAFCoalescedValue';
 export * from './useAudioPlayerControl';
 export * from './useAttachmentPickerState';
