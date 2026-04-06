@@ -11,7 +11,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import debounce from 'lodash/debounce';
 
@@ -68,6 +68,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
+import { transitions } from '../../utils/transitions';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -1263,7 +1264,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         <MessageListItemProvider value={messageListItemContextValue}>
           <ListComponent
             // TODO: Consider hiding this behind a feature flag.
-            layout={LayoutTransition}
+            layout={transitions.layout200}
             contentContainerStyle={flatListContentContainerStyle}
             /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
             data={processedMessageListWithNeighbors}
@@ -1310,7 +1311,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       </View>
       {scrollToBottomButtonVisible ? (
         <Animated.View
-          layout={LinearTransition.duration(200)}
+          layout={transitions.layout200}
           style={[
             {
               bottom: messageInputFloating
@@ -1462,5 +1463,3 @@ export const MessageList = (props: MessageListProps) => {
 const AnimatedList = React.memo(
   Animated.createAnimatedComponent(FlatList<MessageListItemWithNeighbours>),
 );
-
-const LayoutTransition = LinearTransition.duration(200);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { OutputButtons } from './components/OutputButtons';
 
@@ -11,6 +11,7 @@ import { useMessageInputContext } from '../../contexts/messageInputContext/Messa
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { transitions } from '../../utils/transitions';
 
 export const MessageInputTrailingView = () => {
   const {
@@ -25,7 +26,7 @@ export const MessageInputTrailingView = () => {
   );
   return (recordingStatus === 'idle' || recordingStatus === 'recording') && !micLocked ? (
     <Animated.View
-      layout={LinearTransition.duration(200)}
+      layout={transitions.layout200}
       style={[styles.outputButtonsContainer, outputButtonsContainer]}
     >
       <OutputButtons />

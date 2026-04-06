@@ -8,7 +8,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
@@ -56,6 +56,7 @@ import { useStableCallback, useStateStore } from '../../hooks';
 import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
+import { transitions } from '../../utils/transitions';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
 type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
@@ -1094,7 +1095,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         ) : null}
       </View>
       <Animated.View
-        layout={LinearTransition.duration(200)}
+        layout={transitions.layout200}
         style={[
           styles.scrollToBottomButtonContainer,
           {

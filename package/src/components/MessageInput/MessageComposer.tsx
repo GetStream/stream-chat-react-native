@@ -5,7 +5,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   interpolate,
-  LinearTransition,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -54,6 +53,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
+import { transitions } from '../../utils/transitions';
 import { type TextInputOverrideComponent } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
@@ -383,7 +383,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
               ]
             : null
         }
-        layout={LinearTransition.duration(200)}
+        layout={transitions.layout200}
       >
         <PortalWhileClosingView portalHostName='overlay-composer' portalName='message-composer'>
           <View
@@ -419,7 +419,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
               <View style={[styles.container, container]}>
                 <MessageComposerLeadingView />
                 <Animated.View
-                  layout={LinearTransition.duration(200)}
+                  layout={transitions.layout200}
                   style={[
                     styles.inputBoxWrapper,
                     messageInputFloating ? [styles.shadow, inputFloatingContainer] : null,
@@ -438,7 +438,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
 
                     <Animated.View
                       style={[styles.inputContainer, inputContainer]}
-                      layout={LinearTransition.duration(200)}
+                      layout={transitions.layout200}
                     >
                       {!isRecordingStateIdle ? (
                         <AudioRecorder slideToCancelStyle={slideToCancelAnimatedStyle} />

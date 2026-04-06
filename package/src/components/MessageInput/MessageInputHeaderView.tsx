@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { LinkPreviewList } from './components/LinkPreviewList';
 import { useHasLinkPreviews } from './hooks/useLinkPreviews';
@@ -17,6 +17,7 @@ import { useMessagesContext } from '../../contexts/messagesContext/MessagesConte
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { transitions } from '../../utils/transitions';
 
 export const MessageInputHeaderView = () => {
   const {
@@ -42,7 +43,7 @@ export const MessageInputHeaderView = () => {
 
   return isRecordingStateIdle ? (
     <Animated.View
-      layout={LinearTransition.duration(200)}
+      layout={transitions.layout200}
       style={[
         styles.contentContainer,
         {
@@ -55,7 +56,7 @@ export const MessageInputHeaderView = () => {
       ]}
     >
       {editing ? (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
+        <Animated.View entering={transitions.fadeIn200} exiting={transitions.fadeOut200}>
           <Reply
             mode='edit'
             onDismiss={clearEditingState}
@@ -64,7 +65,7 @@ export const MessageInputHeaderView = () => {
         </Animated.View>
       ) : null}
       {quotedMessage && !editing ? (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
+        <Animated.View entering={transitions.fadeIn200} exiting={transitions.fadeOut200}>
           <Reply onDismiss={editing ? undefined : onDismissReply} mode='reply' />
         </Animated.View>
       ) : null}
