@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Linking, Platform, TextInput, TextInputProps } from 'react-native';
+import { Alert, Linking, TextInput, TextInputProps } from 'react-native';
 
 import { lookup as lookupMimeType } from 'mime-types';
 import {
@@ -540,19 +540,9 @@ export const MessageInputProvider = ({
    */
   const openAttachmentPicker = useCallback(() => {
     dismissKeyboard();
-    const run = () => {
-      attachmentPickerStore.setSelectedPicker('images');
-      openPicker();
-    };
-
-    if (Platform.OS === 'android') {
-      setTimeout(() => {
-        run();
-      }, 200);
-    } else {
-      run();
-    }
-  }, [openPicker, attachmentPickerStore]);
+    attachmentPickerStore.setSelectedPicker('images');
+    openPicker();
+  }, [attachmentPickerStore, openPicker]);
 
   /**
    * Function to close the attachment picker if the MediaLibrary is installed.

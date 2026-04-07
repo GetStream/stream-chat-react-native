@@ -121,6 +121,7 @@ export const AttachmentPicker = () => {
 
   return (
     <BottomSheet
+      android_keyboardInputMode='adjustResize'
       backgroundStyle={backgroundStyle}
       enablePanDownToClose={false}
       enableContentPanningGesture={false}
