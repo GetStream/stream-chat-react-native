@@ -767,7 +767,7 @@ export const OptimisticUpdates = () => {
 
         expect(channel.state.messages.some((message) => message.id === localMessage.id)).toBe(true);
 
-        jest.spyOn(channel, 'watch').mockImplementation(async () => ({}));
+        jest.spyOn(channel, 'watch').mockResolvedValue({});
 
         channel.state.removeMessage(localMessage);
         channel.state.addMessageSorted(serverMessage, true);
@@ -826,7 +826,7 @@ export const OptimisticUpdates = () => {
           pendingTask = pendingTasks[0];
         });
 
-        jest.spyOn(channel, 'watch').mockImplementation(async () => ({}));
+        jest.spyOn(channel, 'watch').mockResolvedValue({});
 
         channel.state.removeMessage(localMessage);
         await chatClient.offlineDb.deletePendingTask({ id: pendingTask.id });
