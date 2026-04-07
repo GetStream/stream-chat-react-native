@@ -1167,6 +1167,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         updated_at: message.updated_at?.toString(),
       }) as unknown as MessageResponse;
 
+    const getRecoverableFailedMessages = (messages: LocalMessage[] = []) =>
+      messages
+        .filter(
+          (message) =>
+            message.status === MessageStatusTypes.FAILED &&
+            !channel.state.findMessage(message.id, message.parent_id),
+        )
+        .map(parseMessage);
+
     try {
       if (channelMessagesState?.messages) {
         await channel?.watch({
@@ -1181,9 +1190,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (!thread) {
         copyChannelState();
 
-        const failedMessages = channelMessagesState.messages
-          ?.filter((message) => message.status === MessageStatusTypes.FAILED)
-          .map(parseMessage);
+        const failedMessages = getRecoverableFailedMessages(channelMessagesState.messages);
         if (failedMessages?.length) {
           channel.state.addMessagesSorted(failedMessages);
         }
@@ -1192,11 +1199,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       } else {
         await reloadThread();
 
-        const failedThreadMessages = thread
-          ? threadMessages
-              .filter((message) => message.status === MessageStatusTypes.FAILED)
-              .map(parseMessage)
-          : [];
+        const failedThreadMessages = thread ? getRecoverableFailedMessages(threadMessages) : [];
         if (failedThreadMessages.length) {
           channel.state.addMessagesSorted(failedThreadMessages);
           setThreadMessages([...channel.state.threads[thread.id]]);
