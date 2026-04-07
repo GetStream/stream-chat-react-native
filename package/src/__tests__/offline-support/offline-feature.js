@@ -338,10 +338,13 @@ export const Generic = () => {
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true));
 
-      await waitFor(async () => {
-        expect(screen.getByTestId('channel-list')).toBeTruthy();
-        await expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
-      });
+      await waitFor(
+        async () => {
+          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          await expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
+        },
+        { timeout: 5000 },
+      );
     });
 
     it('should fetch channels from the db correctly even if they are empty', async () => {

@@ -12,9 +12,19 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useStableCallback } from '../../../hooks';
+import {
+  useAfterKeyboardOpenCallback,
+  usePortalSettledCallback,
+  useStableCallback,
+} from '../../../hooks';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import { NativeHandlers } from '../../../native';
+
+const useWithPortalKeyboardSafety = <T extends unknown[]>(callback: (...args: T) => void) => {
+  const callbackAfterKeyboardOpen = useAfterKeyboardOpenCallback(callback);
+
+  return usePortalSettledCallback(callbackAfterKeyboardOpen);
+};
 
 export const useMessageActionHandlers = ({
   channel,
@@ -114,7 +124,7 @@ export const useMessageActionHandlers = ({
     }
   });
 
-  const handleEditMessage = useStableCallback(() => {
+  const handleEditMessage = useWithPortalKeyboardSafety(() => {
     setEditingState(message);
   });
 

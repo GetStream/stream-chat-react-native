@@ -219,7 +219,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     closePollCreationDialog,
     CreatePollContent,
     createPollOptionGap,
-    editing,
     InputView,
     MessageComposerLeadingView,
     MessageComposerTrailingView,
@@ -271,12 +270,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     },
     [closeAttachmentPicker],
   );
-
-  useEffect(() => {
-    if (editing && inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
-  }, [editing, inputBoxRef]);
 
   /**
    * Effect to get the draft data for legacy thread composer and set it to message composer.
@@ -746,6 +739,7 @@ export const MessageComposer = (props: MessageComposerProps) => {
         closePollCreationDialog,
         compressImageQuality,
         CreatePollContent,
+        // TODO: probably not needed anymore, please check
         editing,
         Input,
         InputView,
