@@ -8,6 +8,7 @@ import {
   MessageList,
   UserAdd,
   useTheme,
+  WithComponents,
 } from 'stream-chat-react-native';
 
 import { User } from '../icons/User';
@@ -338,32 +339,37 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         },
       ]}
     >
-      <Channel
-        additionalTextInputProps={{
-          onFocus: () => {
-            setFocusOnMessageInput(true);
-            setFocusOnSearchInput(false);
-            if (messageInputRef.current) {
-              messageInputRef.current.focus();
-            }
-          },
+      <WithComponents
+        value={{
+          EmptyStateIndicator: EmptyMessagesIndicator,
+          SendButton: NewDirectMessagingSendButton,
         }}
-        audioRecordingEnabled={true}
-        channel={currentChannel.current}
-        EmptyStateIndicator={EmptyMessagesIndicator}
-        enforceUniqueReaction
-        keyboardVerticalOffset={0}
-        onChangeText={setMessageInputText}
-        overrideOwnCapabilities={{ sendMessage: true }}
-        SendButton={NewDirectMessagingSendButton}
-        setInputRef={(ref) => (messageInputRef.current = ref)}
       >
-        {renderUserSearch({ inSafeArea: true })}
-        {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
-          <MessageList />
-        )}
-        <MessageComposer />
-      </Channel>
+        <Channel
+          additionalTextInputProps={{
+            onFocus: () => {
+              setFocusOnMessageInput(true);
+              setFocusOnSearchInput(false);
+              if (messageInputRef.current) {
+                messageInputRef.current.focus();
+              }
+            },
+          }}
+          audioRecordingEnabled={true}
+          channel={currentChannel.current}
+          enforceUniqueReaction
+          keyboardVerticalOffset={0}
+          onChangeText={setMessageInputText}
+          overrideOwnCapabilities={{ sendMessage: true }}
+          setInputRef={(ref) => (messageInputRef.current = ref)}
+        >
+          {renderUserSearch({ inSafeArea: true })}
+          {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
+            <MessageList />
+          )}
+          <MessageComposer />
+        </Channel>
+      </WithComponents>
     </SafeAreaView>
   );
 };

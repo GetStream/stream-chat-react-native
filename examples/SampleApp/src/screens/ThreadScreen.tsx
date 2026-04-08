@@ -12,6 +12,7 @@ import {
   useTranslationContext,
   useTypingString,
   PortalWhileClosingView,
+  WithComponents,
 } from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
 
@@ -148,15 +149,19 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
 
   return (
     <View style={[styles.container, { backgroundColor: white }]}>
+      <WithComponents
+        value={{
+          AttachmentPickerSelectionBar: CustomAttachmentPickerSelectionBar,
+          MessageLocation,
+        }}
+      >
       <Channel
         audioRecordingEnabled={true}
-        AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
         enforceUniqueReaction
         keyboardVerticalOffset={0}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
-        MessageLocation={MessageLocation}
         onPressMessage={onPressMessage}
         thread={thread}
         threadList
@@ -174,6 +179,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
           shouldUseFlashList={messageListImplementation === 'flashlist'}
         />
       </Channel>
+      </WithComponents>
     </View>
   );
 };
