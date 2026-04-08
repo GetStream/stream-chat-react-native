@@ -1,14 +1,11 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { CircleBan } from '../../../icons/no-sign';
@@ -20,11 +17,11 @@ type MessageDeletedComponentProps = {
 };
 
 type MessageDeletedPropsWithContext = Pick<MessageContextValue, 'alignment' | 'message'> &
-  Pick<MessagesContextValue, 'MessageFooter'> &
   MessageDeletedComponentProps;
 
 const MessageDeletedWithContext = (props: MessageDeletedPropsWithContext) => {
-  const { alignment, date, groupStyle, MessageFooter } = props;
+  const { alignment, date, groupStyle } = props;
+  const { MessageFooter } = useComponentsContext();
 
   const {
     theme: {
@@ -111,14 +108,11 @@ export type MessageDeletedProps = Partial<MessageDeletedPropsWithContext> & {
 export const MessageDeleted = (props: MessageDeletedProps) => {
   const { alignment, message } = useMessageContext();
 
-  const { MessageFooter } = useMessagesContext();
-
   return (
     <MemoizedMessageDeleted
       {...{
         alignment,
         message,
-        MessageFooter,
       }}
       {...props}
     />

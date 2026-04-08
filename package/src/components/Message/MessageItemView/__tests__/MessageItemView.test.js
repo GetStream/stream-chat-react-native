@@ -6,6 +6,7 @@ import { GestureDetector } from 'react-native-gesture-handler';
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
+import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
@@ -38,13 +39,21 @@ describe('MessageItemView', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.id);
 
-    renderMessage = (options, channelProps) =>
+    renderMessage = (options, channelProps, componentOverrides) =>
       render(
         <ChannelsStateProvider>
           <Chat client={chatClient}>
-            <Channel channel={channel} {...channelProps}>
-              <Message groupStyles={['bottom']} {...options} />
-            </Channel>
+            {componentOverrides ? (
+              <WithComponents value={componentOverrides}>
+                <Channel channel={channel} {...channelProps}>
+                  <Message groupStyles={['bottom']} {...options} />
+                </Channel>
+              </WithComponents>
+            ) : (
+              <Channel channel={channel} {...channelProps}>
+                <Message groupStyles={['bottom']} {...options} />
+              </Channel>
+            )}
           </Chat>
         </ChannelsStateProvider>,
       );
@@ -132,7 +141,7 @@ describe('MessageItemView', () => {
       return <Text ref={contextMenuAnchorRef}>Custom Message Item</Text>;
     };
 
-    renderMessage({ message }, { MessageItemView: CustomMessageItemView });
+    renderMessage({ message }, {}, { MessageItemView: CustomMessageItemView });
 
     await waitFor(() => {
       expect(screen.queryByText('Custom Message Item')).not.toBeNull();
@@ -143,7 +152,7 @@ describe('MessageItemView', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    renderMessage({ message }, { MessageSpacer: () => <Text>Message Spacer</Text> });
+    renderMessage({ message }, {}, { MessageSpacer: () => <Text>Message Spacer</Text> });
 
     await waitFor(() => {
       expect(screen.queryByText('Message Spacer')).not.toBeNull();
@@ -189,7 +198,7 @@ describe('MessageItemView', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    renderMessage({ message }, { MessageHeader: () => <Text>Message Header</Text> });
+    renderMessage({ message }, {}, { MessageHeader: () => <Text>Message Header</Text> });
 
     await waitFor(() => {
       expect(screen.queryByText('Message Header')).not.toBeNull();

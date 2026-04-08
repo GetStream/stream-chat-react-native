@@ -9,11 +9,11 @@ import { useHasLinkPreviews } from './hooks/useLinkPreviews';
 import { idleRecordingStateSelector } from './utils/audioRecorderSelectors';
 import { messageComposerStateStoreSelector } from './utils/messageComposerSelectors';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposerAPIContext } from '../../contexts/messageComposerContext/MessageComposerAPIContext';
 import { useHasAttachments } from '../../contexts/messageInputContext/hooks/useHasAttachments';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
-import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
@@ -30,8 +30,8 @@ export const MessageInputHeaderView = () => {
   const { clearEditingState } = useMessageComposerAPIContext();
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
   const hasLinkPreviews = useHasLinkPreviews();
-  const { audioRecorderManager, AttachmentUploadPreviewList } = useMessageInputContext();
-  const { Reply } = useMessagesContext();
+  const { audioRecorderManager } = useMessageInputContext();
+  const { AttachmentUploadPreviewList, Reply } = useComponentsContext();
   const { isRecordingStateIdle } = useStateStore(
     audioRecorderManager.state,
     idleRecordingStateSelector,

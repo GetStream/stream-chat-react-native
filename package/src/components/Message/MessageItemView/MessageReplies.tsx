@@ -1,14 +1,11 @@
 import React, { useMemo } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
@@ -31,7 +28,6 @@ export type MessageRepliesPropsWithContext = Pick<
   | 'preventPress'
   | 'threadList'
 > &
-  Pick<MessagesContextValue, 'MessageRepliesAvatars'> &
   Pick<TranslationContextValue, 't'>;
 
 const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
@@ -39,7 +35,6 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
     alignment,
     isMyMessage,
     message,
-    MessageRepliesAvatars,
     onLongPress,
     onOpenThread,
     onPress,
@@ -48,6 +43,7 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
     t,
     threadList,
   } = props;
+  const { MessageRepliesAvatars } = useComponentsContext();
 
   const {
     theme: {
@@ -190,7 +186,6 @@ export const MessageReplies = (props: MessageRepliesProps) => {
     preventPress,
     threadList,
   } = useMessageContext();
-  const { MessageRepliesAvatars } = useMessagesContext();
   const { t } = useTranslationContext();
 
   return (
@@ -199,7 +194,6 @@ export const MessageReplies = (props: MessageRepliesProps) => {
         alignment,
         isMyMessage,
         message,
-        MessageRepliesAvatars,
         onLongPress,
         onOpenThread,
         onPress,

@@ -2,7 +2,6 @@ import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import { AttachmentPickerContentProps } from '../../components';
 import {
   AttachmentPickerStore,
   SelectedPickerType,
@@ -22,10 +21,6 @@ export type AttachmentPickerContextValue = Pick<
   'attachmentSelectionBarHeight' | 'attachmentPickerBottomSheetHeight'
 > & {
   /**
-   * Custom UI Component to render select more photos for selected gallery access in iOS.
-   */
-  AttachmentPickerIOSSelectMorePhotos: React.ComponentType;
-  /**
    * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
    * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
    *
@@ -39,16 +34,6 @@ export type AttachmentPickerContextValue = Pick<
   topInset: number;
 
   disableAttachmentPicker?: boolean;
-  /**
-   * Custom UI component to render overlay component, that shows up on top of [selected
-   * image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
-   *
-   * **Default**
-   * [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
-   */
-  ImageOverlaySelectedComponent: React.ComponentType<{ index: number }>;
-  AttachmentPickerSelectionBar: React.ComponentType;
-  AttachmentPickerContent: React.ComponentType<AttachmentPickerContentProps>;
   attachmentPickerStore: AttachmentPickerStore;
   numberOfAttachmentPickerImageColumns?: number;
   numberOfAttachmentImagesToLoadPerCall?: number;

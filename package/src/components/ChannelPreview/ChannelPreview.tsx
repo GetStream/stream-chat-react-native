@@ -10,10 +10,11 @@ import {
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 
 export type ChannelPreviewProps = Partial<Pick<ChatContextValue, 'client'>> &
-  Partial<Pick<ChannelsContextValue, 'Preview' | 'forceUpdate'>> & {
+  Partial<Pick<ChannelsContextValue, 'forceUpdate'>> & {
     /**
      * Instance of Channel from stream-chat package.
      */
@@ -21,18 +22,13 @@ export type ChannelPreviewProps = Partial<Pick<ChatContextValue, 'client'>> &
   };
 
 export const ChannelPreview = (props: ChannelPreviewProps) => {
-  const { channel, client: propClient, forceUpdate: propForceUpdate, Preview: propPreview } = props;
+  const { channel, client: propClient, forceUpdate: propForceUpdate } = props;
 
   const { client: contextClient } = useChatContext();
-  const {
-    Preview: contextPreview,
-    ChannelDetailsBottomSheet,
-    getChannelActionItems,
-    swipeActionsEnabled,
-  } = useChannelsContext();
+  const { getChannelActionItems, swipeActionsEnabled } = useChannelsContext();
+  const { ChannelDetailsBottomSheet, Preview } = useComponentsContext();
 
   const client = propClient || contextClient;
-  const Preview = propPreview || contextPreview;
 
   const { muted, unread, lastMessage } = useChannelPreviewData(channel, client, propForceUpdate);
 

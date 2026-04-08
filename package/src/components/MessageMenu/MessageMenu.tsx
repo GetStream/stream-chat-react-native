@@ -4,15 +4,15 @@ import { useWindowDimensions } from 'react-native';
 
 import { MessageActionType } from './MessageActionListItem';
 
+import type { ComponentOverrides } from '../../contexts/componentsContext/ComponentsContext';
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
-import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
 export type MessageMenuProps = PropsWithChildren<
   Partial<
     Pick<
-      MessagesContextValue,
+      ComponentOverrides,
       | 'MessageActionList'
       | 'MessageActionListItem'
       | 'MessageReactionPicker'

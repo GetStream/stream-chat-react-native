@@ -11,6 +11,7 @@ import { useFetchReactions } from './hooks/useFetchReactions';
 import { ReactionButton } from './ReactionButton';
 
 import { useBottomSheetContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -39,12 +40,7 @@ const getItemLayout = (_, index: number) => ({
   index,
 });
 
-export type MessageUserReactionsProps = Partial<
-  Pick<
-    MessagesContextValue,
-    'MessageUserReactionsAvatar' | 'MessageUserReactionsItem' | 'supportedReactions'
-  >
-> &
+export type MessageUserReactionsProps = Partial<Pick<MessagesContextValue, 'supportedReactions'>> &
   Partial<Pick<MessageContextValue, 'message'>> & {
     /**
      * An array of reactions
@@ -99,13 +95,7 @@ const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.ty
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const styles = useStyles();
   const [showMoreReactions, setShowMoreReactions] = useState(false);
-  const {
-    message,
-    MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
-    MessageUserReactionsItem: propMessageUserReactionsItem,
-    reactions: propReactions,
-    supportedReactions: propSupportedReactions,
-  } = props;
+  const { message, reactions: propReactions, supportedReactions: propSupportedReactions } = props;
   const selectorListRef = useRef<FlatList>(null);
   const { close } = useBottomSheetContext();
   const reactionTypes = useMemo(
@@ -113,16 +103,10 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     [message?.reaction_groups],
   );
   const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
-  const {
-    MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
-    MessageUserReactionsItem: contextMessageUserReactionsItem,
-    supportedReactions: contextSupportedReactions,
-  } = useMessagesContext();
+  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+  const { MessageUserReactionsItem } = useComponentsContext();
   const { handleReaction } = useMessageContext();
   const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
-  const MessageUserReactionsAvatar =
-    propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
-  const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
 
   const onSelectReaction = useStableCallback((reactionType: string) => {
     setSelectedReaction((currentReaction) =>
@@ -225,13 +209,9 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   const renderItem = useCallback(
     ({ item }: { item: Reaction }) => (
-      <MessageUserReactionsItem
-        MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-        reaction={item}
-        supportedReactions={supportedReactions ?? []}
-      />
+      <MessageUserReactionsItem reaction={item} supportedReactions={supportedReactions ?? []} />
     ),
-    [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
+    [MessageUserReactionsItem, supportedReactions],
   );
 
   const handleSelectReaction = useStableCallback((emoji: string) => {

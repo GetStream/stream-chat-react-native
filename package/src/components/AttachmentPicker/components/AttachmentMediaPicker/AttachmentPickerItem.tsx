@@ -7,6 +7,7 @@ import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 's
 import { isIosLimited, type PhotoContentItemType } from './shared';
 
 import { useAttachmentPickerContext } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
@@ -26,8 +27,8 @@ type AttachmentPickerItemType = {
 
 const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const { asset } = props;
-  const { numberOfAttachmentPickerImageColumns, ImageOverlaySelectedComponent } =
-    useAttachmentPickerContext();
+  const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
+  const { ImageOverlaySelectedComponent } = useComponentsContext();
   const { vw } = useViewport();
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
@@ -90,8 +91,8 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
 
 const AttachmentImage = (props: AttachmentPickerItemType) => {
   const { asset } = props;
-  const { numberOfAttachmentPickerImageColumns, ImageOverlaySelectedComponent } =
-    useAttachmentPickerContext();
+  const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
+  const { ImageOverlaySelectedComponent } = useComponentsContext();
   const {
     theme: {
       attachmentPicker: { image, imageOverlay },

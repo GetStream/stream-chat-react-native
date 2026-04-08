@@ -4,10 +4,7 @@ import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import {
@@ -26,7 +23,6 @@ try {
 }
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
-  Pick<MessagesContextValue, 'MessageList'> &
   Pick<
     ThreadContextValue,
     | 'closeThread'
@@ -82,13 +78,13 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     disabled,
     loadMoreThread,
     MessageComposer = DefaultMessageComposer,
-    MessageList,
     onThreadDismount,
     parentMessagePreventPress = true,
     thread,
     threadInstance,
     shouldUseFlashList = false,
   } = props;
+  const { MessageList } = useComponentsContext();
 
   useEffect(() => {
     if (threadInstance?.activate) {
@@ -171,7 +167,6 @@ export type ThreadProps = Partial<ThreadPropsWithContext>;
 export const Thread = (props: ThreadProps) => {
   const { client } = useChatContext();
   const { threadList } = useChannelContext();
-  const { MessageList } = useMessagesContext();
   const { closeThread, loadMoreThread, reloadThread, thread, threadInstance } = useThreadContext();
 
   if (thread?.id && !threadList) {
@@ -186,7 +181,6 @@ export const Thread = (props: ThreadProps) => {
         client,
         closeThread,
         loadMoreThread,
-        MessageList,
         reloadThread,
         thread,
         threadInstance,

@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 
 import { ReactionListItemProps } from './ReactionListItem';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -29,9 +30,7 @@ export type ReactionListBottomProps = Partial<
     | 'showReactionsOverlay'
   >
 > &
-  Partial<
-    Pick<MessagesContextValue, 'supportedReactions' | 'ReactionListClustered' | 'ReactionListItem'>
-  > & {
+  Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
     type?: 'clustered' | 'segmented';
     showCount?: boolean;
   };
@@ -55,8 +54,6 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     supportedReactions: propSupportedReactions,
     type,
     showCount = true,
-    ReactionListClustered: propReactionListClustered,
-    ReactionListItem: propReactionListItem,
   } = props;
 
   const {
@@ -71,11 +68,8 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
     showReactionsOverlay: contextShowReactionsOverlay,
   } = useMessageContext();
 
-  const {
-    supportedReactions: contextSupportedReactions,
-    ReactionListClustered: contextReactionListClustered,
-    ReactionListItem: contextReactionListItem,
-  } = useMessagesContext();
+  const { ReactionListClustered, ReactionListItem } = useComponentsContext();
+  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
 
   const alignment = propAlignment || contextAlignment;
   const handleReaction = propHandlerReaction || contextHandleReaction;
@@ -87,8 +81,6 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const reactions = propReactions || contextReactions;
   const showReactionsOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
-  const ReactionListClustered = propReactionListClustered || contextReactionListClustered;
-  const ReactionListItem = propReactionListItem || contextReactionListItem;
 
   const renderItem = useCallback(
     ({ index, item }: { index: number; item: ReactionListItemProps }) => (

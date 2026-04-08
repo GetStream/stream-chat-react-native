@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
@@ -61,17 +62,19 @@ describe('isAttachmentEqualHandler', () => {
     return (
       <OverlayProvider>
         <Chat client={chatClient}>
-          <Channel
-            UnsupportedAttachment={({ attachment: { customField, type } }) => {
-              if (type === 'test') {
-                return <Text testID='attachment-custom-field'>{customField}</Text>;
-              }
+          <WithComponents
+            value={{
+              UnsupportedAttachment: ({ attachment: { customField, type } }) => {
+                if (type === 'test') {
+                  return <Text testID='attachment-custom-field'>{customField}</Text>;
+                }
+              },
             }}
-            channel={channel}
-            isAttachmentEqual={isAttachmentEqualHandler}
           >
-            <MessageList />
-          </Channel>
+            <Channel channel={channel} isAttachmentEqual={isAttachmentEqualHandler}>
+              <MessageList />
+            </Channel>
+          </WithComponents>
         </Chat>
       </OverlayProvider>
     );

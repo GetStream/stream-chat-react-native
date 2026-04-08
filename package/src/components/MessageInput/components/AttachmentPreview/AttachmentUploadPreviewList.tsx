@@ -31,11 +31,9 @@ import {
 } from 'stream-chat';
 
 import { useMessageComposer } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
-import {
-  MessageInputContextValue,
-  useMessageInputContext,
-} from '../../../../contexts/messageInputContext/MessageInputContext';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { isSoundPackageAvailable } from '../../../../native';
 import { primitives } from '../../../../theme';
@@ -44,13 +42,7 @@ const END_ANCHOR_THRESHOLD = 16;
 const END_SHRINK_COMPENSATION_DURATION = 200;
 const MAX_AUDIO_ATTACHMENTS_CONTAINER_WIDTH = 560;
 
-export type AttachmentUploadListPreviewPropsWithContext = Pick<
-  MessageInputContextValue,
-  | 'AudioAttachmentUploadPreview'
-  | 'FileAttachmentUploadPreview'
-  | 'ImageAttachmentUploadPreview'
-  | 'VideoAttachmentUploadPreview'
->;
+export type AttachmentUploadListPreviewPropsWithContext = Record<string, never>;
 
 const AttachmentPreviewCell = ({ children }: { children: React.ReactNode }) => (
   <Animated.View
@@ -85,15 +77,13 @@ const getIsAudioAttachmentPreview =
  * AttachmentUploadPreviewList
  * UI Component to preview the files set for upload
  */
-const UnMemoizedAttachmentUploadPreviewList = (
-  props: AttachmentUploadListPreviewPropsWithContext,
-) => {
+const UnMemoizedAttachmentUploadPreviewList = () => {
   const {
     AudioAttachmentUploadPreview,
     FileAttachmentUploadPreview,
     ImageAttachmentUploadPreview,
     VideoAttachmentUploadPreview,
-  } = props;
+  } = useComponentsContext();
   const { audioRecordingSendOnComplete } = useMessageInputContext();
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
@@ -370,7 +360,7 @@ const UnMemoizedAttachmentUploadPreviewList = (
   );
 };
 
-export type AttachmentUploadPreviewListProps = Partial<AttachmentUploadListPreviewPropsWithContext>;
+export type AttachmentUploadPreviewListProps = Record<string, never>;
 
 const MemoizedAttachmentUploadPreviewListWithContext = React.memo(
   UnMemoizedAttachmentUploadPreviewList,
@@ -380,25 +370,7 @@ const MemoizedAttachmentUploadPreviewListWithContext = React.memo(
  * AttachmentUploadPreviewList
  * UI Component to preview the files set for upload
  */
-export const AttachmentUploadPreviewList = (props: AttachmentUploadPreviewListProps) => {
-  const {
-    AudioAttachmentUploadPreview,
-    FileAttachmentUploadPreview,
-    ImageAttachmentUploadPreview,
-    VideoAttachmentUploadPreview,
-  } = useMessageInputContext();
-  return (
-    <MemoizedAttachmentUploadPreviewListWithContext
-      {...{
-        AudioAttachmentUploadPreview,
-        FileAttachmentUploadPreview,
-        ImageAttachmentUploadPreview,
-        VideoAttachmentUploadPreview,
-      }}
-      {...props}
-    />
-  );
-};
+export const AttachmentUploadPreviewList = () => <MemoizedAttachmentUploadPreviewListWithContext />;
 
 const styles = StyleSheet.create({
   audioAttachmentsContainer: {

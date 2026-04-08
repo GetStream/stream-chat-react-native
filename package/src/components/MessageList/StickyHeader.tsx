@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
+import type { ComponentOverrides } from '../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import { getDateString } from '../../utils/i18n/getDateString';
@@ -8,7 +8,7 @@ import { getDateString } from '../../utils/i18n/getDateString';
 /**
  * Props for the StickyHeader component.
  */
-export type StickyHeaderProps = Pick<MessagesContextValue, 'DateHeader'> & {
+export type StickyHeaderProps = Pick<Required<ComponentOverrides>, 'DateHeader'> & {
   /**
    * Date to be displayed in the sticky header.
    */

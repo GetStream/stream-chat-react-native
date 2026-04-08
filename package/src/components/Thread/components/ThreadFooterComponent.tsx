@@ -3,10 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import type { ThreadState } from 'stream-chat';
 
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
@@ -16,8 +13,10 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { useStateStore } from '../../../hooks';
 import { primitives } from '../../../theme';
 
-type ThreadFooterComponentPropsWithContext = Pick<MessagesContextValue, 'Message'> &
-  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread' | 'threadInstance'>;
+type ThreadFooterComponentPropsWithContext = Pick<
+  ThreadContextValue,
+  'parentMessagePreventPress' | 'thread' | 'threadInstance'
+>;
 
 export const InlineLoadingMoreThreadIndicator = () => {
   const { threadLoadingMore } = useThreadContext();
@@ -43,7 +42,8 @@ const selector = (nextValue: ThreadState) =>
   }) as const;
 
 const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithContext) => {
-  const { Message, parentMessagePreventPress, thread, threadInstance } = props;
+  const { parentMessagePreventPress, thread, threadInstance } = props;
+  const { Message } = useComponentsContext();
   const { t } = useTranslationContext();
 
   const styles = useStyles();
@@ -131,18 +131,17 @@ const MemoizedThreadFooter = React.memo(
   areEqual,
 ) as typeof ThreadFooterComponentWithContext;
 
-export type ThreadFooterComponentProps = Partial<Pick<MessagesContextValue, 'Message'>> &
-  Partial<Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>>;
+export type ThreadFooterComponentProps = Partial<
+  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>
+>;
 
 export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
-  const { Message } = useMessagesContext();
   const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
     useThreadContext();
 
   return (
     <MemoizedThreadFooter
       {...{
-        Message,
         parentMessagePreventPress,
         thread,
         threadInstance,

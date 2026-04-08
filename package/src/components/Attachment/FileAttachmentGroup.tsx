@@ -1,30 +1,24 @@
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { Attachment as AttachmentDefault } from './Attachment';
-
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
-
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
-export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'files' | 'message'> &
-  Pick<MessagesContextValue, 'Attachment'> & {
-    styles?: Partial<{
-      attachmentContainer: StyleProp<ViewStyle>;
-      container: StyleProp<ViewStyle>;
-    }>;
-  };
+export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'files' | 'message'> & {
+  styles?: Partial<{
+    attachmentContainer: StyleProp<ViewStyle>;
+    container: StyleProp<ViewStyle>;
+  }>;
+};
 
 const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithContext) => {
-  const { Attachment, files, message, styles: stylesProp = {} } = props;
+  const { files, message, styles: stylesProp = {} } = props;
+  const { Attachment } = useComponentsContext();
 
   const {
     theme: {
@@ -75,8 +69,6 @@ export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
 
   const { files: contextFiles, message } = useMessageContext();
 
-  const { Attachment = AttachmentDefault, AudioAttachment } = useMessagesContext();
-
   const files = propFiles || contextFiles;
 
   if (!files.length) {
@@ -86,8 +78,6 @@ export const FileAttachmentGroup = (props: FileAttachmentGroupProps) => {
   return (
     <MemoizedFileAttachmentGroup
       {...{
-        Attachment,
-        AudioAttachment,
         files,
         message,
       }}

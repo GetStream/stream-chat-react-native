@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import dayjs from 'dayjs';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -15,7 +16,7 @@ import { primitives } from '../../../../theme';
 
 type AudioRecordingInProgressPropsWithContext = Pick<
   MessageInputContextValue,
-  'audioRecorderManager' | 'AudioRecordingWaveform'
+  'audioRecorderManager'
 > &
   Pick<AudioRecorderManagerState, 'duration' | 'waveformData'> & {
     /**
@@ -25,7 +26,8 @@ type AudioRecordingInProgressPropsWithContext = Pick<
   };
 
 const AudioRecordingInProgressWithContext = (props: AudioRecordingInProgressPropsWithContext) => {
-  const { AudioRecordingWaveform, maxDataPointsDrawn = 60, duration, waveformData } = props;
+  const { maxDataPointsDrawn = 60, duration, waveformData } = props;
+  const { AudioRecordingWaveform } = useComponentsContext();
 
   const styles = useStyles();
 
@@ -69,7 +71,7 @@ const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
  * Component displayed when the audio is in the recording state.
  */
 export const AudioRecordingInProgress = (props: AudioRecordingInProgressProps) => {
-  const { audioRecorderManager, AudioRecordingWaveform } = useMessageInputContext();
+  const { audioRecorderManager } = useMessageInputContext();
 
   const { duration, waveformData } = useStateStore(
     audioRecorderManager.state,
@@ -78,7 +80,7 @@ export const AudioRecordingInProgress = (props: AudioRecordingInProgressProps) =
 
   return (
     <MemoizedAudioRecordingInProgress
-      {...{ audioRecorderManager, AudioRecordingWaveform, duration, waveformData }}
+      {...{ audioRecorderManager, duration, waveformData }}
       {...props}
     />
   );

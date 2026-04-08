@@ -8,18 +8,17 @@ import { PollButtons, PollOption, ShowAllOptionsButton } from './components';
 import { usePollState } from './hooks/usePollState';
 
 import {
-  MessagesContextValue,
   PollContextProvider,
   PollContextValue,
   useTheme,
   useTranslationContext,
 } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 
 import { primitives } from '../../theme';
 import { defaultPollOptionCount } from '../../utils/constants';
 
-export type PollProps = Pick<PollContextValue, 'poll' | 'message'> &
-  Pick<MessagesContextValue, 'PollContent'>;
+export type PollProps = Pick<PollContextValue, 'poll' | 'message'>;
 
 export type PollContentProps = {
   PollButtons?: React.ComponentType;
@@ -91,16 +90,19 @@ export const PollContent = ({
   );
 };
 
-export const Poll = ({ message, poll, PollContent: PollContentOverride }: PollProps) => (
-  <PollContextProvider
-    value={{
-      message,
-      poll,
-    }}
-  >
-    {PollContentOverride ? <PollContentOverride /> : <PollContent />}
-  </PollContextProvider>
-);
+export const Poll = ({ message, poll }: PollProps) => {
+  const { PollContent: PollContentOverride } = useComponentsContext();
+  return (
+    <PollContextProvider
+      value={{
+        message,
+        poll,
+      }}
+    >
+      {PollContentOverride ? <PollContentOverride /> : <PollContent />}
+    </PollContextProvider>
+  );
+};
 
 const useStyles = () => {
   const {

@@ -3,6 +3,7 @@ import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { SwipableMessageWrapper } from './MessageBubble';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   Alignment,
   MessageContextValue,
@@ -214,20 +215,9 @@ export type MessageItemViewPropsWithContext = Pick<
     | 'enableMessageGroupingByUser'
     | 'enableSwipeToReply'
     | 'myMessageTheme'
-    | 'MessageAuthor'
-    | 'MessageContent'
-    | 'MessageDeleted'
-    | 'MessageError'
-    | 'MessageFooter'
-    | 'MessageHeader'
-    | 'MessageReplies'
-    | 'MessageSpacer'
-    | 'MessageSwipeContent'
     | 'messageSwipeToReplyHitSlop'
-    | 'ReactionListBottom'
     | 'reactionListPosition'
     | 'reactionListType'
-    | 'ReactionListTop'
   >;
 
 const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
@@ -242,6 +232,14 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     groupStyles,
     isMyMessage,
     message,
+    messageSwipeToReplyHitSlop = { left: width, right: width },
+    onlyEmojis,
+    otherAttachments,
+    reactionListPosition,
+    reactionListType,
+    setQuotedMessage,
+  } = props;
+  const {
     MessageAuthor,
     MessageContent,
     MessageDeleted,
@@ -251,15 +249,9 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     MessageReplies,
     MessageSpacer,
     MessageSwipeContent,
-    messageSwipeToReplyHitSlop = { left: width, right: width },
-    onlyEmojis,
-    otherAttachments,
     ReactionListBottom,
-    reactionListPosition,
-    reactionListType,
     ReactionListTop,
-    setQuotedMessage,
-  } = props;
+  } = useComponentsContext();
 
   const {
     theme: {
@@ -533,21 +525,10 @@ export const MessageItemView = (props: MessageItemViewProps) => {
     customMessageSwipeAction,
     enableMessageGroupingByUser,
     enableSwipeToReply,
-    MessageAuthor,
-    MessageContent,
-    MessageDeleted,
-    MessageError,
-    MessageFooter,
-    MessageHeader,
-    MessageReplies,
-    MessageSpacer,
-    MessageSwipeContent,
     messageSwipeToReplyHitSlop,
     myMessageTheme,
-    ReactionListBottom,
     reactionListPosition,
     reactionListType,
-    ReactionListTop,
   } = useMessagesContext();
 
   return (
@@ -562,23 +543,12 @@ export const MessageItemView = (props: MessageItemViewProps) => {
         groupStyles,
         isMyMessage,
         message,
-        MessageAuthor,
-        MessageContent,
-        MessageDeleted,
-        MessageError,
-        MessageFooter,
-        MessageHeader,
-        MessageReplies,
-        MessageSpacer,
-        MessageSwipeContent,
         messageSwipeToReplyHitSlop,
         myMessageTheme,
         onlyEmojis,
         otherAttachments,
-        ReactionListBottom,
         reactionListPosition,
         reactionListType,
-        ReactionListTop,
         setQuotedMessage,
         lastGroupMessage,
         members,

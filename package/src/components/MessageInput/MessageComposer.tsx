@@ -27,6 +27,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageComposerAPIContextValue,
   useMessageComposerAPIContext,
@@ -36,10 +37,6 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
@@ -160,36 +157,18 @@ type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
     | 'asyncMessagesLockDistance'
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
-    | 'AttachmentUploadPreviewList'
-    | 'AudioRecorder'
-    | 'AudioRecordingInProgress'
-    | 'AudioRecordingLockIndicator'
-    | 'AudioRecordingPreview'
-    | 'AutoCompleteSuggestionList'
     | 'closeAttachmentPicker'
     | 'compressImageQuality'
-    | 'Input'
-    | 'InputView'
     | 'inputBoxRef'
-    | 'InputButtons'
-    | 'MessageComposerLeadingView'
-    | 'MessageComposerTrailingView'
     | 'messageInputFloating'
     | 'messageInputHeightStore'
-    | 'MessageInputHeaderView'
-    | 'MessageInputTrailingView'
-    | 'SendButton'
-    | 'StartAudioRecordingButton'
     | 'uploadNewFile'
     | 'openPollCreationDialog'
     | 'closePollCreationDialog'
     | 'showPollCreationDialog'
     | 'sendMessage'
-    | 'CreatePollContent'
     | 'createPollOptionGap'
-    | 'StopMessageStreamingButton'
   > &
-  Pick<MessagesContextValue, 'Reply'> &
   Pick<TranslationContextValue, 't'> &
   Pick<MessageComposerAPIContextValue, 'clearEditingState'> &
   Pick<AudioRecorderManagerState, 'micLocked'> & {
@@ -210,23 +189,11 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     additionalTextInputProps,
     asyncMessagesLockDistance,
     asyncMessagesSlideToCancelDistance,
-    AudioRecorder,
-    AudioRecordingInProgress,
-    AudioRecordingLockIndicator,
-    AudioRecordingPreview,
-    AutoCompleteSuggestionList,
     closeAttachmentPicker,
     closePollCreationDialog,
-    CreatePollContent,
     createPollOptionGap,
-    InputView,
-    MessageComposerLeadingView,
-    MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
-    MessageInputHeaderView,
-    MessageInputTrailingView,
-    Input,
     inputBoxRef,
     isKeyboardVisible,
     members,
@@ -238,6 +205,20 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     isRecordingStateIdle,
     recordingStatus,
   } = props;
+
+  const {
+    AudioRecorder,
+    AudioRecordingInProgress,
+    AudioRecordingLockIndicator,
+    AudioRecordingPreview,
+    AutoCompleteSuggestionList,
+    Input,
+    InputView,
+    MessageComposerLeadingView,
+    MessageComposerTrailingView,
+    MessageInputHeaderView,
+    MessageInputTrailingView,
+  } = useComponentsContext();
 
   const styles = useStyles();
   const { selectedPicker } = useAttachmentPickerState();
@@ -486,7 +467,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
               <SafeAreaViewWrapper style={styles.pollSafeArea}>
                 <CreatePoll
                   closePollCreationDialog={closePollCreationDialog}
-                  CreatePollContent={CreatePollContent}
                   createPollOptionGap={createPollOptionGap}
                   sendMessage={sendMessage}
                 />
@@ -660,42 +640,22 @@ export const MessageComposer = (props: MessageComposerProps) => {
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
-    AttachmentUploadPreviewList,
-    AudioRecorder,
     audioRecordingEnabled,
-    AudioRecordingInProgress,
-    AudioRecordingLockIndicator,
-    AudioRecordingPreview,
-    AudioRecordingWaveform,
-    AutoCompleteSuggestionList,
     closeAttachmentPicker,
     closePollCreationDialog,
     compressImageQuality,
-    CreatePollContent,
-    Input,
-    InputView,
     inputBoxRef,
-    InputButtons,
-    MessageComposerLeadingView,
-    MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
-    MessageInputHeaderView,
-    MessageInputTrailingView,
     openPollCreationDialog,
-    SendButton,
     sendMessage,
-    SendMessageDisallowedIndicator,
     showPollCreationDialog,
-    StartAudioRecordingButton,
-    StopMessageStreamingButton,
     uploadNewFile,
   } = useMessageInputContext();
+  const { SendMessageDisallowedIndicator } = useComponentsContext();
   const messageComposer = useMessageComposer();
   const editing = !!messageComposer.editedMessage;
   const { clearEditingState } = useMessageComposerAPIContext();
-
-  const { Reply } = useMessagesContext();
   const isKeyboardVisible = useKeyboardVisibility();
 
   const { micLocked, isRecordingStateIdle, recordingStatus } = useStateStore(
@@ -725,43 +685,23 @@ export const MessageComposer = (props: MessageComposerProps) => {
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
         asyncMessagesSlideToCancelDistance,
-        AttachmentUploadPreviewList,
-        AudioRecorder,
         audioRecordingEnabled,
-        AudioRecordingInProgress,
-        AudioRecordingLockIndicator,
-        AudioRecordingPreview,
-        AudioRecordingWaveform,
-        AutoCompleteSuggestionList,
         channel,
         clearEditingState,
         closeAttachmentPicker,
         closePollCreationDialog,
         compressImageQuality,
-        CreatePollContent,
         // TODO: probably not needed anymore, please check
         editing,
-        Input,
-        InputView,
         inputBoxRef,
-        InputButtons,
-        MessageComposerLeadingView,
-        MessageComposerTrailingView,
         isKeyboardVisible,
         isOnline,
         members,
         messageInputFloating,
         messageInputHeightStore,
-        MessageInputHeaderView,
-        MessageInputTrailingView,
         openPollCreationDialog,
-        Reply,
-        SendButton,
         sendMessage,
-        SendMessageDisallowedIndicator,
         showPollCreationDialog,
-        StartAudioRecordingButton,
-        StopMessageStreamingButton,
         t,
         uploadNewFile,
         watchers,

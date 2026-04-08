@@ -29,6 +29,7 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -121,19 +122,15 @@ type MessageFlashListPropsWithContext = Pick<
     | 'channel'
     | 'channelUnreadStateStore'
     | 'disabled'
-    | 'EmptyStateIndicator'
     | 'hideStickyDateHeader'
     | 'highlightedMessageId'
     | 'loadChannelAroundMessage'
     | 'loading'
-    | 'LoadingIndicator'
     | 'markRead'
-    | 'NetworkDownIndicator'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'setChannelUnreadState'
     | 'setTargetedMessage'
-    | 'StickyHeader'
     | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
@@ -143,19 +140,7 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<
     MessagesContextValue,
-    | 'DateHeader'
-    | 'disableTypingIndicator'
-    | 'FlatList'
-    | 'InlineDateSeparator'
-    | 'InlineUnreadIndicator'
-    | 'Message'
-    | 'ScrollToBottomButton'
-    | 'MessageSystem'
-    | 'myMessageTheme'
-    | 'shouldShowUnreadUnderlay'
-    | 'TypingIndicator'
-    | 'TypingIndicatorContainer'
-    | 'UnreadMessagesNotification'
+    'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
   Pick<
     ThreadContextValue,
@@ -277,10 +262,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     channelUnreadStateStore,
     client,
     closePicker,
-    DateHeader,
     disabled,
     disableTypingIndicator,
-    EmptyStateIndicator,
     // FlatList,
     FooterComponent,
     HeaderComponent = InlineLoadingMoreIndicator,
@@ -288,7 +271,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     isLiveStreaming = false,
     loadChannelAroundMessage,
     loading,
-    LoadingIndicator,
     loadMore,
     loadMoreRecent,
     loadMoreRecentThread,
@@ -299,24 +281,29 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     messageInputHeightStore,
     myMessageTheme,
     readEvents,
-    NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
     reloadChannel,
-    ScrollToBottomButton,
     setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
-    StickyHeader,
     targetedMessage,
     thread,
     threadInstance,
     threadList = false,
+  } = props;
+  const {
+    DateHeader,
+    EmptyStateIndicator,
+    LoadingIndicator,
+    NetworkDownIndicator,
+    ScrollToBottomButton,
+    StickyHeader,
     TypingIndicator,
     TypingIndicatorContainer,
     UnreadMessagesNotification,
-  } = props;
+  } = useComponentsContext();
   const flashListRef = useRef<FlashListRef<LocalMessage> | null>(null);
 
   const { height: messageInputHeight } = useStateStore(
@@ -1181,7 +1168,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     channel,
     channelUnreadStateStore,
     disabled,
-    EmptyStateIndicator,
     enableMessageGroupingByUser,
     error,
     hideStickyDateHeader,
@@ -1189,34 +1175,18 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     isChannelActive,
     loadChannelAroundMessage,
     loading,
-    LoadingIndicator,
     markRead,
     maximumMessageLimit,
-    NetworkDownIndicator,
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
     setTargetedMessage,
-    StickyHeader,
     targetedMessage,
     threadList,
   } = useChannelContext();
   const { client } = useChatContext();
-  const {
-    DateHeader,
-    disableTypingIndicator,
-    FlatList,
-    InlineDateSeparator,
-    InlineUnreadIndicator,
-    Message,
-    MessageSystem,
-    myMessageTheme,
-    ScrollToBottomButton,
-    shouldShowUnreadUnderlay,
-    TypingIndicator,
-    TypingIndicatorContainer,
-    UnreadMessagesNotification,
-  } = useMessagesContext();
+  const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
+    useMessagesContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
@@ -1230,48 +1200,35 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         channelUnreadStateStore,
         client,
         closePicker,
-        DateHeader,
         disabled,
         disableTypingIndicator,
-        EmptyStateIndicator,
         enableMessageGroupingByUser,
         error,
         FlatList,
         hideStickyDateHeader,
         highlightedMessageId,
-        InlineDateSeparator,
-        InlineUnreadIndicator,
         isListActive: isChannelActive,
         loadChannelAroundMessage,
         loading,
-        LoadingIndicator,
         loadMore,
         loadMoreRecent,
         loadMoreRecentThread,
         loadMoreThread,
         markRead,
         maximumMessageLimit,
-        Message,
         messageInputFloating,
         messageInputHeightStore,
-        MessageSystem,
         myMessageTheme,
-        NetworkDownIndicator,
         readEvents,
         reloadChannel,
-        ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
         setChannelUnreadState,
         setTargetedMessage,
         shouldShowUnreadUnderlay,
-        StickyHeader,
         targetedMessage,
         thread,
         threadInstance,
         threadList,
-        TypingIndicator,
-        TypingIndicatorContainer,
-        UnreadMessagesNotification,
       }}
       {...props}
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}

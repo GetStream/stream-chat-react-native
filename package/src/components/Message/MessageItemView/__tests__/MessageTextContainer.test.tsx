@@ -5,6 +5,7 @@ import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { LocalMessage } from 'stream-chat';
 
+import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';

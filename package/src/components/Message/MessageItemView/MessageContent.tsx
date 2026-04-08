@@ -4,6 +4,7 @@ import { AnimatableNumericValue, ColorValue, Pressable, StyleSheet, View } from 
 import { MessageTextContainer } from './MessageTextContainer';
 
 import { useChatContext } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -67,19 +68,9 @@ export type MessageContentPropsWithContext = Pick<
   Pick<
     MessagesContextValue,
     | 'additionalPressableProps'
-    | 'Attachment'
     | 'enableMessageGroupingByUser'
-    | 'FileAttachmentGroup'
-    | 'Gallery'
     | 'isAttachmentEqual'
-    | 'MessageContentBottomView'
-    | 'MessageContentLeadingView'
-    | 'MessageLocation'
-    | 'MessageContentTrailingView'
-    | 'MessageContentTopView'
     | 'myMessageTheme'
-    | 'Reply'
-    | 'StreamingMessageView'
   > &
   Pick<TranslationContextValue, 't'> & {
     /**
@@ -115,37 +106,38 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   const {
     additionalPressableProps,
     alignment,
-    Attachment,
     backgroundColor,
     enableMessageGroupingByUser,
-    FileAttachmentGroup,
-    Gallery,
     groupStyles,
     isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
     message,
     messageContentOrder,
-    MessageContentBottomView,
-    MessageContentLeadingView,
     messageGroupedSingleOrBottom = false,
-    MessageLocation,
-    MessageContentTrailingView,
-    MessageContentTopView,
     noBorder,
     onLongPress,
     onPress,
     onPressIn,
     otherAttachments,
     preventPress,
-    Reply,
-    StreamingMessageView,
     hidePaddingTop,
     hidePaddingHorizontal,
     hidePaddingBottom,
   } = props;
   const { client } = useChatContext();
-  const { PollContent: PollContentOverride } = useMessagesContext();
+  const {
+    Attachment,
+    FileAttachmentGroup,
+    Gallery,
+    MessageContentBottomView,
+    MessageContentLeadingView,
+    MessageContentTopView,
+    MessageContentTrailingView,
+    MessageLocation,
+    Reply,
+    StreamingMessageView,
+  } = useComponentsContext();
   const replyStyles = useReplyStyles();
 
   const {
@@ -266,12 +258,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
               const pollId = message.poll_id;
               const poll = pollId && client.polls.fromState(pollId);
               return pollId && poll ? (
-                <Poll
-                  key={`poll_${message.poll_id}`}
-                  message={message}
-                  poll={poll}
-                  PollContent={PollContentOverride}
-                />
+                <Poll key={`poll_${message.poll_id}`} message={message} poll={poll} />
               ) : null;
             }
             case 'location':
@@ -560,19 +547,9 @@ export const MessageContent = (props: MessageContentProps) => {
   } = useMessageContext();
   const {
     additionalPressableProps,
-    Attachment,
     enableMessageGroupingByUser,
-    FileAttachmentGroup,
-    Gallery,
     isAttachmentEqual,
-    MessageContentBottomView,
-    MessageContentLeadingView,
-    MessageLocation,
-    MessageContentTrailingView,
-    MessageContentTopView,
     myMessageTheme,
-    Reply,
-    StreamingMessageView,
   } = useMessagesContext();
   const { t } = useTranslationContext();
   const isSingleFile = files.length === 1;
@@ -613,10 +590,7 @@ export const MessageContent = (props: MessageContentProps) => {
       {...{
         additionalPressableProps,
         alignment,
-        Attachment,
         enableMessageGroupingByUser,
-        FileAttachmentGroup,
-        Gallery,
         goToMessage,
         groupStyles,
         isAttachmentEqual,
@@ -624,19 +598,12 @@ export const MessageContent = (props: MessageContentProps) => {
         isMyMessage,
         message,
         messageContentOrder,
-        MessageContentBottomView,
-        MessageContentLeadingView,
-        MessageLocation,
-        MessageContentTrailingView,
-        MessageContentTopView,
         myMessageTheme,
         onLongPress,
         onPress,
         onPressIn,
         otherAttachments,
         preventPress,
-        Reply,
-        StreamingMessageView,
         t,
         threadList,
         hidePaddingTop,

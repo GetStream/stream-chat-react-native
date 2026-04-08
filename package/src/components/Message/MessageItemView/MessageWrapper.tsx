@@ -8,6 +8,7 @@ import { useMessageDateSeparator } from '../../../components/MessageList/hooks/u
 import { useMessageGroupStyles } from '../../../components/MessageList/hooks/useMessageGroupStyles';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useMessageListItemContext } from '../../../contexts/messageListItemContext/MessageListItemContext';
 import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { ThemeProvider, useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -40,15 +41,9 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
     maxTimeBetweenGroupedMessages,
     threadList,
   } = useChannelContext();
-  const {
-    getMessageGroupStyle,
-    InlineDateSeparator,
-    InlineUnreadIndicator,
-    Message,
-    MessageSystem,
-    myMessageTheme,
-    shouldShowUnreadUnderlay,
-  } = useMessagesContext();
+  const { InlineDateSeparator, InlineUnreadIndicator, Message, MessageSystem } =
+    useComponentsContext();
+  const { getMessageGroupStyle, myMessageTheme, shouldShowUnreadUnderlay } = useMessagesContext();
   const { goToMessage, onThreadSelect, noGroupByUser, modifiedTheme } = useMessageListItemContext();
 
   const dateSeparatorDate = useMessageDateSeparator({

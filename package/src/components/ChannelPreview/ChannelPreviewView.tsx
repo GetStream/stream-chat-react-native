@@ -2,11 +2,6 @@ import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ChannelPreviewProps } from './ChannelPreview';
-import { ChannelPreviewMessage } from './ChannelPreviewMessage';
-import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
-import { ChannelPreviewStatus } from './ChannelPreviewStatus';
-import { ChannelPreviewTitle } from './ChannelPreviewTitle';
-import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
 
 import { LastMessageType } from './hooks/useChannelPreviewData';
 
@@ -14,25 +9,14 @@ import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
-import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
 
 export type ChannelPreviewViewPropsWithContext = Pick<ChannelPreviewProps, 'channel'> &
-  Pick<
-    ChannelsContextValue,
-    | 'maxUnreadCount'
-    | 'onSelect'
-    | 'PreviewAvatar'
-    | 'PreviewMessage'
-    | 'PreviewMutedStatus'
-    | 'PreviewStatus'
-    | 'PreviewTitle'
-    | 'PreviewUnreadCount'
-    | 'mutedStatusPosition'
-  > & {
+  Pick<ChannelsContextValue, 'maxUnreadCount' | 'onSelect' | 'mutedStatusPosition'> & {
     /**
      * Formatter function for date of latest message.
      * @param date Message date
@@ -57,16 +41,18 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
     maxUnreadCount,
     muted,
     onSelect,
-    PreviewAvatar = ChannelAvatar,
-    PreviewMessage = ChannelPreviewMessage,
-    PreviewMutedStatus = ChannelPreviewMutedStatus,
-    PreviewStatus = ChannelPreviewStatus,
-    PreviewTitle = ChannelPreviewTitle,
-    PreviewUnreadCount = ChannelPreviewUnreadCount,
     unread,
     mutedStatusPosition,
     lastMessage,
   } = props;
+  const {
+    PreviewAvatar,
+    PreviewMessage,
+    PreviewMutedStatus,
+    PreviewStatus,
+    PreviewTitle,
+    PreviewUnreadCount,
+  } = useComponentsContext();
 
   const {
     theme: {
@@ -158,28 +144,13 @@ const MemoizedChannelPreviewViewWithContext = React.memo(
  * from the ChannelPreview component.
  */
 export const ChannelPreviewView = (props: ChannelPreviewViewProps) => {
-  const {
-    forceUpdate,
-    maxUnreadCount,
-    onSelect,
-    PreviewMessage,
-    PreviewMutedStatus,
-    PreviewStatus,
-    PreviewTitle,
-    PreviewUnreadCount,
-    mutedStatusPosition,
-  } = useChannelsContext();
+  const { forceUpdate, maxUnreadCount, onSelect, mutedStatusPosition } = useChannelsContext();
   return (
     <MemoizedChannelPreviewViewWithContext
       {...{
         forceUpdate,
         maxUnreadCount,
         onSelect,
-        PreviewMessage,
-        PreviewMutedStatus,
-        PreviewStatus,
-        PreviewTitle,
-        PreviewUnreadCount,
         mutedStatusPosition,
       }}
       {...props}

@@ -12,13 +12,14 @@ import Animated, {
 
 import { MessageItemViewPropsWithContext } from './MessageItemView';
 
-import { MessagesContextValue, useTheme } from '../../../contexts';
+import { useTheme } from '../../../contexts';
+import type { ComponentOverrides } from '../../../contexts/componentsContext/ComponentsContext';
 
 import { NativeHandlers } from '../../../native';
 
 const AnimatedWrapper = Animated.createAnimatedComponent(View);
 
-type SwipableMessageWrapperProps = Pick<MessagesContextValue, 'MessageSwipeContent'> &
+type SwipableMessageWrapperProps = Pick<Required<ComponentOverrides>, 'MessageSwipeContent'> &
   Pick<MessageItemViewPropsWithContext, 'messageSwipeToReplyHitSlop'> & {
     children: ReactNode;
     onSwipe: () => void;

@@ -6,6 +6,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 
 import { LocalMessage, ReactionResponse } from 'stream-chat';
 
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessagesContextValue,
   MessagesProvider,
