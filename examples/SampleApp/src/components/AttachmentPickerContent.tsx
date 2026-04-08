@@ -20,7 +20,7 @@ export const CustomAttachmentPickerContent = (props: AttachmentPickerContentProp
   } = useTheme();
 
   const Icon = useCallback(
-    () => <ShareLocationIcon stroke={semantics.textTertiary} />,
+    () => <ShareLocationIcon width={32} height={32} stroke={semantics.textTertiary} />,
     [semantics.textTertiary],
   );
 

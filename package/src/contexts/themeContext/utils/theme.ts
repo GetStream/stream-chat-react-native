@@ -107,6 +107,7 @@ export type Theme = {
     bottomSheetContentContainer: ViewStyle;
     durationText: TextStyle;
     content: {
+      actionContainer: ViewStyle;
       container: ViewStyle;
       infoContainer: ViewStyle;
       text: TextStyle;
@@ -1030,6 +1031,7 @@ export const defaultTheme: Theme = {
     bottomSheetContentContainer: {},
     durationText: {},
     content: {
+      actionContainer: {},
       container: {},
       infoContainer: {},
       text: {},
