@@ -617,7 +617,8 @@ export const MessageContent = (props: MessageContentProps) => {
   const messageHasSingleFile =
     messageContentOrder.length === 1 && messageContentOrder[0] === 'files' && isSingleFile;
   const messageHasOnlyText = messageContentOrder.length === 1 && messageContentOrder[0] === 'text';
-  const messageHasGiphyOrImgur =
+  const messageHasStandaloneGiphyOrImgur =
+    !message.quoted_message &&
     otherAttachments.filter(
       (file) => file.type === FileTypes.Giphy || file.type === FileTypes.Imgur,
     ).length > 0;
@@ -627,17 +628,20 @@ export const MessageContent = (props: MessageContentProps) => {
     messageHasSingleMedia ||
     messageHasSingleFile ||
     messageHasOnlyText ||
-    messageHasGiphyOrImgur;
+    messageHasStandaloneGiphyOrImgur;
 
   const hidePaddingHorizontal =
-    messageHasPoll || messageHasSingleMedia || messageHasSingleFile || messageHasGiphyOrImgur;
+    messageHasPoll ||
+    messageHasSingleMedia ||
+    messageHasSingleFile ||
+    messageHasStandaloneGiphyOrImgur;
 
   const hidePaddingBottom =
     messageHasPoll ||
     messageHasSingleMedia ||
     messageHasSingleFile ||
     messageHasOnlyText ||
-    messageHasGiphyOrImgur ||
+    messageHasStandaloneGiphyOrImgur ||
     (messageContentOrder.length > 1 &&
       messageContentOrder[messageContentOrder.length - 1] === 'text');
 

@@ -7,7 +7,10 @@ import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
-import { generateVideoAttachment } from '../../../../mock-builders/generator/attachment';
+import {
+  generateGiphyAttachment,
+  generateVideoAttachment,
+} from '../../../../mock-builders/generator/attachment';
 import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
@@ -324,6 +327,46 @@ describe('MessageContent', () => {
     expect(contentContainerStyle.paddingTop).toBe(0);
     expect(contentContainerStyle.paddingHorizontal).toBe(0);
     expect(contentContainerStyle.paddingBottom).toBe(0);
+  });
+
+  it('keeps content padding for a quoted reply with a giphy attachment', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [generateGiphyAttachment()],
+      quoted_message: generateMessage({ text: 'quoted message', user }),
+      text: '',
+      user,
+    });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
+      expect(screen.getByTestId('giphy-attachment')).toBeTruthy();
+    });
+
+    const giphyAttachment = screen.getByTestId('giphy-attachment');
+    let ancestor = giphyAttachment.parent;
+    let contentContainerStyle;
+
+    while (ancestor && !contentContainerStyle) {
+      const flattenedStyle = StyleSheet.flatten(ancestor.props.style);
+      if (
+        flattenedStyle &&
+        'paddingTop' in flattenedStyle &&
+        'paddingHorizontal' in flattenedStyle &&
+        'paddingBottom' in flattenedStyle
+      ) {
+        contentContainerStyle = flattenedStyle;
+        break;
+      }
+      ancestor = ancestor.parent;
+    }
+
+    expect(contentContainerStyle).toBeTruthy();
+    expect(contentContainerStyle.paddingTop).toBeGreaterThan(0);
+    expect(contentContainerStyle.paddingHorizontal).toBeGreaterThan(0);
+    expect(contentContainerStyle.paddingBottom).toBeGreaterThan(0);
   });
 
   it('renders the FileAttachment component when a file attachment exists', async () => {
