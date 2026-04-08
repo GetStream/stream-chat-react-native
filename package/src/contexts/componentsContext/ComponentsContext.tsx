@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext, useMemo } from 'react';
 
 import type { View } from 'react-native';
 
-import type { UserResponse } from 'stream-chat';
+import type { PollOption, UserResponse } from 'stream-chat';
 
 import type {
   AttachmentPickerContentProps,
@@ -31,6 +31,7 @@ import type { AutoCompleteSuggestionListProps } from '../../components/AutoCompl
 import type { InputViewProps } from '../../components/AutoCompleteInput/InputView';
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import type { ChannelDetailsBottomSheetProps } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
+import type { ChannelDetailsHeaderProps } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
 import type { ChannelLastMessagePreviewProps } from '../../components/ChannelPreview/ChannelLastMessagePreview';
 import type { ChannelMessagePreviewDeliveryStatusProps } from '../../components/ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 import type { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
@@ -39,6 +40,7 @@ import type { ChannelPreviewTitleProps } from '../../components/ChannelPreview/C
 import type { ChannelPreviewTypingIndicatorProps } from '../../components/ChannelPreview/ChannelPreviewTypingIndicator';
 import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPreview/ChannelPreviewUnreadCount';
 import type { ChannelPreviewViewProps } from '../../components/ChannelPreview/ChannelPreviewView';
+import type { ImageGalleryVideoControlProps } from '../../components/ImageGallery/components/types';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
@@ -105,6 +107,8 @@ import type { MessageUserReactionsProps } from '../../components/MessageMenu/Mes
 import type { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/MessageUserReactionsAvatar';
 import type { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
 import type { ReplyProps } from '../../components/Reply/Reply';
+import type { ThreadListItemMessagePreviewProps } from '../../components/ThreadList/ThreadListItemMessagePreview';
+import type { ThreadMessagePreviewDeliveryStatusProps } from '../../components/ThreadList/ThreadMessagePreviewDeliveryStatus';
 import type { ChannelAvatarProps } from '../../components/ui/Avatar/ChannelAvatar';
 import type { MessageLocationProps } from '../messagesContext/MessagesContext';
 
@@ -256,6 +260,40 @@ export type ComponentOverrides = {
   ChannelDetailsBottomSheet?: React.ComponentType<ChannelDetailsBottomSheetProps>;
   Skeleton?: React.ComponentType;
   ListHeaderComponent?: React.ComponentType;
+
+  // === Chat components ===
+  ChatLoadingIndicator?: React.ComponentType | null;
+
+  // === Channel details ===
+  ChannelDetailsHeader?: React.ComponentType<ChannelDetailsHeaderProps>;
+
+  // === Thread components ===
+  ThreadMessageComposer?: React.ComponentType<MessageComposerProps>;
+  ThreadListComponent?: React.ComponentType;
+  ThreadListEmptyPlaceholder?: React.ComponentType;
+  ThreadListItem?: React.ComponentType;
+  ThreadListItemMessagePreview?: React.ComponentType<ThreadListItemMessagePreviewProps>;
+  ThreadListLoadingIndicator?: React.ComponentType;
+  ThreadListLoadingMoreIndicator?: React.ComponentType;
+  ThreadListUnreadBanner?: React.ComponentType;
+  ThreadMessagePreviewDeliveryStatus?: React.ComponentType<ThreadMessagePreviewDeliveryStatusProps>;
+
+  // === Poll components ===
+  PollButtons?: React.ComponentType;
+  PollHeader?: React.ComponentType;
+  PollAllOptionsContent?: React.ComponentType<{ additionalScrollViewProps?: object }>;
+  PollAnswersListContent?: React.ComponentType<{ additionalFlatListProps?: object }>;
+  PollResultsContent?: React.ComponentType<{ additionalScrollViewProps?: object }>;
+  PollOptionFullResultsContent?: React.ComponentType<{
+    option: PollOption;
+    additionalFlatListProps?: object;
+  }>;
+
+  // === ImageGallery components ===
+  ImageGalleryVideoControls?: React.ComponentType<ImageGalleryVideoControlProps>;
+
+  // === UIComponents ===
+  ImageComponent?: React.ComponentType;
 };
 
 const ComponentsContext = React.createContext<ComponentOverrides>({});

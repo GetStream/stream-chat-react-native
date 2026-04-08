@@ -4,6 +4,8 @@ import { Text } from 'react-native';
 import { act, render } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
+import { ThemeProvider, defaultTheme } from '../../../contexts';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
 import * as ChannelActionItemsModule from '../../ChannelList/hooks/useChannelActionItems';
 import * as ChannelActionsModule from '../../ChannelList/hooks/useChannelActions';
@@ -32,6 +34,7 @@ const mockSwipableWrapper = jest.fn(
 );
 
 jest.mock('../../../contexts', () => ({
+  ...jest.requireActual('../../../contexts'),
   useTheme: () => ({
     theme: {
       semantics: {
@@ -112,9 +115,13 @@ describe('ChannelSwipableWrapper', () => {
     });
 
     render(
-      <ChannelSwipableWrapper channel={channel} ChannelDetailsBottomSheet={customBottomSheet}>
-        <Text>child</Text>
-      </ChannelSwipableWrapper>,
+      <ThemeProvider theme={defaultTheme}>
+        <WithComponents value={{ ChannelDetailsBottomSheet: customBottomSheet }}>
+          <ChannelSwipableWrapper channel={channel}>
+            <Text>child</Text>
+          </ChannelSwipableWrapper>
+        </WithComponents>
+      </ThemeProvider>,
     );
 
     expect(customBottomSheet).toHaveBeenCalledWith(
@@ -178,9 +185,13 @@ describe('ChannelSwipableWrapper', () => {
     });
 
     render(
-      <ChannelSwipableWrapper channel={channel} ChannelDetailsBottomSheet={customBottomSheet}>
-        <Text>child</Text>
-      </ChannelSwipableWrapper>,
+      <ThemeProvider theme={defaultTheme}>
+        <WithComponents value={{ ChannelDetailsBottomSheet: customBottomSheet }}>
+          <ChannelSwipableWrapper channel={channel}>
+            <Text>child</Text>
+          </ChannelSwipableWrapper>
+        </WithComponents>
+      </ThemeProvider>,
     );
 
     expect(customBottomSheet).toHaveBeenCalledWith(

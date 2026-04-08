@@ -4,6 +4,7 @@ import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-na
 
 import type { ImageGalleryFooterProps, ImageGalleryVideoControlProps } from './types';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -42,7 +43,8 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 });
 
 export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) => {
-  const { accessibilityLabel, opacity, openGridView, visible, ImageGalleryVideoControls } = props;
+  const { accessibilityLabel, opacity, openGridView, visible } = props;
+  const { ImageGalleryVideoControls } = useComponentsContext();
 
   const [height, setHeight] = useState(200);
   const [savingInProgress, setSavingInProgress] = useState(false);

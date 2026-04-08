@@ -26,6 +26,7 @@ import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/Ch
 import { ChannelListHeaderNetworkDownIndicator } from '../../components/ChannelList/ChannelListHeaderNetworkDownIndicator';
 import { Skeleton } from '../../components/ChannelList/Skeleton';
 import { ChannelDetailsBottomSheet } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
+import { ChannelDetailsHeader } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
 import { ChannelLastMessagePreview } from '../../components/ChannelPreview/ChannelLastMessagePreview';
 import { ChannelMessagePreviewDeliveryStatus } from '../../components/ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewMessage } from '../../components/ChannelPreview/ChannelPreviewMessage';
@@ -35,6 +36,7 @@ import { ChannelPreviewTitle } from '../../components/ChannelPreview/ChannelPrev
 import { ChannelPreviewTypingIndicator } from '../../components/ChannelPreview/ChannelPreviewTypingIndicator';
 import { ChannelPreviewUnreadCount } from '../../components/ChannelPreview/ChannelPreviewUnreadCount';
 import { ChannelPreviewView } from '../../components/ChannelPreview/ChannelPreviewView';
+import { ImageGalleryVideoControl } from '../../components/ImageGallery/components/ImageGalleryVideoControl';
 import { EmptyStateIndicator } from '../../components/Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator } from '../../components/Indicators/LoadingErrorIndicator';
 import { LoadingIndicator } from '../../components/Indicators/LoadingIndicator';
@@ -90,6 +92,7 @@ import { InputButtons } from '../../components/MessageInput/components/InputButt
 import { AttachButton } from '../../components/MessageInput/components/InputButtons/AttachButton';
 import { CooldownTimer } from '../../components/MessageInput/components/OutputButtons/CooldownTimer';
 import { SendButton } from '../../components/MessageInput/components/OutputButtons/SendButton';
+import { MessageComposer } from '../../components/MessageInput/MessageComposer';
 import { MessageComposerLeadingView } from '../../components/MessageInput/MessageComposerLeadingView';
 import { MessageComposerTrailingView } from '../../components/MessageInput/MessageComposerTrailingView';
 import { MessageInputFooterView } from '../../components/MessageInput/MessageInputFooterView';
@@ -117,7 +120,23 @@ import { MessageReactionPicker } from '../../components/MessageMenu/MessageReact
 import { MessageUserReactions } from '../../components/MessageMenu/MessageUserReactions';
 import { MessageUserReactionsAvatar } from '../../components/MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItem } from '../../components/MessageMenu/MessageUserReactionsItem';
+import { PollAnswersListContent } from '../../components/Poll/components/PollAnswersList';
+import { PollButtons } from '../../components/Poll/components/PollButtons';
+import { PollAllOptionsContent } from '../../components/Poll/components/PollOption';
+import { PollOptionFullResultsContent } from '../../components/Poll/components/PollResults/PollOptionFullResults';
+import { PollResultsContent } from '../../components/Poll/components/PollResults/PollResults';
+import { PollHeader } from '../../components/Poll/Poll';
 import { Reply } from '../../components/Reply/Reply';
+import {
+  DefaultThreadListComponent as ThreadListComponent,
+  DefaultThreadListEmptyPlaceholder,
+  DefaultThreadListLoadingIndicator,
+  DefaultThreadListLoadingNextIndicator,
+} from '../../components/ThreadList/ThreadList';
+import { ThreadListItemComponent as ThreadListItem } from '../../components/ThreadList/ThreadListItem';
+import { ThreadListItemMessagePreview } from '../../components/ThreadList/ThreadListItemMessagePreview';
+import { ThreadListUnreadBanner } from '../../components/ThreadList/ThreadListUnreadBanner';
+import { ThreadMessagePreviewDeliveryStatus } from '../../components/ThreadList/ThreadMessagePreviewDeliveryStatus';
 import { ChannelAvatar } from '../../components/ui/Avatar/ChannelAvatar';
 
 /**
@@ -240,4 +259,32 @@ export const DEFAULT_COMPONENTS = {
   URLPreviewCompact,
   VideoAttachmentUploadPreview,
   VideoThumbnail,
+
+  // Chat
+  ChatLoadingIndicator: null,
+
+  // Channel details
+  ChannelDetailsHeader,
+
+  // Thread
+  ThreadMessageComposer: MessageComposer,
+  ThreadListComponent,
+  ThreadListEmptyPlaceholder: DefaultThreadListEmptyPlaceholder,
+  ThreadListItem,
+  ThreadListItemMessagePreview,
+  ThreadListLoadingIndicator: DefaultThreadListLoadingIndicator,
+  ThreadListLoadingMoreIndicator: DefaultThreadListLoadingNextIndicator,
+  ThreadListUnreadBanner,
+  ThreadMessagePreviewDeliveryStatus,
+
+  // Poll
+  PollButtons,
+  PollHeader,
+  PollAllOptionsContent,
+  PollAnswersListContent,
+  PollResultsContent,
+  PollOptionFullResultsContent,
+
+  // ImageGallery
+  ImageGalleryVideoControls: ImageGalleryVideoControl,
 } satisfies Partial<ComponentOverrides>;

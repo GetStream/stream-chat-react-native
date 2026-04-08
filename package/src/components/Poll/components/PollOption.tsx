@@ -16,6 +16,7 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 
 import { Check } from '../../../icons';
 import { primitives } from '../../../theme';
@@ -32,7 +33,6 @@ export type PollOptionProps = {
 
 export type PollAllOptionsContentProps = PollContextValue & {
   additionalScrollViewProps?: Partial<ScrollViewProps>;
-  PollAllOptionsContent?: React.ComponentType;
 };
 
 export const PollAllOptionsContent = ({
@@ -75,16 +75,14 @@ export const PollAllOptions = ({
   additionalScrollViewProps,
   message,
   poll,
-  PollAllOptionsContent: PollAllOptionsContentOverride,
-}: PollAllOptionsContentProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollAllOptionsContentOverride ? (
-      <PollAllOptionsContentOverride />
-    ) : (
-      <PollAllOptionsContent additionalScrollViewProps={additionalScrollViewProps} />
-    )}
-  </PollContextProvider>
-);
+}: PollAllOptionsContentProps) => {
+  const { PollAllOptionsContent: PollAllOptionsContentComponent } = useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollAllOptionsContentComponent additionalScrollViewProps={additionalScrollViewProps} />
+    </PollContextProvider>
+  );
+};
 
 export const PollOption = ({ option, showProgressBar = true, forceIncoming }: PollOptionProps) => {
   const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();

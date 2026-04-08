@@ -10,6 +10,7 @@ import { useIsOnline } from './hooks/useIsOnline';
 
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { DeepPartial, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
@@ -95,12 +96,6 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      */
     i18nInstance?: Streami18n;
     /**
-     * Custom loading indicator component to be used to represent the loading state of the chat.
-     *
-     * This can be used during the phase when db is not initialised.
-     */
-    LoadingIndicator?: React.ComponentType | null;
-    /**
      * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/themeContext/utils/theme.ts)
      *
      * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#theme) for details.
@@ -146,9 +141,9 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     i18nInstance,
     ImageComponent = Image,
     isMessageAIGenerated,
-    LoadingIndicator = null,
     style,
   } = props;
+  const { ChatLoadingIndicator } = useComponentsContext();
 
   const [channel, setChannel] = useState<Channel>();
 
@@ -266,7 +261,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   if (userID && enableOfflineSupport && !initialisedDatabase) {
     // if user id has been set and offline support is enabled, we need to wait for database to be initialised
-    return LoadingIndicator ? <LoadingIndicator /> : null;
+    return ChatLoadingIndicator ? <ChatLoadingIndicator /> : null;
   }
 
   return (

@@ -66,7 +66,6 @@ type ImageGalleryWithContextProps = Pick<
   | 'numberOfImageGalleryGridColumns'
   | 'ImageGalleryHeader'
   | 'ImageGalleryFooter'
-  | 'ImageGalleryVideoControls'
   | 'ImageGalleryGrid'
 > &
   Pick<OverlayContextValue, 'overlayOpacity'>;
@@ -77,7 +76,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     overlayOpacity,
     ImageGalleryHeader,
     ImageGalleryFooter,
-    ImageGalleryVideoControls,
     ImageGalleryGrid,
   } = props;
   const [isGridViewVisible, setIsGridViewVisible] = useState(false);
@@ -345,7 +343,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
           opacity={headerFooterOpacity}
           openGridView={openGridView}
           visible={headerFooterVisible}
-          ImageGalleryVideoControls={ImageGalleryVideoControls}
         />
       ) : null}
 
@@ -374,7 +371,6 @@ export const ImageGallery = (props: ImageGalleryProps) => {
     numberOfImageGalleryGridColumns,
     ImageGalleryHeader,
     ImageGalleryFooter,
-    ImageGalleryVideoControls,
     ImageGalleryGrid,
   } = useImageGalleryContext();
   const { overlayOpacity } = useOverlayContext();
@@ -384,7 +380,6 @@ export const ImageGallery = (props: ImageGalleryProps) => {
       overlayOpacity={overlayOpacity}
       ImageGalleryHeader={ImageGalleryHeader}
       ImageGalleryFooter={ImageGalleryFooter}
-      ImageGalleryVideoControls={ImageGalleryVideoControls}
       ImageGalleryGrid={ImageGalleryGrid}
       {...props}
     />

@@ -6,7 +6,6 @@ import type {
   ImageGalleryFooterProps,
   ImageGalleryGridProps,
   ImageGalleryHeaderProps,
-  ImageGalleryVideoControlProps,
 } from '../../components/ImageGallery/components/types';
 import { ImageGalleryStateStore } from '../../state-store/image-gallery-state-store';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -19,7 +18,6 @@ export type ImageGalleryProviderProps = {
   numberOfImageGalleryGridColumns?: number;
   ImageGalleryHeader?: React.ComponentType<ImageGalleryHeaderProps>;
   ImageGalleryFooter?: React.ComponentType<ImageGalleryFooterProps>;
-  ImageGalleryVideoControls?: React.ComponentType<ImageGalleryVideoControlProps>;
   ImageGalleryGrid?: React.ComponentType<ImageGalleryGridProps>;
 };
 

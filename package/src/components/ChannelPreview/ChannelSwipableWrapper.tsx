@@ -5,11 +5,10 @@ import { SharedValue } from 'react-native-reanimated';
 
 import { Channel } from 'stream-chat';
 
-import { ChannelDetailsBottomSheet as DefaultChannelDetailsBottomSheet } from './ChannelDetailsBottomSheet';
-import type { ChannelDetailsBottomSheetProps } from './ChannelDetailsBottomSheet';
 import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
 import { useTheme } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { MenuPointHorizontal, Mute, Sound } from '../../icons';
 import { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
@@ -33,15 +32,14 @@ export const OpenChannelDetailsButton = () => {
 export const ChannelSwipableWrapper = ({
   channel,
   getChannelActionItems,
-  ChannelDetailsBottomSheet: ChannelDetailsBottomSheetComponent = DefaultChannelDetailsBottomSheet,
   swipableProps: _swipableProps,
   children,
 }: PropsWithChildren<{
   channel: Channel;
-  ChannelDetailsBottomSheet?: React.ComponentType<ChannelDetailsBottomSheetProps>;
   getChannelActionItems?: GetChannelActionItems;
   swipableProps?: SwipableWrapperProps['swipableProps'];
 }>) => {
+  const { ChannelDetailsBottomSheet: ChannelDetailsBottomSheetComponent } = useComponentsContext();
   const [channelDetailSheetOpen, setChannelDetailSheetOpen] = useState(false);
   const { muteChannel, unmuteChannel } = useChannelActions(channel);
   const channelActionItems = useChannelActionItems({ channel, getChannelActionItems });

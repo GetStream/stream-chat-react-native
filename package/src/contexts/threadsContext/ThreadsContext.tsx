@@ -4,8 +4,6 @@ import { FlatListProps } from 'react-native';
 
 import { Channel, Thread } from 'stream-chat';
 
-import type { ThreadListItemMessagePreviewProps } from '../../components/ThreadList/ThreadListItemMessagePreview';
-import type { ThreadMessagePreviewDeliveryStatusProps } from '../../components/ThreadList/ThreadMessagePreviewDeliveryStatus';
 import { ThreadType } from '../threadContext/ThreadContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -19,13 +17,6 @@ export type ThreadsContextValue = {
   additionalFlatListProps?: Partial<FlatListProps<Thread>>;
   loadMore?: () => Promise<void>;
   onThreadSelect?: (thread: ThreadType, channel: Channel) => void;
-  ThreadListEmptyPlaceholder?: React.ComponentType;
-  ThreadListItem?: React.ComponentType;
-  ThreadListItemMessagePreview?: React.ComponentType<ThreadListItemMessagePreviewProps>;
-  ThreadListLoadingIndicator?: React.ComponentType;
-  ThreadListLoadingMoreIndicator?: React.ComponentType;
-  ThreadListUnreadBanner?: React.ComponentType;
-  ThreadMessagePreviewDeliveryStatus?: React.ComponentType<ThreadMessagePreviewDeliveryStatusProps>;
 };
 
 export const ThreadsContext = React.createContext(

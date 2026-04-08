@@ -9,7 +9,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { ChannelList } from '../../components/ChannelList/ChannelList';
 import { Chat } from '../../components/Chat/Chat';
-import { useChannelsContext } from '../../contexts/channelsContext/ChannelsContext';
 import { WithComponents } from '../../contexts/componentsContext/ComponentsContext';
 import { getOrCreateChannelApi } from '../../mock-builders/api/getOrCreateChannel';
 import { queryChannelsApi } from '../../mock-builders/api/queryChannels';
@@ -55,8 +54,8 @@ import { BetterSqlite } from '../../test-utils/BetterSqlite';
  */
 const ChannelPreviewComponent = ({ channel }) => (
   <View accessibilityLabel='list-item' testID={channel.cid}>
-    <Text>{channel.data.name}</Text>
-    <Text>{channel.state.messages[0]?.text}</Text>
+    <Text>{channel.data?.name}</Text>
+    <Text>{channel.state?.messages?.[0]?.text}</Text>
   </View>
 );
 
@@ -209,7 +208,7 @@ export const Generic = () => {
       render(
         <Chat client={chatClient} enableOfflineSupport>
           <WithComponents value={{ Preview: ChannelPreviewComponent }}>
-            <ChannelList filters={filters} sort={sort} />
+            <ChannelList filters={filters} sort={sort} swipeActionsEnabled={false} />
           </WithComponents>
         </Chat>,
       );
@@ -516,13 +515,26 @@ export const Generic = () => {
       useMockedApis(chatClient, [getOrCreateChannelApi(newChannel)]);
 
       await act(() => dispatchNotificationMessageNewEvent(chatClient, newChannel.channel));
+
+      // Verify the new channel appears on the UI
       await waitFor(() => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
           .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(newChannel.channel.cid)).toBeTruthy();
       });
-      await expectAllChannelsWithStateToBeInDB(screen.queryAllByLabelText);
+
+      // Verify the new channel and its state are persisted in the DB
+      await waitFor(async () => {
+        const channelsRows = await BetterSqlite.selectFromTable('channels');
+        const messagesRows = await BetterSqlite.selectFromTable('messages');
+
+        expect(channelsRows.length).toBe(channels.length);
+        expect(messagesRows.length).toBe(allMessages.length);
+
+        const matchingChannelRow = channelsRows.filter((c) => c.id === newChannel.channel.id);
+        expect(matchingChannelRow.length).toBe(1);
+      });
     });
 
     it('should update a message in database', async () => {
@@ -695,15 +707,18 @@ export const Generic = () => {
       const newChannel = createChannel();
       useMockedApis(chatClient, [getOrCreateChannelApi(newChannel)]);
 
-      act(() => dispatchNotificationAddedToChannel(chatClient, newChannel.channel));
+      await act(() => dispatchNotificationAddedToChannel(chatClient, newChannel.channel));
 
-      await waitFor(async () => {
+      // Verify the new channel appears on the UI
+      await waitFor(() => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
           .map((node) => node._fiber.pendingProps.testID);
         expect(channelIdsOnUI.includes(newChannel.channel.cid)).toBeTruthy();
+      });
 
-        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+      // Verify the new channel is persisted in the DB
+      await waitFor(async () => {
         const channelsRows = await BetterSqlite.selectFromTable('channels');
         const matchingChannelsRows = channelsRows.filter((c) => c.id === newChannel.channel.id);
 

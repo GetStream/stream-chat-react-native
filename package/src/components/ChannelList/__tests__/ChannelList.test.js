@@ -12,7 +12,10 @@ import {
 } from '@testing-library/react-native';
 
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
-import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
+import {
+  useComponentsContext,
+  WithComponents,
+} from '../../../contexts/componentsContext/ComponentsContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
@@ -72,6 +75,16 @@ const RefreshingProbe = () => {
 
 const ChannelPreviewContent = ({ unread }) => <Text testID='preview-unread'>{`${unread}`}</Text>;
 
+let expectedChannelDetailsBottomSheetOverride;
+const ChannelDetailsBottomSheetProbe = () => {
+  const { ChannelDetailsBottomSheet } = useComponentsContext();
+  return (
+    <Text testID='channel-details-bottom-sheet-override'>
+      {`${ChannelDetailsBottomSheet === expectedChannelDetailsBottomSheetOverride}`}
+    </Text>
+  );
+};
+
 class DeferredPromise {
   constructor() {
     this.promise = new Promise((resolve, reject) => {
@@ -92,6 +105,7 @@ describe('ChannelList', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    expectedChannelDetailsBottomSheetOverride = undefined;
     chatClient = await getTestClientWithUser({ id: 'dan' });
     testChannel1 = generateChannelResponse();
     testChannel2 = generateChannelResponse();
@@ -323,45 +337,45 @@ describe('ChannelList', () => {
   it('should expose ChannelDetailsBottomSheet override via WithComponents', async () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
     const ChannelDetailsBottomSheetOverride = () => null;
+    expectedChannelDetailsBottomSheetOverride = ChannelDetailsBottomSheetOverride;
 
-    render(
+    const { getByTestId } = render(
       <Chat client={chatClient}>
         <WithComponents
           value={{
             ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
-            Preview: ChannelPreviewContent,
+            Preview: ChannelDetailsBottomSheetProbe,
           }}
         >
-          <ChannelList {...props} swipeActionsEnabled={true} />
+          <ChannelList {...props} />
         </WithComponents>
       </Chat>,
     );
 
-    await waitFor(() => expect(mockChannelSwipableWrapper).toHaveBeenCalled());
-    const swipableWrapperProps = mockChannelSwipableWrapper.mock.calls[0]?.[0];
-    expect(swipableWrapperProps.ChannelDetailsBottomSheet).toBe(ChannelDetailsBottomSheetOverride);
+    await waitFor(() => expect(getByTestId('channel-details-bottom-sheet-override')).toBeTruthy());
+    expect(getByTestId('channel-details-bottom-sheet-override')).toHaveTextContent('true');
   });
 
   it('should pass ChannelDetailsBottomSheet override to ChannelSwipableWrapper', async () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
     const ChannelDetailsBottomSheetOverride = () => null;
+    expectedChannelDetailsBottomSheetOverride = ChannelDetailsBottomSheetOverride;
 
-    render(
+    const { getByTestId } = render(
       <Chat client={chatClient}>
         <WithComponents
           value={{
             ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
-            Preview: ChannelPreviewContent,
+            Preview: ChannelDetailsBottomSheetProbe,
           }}
         >
-          <ChannelList {...props} swipeActionsEnabled={true} />
+          <ChannelList {...props} />
         </WithComponents>
       </Chat>,
     );
 
-    await waitFor(() => expect(mockChannelSwipableWrapper).toHaveBeenCalled());
-    const swipableWrapperProps = mockChannelSwipableWrapper.mock.calls[0]?.[0];
-    expect(swipableWrapperProps.ChannelDetailsBottomSheet).toBe(ChannelDetailsBottomSheetOverride);
+    await waitFor(() => expect(getByTestId('channel-details-bottom-sheet-override')).toBeTruthy());
+    expect(getByTestId('channel-details-bottom-sheet-override')).toHaveTextContent('true');
   });
 
   describe('Event handling', () => {

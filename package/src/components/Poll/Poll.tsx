@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { PollOption as PollOptionClass } from 'stream-chat';
 
-import { PollButtons, PollOption, ShowAllOptionsButton } from './components';
+import { PollOption, ShowAllOptionsButton } from './components';
 
 import { usePollState } from './hooks/usePollState';
 
@@ -20,10 +20,7 @@ import { defaultPollOptionCount } from '../../utils/constants';
 
 export type PollProps = Pick<PollContextValue, 'poll' | 'message'>;
 
-export type PollContentProps = {
-  PollButtons?: React.ComponentType;
-  PollHeader?: React.ComponentType;
-};
+export type PollContentProps = Record<string, never>;
 
 export const PollHeader = () => {
   const styles = useStyles();
@@ -59,12 +56,11 @@ export const PollHeader = () => {
   );
 };
 
-export const PollContent = ({
-  PollButtons: PollButtonsOverride,
-  PollHeader: PollHeaderOverride,
-}: PollContentProps) => {
+export const PollContent = () => {
   const { options } = usePollState();
   const styles = useStyles();
+  const { PollButtons: PollButtonsComponent, PollHeader: PollHeaderComponent } =
+    useComponentsContext();
 
   const {
     theme: {
@@ -76,7 +72,7 @@ export const PollContent = ({
 
   return (
     <View style={[styles.container, container]}>
-      {PollHeaderOverride ? <PollHeaderOverride /> : <PollHeader />}
+      <PollHeaderComponent />
       <View style={[styles.optionsWrapper, optionsWrapper]}>
         {options
           ?.slice(0, defaultPollOptionCount)
@@ -85,7 +81,7 @@ export const PollContent = ({
           ))}
         <ShowAllOptionsButton />
       </View>
-      {PollButtonsOverride ? <PollButtonsOverride /> : <PollButtons />}
+      <PollButtonsComponent />
     </View>
   );
 };
