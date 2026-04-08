@@ -104,7 +104,9 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     return (
       <View style={styles.container}>
         <PollIcon height={16} width={16} stroke={semantics.textSecondary} />
-        <Text style={styles.subtitle}>{pollLabel}</Text>
+        <Text ellipsizeMode='tail' numberOfLines={1} style={styles.subtitle}>
+          {pollLabel}
+        </Text>
       </View>
     );
   }
