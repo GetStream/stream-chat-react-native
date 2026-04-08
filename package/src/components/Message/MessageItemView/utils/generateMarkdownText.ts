@@ -9,8 +9,10 @@ export const generateMarkdownText = (text?: string) => {
     return null;
   }
 
+  const normalizedText = text.replace(/\uFFFC/g, ' ');
+
   // Trim the extra spaces from the text.
-  let resultText = text.trim();
+  let resultText = normalizedText.trim();
 
   // List of all the links present in the text.
   const linkInfos = parseLinksFromText(resultText);
@@ -24,7 +26,7 @@ export const generateMarkdownText = (text?: string) => {
     // Eg: Hi @getstream.io -> Hi @[getstream.io](getstream.io).
     const normalRegEx = new RegExp(escapeRegExp(linkInfo.raw), 'g');
     const markdown = `[${displayLink}](${linkInfo.url})`;
-    resultText = text.replace(normalRegEx, markdown);
+    resultText = normalizedText.replace(normalRegEx, markdown);
 
     // After previous step, in some cases, the mentioned user after `@` might have a link/email so we convert it back to normal raw text.
     // Eg: Hi, @[test.user@gmail.com](mailto:test.user@gmail.com) to @test.user@gmail.com.
