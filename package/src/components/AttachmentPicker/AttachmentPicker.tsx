@@ -8,6 +8,8 @@ import {
   LayoutChangeEvent,
 } from 'react-native';
 
+import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+
 import { useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -119,8 +121,36 @@ export const AttachmentPicker = () => {
     [semantics.backgroundCoreElevation1],
   );
 
+  const animatedIndex = useSharedValue(currentIndex);
+
+  // This is required to prevent the attachment picker from getting out of sync
+  // with the rest of the state. While there are more prudent fixes, this is about
+  // as much as we can do now without refactoring the entire state layer for the
+  // picker. When we do that, this can be removed completely.
+  const reactToIndex = useStableCallback((index: number) => {
+    if (index === -1) {
+      attachmentPickerStore.setSelectedPicker(undefined);
+    }
+
+    if (index === 0) {
+      // TODO: Extend the store to at least accept a default value.
+      //       This in particular is not nice.
+      attachmentPickerStore.setSelectedPicker('images');
+    }
+  });
+
+  useAnimatedReaction(
+    () => animatedIndex.value,
+    (index, previousIndex) => {
+      if ((index === 0 || index === -1) && index !== previousIndex) {
+        runOnJS(reactToIndex)(index);
+      }
+    },
+  );
+
   return (
     <BottomSheet
+      android_keyboardInputMode='adjustResize'
       backgroundStyle={backgroundStyle}
       enablePanDownToClose={false}
       enableContentPanningGesture={false}
@@ -128,6 +158,7 @@ export const AttachmentPicker = () => {
       handleComponent={RenderNull}
       index={currentIndex}
       onAnimate={setCurrentIndex}
+      animatedIndex={animatedIndex}
       // @ts-ignore
       ref={ref}
       snapPoints={snapPoints}

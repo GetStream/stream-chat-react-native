@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { EventSubscription, Keyboard } from 'react-native';
+import { EventSubscription, Keyboard, Platform } from 'react-native';
 
 import { KeyboardControllerPackage } from '../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
@@ -24,8 +24,16 @@ export const useKeyboardVisibility = () => {
         ),
       );
     } else {
-      listeners.push(Keyboard.addListener('keyboardWillShow', () => setIsKeyboardVisible(true)));
-      listeners.push(Keyboard.addListener('keyboardWillHide', () => setIsKeyboardVisible(false)));
+      listeners.push(
+        Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () =>
+          setIsKeyboardVisible(true),
+        ),
+      );
+      listeners.push(
+        Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () =>
+          setIsKeyboardVisible(false),
+        ),
+      );
     }
 
     return () => listeners.forEach((listener) => listener.remove());
