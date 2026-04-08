@@ -169,6 +169,7 @@ export const MultipleVotesSettings = () => {
             LeadingIcon={Minus}
             onPress={decrementMaxVotes}
             disabled={decrementDisabled}
+            style={decrementDisabled ? styles.buttonDisabled : styles.buttonEnabled}
             testID='max-votes-decrement'
           />
           <MaxVotesTextInput />
@@ -180,6 +181,7 @@ export const MultipleVotesSettings = () => {
             LeadingIcon={Plus}
             onPress={incrementMaxVotes}
             disabled={incrementDisabled}
+            style={incrementDisabled ? styles.buttonDisabled : styles.buttonEnabled}
             testID='max-votes-increment'
           />
         </Animated.View>
@@ -234,6 +236,12 @@ const useStyles = () => {
         paddingHorizontal: primitives.spacingSm,
         paddingVertical: primitives.spacingMd,
         textAlign: I18nManager.isRTL ? 'right' : 'left',
+      },
+      buttonEnabled: {
+        borderColor: semantics.borderCoreOnSurface,
+      },
+      buttonDisabled: {
+        borderColor: semantics.borderUtilityDisabledOnSurface,
       },
     });
   }, [semantics]);

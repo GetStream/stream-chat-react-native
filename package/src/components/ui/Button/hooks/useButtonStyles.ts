@@ -79,7 +79,7 @@ export const useButtonStyles = ({ variant, type }: ButtonStylesConfig) => {
         borderColor: semantics.buttonSecondaryBorder,
         disabledForegroundColor: semantics.textDisabled,
         disabledBackgroundColor: undefined,
-        disabledBorderColor: semantics.buttonSecondaryBorder,
+        disabledBorderColor: semantics.borderUtilityDisabled,
       },
       secondaryGhost: {
         foregroundColor: semantics.buttonSecondaryText,
