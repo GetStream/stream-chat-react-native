@@ -121,6 +121,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     FileAttachmentGroup,
     Gallery,
     groupStyles,
+    goToMessage,
     isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
@@ -221,7 +222,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   const { setNativeScrollability } = useMessageListItemContext();
   const hasContentSideViews = !!(MessageContentLeadingView || MessageContentTrailingView);
-
   const contentBody = (
     <>
       <View
@@ -240,12 +240,45 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
             case 'quoted_reply':
               return (
                 message.quoted_message && (
-                  <View
+                  <Pressable
+                    disabled={!goToMessage}
                     key={`quoted_reply_${messageContentOrderIndex}`}
+                    onLongPress={(event) => {
+                      if (onLongPress) {
+                        onLongPress({
+                          emitter: 'messageContent',
+                          event,
+                        });
+                      }
+                    }}
+                    onPress={(event) => {
+                      if (!message.quoted_message || !goToMessage) {
+                        return;
+                      }
+
+                      if (onPress) {
+                        onPress({
+                          defaultHandler: () => goToMessage(message.quoted_message!.id),
+                          emitter: 'messageContent',
+                          event,
+                        });
+                        return;
+                      }
+
+                      goToMessage(message.quoted_message.id);
+                    }}
+                    onPressIn={(event) => {
+                      if (onPressIn) {
+                        onPressIn({
+                          emitter: 'messageContent',
+                          event,
+                        });
+                      }
+                    }}
                     style={[styles.replyContainer, replyContainer]}
                   >
                     <Reply mode='reply' styles={replyStyles} />
-                  </View>
+                  </Pressable>
                 )
               );
             case 'attachments':
