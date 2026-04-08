@@ -251,6 +251,7 @@ const useStyles = () => {
         flexDirection: 'row',
         flexShrink: 0,
         gap: primitives.spacingXs,
+        minHeight: 20,
       },
       votesText: {
         color: semantics.chatTextIncoming,
