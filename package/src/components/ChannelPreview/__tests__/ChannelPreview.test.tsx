@@ -7,6 +7,7 @@ import type { Channel, StreamChat } from 'stream-chat';
 
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   getOrCreateChannelApi,
   GetOrCreateChannelApiParams,
@@ -83,12 +84,9 @@ describe('ChannelPreview', () => {
 
     return (
       <Chat client={chatClient}>
-        <ChannelPreview
-          {...props}
-          channel={channel}
-          client={chatClient}
-          Preview={ChannelPreviewUIComponent}
-        />
+        <WithComponents value={{ Preview: ChannelPreviewUIComponent }}>
+          <ChannelPreview {...props} channel={channel} client={chatClient} />
+        </WithComponents>
       </Chat>
     );
   };
@@ -436,18 +434,23 @@ describe('ChannelPreview', () => {
 
       return (
         <Chat client={chatClient}>
-          <ChannelsProvider
-            value={
-              {
-                ChannelDetailsBottomSheet: channelDetailsBottomSheet,
-                Preview: SwipePreview,
-                getChannelActionItems: undefined,
-                swipeActionsEnabled,
-              } as unknown as ChannelsContextValue
-            }
+          <WithComponents
+            value={{
+              ChannelDetailsBottomSheet: channelDetailsBottomSheet,
+              Preview: SwipePreview,
+            }}
           >
-            <ChannelPreview channel={channel} client={chatClient} Preview={SwipePreview} />
-          </ChannelsProvider>
+            <ChannelsProvider
+              value={
+                {
+                  getChannelActionItems: undefined,
+                  swipeActionsEnabled,
+                } as unknown as ChannelsContextValue
+              }
+            >
+              <ChannelPreview channel={channel} client={chatClient} />
+            </ChannelsProvider>
+          </WithComponents>
         </Chat>
       );
     };

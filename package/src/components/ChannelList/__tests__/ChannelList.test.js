@@ -12,6 +12,7 @@ import {
 } from '@testing-library/react-native';
 
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
@@ -30,7 +31,6 @@ import { generateChannel, generateChannelResponse } from '../../../mock-builders
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { ChannelPreview } from '../../ChannelPreview/ChannelPreview';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
 
@@ -43,66 +43,34 @@ jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
 }));
 
 /**
- * We are gonna use following custom UI components for preview and list.
- * If we use ChannelPreviewView or ChannelPreviewLastMessage here, then changes
- * to those components might end up breaking tests for ChannelList, which will be quite painful
- * to debug.
+ * Custom Preview component used via WithComponents to verify channel rendering.
+ * Receives { channel, muted, unread, lastMessage } from ChannelPreview.
  */
-const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
-  <View accessibilityLabel='list-item' onPress={setActiveChannel} testID={channel.id}>
+const ChannelPreviewComponent = ({ channel }) => (
+  <View accessibilityLabel='list-item' testID={channel.id}>
     <Text>{channel.data?.name}</Text>
     <Text>{channel.state.messages[0]?.text}</Text>
   </View>
 );
 
-const ChannelListComponent = (props) => {
-  const { channels, onSelect } = useChannelsContext();
-  return (
-    <View testID='channel-list'>
-      {channels?.map((channel) => (
-        <ChannelPreviewComponent
-          {...props}
-          channel={channel}
-          key={channel.id}
-          setActiveChannel={onSelect}
-        />
-      ))}
-    </View>
-  );
-};
-
-const ChannelListSwipeActionsProbe = () => {
+/**
+ * Probe that reads swipeActionsEnabled from ChannelsContext.
+ * Used as a Preview override to inspect context values.
+ */
+const SwipeActionsProbe = () => {
   const { swipeActionsEnabled } = useChannelsContext();
   return <Text testID='swipe-actions-enabled'>{`${swipeActionsEnabled}`}</Text>;
 };
 
-const ChannelListRefreshingProbe = () => {
+/**
+ * Probe that reads refreshing from ChannelsContext.
+ */
+const RefreshingProbe = () => {
   const { refreshing } = useChannelsContext();
   return <Text testID='refreshing'>{`${refreshing}`}</Text>;
 };
 
 const ChannelPreviewContent = ({ unread }) => <Text testID='preview-unread'>{`${unread}`}</Text>;
-
-const ChannelListWithChannelPreview = () => {
-  const { channels } = useChannelsContext();
-  return (
-    <View testID='channel-list-with-channel-preview'>
-      {channels?.map((channel) => (
-        <ChannelPreview channel={channel} key={channel.id} Preview={ChannelPreviewContent} />
-      ))}
-    </View>
-  );
-};
-
-let expectedChannelDetailsBottomSheetOverride;
-const ChannelListChannelDetailsBottomSheetProbe = () => {
-  const { ChannelDetailsBottomSheet } = useChannelsContext();
-  return (
-    <Text testID='channel-details-bottom-sheet-override'>
-      {`${ChannelDetailsBottomSheet === expectedChannelDetailsBottomSheetOverride}`}
-    </Text>
-  );
-};
 
 class DeferredPromise {
   constructor() {
@@ -120,13 +88,10 @@ describe('ChannelList', () => {
   let testChannel3;
   const props = {
     filters: {},
-    List: ChannelListComponent,
-    Preview: ChannelPreviewComponent,
   };
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    expectedChannelDetailsBottomSheetOverride = undefined;
     chatClient = await getTestClientWithUser({ id: 'dan' });
     testChannel1 = generateChannelResponse();
     testChannel2 = generateChannelResponse();
@@ -140,11 +105,13 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} />
+        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+          <ChannelList {...props} />
+        </WithComponents>
       </Chat>,
     );
 
-    await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+    await waitFor(() => expect(getByTestId('channel-list-view')).toBeTruthy());
   });
 
   it('should render a preview of each channel', async () => {
@@ -152,7 +119,9 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} />
+        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+          <ChannelList {...props} />
+        </WithComponents>
       </Chat>,
     );
 
@@ -164,12 +133,14 @@ describe('ChannelList', () => {
 
     render(
       <Chat client={chatClient}>
-        <ChannelList {...props} />
+        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+          <ChannelList {...props} />
+        </WithComponents>
       </Chat>,
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('channel-list')).toBeTruthy();
+      expect(screen.getByTestId('channel-list-view')).toBeTruthy();
       expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy();
     });
 
@@ -177,7 +148,9 @@ describe('ChannelList', () => {
 
     screen.rerender(
       <Chat client={chatClient}>
-        <ChannelList {...props} filters={{ dummyFilter: true }} />
+        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+          <ChannelList {...props} filters={{ dummyFilter: true }} />
+        </WithComponents>
       </Chat>,
     );
 
@@ -191,8 +164,22 @@ describe('ChannelList', () => {
     const deferredCallForFreshFilter = new DeferredPromise();
     const staleFilter = { 'initial-filter': { a: { $gt: 'c' } } };
     const freshFilter = { 'new-filter': { a: { $gt: 'c' } } };
-    const staleChannel = [generateChannel({ id: 'stale-channel' })];
-    const freshChannel = [generateChannel({ id: 'new-channel' })];
+    const createMockChannel = (id) => {
+      const channel = generateChannel({
+        data: { name: id },
+        id,
+        state: { latestMessages: [], members: {}, messages: [], setIsUpToDate: jest.fn() },
+      });
+      channel.countUnread = () => 0;
+      channel.muteStatus = () => ({ muted: false });
+      channel.on = jest.fn(() => ({ unsubscribe: jest.fn() }));
+      channel.messageComposer = {
+        registerDraftEventSubscriptions: jest.fn(() => jest.fn()),
+      };
+      return channel;
+    };
+    const staleChannel = [createMockChannel('stale-channel')];
+    const freshChannel = [createMockChannel('new-channel')];
     const spy = jest.spyOn(chatClient, 'queryChannels');
     spy.mockImplementation((filters = {}) => {
       if (Object.prototype.hasOwnProperty.call(filters, 'new-filter')) {
@@ -203,7 +190,9 @@ describe('ChannelList', () => {
 
     const { rerender, queryByTestId } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} filters={staleFilter} />
+        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+          <ChannelList {...props} filters={staleFilter} />
+        </WithComponents>
       </Chat>,
     );
 
@@ -216,12 +205,14 @@ describe('ChannelList', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('channel-list')).toBeTruthy();
+      expect(queryByTestId('channel-list-view')).toBeTruthy();
     });
 
     rerender(
       <Chat client={chatClient}>
-        <ChannelList {...props} filters={freshFilter} />
+        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+          <ChannelList {...props} filters={freshFilter} />
+        </WithComponents>
       </Chat>,
     );
 
@@ -238,7 +229,7 @@ describe('ChannelList', () => {
       deferredCallForFreshFilter.resolve(freshChannel);
     });
     await waitFor(() => {
-      expect(queryByTestId('channel-list')).toBeTruthy();
+      expect(queryByTestId('channel-list-view')).toBeTruthy();
       expect(queryByTestId('new-channel')).toBeTruthy();
     });
   });
@@ -249,7 +240,9 @@ describe('ChannelList', () => {
 
     render(
       <Chat client={chatClient}>
-        <ChannelList {...props} onSelect={setActiveChannel} />
+        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+          <ChannelList {...props} onSelect={setActiveChannel} />
+        </WithComponents>
       </Chat>,
     );
 
@@ -269,7 +262,9 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} List={ChannelListSwipeActionsProbe} swipeActionsEnabled={false} />
+        <WithComponents value={{ Preview: SwipeActionsProbe }}>
+          <ChannelList {...props} swipeActionsEnabled={false} />
+        </WithComponents>
       </Chat>,
     );
 
@@ -282,7 +277,9 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} List={ChannelListSwipeActionsProbe} />
+        <WithComponents value={{ Preview: SwipeActionsProbe }}>
+          <ChannelList {...props} />
+        </WithComponents>
       </Chat>,
     );
 
@@ -295,11 +292,13 @@ describe('ChannelList', () => {
 
     const { getByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} List={ChannelListWithChannelPreview} swipeActionsEnabled={false} />
+        <WithComponents value={{ Preview: ChannelPreviewContent }}>
+          <ChannelList {...props} swipeActionsEnabled={false} />
+        </WithComponents>
       </Chat>,
     );
 
-    await waitFor(() => expect(getByTestId('channel-list-with-channel-preview')).toBeTruthy());
+    await waitFor(() => expect(getByTestId('channel-list-view')).toBeTruthy());
     expect(getByTestId('preview-unread')).toHaveTextContent('0');
     expect(queryByTestId('swipe-wrapper')).toBeNull();
     expect(mockChannelSwipableWrapper).not.toHaveBeenCalled();
@@ -310,32 +309,37 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} List={ChannelListWithChannelPreview} swipeActionsEnabled={true} />
+        <WithComponents value={{ Preview: ChannelPreviewContent }}>
+          <ChannelList {...props} swipeActionsEnabled={true} />
+        </WithComponents>
       </Chat>,
     );
 
-    await waitFor(() => expect(getByTestId('channel-list-with-channel-preview')).toBeTruthy());
+    await waitFor(() => expect(getByTestId('channel-list-view')).toBeTruthy());
     expect(getByTestId('swipe-wrapper')).toBeTruthy();
     expect(mockChannelSwipableWrapper).toHaveBeenCalledTimes(1);
   });
 
-  it('should expose ChannelDetailsBottomSheet override in ChannelsContext', async () => {
+  it('should expose ChannelDetailsBottomSheet override via WithComponents', async () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
     const ChannelDetailsBottomSheetOverride = () => null;
-    expectedChannelDetailsBottomSheetOverride = ChannelDetailsBottomSheetOverride;
 
-    const { getByTestId } = render(
+    render(
       <Chat client={chatClient}>
-        <ChannelList
-          {...props}
-          ChannelDetailsBottomSheet={ChannelDetailsBottomSheetOverride}
-          List={ChannelListChannelDetailsBottomSheetProbe}
-        />
+        <WithComponents
+          value={{
+            ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
+            Preview: ChannelPreviewContent,
+          }}
+        >
+          <ChannelList {...props} swipeActionsEnabled={true} />
+        </WithComponents>
       </Chat>,
     );
 
-    await waitFor(() => expect(getByTestId('channel-details-bottom-sheet-override')).toBeTruthy());
-    expect(getByTestId('channel-details-bottom-sheet-override')).toHaveTextContent('true');
+    await waitFor(() => expect(mockChannelSwipableWrapper).toHaveBeenCalled());
+    const swipableWrapperProps = mockChannelSwipableWrapper.mock.calls[0]?.[0];
+    expect(swipableWrapperProps.ChannelDetailsBottomSheet).toBe(ChannelDetailsBottomSheetOverride);
   });
 
   it('should pass ChannelDetailsBottomSheet override to ChannelSwipableWrapper', async () => {
@@ -344,21 +348,20 @@ describe('ChannelList', () => {
 
     render(
       <Chat client={chatClient}>
-        <ChannelList
-          {...props}
-          ChannelDetailsBottomSheet={ChannelDetailsBottomSheetOverride}
-          List={ChannelListWithChannelPreview}
-        />
+        <WithComponents
+          value={{
+            ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
+            Preview: ChannelPreviewContent,
+          }}
+        >
+          <ChannelList {...props} swipeActionsEnabled={true} />
+        </WithComponents>
       </Chat>,
     );
 
     await waitFor(() => expect(mockChannelSwipableWrapper).toHaveBeenCalled());
     const swipableWrapperProps = mockChannelSwipableWrapper.mock.calls[0]?.[0];
-    expect(swipableWrapperProps).toEqual(
-      expect.objectContaining({
-        ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
-      }),
-    );
+    expect(swipableWrapperProps.ChannelDetailsBottomSheet).toBe(ChannelDetailsBottomSheetOverride);
   });
 
   describe('Event handling', () => {
@@ -378,11 +381,13 @@ describe('ChannelList', () => {
       it('should move channel to top of the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
-        await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+        await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
 
         const newMessage = sendNewMessageOnChannel3();
 
@@ -400,11 +405,13 @@ describe('ChannelList', () => {
       it('should add channel to top if channel is hidden from the list', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
-        await waitFor(() => expect(screen.getByTestId('channel-list')).toBeTruthy());
+        await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
         act(() => dispatchChannelHiddenEvent(chatClient, testChannel3.channel));
 
         const newItems = screen.getAllByLabelText('list-item');
@@ -428,7 +435,9 @@ describe('ChannelList', () => {
       it('should not alter order if `lockChannelOrder` prop is true', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList lockChannelOrder={true} Preview={props.Preview} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList lockChannelOrder={true} />
+            </WithComponents>
           </Chat>,
         );
 
@@ -452,12 +461,14 @@ describe('ChannelList', () => {
         const onNewMessage = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onNewMessage={onNewMessage} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onNewMessage={onNewMessage} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchMessageNewEvent(chatClient, testChannel2.channel));
@@ -479,11 +490,13 @@ describe('ChannelList', () => {
       it('should move a channel to top of the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchNotificationMessageNewEvent(chatClient, testChannel3.channel));
@@ -501,12 +514,14 @@ describe('ChannelList', () => {
         const onNewMessage = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onNewMessage={onNewMessage} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onNewMessage={onNewMessage} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchMessageNewEvent(chatClient, testChannel2.channel));
@@ -520,12 +535,14 @@ describe('ChannelList', () => {
         const onNewMessageNotification = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onNewMessageNotification={onNewMessageNotification} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onNewMessageNotification={onNewMessageNotification} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchNotificationMessageNewEvent(chatClient, testChannel2.channel));
@@ -547,12 +564,14 @@ describe('ChannelList', () => {
       it('should move a channel to top of the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchNotificationAddedToChannelEvent(chatClient, testChannel3.channel));
@@ -572,12 +591,14 @@ describe('ChannelList', () => {
         const onAddedToChannel = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchNotificationAddedToChannelEvent(chatClient, testChannel3.channel));
@@ -596,12 +617,14 @@ describe('ChannelList', () => {
       it('should remove the channel from list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         const items = screen.getAllByLabelText('list-item');
@@ -621,12 +644,14 @@ describe('ChannelList', () => {
         const onRemovedFromChannel = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchNotificationRemovedFromChannel(chatClient, testChannel3.channel));
@@ -645,12 +670,14 @@ describe('ChannelList', () => {
       it('should update a channel in the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() =>
@@ -669,12 +696,14 @@ describe('ChannelList', () => {
         const onChannelUpdated = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() =>
@@ -698,12 +727,14 @@ describe('ChannelList', () => {
       it('should remove a channel from the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         const items = screen.getAllByLabelText('list-item');
@@ -723,12 +754,14 @@ describe('ChannelList', () => {
         const onChannelDeleted = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchChannelDeletedEvent(chatClient, testChannel2.channel));
@@ -747,12 +780,14 @@ describe('ChannelList', () => {
       it('should hide a channel from the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         const items = screen.getAllByLabelText('list-item');
@@ -772,12 +807,14 @@ describe('ChannelList', () => {
         const onChannelHidden = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onChannelHidden={onChannelHidden} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onChannelHidden={onChannelHidden} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchChannelHiddenEvent(chatClient, testChannel2.channel));
@@ -795,12 +832,14 @@ describe('ChannelList', () => {
 
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchConnectionRecoveredEvent(chatClient));
@@ -821,7 +860,9 @@ describe('ChannelList', () => {
 
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} List={ChannelListRefreshingProbe} />
+            <WithComponents value={{ Preview: RefreshingProbe }}>
+              <ChannelList {...props} />
+            </WithComponents>
           </Chat>,
         );
 
@@ -854,12 +895,14 @@ describe('ChannelList', () => {
         const onChannelTruncated = jest.fn();
         render(
           <Chat client={chatClient}>
-            <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
+            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+              <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
+            </WithComponents>
           </Chat>,
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list')).toBeTruthy();
+          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
         act(() => dispatchChannelTruncatedEvent(chatClient, testChannel1.channel));

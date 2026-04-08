@@ -4,8 +4,6 @@ import type { View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
-import { DEFAULT_COMPONENTS } from './defaultComponents';
-
 import type {
   AttachmentPickerContentProps,
   InlineUnreadIndicatorProps,
@@ -260,7 +258,7 @@ export type ComponentOverrides = {
   ListHeaderComponent?: React.ComponentType;
 };
 
-const ComponentsContext = React.createContext<ComponentOverrides>(DEFAULT_COMPONENTS);
+const ComponentsContext = React.createContext<ComponentOverrides>({});
 
 /**
  * Provider to override UI components at any level of the tree.
@@ -289,9 +287,25 @@ export const WithComponents = ({
   return <ComponentsContext.Provider value={merged}>{children}</ComponentsContext.Provider>;
 };
 
+// Lazy-loaded to break circular dependency:
+// defaultComponents.ts → imports components → components import useComponentsContext from this file
+let cachedDefaults: ComponentOverrides | undefined;
+const getDefaults = (): ComponentOverrides => {
+  if (!cachedDefaults) {
+    cachedDefaults = (require('./defaultComponents') as { DEFAULT_COMPONENTS: ComponentOverrides })
+      .DEFAULT_COMPONENTS;
+  }
+  return cachedDefaults;
+};
+
 /**
  * Hook to access resolved component overrides.
- * Returns all components with defaults filled in.
+ * Returns all components with defaults filled in — user overrides merged over defaults.
  */
-export const useComponentsContext = () =>
-  useContext(ComponentsContext) as Required<ComponentOverrides>;
+export const useComponentsContext = () => {
+  const overrides = useContext(ComponentsContext);
+  return useMemo(
+    () => ({ ...getDefaults(), ...overrides }) as Required<ComponentOverrides>,
+    [overrides],
+  );
+};

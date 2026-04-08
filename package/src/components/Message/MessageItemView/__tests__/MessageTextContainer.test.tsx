@@ -44,10 +44,13 @@ describe('MessageTextContainer', () => {
 
     rerender(
       <ThemeProvider theme={defaultTheme}>
-        <MessageTextContainer
-          message={message as unknown as LocalMessage}
-          MessageText={({ message }) => <Text testID='message-text'>{message?.text}</Text>}
-        />
+        <WithComponents
+          value={{
+            MessageText: ({ message }) => <Text testID='message-text'>{message?.text}</Text>,
+          }}
+        >
+          <MessageTextContainer message={message as unknown as LocalMessage} />
+        </WithComponents>
       </ThemeProvider>,
     );
 

@@ -1,11 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import {
-  ChannelsProvider,
-  useChannelsContext,
-} from '../../../contexts/channelsContext/ChannelsContext';
+import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
@@ -16,43 +13,67 @@ import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
 import { ChannelListView } from '../ChannelListView';
 
-let mockChannels;
 let chatClient;
 
-const ListMessenger = ({ error, loadingChannels, ...props }) => {
-  const channelsContext = useChannelsContext();
+/**
+ * Renders the full ChannelList (which now always uses ChannelListView internally).
+ */
+const Component = () => (
+  <Chat client={chatClient}>
+    <ChatContext.Consumer>
+      {(context) => (
+        <ChatProvider value={{ ...context, isOnline: true }}>
+          <ChannelList
+            filters={{
+              members: {
+                $in: ['vishal', 'neil'],
+              },
+            }}
+          />
+        </ChatProvider>
+      )}
+    </ChatContext.Consumer>
+  </Chat>
+);
 
-  return (
-    <ChannelsProvider value={{ ...channelsContext, error, loadingChannels }}>
-      <ChannelListView {...props} />
-    </ChannelsProvider>
-  );
-};
+const noop = () => {};
 
-const Component = ({ error = false, loadingChannels = false }) => {
-  const List = useCallback(
-    (...props) => <ListMessenger {...props} error={error} loadingChannels={loadingChannels} />,
-    [error, loadingChannels],
-  );
-  return (
-    <Chat client={chatClient}>
-      <ChatContext.Consumer>
-        {(context) => (
-          <ChatProvider value={{ ...context, isOnline: true }}>
-            <ChannelList
-              filters={{
-                members: {
-                  $in: ['vishal', 'neil'],
-                },
-              }}
-              List={List}
-            />
-          </ChatProvider>
-        )}
-      </ChatContext.Consumer>
-    </Chat>
-  );
-};
+/**
+ * Renders ChannelListView directly with a mock ChannelsContext for testing
+ * error and loading states.
+ */
+const ComponentWithContextOverrides = ({ error, loadingChannels }) => (
+  <Chat client={chatClient}>
+    <ChatContext.Consumer>
+      {(context) => (
+        <ChatProvider value={{ ...context, isOnline: true }}>
+          <ChannelsProvider
+            value={{
+              additionalFlatListProps: {},
+              channelListInitialized: !loadingChannels && !error,
+              channels: error ? null : [],
+              error: error ? new Error('test error') : undefined,
+              forceUpdate: 0,
+              hasNextPage: false,
+              loadingChannels,
+              loadingNextPage: false,
+              loadMoreThreshold: 0.1,
+              loadNextPage: noop,
+              maxUnreadCount: 255,
+              numberOfSkeletons: 8,
+              refreshing: false,
+              refreshList: noop,
+              reloadList: noop,
+              setFlatListRef: noop,
+            }}
+          >
+            <ChannelListView />
+          </ChannelsProvider>
+        </ChatProvider>
+      )}
+    </ChatContext.Consumer>
+  </Chat>
+);
 
 describe('ChannelListView', () => {
   beforeAll(async () => {
@@ -77,7 +98,7 @@ describe('ChannelListView', () => {
 
   it('renders the `EmptyStateIndicator` when no channels are present', async () => {
     useMockedApis(chatClient, [queryChannelsApi([])]);
-    const { getByTestId } = render(<Component channels={[]} />);
+    const { getByTestId } = render(<Component />);
     await waitFor(() => {
       expect(getByTestId('empty-channel-state-title')).toBeTruthy();
     });
@@ -85,7 +106,7 @@ describe('ChannelListView', () => {
 
   it('renders the `LoadingErrorIndicator` when `error` prop is true', async () => {
     const { getByTestId } = render(
-      <Component channels={mockChannels} error={true} loadingChannels={false} />,
+      <ComponentWithContextOverrides error={true} loadingChannels={false} />,
     );
     await waitFor(() => {
       expect(getByTestId('loading-error')).toBeTruthy();
@@ -93,9 +114,11 @@ describe('ChannelListView', () => {
   });
 
   it('renders the `LoadingIndicator` when when channels have not yet loaded', async () => {
-    const { getByTestId } = render(<Component channels={[]} loadingChannels={true} />);
+    const { getByText } = render(
+      <ComponentWithContextOverrides error={false} loadingChannels={true} />,
+    );
     await waitFor(() => {
-      expect(getByTestId('channel-list-loading-indicator')).toBeTruthy();
+      expect(getByText('Loading channels...')).toBeTruthy();
     });
   });
 });
