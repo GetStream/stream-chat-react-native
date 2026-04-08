@@ -4,59 +4,47 @@ import { useWindowDimensions } from 'react-native';
 
 import { MessageActionType } from './MessageActionListItem';
 
-import type { ComponentOverrides } from '../../contexts/componentsContext/ComponentsContext';
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
 export type MessageMenuProps = PropsWithChildren<
-  Partial<
-    Pick<
-      ComponentOverrides,
-      | 'MessageActionList'
-      | 'MessageActionListItem'
-      | 'MessageReactionPicker'
-      | 'MessageUserReactions'
-      | 'MessageUserReactionsAvatar'
-      | 'MessageUserReactionsItem'
-    >
-  > &
-    Partial<Pick<MessageContextValue, 'message'>> & {
-      /**
-       * Function to close the message actions bottom sheet
-       * @returns void
-       */
-      dismissOverlay: () => void;
-      /**
-       * An array of message actions to render
-       */
-      messageActions: MessageActionType[];
-      /**
-       * Boolean to determine if there are message actions
-       */
-      showMessageReactions: boolean;
-      /**
-       * Boolean to determine if the overlay is visible.
-       */
-      visible: boolean;
-      /**
-       * Function to handle reaction on press
-       * @param reactionType
-       * @returns
-       */
-      handleReaction?: (reactionType: string) => Promise<void>;
-      /**
-       * The selected reaction
-       */
-      selectedReaction?: string;
+  Partial<Pick<MessageContextValue, 'message'>> & {
+    /**
+     * Function to close the message actions bottom sheet
+     * @returns void
+     */
+    dismissOverlay: () => void;
+    /**
+     * An array of message actions to render
+     */
+    messageActions: MessageActionType[];
+    /**
+     * Boolean to determine if there are message actions
+     */
+    showMessageReactions: boolean;
+    /**
+     * Boolean to determine if the overlay is visible.
+     */
+    visible: boolean;
+    /**
+     * Function to handle reaction on press
+     * @param reactionType
+     * @returns
+     */
+    handleReaction?: (reactionType: string) => Promise<void>;
+    /**
+     * The selected reaction
+     */
+    selectedReaction?: string;
 
-      layout: {
-        x: number;
-        y: number;
-        w: number;
-        h: number;
-      };
-    }
+    layout: {
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+    };
+  }
 >;
 
 // TODO: V9: Either remove this or refactor it so that it's useful again, as its logic

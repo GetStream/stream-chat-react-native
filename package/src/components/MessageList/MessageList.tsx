@@ -348,7 +348,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     threadHasMore,
   } = props;
   const {
-    DateHeader,
     EmptyStateIndicator,
     LoadingIndicator,
     NetworkDownIndicator,
@@ -1295,7 +1294,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       )}
       <View style={styles.stickyHeaderContainer}>
         {messageListLengthAfterUpdate && StickyHeader ? (
-          <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
+          <StickyHeader date={stickyHeaderDate} />
         ) : null}
       </View>
       {scrollToBottomButtonVisible ? (

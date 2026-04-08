@@ -1,4 +1,4 @@
-import type { ComponentOverrides } from './ComponentsContext';
+import React from 'react';
 
 import { Attachment } from '../../components/Attachment/Attachment';
 import { AudioAttachment } from '../../components/Attachment/Audio';
@@ -260,9 +260,6 @@ export const DEFAULT_COMPONENTS = {
   VideoAttachmentUploadPreview,
   VideoThumbnail,
 
-  // Chat
-  ChatLoadingIndicator: null,
-
   // Channel details
   ChannelDetailsHeader,
 
@@ -287,4 +284,34 @@ export const DEFAULT_COMPONENTS = {
 
   // ImageGallery
   ImageGalleryVideoControls: ImageGalleryVideoControl,
-} satisfies Partial<ComponentOverrides>;
+
+  // Optional overrides (no defaults — undefined unless user provides via WithComponents)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  AttachmentPickerIOSSelectMorePhotos: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ChatLoadingIndicator: undefined as React.ComponentType<any> | null | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  CreatePollContent: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ImageComponent: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Input: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ListHeaderComponent: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageContentBottomView: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageContentLeadingView: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageContentTopView: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageContentTrailingView: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageLocation: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageSpacer: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageText: undefined as React.ComponentType<any> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  PollContent: undefined as React.ComponentType<any> | undefined,
+};

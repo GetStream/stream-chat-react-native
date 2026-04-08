@@ -7,10 +7,7 @@ import { openUrlSafely } from './utils/openUrlSafely';
 
 import { FileIconProps } from '../../components/Attachment/FileIcon';
 
-import {
-  ComponentOverrides,
-  useComponentsContext,
-} from '../../contexts/componentsContext/ComponentsContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -25,7 +22,6 @@ export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
   'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
-  Pick<Required<ComponentOverrides>, 'FilePreview'> &
   Pick<MessagesContextValue, 'additionalPressableProps'> & {
     /** The attachment to render */
     attachment: Attachment;
@@ -46,13 +42,13 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
     additionalPressableProps,
     attachment,
     attachmentIconSize,
-    FilePreview,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
     styles: stylesProp = styles,
   } = props;
+  const { FilePreview } = useComponentsContext();
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
@@ -104,18 +100,13 @@ export type FileAttachmentProps = Partial<Omit<FileAttachmentPropsWithContext, '
   Pick<FileAttachmentPropsWithContext, 'attachment'>;
 
 export const FileAttachment = (props: FileAttachmentProps) => {
-  const { FilePreview: PropFilePreview } = props;
   const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
-  const { FilePreview: ComponentsFilePreview } = useComponentsContext();
   const { additionalPressableProps } = useMessagesContext();
-
-  const FilePreview = PropFilePreview || ComponentsFilePreview;
 
   return (
     <FileAttachmentWithContext
       {...{
         additionalPressableProps,
-        FilePreview,
         onLongPress,
         onPress,
         onPressIn,

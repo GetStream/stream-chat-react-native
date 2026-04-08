@@ -13,20 +13,23 @@ import Animated, {
 import { MessageItemViewPropsWithContext } from './MessageItemView';
 
 import { useTheme } from '../../../contexts';
-import type { ComponentOverrides } from '../../../contexts/componentsContext/ComponentsContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 
 import { NativeHandlers } from '../../../native';
 
 const AnimatedWrapper = Animated.createAnimatedComponent(View);
 
-type SwipableMessageWrapperProps = Pick<Required<ComponentOverrides>, 'MessageSwipeContent'> &
-  Pick<MessageItemViewPropsWithContext, 'messageSwipeToReplyHitSlop'> & {
-    children: ReactNode;
-    onSwipe: () => void;
-  };
+type SwipableMessageWrapperProps = Pick<
+  MessageItemViewPropsWithContext,
+  'messageSwipeToReplyHitSlop'
+> & {
+  children: ReactNode;
+  onSwipe: () => void;
+};
 
 export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperProps) => {
-  const { MessageSwipeContent, children, messageSwipeToReplyHitSlop, onSwipe } = props;
+  const { children, messageSwipeToReplyHitSlop, onSwipe } = props;
+  const { MessageSwipeContent } = useComponentsContext();
   const isRTL = I18nManager.isRTL;
   const swipeDirectionMultiplier = isRTL ? -1 : 1;
 

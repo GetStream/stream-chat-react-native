@@ -294,7 +294,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     threadList = false,
   } = props;
   const {
-    DateHeader,
     EmptyStateIndicator,
     LoadingIndicator,
     NetworkDownIndicator,
@@ -1078,7 +1077,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       )}
       <View style={styles.stickyHeaderContainer}>
         {messageListLengthAfterUpdate && StickyHeader ? (
-          <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
+          <StickyHeader date={stickyHeaderDate} />
         ) : null}
       </View>
       <Animated.View

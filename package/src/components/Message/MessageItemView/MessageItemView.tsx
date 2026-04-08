@@ -248,7 +248,6 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     MessageHeader,
     MessageReplies,
     MessageSpacer,
-    MessageSwipeContent,
     ReactionListBottom,
     ReactionListTop,
   } = useComponentsContext();
@@ -366,7 +365,6 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
 
   return enableSwipeToReply && !isMessageTypeDeleted ? (
     <SwipableMessageWrapper
-      MessageSwipeContent={MessageSwipeContent}
       messageSwipeToReplyHitSlop={messageSwipeToReplyHitSlop}
       onSwipe={onSwipeActionHandler}
     >
