@@ -201,7 +201,7 @@ export const AttachmentCameraPicker = (
       onPress={openCameraPicker}
       height={height}
       buttonText={t('Open Camera')}
-      description={t('Take a video and share')}
+      description={t(videoOnly ? 'Take a video and share' : 'Take a photo and share')}
     />
   );
 };
@@ -216,8 +216,8 @@ export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
       Icon={FilePickerIcon}
       onPress={pickFile}
       height={height}
-      buttonText={t('Pick document')}
-      description={t('Pick a document to share it with everyone')}
+      buttonText={t('Open Files')}
+      description={t('Select files to share')}
     />
   );
 };
