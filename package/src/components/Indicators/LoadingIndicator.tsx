@@ -6,7 +6,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { primitives } from '../../theme';
 import { Spinner } from '../UIComponents/Spinner';
 
-type LoadingIndicatorWrapperProps = { text: string };
+type LoadingIndicatorWrapperProps = { text: string | undefined };
 
 const LoadingIndicatorWrapper = ({ text }: LoadingIndicatorWrapperProps) => {
   const styles = useStyles();
@@ -14,9 +14,11 @@ const LoadingIndicatorWrapper = ({ text }: LoadingIndicatorWrapperProps) => {
   return (
     <View style={styles.container}>
       <Spinner height={20} width={20} />
-      <Text style={styles.loadingText} testID='loading'>
-        {text}
-      </Text>
+      {text ? (
+        <Text style={styles.loadingText} testID='loading'>
+          {text}
+        </Text>
+      ) : null}
     </View>
   );
 };
@@ -44,7 +46,7 @@ export const LoadingIndicator = (props: LoadingProps) => {
     case 'message':
       return <LoadingIndicatorWrapper text={t('Loading messages...')} />;
     case 'threads':
-      return <LoadingIndicatorWrapper text={t('Loading threads...')} />;
+      return <LoadingIndicatorWrapper text={undefined} />;
     default:
       return <LoadingIndicatorWrapper text={t('Loading...')} />;
   }
