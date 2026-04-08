@@ -14,7 +14,7 @@ import { MessageProvider } from '../../../contexts/messageContext/MessageContext
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { mergeThemes, ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateGiphyAttachment } from '../../../mock-builders/generator/attachment';
@@ -36,6 +36,8 @@ const streami18n = new Streami18n({
 });
 
 describe('Giphy', () => {
+  const lightTheme = mergeThemes({ scheme: 'light' });
+
   const getAttachmentComponent = (props, messageContextValue = {}) => {
     const message = generateMessage();
     return (
@@ -112,6 +114,36 @@ describe('Giphy', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('giphy-attachment')).toBeTruthy();
+    });
+  });
+
+  it('uses the outgoing attachment background for outgoing giphys', async () => {
+    render(getAttachmentComponent({ attachment }, { isMyMessage: true }));
+
+    await waitFor(() => {
+      const style = screen.getByTestId('giphy-attachment').props.style;
+      expect(style).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            backgroundColor: lightTheme.semantics.chatBgAttachmentOutgoing,
+          }),
+        ]),
+      );
+    });
+  });
+
+  it('uses the incoming attachment background for incoming giphys', async () => {
+    render(getAttachmentComponent({ attachment }, { isMyMessage: false }));
+
+    await waitFor(() => {
+      const style = screen.getByTestId('giphy-attachment').props.style;
+      expect(style).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            backgroundColor: lightTheme.semantics.chatBgAttachmentIncoming,
+          }),
+        ]),
+      );
     });
   });
 
