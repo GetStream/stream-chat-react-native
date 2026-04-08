@@ -20,7 +20,9 @@ import {
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import { NativeHandlers } from '../../../native';
 
-const useWithPortalKeyboardSafety = <T extends unknown[]>(callback: (...args: T) => void) => {
+export const useWithPortalKeyboardSafety = <T extends unknown[]>(
+  callback: (...args: T) => void,
+) => {
   const callbackAfterKeyboardOpen = useAfterKeyboardOpenCallback(callback);
 
   return usePortalSettledCallback(callbackAfterKeyboardOpen);

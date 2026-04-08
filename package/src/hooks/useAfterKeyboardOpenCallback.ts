@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { EventSubscription, Keyboard, Platform } from 'react-native';
 
-import { useKeyboardVisibility } from './useKeyboardVisibility';
-
 import { useStableCallback } from './useStableCallback';
 
 import { KeyboardControllerPackage } from '../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
@@ -18,7 +16,6 @@ import { useMessageInputContext } from '../contexts/messageInputContext/MessageI
 export const useAfterKeyboardOpenCallback = <T extends unknown[]>(
   callback: (...args: T) => void,
 ) => {
-  const isKeyboardVisible = useKeyboardVisibility();
   const { inputBoxRef } = useMessageInputContext();
   const keyboardSubscriptionRef = useRef<EventSubscription | undefined>(undefined);
   // This callback runs from a keyboard event listener, so it must stay fresh across rerenders.
@@ -45,7 +42,7 @@ export const useAfterKeyboardOpenCallback = <T extends unknown[]>(
       return;
     }
 
-    if (isKeyboardVisible) {
+    if (Keyboard.isVisible()) {
       inputBoxRef.current.focus();
       runCallback();
       return;
