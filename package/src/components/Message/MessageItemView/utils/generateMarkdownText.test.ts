@@ -4,8 +4,8 @@ describe('generateMarkdownText', () => {
   it.each([
     ['', null],
     ['  test message  ', 'test message'],
-    ['\uFFFC', null],
-    [' \uFFFC ', null],
+    ['\uFFFC', ''],
+    [' \uFFFC ', ''],
     ['hello\uFFFCworld', 'hello world'],
     ['https://www.getstream.io', '[https://www.getstream.io](https://www.getstream.io)'],
     [
