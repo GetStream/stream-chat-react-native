@@ -437,16 +437,16 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
                         entering={FadeIn.duration(250)}
                         style={styles.sheetContentContainer}
                       >
-                        <View
-                          onLayout={enableDynamicSizing ? handleDynamicContentLayout : undefined}
-                          style={
-                            enableDynamicSizing
-                              ? { paddingBottom: bottomInset }
-                              : styles.staticContentWrapper
-                          }
-                        >
-                          {children}
-                        </View>
+                        {enableDynamicSizing ? (
+                          <View
+                            onLayout={handleDynamicContentLayout}
+                            style={{ paddingBottom: bottomInset }}
+                          >
+                            {children}
+                          </View>
+                        ) : (
+                          children
+                        )}
                       </Animated.View>
                     </BottomSheetProvider>
                   ) : null}
@@ -500,9 +500,6 @@ const useStyles = () => {
           backgroundColor: semantics.backgroundCoreScrim,
         },
         sheetContentContainer: {
-          flex: 1,
-        },
-        staticContentWrapper: {
           flex: 1,
         },
       }),
