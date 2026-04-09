@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { FlatList } from 'react-native-gesture-handler';
 
 import Animated, { LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
