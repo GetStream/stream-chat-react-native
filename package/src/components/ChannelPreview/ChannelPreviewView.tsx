@@ -204,6 +204,7 @@ const useStyles = () => {
       },
       contentContainer: { flex: 1, gap: primitives.spacingXxs },
       upperRow: {
+        gap: primitives.spacingMd,
         alignItems: 'center',
         flex: 1,
         flexDirection: 'row',
