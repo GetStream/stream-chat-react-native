@@ -150,7 +150,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: white }]}>
       <WithComponents
-        value={{
+        overrides={{
           AttachmentPickerSelectionBar: CustomAttachmentPickerSelectionBar,
           MessageLocation,
         }}

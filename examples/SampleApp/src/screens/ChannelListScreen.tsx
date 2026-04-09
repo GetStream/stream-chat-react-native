@@ -246,7 +246,7 @@ export const ChannelListScreen: React.FC = () => {
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <WithComponents
-              value={{
+              overrides={{
                 HeaderNetworkDownIndicator,
                 Preview: ChannelPreview,
               }}

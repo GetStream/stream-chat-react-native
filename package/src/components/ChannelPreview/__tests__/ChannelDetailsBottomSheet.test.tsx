@@ -46,7 +46,7 @@ describe('ChannelDetailsBottomSheet', () => {
 
     const { getByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
-        <WithComponents value={{ ChannelDetailsHeader: CustomChannelDetailsHeader }}>
+        <WithComponents overrides={{ ChannelDetailsHeader: CustomChannelDetailsHeader }}>
           <ChannelDetailsBottomSheet channel={channel} items={items} />
         </WithComponents>
       </ThemeProvider>,
@@ -62,7 +62,7 @@ describe('ChannelDetailsBottomSheet', () => {
 
     render(
       <ThemeProvider theme={defaultTheme}>
-        <WithComponents value={{ ChannelDetailsHeader: () => null }}>
+        <WithComponents overrides={{ ChannelDetailsHeader: () => null }}>
           <ChannelDetailsBottomSheet
             channel={channel}
             items={items}

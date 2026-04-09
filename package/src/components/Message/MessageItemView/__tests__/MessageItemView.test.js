@@ -44,7 +44,7 @@ describe('MessageItemView', () => {
         <ChannelsStateProvider>
           <Chat client={chatClient}>
             {componentOverrides ? (
-              <WithComponents value={componentOverrides}>
+              <WithComponents overrides={componentOverrides}>
                 <Channel channel={channel} {...channelProps}>
                   <Message groupStyles={['bottom']} {...options} />
                 </Channel>

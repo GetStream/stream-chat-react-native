@@ -71,7 +71,7 @@ export default function ChannelScreen() {
       <Stack.Screen
         options={{ title: 'Channel Screen', contentStyle: { backgroundColor: 'white' } }}
       />
-      <WithComponents value={{ MessageLocation, InputButtons }}>
+      <WithComponents overrides={{ MessageLocation, InputButtons }}>
         <Channel
           audioRecordingEnabled={true}
           channel={channel}

@@ -340,7 +340,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       ]}
     >
       <WithComponents
-        value={{
+        overrides={{
           EmptyStateIndicator: EmptyMessagesIndicator,
           SendButton: NewDirectMessagingSendButton,
         }}

@@ -113,7 +113,7 @@ describe('MessageContent', () => {
     render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <WithComponents value={{ MessageHeader: ContextMessageHeader }}>
+          <WithComponents overrides={{ MessageHeader: ContextMessageHeader }}>
             <Channel channel={channel}>
               <Message groupStyles={['bottom']} message={message} />
             </Channel>
@@ -137,7 +137,7 @@ describe('MessageContent', () => {
     render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <WithComponents value={{ MessageFooter: ContextMessageFooter }}>
+          <WithComponents overrides={{ MessageFooter: ContextMessageFooter }}>
             <Channel channel={channel}>
               <Message groupStyles={['bottom']} message={message} />
             </Channel>

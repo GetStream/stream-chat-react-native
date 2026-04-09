@@ -19,7 +19,7 @@ const ComponentsContext = React.createContext<ComponentOverrides>({});
  *
  * @example
  * ```tsx
- * <WithComponents value={{ Message: MyCustomMessage, SendButton: MyCustomSendButton }}>
+ * <WithComponents overrides={{ Message: MyCustomMessage, SendButton: MyCustomSendButton }}>
  *   <Channel channel={channel}>
  *     <MessageList />
  *     <MessageInput />
@@ -29,10 +29,10 @@ const ComponentsContext = React.createContext<ComponentOverrides>({});
  */
 export const WithComponents = ({
   children,
-  value,
-}: PropsWithChildren<{ value: ComponentOverrides }>) => {
+  overrides,
+}: PropsWithChildren<{ overrides: ComponentOverrides }>) => {
   const parent = useContext(ComponentsContext);
-  const merged = useMemo(() => ({ ...parent, ...value }), [parent, value]);
+  const merged = useMemo(() => ({ ...parent, ...overrides }), [parent, overrides]);
   return <ComponentsContext.Provider value={merged}>{children}</ComponentsContext.Provider>;
 };
 

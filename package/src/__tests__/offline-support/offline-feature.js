@@ -207,7 +207,7 @@ export const Generic = () => {
     const renderComponent = () =>
       render(
         <Chat client={chatClient} enableOfflineSupport>
-          <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+          <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
             <ChannelList filters={filters} sort={sort} swipeActionsEnabled={false} />
           </WithComponents>
         </Chat>,

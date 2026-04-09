@@ -116,7 +116,7 @@ describe('ChannelSwipableWrapper', () => {
 
     render(
       <ThemeProvider theme={defaultTheme}>
-        <WithComponents value={{ ChannelDetailsBottomSheet: customBottomSheet }}>
+        <WithComponents overrides={{ ChannelDetailsBottomSheet: customBottomSheet }}>
           <ChannelSwipableWrapper channel={channel}>
             <Text>child</Text>
           </ChannelSwipableWrapper>
@@ -186,7 +186,7 @@ describe('ChannelSwipableWrapper', () => {
 
     render(
       <ThemeProvider theme={defaultTheme}>
-        <WithComponents value={{ ChannelDetailsBottomSheet: customBottomSheet }}>
+        <WithComponents overrides={{ ChannelDetailsBottomSheet: customBottomSheet }}>
           <ChannelSwipableWrapper channel={channel}>
             <Text>child</Text>
           </ChannelSwipableWrapper>

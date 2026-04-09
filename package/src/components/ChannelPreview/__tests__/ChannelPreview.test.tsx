@@ -84,7 +84,7 @@ describe('ChannelPreview', () => {
 
     return (
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewUIComponent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewUIComponent }}>
           <ChannelPreview {...props} channel={channel} client={chatClient} />
         </WithComponents>
       </Chat>

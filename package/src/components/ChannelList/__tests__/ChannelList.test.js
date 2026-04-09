@@ -119,7 +119,7 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
           <ChannelList {...props} />
         </WithComponents>
       </Chat>,
@@ -133,7 +133,7 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
           <ChannelList {...props} />
         </WithComponents>
       </Chat>,
@@ -147,7 +147,7 @@ describe('ChannelList', () => {
 
     render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
           <ChannelList {...props} />
         </WithComponents>
       </Chat>,
@@ -162,7 +162,7 @@ describe('ChannelList', () => {
 
     screen.rerender(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
           <ChannelList {...props} filters={{ dummyFilter: true }} />
         </WithComponents>
       </Chat>,
@@ -204,7 +204,7 @@ describe('ChannelList', () => {
 
     const { rerender, queryByTestId } = render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
           <ChannelList {...props} filters={staleFilter} />
         </WithComponents>
       </Chat>,
@@ -224,7 +224,7 @@ describe('ChannelList', () => {
 
     rerender(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
           <ChannelList {...props} filters={freshFilter} />
         </WithComponents>
       </Chat>,
@@ -254,7 +254,7 @@ describe('ChannelList', () => {
 
     render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
           <ChannelList {...props} onSelect={setActiveChannel} />
         </WithComponents>
       </Chat>,
@@ -276,7 +276,7 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: SwipeActionsProbe }}>
+        <WithComponents overrides={{ Preview: SwipeActionsProbe }}>
           <ChannelList {...props} swipeActionsEnabled={false} />
         </WithComponents>
       </Chat>,
@@ -291,7 +291,7 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: SwipeActionsProbe }}>
+        <WithComponents overrides={{ Preview: SwipeActionsProbe }}>
           <ChannelList {...props} />
         </WithComponents>
       </Chat>,
@@ -306,7 +306,7 @@ describe('ChannelList', () => {
 
     const { getByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewContent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewContent }}>
           <ChannelList {...props} swipeActionsEnabled={false} />
         </WithComponents>
       </Chat>,
@@ -323,7 +323,7 @@ describe('ChannelList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <WithComponents value={{ Preview: ChannelPreviewContent }}>
+        <WithComponents overrides={{ Preview: ChannelPreviewContent }}>
           <ChannelList {...props} swipeActionsEnabled={true} />
         </WithComponents>
       </Chat>,
@@ -395,7 +395,7 @@ describe('ChannelList', () => {
       it('should move channel to top of the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -419,7 +419,7 @@ describe('ChannelList', () => {
       it('should add channel to top if channel is hidden from the list', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -449,7 +449,7 @@ describe('ChannelList', () => {
       it('should not alter order if `lockChannelOrder` prop is true', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList lockChannelOrder={true} />
             </WithComponents>
           </Chat>,
@@ -475,7 +475,7 @@ describe('ChannelList', () => {
         const onNewMessage = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onNewMessage={onNewMessage} />
             </WithComponents>
           </Chat>,
@@ -504,7 +504,7 @@ describe('ChannelList', () => {
       it('should move a channel to top of the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -528,7 +528,7 @@ describe('ChannelList', () => {
         const onNewMessage = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onNewMessage={onNewMessage} />
             </WithComponents>
           </Chat>,
@@ -549,7 +549,7 @@ describe('ChannelList', () => {
         const onNewMessageNotification = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onNewMessageNotification={onNewMessageNotification} />
             </WithComponents>
           </Chat>,
@@ -578,7 +578,7 @@ describe('ChannelList', () => {
       it('should move a channel to top of the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -605,7 +605,7 @@ describe('ChannelList', () => {
         const onAddedToChannel = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
             </WithComponents>
           </Chat>,
@@ -631,7 +631,7 @@ describe('ChannelList', () => {
       it('should remove the channel from list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -658,7 +658,7 @@ describe('ChannelList', () => {
         const onRemovedFromChannel = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
             </WithComponents>
           </Chat>,
@@ -684,7 +684,7 @@ describe('ChannelList', () => {
       it('should update a channel in the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -710,7 +710,7 @@ describe('ChannelList', () => {
         const onChannelUpdated = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
             </WithComponents>
           </Chat>,
@@ -741,7 +741,7 @@ describe('ChannelList', () => {
       it('should remove a channel from the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -768,7 +768,7 @@ describe('ChannelList', () => {
         const onChannelDeleted = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
             </WithComponents>
           </Chat>,
@@ -794,7 +794,7 @@ describe('ChannelList', () => {
       it('should hide a channel from the list by default', async () => {
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -821,7 +821,7 @@ describe('ChannelList', () => {
         const onChannelHidden = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onChannelHidden={onChannelHidden} />
             </WithComponents>
           </Chat>,
@@ -846,7 +846,7 @@ describe('ChannelList', () => {
 
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -874,7 +874,7 @@ describe('ChannelList', () => {
 
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: RefreshingProbe }}>
+            <WithComponents overrides={{ Preview: RefreshingProbe }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -909,7 +909,7 @@ describe('ChannelList', () => {
         const onChannelTruncated = jest.fn();
         render(
           <Chat client={chatClient}>
-            <WithComponents value={{ Preview: ChannelPreviewComponent }}>
+            <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
               <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
             </WithComponents>
           </Chat>,

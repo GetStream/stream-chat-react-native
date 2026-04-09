@@ -180,7 +180,7 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
     <View style={styles.container}>
       <ScreenHeader titleText='Shared Groups' />
       <WithComponents
-        value={{
+        overrides={{
           EmptyStateIndicator: SharedGroupsEmptyState,
           Preview: CustomPreview,
         }}
