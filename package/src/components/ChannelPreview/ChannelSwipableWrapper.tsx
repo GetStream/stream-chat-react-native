@@ -1,27 +1,27 @@
 import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { SharedValue } from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
 
-import { Channel } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import { ChannelDetailsBottomSheet as DefaultChannelDetailsBottomSheet } from './ChannelDetailsBottomSheet';
 import type { ChannelDetailsBottomSheetProps } from './ChannelDetailsBottomSheet';
 import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
-import { useTheme } from '../../contexts';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { MenuPointHorizontal, Mute, Sound } from '../../icons';
-import { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
+import type { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActions } from '../ChannelList/hooks/useChannelActions';
+import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 import {
-  BottomSheetModal,
   RightActions,
   SwipableActionItem,
   SwipableWrapper,
   SwipableWrapperProps,
-} from '../UIComponents';
+} from '../UIComponents/SwipableWrapper';
 
 export const OpenChannelDetailsButton = () => {
   const {

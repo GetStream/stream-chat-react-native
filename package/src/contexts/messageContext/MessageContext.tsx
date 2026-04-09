@@ -4,7 +4,7 @@ import type { View } from 'react-native';
 import type { Attachment, LocalMessage } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
-import { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
+import type { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
 import type {
   MessagePressableHandlerPayload,
   PressableHandlerPayload,
@@ -15,7 +15,7 @@ import type { MessageContentType } from '../../contexts/messagesContext/Messages
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 
-import { MessageComposerAPIContextValue } from '../messageComposerContext/MessageComposerAPIContext';
+import type { MessageComposerAPIContextValue } from '../messageComposerContext/MessageComposerAPIContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type Alignment = 'right' | 'left';
