@@ -79,7 +79,7 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
         image,
       ]}
     >
-      <Image source={{ uri: thumb_url }} style={StyleSheet.absoluteFillObject} />
+      <Image source={{ uri: thumb_url }} style={StyleSheet.absoluteFill} />
       <View style={[styles.overlay, imageOverlay]}>
         <ImageOverlaySelectedComponent index={selectedIndex} />
       </View>
@@ -138,7 +138,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
         image,
       ]}
     >
-      <Image source={{ uri }} style={StyleSheet.absoluteFillObject} />
+      <Image source={{ uri }} style={StyleSheet.absoluteFill} />
       <View style={[styles.overlay, imageOverlay]}>
         <ImageOverlaySelectedComponent index={selectedIndex} />
       </View>

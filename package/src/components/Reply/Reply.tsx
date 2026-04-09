@@ -51,7 +51,7 @@ const RightContent = React.memo(
     ) {
       return (
         <View style={[styles.contentWrapper, styles.contentBorder]}>
-          <ImageComponent source={{ uri }} style={StyleSheet.absoluteFillObject} />
+          <ImageComponent source={{ uri }} style={StyleSheet.absoluteFill} />
         </View>
       );
     }
@@ -59,7 +59,7 @@ const RightContent = React.memo(
       return (
         <View style={[styles.contentWrapper, styles.contentBorder]}>
           <View style={styles.attachmentContainer}>
-            <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFillObject} />
+            <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFill} />
             <VideoPlayIndicator size='sm' />
           </View>
         </View>

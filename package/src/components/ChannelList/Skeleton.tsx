@@ -19,7 +19,7 @@ const SkeletonBlock = ({ style }: { style: React.ComponentProps<typeof View>['st
         baseColor={semantics.backgroundCoreSurfaceDefault}
         duration={animationTime}
         gradientColor={semantics.skeletonLoadingHighlight}
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFill}
       />
     </View>
   );

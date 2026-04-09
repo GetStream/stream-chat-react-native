@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { DevSettings, I18nManager, LogBox, Platform, StyleSheet, useColorScheme, View } from 'react-native';
+import {
+  DevSettings,
+  I18nManager,
+  LogBox,
+  Platform,
+  StyleSheet,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -116,14 +124,9 @@ const MessageOverlayBlurBackground = () => {
         downsampleFactor={isIOS ? undefined : 12}
         pointerEvents='none'
         reducedTransparencyFallbackColor='rgba(0, 0, 0, 0.8)'
-        style={styles.messageOverlayBlurBackground}
+        style={StyleSheet.absoluteFill}
       />
-      <View
-        style={[
-          styles.messageOverlayBlurBackground,
-          { backgroundColor: semantics.backgroundCoreScrim },
-        ]}
-      />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: semantics.backgroundCoreScrim }]} />
     </>
   );
 };
@@ -488,9 +491,3 @@ const HomeScreen = () => {
 };
 
 export default App;
-
-const styles = StyleSheet.create({
-  messageOverlayBlurBackground: {
-    ...StyleSheet.absoluteFillObject,
-  },
-});

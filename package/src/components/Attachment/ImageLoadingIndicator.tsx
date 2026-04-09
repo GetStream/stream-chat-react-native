@@ -14,7 +14,7 @@ export const ImageLoadingIndicator = () => {
       accessible
       enabled
       gradientColor={semantics.skeletonLoadingHighlight}
-      style={StyleSheet.absoluteFillObject}
+      style={StyleSheet.absoluteFill}
     >
       <View pointerEvents='none' style={styles.centered}>
         <ActivityIndicator />
