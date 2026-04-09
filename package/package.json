@@ -19,7 +19,6 @@
   "files": [
     "src",
     "lib",
-    "bin/patch-bottom-sheet-5.1.8-pr-2561.js",
     "package.json",
     "README.md"
   ],
