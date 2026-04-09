@@ -349,7 +349,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   } = props;
   const {
     EmptyStateIndicator,
-    LoadingIndicator,
+    MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
     ScrollToBottomButton,
     StickyHeader,

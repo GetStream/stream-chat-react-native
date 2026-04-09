@@ -295,7 +295,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   } = props;
   const {
     EmptyStateIndicator,
-    LoadingIndicator,
+    MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
     ScrollToBottomButton,
     StickyHeader,

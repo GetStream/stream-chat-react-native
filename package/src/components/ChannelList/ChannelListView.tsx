@@ -75,7 +75,7 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
     FooterLoadingIndicator,
     ListHeaderComponent,
     LoadingErrorIndicator,
-    LoadingIndicator,
+    ChannelListLoadingIndicator: LoadingIndicator,
   } = useComponentsContext();
 
   /**
@@ -136,11 +136,7 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
         extraData={forceUpdate}
         keyExtractor={keyExtractor}
         ListEmptyComponent={
-          loading ? (
-            <LoadingIndicator listType='channel' />
-          ) : (
-            <EmptyStateIndicator listType='channel' />
-          )
+          loading ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
         }
         ListFooterComponent={loadingNextPage ? <FooterLoadingIndicator /> : undefined}
         ListHeaderComponent={ListHeaderComponent}

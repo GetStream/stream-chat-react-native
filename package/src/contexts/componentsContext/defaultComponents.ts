@@ -24,6 +24,7 @@ import { InputView } from '../../components/AutoCompleteInput/InputView';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from '../../components/ChannelList/ChannelListHeaderNetworkDownIndicator';
+import { ChannelListLoadingIndicator } from '../../components/ChannelList/ChannelListLoadingIndicator';
 import { Skeleton } from '../../components/ChannelList/Skeleton';
 import { ChannelDetailsBottomSheet } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
 import { ChannelDetailsHeader } from '../../components/ChannelPreview/ChannelDetailsBottomSheet';
@@ -189,7 +190,8 @@ export const DEFAULT_COMPONENTS = {
   InputView,
   KeyboardCompatibleView,
   LoadingErrorIndicator,
-  LoadingIndicator,
+  ChannelListLoadingIndicator,
+  MessageListLoadingIndicator: LoadingIndicator,
   Message,
   MessageActionList,
   MessageActionListItem,

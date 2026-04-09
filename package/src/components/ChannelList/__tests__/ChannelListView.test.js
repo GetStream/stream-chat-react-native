@@ -114,11 +114,11 @@ describe('ChannelListView', () => {
   });
 
   it('renders the `LoadingIndicator` when when channels have not yet loaded', async () => {
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ComponentWithContextOverrides error={false} loadingChannels={true} />,
     );
     await waitFor(() => {
-      expect(getByText('Loading channels...')).toBeTruthy();
+      expect(getByTestId('channel-list-loading-indicator')).toBeTruthy();
     });
   });
 });
