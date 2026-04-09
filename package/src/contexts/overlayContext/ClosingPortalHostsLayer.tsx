@@ -36,7 +36,7 @@ const ClosingPortalHostSlot = ({
       style={style}
       testID={`closing-portal-host-slot-${hostName}`}
     >
-      <PortalHost name={hostName} style={StyleSheet.absoluteFillObject} />
+      <PortalHost name={hostName} style={styles.absoluteFill} />
     </Animated.View>
   );
 };
@@ -76,3 +76,13 @@ export const ClosingPortalHostsLayer = ({ closeCoverOpacity }: ClosingPortalHost
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  absoluteFill: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+});

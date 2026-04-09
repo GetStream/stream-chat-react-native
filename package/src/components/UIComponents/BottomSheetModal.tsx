@@ -514,8 +514,11 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     <Modal onRequestClose={onClose} transparent visible={visible}>
       <GestureHandlerRootView style={styles.sheetContentContainer}>
         <View style={[styles.overlay, overlayTheme]}>
-          <Animated.View pointerEvents='none' style={[styles.backdrop, overlayAnimatedStyle]} />
-          <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFillObject} />
+          <Animated.View
+            pointerEvents='none'
+            style={[StyleSheet.absoluteFill, styles.backdrop, overlayAnimatedStyle]}
+          />
+          <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFill} />
 
           <Animated.View
             pointerEvents='box-none'
@@ -590,7 +593,6 @@ const useStyles = () => {
           justifyContent: 'flex-end',
         },
         backdrop: {
-          ...StyleSheet.absoluteFillObject,
           backgroundColor: semantics.backgroundCoreScrim,
         },
         sheetContentContainer: {
