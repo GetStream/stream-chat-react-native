@@ -4,23 +4,25 @@ import type { FlatListProps } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 
-import { Channel } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
-import { useBottomSheetContext, useTheme, useTranslationContext } from '../../contexts';
+import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
-import { useStableCallback } from '../../hooks';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../hooks/useStableCallback';
 import { primitives } from '../../theme';
-import { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
+import type { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelMembersState } from '../ChannelList/hooks/useChannelMembersState';
 import { useChannelMuteActive } from '../ChannelList/hooks/useChannelMuteActive';
 import { useChannelOnlineMemberCount } from '../ChannelList/hooks/useChannelOnlineMemberCount';
 import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
-import { ChannelAvatar } from '../ui';
-import { StreamBottomSheetModalFlatList } from '../UIComponents';
+import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
+import { StreamBottomSheetModalFlatList } from '../UIComponents/StreamBottomSheetModalFlatList';
 
 export type ChannelDetailsHeaderProps = { channel: Channel };
 
@@ -55,7 +57,7 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
 
   return (
     <View style={styles.headerContainer}>
-      <ChannelAvatar channel={channel} size={'lg'} />
+      <ChannelAvatar channel={channel} size={'xl'} />
       <View style={styles.metaContainer}>
         <View style={styles.titleContainer}>
           <ChannelPreviewTitle channel={channel} />

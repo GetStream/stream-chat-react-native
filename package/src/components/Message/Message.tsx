@@ -489,7 +489,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     if (content === 'quoted_reply') {
-      return !!message.quoted_message;
+      return !!message.quoted_message && !hasAttachmentActions;
     }
 
     switch (content) {
@@ -700,6 +700,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     goToMessage,
     groupStyles,
     handleAction,
+    hasAttachmentActions,
     handleReaction,
     handleToggleReaction,
     hasReactions,

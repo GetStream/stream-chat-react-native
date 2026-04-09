@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Search, useTheme } from 'stream-chat-react-native';
 
@@ -41,6 +41,12 @@ const styles = StyleSheet.create({
   navigationButton: {
     paddingRight: 8,
   },
+  searchButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 8,
+    paddingRight: 4,
+  },
   userGridItemContainer: { marginHorizontal: 8, width: 64 },
 });
 
@@ -70,6 +76,7 @@ type Props = {
 
 export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) => {
   const { chatClient } = useAppContext();
+  const searchInputRef = useRef<TextInput>(null);
 
   const {
     theme: { semantics },
@@ -97,6 +104,10 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
     navigation.navigate('NewGroupChannelAssignNameScreen');
   };
 
+  const focusSearchInput = useCallback(() => {
+    searchInputRef.current?.focus();
+  }, []);
+
   if (!chatClient) {
     return null;
   }
@@ -122,12 +133,12 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
             },
           ]}
         >
-          <Search pathFill={black} />
           <TextInput
             onChangeText={onChangeSearchText}
             onFocus={onFocusInput}
             placeholder='Search'
             placeholderTextColor={grey}
+            ref={searchInputRef}
             style={[
               styles.inputBox,
               {
@@ -136,6 +147,9 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
             ]}
             value={searchText}
           />
+          <TouchableOpacity hitSlop={8} onPress={focusSearchInput} style={styles.searchButton}>
+            <Search height={20} pathFill={black} width={20} />
+          </TouchableOpacity>
         </View>
         <FlatList
           data={selectedUsers}

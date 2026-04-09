@@ -35,7 +35,6 @@ export const useMessagePreviewText = ({
   const onlyAudio = audios?.length === attachmentsLength;
   const onlyVoiceRecordings =
     voiceRecordings?.length && voiceRecordings?.length === attachmentsLength;
-
   if (message?.type === 'deleted') {
     return 'Message deleted';
   }
@@ -55,8 +54,12 @@ export const useMessagePreviewText = ({
     return 'Location';
   }
 
+  if (giphys?.length) {
+    return 'Giphy';
+  }
+
   if (message?.text) {
-    return message?.text;
+    return message.text;
   }
 
   if (onlyImages) {
@@ -89,10 +92,6 @@ export const useMessagePreviewText = ({
     } else {
       return `${voiceRecordings?.length} Voice messages`;
     }
-  }
-
-  if (giphys?.length) {
-    return 'Giphy';
   }
 
   if (onlyFiles && files?.length === 1) {

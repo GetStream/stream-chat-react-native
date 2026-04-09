@@ -1,21 +1,21 @@
-import React from 'react';
-import { Alert } from 'react-native';
+// import React from 'react';
+// import { Alert } from 'react-native';
 import { LocalMessage, StreamChat } from 'stream-chat';
 import {
   Colors,
   messageActions,
   MessageActionsParams,
   TranslationContextValue,
-  Bell,
+  // Bell,
 } from 'stream-chat-react-native';
 import { Theme } from 'stream-chat-react-native';
 
 export function channelMessageActions({
   params,
-  chatClient,
-  t,
-  // handleMessageInfo,
-  semantics,
+  // chatClient,
+  // t,
+  // // handleMessageInfo,
+  // semantics,
 }: {
   params: MessageActionsParams;
   chatClient: StreamChat;
@@ -24,11 +24,11 @@ export function channelMessageActions({
   handleMessageInfo: (message: LocalMessage) => void;
   semantics: Theme['semantics'];
 }) {
-  const { dismissOverlay, error /*deleteForMeMessage*/ } = params;
+  // const { dismissOverlay, error /*deleteForMeMessage*/ } = params;
   const actions = messageActions(params);
 
   // We cannot use the useMessageReminder hook here because it is a hook.
-  const reminder = chatClient.reminders.getFromState(params.message.id);
+  // const reminder = chatClient.reminders.getFromState(params.message.id);
 
   // actions.push({
   //   action: async () => {
@@ -48,54 +48,54 @@ export function channelMessageActions({
   //   icon: <Time width={20} height={20} stroke={semantics.textSecondary} />,
   //   type: 'standard',
   // });
-  if (!error) {
-    actions.push({
-      action: () => {
-        if (reminder) {
-          Alert.alert('Remove Reminder', 'Are you sure you want to remove this reminder?', [
-            {
-              text: 'Cancel',
-              style: 'cancel',
-            },
-            {
-              text: 'Remove',
-              onPress: () => {
-                chatClient.reminders.deleteReminder(reminder.id).catch((err) => {
-                  console.error('Error deleting reminder:', err);
-                });
-              },
-              style: 'destructive',
-            },
-          ]);
-        } else {
-          Alert.alert(
-            'Select Reminder Time',
-            'When would you like to be reminded?',
-            chatClient.reminders.scheduledOffsetsMs.map((offsetMs) => ({
-              text: t('duration/Remind Me', { milliseconds: offsetMs }),
-              onPress: () => {
-                chatClient.reminders
-                  .upsertReminder({
-                    messageId: params.message.id,
-                    remind_at: new Date(new Date().getTime() + offsetMs).toISOString(),
-                  })
-                  .catch((_error) => {
-                    console.error('Error creating reminder:', _error);
-                  });
-              },
-              style: 'default',
-            })),
-          );
-        }
-
-        dismissOverlay();
-      },
-      actionType: reminder ? 'remove-reminder' : 'remind-me',
-      title: reminder ? 'Remove Reminder' : 'Remind Me',
-      icon: <Bell height={20} width={20} stroke={semantics.textSecondary} />,
-      type: 'standard',
-    });
-  }
+  // if (!error) {
+  //   actions.push({
+  //     action: () => {
+  //       if (reminder) {
+  //         Alert.alert('Remove Reminder', 'Are you sure you want to remove this reminder?', [
+  //           {
+  //             text: 'Cancel',
+  //             style: 'cancel',
+  //           },
+  //           {
+  //             text: 'Remove',
+  //             onPress: () => {
+  //               chatClient.reminders.deleteReminder(reminder.id).catch((err) => {
+  //                 console.error('Error deleting reminder:', err);
+  //               });
+  //             },
+  //             style: 'destructive',
+  //           },
+  //         ]);
+  //       } else {
+  //         Alert.alert(
+  //           'Select Reminder Time',
+  //           'When would you like to be reminded?',
+  //           chatClient.reminders.scheduledOffsetsMs.map((offsetMs) => ({
+  //             text: t('duration/Remind Me', { milliseconds: offsetMs }),
+  //             onPress: () => {
+  //               chatClient.reminders
+  //                 .upsertReminder({
+  //                   messageId: params.message.id,
+  //                   remind_at: new Date(new Date().getTime() + offsetMs).toISOString(),
+  //                 })
+  //                 .catch((_error) => {
+  //                   console.error('Error creating reminder:', _error);
+  //                 });
+  //             },
+  //             style: 'default',
+  //           })),
+  //         );
+  //       }
+  //
+  //       dismissOverlay();
+  //     },
+  //     actionType: reminder ? 'remove-reminder' : 'remind-me',
+  //     title: reminder ? 'Remove Reminder' : 'Remind Me',
+  //     icon: <Bell height={20} width={20} stroke={semantics.textSecondary} />,
+  //     type: 'standard',
+  //   });
+  // }
   // actions.push({
   //   action: async () => {
   //     Alert.alert('Delete for me', 'Are you sure you want to delete this message for me?', [

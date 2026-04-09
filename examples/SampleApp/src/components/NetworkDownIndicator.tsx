@@ -16,20 +16,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  spinner: {
-    backgroundColor: 'white',
-  },
 });
 
 export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = ({
   titleSize = 'small',
 }) => {
-  useTheme();
+  const {
+    theme: { semantics },
+  } = useTheme();
   const { black } = useLegacyColors();
 
   return (
     <View style={styles.networkDownContainer} testID='network-down-indicator'>
-      <Spinner height={12} style={styles.spinner} width={12} />
+      <Spinner height={12} style={{ backgroundColor: semantics.backgroundCoreElevation1 }} width={12} />
       <Text
         style={[
           styles.networkDownText,

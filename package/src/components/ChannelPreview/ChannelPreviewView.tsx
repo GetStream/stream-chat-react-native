@@ -1,14 +1,14 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { ChannelPreviewProps } from './ChannelPreview';
+import type { ChannelPreviewProps } from './ChannelPreview';
 import { ChannelPreviewMessage } from './ChannelPreviewMessage';
 import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewStatus } from './ChannelPreviewStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
 
-import { LastMessageType } from './hooks/useChannelPreviewData';
+import type { LastMessageType } from './hooks/useChannelPreviewData';
 
 import {
   ChannelsContextValue,
@@ -204,6 +204,7 @@ const useStyles = () => {
       },
       contentContainer: { flex: 1, gap: primitives.spacingXxs },
       upperRow: {
+        gap: primitives.spacingMd,
         alignItems: 'center',
         flex: 1,
         flexDirection: 'row',
