@@ -10,6 +10,7 @@ import {
   EventSubscription,
   Keyboard,
   KeyboardEvent,
+  LayoutChangeEvent,
   Modal,
   Platform,
   Pressable,
@@ -28,6 +29,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { getBottomSheetBaseHeight, getBottomSheetSnapPoints } from './BottomSheetModal.utils';
 
 import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -50,6 +53,10 @@ export type BottomSheetModalProps = {
    */
   height?: number;
   /**
+   * Whether the sheet should wrap its content up to the provided `height`.
+   */
+  enableDynamicSizing?: boolean;
+  /**
    * Whether the sheet content should be lazy loaded or not. Particularly
    * useful when the content is something heavy and we don't want to disrupt
    * the animations while this is happening.
@@ -60,7 +67,14 @@ export type BottomSheetModalProps = {
 export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
   const { height: windowHeight } = useWindowDimensions();
   const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();
-  const { children, height = windowHeight / 2, onClose, visible, lazy = false } = props;
+  const {
+    children,
+    enableDynamicSizing = false,
+    height = windowHeight / 2,
+    onClose,
+    visible,
+    lazy = false,
+  } = props;
 
   const {
     theme: {
@@ -74,12 +88,32 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     windowHeight - topInset - (Platform.OS === 'android' ? bottomInset + 16 : 0),
   );
 
-  const baseHeight = Math.min(height, maxHeight);
-  const snapPoints = useMemo(() => [baseHeight, maxHeight], [baseHeight, maxHeight]);
+  const [contentHeight, setContentHeight] = useState<number | null>(null);
+
+  const baseHeight = useMemo(
+    () =>
+      getBottomSheetBaseHeight({
+        bottomInset,
+        contentHeight,
+        enableDynamicSizing,
+        height,
+        maxHeight,
+      }),
+    [bottomInset, contentHeight, enableDynamicSizing, height, maxHeight],
+  );
+  const snapPoints = useMemo(
+    () =>
+      getBottomSheetSnapPoints({
+        baseHeight,
+        maxHeight,
+      }),
+    [baseHeight, maxHeight],
+  );
   const snapPointsTranslateY = useMemo(
     () => snapPoints.map((point) => maxHeight - point),
     [maxHeight, snapPoints],
   );
+  const topSnapIndex = snapPoints.length - 1;
 
   const sheetTranslateY = useSharedValue(maxHeight);
   const keyboardOffset = useSharedValue(0);
@@ -98,6 +132,34 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     if (lazy) {
       setRenderContent(true);
     }
+  });
+
+  const handleDynamicContentLayout = useStableCallback((event: LayoutChangeEvent) => {
+    if (!enableDynamicSizing) {
+      return;
+    }
+
+    const nextContentHeight = Math.ceil(event.nativeEvent.layout.height);
+
+    setContentHeight((previousContentHeight) =>
+      previousContentHeight === nextContentHeight ? previousContentHeight : nextContentHeight,
+    );
+  });
+
+  const open = useStableCallback((shouldShowContentAfterOpen = true) => {
+    sheetTranslateY.value = withTiming(
+      snapPointsTranslateY[0],
+      { duration: 250, easing: Easing.out(Easing.cubic) },
+      (finished) => {
+        if (!finished) return;
+
+        isOpening.value = false;
+
+        if (shouldShowContentAfterOpen) {
+          runOnJS(showContent)();
+        }
+      },
+    );
   });
 
   const finishClose = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
@@ -161,26 +223,30 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     currentSnapIndex.value = 0;
     sheetTranslateY.value = maxHeight;
 
-    sheetTranslateY.value = withTiming(
-      snapPointsTranslateY[0],
-      { duration: 250, easing: Easing.out(Easing.cubic) },
-      (finished) => {
-        if (!finished) return;
+    if (enableDynamicSizing) {
+      setRenderContent(true);
+      return;
+    }
 
-        isOpening.value = false;
-        runOnJS(showContent)();
-      },
-    );
+    open();
   }, [
+    enableDynamicSizing,
     visible,
     isOpen,
     isOpening,
     maxHeight,
-    showContent,
+    open,
     sheetTranslateY,
     currentSnapIndex,
-    snapPointsTranslateY,
   ]);
+
+  useLayoutEffect(() => {
+    if (!visible || !enableDynamicSizing || contentHeight === null || !isOpening.value) {
+      return;
+    }
+
+    open(false);
+  }, [contentHeight, enableDynamicSizing, isOpening, open, visible]);
 
   // if `visible` gets hard changed, we force a cleanup
   useEffect(() => {
@@ -191,6 +257,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     keyboardOffset.value = 0;
     currentSnapIndex.value = 0;
     sheetTranslateY.value = maxHeight;
+    setContentHeight(null);
     setRenderContent(!lazy);
   }, [
     visible,
@@ -277,6 +344,7 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
         .onEnd((event) => {
           const openTranslateY = snapPointsTranslateY[currentSnapIndex.value];
           const draggedDown = Math.max(sheetTranslateY.value - openTranslateY, 0);
+          const hasMultipleSnapPoints = snapPoints.length > 1;
           const topSnapIndex = snapPoints.length - 1;
           const isAtTopSnap = currentSnapIndex.value === topSnapIndex;
           const snap0TranslateY = snapPointsTranslateY[0];
@@ -287,7 +355,11 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
             event.velocityY > 2200 ||
             projectedTranslateY > snap0TranslateY + (maxHeight - snap0TranslateY) * 0.96;
 
-          const shouldClose = isAtTopSnap ? shouldCloseFromTopSnap : shouldCloseFromLowerSnap;
+          const shouldClose = !hasMultipleSnapPoints
+            ? shouldCloseFromLowerSnap
+            : isAtTopSnap
+              ? shouldCloseFromTopSnap
+              : shouldCloseFromLowerSnap;
 
           if (shouldClose) {
             runOnJS(closeFromGesture)();
@@ -304,12 +376,12 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
               }
             }
             // velocity-based snapping, fast upward swipe goes to top snap point
-            if (event.velocityY < -800) {
+            if (hasMultipleSnapPoints && event.velocityY < -800) {
               nearestIndex = snapPointsTranslateY.length - 1;
             }
             // From top snap, a gentle downward flick should settle to snap 0
             // without requiring a large drag distance.
-            if (isAtTopSnap && event.velocityY > 120) {
+            if (hasMultipleSnapPoints && isAtTopSnap && event.velocityY > 120) {
               nearestIndex = 0;
             }
 
@@ -339,8 +411,9 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     () => ({
       close,
       currentSnapIndex,
+      topSnapIndex,
     }),
-    [close, currentSnapIndex],
+    [close, currentSnapIndex, topSnapIndex],
   );
 
   return (
@@ -364,7 +437,12 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
                         entering={FadeIn.duration(250)}
                         style={styles.sheetContentContainer}
                       >
-                        {children}
+                        <View
+                          onLayout={enableDynamicSizing ? handleDynamicContentLayout : undefined}
+                          style={enableDynamicSizing ? { paddingBottom: bottomInset } : undefined}
+                        >
+                          {children}
+                        </View>
                       </Animated.View>
                     </BottomSheetProvider>
                   ) : null}

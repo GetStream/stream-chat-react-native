@@ -120,6 +120,7 @@ export const ChannelSwipableWrapper = ({
         {children}
       </SwipableWrapper>
       <BottomSheetModal
+        enableDynamicSizing={true}
         onClose={() => setChannelDetailSheetOpen(false)}
         visible={channelDetailSheetOpen}
         height={356}

@@ -8,6 +8,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type BottomSheetContextValue = {
   close: (closeAnimationFinishedCallback?: () => void) => void;
   currentSnapIndex: SharedValue<number>;
+  topSnapIndex: number;
 };
 
 export const BottomSheetContext = React.createContext(
