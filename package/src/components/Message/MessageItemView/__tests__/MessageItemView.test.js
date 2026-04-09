@@ -10,7 +10,10 @@ import { useMessageContext } from '../../../../contexts/messageContext/MessageCo
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
-import { generateGiphyAttachment } from '../../../../mock-builders/generator/attachment';
+import {
+  generateAttachmentAction,
+  generateGiphyAttachment,
+} from '../../../../mock-builders/generator/attachment';
 import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
@@ -274,6 +277,34 @@ describe('MessageItemView', () => {
         screen.getByTestId('message-content-wrapper').props.style,
       );
       expect(wrapperStyle.backgroundColor).not.toBe('transparent');
+    });
+  });
+
+  it('renders a standalone shell for an ephemeral giphy preview with a quoted reply', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [
+        {
+          ...generateGiphyAttachment(),
+          actions: [
+            generateAttachmentAction(),
+            generateAttachmentAction(),
+            generateAttachmentAction(),
+          ],
+        },
+      ],
+      quoted_message: generateMessage({ text: 'quoted message', user }),
+      text: '',
+      user,
+    });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      const wrapperStyle = StyleSheet.flatten(
+        screen.getByTestId('message-content-wrapper').props.style,
+      );
+      expect(wrapperStyle.backgroundColor).toBe('transparent');
     });
   });
 });

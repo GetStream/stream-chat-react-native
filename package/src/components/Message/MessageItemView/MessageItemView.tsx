@@ -200,6 +200,7 @@ export type MessageItemViewPropsWithContext = Pick<
   | 'alignment'
   | 'channel'
   | 'groupStyles'
+  | 'hasAttachmentActions'
   | 'isMyMessage'
   | 'message'
   | 'onlyEmojis'
@@ -241,6 +242,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
+    hasAttachmentActions,
     isMyMessage,
     message,
     MessageAuthor,
@@ -294,12 +296,13 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
   });
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
+  const hasVisibleQuotedReply = !!message.quoted_message && !hasAttachmentActions;
   const hasStandaloneGiphyOrImgur =
-    !message.quoted_message &&
+    !hasVisibleQuotedReply &&
     otherAttachments.length > 0 &&
     (otherAttachments[0].type === FileTypes.Giphy || otherAttachments[0].type === FileTypes.Imgur);
 
-  let noBorder = onlyEmojis && !message.quoted_message;
+  let noBorder = onlyEmojis && !hasVisibleQuotedReply;
   if (otherAttachments.length) {
     if (hasStandaloneGiphyOrImgur && !isMyMessage) {
       noBorder = false;
@@ -309,7 +312,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
   }
 
   let backgroundColor = semantics.chatBgOutgoing;
-  if (onlyEmojis && !message.quoted_message) {
+  if (onlyEmojis && !hasVisibleQuotedReply) {
     backgroundColor = 'transparent';
   } else if (hasStandaloneGiphyOrImgur) {
     backgroundColor = 'transparent';
@@ -522,6 +525,7 @@ export const MessageItemView = (props: MessageItemViewProps) => {
     alignment,
     channel,
     groupStyles,
+    hasAttachmentActions,
     isMyMessage,
     message,
     contextMenuAnchorRef,
@@ -563,6 +567,7 @@ export const MessageItemView = (props: MessageItemViewProps) => {
         enableMessageGroupingByUser,
         enableSwipeToReply,
         groupStyles,
+        hasAttachmentActions,
         isMyMessage,
         message,
         MessageAuthor,

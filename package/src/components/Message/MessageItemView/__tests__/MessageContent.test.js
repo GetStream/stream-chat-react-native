@@ -8,6 +8,7 @@ import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
 import {
+  generateAttachmentAction,
   generateGiphyAttachment,
   generateVideoAttachment,
 } from '../../../../mock-builders/generator/attachment';
@@ -367,6 +368,33 @@ describe('MessageContent', () => {
     expect(contentContainerStyle.paddingTop).toBeGreaterThan(0);
     expect(contentContainerStyle.paddingHorizontal).toBeGreaterThan(0);
     expect(contentContainerStyle.paddingBottom).toBeGreaterThan(0);
+  });
+
+  it('does not render the quoted reply for an ephemeral giphy preview', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [
+        {
+          ...generateGiphyAttachment(),
+          actions: [
+            generateAttachmentAction(),
+            generateAttachmentAction(),
+            generateAttachmentAction(),
+          ],
+        },
+      ],
+      quoted_message: generateMessage({ text: 'quoted message', user }),
+      text: '',
+      user,
+    });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('giphy-action-attachment')).toBeTruthy();
+    });
+
+    expect(screen.queryByText('quoted message')).toBeFalsy();
   });
 
   it('renders the FileAttachment component when a file attachment exists', async () => {

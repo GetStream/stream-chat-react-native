@@ -40,6 +40,8 @@ export type MessageContextValue = {
   groupStyles: GroupType[];
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
   handleAction: ActionHandler;
+  /** Whether or not any message attachment exposes actions. */
+  hasAttachmentActions: boolean;
   handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
