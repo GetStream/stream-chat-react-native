@@ -25,7 +25,7 @@ import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.ts
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
+// import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useAppContext } from '../context/AppContext.ts';
 import { useLegacyColors } from '../theme/useLegacyColors';
@@ -150,7 +150,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
     <View style={[styles.container, { backgroundColor: white }]}>
       <Channel
         audioRecordingEnabled={true}
-        AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
+        // AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
         enforceUniqueReaction
         keyboardVerticalOffset={0}
