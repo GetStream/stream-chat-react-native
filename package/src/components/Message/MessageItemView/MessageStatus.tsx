@@ -29,7 +29,6 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
       messageItemView: {
         status: { checkAllIcon, checkIcon, container, timeIcon },
       },
-      semantics,
     },
   } = useTheme();
 
@@ -54,14 +53,14 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
       {read ? (
         <CheckAll
           height={16}
-          stroke={semantics.accentPrimary}
+          stroke={styles.readCheck.color}
           width={16}
           accessibilityLabel='Read'
           {...checkAllIcon}
         />
       ) : delivered ? (
         <CheckAll
-          stroke={semantics.chatTextTimestamp}
+          stroke={styles.deliveredCheck.color}
           height={16}
           width={16}
           accessibilityLabel='Delivered'
@@ -69,7 +68,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
         />
       ) : sending ? (
         <Time
-          stroke={semantics.chatTextTimestamp}
+          stroke={styles.sendingCheck.color}
           height={16}
           width={16}
           accessibilityLabel='Sending'
@@ -77,7 +76,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
         />
       ) : sent ? (
         <Check
-          stroke={semantics.chatTextTimestamp}
+          stroke={styles.sentCheck.color}
           height={16}
           width={16}
           accessibilityLabel='Sent'
@@ -161,6 +160,18 @@ const useStyles = () => {
         alignItems: 'center',
         flexDirection: 'row',
         gap: primitives.spacingXxs,
+      },
+      readCheck: {
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.accentPrimary,
+      },
+      deliveredCheck: {
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.chatTextTimestamp,
+      },
+      sendingCheck: {
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.chatTextTimestamp,
+      },
+      sentCheck: {
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.chatTextTimestamp,
       },
     });
   }, [shouldUseOverlayStyles, semantics]);

@@ -1800,7 +1800,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             },
             {
               "backgroundColor": undefined,
-              "borderColor": "#d5dbe1",
+              "borderColor": "#ebeef1",
               "borderWidth": 1,
               "height": 48,
               "width": 48,

@@ -141,7 +141,7 @@ const useStyles = () => {
           flexDirection: 'row',
           padding: primitives.spacingSm,
           gap: primitives.spacingSm,
-          backgroundColor: semantics.backgroundCoreElevation1,
+          backgroundColor: 'transparent',
           ...header.container,
         },
         headerMeta: {

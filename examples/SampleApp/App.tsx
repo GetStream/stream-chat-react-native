@@ -59,8 +59,6 @@ Geolocation.setRNConfiguration({
 });
 
 import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-chat';
-import { Toast } from './src/components/ToastComponent/Toast';
-import { useClientNotificationsToastHandler } from './src/hooks/useClientNotificationsToastHandler';
 import AsyncStore from './src/utils/AsyncStore.ts';
 import {
   MessageInputFloatingConfigItem,
@@ -377,7 +375,6 @@ const DrawerNavigatorWrapper: React.FC<{
         <AppOverlayProvider>
           <UserSearchProvider>
             <DrawerNavigator />
-            <Toast />
           </UserSearchProvider>
         </AppOverlayProvider>
       </StreamChatProvider>
@@ -403,7 +400,6 @@ const UserSelector = () => (
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => {
   const { overlay } = useOverlayContext();
-  useClientNotificationsToastHandler();
 
   return (
     <Stack.Navigator

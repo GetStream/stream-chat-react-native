@@ -76,6 +76,7 @@ export const ShowThreadMessageInChannelButtonWithContext = (
               showReplyInChannel
                 ? {
                     backgroundColor: semantics.controlRadioCheckBgSelected,
+                    borderWidth: 0,
                     ...checkBoxActive,
                   }
                 : { ...checkBoxInactive },
