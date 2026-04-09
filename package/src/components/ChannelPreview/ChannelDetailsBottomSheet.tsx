@@ -55,7 +55,7 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
 
   return (
     <View style={styles.headerContainer}>
-      <ChannelAvatar channel={channel} size={'lg'} />
+      <ChannelAvatar channel={channel} size={'xl'} />
       <View style={styles.metaContainer}>
         <View style={styles.titleContainer}>
           <ChannelPreviewTitle channel={channel} />

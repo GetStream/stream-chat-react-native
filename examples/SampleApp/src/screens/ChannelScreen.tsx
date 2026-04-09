@@ -103,7 +103,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
             opacity: pressed ? 0.5 : 1,
           })}
         >
-          <ChannelAvatar channel={channel} size='lg' />
+          <ChannelAvatar channel={channel} size='xl' />
         </Pressable>
       )}
       showUnreadCountBadge

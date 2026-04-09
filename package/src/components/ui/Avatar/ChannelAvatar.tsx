@@ -58,7 +58,11 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
 
   if (usersWithoutSelf.length > 1) {
     return (
-      <UserAvatarGroup size='xl' users={usersForGroup} showOnlineIndicator={showOnlineIndicator} />
+      <UserAvatarGroup
+        size={size}
+        users={usersForGroup}
+        showOnlineIndicator={showOnlineIndicator}
+      />
     );
   } else {
     return (
