@@ -575,7 +575,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     asyncMessagesLockDistance = 50,
     asyncMessagesMinimumPressDuration = 500,
     asyncMessagesSlideToCancelDistance = 75,
-    audioRecordingSendOnComplete = true,
+    audioRecordingSendOnComplete = false,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     attachmentPickerBottomSheetHeight = disableAttachmentPicker ? 72 : 333,
