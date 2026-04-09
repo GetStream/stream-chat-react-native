@@ -4,7 +4,6 @@ export const BOTTOM_SHEET_HANDLE_TOTAL_HEIGHT =
   BOTTOM_SHEET_HANDLE_HEIGHT + BOTTOM_SHEET_HANDLE_MARGIN_VERTICAL * 2;
 
 type GetBottomSheetBaseHeightParams = {
-  bottomInset: number;
   contentHeight: number | undefined;
   enableDynamicSizing: boolean;
   height: number;
@@ -12,7 +11,6 @@ type GetBottomSheetBaseHeightParams = {
 };
 
 export const getBottomSheetBaseHeight = ({
-  bottomInset,
   contentHeight,
   enableDynamicSizing,
   height,
@@ -26,8 +24,7 @@ export const getBottomSheetBaseHeight = ({
     return cappedHeight;
   }
 
-  const measuredHeight =
-    Math.max(0, contentHeight) + BOTTOM_SHEET_HANDLE_TOTAL_HEIGHT + bottomInset;
+  const measuredHeight = Math.max(0, contentHeight) + BOTTOM_SHEET_HANDLE_TOTAL_HEIGHT;
 
   return Math.min(measuredHeight, cappedHeight);
 };

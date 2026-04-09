@@ -99,13 +99,12 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
   const baseHeight = useDerivedValue(
     () =>
       getBottomSheetBaseHeight({
-        bottomInset,
         contentHeight: contentHeight.value,
         enableDynamicSizing,
         height,
         maxHeight,
       }),
-    [bottomInset, contentHeight, enableDynamicSizing, height, maxHeight],
+    [contentHeight, enableDynamicSizing, height, maxHeight],
   );
   const topSnapIndex = useDerivedValue<number>(
     () =>
