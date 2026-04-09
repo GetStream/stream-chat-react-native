@@ -20,12 +20,21 @@ export const StreamBottomSheetModalFlatList = <ItemT,>({
   );
 
   useAnimatedReaction(
-    () => currentSnapIndex.value,
+    () => ({
+      currentSnapIndex: currentSnapIndex.value,
+      topSnapIndex: topSnapIndex.value,
+    }),
     (value, prev) => {
-      if (value === prev || scrollEnabledProp !== undefined) {
+      if (
+        scrollEnabledProp !== undefined ||
+        (prev &&
+          value.currentSnapIndex === prev.currentSnapIndex &&
+          value.topSnapIndex === prev.topSnapIndex)
+      ) {
         return;
       }
-      runOnJS(setNativeScrollEnabled)(value === topSnapIndex);
+
+      runOnJS(setNativeScrollEnabled)(value.currentSnapIndex === value.topSnapIndex);
     },
     [currentSnapIndex, topSnapIndex],
   );

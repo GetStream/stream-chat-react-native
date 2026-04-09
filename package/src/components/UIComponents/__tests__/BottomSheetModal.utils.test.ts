@@ -1,7 +1,9 @@
 import {
   BOTTOM_SHEET_HANDLE_TOTAL_HEIGHT,
   getBottomSheetBaseHeight,
+  getBottomSheetSnapPointTranslateY,
   getBottomSheetSnapPoints,
+  getBottomSheetTopSnapIndex,
 } from '../BottomSheetModal.utils';
 
 describe('BottomSheetModal.utils', () => {
@@ -9,7 +11,7 @@ describe('BottomSheetModal.utils', () => {
     expect(
       getBottomSheetBaseHeight({
         bottomInset: 24,
-        contentHeight: null,
+        contentHeight: undefined,
         enableDynamicSizing: false,
         height: 500,
         maxHeight: 420,
@@ -66,5 +68,47 @@ describe('BottomSheetModal.utils', () => {
         maxHeight: 640,
       }),
     ).toEqual([640]);
+  });
+
+  it('returns the correct top snap index', () => {
+    expect(
+      getBottomSheetTopSnapIndex({
+        baseHeight: 280,
+        maxHeight: 640,
+      }),
+    ).toBe(1);
+
+    expect(
+      getBottomSheetTopSnapIndex({
+        baseHeight: 640,
+        maxHeight: 640,
+      }),
+    ).toBe(0);
+  });
+
+  it('returns the correct translateY for each snap point', () => {
+    expect(
+      getBottomSheetSnapPointTranslateY({
+        baseHeight: 280,
+        maxHeight: 640,
+        snapIndex: 0,
+      }),
+    ).toBe(360);
+
+    expect(
+      getBottomSheetSnapPointTranslateY({
+        baseHeight: 280,
+        maxHeight: 640,
+        snapIndex: 1,
+      }),
+    ).toBe(0);
+
+    expect(
+      getBottomSheetSnapPointTranslateY({
+        baseHeight: 640,
+        maxHeight: 640,
+        snapIndex: 0,
+      }),
+    ).toBe(0);
   });
 });

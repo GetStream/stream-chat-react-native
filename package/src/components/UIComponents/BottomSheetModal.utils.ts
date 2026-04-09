@@ -5,7 +5,7 @@ export const BOTTOM_SHEET_HANDLE_TOTAL_HEIGHT =
 
 type GetBottomSheetBaseHeightParams = {
   bottomInset: number;
-  contentHeight: number | null;
+  contentHeight: number | undefined;
   enableDynamicSizing: boolean;
   height: number;
   maxHeight: number;
@@ -18,9 +18,11 @@ export const getBottomSheetBaseHeight = ({
   height,
   maxHeight,
 }: GetBottomSheetBaseHeightParams) => {
+  'worklet';
+
   const cappedHeight = Math.min(height, maxHeight);
 
-  if (!enableDynamicSizing || contentHeight === null) {
+  if (!enableDynamicSizing || contentHeight === undefined) {
     return cappedHeight;
   }
 
@@ -39,9 +41,45 @@ export const getBottomSheetSnapPoints = ({
   baseHeight,
   maxHeight,
 }: GetBottomSheetSnapPointsParams) => {
+  'worklet';
+
   if (baseHeight === maxHeight) {
     return [baseHeight];
   }
 
   return [baseHeight, maxHeight];
+};
+
+type GetBottomSheetTopSnapIndexParams = {
+  baseHeight: number;
+  maxHeight: number;
+};
+
+export const getBottomSheetTopSnapIndex = ({
+  baseHeight,
+  maxHeight,
+}: GetBottomSheetTopSnapIndexParams) => {
+  'worklet';
+
+  return baseHeight === maxHeight ? 0 : 1;
+};
+
+type GetBottomSheetSnapPointTranslateYParams = {
+  baseHeight: number;
+  maxHeight: number;
+  snapIndex: number;
+};
+
+export const getBottomSheetSnapPointTranslateY = ({
+  baseHeight,
+  maxHeight,
+  snapIndex,
+}: GetBottomSheetSnapPointTranslateYParams) => {
+  'worklet';
+
+  if (getBottomSheetTopSnapIndex({ baseHeight, maxHeight }) === 0) {
+    return 0;
+  }
+
+  return snapIndex <= 0 ? maxHeight - baseHeight : 0;
 };
