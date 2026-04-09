@@ -31,7 +31,7 @@ const mockSwipableWrapper = jest.fn(
   },
 );
 
-jest.mock('../../../contexts', () => ({
+jest.mock('../../../contexts/themeContext/ThemeContext', () => ({
   useTheme: () => ({
     theme: {
       semantics: {
@@ -50,8 +50,11 @@ jest.mock('../../../contexts/swipeableContext/SwipeRegistryContext', () => ({
   }),
 }));
 
-jest.mock('../../UIComponents', () => ({
+jest.mock('../../UIComponents/BottomSheetModal', () => ({
   BottomSheetModal: ({ children }: React.PropsWithChildren) => <>{children}</>,
+}));
+
+jest.mock('../../UIComponents/SwipableWrapper', () => ({
   RightActions: ({ items }: { items: Array<{ action: () => void; id: string }> }) => {
     rightActionsProbe.items = items;
     return null;

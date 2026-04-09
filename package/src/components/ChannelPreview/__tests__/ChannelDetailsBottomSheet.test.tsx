@@ -11,7 +11,7 @@ import { ChannelDetailsBottomSheet } from '../ChannelDetailsBottomSheet';
 
 const mockStreamBottomSheetModalFlatList = jest.fn(() => null);
 
-jest.mock('../../UIComponents', () => ({
+jest.mock('../../UIComponents/StreamBottomSheetModalFlatList', () => ({
   StreamBottomSheetModalFlatList: (...args: unknown[]) =>
     mockStreamBottomSheetModalFlatList(...args),
 }));
