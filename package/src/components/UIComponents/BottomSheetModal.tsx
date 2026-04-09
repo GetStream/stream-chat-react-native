@@ -64,7 +64,7 @@ export type BottomSheetModalProps = {
   lazy?: boolean;
 };
 
-export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
+const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) => {
   const { height: windowHeight } = useWindowDimensions();
   const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();
   const {
@@ -439,7 +439,11 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
                       >
                         <View
                           onLayout={enableDynamicSizing ? handleDynamicContentLayout : undefined}
-                          style={enableDynamicSizing ? { paddingBottom: bottomInset } : undefined}
+                          style={
+                            enableDynamicSizing
+                              ? { paddingBottom: bottomInset }
+                              : styles.staticContentWrapper
+                          }
                         >
                           {children}
                         </View>
@@ -454,6 +458,14 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
       </GestureHandlerRootView>
     </Modal>
   );
+};
+
+export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
+  if (!props.visible) {
+    return null;
+  }
+
+  return <BottomSheetModalInner {...props} />;
 };
 
 const useStyles = () => {
@@ -488,6 +500,9 @@ const useStyles = () => {
           backgroundColor: semantics.backgroundCoreScrim,
         },
         sheetContentContainer: {
+          flex: 1,
+        },
+        staticContentWrapper: {
           flex: 1,
         },
       }),
