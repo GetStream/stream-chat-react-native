@@ -32,7 +32,7 @@ import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.ts
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
-import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
+// import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
 import { CustomAttachmentPickerContent } from '../components/AttachmentPickerContent.tsx';
 import { ThreadType } from 'stream-chat-react-native-core';
@@ -104,7 +104,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
             opacity: pressed ? 0.5 : 1,
           })}
         >
-          <ChannelAvatar channel={channel} size='lg' />
+          <ChannelAvatar channel={channel} size='xl' />
         </Pressable>
       )}
       showUnreadCountBadge

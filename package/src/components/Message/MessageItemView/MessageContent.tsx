@@ -109,6 +109,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     backgroundColor,
     enableMessageGroupingByUser,
     groupStyles,
+    goToMessage,
     isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
@@ -213,7 +214,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   const { setNativeScrollability } = useMessageListItemContext();
   const hasContentSideViews = !!(MessageContentLeadingView || MessageContentTrailingView);
-
   const contentBody = (
     <>
       <View
@@ -232,12 +232,45 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
             case 'quoted_reply':
               return (
                 message.quoted_message && (
-                  <View
+                  <Pressable
+                    disabled={!goToMessage}
                     key={`quoted_reply_${messageContentOrderIndex}`}
+                    onLongPress={(event) => {
+                      if (onLongPress) {
+                        onLongPress({
+                          emitter: 'messageContent',
+                          event,
+                        });
+                      }
+                    }}
+                    onPress={(event) => {
+                      if (!message.quoted_message || !goToMessage) {
+                        return;
+                      }
+
+                      if (onPress) {
+                        onPress({
+                          defaultHandler: () => goToMessage(message.quoted_message!.id),
+                          emitter: 'messageContent',
+                          event,
+                        });
+                        return;
+                      }
+
+                      goToMessage(message.quoted_message.id);
+                    }}
+                    onPressIn={(event) => {
+                      if (onPressIn) {
+                        onPressIn({
+                          emitter: 'messageContent',
+                          event,
+                        });
+                      }
+                    }}
                     style={[styles.replyContainer, replyContainer]}
                   >
                     <Reply mode='reply' styles={replyStyles} />
-                  </View>
+                  </Pressable>
                 )
               );
             case 'attachments':
@@ -561,7 +594,8 @@ export const MessageContent = (props: MessageContentProps) => {
   const messageHasSingleFile =
     messageContentOrder.length === 1 && messageContentOrder[0] === 'files' && isSingleFile;
   const messageHasOnlyText = messageContentOrder.length === 1 && messageContentOrder[0] === 'text';
-  const messageHasGiphyOrImgur =
+  const messageHasStandaloneGiphyOrImgur =
+    !message.quoted_message &&
     otherAttachments.filter(
       (file) => file.type === FileTypes.Giphy || file.type === FileTypes.Imgur,
     ).length > 0;
@@ -571,17 +605,20 @@ export const MessageContent = (props: MessageContentProps) => {
     messageHasSingleMedia ||
     messageHasSingleFile ||
     messageHasOnlyText ||
-    messageHasGiphyOrImgur;
+    messageHasStandaloneGiphyOrImgur;
 
   const hidePaddingHorizontal =
-    messageHasPoll || messageHasSingleMedia || messageHasSingleFile || messageHasGiphyOrImgur;
+    messageHasPoll ||
+    messageHasSingleMedia ||
+    messageHasSingleFile ||
+    messageHasStandaloneGiphyOrImgur;
 
   const hidePaddingBottom =
     messageHasPoll ||
     messageHasSingleMedia ||
     messageHasSingleFile ||
     messageHasOnlyText ||
-    messageHasGiphyOrImgur ||
+    messageHasStandaloneGiphyOrImgur ||
     (messageContentOrder.length > 1 &&
       messageContentOrder[messageContentOrder.length - 1] === 'text');
 

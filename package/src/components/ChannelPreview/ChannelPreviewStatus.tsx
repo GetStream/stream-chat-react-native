@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
-import { ChannelPreviewProps } from './ChannelPreview';
+import type { ChannelPreviewProps } from './ChannelPreview';
 import type { ChannelPreviewViewPropsWithContext } from './ChannelPreviewView';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';

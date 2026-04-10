@@ -122,14 +122,18 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
       <VoteButton option={option} />
       <View style={[styles.info, info]}>
         <View style={[styles.header, header]}>
-          <Text style={[styles.text, text]}>{option.text}</Text>
+          <Text ellipsizeMode='tail' numberOfLines={2} style={[styles.text, text]}>
+            {option.text}
+          </Text>
           <View style={[styles.votesContainer, votesContainer]}>
-            <UserAvatarStack
-              users={relevantVotes.map((vote: PollVote) => vote.user as UserResponse)}
-              overlap={0.2}
-              maxVisible={3}
-              avatarSize='xs'
-            />
+            {relevantVotes.length > 0 ? (
+              <UserAvatarStack
+                users={relevantVotes.map((vote: PollVote) => vote.user as UserResponse)}
+                overlap={0.2}
+                maxVisible={3}
+                avatarSize='xs'
+              />
+            ) : null}
 
             <Text style={[styles.votesText, votesText]}>{voteCountsByOption[option.id] || 0}</Text>
           </View>
@@ -221,10 +225,14 @@ const useStyles = () => {
       },
       header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        gap: primitives.spacingXs,
+        minWidth: 0,
       },
       text: {
         color: semantics.chatTextIncoming,
+        flexGrow: 1,
+        flexShrink: 1,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
@@ -232,9 +240,17 @@ const useStyles = () => {
       },
       info: {
         flexGrow: 1,
+        flexShrink: 1,
         gap: primitives.spacingXs,
+        minWidth: 0,
       },
-      votesContainer: { flexDirection: 'row', gap: primitives.spacingXs, alignItems: 'center' },
+      votesContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexShrink: 0,
+        gap: primitives.spacingXs,
+        minHeight: 20,
+      },
       votesText: {
         color: semantics.chatTextIncoming,
         fontSize: primitives.typographyFontSizeXs,

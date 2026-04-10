@@ -12,6 +12,7 @@ import type {
   ImageGalleryAsset,
   ImageGalleryState,
 } from '../../../state-store/image-gallery-state-store';
+import { primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 
@@ -108,8 +109,9 @@ const useStyles = () => {
     return StyleSheet.create({
       contentContainer: {
         flexGrow: 1,
-        ...contentContainer,
         backgroundColor: semantics.backgroundCoreApp,
+        marginTop: primitives.spacingSm,
+        ...contentContainer,
       },
       image: { margin: 1, ...gridImage },
     });

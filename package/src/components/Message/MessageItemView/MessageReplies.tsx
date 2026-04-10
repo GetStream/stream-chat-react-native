@@ -229,7 +229,7 @@ const useStyles = () => {
         gap: primitives.spacingXs,
       },
       messageRepliesText: {
-        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textPrimary,
+        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.textLink,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,

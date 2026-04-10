@@ -12,7 +12,7 @@ import { useIsDirectChat } from './useIsDirectChat';
 
 import { useTheme, useTranslationContext } from '../../../contexts';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
-import { Archive, IconProps, Mute, BlockUser, Delete, Sound } from '../../../icons';
+import { IconProps, Mute, BlockUser, Delete, Sound } from '../../../icons';
 import { ArrowBoxLeft } from '../../../icons/leave';
 
 export type ChannelActionHandler = () => Promise<void> | void;
@@ -56,10 +56,8 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 ) => {
   const {
     actions: {
-      archive,
       deleteChannel,
       leave,
-      unarchive,
       muteChannel,
       unmuteChannel,
       muteUser,
@@ -67,7 +65,6 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       blockUser,
       unblockUser,
     },
-    isArchived,
     isDirectChat,
     muteActive,
     t,
@@ -127,21 +124,6 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       type: 'standard',
     });
   }
-
-  actionItems.push({
-    action: isArchived ? unarchive : archive,
-    Icon: (props) => <ChannelActionsIcon Icon={Archive} {...props} />,
-    id: 'archive',
-    label: isDirectChat
-      ? isArchived
-        ? t('Unarchive Chat')
-        : t('Archive Chat')
-      : isArchived
-        ? t('Unarchive Group')
-        : t('Archive Group'),
-    placement: isDirectChat ? 'sheet' : 'both',
-    type: 'standard',
-  });
 
   actionItems.push({
     action: leave,

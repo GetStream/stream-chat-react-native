@@ -89,12 +89,16 @@ const GiphyImageWithContext = (props: GiphyImagePropsWithContext) => {
         style={[styles.giphy, giphyDimensions, giphy]}
       />
       {isLoadingImageError && (
-        <View style={[styles.imageIndicatorContainer, imageIndicatorContainer]}>
+        <View
+          style={[StyleSheet.absoluteFill, styles.imageIndicatorContainer, imageIndicatorContainer]}
+        >
           <ImageLoadingFailedIndicator onReloadImage={onReloadImage} />
         </View>
       )}
       {isLoadingImage && (
-        <View style={[styles.imageIndicatorContainer, imageIndicatorContainer]}>
+        <View
+          style={[StyleSheet.absoluteFill, styles.imageIndicatorContainer, imageIndicatorContainer]}
+        >
           <ImageLoadingIndicator />
         </View>
       )}
@@ -179,7 +183,6 @@ const useStyles = () => {
       },
       imageContainer: {},
       imageIndicatorContainer: {
-        ...StyleSheet.absoluteFillObject,
         alignItems: 'center',
         justifyContent: 'center',
       },

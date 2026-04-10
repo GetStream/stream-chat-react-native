@@ -34,7 +34,7 @@ export const ImageLoadingFailedIndicator = ({
       accessibilityLabel='Image Loading Error Indicator'
       onLongPress={onLongPress}
       onPress={onReloadImage}
-      style={styles.imageLoadingErrorIndicatorStyle}
+      style={[StyleSheet.absoluteFill, styles.imageLoadingErrorIndicatorStyle]}
     >
       <RetryBadge size='lg' />
     </Pressable>
@@ -48,7 +48,6 @@ const useStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       imageLoadingErrorIndicatorStyle: {
-        ...StyleSheet.absoluteFillObject,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: semantics.backgroundCoreOverlayLight,

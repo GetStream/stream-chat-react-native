@@ -14,12 +14,7 @@ import Animated, {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  useChatContext,
-  useTheme,
-  useViewport,
-  UserAvatar,
-} from 'stream-chat-react-native';
+import { useChatContext, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
@@ -251,7 +246,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   return (
     <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
       <GestureDetector gesture={pan}>
-        <Animated.View style={StyleSheet.absoluteFillObject}>
+        <Animated.View style={StyleSheet.absoluteFill}>
           <GestureDetector gesture={tap}>
             <Animated.View
               onLayout={({

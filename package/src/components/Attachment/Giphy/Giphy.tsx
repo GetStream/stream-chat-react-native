@@ -22,7 +22,7 @@ import { Button } from '../../ui/';
 
 export type GiphyPropsWithContext = Pick<
   MessageContextValue,
-  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
+  'handleAction' | 'isMyMessage' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
   Pick<MessagesContextValue, 'additionalPressableProps' | 'giphyVersion'> & {
     attachment: Attachment;
@@ -34,6 +34,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
     attachment,
     giphyVersion,
     handleAction,
+    isMyMessage,
     onLongPress,
     onPress,
     onPressIn,
@@ -53,7 +54,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
     },
   } = useTheme();
 
-  const styles = useStyles();
+  const styles = useStyles({ isMyMessage });
 
   const uri = image_url || thumb_url;
 
@@ -122,7 +123,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
         }
       }}
       testID='giphy-attachment'
-      style={styles.container}
+      style={[styles.container, container]}
       {...additionalPressableProps}
     >
       <GiphyImage attachment={attachment} giphyVersion={giphyVersion} />
@@ -134,10 +135,12 @@ const areEqual = (prevProps: GiphyPropsWithContext, nextProps: GiphyPropsWithCon
   const {
     attachment: { actions: prevActions, image_url: prevImageUrl, thumb_url: prevThumbUrl },
     giphyVersion: prevGiphyVersion,
+    isMyMessage: prevIsMyMessage,
   } = prevProps;
   const {
     attachment: { actions: nextActions, image_url: nextImageUrl, thumb_url: nextThumbUrl },
     giphyVersion: nextGiphyVersion,
+    isMyMessage: nextIsMyMessage,
   } = nextProps;
 
   const imageUrlEqual = prevImageUrl === nextImageUrl;
@@ -165,6 +168,11 @@ const areEqual = (prevProps: GiphyPropsWithContext, nextProps: GiphyPropsWithCon
     return false;
   }
 
+  const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
+  if (!isMyMessageEqual) {
+    return false;
+  }
+
   return true;
 };
 
@@ -178,7 +186,8 @@ export type GiphyProps = Partial<GiphyPropsWithContext> & {
  * UI component for card in attachments.
  */
 export const Giphy = (props: GiphyProps) => {
-  const { handleAction, onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
+  const { handleAction, isMyMessage, onLongPress, onPress, onPressIn, preventPress } =
+    useMessageContext();
   const { additionalPressableProps, giphyVersion } = useMessagesContext();
 
   return (
@@ -187,6 +196,7 @@ export const Giphy = (props: GiphyProps) => {
         additionalPressableProps,
         giphyVersion,
         handleAction,
+        isMyMessage,
         onLongPress,
         onPress,
         onPressIn,
@@ -199,14 +209,16 @@ export const Giphy = (props: GiphyProps) => {
 
 Giphy.displayName = 'Giphy{messageItemView{giphy}}';
 
-const useStyles = () => {
+const useStyles = ({ isMyMessage }: Pick<GiphyPropsWithContext, 'isMyMessage'>) => {
   const {
     theme: { semantics },
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
       container: {
-        backgroundColor: semantics.chatBgOutgoing,
+        backgroundColor: isMyMessage
+          ? semantics.chatBgAttachmentOutgoing
+          : semantics.chatBgAttachmentIncoming,
         borderRadius: primitives.radiusLg,
         maxWidth: 256, // TODO: Not sure how to fix this
         overflow: 'hidden',
@@ -240,5 +252,5 @@ const useStyles = () => {
         lineHeight: primitives.typographyLineHeightTight,
       },
     });
-  }, [semantics]);
+  }, [isMyMessage, semantics]);
 };

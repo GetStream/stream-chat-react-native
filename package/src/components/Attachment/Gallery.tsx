@@ -311,7 +311,7 @@ const GalleryThumbnail = ({
       {colIndex === numOfColumns - 1 && rowIndex === numOfRows - 1 && imagesAndVideos.length > 4 ? (
         <View
           style={[
-            StyleSheet.absoluteFillObject,
+            StyleSheet.absoluteFill,
             styles.moreImagesContainer,
             { backgroundColor: semantics.backgroundCoreOverlayDark },
             borderRadius,
@@ -541,7 +541,11 @@ const useStyles = () => {
         overflow: 'hidden',
       },
       imageLoadingErrorIndicatorStyle: {
-        ...StyleSheet.absoluteFillObject,
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0,
         alignItems: 'center',
         justifyContent: 'center',
       },
@@ -557,7 +561,11 @@ const useStyles = () => {
         position: 'absolute',
       },
       imageReloadContainerStyle: {
-        ...StyleSheet.absoluteFillObject,
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0,
         alignItems: 'center',
         justifyContent: 'center',
       },
@@ -572,12 +580,20 @@ const useStyles = () => {
         fontWeight: primitives.typographyFontWeightSemiBold,
       },
       imageLoadingErrorContainer: {
-        ...StyleSheet.absoluteFillObject,
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0,
         alignItems: 'center',
         justifyContent: 'center',
       },
       imageLoadingErrorWrapper: {
-        ...StyleSheet.absoluteFillObject,
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0,
         overflow: 'hidden',
       },
     });

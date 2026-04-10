@@ -18,6 +18,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 
 import { primitives } from '../../../theme';
+import { FileTypes } from '../../../types/types';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { useMessageData } from '../hooks/useMessageData';
 
@@ -200,6 +201,7 @@ export type MessageItemViewPropsWithContext = Pick<
   | 'alignment'
   | 'channel'
   | 'groupStyles'
+  | 'hasAttachmentActions'
   | 'isMyMessage'
   | 'message'
   | 'onlyEmojis'
@@ -230,6 +232,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
+    hasAttachmentActions,
     isMyMessage,
     message,
     messageSwipeToReplyHitSlop = { left: width, right: width },
@@ -284,10 +287,15 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
   });
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
+  const hasVisibleQuotedReply = !!message.quoted_message && !hasAttachmentActions;
+  const hasStandaloneGiphyOrImgur =
+    !hasVisibleQuotedReply &&
+    otherAttachments.length > 0 &&
+    (otherAttachments[0].type === FileTypes.Giphy || otherAttachments[0].type === FileTypes.Imgur);
 
-  let noBorder = onlyEmojis && !message.quoted_message;
+  let noBorder = onlyEmojis && !hasVisibleQuotedReply;
   if (otherAttachments.length) {
-    if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
+    if (hasStandaloneGiphyOrImgur && !isMyMessage) {
       noBorder = false;
     } else {
       noBorder = true;
@@ -295,12 +303,10 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
   }
 
   let backgroundColor = semantics.chatBgOutgoing;
-  if (onlyEmojis && !message.quoted_message) {
+  if (onlyEmojis && !hasVisibleQuotedReply) {
     backgroundColor = 'transparent';
-  } else if (otherAttachments.length) {
-    if (otherAttachments[0].type === 'giphy') {
-      backgroundColor = 'transparent';
-    }
+  } else if (hasStandaloneGiphyOrImgur) {
+    backgroundColor = 'transparent';
   } else if (isMessageReceivedOrErrorType) {
     backgroundColor = semantics.chatBgIncoming;
   }
@@ -509,6 +515,7 @@ export const MessageItemView = (props: MessageItemViewProps) => {
     alignment,
     channel,
     groupStyles,
+    hasAttachmentActions,
     isMyMessage,
     message,
     contextMenuAnchorRef,
@@ -539,6 +546,7 @@ export const MessageItemView = (props: MessageItemViewProps) => {
         enableMessageGroupingByUser,
         enableSwipeToReply,
         groupStyles,
+        hasAttachmentActions,
         isMyMessage,
         message,
         messageSwipeToReplyHitSlop,

@@ -260,11 +260,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
           <EmojiPickerList onSelectReaction={handleSelectReaction} renderFullInitially={false} />
         </Animated.View>
       ) : (
-        <Animated.View
-          key={'reaction-details'}
-          entering={FadeIn.duration(200)}
-          exiting={FadeOut.duration(200)}
-        >
+        <Animated.View key={'reaction-details'} exiting={FadeOut.duration(200)}>
           <Text style={[styles.reactionsText, reactionsText]}>
             {t('{{count}} Reactions', { count: totalReactionCount })}
           </Text>

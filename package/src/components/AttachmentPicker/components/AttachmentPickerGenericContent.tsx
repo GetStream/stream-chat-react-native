@@ -21,12 +21,20 @@ const useStyles = () => {
           paddingHorizontal: primitives.spacing2xl,
           paddingBottom: primitives.spacing3xl,
         },
-        infoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+        infoContainer: {
+          flex: 1,
+          gap: primitives.spacingSm,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        actionContainer: {
+          gap: primitives.spacingMd,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
         text: {
           fontSize: primitives.typographyFontSizeMd,
           color: semantics.textSecondary,
-          marginTop: 8,
-          marginHorizontal: 24,
           textAlign: 'center',
           maxWidth: 200,
         },
@@ -54,13 +62,13 @@ export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericCon
     theme: {
       semantics,
       attachmentPicker: {
-        content: { container, text, infoContainer },
+        content: { actionContainer, container, text, infoContainer },
       },
     },
   } = useTheme();
 
   const ThemedIcon = useCallback(
-    () => <Icon width={22} height={22} stroke={semantics.textTertiary} />,
+    () => <Icon width={32} height={32} stroke={semantics.textTertiary} />,
     [Icon, semantics.textTertiary],
   );
 
@@ -76,15 +84,17 @@ export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericCon
     >
       <View style={[styles.infoContainer, infoContainer]}>
         <ThemedIcon />
-        <Text style={[styles.text, text]}>{description}</Text>
+        <View style={[styles.actionContainer, actionContainer]}>
+          <Text style={[styles.text, text]}>{description}</Text>
+          <Button
+            variant={'secondary'}
+            type={'outline'}
+            size={'md'}
+            label={buttonText}
+            onPress={onPress}
+          />
+        </View>
       </View>
-      <Button
-        variant={'secondary'}
-        type={'outline'}
-        size={'lg'}
-        label={buttonText}
-        onPress={onPress}
-      />
     </View>
   );
 };

@@ -122,7 +122,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { black, grey, white } = useLegacyColors();
+  const { black, grey } = useLegacyColors();
   const insets = useSafeAreaInsets();
 
   return (
@@ -130,7 +130,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
       style={[
         styles.safeAreaContainer,
         {
-          backgroundColor: white,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderBottomColor: semantics.borderCoreSubtle,
           height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
         },

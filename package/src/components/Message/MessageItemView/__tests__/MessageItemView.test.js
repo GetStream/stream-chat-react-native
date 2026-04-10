@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
@@ -11,6 +11,10 @@ import { useMessageContext } from '../../../../contexts/messageContext/MessageCo
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import {
+  generateAttachmentAction,
+  generateGiphyAttachment,
+} from '../../../../mock-builders/generator/attachment';
 import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
@@ -263,6 +267,53 @@ describe('MessageItemView', () => {
       expect(screen.getByTestId('message-content-wrapper').props.style[2]).toMatchObject({
         borderWidth: 0,
       });
+    });
+  });
+
+  it('keeps the message shell background for a quoted reply with a giphy attachment', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [generateGiphyAttachment()],
+      quoted_message: generateMessage({ text: 'quoted message', user }),
+      text: '',
+      user,
+    });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      const wrapperStyle = StyleSheet.flatten(
+        screen.getByTestId('message-content-wrapper').props.style,
+      );
+      expect(wrapperStyle.backgroundColor).not.toBe('transparent');
+    });
+  });
+
+  it('renders a standalone shell for an ephemeral giphy preview with a quoted reply', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [
+        {
+          ...generateGiphyAttachment(),
+          actions: [
+            generateAttachmentAction(),
+            generateAttachmentAction(),
+            generateAttachmentAction(),
+          ],
+        },
+      ],
+      quoted_message: generateMessage({ text: 'quoted message', user }),
+      text: '',
+      user,
+    });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      const wrapperStyle = StyleSheet.flatten(
+        screen.getByTestId('message-content-wrapper').props.style,
+      );
+      expect(wrapperStyle.backgroundColor).toBe('transparent');
     });
   });
 });

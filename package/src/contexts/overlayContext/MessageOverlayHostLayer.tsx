@@ -39,11 +39,11 @@ const DefaultMessageOverlayBackground = () => {
   } = useTheme();
 
   return (
-    <View pointerEvents='none' style={StyleSheet.absoluteFillObject}>
+    <View pointerEvents='none' style={StyleSheet.absoluteFill}>
       <View
         pointerEvents='none'
         style={[
-          StyleSheet.absoluteFillObject,
+          StyleSheet.absoluteFill,
           {
             backgroundColor: semantics.badgeBgOverlay,
           },
@@ -320,10 +320,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     <GestureDetector gesture={tap}>
       <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
         {isActive ? (
-          <Animated.View
-            pointerEvents='none'
-            style={[StyleSheet.absoluteFillObject, backdropStyle]}
-          >
+          <Animated.View pointerEvents='none' style={[StyleSheet.absoluteFill, backdropStyle]}>
             <OverlayBackground />
           </Animated.View>
         ) : null}
@@ -332,13 +329,13 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
           {isActive ? (
             <Pressable
               onPress={closeOverlay}
-              style={StyleSheet.absoluteFillObject}
+              style={StyleSheet.absoluteFill}
               testID='message-overlay-backdrop'
             />
           ) : null}
 
           <Animated.View style={[topItemStyle, topItemTranslateStyle]} testID='message-overlay-top'>
-            <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
+            <PortalHost name='top-item' style={styles.absoluteFill} />
           </Animated.View>
 
           <Animated.View
@@ -346,14 +343,14 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
             style={hostStyle}
             testID='message-overlay-message'
           >
-            <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
+            <PortalHost name='message-overlay' style={styles.absoluteFill} />
           </Animated.View>
 
           <Animated.View
             style={[bottomItemStyle, bottomItemTranslateStyle]}
             testID='message-overlay-bottom'
           >
-            <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
+            <PortalHost name='bottom-item' style={styles.absoluteFill} />
           </Animated.View>
         </View>
 
@@ -362,3 +359,13 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     </GestureDetector>
   );
 };
+
+const styles = StyleSheet.create({
+  absoluteFill: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+});

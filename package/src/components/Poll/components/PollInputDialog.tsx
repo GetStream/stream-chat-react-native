@@ -81,7 +81,7 @@ export const PollInputDialog = ({
                 style={styles.button}
               />
               <Button
-                variant={'secondary'}
+                variant={'primary'}
                 type={'solid'}
                 label={t('Send')}
                 size='md'

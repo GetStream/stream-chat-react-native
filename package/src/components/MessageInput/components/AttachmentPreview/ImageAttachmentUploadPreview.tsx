@@ -66,7 +66,7 @@ export const ImageAttachmentUploadPreview = ({
           onError={onErrorHandler}
           onLoadEnd={onLoadEndHandler}
           source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
           testID={'image-attachment-upload-preview-image'}
         />
         {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && <ImageUploadInProgressIndicator />}

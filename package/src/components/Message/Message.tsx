@@ -369,21 +369,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     }
   };
 
-  const onPressQuotedMessage = (quotedMessage: LocalMessage) => {
-    if (!goToMessage) {
-      return;
-    }
-
-    goToMessage(quotedMessage.id);
-  };
-
   const errorOrFailed = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       dismissKeyboard();
     }
-    const quotedMessage = message.quoted_message;
     if (error) {
       /**
        * If its a Blocked message, we don't do anything as per specs.
@@ -399,8 +390,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
         return;
       }
       showMessageOverlay();
-    } else if (quotedMessage) {
-      onPressQuotedMessage(quotedMessage);
     }
   };
 
@@ -488,7 +477,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     if (content === 'quoted_reply') {
-      return !!message.quoted_message;
+      return !!message.quoted_message && !hasAttachmentActions;
     }
 
     switch (content) {
@@ -699,6 +688,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     goToMessage,
     groupStyles,
     handleAction,
+    hasAttachmentActions,
     handleReaction,
     handleToggleReaction,
     hasReactions,

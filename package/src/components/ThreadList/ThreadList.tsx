@@ -39,7 +39,7 @@ export const DefaultThreadListLoadingIndicator = () => (
     ))}
   </View>
 );
-export const DefaultThreadListLoadingNextIndicator = () => <LoadingIndicator />;
+export const DefaultThreadListLoadingNextIndicator = () => <LoadingIndicator listType='threads' />;
 
 const renderItem = (props: { item: Thread }) => <ThreadListItem thread={props.item} />;
 

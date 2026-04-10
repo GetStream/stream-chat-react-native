@@ -4,7 +4,6 @@ import { Text } from 'react-native';
 import { act, render } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { ThemeProvider, defaultTheme } from '../../../contexts';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
 import * as ChannelActionItemsModule from '../../ChannelList/hooks/useChannelActionItems';
@@ -33,8 +32,7 @@ const mockSwipableWrapper = jest.fn(
   },
 );
 
-jest.mock('../../../contexts', () => ({
-  ...jest.requireActual('../../../contexts'),
+jest.mock('../../../contexts/themeContext/ThemeContext', () => ({
   useTheme: () => ({
     theme: {
       semantics: {
@@ -53,8 +51,11 @@ jest.mock('../../../contexts/swipeableContext/SwipeRegistryContext', () => ({
   }),
 }));
 
-jest.mock('../../UIComponents', () => ({
+jest.mock('../../UIComponents/BottomSheetModal', () => ({
   BottomSheetModal: ({ children }: React.PropsWithChildren) => <>{children}</>,
+}));
+
+jest.mock('../../UIComponents/SwipableWrapper', () => ({
   RightActions: ({ items }: { items: Array<{ action: () => void; id: string }> }) => {
     rightActionsProbe.items = items;
     return null;
@@ -115,13 +116,11 @@ describe('ChannelSwipableWrapper', () => {
     });
 
     render(
-      <ThemeProvider theme={defaultTheme}>
-        <WithComponents overrides={{ ChannelDetailsBottomSheet: customBottomSheet }}>
-          <ChannelSwipableWrapper channel={channel}>
-            <Text>child</Text>
-          </ChannelSwipableWrapper>
-        </WithComponents>
-      </ThemeProvider>,
+      <WithComponents overrides={{ ChannelDetailsBottomSheet: customBottomSheet }}>
+        <ChannelSwipableWrapper channel={channel}>
+          <Text>child</Text>
+        </ChannelSwipableWrapper>
+      </WithComponents>,
     );
 
     expect(customBottomSheet).toHaveBeenCalledWith(
@@ -185,13 +184,11 @@ describe('ChannelSwipableWrapper', () => {
     });
 
     render(
-      <ThemeProvider theme={defaultTheme}>
-        <WithComponents overrides={{ ChannelDetailsBottomSheet: customBottomSheet }}>
-          <ChannelSwipableWrapper channel={channel}>
-            <Text>child</Text>
-          </ChannelSwipableWrapper>
-        </WithComponents>
-      </ThemeProvider>,
+      <WithComponents overrides={{ ChannelDetailsBottomSheet: customBottomSheet }}>
+        <ChannelSwipableWrapper channel={channel}>
+          <Text>child</Text>
+        </ChannelSwipableWrapper>
+      </WithComponents>,
     );
 
     expect(customBottomSheet).toHaveBeenCalledWith(
