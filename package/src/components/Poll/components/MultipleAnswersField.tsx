@@ -8,6 +8,7 @@ import { MultipleVotesSettings } from './MultipleVotesSettings';
 import { useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { primitives } from '../../../theme';
+import { getRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 
 export const MultipleAnswersField = () => {
   const [allowMultipleVotes, setAllowMultipleVotes] = useState<boolean>(false);
@@ -49,7 +50,11 @@ export const MultipleAnswersField = () => {
         <Switch
           onValueChange={onEnforceUniqueVoteHandler}
           value={allowMultipleVotes}
-          style={[styles.optionCardSwitch, multipleAnswers.optionCardSwitch]}
+          style={[
+            styles.optionCardSwitch,
+            getRtlMirrorSwitchStyle(),
+            multipleAnswers.optionCardSwitch,
+          ]}
         />
       </View>
       {allowMultipleVotes ? <MultipleVotesSettings /> : null}

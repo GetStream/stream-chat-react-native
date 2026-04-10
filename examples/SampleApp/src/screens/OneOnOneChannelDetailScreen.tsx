@@ -26,6 +26,7 @@ import { Mute } from '../icons/Mute';
 import { Picture } from '../icons/Picture';
 import type { StackNavigatorParamList } from '../types';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
+import { getRtlMirrorSwitchStyle } from '../utils/rtlMirrorSwitchStyle';
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -183,6 +184,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
             trailing={
               <Switch
                 onValueChange={handleMuteToggle}
+                style={getRtlMirrorSwitchStyle()}
                 trackColor={{
                   false: semantics.controlToggleSwitchBg,
                   true: semantics.accentPrimary,

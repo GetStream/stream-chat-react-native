@@ -11,6 +11,7 @@ import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { Minus, Plus } from '../../../icons';
 import { primitives } from '../../../theme';
+import { getRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 import { Button } from '../../ui';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
@@ -152,7 +153,11 @@ export const MultipleVotesSettings = () => {
         <Switch
           onValueChange={onMaxVotesPerPersonHandler}
           value={allowMaxVotesPerPerson}
-          style={[styles.optionCardSwitch, multipleAnswers.optionCardSwitch]}
+          style={[
+            styles.optionCardSwitch,
+            getRtlMirrorSwitchStyle(),
+            multipleAnswers.optionCardSwitch,
+          ]}
         />
       </View>
       {allowMaxVotesPerPerson ? (

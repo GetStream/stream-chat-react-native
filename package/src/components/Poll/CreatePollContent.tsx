@@ -24,6 +24,7 @@ import {
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { getRtlMirrorSwitchStyle } from '../../utils/rtlMirrorSwitchStyle';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   options: state.data.options,
@@ -171,7 +172,11 @@ export const CreatePollContent = () => {
               <Switch
                 onValueChange={onAnonymousPollChangeHandler}
                 value={isAnonymousPoll}
-                style={[styles.optionCardSwitch, anonymousPoll.optionCardSwitch]}
+                style={[
+                  styles.optionCardSwitch,
+                  getRtlMirrorSwitchStyle(),
+                  anonymousPoll.optionCardSwitch,
+                ]}
               />
             </View>
             <View style={[styles.optionCard, suggestOption.wrapper]}>
@@ -185,7 +190,11 @@ export const CreatePollContent = () => {
               <Switch
                 onValueChange={onAllowUserSuggestedOptionsChangeHandler}
                 value={allowUserSuggestedOptions}
-                style={[styles.optionCardSwitch, suggestOption.optionCardSwitch]}
+                style={[
+                  styles.optionCardSwitch,
+                  getRtlMirrorSwitchStyle(),
+                  suggestOption.optionCardSwitch,
+                ]}
               />
             </View>
             <View style={[styles.optionCard, addComment.wrapper]}>
@@ -199,7 +208,11 @@ export const CreatePollContent = () => {
               <Switch
                 onValueChange={onAllowAnswersChangeHandler}
                 value={allowAnswers}
-                style={[styles.optionCardSwitch, addComment.optionCardSwitch]}
+                style={[
+                  styles.optionCardSwitch,
+                  getRtlMirrorSwitchStyle(),
+                  addComment.optionCardSwitch,
+                ]}
               />
             </View>
           </Animated.View>

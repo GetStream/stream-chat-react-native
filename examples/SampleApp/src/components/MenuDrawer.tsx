@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Group } from '../icons/Group.tsx';
 import { User } from '../icons/User';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { getRtlMirrorSwitchStyle } from '../utils/rtlMirrorSwitchStyle';
 
 export const styles = StyleSheet.create({
   avatar: {
@@ -220,6 +221,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
               </View>
               <Switch
                 onValueChange={setRTLEnabled}
+                style={getRtlMirrorSwitchStyle()}
                 thumbColor={white}
                 trackColor={{
                   false: grey,
