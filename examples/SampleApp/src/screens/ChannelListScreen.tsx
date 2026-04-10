@@ -2,6 +2,7 @@ import React, { RefObject, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   FlatListProps,
+  I18nManager,
   StyleSheet,
   Text,
   TextInput,
@@ -9,7 +10,12 @@ import {
   View,
 } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import { ChannelList, useTheme, useStableCallback, ChannelActionItem } from 'stream-chat-react-native';
+import {
+  ChannelList,
+  useTheme,
+  useStableCallback,
+  ChannelActionItem,
+} from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -43,7 +49,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 30,
     borderWidth: 1,
-    flexDirection: 'row',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     margin: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -143,34 +149,36 @@ export const ChannelListScreen: React.FC = () => {
     [],
   );
 
-  const getChannelActionItems = useStableCallback(({ context: { isDirectChat, channel }, defaultItems }) => {
-    const viewInfo = () => {
-      if (!channel) {
-        return;
-      }
-      if (navigation) {
-        if (isDirectChat) {
-          navigation.navigate('OneOnOneChannelDetailScreen', {
-            channel,
-          });
-        } else {
-          navigation.navigate('GroupChannelDetailsScreen', {
-            channel,
-          });
+  const getChannelActionItems = useStableCallback(
+    ({ context: { isDirectChat, channel }, defaultItems }) => {
+      const viewInfo = () => {
+        if (!channel) {
+          return;
         }
-      }
-    };
+        if (navigation) {
+          if (isDirectChat) {
+            navigation.navigate('OneOnOneChannelDetailScreen', {
+              channel,
+            });
+          } else {
+            navigation.navigate('GroupChannelDetailsScreen', {
+              channel,
+            });
+          }
+        }
+      };
 
-    const viewInfoItem: ChannelActionItem = {
-      action: viewInfo,
-      Icon: ChannelInfo,
-      id: 'info',
-      label: 'View Info',
-      placement: 'sheet',
-      type: 'standard',
-    }
-    return [viewInfoItem, ...defaultItems]
-  })
+      const viewInfoItem: ChannelActionItem = {
+        action: viewInfo,
+        Icon: ChannelInfo,
+        id: 'info',
+        label: 'View Info',
+        placement: 'sheet',
+        type: 'standard',
+      };
+      return [viewInfoItem, ...defaultItems];
+    },
+  );
 
   if (!chatClient) {
     return null;
