@@ -241,7 +241,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
               return (
                 message.quoted_message && (
                   <Pressable
-                    disabled={!goToMessage}
+                    disabled={!goToMessage || preventPress}
                     key={`quoted_reply_${messageContentOrderIndex}`}
                     onLongPress={(event) => {
                       if (onLongPress) {
