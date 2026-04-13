@@ -44,6 +44,7 @@ exports[`MessageTextContainer should render message text container 1`] = `
             "color": "#1a1b25",
             "fontSize": 17,
             "lineHeight": 20,
+            "writingDirection": "ltr",
           }
         }
       >
