@@ -166,8 +166,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
   useAnimatedReaction(
     () => {
       if (!topH.value) return undefined;
-      const correction = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
-      return topH.value.y + correction;
+      return isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
     },
     (next, previous) => {
       if (next === undefined) {
@@ -188,8 +187,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
   useAnimatedReaction(
     () => {
       if (!messageH.value) return undefined;
-      const correction = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
-      return messageH.value.y + correction;
+      return isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
     },
     (next, previous) => {
       if (next === undefined) {
@@ -210,8 +208,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
   useAnimatedReaction(
     () => {
       if (!bottomH.value) return undefined;
-      const correction = isActive ? (closing ? closeCorrectionY.value : bottomShiftY.value) : 0;
-      return bottomH.value.y + correction;
+      return isActive ? (closing ? closeCorrectionY.value : bottomShiftY.value) : 0;
     },
     (next, previous) => {
       if (next === undefined) {
@@ -230,42 +227,32 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
   );
 
   const topItemStyle = useAnimatedStyle(() => {
-    if (!topVisualY.value || !topH.value) return { opacity: 0, height: 0, width: 0 };
+    if (!topH.value) return { opacity: 0, height: 0, width: 0 };
     const horizontalPosition = I18nManager.isRTL ? { right: topH.value.x } : { left: topH.value.x };
     return {
       height: topH.value.h,
-      position: 'absolute',
-      top: topVisualY.value,
       opacity: 1,
+      position: 'absolute',
+      top: topH.value.y,
+      transform: [{ scale: backdrop.value }, { translateY: topVisualY.value }],
       width: topH.value.w,
       ...horizontalPosition,
     };
   });
 
-  const topItemTranslateStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: backdrop.value }],
-    };
-  });
-
   const bottomItemStyle = useAnimatedStyle(() => {
-    if (!bottomVisualY.value || !bottomH.value) return { opacity: 0, height: 0, width: 0 };
+    if (!bottomH.value) return { opacity: 0, height: 0, width: 0 };
     const horizontalPosition = I18nManager.isRTL
       ? { right: bottomH.value.x }
       : { left: bottomH.value.x };
     return {
       height: bottomH.value.h,
-      position: 'absolute',
-      top: bottomVisualY.value,
       opacity: 1,
+      position: 'absolute',
+      top: bottomH.value.y,
+      transform: [{ scale: backdrop.value }, { translateY: bottomVisualY.value }],
       width: bottomH.value.w,
       ...horizontalPosition,
-    };
-  });
-
-  const bottomItemTranslateStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: backdrop.value }],
     };
   });
 
@@ -275,7 +262,8 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
       height: messageH.value.h,
       left: messageH.value.x,
       position: 'absolute',
-      top: messageVisualY.value,
+      top: messageH.value.y,
+      transform: [{ translateY: messageVisualY.value }],
       width: messageH.value.w,
     };
   });
@@ -334,7 +322,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
             />
           ) : null}
 
-          <Animated.View style={[topItemStyle, topItemTranslateStyle]} testID='message-overlay-top'>
+          <Animated.View style={topItemStyle} testID='message-overlay-top'>
             <PortalHost name='top-item' style={styles.absoluteFill} />
           </Animated.View>
 
@@ -346,10 +334,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
             <PortalHost name='message-overlay' style={styles.absoluteFill} />
           </Animated.View>
 
-          <Animated.View
-            style={[bottomItemStyle, bottomItemTranslateStyle]}
-            testID='message-overlay-bottom'
-          >
+          <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
             <PortalHost name='bottom-item' style={styles.absoluteFill} />
           </Animated.View>
         </View>
