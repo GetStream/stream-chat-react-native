@@ -167,7 +167,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
           messageGroupedSingleOrBottomContainer,
           messageGroupedTopContainer,
           replyContainer,
-          wrapper,
         },
       },
     },
@@ -368,43 +367,41 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
         }
       }}
     >
-      <View style={wrapper}>
-        <View
-          style={[
-            styles.containerInner,
-            {
-              backgroundColor,
-              ...getBorderRadius(),
-              ...getBorderRadiusFromTheme(),
-            },
-            noBorder ? { borderWidth: 0 } : {},
-            containerInner,
-            messageGroupedSingleOrBottom
-              ? isVeryLastMessage && enableMessageGroupingByUser
-                ? lastMessageContainer
-                : messageGroupedSingleOrBottomContainer
-              : messageGroupedTopContainer,
-          ]}
-          testID='message-content-wrapper'
-        >
-          {MessageContentTopView ? <MessageContentTopView /> : null}
-          {hasContentSideViews ? (
-            <View
-              style={[
-                styles.contentRow,
-                alignment === 'right' ? styles.rightAlignContentRow : undefined,
-              ]}
-              testID='message-content-row'
-            >
-              {MessageContentLeadingView ? <MessageContentLeadingView /> : null}
-              <View style={styles.contentBody}>{contentBody}</View>
-              {MessageContentTrailingView ? <MessageContentTrailingView /> : null}
-            </View>
-          ) : (
-            contentBody
-          )}
-          {MessageContentBottomView ? <MessageContentBottomView /> : null}
-        </View>
+      <View
+        style={[
+          styles.containerInner,
+          {
+            backgroundColor,
+            ...getBorderRadius(),
+            ...getBorderRadiusFromTheme(),
+          },
+          noBorder ? { borderWidth: 0 } : {},
+          containerInner,
+          messageGroupedSingleOrBottom
+            ? isVeryLastMessage && enableMessageGroupingByUser
+              ? lastMessageContainer
+              : messageGroupedSingleOrBottomContainer
+            : messageGroupedTopContainer,
+        ]}
+        testID='message-content-wrapper'
+      >
+        {MessageContentTopView ? <MessageContentTopView /> : null}
+        {hasContentSideViews ? (
+          <View
+            style={[
+              styles.contentRow,
+              alignment === 'right' ? styles.rightAlignContentRow : undefined,
+            ]}
+            testID='message-content-row'
+          >
+            {MessageContentLeadingView ? <MessageContentLeadingView /> : null}
+            <View style={styles.contentBody}>{contentBody}</View>
+            {MessageContentTrailingView ? <MessageContentTrailingView /> : null}
+          </View>
+        ) : (
+          contentBody
+        )}
+        {MessageContentBottomView ? <MessageContentBottomView /> : null}
       </View>
     </Pressable>
   );
