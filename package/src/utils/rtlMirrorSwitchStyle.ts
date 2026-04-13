@@ -1,8 +1,11 @@
-import { I18nManager, ViewStyle } from 'react-native';
+import { I18nManager, Platform, ViewStyle } from 'react-native';
 
-/** Mirrors Switch horizontally in RTL so thumb/track match layout direction. */
+/** Mirrors Switch horizontally in RTL on iOS so thumb/track match layout direction. */
 export function getRtlMirrorSwitchStyle(): Pick<ViewStyle, 'transform'> {
+  if (Platform.OS !== 'ios' || !I18nManager.isRTL) {
+    return {};
+  }
   return {
-    transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }],
+    transform: [{ scaleX: -1 }],
   };
 }
