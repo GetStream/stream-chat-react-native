@@ -24,6 +24,7 @@ import {
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { useRtlMirrorSwitchStyle } from '../../utils/rtlMirrorSwitchStyle';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   options: state.data.options,
@@ -277,6 +278,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   return useMemo(() => {
     return StyleSheet.create({
       scrollView: {
@@ -320,7 +322,7 @@ const useStyles = () => {
       optionCardWrapper: {
         gap: primitives.spacingMd,
       },
-      optionCardSwitch: { width: 64 },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
     });
-  }, [semantics]);
+  }, [rtlMirrorSwitchStyle, semantics]);
 };
