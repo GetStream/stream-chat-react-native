@@ -235,7 +235,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       MessagesContextValue,
       | 'additionalPressableProps'
       | 'customMessageSwipeAction'
-      | 'deletedMessagesVisibilityType'
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
       | 'enableSwipeToReply'
@@ -405,7 +404,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     compressImageQuality,
     createPollOptionGap,
     customMessageSwipeAction,
-    deletedMessagesVisibilityType = 'always',
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
@@ -1635,7 +1633,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     additionalPressableProps,
     channelId,
     customMessageSwipeAction,
-    deletedMessagesVisibilityType,
     deleteMessage,
     deleteReaction,
     disableTypingIndicator,

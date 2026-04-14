@@ -69,20 +69,20 @@ const getDefaults = () => {
 
 Some component keys differ from their default component names to avoid collisions:
 
-| Override Key                  | Default Component                       | Why renamed                                                |
-| ----------------------------- | --------------------------------------- | ---------------------------------------------------------- |
-| `FileAttachmentIcon`          | `FileIcon`                              | Clarity                                                    |
-| `ChannelListLoadingIndicator` | `ChannelListLoadingIndicator`           | Split from shared `LoadingIndicator` — renders skeleton UI |
-| `MessageListLoadingIndicator` | `LoadingIndicator`                      | Split from shared `LoadingIndicator` — renders text        |
-| `ChatLoadingIndicator`        | `undefined`                             | Optional, no default                                       |
-| `ThreadMessageComposer`       | `MessageComposer`                       | Avoid collision with `MessageComposer` component name      |
-| `ThreadListComponent`         | `DefaultThreadListComponent`            | Avoid collision with exported `ThreadList`                 |
-| `StartAudioRecordingButton`   | `AudioRecordingButton`                  | Historical naming                                          |
-| `ChannelPreview`             | `ChannelPreviewView`                    | ChannelList preview item                                   |
-| `ChannelPreviewAvatar`       | `ChannelAvatar`                         | ChannelList preview avatar                                 |
-| `ChannelListFooterLoadingIndicator`      | `ChannelListFooterLoadingIndicator`     | ChannelList footer                                         |
-| `ChannelListHeaderErrorIndicator`        | `ChannelListHeaderErrorIndicator`       | ChannelList header                                         |
-| `ChannelListHeaderNetworkDownIndicator`  | `ChannelListHeaderNetworkDownIndicator` | ChannelList header                                         |
+| Override Key                            | Default Component                       | Why renamed                                                |
+| --------------------------------------- | --------------------------------------- | ---------------------------------------------------------- |
+| `FileAttachmentIcon`                    | `FileIcon`                              | Clarity                                                    |
+| `ChannelListLoadingIndicator`           | `ChannelListLoadingIndicator`           | Split from shared `LoadingIndicator` — renders skeleton UI |
+| `MessageListLoadingIndicator`           | `LoadingIndicator`                      | Split from shared `LoadingIndicator` — renders text        |
+| `ChatLoadingIndicator`                  | `undefined`                             | Optional, no default                                       |
+| `ThreadMessageComposer`                 | `MessageComposer`                       | Avoid collision with `MessageComposer` component name      |
+| `ThreadListComponent`                   | `DefaultThreadListComponent`            | Avoid collision with exported `ThreadList`                 |
+| `StartAudioRecordingButton`             | `AudioRecordingButton`                  | Historical naming                                          |
+| `ChannelPreview`                        | `ChannelPreviewView`                    | ChannelList preview item                                   |
+| `ChannelPreviewAvatar`                  | `ChannelAvatar`                         | ChannelList preview avatar                                 |
+| `ChannelListFooterLoadingIndicator`     | `ChannelListFooterLoadingIndicator`     | ChannelList footer                                         |
+| `ChannelListHeaderErrorIndicator`       | `ChannelListHeaderErrorIndicator`       | ChannelList header                                         |
+| `ChannelListHeaderNetworkDownIndicator` | `ChannelListHeaderNetworkDownIndicator` | ChannelList header                                         |
 
 ### Optional Components (no default)
 
