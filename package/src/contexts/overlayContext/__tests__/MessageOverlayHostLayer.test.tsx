@@ -14,7 +14,7 @@ import {
   setOverlayTopH,
 } from '../../../state-store';
 import { WithComponents } from '../../componentsContext/ComponentsContext';
-import { MessageOverlayHostLayer } from '../MessageOverlayHostLayer';
+import { MessageActionsProps, MessageOverlayHostLayer } from '../MessageOverlayHostLayer';
 
 jest.mock('react-native', () => {
   const actual = jest.requireActual('react-native');
@@ -93,6 +93,18 @@ const TOP_RECT = { h: 20, w: 90, x: 5, y: 0 };
 const MESSAGE_RECT = { h: 50, w: 180, x: 10, y: 0 };
 const BOTTOM_RECT = { h: 30, w: 140, x: 20, y: 100 };
 const NoopBackground = () => null;
+const CustomMessageActions = ({
+  bottomItemStyle,
+  hostStyle,
+  topItemStyle,
+}: MessageActionsProps) => (
+  <>
+    <Text testID='custom-message-actions'>Custom</Text>
+    <Text style={topItemStyle} testID='custom-message-actions-top' />
+    <Text style={hostStyle} testID='custom-message-actions-message' />
+    <Text style={bottomItemStyle} testID='custom-message-actions-bottom' />
+  </>
+);
 
 const flushAnimationFrameQueue = () => {
   act(() => {
@@ -258,6 +270,52 @@ describe('MessageOverlayHostLayer', () => {
       StyleSheet.flatten(screen.getByTestId('message-overlay-bottom').props.style),
     ).toMatchObject({
       height: 0,
+    });
+  });
+
+  it('renders MessageActions override instead of the default host wrappers when provided', () => {
+    const renderTree = () => (
+      <WithComponents
+        overrides={{
+          MessageActions: CustomMessageActions,
+          MessageOverlayBackground: NoopBackground,
+        }}
+      >
+        <MessageOverlayHostLayer />
+      </WithComponents>
+    );
+    const { rerender } = render(renderTree());
+
+    act(() => {
+      setOverlayTopH(TOP_RECT);
+      setOverlayMessageH(MESSAGE_RECT);
+      setOverlayBottomH(BOTTOM_RECT);
+      openOverlay('message-1');
+    });
+
+    rerender(renderTree());
+
+    expect(screen.getByTestId('custom-message-actions')).toBeTruthy();
+    expect(screen.queryByTestId('message-overlay-top')).toBeNull();
+    expect(screen.queryByTestId('message-overlay-message')).toBeNull();
+    expect(screen.queryByTestId('message-overlay-bottom')).toBeNull();
+    expect(
+      StyleSheet.flatten(screen.getByTestId('custom-message-actions-top').props.style),
+    ).toMatchObject({
+      height: TOP_RECT.h,
+      width: TOP_RECT.w,
+    });
+    expect(
+      StyleSheet.flatten(screen.getByTestId('custom-message-actions-message').props.style),
+    ).toMatchObject({
+      height: MESSAGE_RECT.h,
+      width: MESSAGE_RECT.w,
+    });
+    expect(
+      StyleSheet.flatten(screen.getByTestId('custom-message-actions-bottom').props.style),
+    ).toMatchObject({
+      height: BOTTOM_RECT.h,
+      width: BOTTOM_RECT.w,
     });
   });
 });

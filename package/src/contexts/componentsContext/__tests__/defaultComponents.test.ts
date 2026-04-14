@@ -5,6 +5,7 @@ const OPTIONAL_KEYS = new Set([
   'AttachmentPickerIOSSelectMorePhotos',
   'ChatLoadingIndicator',
   'CreatePollContent',
+  'MessageActions',
   'Input',
   'ListHeaderComponent',
   'MessageContentBottomView',

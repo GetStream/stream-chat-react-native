@@ -88,7 +88,7 @@ Some component keys differ from their default component names to avoid collision
 
 These exist in `DEFAULT_COMPONENTS` as `undefined` with `React.ComponentType<any> | undefined` type assertions:
 
-`AttachmentPickerIOSSelectMorePhotos`, `ChatLoadingIndicator`, `CreatePollContent`, `ImageComponent`, `Input`, `ListHeaderComponent`, `MessageContentBottomView`, `MessageContentLeadingView`, `MessageContentTopView`, `MessageContentTrailingView`, `MessageLocation`, `MessageSpacer`, `MessageText`, `PollContent`
+`AttachmentPickerIOSSelectMorePhotos`, `ChatLoadingIndicator`, `CreatePollContent`, `ImageComponent`, `Input`, `ListHeaderComponent`, `MessageActions`, `MessageContentBottomView`, `MessageContentLeadingView`, `MessageContentTopView`, `MessageContentTrailingView`, `MessageLocation`, `MessageSpacer`, `MessageText`, `PollContent`
 
 ### Shared Component Keys (audited)
 
