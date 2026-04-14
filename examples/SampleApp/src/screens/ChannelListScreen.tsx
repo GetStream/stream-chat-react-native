@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 30,
     borderWidth: 1,
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+    flexDirection: 'row',
     margin: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 0, // removal of iOS top padding for weird centering
     textAlignVertical: 'center', // for android vertical text centering
+    textAlign: I18nManager.isRTL ? 'right' : 'left',
   },
 });
 
