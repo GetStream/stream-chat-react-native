@@ -32,7 +32,8 @@ export const WithComponents = ({
   overrides,
 }: PropsWithChildren<{ overrides: ComponentOverrides }>) => {
   const parent = useContext(ComponentsContext);
-  const merged = useMemo(() => ({ ...parent, ...overrides }), [parent, overrides]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally stable: overrides are set once at mount
+  const merged = useMemo(() => ({ ...parent, ...overrides }), []);
   return <ComponentsContext.Provider value={merged}>{children}</ComponentsContext.Provider>;
 };
 
@@ -55,6 +56,7 @@ export const useComponentsContext = () => {
   const overrides = useContext(ComponentsContext);
   return useMemo(
     () => ({ ...getDefaults(), ...overrides }) as Required<ComponentOverrides>,
-    [overrides],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally stable: overrides are set once at mount
+    [],
   );
 };
