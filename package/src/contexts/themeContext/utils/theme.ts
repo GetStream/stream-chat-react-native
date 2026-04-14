@@ -641,7 +641,6 @@ export type Theme = {
       textContainer: ViewStyle & {
         onlyEmojiMarkdown: MarkdownStyle;
       };
-      wrapper: ViewStyle;
       timestampText?: TextStyle;
     };
     deleted: {
@@ -1568,7 +1567,6 @@ export const defaultTheme: Theme = {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
       timestampText: {},
-      wrapper: {},
     },
     deleted: {
       containerInner: {},

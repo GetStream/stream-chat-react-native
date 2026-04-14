@@ -82,7 +82,6 @@
     }
   },
   "scripts": {
-    "postinstall": "if [ -f ../scripts/sync-shared-native.sh ] && [ -d ../shared-native/ios ]; then bash ../scripts/sync-shared-native.sh native-package; fi",
     "prepack": "bash ../scripts/sync-shared-native.sh native-package && cp ../../README.md .",
     "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh native-package"
   },

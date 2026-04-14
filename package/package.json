@@ -23,7 +23,7 @@
     "README.md"
   ],
   "scripts": {
-    "install-all": "(yarn install --force && (cd native-package && yarn install --force) && (cd expo-package && yarn install --force))",
+    "install-all": "(yarn run shared-native:sync && yarn install --force && (cd native-package && yarn install --force) && (cd expo-package && yarn install --force))",
     "shared-native:sync": "bash ./scripts/sync-shared-native.sh all",
     "shared-native:clean-copies": "bash ./scripts/clean-shared-native-copies.sh all",
     "build": "rimraf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",

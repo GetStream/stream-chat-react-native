@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "scripts": {
     "sync-native": "bash ../../package/scripts/reconcile-shared-native.sh expo-package && bash ../../package/scripts/sync-shared-native.sh expo-package",
+    "preinstall": "yarn sync-native",
     "prestart": "yarn sync-native",
     "preandroid": "yarn sync-native",
     "preios": "yarn sync-native",

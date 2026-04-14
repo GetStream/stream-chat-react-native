@@ -787,20 +787,11 @@ exports[`SendButton should render a SendButton 1`] = `
     >
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-top"
       >
@@ -841,20 +832,11 @@ exports[`SendButton should render a SendButton 1`] = `
       </View>
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-bottom"
       >
@@ -1663,20 +1645,11 @@ exports[`SendButton should render a disabled SendButton 1`] = `
     >
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-top"
       >
@@ -1717,20 +1690,11 @@ exports[`SendButton should render a disabled SendButton 1`] = `
       </View>
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-bottom"
       >
