@@ -8,7 +8,7 @@ import { MultipleVotesSettings } from './MultipleVotesSettings';
 import { useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { primitives } from '../../../theme';
-
+import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 export const MultipleAnswersField = () => {
   const [allowMultipleVotes, setAllowMultipleVotes] = useState<boolean>(false);
   const { t } = useTranslationContext();
@@ -61,6 +61,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   return useMemo(() => {
     return StyleSheet.create({
       multipleAnswersWrapper: {
@@ -93,7 +94,7 @@ const useStyles = () => {
         justifyContent: 'space-between',
         flexDirection: 'row',
       },
-      optionCardSwitch: { width: 64 },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
     });
-  }, [semantics]);
+  }, [rtlMirrorSwitchStyle, semantics]);
 };

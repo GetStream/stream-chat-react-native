@@ -8,6 +8,7 @@
   },
   "scripts": {
     "sync-native": "bash ../../package/scripts/reconcile-shared-native.sh native-package && bash ../../package/scripts/sync-shared-native.sh native-package",
+    "preinstall": "yarn sync-native",
     "preandroid": "yarn sync-native",
     "android": "react-native run-android",
     "preios": "yarn sync-native",

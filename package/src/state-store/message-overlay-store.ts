@@ -94,7 +94,13 @@ export const closeOverlay = () => {
     return;
   }
 
-  overlayStore.partialNext({ closing: true });
+  requestAnimationFrame(() => {
+    if (!overlayStore.getLatestValue().id) {
+      return;
+    }
+
+    overlayStore.partialNext({ closing: true });
+  });
 };
 
 let actionQueue: Array<() => void | Promise<void>> = [];

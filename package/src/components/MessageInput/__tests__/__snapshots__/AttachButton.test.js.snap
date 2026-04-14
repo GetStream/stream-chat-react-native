@@ -798,20 +798,11 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
     >
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-top"
       >
@@ -852,20 +843,11 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
       </View>
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-bottom"
       >
@@ -1685,20 +1667,11 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
     >
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-top"
       >
@@ -1739,20 +1712,11 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
       </View>
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-bottom"
       >
@@ -2572,20 +2536,11 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
     >
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-top"
       >
@@ -2626,20 +2581,11 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
       </View>
       <View
         style={
-          [
-            {
-              "height": 0,
-              "opacity": 0,
-              "width": 0,
-            },
-            {
-              "transform": [
-                {
-                  "scale": 0,
-                },
-              ],
-            },
-          ]
+          {
+            "height": 0,
+            "opacity": 0,
+            "width": 0,
+          }
         }
         testID="message-overlay-bottom"
       >

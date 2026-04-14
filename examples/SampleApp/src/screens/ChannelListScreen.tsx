@@ -2,6 +2,7 @@ import React, { RefObject, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   FlatListProps,
+  I18nManager,
   StyleSheet,
   Text,
   TextInput,
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 0, // removal of iOS top padding for weird centering
     textAlignVertical: 'center', // for android vertical text centering
+    textAlign: I18nManager.isRTL ? 'right' : 'left',
   },
 });
 
@@ -143,34 +145,36 @@ export const ChannelListScreen: React.FC = () => {
     [],
   );
 
-  const getChannelActionItems = useStableCallback(({ context: { isDirectChat, channel }, defaultItems }) => {
-    const viewInfo = () => {
-      if (!channel) {
-        return;
-      }
-      if (navigation) {
-        if (isDirectChat) {
-          navigation.navigate('OneOnOneChannelDetailScreen', {
-            channel,
-          });
-        } else {
-          navigation.navigate('GroupChannelDetailsScreen', {
-            channel,
-          });
+  const getChannelActionItems = useStableCallback(
+    ({ context: { isDirectChat, channel }, defaultItems }) => {
+      const viewInfo = () => {
+        if (!channel) {
+          return;
         }
-      }
-    };
+        if (navigation) {
+          if (isDirectChat) {
+            navigation.navigate('OneOnOneChannelDetailScreen', {
+              channel,
+            });
+          } else {
+            navigation.navigate('GroupChannelDetailsScreen', {
+              channel,
+            });
+          }
+        }
+      };
 
-    const viewInfoItem: ChannelActionItem = {
-      action: viewInfo,
-      Icon: ChannelInfo,
-      id: 'info',
-      label: 'View Info',
-      placement: 'sheet',
-      type: 'standard',
-    }
-    return [viewInfoItem, ...defaultItems]
-  })
+      const viewInfoItem: ChannelActionItem = {
+        action: viewInfo,
+        Icon: ChannelInfo,
+        id: 'info',
+        label: 'View Info',
+        placement: 'sheet',
+        type: 'standard',
+      };
+      return [viewInfoItem, ...defaultItems];
+    },
+  );
 
   if (!chatClient) {
     return null;

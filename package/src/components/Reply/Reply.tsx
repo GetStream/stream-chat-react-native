@@ -28,6 +28,7 @@ import {
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks';
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
@@ -108,6 +109,7 @@ export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageP
   };
 
 export const ReplyWithContext = (props: ReplyPropsWithContext) => {
+  const { t } = useTranslationContext();
   const {
     isMyMessage,
     ImageComponent,
@@ -134,13 +136,13 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   const title = useMemo(
     () =>
       mode === 'edit'
-        ? 'Edit Message'
+        ? t('Edit Message')
         : isMyMessage
-          ? 'You'
+          ? t('You')
           : quotedMessage?.user?.name
-            ? `Reply to ${quotedMessage?.user?.name}`
-            : 'Reply',
-    [mode, isMyMessage, quotedMessage?.user?.name],
+            ? t('Reply to {{name}}', { name: quotedMessage?.user?.name })
+            : t('Reply'),
+    [mode, isMyMessage, quotedMessage?.user?.name, t],
   );
 
   if (!quotedMessage) {

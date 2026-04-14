@@ -144,6 +144,7 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightMedium,
           lineHeight: primitives.typographyLineHeightNormal,
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
         transparentContainer: {
           alignItems: 'center',
