@@ -80,9 +80,9 @@ Some component keys differ from their default component names to avoid collision
 | `StartAudioRecordingButton`   | `AudioRecordingButton`                  | Historical naming                                          |
 | `Preview`                     | `ChannelPreviewView`                    | ChannelList preview item                                   |
 | `PreviewAvatar`               | `ChannelAvatar`                         | ChannelList preview avatar                                 |
-| `FooterLoadingIndicator`      | `ChannelListFooterLoadingIndicator`     | ChannelList footer                                         |
-| `HeaderErrorIndicator`        | `ChannelListHeaderErrorIndicator`       | ChannelList header                                         |
-| `HeaderNetworkDownIndicator`  | `ChannelListHeaderNetworkDownIndicator` | ChannelList header                                         |
+| `ChannelListFooterLoadingIndicator`      | `ChannelListFooterLoadingIndicator`     | ChannelList footer                                         |
+| `ChannelListHeaderErrorIndicator`        | `ChannelListHeaderErrorIndicator`       | ChannelList header                                         |
+| `ChannelListHeaderNetworkDownIndicator`  | `ChannelListHeaderNetworkDownIndicator` | ChannelList header                                         |
 
 ### Optional Components (no default)
 

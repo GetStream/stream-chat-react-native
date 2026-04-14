@@ -26,7 +26,8 @@ const StatusIndicator = () => {
   const { isOnline } = useChatContext();
   const styles = useStyles();
   const { error, loadingChannels, refreshList } = useChannelsContext();
-  const { HeaderErrorIndicator, HeaderNetworkDownIndicator } = useComponentsContext();
+  const { ChannelListHeaderErrorIndicator, ChannelListHeaderNetworkDownIndicator } =
+    useComponentsContext();
 
   if (loadingChannels) {
     return null;
@@ -35,13 +36,13 @@ const StatusIndicator = () => {
   if (!isOnline) {
     return (
       <View style={styles.statusIndicator}>
-        <HeaderNetworkDownIndicator />
+        <ChannelListHeaderNetworkDownIndicator />
       </View>
     );
   } else if (error) {
     return (
       <View style={styles.statusIndicator}>
-        <HeaderErrorIndicator onPress={refreshList} />
+        <ChannelListHeaderErrorIndicator onPress={refreshList} />
       </View>
     );
   }
@@ -72,7 +73,7 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
   } = props;
   const {
     EmptyStateIndicator,
-    FooterLoadingIndicator,
+    ChannelListFooterLoadingIndicator,
     ListHeaderComponent,
     LoadingErrorIndicator,
     ChannelListLoadingIndicator: LoadingIndicator,
@@ -138,7 +139,7 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
         ListEmptyComponent={
           loading ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
         }
-        ListFooterComponent={loadingNextPage ? <FooterLoadingIndicator /> : undefined}
+        ListFooterComponent={loadingNextPage ? <ChannelListFooterLoadingIndicator /> : undefined}
         ListHeaderComponent={ListHeaderComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}

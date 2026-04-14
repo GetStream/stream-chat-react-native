@@ -47,7 +47,7 @@ export const useSampleAppComponentOverrides = (
   useMemo<ComponentOverrides>(
     () => ({
       AttachmentPickerContent: CustomAttachmentPickerContent,
-      HeaderNetworkDownIndicator: RenderNull,
+      ChannelListHeaderNetworkDownIndicator: RenderNull,
       ImageComponent: FastImage,
       MessageLocation,
       NetworkDownIndicator: RenderNull,
