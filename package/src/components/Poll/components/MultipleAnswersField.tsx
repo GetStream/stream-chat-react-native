@@ -8,8 +8,7 @@ import { MultipleVotesSettings } from './MultipleVotesSettings';
 import { useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { primitives } from '../../../theme';
-import { getRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
-
+import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 export const MultipleAnswersField = () => {
   const [allowMultipleVotes, setAllowMultipleVotes] = useState<boolean>(false);
   const { t } = useTranslationContext();
@@ -50,11 +49,7 @@ export const MultipleAnswersField = () => {
         <Switch
           onValueChange={onEnforceUniqueVoteHandler}
           value={allowMultipleVotes}
-          style={[
-            styles.optionCardSwitch,
-            getRtlMirrorSwitchStyle(),
-            multipleAnswers.optionCardSwitch,
-          ]}
+          style={[styles.optionCardSwitch, multipleAnswers.optionCardSwitch]}
         />
       </View>
       {allowMultipleVotes ? <MultipleVotesSettings /> : null}
@@ -66,6 +61,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   return useMemo(() => {
     return StyleSheet.create({
       multipleAnswersWrapper: {
@@ -98,7 +94,7 @@ const useStyles = () => {
         justifyContent: 'space-between',
         flexDirection: 'row',
       },
-      optionCardSwitch: { width: 64 },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
     });
-  }, [semantics]);
+  }, [rtlMirrorSwitchStyle, semantics]);
 };

@@ -1,11 +1,20 @@
+import { useMemo } from 'react';
 import { I18nManager, Platform, ViewStyle } from 'react-native';
 
-/** Mirrors Switch horizontally in RTL on iOS so thumb/track match layout direction. */
-export function getRtlMirrorSwitchStyle(): Pick<ViewStyle, 'transform'> {
-  if (Platform.OS !== 'ios' || !I18nManager.isRTL) {
-    return {};
-  }
-  return {
-    transform: [{ scaleX: -1 }],
-  };
+type RtlMirrorSwitchStyle = Pick<ViewStyle, 'transform'>;
+
+/**
+ * Style that mirrors `Switch` horizontally in RTL on iOS so thumb/track match layout direction.
+ * The returned object is stable across renders while `I18nManager.isRTL` is unchanged (`useMemo`).
+ */
+export function useRtlMirrorSwitchStyle(): RtlMirrorSwitchStyle {
+  const isRTL = I18nManager.isRTL;
+  return useMemo(() => {
+    if (Platform.OS !== 'ios' || !isRTL) {
+      return {};
+    }
+    return {
+      transform: [{ scaleX: -1 }],
+    };
+  }, [isRTL]);
 }

@@ -11,7 +11,7 @@ import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { Minus, Plus } from '../../../icons';
 import { primitives } from '../../../theme';
-import { getRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
+import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 import { Button } from '../../ui';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
@@ -153,11 +153,7 @@ export const MultipleVotesSettings = () => {
         <Switch
           onValueChange={onMaxVotesPerPersonHandler}
           value={allowMaxVotesPerPerson}
-          style={[
-            styles.optionCardSwitch,
-            getRtlMirrorSwitchStyle(),
-            multipleAnswers.optionCardSwitch,
-          ]}
+          style={[styles.optionCardSwitch, multipleAnswers.optionCardSwitch]}
         />
       </View>
       {allowMaxVotesPerPerson ? (
@@ -199,6 +195,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
 
   return useMemo(() => {
     return StyleSheet.create({
@@ -226,7 +223,7 @@ const useStyles = () => {
         justifyContent: 'space-between',
         flexDirection: 'row',
       },
-      optionCardSwitch: { width: 64 },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
       settingsWrapper: {
         gap: primitives.spacingMd,
       },
@@ -249,5 +246,5 @@ const useStyles = () => {
         borderColor: semantics.borderUtilityDisabledOnSurface,
       },
     });
-  }, [semantics]);
+  }, [rtlMirrorSwitchStyle, semantics]);
 };

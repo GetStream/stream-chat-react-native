@@ -26,7 +26,7 @@ import { Mute } from '../icons/Mute';
 import { Picture } from '../icons/Picture';
 import type { StackNavigatorParamList } from '../types';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-import { getRtlMirrorSwitchStyle } from '../utils/rtlMirrorSwitchStyle';
+import { useRtlMirrorSwitchStyle } from '../utils/rtlMirrorSwitchStyle';
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -52,6 +52,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   const { chatClient } = useAppContext();
   const userMuted = useChannelMuteActive(channel);
 
@@ -184,7 +185,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
             trailing={
               <Switch
                 onValueChange={handleMuteToggle}
-                style={getRtlMirrorSwitchStyle()}
+                style={rtlMirrorSwitchStyle}
                 trackColor={{
                   false: semantics.controlToggleSwitchBg,
                   true: semantics.accentPrimary,

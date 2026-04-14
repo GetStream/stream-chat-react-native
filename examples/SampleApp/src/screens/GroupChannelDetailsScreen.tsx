@@ -34,7 +34,7 @@ import { LeaveGroup } from '../icons/LeaveGroup';
 import { Mute } from '../icons/Mute';
 import { Picture } from '../icons/Picture';
 import type { StackNavigatorParamList } from '../types';
-import { getRtlMirrorSwitchStyle } from '../utils/rtlMirrorSwitchStyle';
+import { useRtlMirrorSwitchStyle } from '../utils/rtlMirrorSwitchStyle';
 
 const MAX_VISIBLE_MEMBERS = 5;
 
@@ -60,6 +60,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   const { muted: channelMuted } = useIsChannelMuted(channel);
 
   const [muted, setMuted] = useState(
@@ -279,7 +280,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             trailing={
               <Switch
                 onValueChange={handleMuteToggle}
-                style={getRtlMirrorSwitchStyle()}
+                style={rtlMirrorSwitchStyle}
                 trackColor={{
                   false: semantics.controlToggleSwitchBg,
                   true: semantics.accentPrimary,
