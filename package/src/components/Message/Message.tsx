@@ -19,6 +19,7 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
 import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
+import { MessageOverlayWrapper } from './MessageOverlayWrapper';
 import { measureInWindow } from './utils/measureInWindow';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
@@ -335,11 +336,67 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const rectRef = useRef<Rect>(undefined);
   const bubbleRect = useRef<Rect>(undefined);
   const contextMenuAnchorRef = useRef<View>(null);
+  const messageOverlayTargetsRef = useRef<
+    Array<{ id: string; isDefault: boolean; view: View | null }>
+  >([]);
+  const [activeMessageOverlayTargetId, setActiveMessageOverlayTargetId] = useState<
+    string | undefined
+  >(undefined);
+  const [hasCustomMessageOverlayTarget, setHasCustomMessageOverlayTarget] = useState(false);
+  const syncMessageOverlayTargetsState = useStableCallback(() => {
+    const registeredTargets = messageOverlayTargetsRef.current;
+    const customTargets = registeredTargets.filter((target) => !target.isDefault && target.view);
+    const defaultTargets = registeredTargets.filter((target) => target.isDefault && target.view);
+    const activeTarget =
+      customTargets[customTargets.length - 1] ?? defaultTargets[defaultTargets.length - 1];
+
+    setActiveMessageOverlayTargetId(activeTarget?.id);
+    setHasCustomMessageOverlayTarget(customTargets.length > 0);
+  });
+  const registerMessageOverlayTarget = useStableCallback(
+    ({ id, isDefault, view }: { id: string; isDefault: boolean; view: View | null }) => {
+      const existingTargetIndex = messageOverlayTargetsRef.current.findIndex(
+        (target) => target.id === id,
+      );
+
+      if (existingTargetIndex === -1) {
+        messageOverlayTargetsRef.current = [
+          ...messageOverlayTargetsRef.current,
+          { id, isDefault, view },
+        ];
+      } else {
+        messageOverlayTargetsRef.current = messageOverlayTargetsRef.current.map((target, index) =>
+          index === existingTargetIndex ? { id, isDefault, view } : target,
+        );
+      }
+
+      syncMessageOverlayTargetsState();
+    },
+  );
+  const unregisterMessageOverlayTarget = useStableCallback((id: string) => {
+    messageOverlayTargetsRef.current = messageOverlayTargetsRef.current.filter(
+      (target) => target.id !== id,
+    );
+    syncMessageOverlayTargetsState();
+  });
 
   const showMessageOverlay = useStableCallback(async () => {
     dismissKeyboard();
     try {
-      const layout = await measureInWindow(messageWrapperRef, insets);
+      const customTargets = messageOverlayTargetsRef.current.filter(
+        (target) => !target.isDefault && target.view,
+      );
+      const defaultTargets = messageOverlayTargetsRef.current.filter(
+        (target) => target.isDefault && target.view,
+      );
+      const activeTarget =
+        customTargets[customTargets.length - 1] ?? defaultTargets[defaultTargets.length - 1];
+
+      if (!activeTarget?.view) {
+        throw new Error('No message overlay target is registered for this message.');
+      }
+
+      const layout = await measureInWindow({ current: activeTarget.view }, insets);
       const bubbleLayout = await measureInWindow(contextMenuAnchorRef, insets).catch(() => layout);
 
       rectRef.current = layout;
@@ -667,8 +724,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     unpinMessage: handleTogglePinMessage,
   };
 
-  const messageWrapperRef = useRef<View>(null);
-
   const onLongPress = () => {
     setNativeScrollability(false);
     if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
@@ -704,9 +759,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleReaction,
     handleToggleReaction,
     hasReactions,
+    activeMessageOverlayTargetId,
     images: attachments.images,
     isMessageAIGenerated,
     isMyMessage,
+    hasCustomMessageOverlayTarget,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     members,
     message: overlayActive ? frozenMessage.current : message,
@@ -783,6 +840,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onThreadSelect,
     otherAttachments: attachments.other,
     preventPress: overlayActive ? true : preventPress,
+    registerMessageOverlayTarget,
+    unregisterMessageOverlayTarget,
     reactions,
     readBy,
     setQuotedMessage,
@@ -830,14 +889,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   return (
     <MessageProvider value={messageContext}>
       <View style={[style, styles.wrapper]} testID='message-wrapper'>
-        {overlayActive && rect ? (
-          <View
-            style={{
-              height: rect.h,
-              width: rect.w,
-            }}
-          />
-        ) : null}
         {/*TODO: V9: Find a way to separate these in a dedicated file*/}
         <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
           {overlayActive && rect && overlayItemsAnchorRect ? (
@@ -863,14 +914,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             </View>
           ) : null}
         </Portal>
-        <Portal
-          hostName={overlayActive ? 'message-overlay' : undefined}
-          style={overlayActive && rect ? { width: rect.w } : undefined}
-        >
-          <View ref={messageWrapperRef}>
-            <MessageItemView />
-          </View>
-        </Portal>
+        <MessageOverlayWrapper isDefault>
+          <MessageItemView />
+        </MessageOverlayWrapper>
         {showMessageReactions ? (
           <BottomSheetModal
             lazy={true}

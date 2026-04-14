@@ -1,9 +1,14 @@
-import { useMessageContext } from '../../../contexts';
+import { useMessageContext, useMessageOverlayTargetContext } from '../../../contexts';
 import { useIsOverlayActive } from '../../../state-store';
 
 export const useShouldUseOverlayStyles = () => {
-  const { messageOverlayId } = useMessageContext();
+  const { hasCustomMessageOverlayTarget, messageOverlayId } = useMessageContext();
+  const isWithinMessageOverlayTarget = useMessageOverlayTargetContext();
   const { active, closing } = useIsOverlayActive(messageOverlayId);
 
-  return active && !closing;
+  if (!active || closing) {
+    return false;
+  }
+
+  return hasCustomMessageOverlayTarget ? isWithinMessageOverlayTarget : true;
 };

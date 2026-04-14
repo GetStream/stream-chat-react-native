@@ -5,8 +5,10 @@ import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageComposer,
+  MessageContent as DefaultMessageContent,
   MessageList,
   MessageFlashList,
+  MessageOverlayWrapper,
   ThreadContextValue,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
@@ -49,6 +51,14 @@ export type ChannelScreenProps = {
 export type ChannelHeaderProps = {
   channel: StreamChatChannel;
 };
+
+const OverlayTargetedMessageContent = (
+  props: React.ComponentProps<typeof DefaultMessageContent>,
+) => (
+  <MessageOverlayWrapper>
+    <DefaultMessageContent {...props} />
+  </MessageOverlayWrapper>
+);
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { closePicker } = useAttachmentPickerContext();
@@ -275,6 +285,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={0}
         messageActions={messageActions}
+        // MessageContent={OverlayTargetedMessageContent}
         MessageLocation={MessageLocation}
         messageId={messageId}
         NetworkDownIndicator={() => null}

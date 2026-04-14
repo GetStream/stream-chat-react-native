@@ -1,9 +1,12 @@
 import React from 'react';
 
+import { Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
+import { MessageListItemProvider } from '../../../../contexts/messageListItemContext/MessageListItemContext';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 
@@ -16,7 +19,38 @@ import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { MessageComposer } from '../../../MessageInput/MessageComposer';
+import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 import { Message } from '../../Message';
+import { MessageOverlayWrapper } from '../../MessageOverlayWrapper';
+
+const OverlayStateText = ({ label }) => {
+  const shouldUseOverlayStyles = useShouldUseOverlayStyles();
+
+  return <Text>{`${label}:${shouldUseOverlayStyles ? 'overlay' : 'normal'}`}</Text>;
+};
+
+const OverlayTrigger = () => {
+  const { onLongPress } = useMessageContext();
+
+  return (
+    <Pressable
+      onLongPress={() => onLongPress({ emitter: 'message' })}
+      testID='custom-overlay-trigger'
+    >
+      <Text>Open overlay</Text>
+    </Pressable>
+  );
+};
+
+const CustomMessageItemView = () => (
+  <View testID='custom-message-item-view'>
+    <OverlayStateText label='outside' />
+    <MessageOverlayWrapper testID='custom-overlay-target'>
+      <OverlayStateText label='inside' />
+      <OverlayTrigger />
+    </MessageOverlayWrapper>
+  </View>
+);
 
 describe('Message', () => {
   let channel;
@@ -37,16 +71,25 @@ describe('Message', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.id);
 
-    renderMessage = (options) =>
+    renderMessage = (options, channelProps) =>
       render(
         <SafeAreaProvider>
           <OverlayProvider>
-            <Chat client={chatClient}>
-              <Channel channel={channel}>
-                <Message groupStyles={['bottom']} {...options} />
-                <MessageComposer />
-              </Channel>
-            </Chat>
+            <MessageListItemProvider
+              value={{
+                goToMessage: jest.fn(),
+                modifiedTheme: {},
+                onThreadSelect: jest.fn(),
+                setNativeScrollability: jest.fn(),
+              }}
+            >
+              <Chat client={chatClient}>
+                <Channel channel={channel} {...channelProps}>
+                  <Message groupStyles={['bottom']} {...options} />
+                  <MessageComposer />
+                </Channel>
+              </Chat>
+            </MessageListItemProvider>
           </OverlayProvider>
         </SafeAreaProvider>,
       );
@@ -86,6 +129,30 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(onLongPressMessage).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('teleports a custom overlay target without applying overlay styles to siblings', async () => {
+    const message = generateMessage({ user });
+    const { getByTestId, getByText } = renderMessage(
+      { message },
+      {
+        MessageItemView: CustomMessageItemView,
+      },
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('custom-message-item-view')).toBeTruthy();
+      expect(getByText('outside:normal')).toBeTruthy();
+      expect(getByText('inside:normal')).toBeTruthy();
+    });
+
+    fireEvent(getByTestId('custom-overlay-trigger'), 'longPress');
+
+    await waitFor(() => {
+      expect(getByText('outside:normal')).toBeTruthy();
+      expect(getByText('inside:overlay')).toBeTruthy();
+      expect(getByTestId('custom-overlay-target-placeholder')).toBeTruthy();
     });
   });
 });

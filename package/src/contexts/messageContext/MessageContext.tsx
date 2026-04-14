@@ -65,6 +65,14 @@ export type MessageContextValue = {
    */
   contextMenuAnchorRef: React.RefObject<View | null>;
   /**
+   * Whether the current message renderer registered a custom subtree to teleport into the overlay.
+   */
+  hasCustomMessageOverlayTarget: boolean;
+  /**
+   * Registration id for the currently active overlay target subtree.
+   */
+  activeMessageOverlayTargetId?: string;
+  /**
    * Stable UI-instance identifier for the rendered message.
    * Used for overlay state so two rendered instances of the same message do not collide.
    */
@@ -100,6 +108,16 @@ export type MessageContextValue = {
   onPressIn: ((payload: PressableHandlerPayload) => void) | null;
   /** The images attached to a message */
   otherAttachments: Attachment[];
+  /**
+   * Registers the subtree that should be measured and portaled into the message overlay.
+   * Custom message renderers typically interact with this via `MessageOverlayWrapper`.
+   */
+  registerMessageOverlayTarget: (params: {
+    id: string;
+    isDefault: boolean;
+    view: View | null;
+  }) => void;
+  unregisterMessageOverlayTarget: (id: string) => void;
   reactions: ReactionSummary[];
   /** Read count of the message */
   readBy: number | boolean;
@@ -164,3 +182,16 @@ export const useMessageContext = () => {
 
   return contextValue;
 };
+
+const MessageOverlayTargetContext = React.createContext(false);
+
+export const MessageOverlayTargetProvider = ({
+  children,
+  value,
+}: PropsWithChildren<{ value: boolean }>) => (
+  <MessageOverlayTargetContext.Provider value={value}>
+    {children}
+  </MessageOverlayTargetContext.Provider>
+);
+
+export const useMessageOverlayTargetContext = () => useContext(MessageOverlayTargetContext);
