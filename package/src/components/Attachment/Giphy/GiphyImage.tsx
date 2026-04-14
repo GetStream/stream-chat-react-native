@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, ImageProps, StyleSheet, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
@@ -16,14 +16,14 @@ import { makeImageCompatibleUrl } from '../../../utils/utils';
 import { GiphyBadge } from '../../ui/Badge/GiphyBadge';
 
 export type GiphyImagePropsWithContext = Pick<MessagesContextValue, 'giphyVersion'> & {
-    ImageComponent?: React.ComponentType<any>;
-  } & {
-    attachment: Attachment;
-    /**
-     * Whether to render the preview image or the full image
-     */
-    preview?: boolean;
-  };
+  ImageComponent?: React.ComponentType<ImageProps>;
+} & {
+  attachment: Attachment;
+  /**
+   * Whether to render the preview image or the full image
+   */
+  preview?: boolean;
+};
 
 const GiphyImageWithContext = (props: GiphyImagePropsWithContext) => {
   const { attachment, giphyVersion, ImageComponent = Image, preview = false } = props;

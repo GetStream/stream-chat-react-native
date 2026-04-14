@@ -6,7 +6,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { getUrlWithoutParams, isLocalUrl, makeImageCompatibleUrl } from '../../utils/utils';
 
 export type GalleryImageWithContextProps = GalleryImageProps & {
-  ImageComponent?: React.ComponentType<any>;
+  ImageComponent?: React.ComponentType<ImageProps>;
 };
 
 export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => {

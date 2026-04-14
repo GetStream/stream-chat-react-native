@@ -60,6 +60,7 @@ const ImageGalleryComponentVideo = (props: ImageGalleryProps) => {
 
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
         <ImageGalleryContext.Provider
           value={
@@ -101,6 +102,7 @@ const ImageGalleryComponentImage = (
 
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
         <ImageGalleryContext.Provider
           value={

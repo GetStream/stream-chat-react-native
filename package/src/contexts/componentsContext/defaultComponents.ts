@@ -40,8 +40,8 @@ import { ChannelPreviewUnreadCount } from '../../components/ChannelPreview/Chann
 import { ChannelPreviewView } from '../../components/ChannelPreview/ChannelPreviewView';
 import { ImageGalleryFooter } from '../../components/ImageGallery/components/ImageGalleryFooter';
 import { ImageGalleryHeader } from '../../components/ImageGallery/components/ImageGalleryHeader';
-import { ImageGalleryGrid } from '../../components/ImageGallery/components/ImageGrid';
 import { ImageGalleryVideoControl } from '../../components/ImageGallery/components/ImageGalleryVideoControl';
+import { ImageGalleryGrid } from '../../components/ImageGallery/components/ImageGrid';
 import { EmptyStateIndicator } from '../../components/Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator } from '../../components/Indicators/LoadingErrorIndicator';
 import { LoadingIndicator } from '../../components/Indicators/LoadingIndicator';
@@ -299,6 +299,7 @@ export const DEFAULT_COMPONENTS = {
   MessageOverlayBackground: DefaultMessageOverlayBackground,
 
   // Image
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ImageComponent: Image as React.ComponentType<any>,
 
   // Optional overrides (no defaults — undefined unless user provides via WithComponents)

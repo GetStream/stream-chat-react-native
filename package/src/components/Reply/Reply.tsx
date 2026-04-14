@@ -1,5 +1,14 @@
 import React, { useMemo } from 'react';
-import { I18nManager, Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import {
+  I18nManager,
+  Image,
+  ImageProps,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import {
   isFileAttachment,
@@ -79,8 +88,10 @@ const RightContent = React.memo(
   },
 );
 
-export type ReplyPropsWithContext = { ImageComponent?: React.ComponentType<any> } &
-  Pick<MessageContextValue, 'message'> &
+export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageProps> } & Pick<
+  MessageContextValue,
+  'message'
+> &
   Pick<MessagesContextValue, 'quotedMessage'> & {
     isMyMessage: boolean;
     onDismiss?: () => void;

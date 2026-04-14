@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import {
   Image,
+  ImageProps,
   ImageStyle,
   Pressable,
   StyleProp,
@@ -32,8 +33,9 @@ import { VideoPlayIndicator } from '../../ui';
 import { ImageBackground } from '../../UIComponents/ImageBackground';
 import { openUrlSafely } from '../utils/openUrlSafely';
 
-export type URLPreviewPropsWithContext = { ImageComponent?: React.ComponentType<any> } &
-  Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
+export type URLPreviewPropsWithContext = {
+  ImageComponent?: React.ComponentType<ImageProps>;
+} & Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<
     MessagesContextValue,
     'additionalPressableProps' | 'myMessageTheme' | 'isAttachmentEqual'

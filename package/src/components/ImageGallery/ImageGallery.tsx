@@ -13,14 +13,19 @@ import Animated, {
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
+import type {
+  ImageGalleryFooterProps,
+  ImageGalleryGridProps,
+  ImageGalleryHeaderProps,
+} from './components/types';
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   ImageGalleryProviderProps,
   useImageGalleryContext,
 } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   OverlayContextValue,
   useOverlayContext,
@@ -67,9 +72,9 @@ type ImageGalleryWithContextProps = Pick<
   'numberOfImageGalleryGridColumns'
 > &
   Pick<OverlayContextValue, 'overlayOpacity'> & {
-    ImageGalleryHeader?: React.ComponentType<any>;
-    ImageGalleryFooter?: React.ComponentType<any>;
-    ImageGalleryGrid?: React.ComponentType<any>;
+    ImageGalleryHeader?: React.ComponentType<ImageGalleryHeaderProps>;
+    ImageGalleryFooter?: React.ComponentType<ImageGalleryFooterProps>;
+    ImageGalleryGrid?: React.ComponentType<ImageGalleryGridProps>;
   };
 
 export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
@@ -370,11 +375,7 @@ export type ImageGalleryProps = Partial<ImageGalleryWithContextProps>;
 
 export const ImageGallery = (props: ImageGalleryProps) => {
   const { numberOfImageGalleryGridColumns } = useImageGalleryContext();
-  const {
-    ImageGalleryHeader,
-    ImageGalleryFooter,
-    ImageGalleryGrid,
-  } = useComponentsContext();
+  const { ImageGalleryHeader, ImageGalleryFooter, ImageGalleryGrid } = useComponentsContext();
   const { overlayOpacity } = useOverlayContext();
   return (
     <ImageGalleryWithContext
