@@ -1,5 +1,14 @@
 import React, { useMemo } from 'react';
-import { I18nManager, Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import {
+  I18nManager,
+  Image,
+  ImageProps,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import {
   isFileAttachment,
@@ -10,7 +19,8 @@ import {
 
 import { ReplyMessageView } from './ReplyMessageView';
 
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -79,8 +89,10 @@ const RightContent = React.memo(
   },
 );
 
-export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
-  Pick<MessageContextValue, 'message'> &
+export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageProps> } & Pick<
+  MessageContextValue,
+  'message'
+> &
   Pick<MessagesContextValue, 'quotedMessage'> & {
     isMyMessage: boolean;
     onDismiss?: () => void;
@@ -216,7 +228,8 @@ export type ReplyProps = Partial<ReplyPropsWithContext> &
 
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();
-  const { client, ImageComponent } = useChatContext();
+  const { client } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
 
   const messageComposer = useMessageComposer();
   const { quotedMessage: quotedMessageFromComposer } = useStateStore(

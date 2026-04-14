@@ -28,11 +28,12 @@ import {
   Rect,
   useOverlayController,
 } from '../../state-store';
+import { useComponentsContext } from '../componentsContext/ComponentsContext';
 import { useTheme } from '../themeContext/ThemeContext';
 
 const DURATION = 300;
 
-const DefaultMessageOverlayBackground = () => {
+export const DefaultMessageOverlayBackground = () => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -52,11 +53,8 @@ const DefaultMessageOverlayBackground = () => {
   );
 };
 
-type MessageOverlayHostLayerProps = {
-  BackgroundComponent?: React.ComponentType;
-};
-
-export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayHostLayerProps) => {
+export const MessageOverlayHostLayer = () => {
+  const { MessageOverlayBackground } = useComponentsContext();
   const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
@@ -123,7 +121,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     opacity: backdrop.value,
   }));
 
-  const OverlayBackground = BackgroundComponent ?? DefaultMessageOverlayBackground;
+  const OverlayBackground = MessageOverlayBackground;
 
   const messageShiftY = useDerivedValue(() => {
     if (!messageH.value || !topH.value || !bottomH.value) return 0;

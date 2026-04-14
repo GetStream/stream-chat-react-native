@@ -14,6 +14,7 @@ import {
   useMessageComposerHasSendableData,
   useTheme,
 } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useHasAttachments } from '../../../../contexts/messageInputContext/hooks/useHasAttachments';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -36,10 +37,6 @@ export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
     | 'asyncMessagesLockDistance'
     | 'audioRecordingSendOnComplete'
     | 'audioRecordingEnabled'
-    | 'CooldownTimer'
-    | 'SendButton'
-    | 'StopMessageStreamingButton'
-    | 'StartAudioRecordingButton'
   > & {
     cooldownIsActive: boolean;
     hasAttachments: boolean;
@@ -51,17 +48,9 @@ const textComposerStateSelector = (state: TextComposerState) => ({
 });
 
 export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) => {
-  const {
-    audioRecordingEnabled,
-    channel,
-    CooldownTimer,
-    cooldownIsActive,
-    isOnline,
-    SendButton,
-    StopMessageStreamingButton,
-    StartAudioRecordingButton,
-    hasAttachments,
-  } = props;
+  const { audioRecordingEnabled, channel, cooldownIsActive, isOnline, hasAttachments } = props;
+  const { CooldownTimer, SendButton, StartAudioRecordingButton, StopMessageStreamingButton } =
+    useComponentsContext();
   const {
     theme: {
       messageComposer: {
@@ -180,10 +169,6 @@ export const OutputButtons = (props: OutputButtonsProps) => {
     asyncMessagesSlideToCancelDistance,
     asyncMessagesLockDistance,
     audioRecordingSendOnComplete,
-    CooldownTimer,
-    SendButton,
-    StopMessageStreamingButton,
-    StartAudioRecordingButton,
   } = useMessageInputContext();
   const cooldownIsActive = useIsCooldownActive();
   const hasAttachments = useHasAttachments();
@@ -198,11 +183,7 @@ export const OutputButtons = (props: OutputButtonsProps) => {
         audioRecordingEnabled,
         channel,
         cooldownIsActive,
-        CooldownTimer,
         isOnline,
-        SendButton,
-        StartAudioRecordingButton,
-        StopMessageStreamingButton,
         hasAttachments,
       }}
       {...props}

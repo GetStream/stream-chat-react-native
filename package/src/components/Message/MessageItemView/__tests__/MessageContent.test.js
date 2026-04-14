@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
+import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
@@ -116,9 +117,11 @@ describe('MessageContent', () => {
     render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <Channel channel={channel} MessageHeader={ContextMessageHeader}>
-            <Message groupStyles={['bottom']} message={message} />
-          </Channel>
+          <WithComponents overrides={{ MessageHeader: ContextMessageHeader }}>
+            <Channel channel={channel}>
+              <Message groupStyles={['bottom']} message={message} />
+            </Channel>
+          </WithComponents>
         </Chat>
       </ChannelsStateProvider>,
     );
@@ -138,9 +141,11 @@ describe('MessageContent', () => {
     render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <Channel channel={channel} MessageFooter={ContextMessageFooter}>
-            <Message groupStyles={['bottom']} message={message} />
-          </Channel>
+          <WithComponents overrides={{ MessageFooter: ContextMessageFooter }}>
+            <Channel channel={channel}>
+              <Message groupStyles={['bottom']} message={message} />
+            </Channel>
+          </WithComponents>
         </Chat>
       </ChannelsStateProvider>,
     );
@@ -158,13 +163,16 @@ describe('MessageContent', () => {
     render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <Channel
-            channel={channel}
-            MessageContentBottomView={() => <View testID='message-content-bottom-view' />}
-            MessageContentTopView={() => <View testID='message-content-top-view' />}
+          <WithComponents
+            overrides={{
+              MessageContentBottomView: () => <View testID='message-content-bottom-view' />,
+              MessageContentTopView: () => <View testID='message-content-top-view' />,
+            }}
           >
-            <Message groupStyles={['bottom']} message={message} />
-          </Channel>
+            <Channel channel={channel}>
+              <Message groupStyles={['bottom']} message={message} />
+            </Channel>
+          </WithComponents>
         </Chat>
       </ChannelsStateProvider>,
     );
@@ -183,13 +191,16 @@ describe('MessageContent', () => {
     render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <Channel
-            channel={channel}
-            MessageContentLeadingView={() => <View testID='message-content-leading-view' />}
-            MessageContentTrailingView={() => <View testID='message-content-trailing-view' />}
+          <WithComponents
+            overrides={{
+              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+            }}
           >
-            <Message groupStyles={['bottom']} message={message} />
-          </Channel>
+            <Channel channel={channel}>
+              <Message groupStyles={['bottom']} message={message} />
+            </Channel>
+          </WithComponents>
         </Chat>
       </ChannelsStateProvider>,
     );
@@ -209,13 +220,16 @@ describe('MessageContent', () => {
     const { rerender } = render(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <Channel
-            channel={channel}
-            MessageContentLeadingView={() => <View testID='message-content-leading-view' />}
-            MessageContentTrailingView={() => <View testID='message-content-trailing-view' />}
+          <WithComponents
+            overrides={{
+              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+            }}
           >
-            <Message groupStyles={['bottom']} message={leftAlignedMessage} />
-          </Channel>
+            <Channel channel={channel}>
+              <Message groupStyles={['bottom']} message={leftAlignedMessage} />
+            </Channel>
+          </WithComponents>
         </Chat>
       </ChannelsStateProvider>,
     );
@@ -231,13 +245,16 @@ describe('MessageContent', () => {
     rerender(
       <ChannelsStateProvider>
         <Chat client={chatClient}>
-          <Channel
-            channel={channel}
-            MessageContentLeadingView={() => <View testID='message-content-leading-view' />}
-            MessageContentTrailingView={() => <View testID='message-content-trailing-view' />}
+          <WithComponents
+            overrides={{
+              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+            }}
           >
-            <Message groupStyles={['bottom']} message={rightAlignedMessage} />
-          </Channel>
+            <Channel channel={channel}>
+              <Message groupStyles={['bottom']} message={rightAlignedMessage} />
+            </Channel>
+          </WithComponents>
         </Chat>
       </ChannelsStateProvider>,
     );

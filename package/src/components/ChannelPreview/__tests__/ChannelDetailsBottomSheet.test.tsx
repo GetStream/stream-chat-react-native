@@ -5,6 +5,7 @@ import { render } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { ThemeProvider, defaultTheme } from '../../../contexts';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
 import type { ChannelDetailsHeaderProps } from '../ChannelDetailsBottomSheet';
 import { ChannelDetailsBottomSheet } from '../ChannelDetailsBottomSheet';
@@ -17,7 +18,11 @@ jest.mock('../../UIComponents/StreamBottomSheetModalFlatList', () => ({
 }));
 
 describe('ChannelDetailsBottomSheet', () => {
-  const channel = { cid: 'messaging:test-channel', id: 'test-channel' } as Channel;
+  const channel = {
+    cid: 'messaging:test-channel',
+    id: 'test-channel',
+    state: { members: {} },
+  } as unknown as Channel;
 
   const items: ChannelActionItem[] = [
     {
@@ -41,11 +46,9 @@ describe('ChannelDetailsBottomSheet', () => {
 
     const { getByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
-        <ChannelDetailsBottomSheet
-          channel={channel}
-          items={items}
-          ChannelDetailsHeader={CustomChannelDetailsHeader}
-        />
+        <WithComponents overrides={{ ChannelDetailsHeader: CustomChannelDetailsHeader }}>
+          <ChannelDetailsBottomSheet channel={channel} items={items} />
+        </WithComponents>
       </ThemeProvider>,
     );
 
@@ -59,12 +62,13 @@ describe('ChannelDetailsBottomSheet', () => {
 
     render(
       <ThemeProvider theme={defaultTheme}>
-        <ChannelDetailsBottomSheet
-          channel={channel}
-          items={items}
-          ChannelDetailsHeader={() => null}
-          additionalFlatListProps={{ onEndReached, testID: 'channel-details-list' }}
-        />
+        <WithComponents overrides={{ ChannelDetailsHeader: () => null }}>
+          <ChannelDetailsBottomSheet
+            channel={channel}
+            items={items}
+            additionalFlatListProps={{ onEndReached, testID: 'channel-details-list' }}
+          />
+        </WithComponents>
       </ThemeProvider>,
     );
 

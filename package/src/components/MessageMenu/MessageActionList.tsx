@@ -5,11 +5,11 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import { MessageActionType } from './MessageActionListItem';
 
-import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
-export type MessageActionListProps = Pick<MessagesContextValue, 'MessageActionListItem'> & {
+export type MessageActionListProps = {
   /**
    * Function to close the message actions bottom sheet
    * @returns void
@@ -22,7 +22,8 @@ export type MessageActionListProps = Pick<MessagesContextValue, 'MessageActionLi
 };
 
 export const MessageActionList = (props: MessageActionListProps) => {
-  const { MessageActionListItem, messageActions } = props;
+  const { messageActions } = props;
+  const { MessageActionListItem } = useComponentsContext();
   const {
     theme: {
       messageMenu: {

@@ -2,43 +2,35 @@ import React, { useMemo } from 'react';
 
 import { View, ViewStyle } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
 import { useMessageReminder } from '../../../hooks/useMessageReminder';
 
-type MessageHeaderPropsWithContext = Pick<MessageContextValue, 'alignment' | 'message'> &
-  Pick<
-    MessagesContextValue,
-    | 'MessagePinnedHeader'
-    | 'MessageReminderHeader'
-    | 'MessageSavedForLaterHeader'
-    | 'SentToChannelHeader'
-  > & {
-    shouldShowSavedForLaterHeader?: boolean;
-    shouldShowPinnedHeader: boolean;
-    shouldShowReminderHeader: boolean;
-    shouldShowSentToChannelHeader: boolean;
-  };
+type MessageHeaderPropsWithContext = Pick<MessageContextValue, 'alignment' | 'message'> & {
+  shouldShowSavedForLaterHeader?: boolean;
+  shouldShowPinnedHeader: boolean;
+  shouldShowReminderHeader: boolean;
+  shouldShowSentToChannelHeader: boolean;
+};
 
 const MessageHeaderWithContext = (props: MessageHeaderPropsWithContext) => {
   const {
     alignment,
     message,
-    MessagePinnedHeader,
     shouldShowSavedForLaterHeader,
     shouldShowPinnedHeader,
     shouldShowReminderHeader,
     shouldShowSentToChannelHeader,
+  } = props;
+  const {
+    MessagePinnedHeader,
     MessageReminderHeader,
     MessageSavedForLaterHeader,
     SentToChannelHeader,
-  } = props;
+  } = useComponentsContext();
 
   const containerStyle: ViewStyle = useMemo(() => {
     return {
@@ -115,12 +107,6 @@ export type MessageHeaderProps = Partial<Pick<MessageContextValue, 'message'>>;
 
 export const MessageHeader = (props: MessageHeaderProps) => {
   const { alignment, message } = useMessageContext();
-  const {
-    MessagePinnedHeader,
-    MessageReminderHeader,
-    MessageSavedForLaterHeader,
-    SentToChannelHeader,
-  } = useMessagesContext();
   const reminder = useMessageReminder(message.id);
 
   const shouldShowSavedForLaterHeader = reminder && !reminder.remindAt;
@@ -141,14 +127,10 @@ export const MessageHeader = (props: MessageHeaderProps) => {
     <MemoizedMessageHeader
       alignment={alignment}
       message={message}
-      MessagePinnedHeader={MessagePinnedHeader}
       shouldShowSavedForLaterHeader={shouldShowSavedForLaterHeader}
       shouldShowPinnedHeader={shouldShowPinnedHeader}
       shouldShowReminderHeader={!!shouldShowReminderHeader}
       shouldShowSentToChannelHeader={shouldShowSentToChannelHeader}
-      MessageReminderHeader={MessageReminderHeader}
-      MessageSavedForLaterHeader={MessageSavedForLaterHeader}
-      SentToChannelHeader={SentToChannelHeader}
       {...props}
     />
   );

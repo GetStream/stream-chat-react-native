@@ -10,12 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import {
-  ChannelList,
-  useTheme,
-  useStableCallback,
-  ChannelActionItem,
-} from 'stream-chat-react-native';
+import { ChannelList, useTheme, useStableCallback, ChannelActionItem, WithComponents } from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -254,18 +249,23 @@ export const ChannelListScreen: React.FC = () => {
         )}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
-            <ChannelList
-              additionalFlatListProps={additionalFlatListProps}
-              filters={filters}
-              HeaderNetworkDownIndicator={HeaderNetworkDownIndicator}
-              maxUnreadCount={99}
-              onSelect={onSelect}
-              options={options}
-              Preview={ChannelPreview}
-              setFlatListRef={setScrollRef}
-              getChannelActionItems={getChannelActionItems}
-              sort={sort}
-            />
+            <WithComponents
+              overrides={{
+                HeaderNetworkDownIndicator,
+                Preview: ChannelPreview,
+              }}
+            >
+              <ChannelList
+                additionalFlatListProps={additionalFlatListProps}
+                filters={filters}
+                maxUnreadCount={99}
+                onSelect={onSelect}
+                options={options}
+                setFlatListRef={setScrollRef}
+                getChannelActionItems={getChannelActionItems}
+                sort={sort}
+              />
+            </WithComponents>
           </View>
         </View>
       </View>

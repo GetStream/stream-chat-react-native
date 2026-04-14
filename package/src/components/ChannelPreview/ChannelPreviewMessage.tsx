@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ChannelLastMessagePreview } from './ChannelLastMessagePreview';
-import { ChannelMessagePreviewDeliveryStatus } from './ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewProps } from './ChannelPreview';
 
-import { ChannelPreviewTypingIndicator } from './ChannelPreviewTypingIndicator';
 import { LastMessageType } from './hooks/useChannelPreviewData';
 
 import { useChannelPreviewDraftMessage } from './hooks/useChannelPreviewDraftMessage';
@@ -13,11 +10,8 @@ import { useChannelPreviewPollLabel } from './hooks/useChannelPreviewPollLabel';
 
 import { useChannelTypingState } from './hooks/useChannelTypingState';
 
-import {
-  ChannelsContextValue,
-  useChannelsContext,
-} from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
@@ -26,34 +20,14 @@ import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { ErrorBadge } from '../ui';
 
-export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> &
-  Partial<
-    Pick<
-      ChannelsContextValue,
-      'PreviewTypingIndicator' | 'PreviewMessageDeliveryStatus' | 'PreviewLastMessage'
-    >
-  > & {
-    lastMessage?: LastMessageType;
-  };
+export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> & {
+  lastMessage?: LastMessageType;
+};
 
 export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
-  const {
-    channel,
-    lastMessage,
-    PreviewTypingIndicator: PreviewTypingIndicatorProp = ChannelPreviewTypingIndicator,
-    PreviewMessageDeliveryStatus:
-      PreviewMessageDeliveryStatusProp = ChannelMessagePreviewDeliveryStatus,
-    PreviewLastMessage: PreviewLastMessageProp = ChannelLastMessagePreview,
-  } = props;
-  const {
-    PreviewTypingIndicator: PreviewTypingIndicatorContext,
-    PreviewMessageDeliveryStatus: PreviewMessageDeliveryStatusContext,
-    PreviewLastMessage: PreviewLastMessageContext,
-  } = useChannelsContext();
-  const PreviewTypingIndicator = PreviewTypingIndicatorProp || PreviewTypingIndicatorContext;
-  const PreviewMessageDeliveryStatus =
-    PreviewMessageDeliveryStatusProp || PreviewMessageDeliveryStatusContext;
-  const PreviewLastMessage = PreviewLastMessageProp || PreviewLastMessageContext;
+  const { channel, lastMessage } = props;
+  const { PreviewTypingIndicator, PreviewMessageDeliveryStatus, PreviewLastMessage } =
+    useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();

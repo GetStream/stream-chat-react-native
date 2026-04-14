@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
@@ -35,12 +36,11 @@ export const AttachmentPicker = () => {
   const {
     closePicker,
     attachmentPickerStore,
-    AttachmentPickerSelectionBar,
-    AttachmentPickerContent,
     attachmentPickerBottomSheetHeight,
     bottomSheetRef: ref,
     disableAttachmentPicker,
   } = useAttachmentPickerContext();
+  const { AttachmentPickerContent, AttachmentPickerSelectionBar } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();

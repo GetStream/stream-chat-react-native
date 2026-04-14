@@ -17,6 +17,7 @@ import {
   MessageActionsParams,
   ChannelAvatar,
   PortalWhileClosingView,
+  WithComponents,
 } from 'stream-chat-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -265,19 +266,23 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
 
   return (
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
+      <WithComponents
+        overrides={{
+          // AttachmentPickerSelectionBar: CustomAttachmentPickerSelectionBar,
+          AttachmentPickerContent: CustomAttachmentPickerContent,
+          MessageLocation,
+          NetworkDownIndicator: () => null,
+        }}
+      >
       <Channel
         audioRecordingEnabled={true}
-        // AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
-        AttachmentPickerContent={CustomAttachmentPickerContent}
         channel={channel}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={0}
         messageActions={messageActions}
-        MessageLocation={MessageLocation}
         messageId={messageId}
-        NetworkDownIndicator={() => null}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}
         maximumMessageLimit={messageListPruning}
@@ -306,6 +311,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
           />
         )}
       </Channel>
+      </WithComponents>
     </View>
   );
 };

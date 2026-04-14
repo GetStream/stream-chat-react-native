@@ -14,6 +14,7 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { primitives } from '../../../theme';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import { Button } from '../../ui';
@@ -64,7 +65,6 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
 
 export type PollAnswersListProps = PollContextValue & {
   additionalFlatListProps?: Partial<FlatListProps<PollAnswer>>;
-  PollAnswersListContent?: React.ComponentType;
 };
 
 export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
@@ -157,16 +157,14 @@ export const PollAnswersList = ({
   additionalFlatListProps,
   message,
   poll,
-  PollAnswersListContent: PollAnswersListOverride,
-}: PollAnswersListProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollAnswersListOverride ? (
-      <PollAnswersListOverride />
-    ) : (
-      <PollAnswersListContent additionalFlatListProps={additionalFlatListProps} />
-    )}
-  </PollContextProvider>
-);
+}: PollAnswersListProps) => {
+  const { PollAnswersListContent: PollAnswersListContentComponent } = useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollAnswersListContentComponent additionalFlatListProps={additionalFlatListProps} />
+    </PollContextProvider>
+  );
+};
 
 const useStyles = () => {
   const {

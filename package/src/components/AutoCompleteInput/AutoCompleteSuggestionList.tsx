@@ -7,20 +7,15 @@ import Animated, { LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanim
 
 import { SearchSourceState, TextComposerState, TextComposerSuggestion } from 'stream-chat';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
-import {
-  MessageInputContextValue,
-  useMessageInputContext,
-} from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 
 export const DEFAULT_LIST_HEIGHT = 208;
 
-export type AutoCompleteSuggestionListProps = Partial<
-  Pick<MessageInputContextValue, 'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'>
->;
+export type AutoCompleteSuggestionListProps = Record<string, never>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   suggestions: state.suggestions,
@@ -31,19 +26,8 @@ const searchSourceStateSelector = (nextValue: SearchSourceState) => ({
   items: nextValue.items,
 });
 
-export const AutoCompleteSuggestionList = ({
-  AutoCompleteSuggestionHeader: propsAutoCompleteSuggestionHeader,
-  AutoCompleteSuggestionItem: propsAutoCompleteSuggestionItem,
-}: AutoCompleteSuggestionListProps) => {
-  const {
-    AutoCompleteSuggestionHeader: contextAutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem: contextAutoCompleteSuggestionItem,
-  } = useMessageInputContext();
-
-  const AutoCompleteSuggestionHeader =
-    propsAutoCompleteSuggestionHeader ?? contextAutoCompleteSuggestionHeader;
-  const AutoCompleteSuggestionItem =
-    propsAutoCompleteSuggestionItem ?? contextAutoCompleteSuggestionItem;
+export const AutoCompleteSuggestionList = () => {
+  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } = useComponentsContext();
 
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;

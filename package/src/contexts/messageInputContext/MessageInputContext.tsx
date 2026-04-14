@@ -18,40 +18,14 @@ import {
   Message as StreamMessage,
   UpdateMessageOptions,
   UploadRequestFn,
-  UserResponse,
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageComposer } from './hooks/useMessageComposer';
 
-import {
-  AutoCompleteSuggestionHeaderProps,
-  AutoCompleteSuggestionItemProps,
-  AutoCompleteSuggestionListProps,
-  FileUploadNotSupportedIndicatorProps,
-  FileUploadRetryIndicatorProps,
-  ImageUploadRetryIndicatorProps,
-  PollContentProps,
-  StopMessageStreamingButtonProps,
-} from '../../components';
-import type { InputViewProps } from '../../components/AutoCompleteInput/InputView';
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { parseLinksFromText } from '../../components/Message/MessageItemView/utils/parseLinks';
-import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
-import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
-import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
-import { ImageAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-import { VideoAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
-import type { AudioRecorderProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecorder';
-import type { AudioRecordingButtonProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingButton';
-import type { AudioRecordingInProgressProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingInProgress';
-import type { AudioRecordingLockIndicatorProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
-import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
-import type { AttachButtonProps } from '../../components/MessageInput/components/InputButtons/AttachButton';
-import type { InputButtonsProps } from '../../components/MessageInput/components/InputButtons/index';
-import type { SendButtonProps } from '../../components/MessageInput/components/OutputButtons/SendButton';
 import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
-import type { MessageComposerProps } from '../../components/MessageInput/MessageComposer';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import {
   createAttachmentsCompositionMiddleware,
@@ -126,68 +100,15 @@ export type InputMessageInputContextValue = {
    */
   asyncMessagesSlideToCancelDistance: number;
   /**
-   * Custom UI component for attach button.
-   *
-   * Defaults to and accepts same props as:
-   * [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
-   */
-  AttachButton: React.ComponentType<AttachButtonProps>;
-  /**
-   * Custom UI component for audio recorder UI.
-   *
-   * Defaults to and accepts same props as:
-   * [AudioRecorder](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/AudioRecorder.tsx)
-   */
-  AudioRecorder: React.ComponentType<AudioRecorderProps>;
-  /**
    * Controls whether the async audio feature is enabled.
    */
   audioRecordingEnabled: boolean;
-  /**
-   * Custom UI component to render audio recording in progress.
-   *
-   * **Default**
-   * [AudioRecordingInProgress](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingInProgress.tsx)
-   */
-  AudioRecordingInProgress: React.ComponentType<AudioRecordingInProgressProps>;
-  /**
-   * Custom UI component for audio recording lock indicator.
-   *
-   * Defaults to and accepts same props as:
-   * [AudioRecordingLockIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator.tsx)
-   */
-  AudioRecordingLockIndicator: React.ComponentType<AudioRecordingLockIndicatorProps>;
-  /**
-   * Custom UI component to render audio recording preview.
-   *
-   * **Default**
-   * [AudioRecordingPreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx)
-   */
-  AudioRecordingPreview: React.ComponentType;
-  /**
-   * Custom UI component to render audio recording waveform.
-   *
-   * **Default**
-   * [AudioRecordingWaveform](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingWaveform.tsx)
-   */
-  AudioRecordingWaveform: React.ComponentType<AudioRecordingWaveformProps>;
-
-  AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
-  AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps>;
-  AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
   /**
    * Height of the image picker bottom sheet when opened.
    * @type number
    * @default 40% of window height
    */
   attachmentPickerBottomSheetHeight: number;
-  /**
-   * Custom UI component for AttachmentPickerSelectionBar
-   *
-   * **Default: **
-   * [AttachmentPickerSelectionBar](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/AttachmentPicker/components/AttachmentPickerSelectionBar.tsx)
-   */
-  AttachmentPickerSelectionBar: React.ComponentType;
   /**
    * Height of the attachment selection bar displayed on the attachment picker.
    * @type number
@@ -196,28 +117,6 @@ export type InputMessageInputContextValue = {
    */
   attachmentSelectionBarHeight: number;
 
-  AttachmentUploadPreviewList: React.ComponentType<AttachmentUploadPreviewListProps>;
-  AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentUploadPreviewProps>;
-  ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
-  FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
-  VideoAttachmentUploadPreview: React.ComponentType<VideoAttachmentUploadPreviewProps>;
-
-  FileUploadInProgressIndicator: React.ComponentType;
-  FileUploadRetryIndicator: React.ComponentType<FileUploadRetryIndicatorProps>;
-  FileUploadNotSupportedIndicator: React.ComponentType<FileUploadNotSupportedIndicatorProps>;
-  ImageUploadInProgressIndicator: React.ComponentType;
-  ImageUploadRetryIndicator: React.ComponentType<ImageUploadRetryIndicatorProps>;
-  ImageUploadNotSupportedIndicator: React.ComponentType;
-
-  /**
-   * Custom UI component to display the remaining cooldown a user will have to wait before
-   * being allowed to send another message. This component is displayed in place of the
-   * send button for the MessageComposer component.
-   *
-   * **default**
-   * [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
-   */
-  CooldownTimer: React.ComponentType;
   editMessage: (params: {
     localMessage: LocalMessage;
     options?: UpdateMessageOptions;
@@ -233,58 +132,11 @@ export type InputMessageInputContextValue = {
   /** When false, ImageSelectorIcon will be hidden */
   hasImagePicker: boolean;
 
-  /**
-   * Custom UI component for send button.
-   *
-   * Defaults to and accepts same props as:
-   * [SendButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/send-button/)
-   */
-  SendButton: React.ComponentType<SendButtonProps>;
   sendMessage: (params: {
     localMessage: LocalMessage;
     message: StreamMessage;
     options?: SendMessageOptions;
   }) => Promise<void>;
-  /**
-   * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
-   * When ticked, message will also be sent in parent channel.
-   */
-  ShowThreadMessageInChannelButton: React.ComponentType<{
-    threadList?: boolean;
-  }>;
-  /**
-   * Custom UI component to override leading side of composer container.
-   */
-  MessageComposerLeadingView: React.ComponentType;
-  /**
-   * Custom UI component to override trailing side of composer container.
-   */
-  MessageComposerTrailingView: React.ComponentType;
-  /**
-   * Custom UI component to override message input header content.
-   */
-  MessageInputHeaderView: React.ComponentType;
-  /**
-   * Custom UI component to override message input footer content.
-   */
-  MessageInputFooterView: React.ComponentType;
-  /**
-   * Custom UI component to override leading side of input row.
-   */
-  MessageInputLeadingView: React.ComponentType;
-  /**
-   * Custom UI component to override trailing side of input row.
-   */
-  MessageInputTrailingView: React.ComponentType;
-
-  /**
-   * Custom UI component for audio recording mic button.
-   *
-   * Defaults to and accepts same props as:
-   * [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
-   */
-  StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps>;
-  StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps> | null;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
@@ -301,10 +153,6 @@ export type InputMessageInputContextValue = {
    */
   compressImageQuality?: number;
 
-  /**
-   * Override the entire content of the CreatePoll component. The component has full access to the useCreatePollContext() hook.
-   * */
-  CreatePollContent?: React.ComponentType<PollContentProps>;
   /**
    * Vertical gap between poll options in poll creation dialog.
    */
@@ -331,40 +179,7 @@ export type InputMessageInputContextValue = {
    */
   messageInputFloating: boolean;
 
-  /**
-   * Custom UI component for AutoCompleteInput.
-   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
-   */
-  Input?: React.ComponentType<
-    Omit<MessageComposerProps, 'Input'> &
-      InputButtonsProps & {
-        getUsers: () => UserResponse[];
-      }
-  >;
-  /**
-   * Custom UI component to override the combined input body view.
-   * Defaults to
-   * [InputView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AutoCompleteInput/InputView.tsx)
-   */
-  InputView: React.ComponentType<InputViewProps>;
-  /**
-   * Custom UI component to override buttons on left side of input box
-   * Defaults to
-   * [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/InputButtons.tsx),
-   * which contain following components/buttons:
-   *
-   *  - AttachButton
-   *  - CommandsButtom
-   *
-   * You have access to following prop functions:
-   *
-   * - closeAttachmentPicker
-   * - openAttachmentPicker
-   * - openCommandsPicker
-   */
-  InputButtons?: React.ComponentType<InputButtonsProps>;
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
-  SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
    *

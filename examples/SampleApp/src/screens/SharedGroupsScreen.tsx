@@ -3,8 +3,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
 import {
   ChannelList,
-  ChannelListView,
-  ChannelListViewProps,
   ChannelPreviewViewProps,
   getChannelPreviewDisplayAvatar,
   GroupAvatar,
@@ -13,6 +11,7 @@ import {
   useTheme,
   Avatar,
   getInitialsFromName,
+  WithComponents,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -145,18 +144,19 @@ const EmptyListComponent = () => {
   );
 };
 
-type ListComponentProps = ChannelListViewProps;
-
-// If the length of channels is 1, which means we only got 1:1-distinct channel,
-// And we don't want to show 1:1-distinct channel in this list.
-const ListComponent: React.FC<ListComponentProps> = (props) => {
+// Custom empty state that also shows when there's only the 1:1 direct channel
+const SharedGroupsEmptyState = () => {
   const { channels, loadingChannels, refreshing } = useChannelsContext();
 
-  if (channels && channels.length <= 1 && !loadingChannels && !refreshing) {
+  if (loadingChannels || refreshing) {
+    return null;
+  }
+
+  if (!channels || channels.length <= 1) {
     return <EmptyListComponent />;
   }
 
-  return <ChannelListView {...props} />;
+  return null;
 };
 
 type SharedGroupsScreenRouteProp = RouteProp<StackNavigatorParamList, 'SharedGroupsScreen'>;
@@ -179,19 +179,24 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
   return (
     <View style={styles.container}>
       <ScreenHeader titleText='Shared Groups' />
-      <ChannelList
-        filters={{
-          $and: [{ members: { $in: [chatClient?.user?.id] } }, { members: { $in: [user.id] } }],
+      <WithComponents
+        overrides={{
+          EmptyStateIndicator: SharedGroupsEmptyState,
+          Preview: CustomPreview,
         }}
-        List={ListComponent}
-        options={{
-          watch: false,
-        }}
-        Preview={CustomPreview}
-        sort={{
-          last_updated: -1,
-        }}
-      />
+      >
+        <ChannelList
+          filters={{
+            $and: [{ members: { $in: [chatClient?.user?.id] } }, { members: { $in: [user.id] } }],
+          }}
+          options={{
+            watch: false,
+          }}
+          sort={{
+            last_updated: -1,
+          }}
+        />
+      </WithComponents>
     </View>
   );
 };

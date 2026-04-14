@@ -7,10 +7,6 @@ import {
   useImageGalleryContext,
 } from './ImageGalleryContextBase';
 
-import { ImageGalleryFooter as ImageGalleryFooterDefault } from '../../components/ImageGallery/components/ImageGalleryFooter';
-import { ImageGalleryHeader as ImageGalleryHeaderDefault } from '../../components/ImageGallery/components/ImageGalleryHeader';
-import { ImageGalleryVideoControl as ImageGalleryVideoControlDefault } from '../../components/ImageGallery/components/ImageGalleryVideoControl';
-import { ImageGalleryGrid as ImageGalleryGridDefault } from '../../components/ImageGallery/components/ImageGrid';
 import { ImageGalleryStateStore } from '../../state-store/image-gallery-state-store';
 
 export const ImageGalleryProvider = ({
@@ -30,10 +26,6 @@ export const ImageGalleryProvider = ({
     () => ({
       autoPlayVideo: value?.autoPlayVideo,
       imageGalleryStateStore,
-      ImageGalleryHeader: ImageGalleryHeaderDefault,
-      ImageGalleryFooter: ImageGalleryFooterDefault,
-      ImageGalleryVideoControls: ImageGalleryVideoControlDefault,
-      ImageGalleryGrid: ImageGalleryGridDefault,
       ...value,
     }),
     [imageGalleryStateStore, value],

@@ -6,6 +6,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 
 import { LocalMessage, ReactionResponse } from 'stream-chat';
 
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessagesContextValue,
   MessagesProvider,
@@ -42,18 +43,18 @@ const renderComponent = (props = {}) =>
   render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider value={mockTranslations as unknown as TranslationContextValue}>
-        <MessagesProvider
-          value={
-            {
-              MessageUserReactionsAvatar: () => null,
-              MessageUserReactionsItem: (props: MessageUserReactionsItemProps) => (
-                <Text>{props.reaction.id + ' ' + props.reaction.type}</Text>
-              ),
-            } as unknown as MessagesContextValue
-          }
+        <WithComponents
+          overrides={{
+            MessageUserReactionsAvatar: () => null,
+            MessageUserReactionsItem: (itemProps: MessageUserReactionsItemProps) => (
+              <Text>{itemProps.reaction.id + ' ' + itemProps.reaction.type}</Text>
+            ),
+          }}
         >
-          <MessageUserReactions {...defaultProps} {...props} />
-        </MessagesProvider>
+          <MessagesProvider value={{} as unknown as MessagesContextValue}>
+            <MessageUserReactions {...defaultProps} {...props} />
+          </MessagesProvider>
+        </WithComponents>
       </TranslationProvider>
     </ThemeProvider>,
   );

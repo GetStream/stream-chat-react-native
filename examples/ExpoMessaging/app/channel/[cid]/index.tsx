@@ -6,6 +6,7 @@ import {
   useChatContext,
   ThreadContextValue,
   MessageList,
+  WithComponents,
 } from 'stream-chat-expo';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
@@ -70,22 +71,23 @@ export default function ChannelScreen() {
       <Stack.Screen
         options={{ title: 'Channel Screen', contentStyle: { backgroundColor: 'white' } }}
       />
-      <Channel
-        audioRecordingEnabled={true}
-        channel={channel}
-        onPressMessage={onPressMessage}
-        keyboardVerticalOffset={headerHeight}
-        MessageLocation={MessageLocation}
-        thread={thread}
-      >
-        <MessageList
-          onThreadSelect={(thread: ThreadContextValue['thread']) => {
-            setThread(thread);
-            router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
-          }}
-        />
-        <MessageComposer InputButtons={InputButtons} />
-      </Channel>
+      <WithComponents overrides={{ MessageLocation, InputButtons }}>
+        <Channel
+          audioRecordingEnabled={true}
+          channel={channel}
+          onPressMessage={onPressMessage}
+          keyboardVerticalOffset={headerHeight}
+          thread={thread}
+        >
+          <MessageList
+            onThreadSelect={(thread: ThreadContextValue['thread']) => {
+              setThread(thread);
+              router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
+            }}
+          />
+          <MessageComposer />
+        </Channel>
+      </WithComponents>
     </View>
   );
 }

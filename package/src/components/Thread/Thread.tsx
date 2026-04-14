@@ -4,16 +4,10 @@ import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import {
-  MessageComposer as DefaultMessageComposer,
-  MessageComposerProps,
-} from '../MessageInput/MessageComposer';
+import type { MessageComposerProps } from '../MessageInput/MessageComposer';
 import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
 import { MessageListProps } from '../MessageList/MessageList';
 
@@ -26,7 +20,6 @@ try {
 }
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
-  Pick<MessagesContextValue, 'MessageList'> &
   Pick<
     ThreadContextValue,
     | 'closeThread'
@@ -60,11 +53,6 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
     /** Disables the thread UI. So MessageComposer and MessageList will be disabled. */
     disabled?: boolean;
     /**
-     * **Customized MessageComposer component to used within Thread instead of default MessageComposer
-     * **Available from [MessageComposer](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-input)**
-     */
-    MessageComposer?: React.ComponentType<MessageComposerProps>;
-    /**
      * Call custom function on closing thread if handling thread state elsewhere
      */
     onThreadDismount?: () => void;
@@ -81,14 +69,13 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     closeThreadOnDismount = true,
     disabled,
     loadMoreThread,
-    MessageComposer = DefaultMessageComposer,
-    MessageList,
     onThreadDismount,
     parentMessagePreventPress = true,
     thread,
     threadInstance,
     shouldUseFlashList = false,
   } = props;
+  const { MessageList, ThreadMessageComposer: MessageComposer } = useComponentsContext();
 
   useEffect(() => {
     if (threadInstance?.activate) {
@@ -171,7 +158,6 @@ export type ThreadProps = Partial<ThreadPropsWithContext>;
 export const Thread = (props: ThreadProps) => {
   const { client } = useChatContext();
   const { threadList } = useChannelContext();
-  const { MessageList } = useMessagesContext();
   const { closeThread, loadMoreThread, reloadThread, thread, threadInstance } = useThreadContext();
 
   if (thread?.id && !threadList) {
@@ -186,7 +172,6 @@ export const Thread = (props: ThreadProps) => {
         client,
         closeThread,
         loadMoreThread,
-        MessageList,
         reloadThread,
         thread,
         threadInstance,

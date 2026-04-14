@@ -3,18 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
-import type { MessageStatusProps } from './MessageStatus';
-
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   Alignment,
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -37,7 +32,6 @@ type MessageFooterPropsWithContext = Pick<
   | 'lastGroupMessage'
   | 'isMessageAIGenerated'
 > &
-  Pick<MessagesContextValue, 'MessageStatus' | 'MessageTimestamp'> &
   MessageFooterComponentProps;
 
 const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
@@ -49,10 +43,9 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
     lastGroupMessage,
     members,
     message,
-    MessageStatus,
-    MessageTimestamp,
     showMessageStatus,
   } = props;
+  const { MessageStatus, MessageTimestamp } = useComponentsContext();
   const styles = useStyles();
 
   const {
@@ -169,7 +162,6 @@ export type MessageFooterProps = Partial<Pick<ChannelContextValue, 'members'>> &
     alignment?: Alignment;
     lastGroupMessage?: boolean;
     message?: LocalMessage;
-    MessageStatus?: React.ComponentType<MessageStatusProps>;
     otherAttachments?: Attachment[];
     showMessageStatus?: boolean;
   };
@@ -177,8 +169,6 @@ export type MessageFooterProps = Partial<Pick<ChannelContextValue, 'members'>> &
 export const MessageFooter = (props: MessageFooterProps) => {
   const { alignment, isMessageAIGenerated, lastGroupMessage, members, message, showMessageStatus } =
     useMessageContext();
-
-  const { MessageStatus, MessageTimestamp } = useMessagesContext();
 
   return (
     <MemoizedMessageFooter
@@ -188,8 +178,6 @@ export const MessageFooter = (props: MessageFooterProps) => {
         lastGroupMessage,
         members,
         message,
-        MessageStatus,
-        MessageTimestamp,
         showMessageStatus,
       }}
       {...props}

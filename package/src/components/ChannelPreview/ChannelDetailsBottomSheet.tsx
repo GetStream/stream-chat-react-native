@@ -11,6 +11,7 @@ import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
 import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -29,7 +30,6 @@ export type ChannelDetailsHeaderProps = { channel: Channel };
 export type ChannelDetailsBottomSheetProps = {
   additionalFlatListProps?: Partial<FlatListProps<ChannelActionItem>>;
   channel: Channel;
-  ChannelDetailsHeader?: React.ComponentType<ChannelDetailsHeaderProps>;
   items: ChannelActionItem[];
 };
 
@@ -104,10 +104,10 @@ const keyExtractor = (item: ChannelActionItem) => item.id;
 
 export const ChannelDetailsBottomSheet = ({
   additionalFlatListProps,
-  ChannelDetailsHeader: ChannelDetailsHeaderComponent = ChannelDetailsHeader,
   items,
   channel,
 }: ChannelDetailsBottomSheetProps) => {
+  const { ChannelDetailsHeader: ChannelDetailsHeaderComponent } = useComponentsContext();
   const styles = useStyles();
   return (
     <>
