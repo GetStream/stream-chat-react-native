@@ -49,7 +49,7 @@ import { BetterSqlite } from '../../test-utils/BetterSqlite';
  * to debug.
  */
 /**
- * Custom Preview component used via WithComponents.
+ * Custom ChannelPreview component used via WithComponents.
  * Receives { channel, muted, unread, lastMessage } from ChannelPreview.
  */
 const ChannelPreviewComponent = ({ channel }) => (
@@ -207,7 +207,7 @@ export const Generic = () => {
     const renderComponent = () =>
       render(
         <Chat client={chatClient} enableOfflineSupport>
-          <WithComponents overrides={{ Preview: ChannelPreviewComponent }}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
             <ChannelList filters={filters} sort={sort} swipeActionsEnabled={false} />
           </WithComponents>
         </Chat>,

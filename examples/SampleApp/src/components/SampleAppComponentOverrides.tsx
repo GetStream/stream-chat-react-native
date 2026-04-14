@@ -51,7 +51,7 @@ export const useSampleAppComponentOverrides = (
       ImageComponent: FastImage,
       MessageLocation,
       NetworkDownIndicator: RenderNull,
-      PreviewStatus: CustomChannelPreviewStatus,
+      ChannelPreviewStatus: CustomChannelPreviewStatus,
       ...(messageOverlayBackdrop === 'blurview'
         ? { MessageOverlayBackground: MessageOverlayBlurBackground }
         : {}),

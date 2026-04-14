@@ -26,8 +26,11 @@ export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> & 
 
 export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const { channel, lastMessage } = props;
-  const { PreviewTypingIndicator, PreviewMessageDeliveryStatus, PreviewLastMessage } =
-    useComponentsContext();
+  const {
+    ChannelPreviewTypingIndicator,
+    ChannelPreviewMessageDeliveryStatus,
+    ChannelPreviewLastMessage,
+  } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -53,14 +56,14 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const showMessageDeliveryStatus = !isMessageDeleted;
 
   if (usersTyping.length > 0) {
-    return <PreviewTypingIndicator channel={channel} usersTyping={usersTyping} />;
+    return <ChannelPreviewTypingIndicator channel={channel} usersTyping={usersTyping} />;
   }
 
   if (draftMessage) {
     return (
       <View style={styles.container}>
         <Text style={styles.draftText}>{t('Draft')}:</Text>
-        <PreviewLastMessage message={draftMessage} />
+        <ChannelPreviewLastMessage message={draftMessage} />
       </View>
     );
   }
@@ -98,18 +101,18 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     return (
       <View style={styles.container}>
         {showMessageDeliveryStatus ? (
-          <PreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
+          <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
         ) : null}
-        <PreviewLastMessage message={lastMessage} />
+        <ChannelPreviewLastMessage message={lastMessage} />
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
         {showMessageDeliveryStatus ? (
-          <PreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
+          <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
         ) : null}
-        <PreviewLastMessage message={lastMessage} />
+        <ChannelPreviewLastMessage message={lastMessage} />
       </View>
     );
   }

@@ -78,8 +78,8 @@ Some component keys differ from their default component names to avoid collision
 | `ThreadMessageComposer`       | `MessageComposer`                       | Avoid collision with `MessageComposer` component name      |
 | `ThreadListComponent`         | `DefaultThreadListComponent`            | Avoid collision with exported `ThreadList`                 |
 | `StartAudioRecordingButton`   | `AudioRecordingButton`                  | Historical naming                                          |
-| `Preview`                     | `ChannelPreviewView`                    | ChannelList preview item                                   |
-| `PreviewAvatar`               | `ChannelAvatar`                         | ChannelList preview avatar                                 |
+| `ChannelPreview`             | `ChannelPreviewView`                    | ChannelList preview item                                   |
+| `ChannelPreviewAvatar`       | `ChannelAvatar`                         | ChannelList preview avatar                                 |
 | `ChannelListFooterLoadingIndicator`      | `ChannelListFooterLoadingIndicator`     | ChannelList footer                                         |
 | `ChannelListHeaderErrorIndicator`        | `ChannelListHeaderErrorIndicator`       | ChannelList header                                         |
 | `ChannelListHeaderNetworkDownIndicator`  | `ChannelListHeaderNetworkDownIndicator` | ChannelList header                                         |
