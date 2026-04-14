@@ -589,6 +589,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                 "color": "#1a1b25",
                                                 "fontSize": 17,
                                                 "lineHeight": 20,
+                                                "writingDirection": "ltr",
                                               }
                                             }
                                           >
@@ -922,6 +923,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                 "color": "#1a1b25",
                                                 "fontSize": 17,
                                                 "lineHeight": 20,
+                                                "writingDirection": "ltr",
                                               }
                                             }
                                           >
@@ -1288,6 +1290,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                                 "color": "#1a1b25",
                                                 "fontSize": 17,
                                                 "lineHeight": 20,
+                                                "writingDirection": "ltr",
                                               }
                                             }
                                           >
@@ -1612,6 +1615,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                               "color": "#1a1b25",
                                               "fontSize": 17,
                                               "lineHeight": 20,
+                                              "writingDirection": "ltr",
                                             }
                                           }
                                         >
