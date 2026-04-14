@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { I18nManager, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -355,6 +355,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
     lineHeight: 20,
+    writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
   },
   memberList: {
     paddingBottom: 12,
