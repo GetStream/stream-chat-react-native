@@ -435,7 +435,7 @@ describe('ChannelPreview', () => {
       return (
         <Chat client={chatClient}>
           <WithComponents
-            value={{
+            overrides={{
               ChannelDetailsBottomSheet: channelDetailsBottomSheet,
               Preview: SwipePreview,
             }}

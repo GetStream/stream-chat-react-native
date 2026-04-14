@@ -164,7 +164,7 @@ describe('MessageContent', () => {
       <ChannelsStateProvider>
         <Chat client={chatClient}>
           <WithComponents
-            value={{
+            overrides={{
               MessageContentBottomView: () => <View testID='message-content-bottom-view' />,
               MessageContentTopView: () => <View testID='message-content-top-view' />,
             }}
@@ -192,7 +192,7 @@ describe('MessageContent', () => {
       <ChannelsStateProvider>
         <Chat client={chatClient}>
           <WithComponents
-            value={{
+            overrides={{
               MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
               MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
             }}
@@ -221,7 +221,7 @@ describe('MessageContent', () => {
       <ChannelsStateProvider>
         <Chat client={chatClient}>
           <WithComponents
-            value={{
+            overrides={{
               MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
               MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
             }}
@@ -246,7 +246,7 @@ describe('MessageContent', () => {
       <ChannelsStateProvider>
         <Chat client={chatClient}>
           <WithComponents
-            value={{
+            overrides={{
               MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
               MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
             }}

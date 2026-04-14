@@ -45,7 +45,7 @@ describe('MessageTextContainer', () => {
     rerender(
       <ThemeProvider theme={defaultTheme}>
         <WithComponents
-          value={{
+          overrides={{
             MessageText: ({ message }) => <Text testID='message-text'>{message?.text}</Text>,
           }}
         >

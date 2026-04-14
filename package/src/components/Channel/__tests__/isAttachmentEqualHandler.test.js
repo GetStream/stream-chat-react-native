@@ -63,7 +63,7 @@ describe('isAttachmentEqualHandler', () => {
       <OverlayProvider>
         <Chat client={chatClient}>
           <WithComponents
-            value={{
+            overrides={{
               UnsupportedAttachment: ({ attachment: { customField, type } }) => {
                 if (type === 'test') {
                   return <Text testID='attachment-custom-field'>{customField}</Text>;

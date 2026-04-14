@@ -44,7 +44,7 @@ const renderComponent = (props = {}) =>
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider value={mockTranslations as unknown as TranslationContextValue}>
         <WithComponents
-          value={{
+          overrides={{
             MessageUserReactionsAvatar: () => null,
             MessageUserReactionsItem: (itemProps: MessageUserReactionsItemProps) => (
               <Text>{itemProps.reaction.id + ' ' + itemProps.reaction.type}</Text>

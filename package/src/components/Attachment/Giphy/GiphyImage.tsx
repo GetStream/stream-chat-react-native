@@ -3,7 +3,6 @@ import { Image, StyleSheet, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
-import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 
 import {
@@ -16,8 +15,9 @@ import { useLoadingImage } from '../../../hooks/useLoadingImage';
 import { makeImageCompatibleUrl } from '../../../utils/utils';
 import { GiphyBadge } from '../../ui/Badge/GiphyBadge';
 
-export type GiphyImagePropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
-  Pick<MessagesContextValue, 'giphyVersion'> & {
+export type GiphyImagePropsWithContext = Pick<MessagesContextValue, 'giphyVersion'> & {
+    ImageComponent?: React.ComponentType<any>;
+  } & {
     attachment: Attachment;
     /**
      * Whether to render the preview image or the full image
@@ -160,7 +160,7 @@ export type GiphyImageProps = Partial<GiphyImagePropsWithContext> & {
  * UI component for card in attachments.
  */
 export const GiphyImage = (props: GiphyImageProps) => {
-  const { ImageComponent } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
   const { giphyVersion } = useMessagesContext();
 
   return (

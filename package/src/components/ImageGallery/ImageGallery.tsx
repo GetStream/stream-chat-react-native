@@ -20,6 +20,7 @@ import {
   ImageGalleryProviderProps,
   useImageGalleryContext,
 } from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   OverlayContextValue,
   useOverlayContext,
@@ -63,12 +64,13 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 
 type ImageGalleryWithContextProps = Pick<
   ImageGalleryProviderProps,
-  | 'numberOfImageGalleryGridColumns'
-  | 'ImageGalleryHeader'
-  | 'ImageGalleryFooter'
-  | 'ImageGalleryGrid'
+  'numberOfImageGalleryGridColumns'
 > &
-  Pick<OverlayContextValue, 'overlayOpacity'>;
+  Pick<OverlayContextValue, 'overlayOpacity'> & {
+    ImageGalleryHeader?: React.ComponentType<any>;
+    ImageGalleryFooter?: React.ComponentType<any>;
+    ImageGalleryGrid?: React.ComponentType<any>;
+  };
 
 export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
   const {
@@ -367,12 +369,12 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
 export type ImageGalleryProps = Partial<ImageGalleryWithContextProps>;
 
 export const ImageGallery = (props: ImageGalleryProps) => {
+  const { numberOfImageGalleryGridColumns } = useImageGalleryContext();
   const {
-    numberOfImageGalleryGridColumns,
     ImageGalleryHeader,
     ImageGalleryFooter,
     ImageGalleryGrid,
-  } = useImageGalleryContext();
+  } = useComponentsContext();
   const { overlayOpacity } = useOverlayContext();
   return (
     <ImageGalleryWithContext

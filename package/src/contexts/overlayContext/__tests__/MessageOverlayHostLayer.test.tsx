@@ -13,6 +13,7 @@ import {
   setOverlayMessageH,
   setOverlayTopH,
 } from '../../../state-store';
+import { WithComponents } from '../../componentsContext/ComponentsContext';
 import { MessageOverlayHostLayer } from '../MessageOverlayHostLayer';
 
 jest.mock('react-native', () => {
@@ -142,7 +143,11 @@ describe('MessageOverlayHostLayer', () => {
 
   it('renders the custom background only while active and pressing the backdrop starts closing', () => {
     const CustomBackground = () => <Text testID='custom-background'>Background</Text>;
-    render(<MessageOverlayHostLayer BackgroundComponent={CustomBackground} />);
+    render(
+      <WithComponents overrides={{ MessageOverlayBackground: CustomBackground }}>
+        <MessageOverlayHostLayer />
+      </WithComponents>,
+    );
 
     expect(screen.queryByTestId('custom-background')).toBeNull();
     expect(screen.queryByTestId('message-overlay-backdrop')).toBeNull();
@@ -161,7 +166,12 @@ describe('MessageOverlayHostLayer', () => {
   });
 
   it('positions and translates the top, message, and bottom hosts using the registered rects', () => {
-    const { rerender } = render(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    const renderTree = () => (
+      <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
+        <MessageOverlayHostLayer />
+      </WithComponents>
+    );
+    const { rerender } = render(renderTree());
 
     act(() => {});
 
@@ -172,7 +182,7 @@ describe('MessageOverlayHostLayer', () => {
       openOverlay('message-1');
     });
 
-    rerender(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    rerender(renderTree());
 
     const topSlot = screen.getByTestId('message-overlay-top');
     const messageSlot = screen.getByTestId('message-overlay-message');
@@ -206,7 +216,12 @@ describe('MessageOverlayHostLayer', () => {
   });
 
   it('resets host geometry after finalizeCloseOverlay clears the registered rects', () => {
-    const { rerender } = render(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    const renderTree = () => (
+      <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
+        <MessageOverlayHostLayer />
+      </WithComponents>
+    );
+    const { rerender } = render(renderTree());
 
     act(() => {});
 
@@ -217,7 +232,7 @@ describe('MessageOverlayHostLayer', () => {
       openOverlay('message-1');
     });
 
-    rerender(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    rerender(renderTree());
 
     expect(
       StyleSheet.flatten(screen.getByTestId('message-overlay-message').props.style),
@@ -230,7 +245,7 @@ describe('MessageOverlayHostLayer', () => {
       finalizeCloseOverlay();
     });
 
-    rerender(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    rerender(renderTree());
 
     expect(StyleSheet.flatten(screen.getByTestId('message-overlay-top').props.style)).toMatchObject(
       {

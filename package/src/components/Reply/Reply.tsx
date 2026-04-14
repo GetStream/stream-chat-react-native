@@ -10,7 +10,8 @@ import {
 
 import { ReplyMessageView } from './ReplyMessageView';
 
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -78,7 +79,7 @@ const RightContent = React.memo(
   },
 );
 
-export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
+export type ReplyPropsWithContext = { ImageComponent?: React.ComponentType<any> } &
   Pick<MessageContextValue, 'message'> &
   Pick<MessagesContextValue, 'quotedMessage'> & {
     isMyMessage: boolean;
@@ -214,7 +215,8 @@ export type ReplyProps = Partial<ReplyPropsWithContext> &
 
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();
-  const { client, ImageComponent } = useChatContext();
+  const { client } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
 
   const messageComposer = useMessageComposer();
   const { quotedMessage: quotedMessageFromComposer } = useStateStore(

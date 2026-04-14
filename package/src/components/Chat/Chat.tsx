@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { Image, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import { Channel, OfflineDBState } from 'stream-chat';
 
@@ -31,7 +31,7 @@ import { version } from '../../version.json';
 init();
 
 export type ChatProps = Pick<ChatContextValue, 'client'> &
-  Partial<Pick<ChatContextValue, 'ImageComponent' | 'isMessageAIGenerated'>> & {
+  Partial<Pick<ChatContextValue, 'isMessageAIGenerated'>> & {
     /**
      * When false, ws connection won't be disconnection upon backgrounding the app.
      * To receive push notifications, its necessary that user doesn't have active
@@ -139,7 +139,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     closeConnectionOnBackground = true,
     enableOfflineSupport = false,
     i18nInstance,
-    ImageComponent = Image,
     isMessageAIGenerated,
     style,
   } = props;
@@ -252,7 +251,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     client,
     connectionRecovering,
     enableOfflineSupport,
-    ImageComponent,
     isMessageAIGenerated,
     isOnline,
     mutedUsers,

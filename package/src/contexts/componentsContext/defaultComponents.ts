@@ -1,4 +1,5 @@
 import React from 'react';
+import { Image } from 'react-native';
 
 import { Attachment } from '../../components/Attachment/Attachment';
 import { AudioAttachment } from '../../components/Attachment/Audio';
@@ -37,6 +38,9 @@ import { ChannelPreviewTitle } from '../../components/ChannelPreview/ChannelPrev
 import { ChannelPreviewTypingIndicator } from '../../components/ChannelPreview/ChannelPreviewTypingIndicator';
 import { ChannelPreviewUnreadCount } from '../../components/ChannelPreview/ChannelPreviewUnreadCount';
 import { ChannelPreviewView } from '../../components/ChannelPreview/ChannelPreviewView';
+import { ImageGalleryFooter } from '../../components/ImageGallery/components/ImageGalleryFooter';
+import { ImageGalleryHeader } from '../../components/ImageGallery/components/ImageGalleryHeader';
+import { ImageGalleryGrid } from '../../components/ImageGallery/components/ImageGrid';
 import { ImageGalleryVideoControl } from '../../components/ImageGallery/components/ImageGalleryVideoControl';
 import { EmptyStateIndicator } from '../../components/Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator } from '../../components/Indicators/LoadingErrorIndicator';
@@ -139,6 +143,7 @@ import { ThreadListItemMessagePreview } from '../../components/ThreadList/Thread
 import { ThreadListUnreadBanner } from '../../components/ThreadList/ThreadListUnreadBanner';
 import { ThreadMessagePreviewDeliveryStatus } from '../../components/ThreadList/ThreadMessagePreviewDeliveryStatus';
 import { ChannelAvatar } from '../../components/ui/Avatar/ChannelAvatar';
+import { DefaultMessageOverlayBackground } from '../../contexts/overlayContext/MessageOverlayHostLayer';
 
 /**
  * All default component implementations used across the SDK.
@@ -285,7 +290,16 @@ export const DEFAULT_COMPONENTS = {
   PollOptionFullResultsContent,
 
   // ImageGallery
+  ImageGalleryFooter,
+  ImageGalleryGrid,
+  ImageGalleryHeader,
   ImageGalleryVideoControls: ImageGalleryVideoControl,
+
+  // Overlay
+  MessageOverlayBackground: DefaultMessageOverlayBackground,
+
+  // Image
+  ImageComponent: Image as React.ComponentType<any>,
 
   // Optional overrides (no defaults — undefined unless user provides via WithComponents)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -294,8 +308,6 @@ export const DEFAULT_COMPONENTS = {
   ChatLoadingIndicator: undefined as React.ComponentType<any> | null | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   CreatePollContent: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ImageComponent: undefined as React.ComponentType<any> | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Input: undefined as React.ComponentType<any> | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

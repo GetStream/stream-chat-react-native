@@ -13,7 +13,7 @@ import {
 
 import type { Attachment } from 'stream-chat';
 
-import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 
 import {
   MessageContextValue,
@@ -32,7 +32,7 @@ import { VideoPlayIndicator } from '../../ui';
 import { ImageBackground } from '../../UIComponents/ImageBackground';
 import { openUrlSafely } from '../utils/openUrlSafely';
 
-export type URLPreviewPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
+export type URLPreviewPropsWithContext = { ImageComponent?: React.ComponentType<any> } &
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<
     MessagesContextValue,
@@ -210,7 +210,7 @@ export type URLPreviewProps = Partial<URLPreviewPropsWithContext> & {
  * UI component for card in attachments.
  */
 export const URLPreview = (props: URLPreviewProps) => {
-  const { ImageComponent } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
   const { message, onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
   const { additionalPressableProps, isAttachmentEqual, myMessageTheme } = useMessagesContext();
 

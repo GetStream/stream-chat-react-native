@@ -342,7 +342,7 @@ describe('ChannelList', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <WithComponents
-          value={{
+          overrides={{
             ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
             Preview: ChannelDetailsBottomSheetProbe,
           }}
@@ -364,7 +364,7 @@ describe('ChannelList', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <WithComponents
-          value={{
+          overrides={{
             ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
             Preview: ChannelDetailsBottomSheetProbe,
           }}

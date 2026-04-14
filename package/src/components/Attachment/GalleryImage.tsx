@@ -1,12 +1,13 @@
 import React from 'react';
 import { Image, ImageProps, StyleSheet } from 'react-native';
 
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 
 import { getUrlWithoutParams, isLocalUrl, makeImageCompatibleUrl } from '../../utils/utils';
 
-export type GalleryImageWithContextProps = GalleryImageProps &
-  Pick<ChatContextValue, 'ImageComponent'>;
+export type GalleryImageWithContextProps = GalleryImageProps & {
+  ImageComponent?: React.ComponentType<any>;
+};
 
 export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => {
   const { ImageComponent = Image, uri, style, ...rest } = props;
@@ -48,7 +49,7 @@ export type GalleryImageProps = Omit<ImageProps, 'height' | 'source'> & {
 };
 
 export const GalleryImage = (props: GalleryImageProps) => {
-  const { ImageComponent } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
 
   return <MemoizedGalleryImage ImageComponent={ImageComponent} {...props} />;
 };
