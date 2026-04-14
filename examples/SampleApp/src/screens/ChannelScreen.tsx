@@ -268,7 +268,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
       <WithComponents
         overrides={{
-          AttachmentPickerSelectionBar: CustomAttachmentPickerSelectionBar,
+          // AttachmentPickerSelectionBar: CustomAttachmentPickerSelectionBar,
           AttachmentPickerContent: CustomAttachmentPickerContent,
           MessageLocation,
           NetworkDownIndicator: () => null,
