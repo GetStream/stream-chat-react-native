@@ -1,8 +1,14 @@
-import { useMessageContext, useMessageOverlayTargetContext } from '../../../contexts';
+import {
+  useMessageContext,
+  useMessageOverlayRuntimeContext,
+  useMessageOverlayTargetContext,
+} from '../../../contexts';
 import { useIsOverlayActive } from '../../../state-store';
+import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from '../messageOverlayConstants';
 
 export const useShouldUseOverlayStyles = () => {
-  const { hasCustomMessageOverlayTarget, messageOverlayId } = useMessageContext();
+  const { messageOverlayId } = useMessageContext();
+  const { messageOverlayTargetId } = useMessageOverlayRuntimeContext();
   const isWithinMessageOverlayTarget = useMessageOverlayTargetContext();
   const { active, closing } = useIsOverlayActive(messageOverlayId);
 
@@ -10,5 +16,7 @@ export const useShouldUseOverlayStyles = () => {
     return false;
   }
 
-  return hasCustomMessageOverlayTarget ? isWithinMessageOverlayTarget : true;
+  return messageOverlayTargetId === DEFAULT_MESSAGE_OVERLAY_TARGET_ID
+    ? true
+    : isWithinMessageOverlayTarget;
 };

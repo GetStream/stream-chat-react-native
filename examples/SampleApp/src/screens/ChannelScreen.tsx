@@ -55,7 +55,7 @@ export type ChannelHeaderProps = {
 const OverlayTargetedMessageContent = (
   props: React.ComponentProps<typeof DefaultMessageContent>,
 ) => (
-  <MessageOverlayWrapper>
+  <MessageOverlayWrapper targetId='message-content'>
     <DefaultMessageContent {...props} />
   </MessageOverlayWrapper>
 );
@@ -285,9 +285,10 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={0}
         messageActions={messageActions}
-        // MessageContent={OverlayTargetedMessageContent}
+        MessageContent={OverlayTargetedMessageContent}
         MessageLocation={MessageLocation}
         messageId={messageId}
+        messageOverlayTargetId='message-content'
         NetworkDownIndicator={() => null}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}

@@ -9,6 +9,7 @@ import type {
   MessagePressableHandlerPayload,
   PressableHandlerPayload,
 } from '../../components/Message/Message';
+import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from '../../components/Message/messageOverlayConstants';
 import type { GroupType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
@@ -65,14 +66,6 @@ export type MessageContextValue = {
    */
   contextMenuAnchorRef: React.RefObject<View | null>;
   /**
-   * Whether the current message renderer registered a custom subtree to teleport into the overlay.
-   */
-  hasCustomMessageOverlayTarget: boolean;
-  /**
-   * Registration id for the currently active overlay target subtree.
-   */
-  activeMessageOverlayTargetId?: string;
-  /**
    * Stable UI-instance identifier for the rendered message.
    * Used for overlay state so two rendered instances of the same message do not collide.
    */
@@ -112,11 +105,7 @@ export type MessageContextValue = {
    * Registers the subtree that should be measured and portaled into the message overlay.
    * Custom message renderers typically interact with this via `MessageOverlayWrapper`.
    */
-  registerMessageOverlayTarget: (params: {
-    id: string;
-    isDefault: boolean;
-    view: View | null;
-  }) => void;
+  registerMessageOverlayTarget: (params: { id: string; view: View | null }) => void;
   unregisterMessageOverlayTarget: (id: string) => void;
   reactions: ReactionSummary[];
   /** Read count of the message */
@@ -182,6 +171,27 @@ export const useMessageContext = () => {
 
   return contextValue;
 };
+
+type MessageOverlayRuntimeContextValue = {
+  messageOverlayTargetId: string;
+  overlayActive: boolean;
+};
+
+const MessageOverlayRuntimeContext = React.createContext<MessageOverlayRuntimeContextValue>({
+  messageOverlayTargetId: DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
+  overlayActive: false,
+});
+
+export const MessageOverlayRuntimeProvider = ({
+  children,
+  value,
+}: PropsWithChildren<{ value: MessageOverlayRuntimeContextValue }>) => (
+  <MessageOverlayRuntimeContext.Provider value={value}>
+    {children}
+  </MessageOverlayRuntimeContext.Provider>
+);
+
+export const useMessageOverlayRuntimeContext = () => useContext(MessageOverlayRuntimeContext);
 
 const MessageOverlayTargetContext = React.createContext(false);
 

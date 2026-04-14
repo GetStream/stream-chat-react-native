@@ -4,10 +4,12 @@ import { act, cleanup, renderHook } from '@testing-library/react-native';
 
 import {
   MessageContextValue,
+  MessageOverlayRuntimeProvider,
   MessageProvider,
 } from '../../../../contexts/messageContext/MessageContext';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { finalizeCloseOverlay, openOverlay, overlayStore } from '../../../../state-store';
+import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from '../../messageOverlayConstants';
 
 import { useShouldUseOverlayStyles } from '../useShouldUseOverlayStyles';
 
@@ -15,7 +17,6 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
   ({
     actionsEnabled: false,
     alignment: 'left',
-    activeMessageOverlayTargetId: undefined,
     channel: {} as MessageContextValue['channel'],
     deliveredToCount: 0,
     dismissOverlay: jest.fn(),
@@ -24,7 +25,6 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
     handleAction: jest.fn(),
     handleToggleReaction: jest.fn(),
     hasAttachmentActions: false,
-    hasCustomMessageOverlayTarget: false,
     hasReactions: false,
     images: [],
     isMessageAIGenerated: jest.fn(),
@@ -56,9 +56,17 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
     ...overrides,
   }) as MessageContextValue;
 
-const createWrapper = (value: MessageContextValue) => {
+const createWrapper = (
+  value: MessageContextValue,
+  runtimeValue = {
+    messageOverlayTargetId: DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
+    overlayActive: false,
+  },
+) => {
   const Wrapper = ({ children }: PropsWithChildren) => (
-    <MessageProvider value={value}>{children}</MessageProvider>
+    <MessageProvider value={value}>
+      <MessageOverlayRuntimeProvider value={runtimeValue}>{children}</MessageOverlayRuntimeProvider>
+    </MessageProvider>
   );
 
   return Wrapper;

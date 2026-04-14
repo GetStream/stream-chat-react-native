@@ -260,6 +260,11 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
+   * Overlay target id that should be teleported when a message overlay opens.
+   * Custom `MessageOverlayWrapper` usages should pass a matching `targetId`.
+   */
+  messageOverlayTargetId?: string;
+  /**
    * UI component for MessageDeleted
    * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageDeleted.tsx)
    */

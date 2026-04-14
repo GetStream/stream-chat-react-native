@@ -45,7 +45,7 @@ const OverlayTrigger = () => {
 const CustomMessageItemView = () => (
   <View testID='custom-message-item-view'>
     <OverlayStateText label='outside' />
-    <MessageOverlayWrapper testID='custom-overlay-target'>
+    <MessageOverlayWrapper targetId='custom-overlay-target' testID='custom-overlay-target'>
       <OverlayStateText label='inside' />
       <OverlayTrigger />
     </MessageOverlayWrapper>
@@ -138,6 +138,7 @@ describe('Message', () => {
       { message },
       {
         MessageItemView: CustomMessageItemView,
+        messageOverlayTargetId: 'custom-overlay-target',
       },
     );
 

@@ -372,6 +372,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'MessageContentBottomView'
       | 'MessageContentLeadingView'
       | 'messageContentOrder'
+      | 'messageOverlayTargetId'
       | 'MessageContentTrailingView'
       | 'MessageContentTopView'
       | 'MessageDeleted'
@@ -704,6 +705,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'text',
       'location',
     ],
+    messageOverlayTargetId,
     MessageContentTrailingView,
     MessageContentTopView,
     MessageDeleted = MessageDeletedDefault,
@@ -2032,6 +2034,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     MessageContentBottomView,
     MessageContentLeadingView,
     messageContentOrder,
+    messageOverlayTargetId,
     MessageContentTrailingView,
     MessageContentTopView,
     MessageDeleted,
