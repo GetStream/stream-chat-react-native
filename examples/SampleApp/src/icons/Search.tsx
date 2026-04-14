@@ -7,13 +7,13 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 
 export const Search: React.FC<IconProps> = ({ fill, height = 24, scale = 1, width = 24 }) => {
   const { black } = useLegacyColors();
-  const vbWidth = height * scale;
+  const vbWidth = width * scale;
   return (
     <Svg
       fill='none'
       height={height * scale}
-      viewBox={`0 0 ${vbWidth} ${vbWidth}`}
-      width={width * scale}
+      viewBox={`0 0 ${height * scale} ${vbWidth}`}
+      width={vbWidth}
     >
       <G transform={I18nManager.isRTL ? `matrix(-1 0 0 1 ${vbWidth} 0)` : undefined}>
         <G scale={scale}>
