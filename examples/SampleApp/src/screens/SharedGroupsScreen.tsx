@@ -11,7 +11,6 @@ import {
   useTheme,
   Avatar,
   getInitialsFromName,
-  WithComponents,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
 
 type CustomPreviewProps = ChannelPreviewViewProps;
 
-const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
+export const SharedGroupsPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
   const name = useChannelPreviewDisplayName(channel, 30);
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList, 'SharedGroupsScreen'>>();
@@ -145,7 +144,7 @@ const EmptyListComponent = () => {
 };
 
 // Custom empty state that also shows when there's only the 1:1 direct channel
-const SharedGroupsEmptyState = () => {
+export const SharedGroupsEmptyState = () => {
   const { channels, loadingChannels, refreshing } = useChannelsContext();
 
   if (loadingChannels || refreshing) {
@@ -179,24 +178,17 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
   return (
     <View style={styles.container}>
       <ScreenHeader titleText='Shared Groups' />
-      <WithComponents
-        overrides={{
-          EmptyStateIndicator: SharedGroupsEmptyState,
-          Preview: CustomPreview,
+      <ChannelList
+        filters={{
+          $and: [{ members: { $in: [chatClient?.user?.id] } }, { members: { $in: [user.id] } }],
         }}
-      >
-        <ChannelList
-          filters={{
-            $and: [{ members: { $in: [chatClient?.user?.id] } }, { members: { $in: [user.id] } }],
-          }}
-          options={{
-            watch: false,
-          }}
-          sort={{
-            last_updated: -1,
-          }}
-        />
-      </WithComponents>
+        options={{
+          watch: false,
+        }}
+        sort={{
+          last_updated: -1,
+        }}
+      />
     </View>
   );
 };

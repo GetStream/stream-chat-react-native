@@ -12,7 +12,6 @@ import {
   useTranslationContext,
   useTypingString,
   PortalWhileClosingView,
-  WithComponents,
 } from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
 
@@ -27,7 +26,6 @@ import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 // import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
-import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useAppContext } from '../context/AppContext.ts';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
@@ -149,12 +147,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
 
   return (
     <View style={[styles.container, { backgroundColor: white }]}>
-      <WithComponents
-        overrides={{
-          // AttachmentPickerSelectionBar: CustomAttachmentPickerSelectionBar,
-          MessageLocation,
-        }}
-      >
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
@@ -179,7 +171,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
           shouldUseFlashList={messageListImplementation === 'flashlist'}
         />
       </Channel>
-      </WithComponents>
     </View>
   );
 };

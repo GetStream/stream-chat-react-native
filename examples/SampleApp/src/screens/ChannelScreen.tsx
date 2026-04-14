@@ -17,7 +17,6 @@ import {
   MessageActionsParams,
   ChannelAvatar,
   PortalWhileClosingView,
-  WithComponents,
 } from 'stream-chat-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -30,11 +29,9 @@ import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
-import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 // import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
-import { CustomAttachmentPickerContent } from '../components/AttachmentPickerContent.tsx';
 import { ThreadType } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
@@ -266,14 +263,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
 
   return (
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
-      <WithComponents
-        overrides={{
-          // AttachmentPickerSelectionBar: CustomAttachmentPickerSelectionBar,
-          AttachmentPickerContent: CustomAttachmentPickerContent,
-          MessageLocation,
-          NetworkDownIndicator: () => null,
-        }}
-      >
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
@@ -311,7 +300,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
           />
         )}
       </Channel>
-      </WithComponents>
     </View>
   );
 };

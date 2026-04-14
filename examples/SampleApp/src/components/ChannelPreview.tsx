@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CustomChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
+export const CustomChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
   const { channel } = props;
 
   const membership = useChannelMembershipState(channel);
@@ -52,8 +52,4 @@ const CustomChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
       )}
     </View>
   );
-};
-
-export const ChannelPreview: React.FC<ChannelPreviewViewProps> = (props) => {
-  return <ChannelPreviewView {...props} PreviewStatus={CustomChannelPreviewStatus} />;
 };
