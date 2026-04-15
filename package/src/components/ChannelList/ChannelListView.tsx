@@ -211,17 +211,23 @@ ChannelListView.displayName = 'ChannelListView{channelListView}';
 const useStyles = () => {
   const {
     theme: {
+      semantics,
       channelListView: { flatList, flatListContent },
     },
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
-      flatList: { flex: 1, ...flatList },
+      flatList: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreApp,
+        ...flatList,
+      },
       flatListContentContainer: {
         flexGrow: 1,
+        backgroundColor: semantics.backgroundCoreApp,
         ...flatListContent,
       },
       statusIndicator: { left: 0, position: 'absolute', right: 0, top: 0 },
     });
-  }, [flatList, flatListContent]);
+  }, [flatList, flatListContent, semantics]);
 };
