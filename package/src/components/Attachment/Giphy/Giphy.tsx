@@ -220,12 +220,10 @@ const useStyles = ({
     return StyleSheet.create({
       container: {
         backgroundColor: hasActions
-          ? isMyMessage
-            ? semantics.chatBgAttachmentOutgoing
-            : semantics.chatBgAttachmentIncoming
+          ? semantics.chatBgOutgoing
           : isMyMessage
-            ? semantics.chatBgOutgoing
-            : semantics.chatBgIncoming,
+            ? semantics.chatBgAttachmentOutgoing
+            : semantics.chatBgAttachmentIncoming,
         borderRadius: primitives.radiusLg,
         maxWidth: 256, // TODO: Not sure how to fix this
         overflow: 'hidden',

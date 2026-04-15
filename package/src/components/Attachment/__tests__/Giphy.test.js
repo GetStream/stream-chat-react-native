@@ -117,7 +117,7 @@ describe('Giphy', () => {
     });
   });
 
-  it('uses the default outgoing bubble background for outgoing giphys', async () => {
+  it('uses the outgoing attachment background for outgoing giphys', async () => {
     render(getAttachmentComponent({ attachment }, { isMyMessage: true }));
 
     await waitFor(() => {
@@ -125,14 +125,14 @@ describe('Giphy', () => {
       expect(style).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            backgroundColor: lightTheme.semantics.chatBgOutgoing,
+            backgroundColor: lightTheme.semantics.chatBgAttachmentOutgoing,
           }),
         ]),
       );
     });
   });
 
-  it('uses the default incoming bubble background for incoming giphys', async () => {
+  it('uses the incoming attachment background for incoming giphys', async () => {
     render(getAttachmentComponent({ attachment }, { isMyMessage: false }));
 
     await waitFor(() => {
@@ -140,14 +140,14 @@ describe('Giphy', () => {
       expect(style).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            backgroundColor: lightTheme.semantics.chatBgIncoming,
+            backgroundColor: lightTheme.semantics.chatBgAttachmentIncoming,
           }),
         ]),
       );
     });
   });
 
-  it('uses the outgoing attachment background for ephemeral giphy previews', async () => {
+  it('uses the outgoing bubble background for ephemeral giphy previews', async () => {
     render(
       getAttachmentComponent(
         {
@@ -156,7 +156,7 @@ describe('Giphy', () => {
             actions,
           },
         },
-        { isMyMessage: true },
+        { isMyMessage: false },
       ),
     );
 
@@ -165,7 +165,7 @@ describe('Giphy', () => {
       expect(style).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            backgroundColor: lightTheme.semantics.chatBgAttachmentOutgoing,
+            backgroundColor: lightTheme.semantics.chatBgOutgoing,
           }),
         ]),
       );
