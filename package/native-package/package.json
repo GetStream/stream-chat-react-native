@@ -33,27 +33,24 @@
     "stream-chat-react-native-core": "8.1.0"
   },
   "peerDependencies": {
-    "@react-native-camera-roll/camera-roll": ">=7.8.0",
-    "@react-native-clipboard/clipboard": ">=1.14.1",
+    "@react-native-camera-roll/camera-roll": ">=7.9.0",
+    "@react-native-clipboard/clipboard": ">=1.16.0",
     "@react-native-documents/picker": ">=10.1.1",
-    "@stream-io/flat-list-mvcp": ">=0.10.3",
-    "react-native": ">=0.73.0",
+    "react-native": ">=0.76.0",
     "react-native-audio-recorder-player": ">=3.6.13",
     "react-native-nitro-sound": ">=0.2.9",
-    "react-native-blob-util": ">=0.21.1",
+    "react-native-blob-util": ">=0.22.0",
     "react-native-haptic-feedback": ">=2.3.0",
     "react-native-image-picker": ">=7.1.2",
     "react-native-share": ">=11.0.0",
     "react-native-video": ">=6.4.2"
   },
+
   "peerDependenciesMeta": {
     "@react-native-camera-roll/camera-roll": {
       "optional": true
     },
     "@react-native-clipboard/clipboard": {
-      "optional": true
-    },
-    "@stream-io/flat-list-mvcp": {
       "optional": true
     },
     "react-native-share": {
