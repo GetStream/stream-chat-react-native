@@ -54,7 +54,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
     },
   } = useTheme();
 
-  const styles = useStyles({ isMyMessage });
+  const styles = useStyles({ hasActions: !!actions, isMyMessage });
 
   const uri = image_url || thumb_url;
 
@@ -209,16 +209,23 @@ export const Giphy = (props: GiphyProps) => {
 
 Giphy.displayName = 'Giphy{messageItemView{giphy}}';
 
-const useStyles = ({ isMyMessage }: Pick<GiphyPropsWithContext, 'isMyMessage'>) => {
+const useStyles = ({
+  hasActions,
+  isMyMessage,
+}: Pick<GiphyPropsWithContext, 'isMyMessage'> & { hasActions: boolean }) => {
   const {
     theme: { semantics },
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
       container: {
-        backgroundColor: isMyMessage
-          ? semantics.chatBgAttachmentOutgoing
-          : semantics.chatBgAttachmentIncoming,
+        backgroundColor: hasActions
+          ? isMyMessage
+            ? semantics.chatBgAttachmentOutgoing
+            : semantics.chatBgAttachmentIncoming
+          : isMyMessage
+            ? semantics.chatBgOutgoing
+            : semantics.chatBgIncoming,
         borderRadius: primitives.radiusLg,
         maxWidth: 256, // TODO: Not sure how to fix this
         overflow: 'hidden',
@@ -252,5 +259,5 @@ const useStyles = ({ isMyMessage }: Pick<GiphyPropsWithContext, 'isMyMessage'>) 
         lineHeight: primitives.typographyLineHeightTight,
       },
     });
-  }, [isMyMessage, semantics]);
+  }, [hasActions, isMyMessage, semantics]);
 };

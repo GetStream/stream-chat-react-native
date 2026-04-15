@@ -117,7 +117,7 @@ describe('Giphy', () => {
     });
   });
 
-  it('uses the outgoing attachment background for outgoing giphys', async () => {
+  it('uses the default outgoing bubble background for outgoing giphys', async () => {
     render(getAttachmentComponent({ attachment }, { isMyMessage: true }));
 
     await waitFor(() => {
@@ -125,14 +125,14 @@ describe('Giphy', () => {
       expect(style).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            backgroundColor: lightTheme.semantics.chatBgAttachmentOutgoing,
+            backgroundColor: lightTheme.semantics.chatBgOutgoing,
           }),
         ]),
       );
     });
   });
 
-  it('uses the incoming attachment background for incoming giphys', async () => {
+  it('uses the default incoming bubble background for incoming giphys', async () => {
     render(getAttachmentComponent({ attachment }, { isMyMessage: false }));
 
     await waitFor(() => {
@@ -140,7 +140,32 @@ describe('Giphy', () => {
       expect(style).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            backgroundColor: lightTheme.semantics.chatBgAttachmentIncoming,
+            backgroundColor: lightTheme.semantics.chatBgIncoming,
+          }),
+        ]),
+      );
+    });
+  });
+
+  it('uses the outgoing attachment background for ephemeral giphy previews', async () => {
+    render(
+      getAttachmentComponent(
+        {
+          attachment: {
+            ...attachment,
+            actions,
+          },
+        },
+        { isMyMessage: true },
+      ),
+    );
+
+    await waitFor(() => {
+      const style = screen.getByTestId('giphy-action-attachment').props.style;
+      expect(style).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            backgroundColor: lightTheme.semantics.chatBgAttachmentOutgoing,
           }),
         ]),
       );
