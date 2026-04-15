@@ -1,5 +1,7 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image, ImageProps, TextInputProps } from 'react-native';
+
+import type { LocalMessage, UserResponse } from 'stream-chat';
 
 import { Attachment } from '../../components/Attachment/Attachment';
 import { AudioAttachment } from '../../components/Attachment/Audio';
@@ -64,6 +66,7 @@ import { MessageReplies } from '../../components/Message/MessageItemView/Message
 import { MessageRepliesAvatars } from '../../components/Message/MessageItemView/MessageRepliesAvatars';
 import { MessageStatus } from '../../components/Message/MessageItemView/MessageStatus';
 import { MessageSwipeContent } from '../../components/Message/MessageItemView/MessageSwipeContent';
+import type { MessageTextProps } from '../../components/Message/MessageItemView/MessageTextContainer';
 import { MessageTimestamp } from '../../components/Message/MessageItemView/MessageTimestamp';
 import { ReactionListBottom } from '../../components/Message/MessageItemView/ReactionList/ReactionListBottom';
 import { ReactionListClustered } from '../../components/Message/MessageItemView/ReactionList/ReactionListClustered';
@@ -147,10 +150,16 @@ import { DefaultMessageOverlayBackground } from '../../contexts/overlayContext/M
 import type { MessageActionsProps } from '../../contexts/overlayContext/MessageOverlayHostLayer';
 
 /**
- * All default component implementations used across the SDK.
- * These are the components used when no overrides are provided via WithComponents.
+ * Normalizes each component entry to React.ComponentType<P>, stripping
+ * extra inferred properties (like `displayName: string` from runtime
+ * assignments) that would otherwise leak into the override types and
+ * force integrators to match them.
  */
-export const DEFAULT_COMPONENTS = {
+type NormalizeComponents<T> = {
+  [K in keyof T]: T[K] extends React.ComponentType<infer P> ? React.ComponentType<P> : T[K];
+};
+
+const components = {
   Attachment,
   AttachButton,
   AttachmentPickerContent,
@@ -300,35 +309,38 @@ export const DEFAULT_COMPONENTS = {
   MessageOverlayBackground: DefaultMessageOverlayBackground,
 
   // Image
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ImageComponent: Image as React.ComponentType<any>,
-
-  // Optional overrides (no defaults — undefined unless user provides via WithComponents)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  AttachmentPickerIOSSelectMorePhotos: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ChatLoadingIndicator: undefined as React.ComponentType<any> | null | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  CreatePollContent: undefined as React.ComponentType<any> | undefined,
-  MessageActions: undefined as React.ComponentType<MessageActionsProps> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Input: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ListHeaderComponent: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  MessageContentBottomView: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  MessageContentLeadingView: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  MessageContentTopView: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  MessageContentTrailingView: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  MessageLocation: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  MessageSpacer: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  MessageText: undefined as React.ComponentType<any> | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  PollContent: undefined as React.ComponentType<any> | undefined,
+  ImageComponent: Image as React.ComponentType<ImageProps>,
 };
+
+/**
+ * Optional component slots that have no default implementation.
+ * These are `undefined` unless the integrator provides them via WithComponents.
+ */
+export interface OptionalComponentOverrides {
+  AttachmentPickerIOSSelectMorePhotos?: React.ComponentType;
+  ChatLoadingIndicator?: React.ComponentType | null;
+  CreatePollContent?: React.ComponentType;
+  Input?: React.ComponentType<{
+    additionalTextInputProps?: TextInputProps;
+    getUsers: () => UserResponse[];
+  }>;
+  ListHeaderComponent?: React.ComponentType;
+  MessageActions?: React.ComponentType<MessageActionsProps>;
+  MessageContentBottomView?: React.ComponentType;
+  MessageContentLeadingView?: React.ComponentType;
+  MessageContentTopView?: React.ComponentType;
+  MessageContentTrailingView?: React.ComponentType;
+  MessageLocation?: React.ComponentType<{ message: LocalMessage }>;
+  MessageSpacer?: React.ComponentType;
+  MessageText?: React.ComponentType<MessageTextProps>;
+  PollContent?: React.ComponentType;
+}
+
+/**
+ * All default component implementations used across the SDK.
+ * These are the components used when no overrides are provided via WithComponents.
+ *
+ * The `NormalizeComponents` cast ensures that internal details like
+ * `displayName: string` don't leak into the public override types.
+ */
+export const DEFAULT_COMPONENTS: NormalizeComponents<typeof components> = components;
