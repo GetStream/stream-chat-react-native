@@ -8,7 +8,6 @@ import {
   MessageList,
   UserAdd,
   useTheme,
-  WithComponents,
 } from 'stream-chat-react-native';
 
 import { User } from '../icons/User';
@@ -23,7 +22,6 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 
-import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import type { StackNavigatorParamList } from '../types';
 import { Group } from '../icons/Group';
 
@@ -85,7 +83,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const EmptyMessagesIndicator = () => {
+export const EmptyMessagesIndicator = () => {
   const { grey } = useLegacyColors();
   return (
     <View style={styles.emptyMessageContainer}>
@@ -339,37 +337,30 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         },
       ]}
     >
-      <WithComponents
-        overrides={{
-          EmptyStateIndicator: EmptyMessagesIndicator,
-          SendButton: NewDirectMessagingSendButton,
+      <Channel
+        additionalTextInputProps={{
+          onFocus: () => {
+            setFocusOnMessageInput(true);
+            setFocusOnSearchInput(false);
+            if (messageInputRef.current) {
+              messageInputRef.current.focus();
+            }
+          },
         }}
+        audioRecordingEnabled={true}
+        channel={currentChannel.current}
+        enforceUniqueReaction
+        keyboardVerticalOffset={0}
+        onChangeText={setMessageInputText}
+        overrideOwnCapabilities={{ sendMessage: true }}
+        setInputRef={(ref) => (messageInputRef.current = ref)}
       >
-        <Channel
-          additionalTextInputProps={{
-            onFocus: () => {
-              setFocusOnMessageInput(true);
-              setFocusOnSearchInput(false);
-              if (messageInputRef.current) {
-                messageInputRef.current.focus();
-              }
-            },
-          }}
-          audioRecordingEnabled={true}
-          channel={currentChannel.current}
-          enforceUniqueReaction
-          keyboardVerticalOffset={0}
-          onChangeText={setMessageInputText}
-          overrideOwnCapabilities={{ sendMessage: true }}
-          setInputRef={(ref) => (messageInputRef.current = ref)}
-        >
-          {renderUserSearch({ inSafeArea: true })}
-          {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
-            <MessageList />
-          )}
-          <MessageComposer />
-        </Channel>
-      </WithComponents>
+        {renderUserSearch({ inSafeArea: true })}
+        {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
+          <MessageList />
+        )}
+        <MessageComposer />
+      </Channel>
     </SafeAreaView>
   );
 };

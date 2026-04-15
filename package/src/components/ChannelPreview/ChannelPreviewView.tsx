@@ -46,12 +46,12 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
     lastMessage,
   } = props;
   const {
-    PreviewAvatar,
-    PreviewMessage,
-    PreviewMutedStatus,
-    PreviewStatus,
-    PreviewTitle,
-    PreviewUnreadCount,
+    ChannelPreviewAvatar,
+    ChannelPreviewMessage,
+    ChannelPreviewMutedStatus,
+    ChannelPreviewStatus,
+    ChannelPreviewTitle,
+    ChannelPreviewUnreadCount,
   } = useComponentsContext();
 
   const {
@@ -97,24 +97,26 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
         ]}
         testID='channel-preview-button'
       >
-        <PreviewAvatar channel={channel} size='xl' />
+        <ChannelPreviewAvatar channel={channel} size='xl' />
         <View
           style={[styles.contentContainer, contentContainer]}
           testID={`channel-preview-content-${channel.id}`}
         >
           <View style={[styles.upperRow, upperRow]}>
             <View style={[styles.titleContainer, titleContainer]}>
-              <PreviewTitle channel={channel} />
-              {muted && mutedStatusPosition === 'inlineTitle' ? <PreviewMutedStatus /> : null}
+              <ChannelPreviewTitle channel={channel} />
+              {muted && mutedStatusPosition === 'inlineTitle' ? (
+                <ChannelPreviewMutedStatus />
+              ) : null}
             </View>
 
             <View style={[styles.statusContainer, statusContainer]}>
-              <PreviewStatus
+              <ChannelPreviewStatus
                 channel={channel}
                 formatLatestMessageDate={formatLatestMessageDate}
                 lastMessage={lastMessage}
               />
-              <PreviewUnreadCount
+              <ChannelPreviewUnreadCount
                 channel={channel}
                 maxUnreadCount={maxUnreadCount}
                 unread={unread}
@@ -123,8 +125,10 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
           </View>
 
           <View style={[styles.lowerRow, lowerRow]}>
-            <PreviewMessage channel={channel} lastMessage={lastMessage} />
-            {muted && mutedStatusPosition === 'trailingBottom' ? <PreviewMutedStatus /> : null}
+            <ChannelPreviewMessage channel={channel} lastMessage={lastMessage} />
+            {muted && mutedStatusPosition === 'trailingBottom' ? (
+              <ChannelPreviewMutedStatus />
+            ) : null}
           </View>
         </View>
       </Pressable>

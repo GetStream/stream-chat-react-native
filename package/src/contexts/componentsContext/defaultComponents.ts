@@ -144,6 +144,7 @@ import { ThreadListUnreadBanner } from '../../components/ThreadList/ThreadListUn
 import { ThreadMessagePreviewDeliveryStatus } from '../../components/ThreadList/ThreadMessagePreviewDeliveryStatus';
 import { ChannelAvatar } from '../../components/ui/Avatar/ChannelAvatar';
 import { DefaultMessageOverlayBackground } from '../../contexts/overlayContext/MessageOverlayHostLayer';
+import type { MessageActionsProps } from '../../contexts/overlayContext/MessageOverlayHostLayer';
 
 /**
  * All default component implementations used across the SDK.
@@ -177,11 +178,11 @@ export const DEFAULT_COMPONENTS = {
   FileUploadNotSupportedIndicator,
   FileUploadRetryIndicator,
   FilePreview,
-  FooterLoadingIndicator: ChannelListFooterLoadingIndicator,
+  ChannelListFooterLoadingIndicator,
   Gallery,
   Giphy,
-  HeaderErrorIndicator: ChannelListHeaderErrorIndicator,
-  HeaderNetworkDownIndicator: ChannelListHeaderNetworkDownIndicator,
+  ChannelListHeaderErrorIndicator,
+  ChannelListHeaderNetworkDownIndicator,
   ImageAttachmentUploadPreview,
   ImageLoadingFailedIndicator,
   ImageLoadingIndicator,
@@ -231,16 +232,16 @@ export const DEFAULT_COMPONENTS = {
   MessageUserReactionsAvatar,
   MessageUserReactionsItem,
   NetworkDownIndicator,
-  Preview: ChannelPreviewView,
-  PreviewAvatar: ChannelAvatar,
-  PreviewLastMessage: ChannelLastMessagePreview,
-  PreviewMessage: ChannelPreviewMessage,
-  PreviewMessageDeliveryStatus: ChannelMessagePreviewDeliveryStatus,
-  PreviewMutedStatus: ChannelPreviewMutedStatus,
-  PreviewStatus: ChannelPreviewStatus,
-  PreviewTitle: ChannelPreviewTitle,
-  PreviewTypingIndicator: ChannelPreviewTypingIndicator,
-  PreviewUnreadCount: ChannelPreviewUnreadCount,
+  ChannelPreview: ChannelPreviewView,
+  ChannelPreviewAvatar: ChannelAvatar,
+  ChannelPreviewLastMessage: ChannelLastMessagePreview,
+  ChannelPreviewMessage,
+  ChannelPreviewMessageDeliveryStatus: ChannelMessagePreviewDeliveryStatus,
+  ChannelPreviewMutedStatus,
+  ChannelPreviewStatus,
+  ChannelPreviewTitle,
+  ChannelPreviewTypingIndicator,
+  ChannelPreviewUnreadCount,
   ReactionListBottom,
   ReactionListClustered,
   ReactionListCountItem,
@@ -309,6 +310,7 @@ export const DEFAULT_COMPONENTS = {
   ChatLoadingIndicator: undefined as React.ComponentType<any> | null | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   CreatePollContent: undefined as React.ComponentType<any> | undefined,
+  MessageActions: undefined as React.ComponentType<MessageActionsProps> | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Input: undefined as React.ComponentType<any> | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

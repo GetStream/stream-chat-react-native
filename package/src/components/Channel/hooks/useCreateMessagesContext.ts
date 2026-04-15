@@ -6,7 +6,6 @@ export const useCreateMessagesContext = ({
   additionalPressableProps,
   channelId,
   customMessageSwipeAction,
-  deletedMessagesVisibilityType,
   deleteMessage,
   deleteReaction,
   disableTypingIndicator,
@@ -70,7 +69,6 @@ export const useCreateMessagesContext = ({
     () => ({
       additionalPressableProps,
       customMessageSwipeAction,
-      deletedMessagesVisibilityType,
       deleteMessage,
       deleteReaction,
       disableTypingIndicator,

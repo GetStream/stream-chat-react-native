@@ -69,26 +69,26 @@ const getDefaults = () => {
 
 Some component keys differ from their default component names to avoid collisions:
 
-| Override Key                  | Default Component                       | Why renamed                                                |
-| ----------------------------- | --------------------------------------- | ---------------------------------------------------------- |
-| `FileAttachmentIcon`          | `FileIcon`                              | Clarity                                                    |
-| `ChannelListLoadingIndicator` | `ChannelListLoadingIndicator`           | Split from shared `LoadingIndicator` — renders skeleton UI |
-| `MessageListLoadingIndicator` | `LoadingIndicator`                      | Split from shared `LoadingIndicator` — renders text        |
-| `ChatLoadingIndicator`        | `undefined`                             | Optional, no default                                       |
-| `ThreadMessageComposer`       | `MessageComposer`                       | Avoid collision with `MessageComposer` component name      |
-| `ThreadListComponent`         | `DefaultThreadListComponent`            | Avoid collision with exported `ThreadList`                 |
-| `StartAudioRecordingButton`   | `AudioRecordingButton`                  | Historical naming                                          |
-| `Preview`                     | `ChannelPreviewView`                    | ChannelList preview item                                   |
-| `PreviewAvatar`               | `ChannelAvatar`                         | ChannelList preview avatar                                 |
-| `FooterLoadingIndicator`      | `ChannelListFooterLoadingIndicator`     | ChannelList footer                                         |
-| `HeaderErrorIndicator`        | `ChannelListHeaderErrorIndicator`       | ChannelList header                                         |
-| `HeaderNetworkDownIndicator`  | `ChannelListHeaderNetworkDownIndicator` | ChannelList header                                         |
+| Override Key                            | Default Component                       | Why renamed                                                |
+| --------------------------------------- | --------------------------------------- | ---------------------------------------------------------- |
+| `FileAttachmentIcon`                    | `FileIcon`                              | Clarity                                                    |
+| `ChannelListLoadingIndicator`           | `ChannelListLoadingIndicator`           | Split from shared `LoadingIndicator` — renders skeleton UI |
+| `MessageListLoadingIndicator`           | `LoadingIndicator`                      | Split from shared `LoadingIndicator` — renders text        |
+| `ChatLoadingIndicator`                  | `undefined`                             | Optional, no default                                       |
+| `ThreadMessageComposer`                 | `MessageComposer`                       | Avoid collision with `MessageComposer` component name      |
+| `ThreadListComponent`                   | `DefaultThreadListComponent`            | Avoid collision with exported `ThreadList`                 |
+| `StartAudioRecordingButton`             | `AudioRecordingButton`                  | Historical naming                                          |
+| `ChannelPreview`                        | `ChannelPreviewView`                    | ChannelList preview item                                   |
+| `ChannelPreviewAvatar`                  | `ChannelAvatar`                         | ChannelList preview avatar                                 |
+| `ChannelListFooterLoadingIndicator`     | `ChannelListFooterLoadingIndicator`     | ChannelList footer                                         |
+| `ChannelListHeaderErrorIndicator`       | `ChannelListHeaderErrorIndicator`       | ChannelList header                                         |
+| `ChannelListHeaderNetworkDownIndicator` | `ChannelListHeaderNetworkDownIndicator` | ChannelList header                                         |
 
 ### Optional Components (no default)
 
 These exist in `DEFAULT_COMPONENTS` as `undefined` with `React.ComponentType<any> | undefined` type assertions:
 
-`AttachmentPickerIOSSelectMorePhotos`, `ChatLoadingIndicator`, `CreatePollContent`, `ImageComponent`, `Input`, `ListHeaderComponent`, `MessageContentBottomView`, `MessageContentLeadingView`, `MessageContentTopView`, `MessageContentTrailingView`, `MessageLocation`, `MessageSpacer`, `MessageText`, `PollContent`
+`AttachmentPickerIOSSelectMorePhotos`, `ChatLoadingIndicator`, `CreatePollContent`, `ImageComponent`, `Input`, `ListHeaderComponent`, `MessageActions`, `MessageContentBottomView`, `MessageContentLeadingView`, `MessageContentTopView`, `MessageContentTrailingView`, `MessageLocation`, `MessageSpacer`, `MessageText`, `PollContent`
 
 ### Shared Component Keys (audited)
 

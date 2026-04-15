@@ -4,8 +4,10 @@ import {
   Platform,
   Pressable,
   StyleSheet,
+  StyleProp,
   useWindowDimensions,
   View,
+  ViewStyle,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -53,8 +55,15 @@ export const DefaultMessageOverlayBackground = () => {
   );
 };
 
+export type MessageActionsProps = {
+  bottomItemStyle: StyleProp<ViewStyle>;
+  hostStyle: StyleProp<ViewStyle>;
+  portalHostStyle: StyleProp<ViewStyle>;
+  topItemStyle: StyleProp<ViewStyle>;
+};
+
 export const MessageOverlayHostLayer = () => {
-  const { MessageOverlayBackground } = useComponentsContext();
+  const { MessageActions, MessageOverlayBackground } = useComponentsContext();
   const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
@@ -259,21 +268,32 @@ export const MessageOverlayHostLayer = () => {
             />
           ) : null}
 
-          <Animated.View style={topItemStyle} testID='message-overlay-top'>
-            <PortalHost name='top-item' style={styles.absoluteFill} />
-          </Animated.View>
+          {MessageActions ? (
+            <MessageActions
+              bottomItemStyle={bottomItemStyle}
+              hostStyle={hostStyle}
+              portalHostStyle={styles.absoluteFill}
+              topItemStyle={topItemStyle}
+            />
+          ) : (
+            <>
+              <Animated.View style={topItemStyle} testID='message-overlay-top'>
+                <PortalHost name='top-item' style={styles.absoluteFill} />
+              </Animated.View>
 
-          <Animated.View
-            pointerEvents='box-none'
-            style={hostStyle}
-            testID='message-overlay-message'
-          >
-            <PortalHost name='message-overlay' style={styles.absoluteFill} />
-          </Animated.View>
+              <Animated.View
+                pointerEvents='box-none'
+                style={hostStyle}
+                testID='message-overlay-message'
+              >
+                <PortalHost name='message-overlay' style={styles.absoluteFill} />
+              </Animated.View>
 
-          <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
-            <PortalHost name='bottom-item' style={styles.absoluteFill} />
-          </Animated.View>
+              <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
+                <PortalHost name='bottom-item' style={styles.absoluteFill} />
+              </Animated.View>
+            </>
+          )}
         </View>
 
         <ClosingPortalHostsLayer closeCoverOpacity={closeCoverOpacity} />

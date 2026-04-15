@@ -51,7 +51,8 @@ export type ChannelsContextValue = {
    */
   loadingChannels: boolean;
   /**
-   * Whether or not additional channels are being loaded, triggers the FooterLoadingIndicator
+   * Whether or not additional channels are being loaded, triggers the
+   * ChannelListFooterLoadingIndicator
    */
   loadingNextPage: boolean;
   /**

@@ -6,14 +6,11 @@ import {
   useChatContext,
   ThreadContextValue,
   MessageList,
-  WithComponents,
 } from 'stream-chat-expo';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
-import InputButtons from '../../../components/InputButtons';
-import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
 import { StyleSheet, View } from 'react-native';
 
 export default function ChannelScreen() {
@@ -71,23 +68,21 @@ export default function ChannelScreen() {
       <Stack.Screen
         options={{ title: 'Channel Screen', contentStyle: { backgroundColor: 'white' } }}
       />
-      <WithComponents overrides={{ MessageLocation, InputButtons }}>
-        <Channel
-          audioRecordingEnabled={true}
-          channel={channel}
-          onPressMessage={onPressMessage}
-          keyboardVerticalOffset={headerHeight}
-          thread={thread}
-        >
-          <MessageList
-            onThreadSelect={(thread: ThreadContextValue['thread']) => {
-              setThread(thread);
-              router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
-            }}
-          />
-          <MessageComposer />
-        </Channel>
-      </WithComponents>
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        onPressMessage={onPressMessage}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+      >
+        <MessageList
+          onThreadSelect={(thread: ThreadContextValue['thread']) => {
+            setThread(thread);
+            router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
+          }}
+        />
+        <MessageComposer />
+      </Channel>
     </View>
   );
 }

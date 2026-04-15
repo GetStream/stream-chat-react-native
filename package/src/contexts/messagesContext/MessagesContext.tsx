@@ -39,7 +39,6 @@ export type MessageContentType =
   | 'ai_text'
   | 'text'
   | 'location';
-export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
 
 export type MessageLocationProps = {
   message: LocalMessage;
@@ -111,14 +110,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
     channel: Channel;
     message: LocalMessage;
   }) => void;
-
-  /**
-   * Full override of the delete message button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   */
-  /** Control if the deleted message is visible to both the send and reciever, either of them or none  */
-  deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
 
   disableTypingIndicator?: boolean;
   /**

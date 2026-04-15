@@ -4,15 +4,12 @@ import {
   I18nManager,
   LogBox,
   Platform,
-  StyleSheet,
   useColorScheme,
-  View,
 } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { BlurView } from '@react-native-community/blur';
 import {
   Chat,
   createTextComposerEmojiMiddleware,
@@ -23,7 +20,7 @@ import {
   Streami18n,
   ThemeProvider,
   useOverlayContext,
-  useTheme,
+  WithComponents,
 } from 'stream-chat-react-native';
 
 import { getMessaging } from '@react-native-firebase/messaging';
@@ -55,10 +52,10 @@ import Geolocation from '@react-native-community/geolocation';
 import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
-import FastImage from 'react-native-fast-image';
 import { StreamChatProvider } from './src/context/StreamChatContext';
 import { MapScreen } from './src/screens/MapScreen';
 import { watchLocation } from './src/utils/watchLocation';
+import { useSampleAppComponentOverrides } from './src/components/SampleAppComponentOverrides';
 
 Geolocation.setRNConfiguration({
   skipPermissionRequests: false,
@@ -107,30 +104,6 @@ const Stack = createNativeStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createNativeStackNavigator<UserSelectorParamList>();
 const RTL_STORAGE_KEY = '@stream-rn-sampleapp-rtl-enabled';
 
-const MessageOverlayBlurBackground = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-  const scheme = useColorScheme();
-  const isDark = scheme === 'dark';
-  const isIOS = Platform.OS === 'ios';
-
-  return (
-    <>
-      <BlurView
-        blurAmount={isIOS ? 10 : 6}
-        blurType={isDark ? 'dark' : 'light'}
-        blurRadius={isIOS ? undefined : 6}
-        downsampleFactor={isIOS ? undefined : 12}
-        pointerEvents='none'
-        reducedTransparencyFallbackColor='rgba(0, 0, 0, 0.8)'
-        style={StyleSheet.absoluteFill}
-      />
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: semantics.backgroundCoreScrim }]} />
-    </>
-  );
-};
-
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const [rtlEnabled, setRtlEnabled] = useState<boolean | undefined>(undefined);
@@ -152,6 +125,7 @@ const App = () => {
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
   const streami18n = new Streami18n();
+  const componentOverrides = useSampleAppComponentOverrides(messageOverlayBackdrop);
 
   const setRTLEnabled = React.useCallback(async (enabled: boolean) => {
     await AsyncStore.setItem(RTL_STORAGE_KEY, enabled);
@@ -295,50 +269,46 @@ const App = () => {
       }}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <OverlayProvider
-          MessageOverlayBackground={
-            messageOverlayBackdrop === 'blurview' ? MessageOverlayBlurBackground : undefined
-          }
-          value={{ style: streamChatTheme }}
-          i18nInstance={streami18n}
-        >
-          <ThemeProvider style={streamChatTheme}>
-            <NavigationContainer
-              ref={RootNavigationRef}
-              theme={{
-                colors: {
-                  ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-                  background: streamChatTheme.colors?.white_snow || '#FCFCFC',
-                },
-                fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
-                dark: colorScheme === 'dark',
-              }}
-            >
-              <AppContext.Provider
-                value={{
-                  chatClient,
-                  loginUser,
-                  logout,
-                  switchUser,
-                  rtlEnabled,
-                  setRTLEnabled,
-                  messageListImplementation,
-                  messageInputFloating: messageInputFloating ?? false,
-                  messageListMode,
-                  messageListPruning,
+        <WithComponents overrides={componentOverrides}>
+          <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
+            <ThemeProvider style={streamChatTheme}>
+              <NavigationContainer
+                ref={RootNavigationRef}
+                theme={{
+                  colors: {
+                    ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+                    background: streamChatTheme.colors?.white_snow || '#FCFCFC',
+                  },
+                  fonts: (colorScheme === 'dark' ? DarkTheme : DefaultTheme).fonts,
+                  dark: colorScheme === 'dark',
                 }}
               >
-                {isConnecting && !chatClient ? (
-                  <LoadingScreen />
-                ) : chatClient ? (
-                  <DrawerNavigatorWrapper chatClient={chatClient} i18nInstance={streami18n} />
-                ) : (
-                  <UserSelector />
-                )}
-              </AppContext.Provider>
-            </NavigationContainer>
-          </ThemeProvider>
-        </OverlayProvider>
+                <AppContext.Provider
+                  value={{
+                    chatClient,
+                    loginUser,
+                    logout,
+                    switchUser,
+                    rtlEnabled,
+                    setRTLEnabled,
+                    messageListImplementation,
+                    messageInputFloating: messageInputFloating ?? false,
+                    messageListMode,
+                    messageListPruning,
+                  }}
+                >
+                  {isConnecting && !chatClient ? (
+                    <LoadingScreen />
+                  ) : chatClient ? (
+                    <DrawerNavigatorWrapper chatClient={chatClient} i18nInstance={streami18n} />
+                  ) : (
+                    <UserSelector />
+                  )}
+                </AppContext.Provider>
+              </NavigationContainer>
+            </ThemeProvider>
+          </OverlayProvider>
+        </WithComponents>
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );
@@ -369,8 +339,6 @@ const DrawerNavigatorWrapper: React.FC<{
     <Chat
       client={chatClient}
       enableOfflineSupport
-      // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
-      ImageComponent={FastImage}
       isMessageAIGenerated={isMessageAIGenerated}
       i18nInstance={i18nInstance}
     >
