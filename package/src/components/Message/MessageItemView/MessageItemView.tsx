@@ -99,10 +99,12 @@ const useStyles = ({
           ...bubbleReactionListTopContainer,
         },
         bubbleWrapper: {
+          zIndex: 1,
           ...bubbleWrapper,
         },
         repliesContainer: {
           marginTop: -primitives.spacingXxs, // Reducing the margin to account the gap added in the content container
+          zIndex: 0,
           ...repliesContainer,
         },
         leftAlignItems: {

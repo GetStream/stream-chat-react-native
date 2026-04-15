@@ -147,6 +147,31 @@ describe('Giphy', () => {
     });
   });
 
+  it('uses the outgoing bubble background for ephemeral giphy previews', async () => {
+    render(
+      getAttachmentComponent(
+        {
+          attachment: {
+            ...attachment,
+            actions,
+          },
+        },
+        { isMyMessage: false },
+      ),
+    );
+
+    await waitFor(() => {
+      const style = screen.getByTestId('giphy-action-attachment').props.style;
+      expect(style).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            backgroundColor: lightTheme.semantics.chatBgOutgoing,
+          }),
+        ]),
+      );
+    });
+  });
+
   it('"giphy" attachment size should be customisable', async () => {
     attachment.giphy = giphy;
     render(getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }));
