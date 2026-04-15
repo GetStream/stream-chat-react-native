@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
-  ChannelPreviewView,
-  ChannelPreviewViewProps,
   ChannelPreviewStatus,
   ChannelPreviewStatusProps,
   Pin,
