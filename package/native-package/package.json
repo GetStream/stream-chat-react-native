@@ -43,7 +43,7 @@
     "react-native-haptic-feedback": ">=2.3.0",
     "react-native-image-picker": ">=7.1.2",
     "react-native-share": ">=11.0.0",
-    "react-native-video": ">=6.4.2"
+    "react-native-video": ">=6.18.0"
   },
 
   "peerDependenciesMeta": {
