@@ -9,7 +9,8 @@ import React, { PropsWithChildren, useContext, useMemo } from 'react';
  */
 export type ComponentOverrides = Partial<
   (typeof import('./defaultComponents'))['DEFAULT_COMPONENTS']
->;
+> &
+  import('./defaultComponents').OptionalComponentOverrides;
 
 const ComponentsContext = React.createContext<ComponentOverrides>({});
 
