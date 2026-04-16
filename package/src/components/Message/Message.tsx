@@ -886,10 +886,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
               visible={showMessageReactions}
               height={424}
             >
-              <MessageUserReactions
-                message={message}
-                selectedReaction={selectedReaction}
-              />
+              <MessageUserReactions message={message} selectedReaction={selectedReaction} />
             </BottomSheetModal>
           ) : null}
           <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>

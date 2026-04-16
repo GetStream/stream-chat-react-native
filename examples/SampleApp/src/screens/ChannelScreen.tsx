@@ -19,6 +19,7 @@ import {
   MessageActionsParams,
   ChannelAvatar,
   PortalWhileClosingView,
+  WithComponents,
 } from 'stream-chat-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -273,44 +274,46 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
 
   return (
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
-      <Channel
-        audioRecordingEnabled={true}
-        channel={channel}
-        messageInputFloating={messageInputFloating}
-        onPressMessage={onPressMessage}
-        initialScrollToFirstUnreadMessage
-        keyboardVerticalOffset={0}
-        messageActions={messageActions}
-        messageId={messageId}
-        messageOverlayTargetId='message-content'
-        onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
-        thread={selectedThread}
-        maximumMessageLimit={messageListPruning}
-      >
-        <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
-          <ChannelHeader channel={channel} />
-        </PortalWhileClosingView>
-        {messageListImplementation === 'flashlist' ? (
-          <MessageFlashList
-            onThreadSelect={onThreadSelect}
-            isLiveStreaming={messageListMode === 'livestream'}
-          />
-        ) : (
-          <MessageList
-            onThreadSelect={onThreadSelect}
-            isLiveStreaming={messageListMode === 'livestream'}
-          />
-        )}
-        <AITypingIndicatorView channel={channel} />
-        <MessageComposer />
-        {modalVisible && (
-          <MessageInfoBottomSheet
-            visible={modalVisible}
-            message={selectedMessage}
-            onClose={handleMessageInfoClose}
-          />
-        )}
-      </Channel>
+      <WithComponents overrides={{ MessageContent: OverlayTargetedMessageContent }}>
+        <Channel
+          audioRecordingEnabled={true}
+          channel={channel}
+          messageInputFloating={messageInputFloating}
+          onPressMessage={onPressMessage}
+          initialScrollToFirstUnreadMessage
+          keyboardVerticalOffset={0}
+          messageActions={messageActions}
+          messageId={messageId}
+          messageOverlayTargetId='message-content'
+          onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+          thread={selectedThread}
+          maximumMessageLimit={messageListPruning}
+        >
+          <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
+            <ChannelHeader channel={channel} />
+          </PortalWhileClosingView>
+          {messageListImplementation === 'flashlist' ? (
+            <MessageFlashList
+              onThreadSelect={onThreadSelect}
+              isLiveStreaming={messageListMode === 'livestream'}
+            />
+          ) : (
+            <MessageList
+              onThreadSelect={onThreadSelect}
+              isLiveStreaming={messageListMode === 'livestream'}
+            />
+          )}
+          <AITypingIndicatorView channel={channel} />
+          <MessageComposer />
+          {modalVisible && (
+            <MessageInfoBottomSheet
+              visible={modalVisible}
+              message={selectedMessage}
+              onClose={handleMessageInfoClose}
+            />
+          )}
+        </Channel>
+      </WithComponents>
     </View>
   );
 };

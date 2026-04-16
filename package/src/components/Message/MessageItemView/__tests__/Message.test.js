@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 import { MessageListItemProvider } from '../../../../contexts/messageListItemContext/MessageListItemContext';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
@@ -71,7 +72,7 @@ describe('Message', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.id);
 
-    renderMessage = (options, channelProps) =>
+    renderMessage = (options, channelProps, componentOverrides) =>
       render(
         <SafeAreaProvider>
           <OverlayProvider>
@@ -84,10 +85,19 @@ describe('Message', () => {
               }}
             >
               <Chat client={chatClient}>
-                <Channel channel={channel} {...channelProps}>
-                  <Message groupStyles={['bottom']} {...options} />
-                  <MessageComposer />
-                </Channel>
+                {componentOverrides ? (
+                  <WithComponents overrides={componentOverrides}>
+                    <Channel channel={channel} {...channelProps}>
+                      <Message groupStyles={['bottom']} {...options} />
+                      <MessageComposer />
+                    </Channel>
+                  </WithComponents>
+                ) : (
+                  <Channel channel={channel} {...channelProps}>
+                    <Message groupStyles={['bottom']} {...options} />
+                    <MessageComposer />
+                  </Channel>
+                )}
               </Chat>
             </MessageListItemProvider>
           </OverlayProvider>
@@ -137,8 +147,10 @@ describe('Message', () => {
     const { getByTestId, getByText } = renderMessage(
       { message },
       {
-        MessageItemView: CustomMessageItemView,
         messageOverlayTargetId: 'custom-overlay-target',
+      },
+      {
+        MessageItemView: CustomMessageItemView,
       },
     );
 
