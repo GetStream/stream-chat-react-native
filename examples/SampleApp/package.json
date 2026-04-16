@@ -56,7 +56,6 @@
     "react-native-blob-util": "^0.22.2",
     "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "^2.31.0",
-    "react-native-haptic-feedback": "^2.3.3",
     "react-native-image-picker": "^8.2.1",
     "react-native-maps": "1.20.1",
     "react-native-nitro-modules": "^0.31.3",
