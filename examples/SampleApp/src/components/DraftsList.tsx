@@ -1,18 +1,17 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DraftsIcon } from '../icons/DraftIcon';
 import {
-  MessagePreview,
   useChatContext,
   useStateStore,
   useTheme,
-  useTranslationContext,
+  useMessagePreviewText,
 } from 'stream-chat-react-native';
 import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
 import { useCallback, useEffect, useMemo } from 'react';
 import dayjs from 'dayjs';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { ChannelResponse, DraftMessage, DraftResponse, MessageResponseBase } from 'stream-chat';
-import { getPreviewFromMessage } from '../utils/getPreviewOfMessage';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export type DraftItemProps = {
   type?: 'channel' | 'thread';
@@ -24,14 +23,11 @@ export type DraftItemProps = {
 };
 
 export const DraftItem = ({ type, channel, date, message, thread }: DraftItemProps) => {
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
+  useTheme();
+  const { grey } = useLegacyColors();
   const navigation = useNavigation();
   const { client } = useChatContext();
-  const { t } = useTranslationContext();
+  const messagePreviewText = useMessagePreviewText({ message });
   const channelName = channel?.name ? channel.name : 'Channel';
 
   const onNavigationHandler = async () => {
@@ -50,10 +46,6 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
     }
   };
 
-  const previews = useMemo(() => {
-    return getPreviewFromMessage({ message, t });
-  }, [message, t]);
-
   return (
     <Pressable
       style={({ pressed }) => [styles.itemContainer, { opacity: pressed ? 0.8 : 1 }]}
@@ -69,7 +61,7 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
         <View style={styles.icon}>
           <DraftsIcon />
         </View>
-        <MessagePreview previews={previews} />
+        <Text style={styles.text}>{messagePreviewText}</Text>
       </View>
     </Pressable>
   );

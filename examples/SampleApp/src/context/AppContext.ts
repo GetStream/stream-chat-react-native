@@ -4,6 +4,7 @@ import type { StreamChat } from 'stream-chat';
 
 import type { LoginConfig } from '../types';
 import {
+  MessageInputFloatingConfigItem,
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
@@ -14,7 +15,10 @@ type AppContextType = {
   loginUser: (config: LoginConfig) => void;
   logout: () => void;
   switchUser: (userId?: string) => void;
+  rtlEnabled: boolean;
+  setRTLEnabled: (enabled: boolean) => Promise<void>;
   messageListImplementation: MessageListImplementationConfigItem['id'];
+  messageInputFloating: MessageInputFloatingConfigItem['value'];
   messageListMode: MessageListModeConfigItem['mode'];
   messageListPruning: MessageListPruningConfigItem['value'];
 };

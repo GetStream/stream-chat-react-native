@@ -1,58 +1,43 @@
-import React from 'react';
-import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
 import dayjs from 'dayjs';
 
+import { Button } from '../../../../components/ui';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { ArrowLeft, CircleStop, Delete, Mic, SendCheck } from '../../../../icons';
+import { useStateStore } from '../../../../hooks/useStateStore';
 
-import { AudioRecordingReturnType } from '../../../../native';
+import { Tick } from '../../../../icons/checkmark';
+import { ChevronLeft } from '../../../../icons/chevron-left';
+import { Delete } from '../../../../icons/delete';
+import { Stop } from '../../../../icons/stop-fill';
+import { IconProps } from '../../../../icons/utils/base';
+import { Mic } from '../../../../icons/voice';
+import { NativeHandlers } from '../../../../native';
+import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
+import { primitives } from '../../../../theme';
 
 type AudioRecorderPropsWithContext = Pick<
   MessageInputContextValue,
-  'asyncMessagesMultiSendEnabled'
-> & {
-  /**
-   * Function to stop and delete the voice recording.
-   */
-  deleteVoiceRecording: () => Promise<void>;
-  /**
-   * Boolean used to show if the voice recording state is locked. This makes sure the mic button shouldn't be pressed any longer.
-   * When the mic is locked the `AudioRecordingInProgress` component shows up.
-   */
-  micLocked: boolean;
-  /**
-   * The current voice recording that is in progress.
-   */
-  recording: AudioRecordingReturnType;
-  /**
-   * Boolean to determine if the recording has been stopped.
-   */
-  recordingStopped: boolean;
-  /**
-   * Function to stop the ongoing voice recording.
-   */
-  stopVoiceRecording: () => Promise<void>;
-  /**
-   * Function to upload the voice recording.
-   */
-  uploadVoiceRecording: (multiSendEnabled: boolean) => Promise<void>;
-  /**
-   * The duration of the voice recording.
-   */
-  recordingDuration?: number;
-  /**
-   * Style used in slide to cancel container.
-   */
-  slideToCancelStyle?: StyleProp<ViewStyle>;
-};
+  | 'audioRecorderManager'
+  | 'audioRecordingSendOnComplete'
+  | 'stopVoiceRecording'
+  | 'deleteVoiceRecording'
+  | 'uploadVoiceRecording'
+> &
+  Pick<AudioRecorderManagerState, 'duration' | 'micLocked' | 'status'> & {
+    /**
+     * Style used in slide to cancel container.
+     */
+    slideToCancelStyle?: StyleProp<ViewStyle>;
+  };
 
 const StopRecording = ({
   stopVoiceRecordingHandler,
@@ -60,47 +45,51 @@ const StopRecording = ({
   stopVoiceRecordingHandler: () => Promise<void>;
 }) => {
   const {
-    theme: {
-      colors: { accent_red },
-      messageInput: {
-        audioRecorder: { circleStopIcon, pausedContainer },
-      },
-    },
+    theme: { semantics },
   } = useTheme();
+  const onStopVoiceRecording = () => {
+    NativeHandlers.triggerHaptic('impactMedium');
+    stopVoiceRecordingHandler();
+  };
+
+  const StopIcon = useCallback(
+    (props: IconProps) => <Stop {...props} fill={semantics.buttonDestructiveBg} />,
+    [semantics.buttonDestructiveBg],
+  );
+
   return (
-    <Pressable
-      onPress={stopVoiceRecordingHandler}
-      style={[styles.pausedContainer, pausedContainer]}
-    >
-      <CircleStop fill={accent_red} size={32} {...circleStopIcon} />
-    </Pressable>
+    <Button
+      variant='destructive'
+      type='outline'
+      size='sm'
+      onPress={onStopVoiceRecording}
+      LeadingIcon={StopIcon}
+      iconOnly
+    />
   );
 };
 
 const UploadRecording = ({
-  asyncMessagesMultiSendEnabled,
+  audioRecordingSendOnComplete,
   uploadVoiceRecordingHandler,
 }: {
-  asyncMessagesMultiSendEnabled: boolean;
-  uploadVoiceRecordingHandler: (multiSendEnabled: boolean) => Promise<void>;
+  audioRecordingSendOnComplete: boolean;
+  uploadVoiceRecordingHandler: (sendOnComplete: boolean) => Promise<void>;
 }) => {
-  const {
-    theme: {
-      colors: { accent_blue },
-      messageInput: {
-        audioRecorder: { checkContainer, sendCheckIcon },
-      },
-    },
-  } = useTheme();
+  const onUploadVoiceRecording = () => {
+    NativeHandlers.triggerHaptic('impactMedium');
+    uploadVoiceRecordingHandler(audioRecordingSendOnComplete);
+  };
+
   return (
-    <Pressable
-      onPress={async () => {
-        await uploadVoiceRecordingHandler(asyncMessagesMultiSendEnabled);
-      }}
-      style={[styles.checkContainer, checkContainer]}
-    >
-      <SendCheck fill={accent_blue} size={32} {...sendCheckIcon} />
-    </Pressable>
+    <Button
+      variant='primary'
+      type='solid'
+      onPress={onUploadVoiceRecording}
+      LeadingIcon={Tick}
+      iconOnly
+      size='sm'
+    />
   );
 };
 
@@ -109,191 +98,181 @@ const DeleteRecording = ({
 }: {
   deleteVoiceRecordingHandler: () => Promise<void>;
 }) => {
-  const {
-    theme: {
-      colors: { accent_blue },
-      messageInput: {
-        audioRecorder: { deleteContainer, deleteIcon },
-      },
-    },
-  } = useTheme();
+  const onDeleteVoiceRecording = () => {
+    NativeHandlers.triggerHaptic('impactMedium');
+    deleteVoiceRecordingHandler();
+  };
   return (
-    <Pressable
-      onPress={deleteVoiceRecordingHandler}
-      style={[styles.deleteContainer, deleteContainer]}
-      testID='delete-button'
-    >
-      <Delete fill={accent_blue} size={32} {...deleteIcon} />
-    </Pressable>
+    <Button
+      variant='secondary'
+      type='outline'
+      size='sm'
+      iconOnly
+      onPress={onDeleteVoiceRecording}
+      LeadingIcon={Delete}
+    />
   );
 };
 
 const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
   const {
-    asyncMessagesMultiSendEnabled,
-    deleteVoiceRecording,
-    micLocked,
-    recordingDuration,
-    recordingStopped,
+    audioRecordingSendOnComplete,
     slideToCancelStyle,
+    deleteVoiceRecording,
     stopVoiceRecording,
     uploadVoiceRecording,
+    micLocked,
+    status,
+    duration,
   } = props;
   const { t } = useTranslationContext();
 
+  const recordingStopped = status === 'stopped';
   const {
     theme: {
-      colors: { accent_red, grey_dark },
-      messageInput: {
+      semantics,
+      messageComposer: {
         audioRecorder: { arrowLeftIcon, micContainer, micIcon, slideToCancelContainer },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   if (micLocked) {
     if (recordingStopped) {
       return (
-        <>
+        <View style={styles.container}>
           <DeleteRecording deleteVoiceRecordingHandler={deleteVoiceRecording} />
           <UploadRecording
-            asyncMessagesMultiSendEnabled={asyncMessagesMultiSendEnabled}
+            audioRecordingSendOnComplete={audioRecordingSendOnComplete}
             uploadVoiceRecordingHandler={uploadVoiceRecording}
           />
-        </>
+        </View>
       );
     } else {
       return (
-        <>
-          <View style={[styles.micContainer, micContainer]}>
-            <Mic fill={recordingDuration !== 0 ? accent_red : grey_dark} size={32} {...micIcon} />
-          </View>
+        <View style={styles.container}>
+          <DeleteRecording deleteVoiceRecordingHandler={deleteVoiceRecording} />
           <StopRecording stopVoiceRecordingHandler={stopVoiceRecording} />
           <UploadRecording
-            asyncMessagesMultiSendEnabled={asyncMessagesMultiSendEnabled}
+            audioRecordingSendOnComplete={audioRecordingSendOnComplete}
             uploadVoiceRecordingHandler={uploadVoiceRecording}
           />
-        </>
+        </View>
       );
     }
   } else {
     return (
       <>
         <View style={[styles.micContainer, micContainer]} testID='recording-active-container'>
-          <Mic fill={recordingDuration !== 0 ? accent_red : grey_dark} size={32} {...micIcon} />
-          <Text style={[styles.durationLabel, { color: grey_dark }]}>
-            {recordingDuration ? dayjs.duration(recordingDuration).format('mm:ss') : null}
+          <Mic height={20} width={20} stroke={semantics.accentError} {...micIcon} />
+          <Text style={[styles.durationLabel]}>
+            {duration ? dayjs.duration(duration).format('mm:ss') : '00:00'}
           </Text>
         </View>
         <Animated.View
           style={[styles.slideToCancelContainer, slideToCancelStyle, slideToCancelContainer]}
         >
-          <Text style={[styles.slideToCancel, { color: grey_dark }]}>{t('Slide to Cancel')}</Text>
-          <ArrowLeft fill={grey_dark} size={24} {...arrowLeftIcon} />
+          <Text style={[styles.slideToCancel, { color: semantics.textPrimary }]}>
+            {t('Slide to Cancel')}
+          </Text>
+          <ChevronLeft stroke={semantics.textTertiary} height={20} width={20} {...arrowLeftIcon} />
         </Animated.View>
       </>
     );
   }
 };
 
-const areEqual = (
-  prevProps: AudioRecorderPropsWithContext,
-  nextProps: AudioRecorderPropsWithContext,
-) => {
-  const {
-    asyncMessagesMultiSendEnabled: prevAsyncMessagesMultiSendEnabled,
-    micLocked: prevMicLocked,
-    recording: prevRecording,
-    recordingDuration: prevRecordingDuration,
-    recordingStopped: prevRecordingStopped,
-  } = prevProps;
-  const {
-    asyncMessagesMultiSendEnabled: nextAsyncMessagesMultiSendEnabled,
-    micLocked: nextMicLocked,
-    recording: nextRecording,
-    recordingDuration: nextRecordingDuration,
-    recordingStopped: nextRecordingStopped,
-  } = nextProps;
-
-  const asyncMessagesMultiSendEnabledEqual =
-    prevAsyncMessagesMultiSendEnabled === nextAsyncMessagesMultiSendEnabled;
-  if (!asyncMessagesMultiSendEnabledEqual) {
-    return false;
-  }
-
-  const micLockedEqual = prevMicLocked === nextMicLocked;
-  if (!micLockedEqual) {
-    return false;
-  }
-
-  const recordingEqual = prevRecording === nextRecording;
-  if (!recordingEqual) {
-    return false;
-  }
-
-  const recordingDurationEqual = prevRecordingDuration === nextRecordingDuration;
-  if (!recordingDurationEqual) {
-    return false;
-  }
-
-  const recordingStoppedEqual = prevRecordingStopped === nextRecordingStopped;
-  if (!recordingStoppedEqual) {
-    return false;
-  }
-
-  return true;
-};
-
 const MemoizedAudioRecorder = React.memo(
   AudioRecorderWithContext,
-  areEqual,
 ) as typeof AudioRecorderWithContext;
 
-export type AudioRecorderProps = Partial<AudioRecorderPropsWithContext> &
-  Pick<
-    AudioRecorderPropsWithContext,
-    | 'deleteVoiceRecording'
-    | 'micLocked'
-    | 'recording'
-    | 'recordingStopped'
-    | 'stopVoiceRecording'
-    | 'uploadVoiceRecording'
-  >;
+export type AudioRecorderProps = Partial<AudioRecorderPropsWithContext>;
+
+const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
+  duration: state.duration,
+  micLocked: state.micLocked,
+  status: state.status,
+});
 
 /**
  * Component to display the Recording UI in the Message Input.
  */
 export const AudioRecorder = (props: AudioRecorderProps) => {
-  const { asyncMessagesMultiSendEnabled } = useMessageInputContext();
+  const {
+    audioRecorderManager,
+    audioRecordingSendOnComplete,
+    stopVoiceRecording,
+    deleteVoiceRecording,
+    uploadVoiceRecording,
+  } = useMessageInputContext();
+
+  const { micLocked, duration, status } = useStateStore(
+    audioRecorderManager.state,
+    audioRecorderSelector,
+  );
 
   return (
     <MemoizedAudioRecorder
       {...{
-        asyncMessagesMultiSendEnabled,
+        audioRecorderManager,
+        audioRecordingSendOnComplete,
+        stopVoiceRecording,
+        deleteVoiceRecording,
+        uploadVoiceRecording,
+        micLocked,
+        status,
+        duration,
       }}
       {...props}
     />
   );
 };
 
-const styles = StyleSheet.create({
-  checkContainer: {},
-  deleteContainer: {},
-  durationLabel: {
-    fontSize: 14,
-  },
-  micContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  pausedContainer: {},
-  slideToCancel: {
-    fontSize: 18,
-  },
-  slideToCancelContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          padding: primitives.spacingXs,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        },
+        checkContainer: {},
+        deleteContainer: {},
+        durationLabel: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
+        },
+        micContainer: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          gap: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingMd,
+        },
+        pausedContainer: {},
+        slideToCancel: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
+        },
+        slideToCancelContainer: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: primitives.spacingXxs,
+        },
+      }),
+    [semantics.textPrimary],
+  );
+};
 
-AudioRecorder.displayName = 'AudioRecorder{messageInput}';
+AudioRecorder.displayName = 'AudioRecorder{messageComposer}';

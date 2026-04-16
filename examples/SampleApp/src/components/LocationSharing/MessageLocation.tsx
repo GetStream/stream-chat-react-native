@@ -16,6 +16,7 @@ import {
 } from 'stream-chat-react-native';
 import MapView, { MapMarker, Marker } from 'react-native-maps';
 import { SharedLocationResponse, StreamChat } from 'stream-chat';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const MessageLocationFooter = ({
   client,
@@ -26,11 +27,8 @@ const MessageLocationFooter = ({
 }) => {
   const { channel } = useChannelContext();
   const { end_at, user_id } = shared_location;
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
+  useTheme();
+  const { grey } = useLegacyColors();
   const liveLocationActive = end_at && new Date(end_at) > new Date();
   const endedAtDate = end_at ? new Date(end_at) : null;
   const formattedEndedAt = endedAtDate ? endedAtDate.toLocaleString() : '';
@@ -79,12 +77,8 @@ const MessageLocationComponent = ({
 
   const { width, height } = useWindowDimensions();
   const aspect_ratio = width / height;
-
-  const {
-    theme: {
-      colors: { accent_blue },
-    },
-  } = useTheme();
+  useTheme();
+  const { accent_blue } = useLegacyColors();
 
   const region = useMemo(() => {
     const latitudeDelta = 0.1;
@@ -160,12 +154,11 @@ export const MessageLocation = ({ message }: MessageLocationProps) => {
 const IMAGE_SIZE = 35;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {},
   mapView: {
-    height: 250,
-    width: 250,
+    height: 252,
+    width: 252,
+    borderRadius: 12,
   },
   textStyle: {
     fontSize: 12,

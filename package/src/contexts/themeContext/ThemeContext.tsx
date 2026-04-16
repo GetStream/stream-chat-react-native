@@ -1,9 +1,14 @@
 import React, { PropsWithChildren, useContext, useMemo } from 'react';
 
+import { ColorSchemeName, useColorScheme } from 'react-native';
+
 import merge from 'lodash/merge';
 
 import { defaultTheme, Theme } from './utils/theme';
 
+import { darkSemantics, lightSemantics } from '../../theme';
+
+import { resolveTokensTopologically } from '../../theme/topologicalResolution';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -19,6 +24,7 @@ export type ThemeProviderInputValue = {
 export type MergedThemesParams = {
   style?: DeepPartial<Theme>;
   theme?: Theme;
+  scheme?: ColorSchemeName;
 };
 
 export type ThemeContextValue = {
@@ -26,12 +32,16 @@ export type ThemeContextValue = {
 };
 
 export const mergeThemes = (params: MergedThemesParams) => {
-  const { style, theme } = params;
-  const finalTheme = (
+  const { style, theme, scheme } = params;
+  const baseTheme = (
     !theme || Object.keys(theme).length === 0
       ? JSON.parse(JSON.stringify(defaultTheme))
       : JSON.parse(JSON.stringify(theme))
   ) as Theme;
+
+  const semantics = resolveTokensTopologically(scheme === 'dark' ? darkSemantics : lightSemantics);
+
+  const finalTheme = { ...baseTheme, semantics };
 
   if (style) {
     merge(finalTheme, style);
@@ -47,13 +57,15 @@ export const ThemeProvider = (
 ) => {
   const { children, mergedStyle, style, theme } = props;
 
+  const scheme = useColorScheme();
+
   const modifiedTheme = useMemo(() => {
     if (mergedStyle) {
       return mergedStyle;
     }
 
-    return mergeThemes({ style, theme });
-  }, [mergedStyle, style, theme]);
+    return mergeThemes({ style, theme, scheme });
+  }, [mergedStyle, style, theme, scheme]);
 
   return <ThemeContext.Provider value={modifiedTheme}>{children}</ThemeContext.Provider>;
 };

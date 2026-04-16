@@ -9,7 +9,7 @@ import { generateAudioAttachment } from '../../../mock-builders/attachments';
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { AttachmentUploadPreviewList } from '../AttachmentUploadPreviewList';
+import { AttachmentUploadPreviewList } from '../components/AttachmentPreview/AttachmentUploadPreviewList';
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native').View;
@@ -78,12 +78,10 @@ describe('AudioAttachmentUploadPreview render', () => {
 
     renderComponent({ channel, client, props });
 
-    const { getByLabelText, getAllByTestId, queryAllByTestId } = screen;
+    const { getAllByTestId, queryAllByTestId } = screen;
 
     await waitFor(() => {
       expect(queryAllByTestId('audio-attachment-upload-preview')).toHaveLength(1);
-      expect(getByLabelText('audio-attachment-preview')).toBeDefined();
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(1);
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
     });
 
@@ -121,7 +119,6 @@ describe('AudioAttachmentUploadPreview render', () => {
     await waitFor(() => {
       expect(queryAllByTestId('audio-attachment-upload-preview')).toHaveLength(1);
       expect(getByLabelText('audio-attachment-preview')).toBeDefined();
-      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
     });
   });
 
@@ -187,12 +184,12 @@ describe('AudioAttachmentUploadPreview render', () => {
 
     renderComponent({ channel, client, props });
 
-    const { getByLabelText, queryAllByTestId, queryAllByText } = screen;
+    const { getByLabelText, queryAllByTestId } = screen;
 
     await waitFor(() => {
       expect(queryAllByTestId('audio-attachment-upload-preview')).toHaveLength(1);
       expect(getByLabelText('audio-attachment-preview')).toBeDefined();
-      expect(queryAllByText('Not supported')).toHaveLength(1);
+      expect(queryAllByTestId('inline-not-supported-indicator')).toHaveLength(1);
     });
   });
 });

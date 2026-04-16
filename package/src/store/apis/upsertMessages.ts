@@ -24,6 +24,9 @@ export const upsertMessages = async ({
   const storableLocations: Array<ReturnType<typeof mapSharedLocationToStorable>> = [];
 
   messages?.forEach((message: MessageResponse | LocalMessage) => {
+    if (message.parent_id && !message.show_in_channel) {
+      return;
+    }
     storableMessages.push(mapMessageToStorable(message));
     if (message.user) {
       storableUsers.push(mapUserToStorable(message.user));

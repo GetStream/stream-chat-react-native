@@ -11,50 +11,31 @@ import {
   QueryChannelsRequestType,
 } from 'stream-chat';
 
-import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
-import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
-import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
-import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
-import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
+import { ChannelListView } from './ChannelListView';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
-import { Skeleton as SkeletonDefault } from './Skeleton';
 
 import {
   ChannelsContextValue,
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import type { ChannelListEventListenerOptions } from '../../types/types';
-import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
-import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
-import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 
 export type ChannelListProps = Partial<
   Pick<
     ChannelsContextValue,
     | 'additionalFlatListProps'
-    | 'EmptyStateIndicator'
-    | 'FooterLoadingIndicator'
-    | 'HeaderErrorIndicator'
-    | 'HeaderNetworkDownIndicator'
-    | 'LoadingErrorIndicator'
-    | 'LoadingIndicator'
-    | 'Preview'
     | 'setFlatListRef'
-    | 'ListHeaderComponent'
     | 'onSelect'
-    | 'PreviewAvatar'
-    | 'PreviewMessage'
-    | 'PreviewMutedStatus'
-    | 'PreviewStatus'
-    | 'PreviewTitle'
-    | 'PreviewUnreadCount'
+    | 'getChannelActionItems'
+    | 'swipeActionsEnabled'
     | 'loadMoreThreshold'
-    | 'Skeleton'
     | 'maxUnreadCount'
     | 'numberOfSkeletons'
+    | 'mutedStatusPosition'
   >
 > & {
   /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
@@ -67,12 +48,6 @@ export type ChannelListProps = Partial<
    * @overrideType object
    * */
   filters?: ChannelFilters;
-  /**
-   * Custom UI component to display the list of channels
-   *
-   * Default: [ChannelListMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-list-messenger/)
-   */
-  List?: React.ComponentType<ChannelListMessengerProps>;
   /**
    * If set to true, channels won't dynamically sort by most recent message, defaults to false
    */
@@ -239,8 +214,7 @@ const DEFAULT_SORT = {};
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
- * The ChannelList doesn't provide any UI for the underlying React Native FlatList. UI is determined by the `List` component which is
- * provided to the ChannelList component as a prop. By default, the ChannelListMessenger component is used as the list UI.
+ * The ChannelList renders a ChannelListView which provides the UI for the underlying React Native FlatList.
  *
  * @example ./ChannelList.md
  */
@@ -248,20 +222,12 @@ export const ChannelList = (props: ChannelListProps) => {
   const {
     additionalFlatListProps = {},
     channelRenderFilterFn,
-    EmptyStateIndicator = EmptyStateIndicatorDefault,
     filters = DEFAULT_FILTERS,
-    FooterLoadingIndicator = ChannelListFooterLoadingIndicator,
-    HeaderErrorIndicator = ChannelListHeaderErrorIndicator,
-    HeaderNetworkDownIndicator = ChannelListHeaderNetworkDownIndicator,
-    List = ChannelListMessenger,
-    ListHeaderComponent,
-    LoadingErrorIndicator = LoadingErrorIndicatorDefault,
-    LoadingIndicator = ChannelListLoadingIndicator,
     // https://stackoverflow.com/a/60666252/10826415
     loadMoreThreshold = 0.1,
     lockChannelOrder = false,
     maxUnreadCount = 255,
-    numberOfSkeletons = 6,
+    numberOfSkeletons = 8,
     onAddedToChannel,
     onChannelDeleted,
     onChannelHidden,
@@ -274,17 +240,12 @@ export const ChannelList = (props: ChannelListProps) => {
     onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
-    Preview = ChannelPreviewMessenger,
-    PreviewAvatar,
-    PreviewMessage,
-    PreviewMutedStatus,
-    PreviewStatus,
-    PreviewTitle,
-    PreviewUnreadCount,
+    getChannelActionItems,
     setFlatListRef,
-    Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
     queryChannelsOverride,
+    mutedStatusPosition = 'inlineTitle',
+    swipeActionsEnabled = true,
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -383,30 +344,18 @@ export const ChannelList = (props: ChannelListProps) => {
     additionalFlatListProps,
     channelListInitialized,
     channels: channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : channels,
-    EmptyStateIndicator,
     error,
-    FooterLoadingIndicator,
     forceUpdate,
     hasNextPage,
-    HeaderErrorIndicator,
-    HeaderNetworkDownIndicator,
-    ListHeaderComponent,
     loadingChannels,
-    LoadingErrorIndicator,
-    LoadingIndicator,
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
     maxUnreadCount,
     numberOfSkeletons,
     onSelect,
-    Preview,
-    PreviewAvatar,
-    PreviewMessage,
-    PreviewMutedStatus,
-    PreviewStatus,
-    PreviewTitle,
-    PreviewUnreadCount,
+    getChannelActionItems,
+    swipeActionsEnabled,
     refreshing,
     refreshList,
     reloadList,
@@ -415,12 +364,14 @@ export const ChannelList = (props: ChannelListProps) => {
         setFlatListRef(ref);
       }
     },
-    Skeleton,
+    mutedStatusPosition,
   });
 
   return (
     <ChannelsProvider value={channelsContext}>
-      <List />
+      <SwipeRegistryProvider>
+        <ChannelListView />
+      </SwipeRegistryProvider>
     </ChannelsProvider>
   );
 };

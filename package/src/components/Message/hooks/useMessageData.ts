@@ -30,8 +30,11 @@ export const useMessageData = ({
   const isVeryLastMessage =
     channel?.state.messages[channel?.state.messages.length - 1]?.id === message.id;
 
-  const messageGroupedSingleOrBottom =
-    groupStyles.includes('single') || groupStyles.includes('bottom');
+  const messageGroupedSingle = groupStyles.includes('single');
+  const messageGroupedBottom = groupStyles.includes('bottom');
+  const messageGroupedTop = groupStyles.includes('top');
+  const messageGroupedMiddle = groupStyles.includes('middle');
+  const messageGroupedSingleOrBottom = messageGroupedSingle || messageGroupedBottom;
 
   const isMessageErrorType =
     message.type === 'error' || message.status === MessageStatusTypes.FAILED;
@@ -46,6 +49,10 @@ export const useMessageData = ({
     isMessageReceivedOrErrorType,
     isMessageTypeDeleted,
     isVeryLastMessage,
+    messageGroupedSingle,
+    messageGroupedBottom,
+    messageGroupedTop,
     messageGroupedSingleOrBottom,
+    messageGroupedMiddle,
   };
 };

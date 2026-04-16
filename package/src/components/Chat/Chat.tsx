@@ -1,15 +1,16 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { Image, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import { Channel, OfflineDBState } from 'stream-chat';
 
+import { useClientMutedUsers } from './hooks';
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
-import { useMutedUsers } from './hooks/useMutedUsers';
 
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { DeepPartial, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
@@ -30,7 +31,7 @@ import { version } from '../../version.json';
 init();
 
 export type ChatProps = Pick<ChatContextValue, 'client'> &
-  Partial<Pick<ChatContextValue, 'ImageComponent' | 'isMessageAIGenerated'>> & {
+  Partial<Pick<ChatContextValue, 'isMessageAIGenerated'>> & {
     /**
      * When false, ws connection won't be disconnection upon backgrounding the app.
      * To receive push notifications, its necessary that user doesn't have active
@@ -95,12 +96,6 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      */
     i18nInstance?: Streami18n;
     /**
-     * Custom loading indicator component to be used to represent the loading state of the chat.
-     *
-     * This can be used during the phase when db is not initialised.
-     */
-    LoadingIndicator?: React.ComponentType | null;
-    /**
      * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/themeContext/utils/theme.ts)
      *
      * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#theme) for details.
@@ -109,7 +104,7 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * import type { DeepPartial, Theme } from 'stream-chat-react-native';
      *
      * const theme: DeepPartial<Theme> = {
-     *   messageSimple: {
+     *   messageItemView: {
      *     file: {
      *       container: {
      *         backgroundColor: 'red',
@@ -144,11 +139,10 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     closeConnectionOnBackground = true,
     enableOfflineSupport = false,
     i18nInstance,
-    ImageComponent = Image,
     isMessageAIGenerated,
-    LoadingIndicator = null,
     style,
   } = props;
+  const { ChatLoadingIndicator } = useComponentsContext();
 
   const [channel, setChannel] = useState<Channel>();
 
@@ -172,7 +166,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
    * Setup muted user listener
    * TODO: reimplement
    */
-  const mutedUsers = useMutedUsers(client);
+  const mutedUsers = useClientMutedUsers(client);
 
   const debugRef = useDebugContext();
   const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
@@ -191,6 +185,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       client.deviceIdentifier = { os: `${Platform.OS} ${Platform.Version}` };
       // This is to disable recovery related logic in js client, since we handle it in this SDK
       client.recoverStateOnReconnect = false;
+      client.preventThreadCleanup = true;
       client.persistUserOnConnectionFailure = enableOfflineSupport;
     }
 
@@ -256,7 +251,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     client,
     connectionRecovering,
     enableOfflineSupport,
-    ImageComponent,
     isMessageAIGenerated,
     isOnline,
     mutedUsers,
@@ -265,7 +259,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   if (userID && enableOfflineSupport && !initialisedDatabase) {
     // if user id has been set and offline support is enabled, we need to wait for database to be initialised
-    return LoadingIndicator ? <LoadingIndicator /> : null;
+    return ChatLoadingIndicator ? <ChatLoadingIndicator /> : null;
   }
 
   return (

@@ -1,12 +1,23 @@
-import React from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Close } from '../../icons';
+import { useStateStore } from '../../hooks/useStateStore';
+import { ArrowUp } from '../../icons/arrow-up';
+import { NewClose } from '../../icons/xmark';
+import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
+import { primitives } from '../../theme';
+import { Button } from '../ui';
 
-export type UnreadMessagesNotificationProps = {
+export type UnreadMessagesNotificationProps = Pick<
+  ChannelContextValue,
+  'channelUnreadStateStore'
+> & {
   /**
    * Callback to handle the close event
    */
@@ -15,18 +26,27 @@ export type UnreadMessagesNotificationProps = {
    * Callback to handle the press event
    */
   onPressHandler?: () => Promise<void>;
+  /**
+   * Unread count
+   */
+  unreadCount?: number;
 };
 
+const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
+  unread_messages: state.channelUnreadState?.unread_messages,
+});
+
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
-  const { onCloseHandler, onPressHandler } = props;
+  const { onCloseHandler, onPressHandler, unreadCount, channelUnreadStateStore } = props;
   const { t } = useTranslationContext();
-  const {
-    channelUnreadStateStore,
-    loadChannelAtFirstUnreadMessage,
-    markRead,
-    setChannelUnreadState,
-    setTargetedMessage,
-  } = useChannelContext();
+  const { loadChannelAtFirstUnreadMessage, markRead, setChannelUnreadState, setTargetedMessage } =
+    useChannelContext();
+  const { unread_messages } = useStateStore(
+    channelUnreadStateStore.state,
+    channelUnreadStateSelector,
+  );
+
+  const count = unread_messages ?? unreadCount;
 
   const handleOnPress = async () => {
     if (onPressHandler) {
@@ -48,60 +68,67 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     }
   };
 
-  const {
-    theme: {
-      colors: { text_low_emphasis, white_snow },
-      messageList: {
-        unreadMessagesNotification: { closeButtonContainer, closeIcon, container, text },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   return (
-    <Pressable
-      onPress={handleOnPress}
-      style={({ pressed }) => [
-        styles.container,
-        { backgroundColor: text_low_emphasis, opacity: pressed ? 0.8 : 1 },
-        container,
-      ]}
-    >
-      <Text style={[styles.text, { color: white_snow }, text]}>{t('Unread Messages')}</Text>
-      <Pressable
-        onPress={handleClose}
-        style={({ pressed }) => [
-          {
-            opacity: pressed ? 0.8 : 1,
-          },
-          closeButtonContainer,
-        ]}
-      >
-        <Close pathFill={white_snow} {...closeIcon} />
-      </Pressable>
-    </Pressable>
+    <View style={styles.container}>
+      <View style={styles.leftButtonContainer}>
+        <Button
+          variant='secondary'
+          type='ghost'
+          LeadingIcon={ArrowUp}
+          label={count ? t('{{count}} unread', { count }) : t('Unread Messages')}
+          onPress={handleOnPress}
+          size='md'
+        />
+      </View>
+      <View style={styles.rightButtonContainer}>
+        <Button
+          variant='secondary'
+          type='ghost'
+          iconOnly
+          LeadingIcon={NewClose}
+          onPress={handleClose}
+          size='md'
+        />
+      </View>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderRadius: 20,
-    elevation: 4,
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    position: 'absolute',
-    shadowColor: '#000',
-    shadowOffset: {
-      height: 2,
-      width: 0,
+const useStyles = () => {
+  const {
+    theme: {
+      messageList: {
+        unreadMessagesNotification: { container, leftButtonContainer, rightButtonContainer },
+      },
+      semantics,
     },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    top: 8,
-  },
-  text: {
-    fontWeight: '500',
-    marginRight: 8,
-  },
-});
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          borderRadius: primitives.radiusMax,
+          borderWidth: 1,
+          borderColor: semantics.borderCoreDefault,
+          backgroundColor: semantics.backgroundCoreApp,
+          flexDirection: 'row',
+          alignItems: 'center',
+          ...primitives.lightElevation4,
+          ...container,
+        },
+        leftButtonContainer: {
+          flexShrink: 0,
+          borderRightWidth: 1,
+          borderRightColor: semantics.borderCoreDefault,
+          ...leftButtonContainer,
+        },
+        rightButtonContainer: {
+          flexShrink: 0,
+          ...rightButtonContainer,
+        },
+      }),
+    [semantics, container, leftButtonContainer, rightButtonContainer],
+  );
+};

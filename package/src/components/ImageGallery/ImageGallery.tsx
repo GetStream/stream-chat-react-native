@@ -1,55 +1,53 @@
-import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, ImageStyle, Keyboard, StyleSheet, ViewStyle } from 'react-native';
-
+import React, { useCallback, useEffect, useState } from 'react';
+import { Image, ImageStyle, StyleSheet, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
   Easing,
-  runOnJS,
-  runOnUI,
-  SharedValue,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 
-import { BottomSheetModal as BottomSheetModalOriginal } from '@gorhom/bottom-sheet';
-import type { UserResponse } from 'stream-chat';
-
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
-import {
-  ImageGalleryFooter,
-  ImageGalleryFooterCustomComponentProps,
-} from './components/ImageGalleryFooter';
-import {
-  ImageGalleryHeader,
-  ImageGalleryHeaderCustomComponentProps,
-} from './components/ImageGalleryHeader';
-import { ImageGalleryOverlay } from './components/ImageGalleryOverlay';
-import { ImageGalleryGridImageComponents, ImageGrid } from './components/ImageGrid';
-import {
-  ImageGalleryGridHandleCustomComponentProps,
-  ImageGridHandle,
-} from './components/ImageGridHandle';
+import type {
+  ImageGalleryFooterProps,
+  ImageGalleryGridProps,
+  ImageGalleryHeaderProps,
+} from './components/types';
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
-import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
-import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useViewport } from '../../hooks/useViewport';
-import { isVideoPlayerAvailable, VideoType } from '../../native';
-import { FileTypes } from '../../types/types';
-import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
-import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
-import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from '../BottomSheetCompatibility/BottomSheetModal';
+  ImageGalleryProviderProps,
+  useImageGalleryContext,
+} from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../hooks';
+import { useViewport } from '../../hooks/useViewport';
+import { IconProps } from '../../icons/utils/base';
+import { ImageGalleryState } from '../../state-store/image-gallery-state-store';
+import { FileTypes } from '../../types/types';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { BottomSheetModal } from '../UIComponents';
+
+export type ImageGalleryActionHandler = () => Promise<void> | void;
+
+export type ImageGalleryActionItem = {
+  action: ImageGalleryActionHandler;
+  Icon: React.ComponentType<IconProps>;
+  id: 'showInChat' | 'save' | 'reply' | 'delete' | string;
+  label: string;
+  type: 'destructive' | 'standard';
+};
 
 const MARGIN = 32;
 
@@ -64,76 +62,42 @@ export enum IsSwiping {
   FALSE,
 }
 
-export type ImageGalleryCustomComponents = {
-  /**
-   * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
-   *
-   * - [ImageGalleryFooter](#ImageGalleryFooter)
-   *
-   * - [ImageGrid](#ImageGrid)
-   *
-   * - [ImageGridHandle](#ImageGridHandle)
-   *
-   * - [ImageGalleryHeader](#ImageGalleryHeader)
-   *
-   * e.g.,
-   *
-   * ```js
-   * {
-   *  footer: {
-   *    ShareIcon: CustomShareIconComponent
-   *  },
-   *  grid: {
-   *    avatarComponent: CustomAvatarComponent
-   *  },
-   *  gridHandle: {
-   *    centerComponent: CustomCenterComponent
-   *  },
-   *  header: {
-   *    CloseIcon: CustomCloseButtonComponent
-   *  },
-   * }
-   * ```
-   * @overrideType object
-   */
-  imageGalleryCustomComponents?: {
-    footer?: ImageGalleryFooterCustomComponentProps;
-    grid?: ImageGalleryGridImageComponents;
-    gridHandle?: ImageGalleryGridHandleCustomComponentProps;
-    header?: ImageGalleryHeaderCustomComponentProps;
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  assets: state.assets,
+  currentIndex: state.currentIndex,
+});
+
+type ImageGalleryWithContextProps = Pick<
+  ImageGalleryProviderProps,
+  'numberOfImageGalleryGridColumns'
+> &
+  Pick<OverlayContextValue, 'overlayOpacity'> & {
+    ImageGalleryHeader?: React.ComponentType<ImageGalleryHeaderProps>;
+    ImageGalleryFooter?: React.ComponentType<ImageGalleryFooterProps>;
+    ImageGalleryGrid?: React.ComponentType<ImageGalleryGridProps>;
   };
-};
 
-type Props = ImageGalleryCustomComponents & {
-  overlayOpacity: SharedValue<number>;
-} & Pick<
-    OverlayProviderProps,
-    | 'giphyVersion'
-    | 'imageGalleryGridSnapPoints'
-    | 'imageGalleryGridHandleHeight'
-    | 'numberOfImageGalleryGridColumns'
-    | 'autoPlayVideo'
-  >;
-
-export const ImageGallery = (props: Props) => {
+export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
   const {
-    autoPlayVideo = false,
-    giphyVersion = 'fixed_height',
-    imageGalleryCustomComponents,
-    imageGalleryGridHandleHeight = 40,
-    imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
     overlayOpacity,
+    ImageGalleryHeader,
+    ImageGalleryFooter,
+    ImageGalleryGrid,
   } = props;
-  const { resizableCDNHosts } = useChatConfigContext();
+  const [isGridViewVisible, setIsGridViewVisible] = useState(false);
   const {
     theme: {
-      colors: { white_snow },
       imageGallery: { backgroundColor, pager, slide },
+      semantics,
     },
   } = useTheme();
-  const [gridPhotos, setGridPhotos] = useState<Photo[]>([]);
-  const { messages, selectedMessage, setSelectedMessage } = useImageGalleryContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { assets, currentIndex } = useStateStore(
+    imageGalleryStateStore.state,
+    imageGallerySelector,
+  );
+  const { videoPlayerPool } = imageGalleryStateStore;
 
   const { vh, vw } = useViewport();
 
@@ -143,44 +107,27 @@ export const ImageGallery = (props: Props) => {
 
   const halfScreenHeight = fullWindowHeight / 2;
   const quarterScreenHeight = fullWindowHeight / 4;
-  const snapPoints = React.useMemo(
-    () => [(fullWindowHeight * 3) / 4, fullWindowHeight - imageGalleryGridHandleHeight],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
-
-  /**
-   * BottomSheetModal ref
-   */
-  const bottomSheetModalRef = useRef<BottomSheetModalOriginal>(null);
-
-  /**
-   * BottomSheetModal state
-   */
-  const [currentBottomSheetIndex, setCurrentBottomSheetIndex] = useState(0);
-  const animatedBottomSheetIndex = useSharedValue(0);
 
   /**
    * Fade animation for screen, it is always rendered with pointerEvents
    * set to none for fast opening
    */
   const screenTranslateY = useSharedValue(fullWindowHeight);
-  const showScreen = () => {
+  const showScreen = useCallback(() => {
     'worklet';
     screenTranslateY.value = withTiming(0, {
       duration: 250,
       easing: Easing.out(Easing.ease),
     });
-  };
+  }, [screenTranslateY]);
 
   /**
    * Run the fade animation on visible change
    */
   useEffect(() => {
-    Keyboard.dismiss();
+    dismissKeyboard();
     showScreen();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [showScreen]);
 
   /**
    * Image height from URL or default to full screen height
@@ -199,116 +146,15 @@ export const ImageGallery = (props: Props) => {
   const translateY = useSharedValue(0);
   const offsetScale = useSharedValue(1);
   const scale = useSharedValue(1);
-  const translationX = useSharedValue(0);
+  const translationX = useSharedValue(-(fullWindowWidth + MARGIN) * currentIndex);
 
-  /**
-   * Photos array created from all currently available
-   * photo attachments
-   */
-
-  const photos = useMemo(
-    () =>
-      messages.reduce((acc: Photo[], cur) => {
-        const attachmentImages =
-          cur.attachments?.filter(
-            (attachment) =>
-              (attachment.type === FileTypes.Giphy &&
-                (attachment.giphy?.[giphyVersion]?.url ||
-                  attachment.thumb_url ||
-                  attachment.image_url)) ||
-              (attachment.type === FileTypes.Image &&
-                !attachment.title_link &&
-                !attachment.og_scrape_url &&
-                getUrlOfImageAttachment(attachment)) ||
-              (isVideoPlayerAvailable() && attachment.type === FileTypes.Video),
-          ) || [];
-
-        const attachmentPhotos = attachmentImages.map((a) => {
-          const imageUrl = getUrlOfImageAttachment(a) as string;
-          const giphyURL = a.giphy?.[giphyVersion]?.url || a.thumb_url || a.image_url;
-          const isInitiallyPaused = !autoPlayVideo;
-
-          return {
-            channelId: cur.cid,
-            created_at: cur.created_at,
-            duration: 0,
-            id: `photoId-${cur.id}-${imageUrl}`,
-            messageId: cur.id,
-            mime_type: a.type === 'giphy' ? getGiphyMimeType(giphyURL ?? '') : a.mime_type,
-            original_height: a.original_height,
-            original_width: a.original_width,
-            paused: isInitiallyPaused,
-            progress: 0,
-            thumb_url: a.thumb_url,
-            type: a.type,
-            uri:
-              a.type === 'giphy'
-                ? giphyURL
-                : getResizedImageUrl({
-                    height: fullWindowHeight,
-                    resizableCDNHosts,
-                    url: imageUrl,
-                    width: fullWindowWidth,
-                  }),
-            user: cur.user,
-            user_id: cur.user_id,
-          };
-        });
-
-        return [...attachmentPhotos, ...acc] as Photo[];
-      }, []),
-    [autoPlayVideo, fullWindowHeight, fullWindowWidth, giphyVersion, messages, resizableCDNHosts],
+  useAnimatedReaction(
+    () => currentIndex,
+    (index) => {
+      translationX.value = -(fullWindowWidth + MARGIN) * index;
+    },
+    [currentIndex, fullWindowWidth],
   );
-
-  /**
-   * The URL for the images may differ because of dimensions passed as
-   * part of the query.
-   */
-  const stripQueryFromUrl = (url: string) => url.split('?')[0];
-
-  const photoSelectedIndex = useMemo(() => {
-    const idx = photos.findIndex(
-      (photo) =>
-        photo.messageId === selectedMessage?.messageId &&
-        stripQueryFromUrl(photo.uri) === stripQueryFromUrl(selectedMessage?.url || ''),
-    );
-
-    return idx === -1 ? 0 : idx;
-  }, [photos, selectedMessage]);
-
-  /**
-   * JS and UI index values, the JS follows the UI but is needed
-   * for rendering the virtualized image list
-   */
-  const [selectedIndex, setSelectedIndex] = useState(photoSelectedIndex);
-  const index = useSharedValue(photoSelectedIndex);
-
-  const [imageGalleryAttachments, setImageGalleryAttachments] = useState<Photo[]>(photos);
-
-  /**
-   * Photos length needs to be kept as a const here so if the length
-   * changes it causes the pan gesture handler function to refresh. This
-   * does not work if the calculation for the length of the array is left
-   * inside the gesture handler as it will have an array as a dependency
-   */
-  const photoLength = photos.length;
-
-  /**
-   * Set selected photo when changed via pressing in the message list
-   */
-  useEffect(() => {
-    const updatePosition = (newIndex: number) => {
-      'worklet';
-
-      if (newIndex > -1) {
-        index.value = newIndex;
-        translationX.value = -(fullWindowWidth + MARGIN) * newIndex;
-        runOnJS(setSelectedIndex)(newIndex);
-      }
-    };
-
-    runOnUI(updatePosition)(photoSelectedIndex);
-  }, [fullWindowWidth, index, photoSelectedIndex, translationX]);
 
   /**
    * Image heights are not provided and therefore need to be calculated.
@@ -316,11 +162,9 @@ export const ImageGallery = (props: Props) => {
    * to the proper scaled height based on the width being restricted to the
    * screen width when the dimensions are received.
    */
-  const uriForCurrentImage = imageGalleryAttachments[selectedIndex]?.uri;
-
   useEffect(() => {
     let currentImageHeight = fullWindowHeight;
-    const photo = imageGalleryAttachments[index.value];
+    const photo = assets[currentIndex];
     const height = photo?.original_height;
     const width = photo?.original_width;
 
@@ -338,7 +182,16 @@ export const ImageGallery = (props: Props) => {
 
     setCurrentImageHeight(currentImageHeight);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uriForCurrentImage]);
+  }, [currentIndex]);
+
+  // If you change the current index, pause the active video player.
+  useEffect(() => {
+    const activePlayer = videoPlayerPool.getActivePlayer();
+
+    if (activePlayer) {
+      activePlayer.pause();
+    }
+  }, [currentIndex, videoPlayerPool]);
 
   const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({
     currentImageHeight,
@@ -347,12 +200,9 @@ export const ImageGallery = (props: Props) => {
     headerFooterVisible,
     offsetScale,
     overlayOpacity,
-    photoLength,
     scale,
     screenHeight: fullWindowHeight,
     screenWidth: fullWindowWidth,
-    selectedIndex,
-    setSelectedIndex,
     translateX,
     translateY,
     translationX,
@@ -395,7 +245,7 @@ export const ImageGallery = (props: Props) => {
    */
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
-      backgroundColor: backgroundColor || white_snow,
+      backgroundColor: backgroundColor || semantics.backgroundCoreApp,
       opacity: headerFooterOpacity.value,
     }),
     [headerFooterOpacity],
@@ -420,130 +270,39 @@ export const ImageGallery = (props: Props) => {
    * Functions toclose BottomSheetModal with image grid
    */
   const closeGridView = () => {
-    if (bottomSheetModalRef.current?.close) {
-      bottomSheetModalRef.current.close();
-      setGridPhotos([]);
-    }
+    setIsGridViewVisible(false);
   };
 
   /**
    * Function to open BottomSheetModal with image grid
    */
   const openGridView = () => {
-    if (bottomSheetModalRef.current?.present) {
-      bottomSheetModalRef.current.present();
-      setGridPhotos(imageGalleryAttachments);
-    }
+    setIsGridViewVisible(true);
   };
-
-  const handleEnd = () => {
-    handlePlayPause(imageGalleryAttachments[selectedIndex].id, true);
-    handleProgress(imageGalleryAttachments[selectedIndex].id, 1, true);
-  };
-
-  const videoRef = useRef<VideoType>(null);
-
-  const handleLoad = (index: string, duration: number) => {
-    setImageGalleryAttachments((prevImageGalleryAttachment) =>
-      prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
-        ...imageGalleryAttachment,
-        duration: imageGalleryAttachment.id === index ? duration : imageGalleryAttachment.duration,
-      })),
-    );
-  };
-
-  const handleProgress = (index: string, progress: number, hasEnd?: boolean) => {
-    setImageGalleryAttachments((prevImageGalleryAttachments) =>
-      prevImageGalleryAttachments.map((imageGalleryAttachment) => ({
-        ...imageGalleryAttachment,
-        progress:
-          imageGalleryAttachment.id === index
-            ? hasEnd
-              ? 1
-              : progress
-            : imageGalleryAttachment.progress,
-      })),
-    );
-  };
-
-  const handlePlayPause = (index: string, pausedStatus?: boolean) => {
-    if (pausedStatus === false) {
-      // If the status is false we set the audio with the index as playing and the others as paused.
-      setImageGalleryAttachments((prevImageGalleryAttachment) =>
-        prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
-          ...imageGalleryAttachment,
-          paused: imageGalleryAttachment.id === index ? false : true,
-        })),
-      );
-
-      if (videoRef.current?.play) {
-        videoRef.current.play();
-      }
-    } else {
-      // If the status is true we simply set all the audio's paused state as true.
-      setImageGalleryAttachments((prevImageGalleryAttachment) =>
-        prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
-          ...imageGalleryAttachment,
-          paused: true,
-        })),
-      );
-
-      if (videoRef.current?.pause) {
-        videoRef.current.pause();
-      }
-    }
-  };
-
-  const onPlayPause = (status?: boolean) => {
-    if (status === undefined) {
-      if (imageGalleryAttachments[selectedIndex].paused) {
-        handlePlayPause(imageGalleryAttachments[selectedIndex].id, false);
-      } else {
-        handlePlayPause(imageGalleryAttachments[selectedIndex].id, true);
-      }
-    } else {
-      handlePlayPause(imageGalleryAttachments[selectedIndex].id, status);
-    }
-  };
-
-  const MemoizedImageGridHandle = useCallback(
-    () => (
-      <ImageGridHandle
-        closeGridView={closeGridView}
-        {...imageGalleryCustomComponents?.gridHandle}
-      />
-    ),
-    [imageGalleryCustomComponents?.gridHandle],
-  );
 
   return (
     <Animated.View
       accessibilityLabel='Image Gallery'
       pointerEvents={'auto'}
-      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
+      style={[StyleSheet.absoluteFill, showScreenStyle]}
     >
-      <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
+      <Animated.View style={[StyleSheet.absoluteFill, containerBackground]} />
       <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
-        <Animated.View style={StyleSheet.absoluteFillObject}>
-          <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
-            {imageGalleryAttachments.map((photo, i) =>
+        <Animated.View style={StyleSheet.absoluteFill}>
+          <Animated.View
+            testID='image-gallery-pager'
+            style={[styles.animatedContainer, pagerStyle, pager]}
+          >
+            {assets.map((photo, i) =>
               photo.type === FileTypes.Video ? (
                 <AnimatedGalleryVideo
                   attachmentId={photo.id}
-                  handleEnd={handleEnd}
-                  handleLoad={handleLoad}
-                  handleProgress={handleProgress}
                   index={i}
-                  key={`${photo.uri}-${i}`}
+                  key={photo.id}
                   offsetScale={offsetScale}
-                  paused={photo.paused || false}
-                  previous={selectedIndex > i}
-                  repeat={true}
+                  photo={photo}
                   scale={scale}
                   screenHeight={fullWindowHeight}
-                  selected={selectedIndex === i}
-                  shouldRender={Math.abs(selectedIndex - i) < 4}
-                  source={{ uri: photo.uri }}
                   style={[
                     {
                       height: fullWindowHeight * 8,
@@ -554,20 +313,17 @@ export const ImageGallery = (props: Props) => {
                   ]}
                   translateX={translateX}
                   translateY={translateY}
-                  videoRef={videoRef as RefObject<VideoType>}
                 />
               ) : (
                 <AnimatedGalleryImage
                   accessibilityLabel={'Image Item'}
                   index={i}
-                  key={`${photo.uri}-${i}`}
+                  key={photo.id}
                   offsetScale={offsetScale}
                   photo={photo}
-                  previous={selectedIndex > i}
                   scale={scale}
                   screenHeight={fullWindowHeight}
-                  selected={selectedIndex === i}
-                  shouldRender={Math.abs(selectedIndex - i) < 4}
+                  screenWidth={fullWindowWidth}
                   style={[
                     {
                       height: fullWindowHeight * 8,
@@ -584,58 +340,52 @@ export const ImageGallery = (props: Props) => {
           </Animated.View>
         </Animated.View>
       </GestureDetector>
-      <ImageGalleryHeader
-        opacity={headerFooterOpacity}
-        photo={imageGalleryAttachments[selectedIndex]}
-        visible={headerFooterVisible}
-        {...imageGalleryCustomComponents?.header}
-      />
+      {ImageGalleryHeader ? (
+        <ImageGalleryHeader opacity={headerFooterOpacity} visible={headerFooterVisible} />
+      ) : null}
 
-      {imageGalleryAttachments[selectedIndex] && (
+      {ImageGalleryFooter ? (
         <ImageGalleryFooter
           accessibilityLabel={'Image Gallery Footer'}
-          duration={imageGalleryAttachments[selectedIndex].duration || 0}
-          onPlayPause={onPlayPause}
           opacity={headerFooterOpacity}
           openGridView={openGridView}
-          paused={imageGalleryAttachments[selectedIndex].paused || false}
-          photo={imageGalleryAttachments[selectedIndex]}
-          photoLength={imageGalleryAttachments.length}
-          progress={imageGalleryAttachments[selectedIndex].progress || 0}
-          selectedIndex={selectedIndex}
-          videoRef={videoRef as RefObject<VideoType>}
           visible={headerFooterVisible}
-          {...imageGalleryCustomComponents?.footer}
         />
-      )}
+      ) : null}
 
-      <ImageGalleryOverlay
-        animatedBottomSheetIndex={animatedBottomSheetIndex}
-        closeGridView={closeGridView}
-        currentBottomSheetIndex={currentBottomSheetIndex}
-      />
-      <BottomSheetModalProvider>
-        <BottomSheetModal
-          animatedIndex={animatedBottomSheetIndex}
-          enablePanDownToClose={true}
-          handleComponent={MemoizedImageGridHandle}
-          // @ts-ignore
-          handleHeight={imageGalleryGridHandleHeight}
-          index={0}
-          onChange={(index: number) => setCurrentBottomSheetIndex(index)}
-          ref={bottomSheetModalRef}
-          snapPoints={imageGalleryGridSnapPoints || snapPoints}
-        >
-          <ImageGrid
+      <BottomSheetModal
+        height={350}
+        onClose={() => {
+          setIsGridViewVisible(false);
+        }}
+        visible={isGridViewVisible}
+      >
+        {ImageGalleryGrid ? (
+          <ImageGalleryGrid
             closeGridView={closeGridView}
             numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-            photos={gridPhotos}
-            setSelectedMessage={setSelectedMessage}
-            {...imageGalleryCustomComponents?.grid}
           />
-        </BottomSheetModal>
-      </BottomSheetModalProvider>
+        ) : null}
+      </BottomSheetModal>
     </Animated.View>
+  );
+};
+
+export type ImageGalleryProps = Partial<ImageGalleryWithContextProps>;
+
+export const ImageGallery = (props: ImageGalleryProps) => {
+  const { numberOfImageGalleryGridColumns } = useImageGalleryContext();
+  const { ImageGalleryHeader, ImageGalleryFooter, ImageGalleryGrid } = useComponentsContext();
+  const { overlayOpacity } = useOverlayContext();
+  return (
+    <ImageGalleryWithContext
+      numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+      overlayOpacity={overlayOpacity}
+      ImageGalleryHeader={ImageGalleryHeader}
+      ImageGalleryFooter={ImageGalleryFooter}
+      ImageGalleryGrid={ImageGalleryGrid}
+      {...props}
+    />
   );
 };
 
@@ -650,26 +400,9 @@ export const clamp = (value: number, lowerBound: number, upperBound: number) => 
 const styles = StyleSheet.create({
   animatedContainer: {
     alignItems: 'center',
+    direction: 'ltr',
     flexDirection: 'row',
   },
 });
-
-export type Photo = {
-  id: string;
-  uri: string;
-  channelId?: string;
-  created_at?: string | Date;
-  duration?: number;
-  messageId?: string;
-  mime_type?: string;
-  original_height?: number;
-  original_width?: number;
-  paused?: boolean;
-  progress?: number;
-  thumb_url?: string;
-  type?: string;
-  user?: UserResponse | null;
-  user_id?: string;
-};
 
 ImageGallery.displayName = 'ImageGallery{imageGallery}';

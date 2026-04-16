@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`MessageAuthor should render message author 1`] = `
+<View
+  style={{}}
+  testID="message-author"
+>
+  <View
+    testID="user-avatar"
+  >
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "borderRadius": 9999,
+            "justifyContent": "center",
+            "overflow": "hidden",
+          },
+          {
+            "height": 32,
+            "width": 32,
+          },
+          {
+            "backgroundColor": "#006970",
+          },
+          {
+            "borderColor": "rgba(255, 255, 255, 0.2)",
+            "borderWidth": 1,
+          },
+          undefined,
+        ]
+      }
+      testID="avatar-image"
+    >
+      <Image
+        onError={[Function]}
+        source={
+          {
+            "uri": "https://i.imgur.com/ytIyojl.png",
+          }
+        }
+        style={
+          [
+            {},
+            {
+              "height": 32,
+              "width": 32,
+            },
+          ]
+        }
+      />
+    </View>
+  </View>
+</View>
+`;

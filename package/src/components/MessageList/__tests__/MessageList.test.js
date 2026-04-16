@@ -92,137 +92,6 @@ describe('MessageList', () => {
     });
   });
 
-  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to default(always)', async () => {
-    const user1 = generateUser();
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [
-        generateMessage({ type: 'deleted', user: user1 }),
-        generateMessage({ type: 'system', user: undefined }),
-        generateMessage({ user: user1 }),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-
-    const { getByTestId, queryByTestId } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <MessageList />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(getByTestId('message-deleted')).toBeTruthy();
-      expect(queryByTestId('only-visible-to-you')).toBeNull();
-    });
-  });
-
-  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to sender', async () => {
-    const user1 = generateUser();
-    const user2 = generateUser({ id: 'testID' });
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [
-        generateMessage({ type: 'deleted', user: user2 }),
-        generateMessage({ type: 'system', user: undefined }),
-        generateMessage({ user: user1 }),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-
-    const { getByTestId, queryByTestId } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} deletedMessagesVisibilityType='sender'>
-            <MessageList />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('message-deleted')).toBeTruthy();
-      expect(getByTestId('only-visible-to-you')).toBeTruthy();
-    });
-  });
-
-  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to receiver', async () => {
-    const user1 = generateUser();
-    const user2 = generateUser({ id: 'testID' });
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [
-        generateMessage({ user: user2 }),
-        generateMessage({ type: 'system', user: undefined }),
-        generateMessage({ type: 'deleted', user: user1 }),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-
-    const { getByTestId, queryByTestId } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} deletedMessagesVisibilityType='receiver'>
-            <MessageList />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(getByTestId('message-deleted')).toBeTruthy();
-      expect(queryByTestId('only-visible-to-you')).toBeNull();
-    });
-  });
-
-  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to never', async () => {
-    const user1 = generateUser();
-    const user2 = generateUser({ id: 'testID' });
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [
-        generateMessage({ user: user2 }),
-        generateMessage({ type: 'system', user: undefined }),
-        generateMessage({ type: 'deleted', user: user1 }),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-
-    const { queryByTestId } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} deletedMessagesVisibilityType='never'>
-            <MessageList />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('message-deleted')).toBeNull();
-      expect(queryByTestId('only-visible-to-you')).toBeNull();
-    });
-  });
-
   it('should render deleted message in the list', async () => {
     const user1 = generateUser();
     const mockedChannel = generateChannelResponse({
@@ -239,7 +108,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
 
-    const { getByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
@@ -251,6 +120,7 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-deleted')).toBeTruthy();
+      expect(queryByTestId('only-visible-to-you')).toBeNull();
     });
   });
 

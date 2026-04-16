@@ -3,8 +3,9 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
-import { Avatar, Spinner, useTheme, useViewport } from 'stream-chat-react-native';
+import { Spinner, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 import { DEFAULT_PAGINATION_LIMIT } from '../../utils/constants';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 import type { MessageResponse } from 'stream-chat';
 
@@ -27,6 +28,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   itemContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
     borderBottomWidth: 1,
     flex: 1,
     flexDirection: 'row',
@@ -70,9 +73,10 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
     } = props;
     const {
       theme: {
-        colors: { black, border, grey, white_snow },
+        semantics,
       },
     } = useTheme();
+    const { black, grey, white_snow } = useLegacyColors();
     const { vw } = useViewport();
     const navigation =
       useNavigation<NavigationProp<StackNavigatorParamList, 'ChannelListScreen'>>();
@@ -92,13 +96,11 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
             }}
           >
             <Text style={{ color: grey }}>
-              {`${
-                messages.length >= DEFAULT_PAGINATION_LIMIT
-                  ? DEFAULT_PAGINATION_LIMIT
-                  : messages.length
-              }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${
-                messages.length === 1 ? '' : 's'
-              }`}
+              {`${messages.length >= DEFAULT_PAGINATION_LIMIT
+                ? DEFAULT_PAGINATION_LIMIT
+                : messages.length
+                }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${messages.length === 1 ? '' : 's'
+                }`}
             </Text>
           </View>
         )}
@@ -128,15 +130,11 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
                   messageId: item.id,
                 });
               }}
-              style={[styles.itemContainer, { borderBottomColor: border }]}
+              style={[styles.itemContainer, { borderBottomColor: semantics.borderCoreDefault }]}
               testID='channel-preview-button'
             >
-              <Avatar
-                image={item.user?.image}
-                name={item.user?.name}
-                online={item?.user?.online}
-                size={40}
-              />
+              {item.user ? <UserAvatar user={item.user} size={'lg'} /> : null}
+
               <View style={styles.flex}>
                 <View style={styles.row}>
                   <Text

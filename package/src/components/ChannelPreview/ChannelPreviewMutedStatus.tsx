@@ -1,15 +1,7 @@
 import React from 'react';
 
-import { StyleSheet } from 'react-native';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Mute } from '../../icons';
-
-const styles = StyleSheet.create({
-  iconStyle: {
-    marginRight: 8,
-  },
-});
 
 /**
  * This UI component displays an avatar for a particular channel.
@@ -17,14 +9,10 @@ const styles = StyleSheet.create({
 export const ChannelPreviewMutedStatus = () => {
   const {
     theme: {
-      channelPreview: {
-        mutedStatus: { height, iconStyle, width },
-      },
-      colors: { grey },
+      channelPreview: { mutedStatus },
+      semantics,
     },
   } = useTheme();
 
-  return (
-    <Mute height={height} pathFill={grey} style={[styles.iconStyle, iconStyle]} width={width} />
-  );
+  return <Mute height={20} fill={semantics.textTertiary} width={20} {...mutedStatus} />;
 };

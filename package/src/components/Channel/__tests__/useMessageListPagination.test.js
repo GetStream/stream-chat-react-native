@@ -161,8 +161,10 @@ describe('useMessageListPagination', () => {
 
       await waitFor(() => {
         expect(queryFn).toHaveBeenCalledWith({
-          messages: { id_lt: messages[0].id, limit: 20 },
-          watchers: { limit: 20 },
+          messages: { id_lt: messages[0].id, limit: 25 },
+          watchers: {
+            limit: 25,
+          },
         });
         expect(result.current.state.hasMore).toBe(true);
         expect(result.current.state.messages.length).toBe(40);

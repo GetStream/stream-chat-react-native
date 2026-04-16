@@ -1,28 +1,46 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+
 import { ReactionSortBase } from 'stream-chat';
 
+import { EmojiPickerList } from './EmojiPickerList';
 import { useFetchReactions } from './hooks/useFetchReactions';
 import { ReactionButton } from './ReactionButton';
 
-import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
+import { useBottomSheetContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../hooks';
+import { IconProps } from '../../icons';
+import { MoreEmojis } from '../../icons/emoji-add-1';
+import { primitives } from '../../theme';
 import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
+import { Button } from '../ui';
+import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
-export type MessageUserReactionsProps = Partial<
-  Pick<
-    MessagesContextValue,
-    'MessageUserReactionsAvatar' | 'MessageUserReactionsItem' | 'supportedReactions'
-  >
-> &
+const ITEM_WIDTH = 60;
+
+// @ts-ignore
+const getItemLayout = (_, index: number) => ({
+  length: ITEM_WIDTH,
+  offset: ITEM_WIDTH * index,
+  index,
+});
+
+export type MessageUserReactionsProps = Partial<Pick<MessagesContextValue, 'supportedReactions'>> &
   Partial<Pick<MessageContextValue, 'message'>> & {
     /**
      * An array of reactions
@@ -41,64 +59,107 @@ const sort: ReactionSortBase = {
 export type ReactionSelectorItemType = ReactionData & {
   onSelectReaction: (type: string) => void;
   selectedReaction?: string;
+  count: string;
+};
+
+export const MessageUserReactionsSelectorItem = (props: ReactionSelectorItemType) => {
+  const { Icon, type, onSelectReaction, selectedReaction, count } = props;
+  const SelectorIcon = useCallback(({ ...props }) => <Icon {...props} size={16} />, [Icon]);
+
+  return (
+    <ReactionButton
+      Icon={SelectorIcon}
+      onPress={onSelectReaction}
+      selected={selectedReaction === type}
+      type={type}
+      count={count}
+      size={'sm'}
+    />
+  );
 };
 
 const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSelectorItemType }) => (
-  <ReactionButton
+  <MessageUserReactionsSelectorItem
     Icon={item.Icon}
     key={`${item.type}_${index}`}
-    onPress={item.onSelectReaction}
-    selected={item.selectedReaction === item.type}
+    onSelectReaction={item.onSelectReaction}
+    selectedReaction={item.selectedReaction}
     type={item.type}
+    count={item.count}
   />
 );
 
-export const MessageUserReactions = (props: MessageUserReactionsProps) => {
-  const {
-    message,
-    MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
-    MessageUserReactionsItem: propMessageUserReactionsItem,
-    reactions: propReactions,
-    selectedReaction: propSelectedReaction,
-    supportedReactions: propSupportedReactions,
-  } = props;
-  const reactionTypes = Object.keys(message?.reaction_groups ?? {});
-  const [selectedReaction, setSelectedReaction] = React.useState<string | undefined>(
-    propSelectedReaction ?? reactionTypes[0],
-  );
-  const {
-    MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
-    MessageUserReactionsItem: contextMessageUserReactionsItem,
-    supportedReactions: contextSupportedReactions,
-  } = useMessagesContext();
-  const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
-  const MessageUserReactionsAvatar =
-    propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
-  const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
+const reactionsKeyExtractor = (item: Reaction) => `${item.id}-${item.type}`;
+const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.type;
 
-  const onSelectReaction = (reactionType: string) => {
-    setSelectedReaction(reactionType);
-  };
+export const MessageUserReactions = (props: MessageUserReactionsProps) => {
+  const styles = useStyles();
+  const [showMoreReactions, setShowMoreReactions] = useState(false);
+  const { message, reactions: propReactions, supportedReactions: propSupportedReactions } = props;
+  const selectorListRef = useRef<FlatList>(null);
+  const { close } = useBottomSheetContext();
+  const reactionTypes = useMemo(
+    () => Object.keys(message?.reaction_groups ?? {}),
+    [message?.reaction_groups],
+  );
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
+  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+  const { MessageUserReactionsItem } = useComponentsContext();
+  const { handleReaction } = useMessageContext();
+  const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
+
+  const onSelectReaction = useStableCallback((reactionType: string) => {
+    setSelectedReaction((currentReaction) =>
+      currentReaction === reactionType ? undefined : reactionType,
+    );
+  });
 
   useEffect(() => {
     if (selectedReaction && reactionTypes.length > 0 && !reactionTypes.includes(selectedReaction)) {
-      setSelectedReaction(reactionTypes[0]);
+      setSelectedReaction(undefined);
     }
   }, [reactionTypes, selectedReaction]);
 
-  const messageReactions = useMemo(
+  const selectorReactions: ReactionSelectorItemType[] = useMemo(
     () =>
-      reactionTypes.reduce<ReactionData[]>((acc, reaction) => {
+      reactionTypes.reduce<ReactionSelectorItemType[]>((acc, reaction) => {
         const reactionData = supportedReactions?.find(
           (supportedReaction) => supportedReaction.type === reaction,
         );
         if (reactionData) {
-          acc.push(reactionData);
+          acc.push({
+            ...reactionData,
+            onSelectReaction,
+            selectedReaction,
+            count: (message?.reaction_counts?.[reactionData.type] ?? 0).toString(),
+          });
         }
         return acc;
       }, []),
-    [reactionTypes, supportedReactions],
+    [
+      message?.reaction_counts,
+      onSelectReaction,
+      reactionTypes,
+      selectedReaction,
+      supportedReactions,
+    ],
   );
+
+  const selectedIndex = useMemo(() => {
+    if (!selectedReaction) {
+      return -1;
+    }
+    return selectorReactions.findIndex((reaction) => reaction.type === selectedReaction);
+  }, [selectedReaction, selectorReactions]);
+
+  useEffect(() => {
+    if (selectedIndex !== -1 && selectorListRef.current) {
+      selectorListRef.current?.scrollToIndex({
+        index: selectedIndex,
+        animated: true,
+      });
+    }
+  }, [selectedIndex]);
 
   const {
     loading,
@@ -116,7 +177,6 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
         userReactions: {
           container,
           contentContainer,
-          flatlistColumnContainer,
           flatlistContainer,
           reactionSelectorContainer,
           reactionsText,
@@ -125,6 +185,15 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     },
   } = useTheme();
   const { t } = useTranslationContext();
+
+  const totalReactionCount = useMemo(
+    () =>
+      Object.values(message?.reaction_counts ?? {}).reduce(
+        (acc, reactionCount) => acc + reactionCount,
+        0,
+      ),
+    [message?.reaction_counts],
+  );
 
   const reactions = useMemo(
     () =>
@@ -140,81 +209,122 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   const renderItem = useCallback(
     ({ item }: { item: Reaction }) => (
-      <MessageUserReactionsItem
-        MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-        reaction={item}
-        supportedReactions={supportedReactions ?? []}
+      <MessageUserReactionsItem reaction={item} supportedReactions={supportedReactions ?? []} />
+    ),
+    [MessageUserReactionsItem, supportedReactions],
+  );
+
+  const handleSelectReaction = useStableCallback((emoji: string) => {
+    if (handleReaction) {
+      handleReaction(emoji);
+    }
+    close();
+  });
+
+  const onShowMoreReactionsPress = useStableCallback(() => setShowMoreReactions(true));
+
+  const MoreEmojisIcon = useCallback(
+    (props: IconProps) => (
+      <View style={styles.showMoreReactionsButton}>
+        <MoreEmojis {...props} />
+      </View>
+    ),
+    [styles.showMoreReactionsButton],
+  );
+
+  const ShowMoreReactionsButton = useCallback(
+    () => (
+      <Button
+        accessibilityLabel={'more-reactions-button'}
+        variant={'secondary'}
+        type={'outline'}
+        size={'sm'}
+        LeadingIcon={MoreEmojisIcon}
+        onPress={onShowMoreReactionsPress}
       />
     ),
-    [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
+    [onShowMoreReactionsPress, MoreEmojisIcon],
   );
-
-  const renderHeader = useCallback(
-    () => <Text style={[styles.reactionsText, reactionsText]}>{t('Message Reactions')}</Text>,
-    [t, reactionsText],
-  );
-
-  const selectorReactions: ReactionSelectorItemType[] = messageReactions.map((reaction) => ({
-    ...reaction,
-    onSelectReaction,
-    selectedReaction,
-  }));
 
   return (
     <View
       accessibilityLabel='User Reactions on long press message'
       style={[styles.container, container]}
     >
-      <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
-        <FlatList
-          contentContainerStyle={[styles.contentContainer, contentContainer]}
-          data={selectorReactions}
-          horizontal
-          keyExtractor={(item) => item.type}
-          renderItem={renderSelectorItem}
-        />
-      </View>
+      {showMoreReactions ? (
+        <Animated.View
+          key={'emoji-viewer'}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+        >
+          <EmojiPickerList onSelectReaction={handleSelectReaction} renderFullInitially={false} />
+        </Animated.View>
+      ) : (
+        <Animated.View key={'reaction-details'} exiting={FadeOut.duration(200)}>
+          <Text style={[styles.reactionsText, reactionsText]}>
+            {t('{{count}} Reactions', { count: totalReactionCount })}
+          </Text>
+          <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={[styles.contentContainer, contentContainer]}
+              data={selectorReactions}
+              getItemLayout={getItemLayout}
+              horizontal
+              keyExtractor={reactionSelectorKeyExtractor}
+              ListHeaderComponent={ShowMoreReactionsButton}
+              renderItem={renderSelectorItem}
+              ref={selectorListRef}
+            />
+          </View>
 
-      {!loading ? (
-        <FlatList
-          accessibilityLabel='reaction-flat-list'
-          columnWrapperStyle={[styles.flatListColumnContainer, flatlistColumnContainer]}
-          contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
-          data={reactions}
-          keyExtractor={(item) => item.id}
-          ListHeaderComponent={renderHeader}
-          numColumns={4}
-          onEndReached={loadNextPage}
-          renderItem={renderItem}
-        />
-      ) : null}
+          {!loading ? (
+            <StreamBottomSheetModalFlatList
+              accessibilityLabel='reaction-flat-list'
+              contentContainerStyle={[styles.flatListContainer, flatlistContainer]}
+              data={reactions}
+              keyExtractor={reactionsKeyExtractor}
+              onEndReached={loadNextPage}
+              renderItem={renderItem}
+            />
+          ) : null}
+        </Animated.View>
+      )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    flexGrow: 1,
-    justifyContent: 'space-around',
-    marginVertical: 16,
-  },
-  flatListColumnContainer: {
-    justifyContent: 'space-evenly',
-  },
-  flatListContainer: {
-    justifyContent: 'center',
-  },
-  reactionSelectorContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-  },
-  reactionsText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginVertical: 16,
-    textAlign: 'center',
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+        },
+        contentContainer: {
+          flexGrow: 1,
+          gap: primitives.spacingXs,
+          paddingHorizontal: primitives.spacingMd,
+          paddingVertical: primitives.spacingSm,
+        },
+        flatListContainer: {
+          justifyContent: 'center',
+        },
+        reactionSelectorContainer: {
+          flexDirection: 'row',
+        },
+        reactionsText: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+          paddingVertical: primitives.spacingSm,
+          textAlign: 'center',
+        },
+        showMoreReactionsButton: { paddingHorizontal: primitives.spacingXs },
+      }),
+    [semantics.textPrimary],
+  );
+};

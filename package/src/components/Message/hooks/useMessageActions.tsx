@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { LocalMessage } from 'stream-chat';
 
 import { useMessageActionHandlers } from './useMessageActionHandlers';
+
+import { useUserMuteActive } from './useUserMuteActive';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -12,7 +14,9 @@ import type { MessagesContextValue } from '../../../contexts/messagesContext/Mes
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../../hooks';
 import {
+  BlockUser,
   Copy,
   CurveLineLeftUp,
   Delete,
@@ -21,6 +25,7 @@ import {
   Mute,
   Pin,
   Resend,
+  Sound,
   ThreadReply,
   Unpin,
   UnreadIndicator,
@@ -49,6 +54,7 @@ export type MessageActionsHookProps = Pick<
   | 'handleRetry'
   | 'handleReaction'
   | 'handleThreadReply'
+  | 'handleBlockUser'
   | 'removeMessage'
   | 'deleteReaction'
   | 'retrySendMessage'
@@ -69,7 +75,6 @@ export const useMessageActions = ({
   client,
   deleteMessage: deleteMessageFromContext,
   deleteReaction,
-  dismissOverlay,
   enforceUniqueReaction,
   handleBan,
   handleCopy,
@@ -84,6 +89,7 @@ export const useMessageActions = ({
   handleReaction: handleReactionProp,
   handleRetry,
   handleThreadReply,
+  handleBlockUser,
   message,
   onThreadSelect,
   openThread,
@@ -96,9 +102,7 @@ export const useMessageActions = ({
   setQuotedMessage,
 }: MessageActionsHookProps) => {
   const {
-    theme: {
-      colors: { accent_red, grey },
-    },
+    theme: { semantics },
   } = useTheme();
   const {
     handleCopyMessage,
@@ -113,6 +117,7 @@ export const useMessageActions = ({
     handleToggleMuteUser,
     handleTogglePinMessage,
     handleToggleReaction,
+    handleToggleBlockUser,
   } = useMessageActionHandlers({
     channel,
     client,
@@ -129,223 +134,292 @@ export const useMessageActions = ({
 
   const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
-  const onOpenThread = () => {
+  const onOpenThread = useStableCallback(() => {
     if (onThreadSelect) {
       onThreadSelect(message);
     }
     if (openThread) {
       openThread(message);
     }
-  };
+  });
 
-  const isMuted = (client.mutedUsers || []).some(
-    (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
+  const onBanUser = useStableCallback(async () => {
+    if (message.user?.id) {
+      if (handleBan) {
+        handleBan(message);
+      }
+
+      await handleToggleBanUser();
+    }
+  });
+
+  const onCopyMessage = useStableCallback(() => {
+    //
+    if (handleCopy) {
+      handleCopy(message);
+    }
+    handleCopyMessage();
+  });
+
+  const onDeleteMessage = useStableCallback(() => {
+    if (handleDelete) {
+      handleDelete(message);
+    }
+    handleDeleteMessage();
+  });
+
+  const onDeleteForMeMessage = useStableCallback(() => {
+    if (handleDeleteForMe) {
+      handleDeleteForMe(message);
+    }
+    handleDeleteForMeMessage();
+  });
+
+  const onEditMessage = useStableCallback(() => {
+    if (handleEdit) {
+      handleEdit(message);
+    }
+    handleEditMessage();
+  });
+
+  const onFlagMessage = useStableCallback(() => {
+    if (handleFlag) {
+      handleFlag(message);
+    }
+    handleFlagMessage();
+  });
+
+  const onMarkUnread = useStableCallback(() => {
+    if (handleMarkUnread) {
+      handleMarkUnread(message);
+    }
+    handleMarkUnreadMessage();
+  });
+
+  const onTogglePinMessage = useStableCallback(() => {
+    if (handlePinMessage) {
+      handlePinMessage(message);
+    }
+    handleTogglePinMessage();
+  });
+
+  const onReaction = useStableCallback(async (reactionType: string) => {
+    if (handleReactionProp) {
+      handleReactionProp(message, reactionType);
+    }
+
+    await handleToggleReaction(reactionType);
+  });
+
+  const onMuteUser = useStableCallback(async () => {
+    if (message.user?.id) {
+      if (handleMute) {
+        handleMute(message);
+      }
+
+      await handleToggleMuteUser();
+    }
+  });
+
+  const onQuotedReply = useStableCallback(() => {
+    if (handleQuotedReply) {
+      handleQuotedReply(message);
+    }
+    handleQuotedReplyMessage();
+  });
+
+  const onRetry = useStableCallback(async () => {
+    const messageWithoutReservedFields = removeReservedFields(message);
+    if (handleRetry) {
+      handleRetry(messageWithoutReservedFields as LocalMessage);
+    }
+
+    await handleResendMessage();
+  });
+
+  const onThreadReply = useStableCallback(() => {
+    if (handleThreadReply) {
+      handleThreadReply(message);
+    }
+    onOpenThread();
+  });
+
+  const onBlockUser = useStableCallback(() => {
+    if (handleBlockUser) {
+      handleBlockUser(message.user);
+    }
+
+    handleToggleBlockUser(message.user);
+  });
+
+  const isMuted = useUserMuteActive(message.user);
+  const isBlocked = new Set(client.blockedUsers.getLatestValue().userIds).has(
+    message.user?.id ?? '',
   );
 
-  const banUser: MessageActionType = {
-    action: async () => {
-      dismissOverlay();
-      if (message.user?.id) {
-        if (handleBan) {
-          handleBan(message);
-        }
+  return useMemo(() => {
+    const handleReaction =
+      !error && !selectReaction ? onReaction : !error ? selectReaction?.(message) : undefined;
 
-        await handleToggleBanUser();
-      }
-    },
-    actionType: 'banUser',
-    icon: <UserDelete pathFill={grey} />,
-    title: message.user?.banned ? t('Unban User') : t('Ban User'),
-  };
+    const banUser: MessageActionType = {
+      action: onBanUser,
+      actionType: 'banUser',
+      icon: <UserDelete width={20} height={20} stroke={semantics.accentError} />,
+      title: message.user?.banned ? t('Unban User') : t('Ban User'),
+      titleStyle: { color: semantics.accentError },
+      type: 'destructive',
+    };
 
-  const copyMessage: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleCopy) {
-        handleCopy(message);
-      }
-      handleCopyMessage();
-    },
-    actionType: 'copyMessage',
-    icon: <Copy pathFill={grey} />,
-    title: t('Copy Message'),
-  };
+    const copyMessage: MessageActionType = {
+      action: onCopyMessage,
+      actionType: 'copyMessage',
+      icon: <Copy width={20} height={20} stroke={semantics.textSecondary} />,
+      title: t('Copy Message'),
+      type: 'standard',
+    };
 
-  const deleteMessage: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleDelete) {
-        handleDelete(message);
-      }
-      handleDeleteMessage();
-    },
-    actionType: 'deleteMessage',
-    icon: <Delete fill={accent_red} size={24} />,
-    title: t('Delete Message'),
-    titleStyle: { color: accent_red },
-  };
+    const deleteMessage: MessageActionType = {
+      action: onDeleteMessage,
+      actionType: 'deleteMessage',
+      icon: <Delete stroke={semantics.accentError} width={20} height={20} />,
+      title: t('Delete Message'),
+      titleStyle: { color: semantics.accentError },
+      type: 'destructive',
+    };
 
-  const deleteForMeMessage: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleDeleteForMe) {
-        handleDeleteForMe(message);
-      }
-      handleDeleteForMeMessage();
-    },
-    actionType: 'deleteForMeMessage',
-    icon: <Delete fill={accent_red} size={24} />,
-    title: t('Delete for me'),
-  };
+    const deleteForMeMessage: MessageActionType = {
+      action: onDeleteForMeMessage,
+      actionType: 'deleteForMeMessage',
+      icon: <Delete stroke={semantics.accentError} width={20} height={20} />,
+      title: t('Delete for me'),
+      titleStyle: { color: semantics.accentError },
+      type: 'destructive',
+    };
 
-  const editMessage: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleEdit) {
-        handleEdit(message);
-      }
-      handleEditMessage();
-    },
-    actionType: 'editMessage',
-    icon: <Edit pathFill={grey} />,
-    title: t('Edit Message'),
-  };
+    const editMessage: MessageActionType = {
+      action: onEditMessage,
+      actionType: 'editMessage',
+      icon: <Edit width={20} height={20} stroke={semantics.textSecondary} />,
+      title: t('Edit Message'),
+      type: 'standard',
+    };
 
-  const flagMessage: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleFlag) {
-        handleFlag(message);
-      }
-      handleFlagMessage();
-    },
-    actionType: 'flagMessage',
-    icon: <MessageFlag pathFill={grey} />,
-    title: t('Flag Message'),
-  };
+    const flagMessage: MessageActionType = {
+      action: onFlagMessage,
+      actionType: 'flagMessage',
+      icon: <MessageFlag width={20} height={20} stroke={semantics.textSecondary} />,
+      title: t('Flag Message'),
+      type: 'standard',
+    };
 
-  const markUnread: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleMarkUnread) {
-        handleMarkUnread(message);
-      }
-      handleMarkUnreadMessage();
-    },
-    actionType: 'markUnread',
-    icon: <UnreadIndicator fill={grey} size={24} />,
-    title: t('Mark as Unread'),
-  };
+    const markUnread: MessageActionType = {
+      action: onMarkUnread,
+      actionType: 'markUnread',
+      icon: <UnreadIndicator width={20} height={20} stroke={semantics.textSecondary} />,
+      title: t('Mark as Unread'),
+      type: 'standard',
+    };
 
-  const pinMessage: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handlePinMessage) {
-        handlePinMessage(message);
-      }
-      handleTogglePinMessage();
-    },
-    actionType: 'pinMessage',
-    icon: <Pin pathFill={grey} size={24} />,
-    title: t('Pin to Conversation'),
-  };
+    const pinMessage: MessageActionType = {
+      action: onTogglePinMessage,
+      actionType: 'pinMessage',
+      icon: <Pin width={20} height={20} stroke={semantics.textSecondary} />,
+      title: t('Pin to Conversation'),
+      type: 'standard',
+    };
 
-  const unpinMessage: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handlePinMessage) {
-        handlePinMessage(message);
-      }
-      handleTogglePinMessage();
-    },
-    actionType: 'unpinMessage',
-    icon: <Unpin pathFill={grey} />,
-    title: t('Unpin from Conversation'),
-  };
+    const unpinMessage: MessageActionType = {
+      action: onTogglePinMessage,
+      actionType: 'unpinMessage',
+      icon: <Unpin width={20} height={20} stroke={semantics.textSecondary} />,
+      title: t('Unpin from Conversation'),
+      type: 'standard',
+    };
 
-  const handleReaction = !error
-    ? selectReaction
-      ? selectReaction(message)
-      : async (reactionType: string) => {
-          if (handleReactionProp) {
-            handleReactionProp(message, reactionType);
-          }
+    const muteUser: MessageActionType = {
+      action: onMuteUser,
+      actionType: 'muteUser',
+      icon: isMuted ? (
+        <Sound height={20} stroke={semantics.textSecondary} width={20} />
+      ) : (
+        <Mute fill={semantics.textSecondary} height={20} width={20} />
+      ),
+      title: isMuted ? t('Unmute User') : t('Mute User'),
+      type: 'standard',
+    };
 
-          await handleToggleReaction(reactionType);
-        }
-    : undefined;
+    const quotedReply: MessageActionType = {
+      action: onQuotedReply,
+      actionType: 'quotedReply',
+      icon: <CurveLineLeftUp stroke={semantics.textSecondary} height={20} width={20} />,
+      title: t('Reply'),
+      type: 'standard',
+    };
 
-  const muteUser: MessageActionType = {
-    action: async () => {
-      dismissOverlay();
-      if (message.user?.id) {
-        if (handleMute) {
-          handleMute(message);
-        }
+    const retry: MessageActionType = {
+      action: onRetry,
+      actionType: 'retry',
+      icon: <Resend stroke={semantics.textSecondary} height={20} width={20} />,
+      title: t('Resend'),
+      type: 'standard',
+    };
 
-        await handleToggleMuteUser();
-      }
-    },
-    actionType: 'muteUser',
-    icon: <Mute pathFill={grey} />,
-    title: isMuted ? t('Unmute User') : t('Mute User'),
-  };
+    const threadReply: MessageActionType = {
+      action: onThreadReply,
+      actionType: 'threadReply',
+      icon: <ThreadReply stroke={semantics.textSecondary} height={20} width={20} />,
+      title: t('Thread Reply'),
+      type: 'standard',
+    };
 
-  const quotedReply: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleQuotedReply) {
-        handleQuotedReply(message);
-      }
-      handleQuotedReplyMessage();
-    },
-    actionType: 'quotedReply',
-    icon: <CurveLineLeftUp pathFill={grey} />,
-    title: t('Reply'),
-  };
+    const blockUser: MessageActionType = {
+      action: onBlockUser,
+      actionType: 'blockUser',
+      icon: <BlockUser stroke={semantics.accentError} height={20} width={20} />,
+      title: isBlocked ? t('Unblock User') : t('Block User'),
+      titleStyle: { color: semantics.accentError },
+      type: 'destructive',
+    };
 
-  const retry: MessageActionType = {
-    action: async () => {
-      dismissOverlay();
-      const messageWithoutReservedFields = removeReservedFields(message);
-      if (handleRetry) {
-        handleRetry(messageWithoutReservedFields as LocalMessage);
-      }
-
-      await handleResendMessage();
-    },
-    actionType: 'retry',
-    icon: <Resend pathFill={grey} />,
-    title: t('Resend'),
-  };
-
-  const threadReply: MessageActionType = {
-    action: () => {
-      dismissOverlay();
-      if (handleThreadReply) {
-        handleThreadReply(message);
-      }
-      onOpenThread();
-    },
-    actionType: 'threadReply',
-    icon: <ThreadReply pathFill={grey} />,
-    title: t('Thread Reply'),
-  };
-
-  return {
-    banUser,
-    copyMessage,
-    deleteForMeMessage,
-    deleteMessage,
-    editMessage,
-    flagMessage,
-    handleReaction,
-    markUnread,
-    muteUser,
-    pinMessage,
-    quotedReply,
-    retry,
-    threadReply,
-    unpinMessage,
-  };
+    return {
+      banUser,
+      copyMessage,
+      deleteForMeMessage,
+      deleteMessage,
+      editMessage,
+      flagMessage,
+      handleReaction,
+      markUnread,
+      muteUser,
+      pinMessage,
+      quotedReply,
+      retry,
+      threadReply,
+      unpinMessage,
+      blockUser,
+    };
+  }, [
+    error,
+    isBlocked,
+    isMuted,
+    message,
+    onBanUser,
+    onBlockUser,
+    onCopyMessage,
+    onDeleteForMeMessage,
+    onDeleteMessage,
+    onEditMessage,
+    onFlagMessage,
+    onMarkUnread,
+    onMuteUser,
+    onQuotedReply,
+    onReaction,
+    onRetry,
+    onThreadReply,
+    onTogglePinMessage,
+    selectReaction,
+    semantics.accentError,
+    semantics.textSecondary,
+    t,
+  ]);
 };

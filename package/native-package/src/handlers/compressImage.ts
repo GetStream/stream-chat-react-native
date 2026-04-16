@@ -22,7 +22,6 @@ export const compressImage = async ({
       Math.min(Math.max(0, compressImageQuality), 1) * 100,
       0,
       undefined,
-      false,
       { mode: 'cover' },
     );
     return compressedUri;

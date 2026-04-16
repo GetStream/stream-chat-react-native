@@ -1,10 +1,13 @@
-import React, { ComponentType } from 'react';
+import React from 'react';
 import { Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 
 import type { Channel, StreamChat } from 'stream-chat';
 
+import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
+import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   getOrCreateChannelApi,
   GetOrCreateChannelApiParams,
@@ -19,33 +22,37 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelPreview } from '../ChannelPreview';
-import type { ChannelPreviewMessengerProps } from '../ChannelPreviewMessenger';
 
 import '@testing-library/jest-native/extend-expect';
+import { LastMessageType } from '../hooks/useChannelPreviewData';
 
 type ChannelPreviewUIComponentProps = {
   channel: {
     id: string;
   };
-  latestMessagePreview: {
-    messageObject: {
-      text: string;
-    };
-  };
+  lastMessage: LastMessageType;
   unread: number;
+  muted: boolean;
 };
 
-const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => (
-  <>
-    <Text testID='channel-id'>{props.channel.id}</Text>
-    <Text testID='unread-count'>{props.unread}</Text>
-    <Text testID='latest-message'>
-      {props.latestMessagePreview &&
-        props.latestMessagePreview.messageObject &&
-        props.latestMessagePreview.messageObject.text}
-    </Text>
-  </>
-);
+const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
+const mockChannelSwipableWrapper = jest.fn(({ children }: React.PropsWithChildren) => (
+  <Text testID='swipe-wrapper'>{children}</Text>
+));
+
+jest.mock('../ChannelSwipableWrapper', () => ({
+  ChannelSwipableWrapper: (...args: unknown[]) => mockChannelSwipableWrapper(...args),
+}));
+
+const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => {
+  return (
+    <>
+      <Text testID='channel-id'>{props.channel.id}</Text>
+      <Text testID='unread-count'>{props.unread}</Text>
+      <Text testID='latest-message'>{props.lastMessage?.text}</Text>
+    </>
+  );
+};
 
 const initChannelFromData = async (
   chatClient: StreamChat,
@@ -60,6 +67,7 @@ const initChannelFromData = async (
   channel.initialized = true;
   channel.lastMessage = jest.fn().mockReturnValue(generateMessage());
   channel.muteStatus = jest.fn().mockReturnValue({ muted: false });
+  channel.state.messages = [generateMessage()];
 
   return channel;
 };
@@ -76,12 +84,9 @@ describe('ChannelPreview', () => {
 
     return (
       <Chat client={chatClient}>
-        <ChannelPreview
-          {...props}
-          channel={channel}
-          client={chatClient}
-          Preview={ChannelPreviewUIComponent as ComponentType<ChannelPreviewMessengerProps>}
-        />
+        <WithComponents overrides={{ ChannelPreview: ChannelPreviewUIComponent }}>
+          <ChannelPreview {...props} channel={channel} client={chatClient} />
+        </WithComponents>
       </Chat>
     );
   };
@@ -113,8 +118,6 @@ describe('ChannelPreview', () => {
 
   describe('notification.mark_read event', () => {
     it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
-      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
-
       channel = await initChannelFromData(chatClient);
 
       channel.countUnread = jest.fn().mockReturnValue(10);
@@ -342,7 +345,7 @@ describe('ChannelPreview', () => {
     });
   });
 
-  it('should update the lastest message on "message.new" event', async () => {
+  it('should update the latest message on "message.new" event', async () => {
     const c = generateChannelResponse();
     await useInitializeChannel(c);
 
@@ -404,6 +407,89 @@ describe('ChannelPreview', () => {
 
     await waitFor(() => {
       expect(getByText(message.i18n.no_text)).toBeTruthy();
+    });
+  });
+
+  describe('swipeActionsEnabled', () => {
+    const ChannelDetailsBottomSheetOverride = () => null;
+
+    const SwipePreview = ({ lastMessage, muted, unread }: ChannelPreviewUIComponentProps) => (
+      <>
+        <Text testID='preview-muted'>{`${muted}`}</Text>
+        <Text testID='preview-unread'>{`${unread}`}</Text>
+        <Text testID='preview-last-message'>{lastMessage?.text ?? ''}</Text>
+      </>
+    );
+
+    const SwipeTestComponent = ({
+      channelDetailsBottomSheet,
+      swipeActionsEnabled,
+    }: {
+      channelDetailsBottomSheet?: React.ComponentType;
+      swipeActionsEnabled: boolean;
+    }) => {
+      if (channel === null) {
+        return null;
+      }
+
+      return (
+        <Chat client={chatClient}>
+          <WithComponents
+            overrides={{
+              ChannelDetailsBottomSheet: channelDetailsBottomSheet,
+              ChannelPreview: SwipePreview,
+            }}
+          >
+            <ChannelsProvider
+              value={
+                {
+                  getChannelActionItems: undefined,
+                  swipeActionsEnabled,
+                } as unknown as ChannelsContextValue
+              }
+            >
+              <ChannelPreview channel={channel} client={chatClient} />
+            </ChannelsProvider>
+          </WithComponents>
+        </Chat>
+      );
+    };
+
+    beforeEach(async () => {
+      mockChannelSwipableWrapper.mockClear();
+      channel = await initChannelFromData(chatClient);
+    });
+
+    it('does not render ChannelSwipableWrapper when swipeActionsEnabled is false', async () => {
+      const { getByTestId, queryByTestId } = render(
+        <SwipeTestComponent swipeActionsEnabled={false} />,
+      );
+
+      await waitFor(() => expect(getByTestId('preview-unread')).toHaveTextContent('0'));
+      expect(queryByTestId('swipe-wrapper')).toBeNull();
+      expect(mockChannelSwipableWrapper).not.toHaveBeenCalled();
+    });
+
+    it('renders ChannelSwipableWrapper when swipeActionsEnabled is true', async () => {
+      const { getByTestId } = render(<SwipeTestComponent swipeActionsEnabled={true} />);
+
+      await waitFor(() => expect(getByTestId('swipe-wrapper')).toBeTruthy());
+      expect(mockChannelSwipableWrapper).toHaveBeenCalled();
+    });
+
+    it('makes ChannelDetailsBottomSheet override available via WithComponents', async () => {
+      render(
+        <SwipeTestComponent
+          swipeActionsEnabled={true}
+          channelDetailsBottomSheet={ChannelDetailsBottomSheetOverride}
+        />,
+      );
+
+      // ChannelDetailsBottomSheet is now read from useComponentsContext() by
+      // ChannelSwipableWrapper rather than passed as a prop from ChannelPreview.
+      // Since ChannelSwipableWrapper is mocked, we verify the override is
+      // provided via WithComponents (set up in SwipeTestComponent).
+      await waitFor(() => expect(mockChannelSwipableWrapper).toHaveBeenCalled());
     });
   });
 });

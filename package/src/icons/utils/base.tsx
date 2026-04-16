@@ -1,22 +1,21 @@
 import React from 'react';
 import Svg, { Path, PathProps, SvgProps } from 'react-native-svg';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
 export type IconProps = Partial<SvgProps> &
   Omit<RootPathProps, 'd'> & {
     height?: number;
     width?: number;
+    size?: number;
   };
 
 export const RootSvg = (props: IconProps) => {
-  const { children, height = 24, viewBox = '0 0 24 24', width = 24 } = props;
+  const { children, height, size, viewBox = '0 0 24 24', width } = props;
   return (
     <Svg
       {...{
-        height,
+        height: height ?? size ?? 24,
         viewBox,
-        width,
+        width: width ?? size ?? 24,
       }}
       {...props}
     >
@@ -31,13 +30,7 @@ export type RootPathProps = Pick<PathProps, 'd'> & {
 };
 
 export const RootPath = (props: RootPathProps) => {
-  const {
-    theme: {
-      colors: { black },
-    },
-  } = useTheme();
-
-  const { d, pathFill = black, pathOpacity } = props;
+  const { d, pathFill = 'black', pathOpacity } = props;
   return (
     <Path
       {...{

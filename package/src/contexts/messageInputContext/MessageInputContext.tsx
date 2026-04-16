@@ -7,9 +7,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Keyboard, Linking, TextInput, TextInputProps } from 'react-native';
+import { Alert, Linking, TextInput, TextInputProps } from 'react-native';
 
-import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
+import { lookup as lookupMimeType } from 'mime-types';
 import {
   LocalMessage,
   MessageComposer,
@@ -18,55 +18,27 @@ import {
   Message as StreamMessage,
   UpdateMessageOptions,
   UploadRequestFn,
-  UserResponse,
 } from 'stream-chat';
 
-import { useAttachmentManagerState } from './hooks/useAttachmentManagerState';
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageComposer } from './hooks/useMessageComposer';
 
-import {
-  AutoCompleteSuggestionHeaderProps,
-  AutoCompleteSuggestionItemProps,
-  AutoCompleteSuggestionListProps,
-  PollContentProps,
-  StopMessageStreamingButtonProps,
-} from '../../components';
-import { parseLinksFromText } from '../../components/Message/MessageSimple/utils/parseLinks';
-import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
-import { AttachmentUploadPreviewListProps } from '../../components/MessageInput/AttachmentUploadPreviewList';
-import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
-import type { AttachmentUploadProgressIndicatorProps } from '../../components/MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
-import { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
-import { FileAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
-import { ImageAttachmentUploadPreviewProps } from '../../components/MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-import type { AudioRecorderProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecorder';
-import type { AudioRecordingButtonProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingButton';
-import type { AudioRecordingInProgressProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingInProgress';
-import type { AudioRecordingLockIndicatorProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
-import type { AudioRecordingPreviewProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingPreview';
-import type { AudioRecordingWaveformProps } from '../../components/MessageInput/components/AudioRecorder/AudioRecordingWaveform';
-import type { CommandInputProps } from '../../components/MessageInput/components/CommandInput';
-import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
-import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
-import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
-import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
-import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
-import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
-import type { SendButtonProps } from '../../components/MessageInput/SendButton';
+import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { parseLinksFromText } from '../../components/Message/MessageItemView/utils/parseLinks';
+import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import {
   createAttachmentsCompositionMiddleware,
   createDraftAttachmentsCompositionMiddleware,
+  setupVideoAttachmentPreviewMiddleware,
 } from '../../middlewares/attachments';
 
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
+import { AudioRecorderManager } from '../../state-store/audio-recorder-manager';
+import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
-import {
-  AttachmentPickerIconProps,
-  useAttachmentPickerContext,
-} from '../attachmentPickerContext/AttachmentPickerContext';
+import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { useChannelContext } from '../channelContext/ChannelContext';
 import { useChatContext } from '../chatContext/ChatContext';
 import { useMessageComposerAPIContext } from '../messageComposerContext/MessageComposerAPIContext';
@@ -79,9 +51,6 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type LocalMessageInputContext = {
   closeAttachmentPicker: () => void;
-  /** The time at which the active cooldown will end */
-  cooldownEndsAt: Date;
-
   inputBoxRef: React.RefObject<TextInput | null>;
   openAttachmentPicker: () => void;
   /**
@@ -89,7 +58,6 @@ export type LocalMessageInputContext = {
    */
   pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
-  selectedPicker?: 'images';
   sendMessage: () => Promise<void>;
   /**
    * Ref callback to set reference on input box
@@ -98,9 +66,15 @@ export type LocalMessageInputContext = {
   /**
    * Function for taking a photo and uploading it
    */
-  takeAndUploadImage: (mediaType?: MediaTypes) => Promise<void>;
-  toggleAttachmentPicker: () => void;
+  takeAndUploadImage: (
+    mediaType?: MediaTypes,
+  ) => Promise<{ askToOpenSettings?: boolean; canceled?: boolean } | undefined>;
   uploadNewFile: (file: File) => Promise<void>;
+  audioRecorderManager: AudioRecorderManager;
+  startVoiceRecording: () => Promise<boolean | undefined>;
+  deleteVoiceRecording: () => Promise<void>;
+  uploadVoiceRecording: (sendOnComplete: boolean) => Promise<void>;
+  stopVoiceRecording: () => Promise<void>;
 };
 
 export type InputMessageInputContextValue = {
@@ -115,79 +89,20 @@ export type InputMessageInputContextValue = {
    */
   asyncMessagesMinimumPressDuration: number;
   /**
-   * When it’s enabled, recorded messages won’t be sent immediately. Instead they will “stack up” in the composer
-   * allowing the user to send multiple voice recording as part of the same message.
+   * Controls whether a completed voice recording is sent immediately or added to the composer first.
+   * When true, the recording is sent immediately on completion.
+   * When false, the recording is added to the composer and only sent if the user decides to.
    */
-  asyncMessagesMultiSendEnabled: boolean;
+  audioRecordingSendOnComplete: boolean;
   /**
    * Controls how many pixels to the leading side the user has to scroll in order to cancel the recording of a voice
    * message.
    */
   asyncMessagesSlideToCancelDistance: number;
   /**
-   * Custom UI component for attach button.
-   *
-   * Defaults to and accepts same props as:
-   * [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
-   */
-  AttachButton: React.ComponentType<AttachButtonProps>;
-  /**
-   * Custom UI component for audio recorder UI.
-   *
-   * Defaults to and accepts same props as:
-   * [AudioRecorder](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/AudioRecorder.tsx)
-   */
-  AudioRecorder: React.ComponentType<AudioRecorderProps>;
-  /**
    * Controls whether the async audio feature is enabled.
    */
   audioRecordingEnabled: boolean;
-  /**
-   * Custom UI component to render audio recording in progress.
-   *
-   * **Default**
-   * [AudioRecordingInProgress](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingInProgress.tsx)
-   */
-  AudioRecordingInProgress: React.ComponentType<AudioRecordingInProgressProps>;
-  /**
-   * Custom UI component for audio recording lock indicator.
-   *
-   * Defaults to and accepts same props as:
-   * [AudioRecordingLockIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingLockIndicator.tsx)
-   */
-  AudioRecordingLockIndicator: React.ComponentType<AudioRecordingLockIndicatorProps>;
-  /**
-   * Custom UI component to render audio recording preview.
-   *
-   * **Default**
-   * [AudioRecordingPreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingPreview.tsx)
-   */
-  AudioRecordingPreview: React.ComponentType<AudioRecordingPreviewProps>;
-  /**
-   * Custom UI component to render audio recording waveform.
-   *
-   * **Default**
-   * [AudioRecordingWaveform](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingWaveform.tsx)
-   */
-  AudioRecordingWaveform: React.ComponentType<AudioRecordingWaveformProps>;
-
-  AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
-  AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps>;
-  AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps>;
-
-  /**
-   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachmentpicker.
-   *
-   * **Default**
-   * [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
-   */
-  AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
-  /**
-   * Height of the image picker bottom sheet handle.
-   * @type number
-   * @default 20
-   */
-  attachmentPickerBottomSheetHandleHeight: number;
   /**
    * Height of the image picker bottom sheet when opened.
    * @type number
@@ -195,75 +110,13 @@ export type InputMessageInputContextValue = {
    */
   attachmentPickerBottomSheetHeight: number;
   /**
-   * Custom UI component for AttachmentPickerSelectionBar
-   *
-   * **Default: **
-   * [AttachmentPickerSelectionBar](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/AttachmentPicker/components/AttachmentPickerSelectionBar.tsx)
-   */
-  AttachmentPickerSelectionBar: React.ComponentType;
-  /**
    * Height of the attachment selection bar displayed on the attachment picker.
    * @type number
    * @default 52
+   * @deprecated Please remove this in scope of V9
    */
   attachmentSelectionBarHeight: number;
 
-  AttachmentUploadPreviewList: React.ComponentType<AttachmentUploadPreviewListProps>;
-  /**
-   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
-   */
-  CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for the poll creation icon.
-   *
-   * **Default: **
-   * [CreatePollIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CreatePollIcon.tsx)
-   */
-  CreatePollIcon: React.ComponentType;
-  /**
-   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
-   */
-  FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
-   *
-   * **Default: **
-   * [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
-   */
-  ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  /**
-   * Custom UI component for Android's video recorder selector icon.
-   *
-   * **Default: **
-   * [VideoRecorderSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/VideoRecorderSelectorIcon.tsx)
-   */
-  VideoRecorderSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
-  AudioAttachmentUploadPreview: React.ComponentType<AudioAttachmentUploadPreviewProps>;
-  ImageAttachmentUploadPreview: React.ComponentType<ImageAttachmentUploadPreviewProps>;
-  FileAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
-  VideoAttachmentUploadPreview: React.ComponentType<FileAttachmentUploadPreviewProps>;
-  /**
-   * Custom UI component for commands button.
-   *
-   * Defaults to and accepts same props as:
-   * [CommandsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/commands-button/)
-   */
-  CommandsButton: React.ComponentType<CommandsButtonProps>;
-  /**
-   * Custom UI component to display the remaining cooldown a user will have to wait before
-   * being allowed to send another message. This component is displayed in place of the
-   * send button for the MessageInput component.
-   *
-   * **default**
-   * [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
-   */
-  CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editMessage: (params: {
     localMessage: LocalMessage;
     options?: UpdateMessageOptions;
@@ -279,49 +132,11 @@ export type InputMessageInputContextValue = {
   /** When false, ImageSelectorIcon will be hidden */
   hasImagePicker: boolean;
 
-  InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps>;
-  CommandInput: React.ComponentType<CommandInputProps>;
-  InputReplyStateHeader: React.ComponentType;
-  /**
-   * Custom UI component for more options button.
-   *
-   * Defaults to and accepts same props as:
-   * [MoreOptionsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/more-options-button/)
-   */
-  MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
-
-  /**
-   * Custom UI component for send button.
-   *
-   * Defaults to and accepts same props as:
-   * [SendButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/send-button/)
-   */
-  SendButton: React.ComponentType<SendButtonProps>;
   sendMessage: (params: {
     localMessage: LocalMessage;
     message: StreamMessage;
     options?: SendMessageOptions;
   }) => Promise<void>;
-  /**
-   * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
-   * When ticked, message will also be sent in parent channel.
-   */
-  ShowThreadMessageInChannelButton: React.ComponentType<{
-    threadList?: boolean;
-  }>;
-
-  /**
-   * Custom UI component for audio recording mic button.
-   *
-   * Defaults to and accepts same props as:
-   * [AudioRecordingButton](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/components/AudioRecorder/AudioRecordingButton.tsx)
-   */
-  StartAudioRecordingButton: React.ComponentType<AudioRecordingButtonProps>;
-  StopMessageStreamingButton: React.ComponentType<StopMessageStreamingButtonProps> | null;
-  /**
-   * Custom UI component to render upload progress indicator on attachment preview.
-   */
-  AttachmentUploadProgressIndicator: React.ComponentType<AttachmentUploadProgressIndicatorProps>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
@@ -339,9 +154,9 @@ export type InputMessageInputContextValue = {
   compressImageQuality?: number;
 
   /**
-   * Override the entire content of the CreatePoll component. The component has full access to the useCreatePollContext() hook.
-   * */
-  CreatePollContent?: React.ComponentType<PollContentProps>;
+   * Vertical gap between poll options in poll creation dialog.
+   */
+  createPollOptionGap?: number;
 
   /**
    * Override file upload request
@@ -358,34 +173,13 @@ export type InputMessageInputContextValue = {
   handleAttachButtonPress?: () => void;
 
   /**
-   * Custom UI component for AutoCompleteInput.
-   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
+   * Whether the message input is floating or not.
+   * @type boolean
+   * @default false
    */
-  Input?: React.ComponentType<
-    Omit<MessageInputProps, 'Input'> &
-      InputButtonsProps & {
-        getUsers: () => UserResponse[];
-      }
-  >;
-  /**
-   * Custom UI component to override buttons on left side of input box
-   * Defaults to
-   * [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/InputButtons.tsx),
-   * which contain following components/buttons:
-   *
-   *  - AttachButton
-   *  - CommandsButtom
-   *
-   * You have access to following prop functions:
-   *
-   * - closeAttachmentPicker
-   * - openAttachmentPicker
-   * - openCommandsPicker
-   * - toggleAttachmentPicker
-   */
-  InputButtons?: React.ComponentType<InputButtonsProps>;
+  messageInputFloating: boolean;
+
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
-  SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
    *
@@ -395,6 +189,7 @@ export type InputMessageInputContextValue = {
    */
   setInputRef?: (ref: TextInput | null) => void;
   showPollCreationDialog?: boolean;
+  messageInputHeightStore: MessageInputHeightStore;
 };
 
 export type MessageInputContextValue = LocalMessageInputContext &
@@ -410,10 +205,11 @@ export const MessageInputProvider = ({
 }: PropsWithChildren<{
   value: InputMessageInputContextValue;
 }>) => {
-  const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
+  const { closePicker, openPicker, attachmentPickerStore, disableAttachmentPicker } =
     useAttachmentPickerContext();
   const { client } = useChatContext();
   const channelCapabilities = useOwnCapabilitiesContext();
+  const [audioRecorderManager] = useState(new AudioRecorderManager());
 
   const { uploadAbortControllerRef } = useChannelContext();
   const { clearEditingState } = useMessageComposerAPIContext();
@@ -431,11 +227,8 @@ export const MessageInputProvider = ({
     allowSendBeforeAttachmentsUpload,
   } = value;
 
-  const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown();
-
   const messageComposer = useMessageComposer();
   const { attachmentManager, editedMessage } = messageComposer;
-  const { availableUploadSlots } = useAttachmentManagerState();
 
   /**
    * These are the RN SDK specific middlewares that are added to the message composer to provide the default behaviour.
@@ -446,6 +239,8 @@ export const MessageInputProvider = ({
     if (value.doFileUploadRequest) {
       attachmentManager.setCustomUploadFn(value.doFileUploadRequest);
     }
+
+    setupVideoAttachmentPreviewMiddleware(messageComposer);
 
     if (allowSendBeforeAttachmentsUpload) {
       messageComposer.compositionMiddlewareExecutor.replace([
@@ -467,7 +262,7 @@ export const MessageInputProvider = ({
    * Function for capturing a photo and uploading it
    */
   const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
@@ -477,7 +272,7 @@ export const MessageInputProvider = ({
       mediaType,
     });
 
-    if (file.askToOpenSettings) {
+    if (file.askToOpenSettings && disableAttachmentPicker) {
       Alert.alert(
         t('Allow camera access in device settings'),
         t('Device camera is used to take photos or videos.'),
@@ -488,23 +283,27 @@ export const MessageInputProvider = ({
       );
     }
 
-    if (file.cancelled) {
-      return;
+    if (file.askToOpenSettings || file.cancelled) {
+      return file;
     }
 
     await uploadNewFile(file);
+
+    return file;
   });
 
   /**
    * Function for picking a photo from native image picker and uploading it
    */
   const pickAndUploadImageFromNativePicker = useStableCallback(async () => {
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
 
-    const result = await NativeHandlers.pickImage({ maxNumberOfFiles: availableUploadSlots });
+    const result = await NativeHandlers.pickImage({
+      maxNumberOfFiles: attachmentManager.availableUploadSlots,
+    });
     if (result.askToOpenSettings) {
       Alert.alert(
         t('Allow access to your Gallery'),
@@ -533,13 +332,13 @@ export const MessageInputProvider = ({
       return;
     }
 
-    if (!availableUploadSlots) {
+    if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('Maximum number of files reached'));
       return;
     }
 
     const result = await NativeHandlers.pickDocument({
-      maxNumberOfFiles: availableUploadSlots,
+      maxNumberOfFiles: attachmentManager.availableUploadSlots,
     });
 
     if (result.cancelled || !result.assets?.length) {
@@ -555,33 +354,20 @@ export const MessageInputProvider = ({
    * Function to open the attachment picker if the MediaLibary is installed.
    */
   const openAttachmentPicker = useCallback(() => {
-    Keyboard.dismiss();
-    setSelectedPicker('images');
+    dismissKeyboard();
+    attachmentPickerStore.setSelectedPicker('images');
     openPicker();
-  }, [openPicker, setSelectedPicker]);
+  }, [attachmentPickerStore, openPicker]);
 
   /**
    * Function to close the attachment picker if the MediaLibrary is installed.
    */
   const closeAttachmentPicker = useCallback(() => {
-    setSelectedPicker(undefined);
+    attachmentPickerStore.setSelectedPicker(undefined);
     closePicker();
-  }, [closePicker, setSelectedPicker]);
-
-  /**
-   * Function to toggle the attachment picker if the MediaLibrary is installed.
-   */
-  const toggleAttachmentPicker = useCallback(() => {
-    if (selectedPicker) {
-      closeAttachmentPicker();
-    } else {
-      openAttachmentPicker();
-    }
-  }, [closeAttachmentPicker, openAttachmentPicker, selectedPicker]);
+  }, [closePicker, attachmentPickerStore]);
 
   const sendMessage = useStableCallback(async () => {
-    startCooldown();
-
     if (inputBoxRef.current) {
       inputBoxRef.current.clear();
     }
@@ -652,13 +438,26 @@ export const MessageInputProvider = ({
 
   const uploadNewFile = useStableCallback(async (file: File) => {
     try {
+      if (!file?.uri) {
+        return;
+      }
+
+      const fallbackMimeType =
+        lookupMimeType(file.name || file.uri || '') ||
+        (file.duration ? 'video/*' : file.height && file.width ? 'image/*' : undefined);
+      const normalizedFile = {
+        ...file,
+        type:
+          file.type ||
+          (typeof fallbackMimeType === 'string' ? fallbackMimeType : 'application/octet-stream'),
+      };
       uploadAbortControllerRef.current.set(file.name, client.createAbortControllerForNextRequest());
-      const fileURI = file.type.includes('image')
-        ? await compressedImageURI(file, value.compressImageQuality)
-        : file.uri;
-      const updatedFile = { ...file, uri: fileURI };
+      const fileURI = normalizedFile.type.includes('image')
+        ? await compressedImageURI(normalizedFile, value.compressImageQuality)
+        : normalizedFile.uri;
+      const updatedFile = { ...normalizedFile, uri: fileURI };
       await attachmentManager.uploadFiles([updatedFile]);
-      uploadAbortControllerRef.current.delete(file.name);
+      uploadAbortControllerRef.current.delete(normalizedFile.name);
     } catch (error) {
       if (
         error instanceof Error &&
@@ -678,9 +477,11 @@ export const MessageInputProvider = ({
     defaultOpenPollCreationDialog();
   });
 
+  const { deleteVoiceRecording, startVoiceRecording, stopVoiceRecording, uploadVoiceRecording } =
+    useAudioRecorder({ audioRecorderManager, sendMessage });
+
   const messageInputContext = useCreateMessageInputContext({
     closeAttachmentPicker,
-    cooldownEndsAt,
     inputBoxRef,
     openAttachmentPicker,
     pickAndUploadImageFromNativePicker,
@@ -688,14 +489,17 @@ export const MessageInputProvider = ({
     setInputBoxRef,
     takeAndUploadImage,
     thread,
-    toggleAttachmentPicker,
     uploadNewFile,
     ...value,
     closePollCreationDialog,
     openPollCreationDialog,
-    selectedPicker,
     sendMessage, // overriding the originally passed in sendMessage
     showPollCreationDialog,
+    audioRecorderManager,
+    startVoiceRecording,
+    deleteVoiceRecording,
+    uploadVoiceRecording,
+    stopVoiceRecording,
   });
   return (
     <MessageInputContext.Provider

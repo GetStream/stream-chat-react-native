@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { ArrowRight, Search, useTheme } from 'stream-chat-react-native';
+import { Search, useTheme } from 'stream-chat-react-native';
 
+import { RightArrow } from '../icons/RightArrow';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -39,6 +41,12 @@ const styles = StyleSheet.create({
   navigationButton: {
     paddingRight: 8,
   },
+  searchButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 8,
+    paddingRight: 4,
+  },
   userGridItemContainer: { marginHorizontal: 8, width: 64 },
 });
 
@@ -50,15 +58,9 @@ type RightArrowButtonProps = {
 const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
   const { disabled, onPress } = props;
 
-  const {
-    theme: {
-      colors: { accent_blue },
-    },
-  } = useTheme();
-
   return (
     <TouchableOpacity disabled={disabled} onPress={onPress} style={styles.navigationButton}>
-      <ArrowRight pathFill={disabled ? 'transparent' : accent_blue} />
+      <RightArrow height={24} width={24} />
     </TouchableOpacity>
   );
 };
@@ -74,15 +76,26 @@ type Props = {
 
 export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) => {
   const { chatClient } = useAppContext();
+  const searchInputRef = useRef<TextInput>(null);
 
   const {
-    theme: {
-      colors: { black, border, grey, white },
-    },
+    theme: { semantics },
   } = useTheme();
+  const { black, grey, white } = useLegacyColors();
 
   const { onChangeSearchText, onFocusInput, removeUser, reset, searchText, selectedUsers } =
     useUserSearchContext();
+
+  const onBackPress = useCallback(() => {
+    reset();
+
+    if (!navigation.canGoBack()) {
+      navigation.reset({ index: 0, routes: [{ name: 'MessagingScreen' }] });
+      return;
+    }
+
+    navigation.goBack();
+  }, [navigation, reset]);
 
   const onRightArrowPress = () => {
     if (selectedUsers.length === 0) {
@@ -91,6 +104,10 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
     navigation.navigate('NewGroupChannelAssignNameScreen');
   };
 
+  const focusSearchInput = useCallback(() => {
+    searchInputRef.current?.focus();
+  }, []);
+
   if (!chatClient) {
     return null;
   }
@@ -98,7 +115,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
   return (
     <View style={styles.container}>
       <ScreenHeader
-        onBack={reset}
+        onBack={onBackPress}
         // eslint-disable-next-line react/no-unstable-nested-components
         RightContent={() => (
           <RightArrowButton disabled={selectedUsers.length === 0} onPress={onRightArrowPress} />
@@ -111,17 +128,17 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
             styles.inputBoxContainer,
             {
               backgroundColor: white,
-              borderColor: border,
+              borderColor: semantics.borderCoreDefault,
               marginBottom: selectedUsers.length === 0 ? 8 : 16,
             },
           ]}
         >
-          <Search pathFill={black} />
           <TextInput
             onChangeText={onChangeSearchText}
             onFocus={onFocusInput}
             placeholder='Search'
             placeholderTextColor={grey}
+            ref={searchInputRef}
             style={[
               styles.inputBox,
               {
@@ -130,6 +147,9 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
             ]}
             value={searchText}
           />
+          <TouchableOpacity hitSlop={8} onPress={focusSearchInput} style={styles.searchButton}>
+            <Search height={20} pathFill={black} width={20} />
+          </TouchableOpacity>
         </View>
         <FlatList
           data={selectedUsers}

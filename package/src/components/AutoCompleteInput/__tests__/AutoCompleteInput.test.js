@@ -113,29 +113,6 @@ describe('AutoCompleteInput', () => {
     });
   });
 
-  it('should style the text input with maxHeight that is set by the layout', async () => {
-    const channelProps = { channel };
-    const props = { numberOfLines: 10 };
-
-    renderComponent({ channelProps, client, props });
-
-    const { queryByTestId } = screen;
-
-    const input = queryByTestId('auto-complete-text-input');
-
-    act(() => {
-      fireEvent(input, 'contentSizeChange', {
-        nativeEvent: {
-          contentSize: { height: 100 },
-        },
-      });
-    });
-
-    await waitFor(() => {
-      expect(input.props.style[1].maxHeight).toBe(1000);
-    });
-  });
-
   it('should call the textComposer setSelection when the onSelectionChange is triggered', async () => {
     const { textComposer } = channel.messageComposer;
 
@@ -166,12 +143,12 @@ describe('AutoCompleteInput', () => {
 
   // TODO: Add a test for command
   it.each([
-    { cooldownActive: false, result: 'Send a message' },
-    { cooldownActive: true, result: 'Slow mode ON' },
+    { cooldownRemainingSeconds: undefined, result: 'Send a message' },
+    { cooldownRemainingSeconds: 10, result: 'Slow mode, wait 10s...' },
   ])('should have the placeholderText as Slow mode ON when cooldown is active', async (data) => {
     const channelProps = { channel };
     const props = {
-      cooldownActive: data.cooldownActive,
+      cooldownRemainingSeconds: data.cooldownRemainingSeconds,
     };
 
     renderComponent({ channelProps, client, props });

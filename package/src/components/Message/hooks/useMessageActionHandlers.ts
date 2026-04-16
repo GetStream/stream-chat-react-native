@@ -1,4 +1,9 @@
+import { useMemo } from 'react';
 import { Alert } from 'react-native';
+
+import { UserResponse } from 'stream-chat';
+
+import { useUserMuteActive } from './useUserMuteActive';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -7,8 +12,21 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import {
+  useAfterKeyboardOpenCallback,
+  usePortalSettledCallback,
+  useStableCallback,
+} from '../../../hooks';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import { NativeHandlers } from '../../../native';
+
+export const useWithPortalKeyboardSafety = <T extends unknown[]>(
+  callback: (...args: T) => void,
+) => {
+  const callbackAfterKeyboardOpen = useAfterKeyboardOpenCallback(callback);
+
+  return usePortalSettledCallback(callbackAfterKeyboardOpen);
+};
 
 export const useMessageActionHandlers = ({
   channel,
@@ -29,25 +47,23 @@ export const useMessageActionHandlers = ({
   Pick<MessageContextValue, 'message'> &
   Pick<MessageComposerAPIContextValue, 'setEditingState' | 'setQuotedMessage'>) => {
   const { t } = useTranslationContext();
-  const handleResendMessage = () => retrySendMessage(message);
+  const handleResendMessage = useStableCallback(() => retrySendMessage(message));
   const translatedMessage = useTranslatedMessage(message);
 
-  const handleQuotedReplyMessage = () => {
+  const isMuted = useUserMuteActive(message.user);
+
+  const handleQuotedReplyMessage = useStableCallback(() => {
     setQuotedMessage(message);
-  };
+  });
 
-  const isMuted = (client.mutedUsers || []).some(
-    (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
-  );
-
-  const handleCopyMessage = () => {
+  const handleCopyMessage = useStableCallback(() => {
     if (!message.text) {
       return;
     }
     NativeHandlers.setClipboardString(translatedMessage?.text ?? message.text);
-  };
+  });
 
-  const handleDeleteMessage = () => {
+  const handleDeleteMessage = useStableCallback(() => {
     if (!message.id) {
       return;
     }
@@ -66,17 +82,17 @@ export const useMessageActionHandlers = ({
       ],
       { cancelable: false },
     );
-  };
+  });
 
-  const handleDeleteForMeMessage = async () => {
+  const handleDeleteForMeMessage = useStableCallback(async () => {
     if (!message.id) {
       return;
     }
 
     await deleteMessage(message, { deleteForMe: true });
-  };
+  });
 
-  const handleToggleMuteUser = async () => {
+  const handleToggleMuteUser = useStableCallback(async () => {
     if (!message.user?.id) {
       return;
     }
@@ -86,9 +102,9 @@ export const useMessageActionHandlers = ({
     } else {
       await client.muteUser(message.user.id);
     }
-  };
+  });
 
-  const handleToggleBanUser = async () => {
+  const handleToggleBanUser = useStableCallback(async () => {
     const messageUser = message.user;
     if (!messageUser) {
       return;
@@ -99,22 +115,22 @@ export const useMessageActionHandlers = ({
     } else {
       await client.banUser(messageUser.id);
     }
-  };
+  });
 
-  const handleTogglePinMessage = async () => {
+  const handleTogglePinMessage = useStableCallback(async () => {
     const MessagePinnedHeaderStatus = message.pinned;
     if (!MessagePinnedHeaderStatus) {
       await client.pinMessage(message, null);
     } else {
       await client.unpinMessage(message);
     }
-  };
+  });
 
-  const handleEditMessage = () => {
+  const handleEditMessage = useWithPortalKeyboardSafety(() => {
     setEditingState(message);
-  };
+  });
 
-  const handleFlagMessage = () => {
+  const handleFlagMessage = useStableCallback(() => {
     if (!message.id) {
       return;
     }
@@ -143,9 +159,9 @@ export const useMessageActionHandlers = ({
       ],
       { cancelable: false },
     );
-  };
+  });
 
-  const handleMarkUnreadMessage = async () => {
+  const handleMarkUnreadMessage = useStableCallback(async () => {
     if (!message.id) {
       return;
     }
@@ -159,9 +175,9 @@ export const useMessageActionHandlers = ({
         ),
       );
     }
-  };
+  });
 
-  const handleToggleReaction = async (reactionType: string) => {
+  const handleToggleReaction = useStableCallback(async (reactionType: string) => {
     const messageId = message.id;
     const own_reactions = message.own_reactions ?? [];
     const userExistingReaction = own_reactions.find((reaction) => {
@@ -188,20 +204,54 @@ export const useMessageActionHandlers = ({
     } catch (err) {
       console.log(err);
     }
-  };
+  });
 
-  return {
-    handleCopyMessage,
-    handleDeleteForMeMessage,
-    handleDeleteMessage,
-    handleEditMessage,
-    handleFlagMessage,
-    handleMarkUnreadMessage,
-    handleQuotedReplyMessage,
-    handleResendMessage,
-    handleToggleBanUser,
-    handleToggleMuteUser,
-    handleTogglePinMessage,
-    handleToggleReaction,
-  };
+  const handleToggleBlockUser = useStableCallback(async (user: UserResponse | null | undefined) => {
+    try {
+      if (!user) {
+        return;
+      }
+      const isBlocked = new Set(client.blockedUsers.getLatestValue().userIds).has(user?.id ?? '');
+      if (isBlocked) {
+        await client.unBlockUser(user.id);
+      } else {
+        await client.blockUser(user.id);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  return useMemo(
+    () => ({
+      handleCopyMessage,
+      handleDeleteForMeMessage,
+      handleDeleteMessage,
+      handleEditMessage,
+      handleFlagMessage,
+      handleMarkUnreadMessage,
+      handleQuotedReplyMessage,
+      handleResendMessage,
+      handleToggleBanUser,
+      handleToggleMuteUser,
+      handleTogglePinMessage,
+      handleToggleReaction,
+      handleToggleBlockUser,
+    }),
+    [
+      handleCopyMessage,
+      handleDeleteForMeMessage,
+      handleDeleteMessage,
+      handleEditMessage,
+      handleFlagMessage,
+      handleMarkUnreadMessage,
+      handleQuotedReplyMessage,
+      handleResendMessage,
+      handleToggleBanUser,
+      handleToggleMuteUser,
+      handleTogglePinMessage,
+      handleToggleReaction,
+      handleToggleBlockUser,
+    ],
+  );
 };

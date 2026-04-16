@@ -1,157 +1,131 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
-import { Defs, LinearGradient, Path, Rect, Stop, Svg } from 'react-native-svg';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
+import { NativeShimmerView } from '../UIComponents/NativeShimmerView';
 
-const paddingLarge = 16;
-const paddingMedium = 12;
-const paddingSmall = 8;
-
-const styles = StyleSheet.create({
-  background: {
-    height: 64,
-    position: 'absolute',
-    width: '100%',
-  },
-  container: {
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-  },
-});
-
-export const Skeleton = () => {
-  const width = useWindowDimensions().width;
-  const startOffset = useSharedValue(-width);
-
+const SkeletonBlock = ({ style }: { style: React.ComponentProps<typeof View>['style'] }) => {
   const {
     theme: {
-      channelListSkeleton: {
-        animationTime = 1800,
-        background,
-        container,
-        gradientStart,
-        gradientStop,
-        height = 64,
-        maskFillColor,
-      },
-      colors: { border, grey_gainsboro, white_snow },
+      channelListSkeleton: { animationTime },
+      semantics,
     },
   } = useTheme();
 
-  useEffect(() => {
-    startOffset.value = withRepeat(
-      withTiming(width, {
-        duration: animationTime,
-        easing: Easing.linear,
-      }),
-      -1,
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(
-    () => ({
-      transform: [{ translateX: startOffset.value }],
-    }),
-    [],
+  return (
+    <View style={style}>
+      <NativeShimmerView
+        baseColor={semantics.backgroundCoreSurfaceDefault}
+        duration={animationTime}
+        gradientColor={semantics.skeletonLoadingHighlight}
+        style={StyleSheet.absoluteFill}
+      />
+    </View>
   );
+};
 
-  const d = useDerivedValue(() => {
-    const useableHeight = height - paddingMedium * 2;
-    const boneHeight = (useableHeight - 8) / 2;
-    const boneRadius = boneHeight / 2;
-    const circleRadius = useableHeight / 2;
-    const avatarBoneWidth = circleRadius * 2 + paddingSmall * 2;
-    const detailsBonesWidth = width - avatarBoneWidth;
+const SkeletonAvatar = () => {
+  const styles = useStyles();
+  return <SkeletonBlock style={styles.avatar} />;
+};
 
-    return `M0 0 h${width} v${height} h-${width}z M${paddingSmall} ${
-      height / 2
-    } a${circleRadius} ${circleRadius} 0 1 0 ${
-      circleRadius * 2
-    } 0 a${circleRadius} ${circleRadius} 0 1 0 -${circleRadius * 2} 0z M${
-      avatarBoneWidth + boneRadius
-    } ${paddingMedium} a${boneRadius} ${boneRadius} 0 1 0 0 ${boneHeight}z M${
-      avatarBoneWidth - boneRadius + detailsBonesWidth * 0.25
-    } ${paddingMedium} h-${detailsBonesWidth * 0.25 - boneRadius * 2} v${boneHeight} h${
-      detailsBonesWidth * 0.25 - boneRadius * 2
-    }z M${avatarBoneWidth - boneRadius + detailsBonesWidth * 0.25} ${
-      paddingMedium + boneHeight
-    } a${boneRadius} ${boneRadius} 0 1 0 0 -${boneHeight}z M${avatarBoneWidth + boneRadius} ${
-      paddingMedium + boneHeight + paddingSmall
-    } a${boneRadius} ${boneRadius} 0 1 0 0 ${boneHeight}z M${
-      avatarBoneWidth + detailsBonesWidth * 0.8 - boneRadius
-    } ${paddingMedium + boneHeight + paddingSmall} h-${
-      detailsBonesWidth * 0.8 - boneRadius * 2
-    } v${boneHeight} h${detailsBonesWidth * 0.8 - boneRadius * 2}z M${
-      avatarBoneWidth + detailsBonesWidth * 0.8 - boneRadius
-    } ${height - paddingMedium} a${boneRadius} ${boneRadius} 0 1 0 0 -${boneHeight}z M${
-      avatarBoneWidth + detailsBonesWidth * 0.8 + boneRadius + paddingLarge
-    } ${
-      paddingMedium + boneHeight + paddingSmall
-    } a${boneRadius} ${boneRadius} 0 1 0 0 ${boneHeight}z M${width - paddingSmall - boneRadius} ${
-      paddingMedium + boneHeight + paddingSmall
-    } h-${
-      width -
-      paddingSmall -
-      boneRadius -
-      (avatarBoneWidth + detailsBonesWidth * 0.8 + boneRadius + paddingLarge)
-    } v${boneHeight} h${
-      width -
-      paddingSmall -
-      boneRadius -
-      (avatarBoneWidth + detailsBonesWidth * 0.8 + boneRadius + paddingLarge)
-    }z M${width - paddingSmall * 2} ${
-      height - paddingMedium
-    } a${boneRadius} ${boneRadius} 0 1 0 0 -${boneHeight}z`;
-  }, []);
+const SkeletonTimestamp = () => {
+  const styles = useStyles();
+  return <SkeletonBlock style={styles.badge} />;
+};
 
-  const svgAnimatedProps = useAnimatedProps(
-    () => ({
-      d: d.value,
-    }),
-    [d],
+const SkeletonContent = () => {
+  const styles = useStyles();
+  return (
+    <View style={styles.textContainer}>
+      <View style={styles.headerRow}>
+        <SkeletonBlock style={styles.title} />
+        <SkeletonTimestamp />
+      </View>
+
+      <SkeletonBlock style={styles.subtitle} />
+    </View>
   );
+};
+
+export const Skeleton = () => {
+  const styles = useStyles();
 
   return (
-    <View
-      style={[styles.container, { borderBottomColor: border }, container]}
-      testID='channel-preview-skeleton'
-    >
-      <View style={[styles.background, { backgroundColor: white_snow }, background]} />
-      <Animated.View style={[animatedStyle, styles.background]}>
-        <Svg height={height} width={width}>
-          <Rect fill='url(#gradient)' height={height} width={width} x={0} y={0} />
-          <Defs>
-            <LinearGradient
-              gradientUnits='userSpaceOnUse'
-              id='gradient'
-              x1={0}
-              x2={width}
-              y1={0}
-              y2={0}
-            >
-              <Stop offset={1} stopColor={grey_gainsboro} {...gradientStart} />
-              <Stop offset={0.5} stopColor={grey_gainsboro} {...gradientStop} />
-              <Stop offset={0} stopColor={grey_gainsboro} {...gradientStart} />
-            </LinearGradient>
-          </Defs>
-        </Svg>
-      </Animated.View>
-      <Svg height={height} width={width}>
-        <Path {...svgAnimatedProps} fill={maskFillColor || white_snow} />
-      </Svg>
+    <View style={styles.container} testID='channel-preview-skeleton'>
+      <View style={styles.content}>
+        <SkeletonAvatar />
+        <SkeletonContent />
+      </View>
     </View>
   );
 };
 
 Skeleton.displayName = 'Skeleton{channelListSkeleton}';
+
+const useStyles = () => {
+  const {
+    theme: { channelListSkeleton, semantics },
+  } = useTheme();
+
+  return useMemo(() => {
+    return StyleSheet.create({
+      avatar: {
+        borderRadius: primitives.radiusMax,
+        height: 48,
+        overflow: 'hidden',
+        width: 48,
+        ...channelListSkeleton.avatar,
+      },
+      badge: {
+        borderRadius: primitives.radiusMax,
+        height: 16,
+        minWidth: 0,
+        overflow: 'hidden',
+        width: 48,
+        ...channelListSkeleton.badge,
+      },
+      container: {
+        borderBottomColor: semantics.borderCoreSubtle,
+        borderBottomWidth: 1,
+        flexDirection: 'row',
+        ...channelListSkeleton.container,
+      },
+      content: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingMd,
+        padding: primitives.spacingMd,
+        width: '100%',
+        ...channelListSkeleton.content,
+      },
+      headerRow: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: primitives.spacingMd,
+        width: '100%',
+        ...channelListSkeleton.headerRow,
+      },
+      subtitle: {
+        borderRadius: primitives.radiusMax,
+        height: primitives.spacingMd,
+        overflow: 'hidden',
+        width: '65%',
+        ...channelListSkeleton.subtitle,
+      },
+      textContainer: {
+        flex: 1,
+        gap: primitives.spacingXs,
+        ...channelListSkeleton.textContainer,
+      },
+      title: {
+        borderRadius: primitives.radiusMax,
+        flex: 1,
+        height: 16,
+        overflow: 'hidden',
+        ...channelListSkeleton.title,
+      },
+    });
+  }, [channelListSkeleton, semantics.borderCoreSubtle]);
+};

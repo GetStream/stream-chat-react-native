@@ -7,7 +7,6 @@ import {
   MessageInputContextValue,
   Search,
   SendRight,
-  SendUp,
   useChannelContext,
   useMessageInputContext,
   useTheme,
@@ -17,21 +16,24 @@ import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMess
 
 import { useUserSearchContext } from '../context/UserSearchContext';
 import { useAppContext } from '../context/AppContext';
+import { SendUp } from '../icons/SendUp';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
-type NewDirectMessagingSendButtonPropsWithContext = Pick<MessageInputContextValue, 'giphyActive' | 'sendMessage'> & {
+type NewDirectMessagingSendButtonPropsWithContext = Pick<
+  MessageInputContextValue,
+  'giphyActive' | 'sendMessage'
+> & {
   /** Disables the button */ disabled: boolean;
 };
 
-const SendButtonWithContext = (
-  props: NewDirectMessagingSendButtonPropsWithContext,
-) => {
+const SendButtonWithContext = (props: NewDirectMessagingSendButtonPropsWithContext) => {
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
     theme: {
-      colors: { accent_blue, grey_gainsboro },
-      messageInput: { sendButton },
+      messageComposer: { sendButton },
     },
   } = useTheme();
+  const { accent_blue, grey_gainsboro } = useLegacyColors();
 
   return (
     <TouchableOpacity
@@ -88,7 +90,7 @@ const MemoizedNewDirectMessagingSendButton = React.memo(
 export type SendButtonProps = Partial<NewDirectMessagingSendButtonPropsWithContext>;
 
 /**
- * UI Component for send button in MessageInput component.
+ * UI Component for send button in MessageComposer component.
  */
 export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
   const { chatClient } = useAppContext();

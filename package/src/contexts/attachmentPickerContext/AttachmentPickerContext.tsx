@@ -1,17 +1,25 @@
-import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
+import {
+  AttachmentPickerStore,
+  SelectedPickerType,
+} from '../../state-store/attachment-picker-store';
+import { MessageInputContextValue } from '../messageInputContext/MessageInputContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type AttachmentPickerIconProps = {
   numberOfImageUploads?: number;
-  selectedPicker?: 'images';
+  selectedPicker: SelectedPickerType;
 };
 
-export type AttachmentPickerContextValue = {
+export type AttachmentPickerContextValue = Pick<
+  MessageInputContextValue,
+  'attachmentSelectionBarHeight' | 'attachmentPickerBottomSheetHeight'
+> & {
   /**
    * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
    * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
@@ -23,13 +31,12 @@ export type AttachmentPickerContextValue = {
   bottomSheetRef: React.RefObject<BottomSheet | null>;
   closePicker: () => void;
   openPicker: () => void;
-  setBottomInset: React.Dispatch<React.SetStateAction<number>>;
-  setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
-  setTopInset: React.Dispatch<React.SetStateAction<number>>;
   topInset: number;
 
-  selectedPicker?: 'images';
   disableAttachmentPicker?: boolean;
+  attachmentPickerStore: AttachmentPickerStore;
+  numberOfAttachmentPickerImageColumns?: number;
+  numberOfAttachmentImagesToLoadPerCall?: number;
 };
 
 export const AttachmentPickerContext = React.createContext(
@@ -43,30 +50,18 @@ export const AttachmentPickerProvider = ({
   value?: Pick<AttachmentPickerContextValue, 'closePicker' | 'openPicker'> &
     Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>>;
 }>) => {
-  const bottomInsetValue = value?.bottomInset;
-  const topInsetValue = value?.topInset;
+  const { bottomInset = 0, topInset = 0, ...rest } = value ?? {};
+  const [attachmentPickerStore] = useState(() => new AttachmentPickerStore());
 
-  const [bottomInset, setBottomInset] = useState<number>(bottomInsetValue ?? 0);
-  const [selectedPicker, setSelectedPicker] = useState<'images'>();
-  const [topInset, setTopInset] = useState<number>(topInsetValue ?? 0);
-
-  useEffect(() => {
-    setBottomInset(bottomInsetValue ?? 0);
-  }, [bottomInsetValue]);
-
-  useEffect(() => {
-    setTopInset(topInsetValue ?? 0);
-  }, [topInsetValue]);
-
-  const combinedValue = {
-    selectedPicker,
-    setBottomInset,
-    setSelectedPicker,
-    setTopInset,
-    ...value,
-    bottomInset,
-    topInset,
-  };
+  const combinedValue = useMemo(
+    () => ({
+      bottomInset,
+      topInset,
+      attachmentPickerStore,
+      ...rest,
+    }),
+    [bottomInset, topInset, attachmentPickerStore, rest],
+  );
 
   return (
     <AttachmentPickerContext.Provider

@@ -4,39 +4,38 @@ import { StyleSheet, View } from 'react-native';
 import { CommandVariants } from 'stream-chat';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
+import { Flag, GiphyIcon, Mute, Sound, UserAdd, UserDelete } from '../../icons';
+import { Lightning } from '../../icons/bolt';
+import { Imgur } from '../../icons/imgur';
 
 export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
-    theme: {
-      colors: { white },
-    },
+    theme: { semantics },
   } = useTheme();
 
   if (name === 'ban') {
-    return <UserDelete height={16} pathFill={white} width={16} />;
+    return <UserDelete height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'flag') {
-    return <Flag pathFill={white} />;
+    return <Flag height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'giphy') {
-    return <GiphyIcon />;
+    return <GiphyIcon height={20} width={20} />;
   } else if (name === 'imgur') {
-    return <Imgur />;
+    return <Imgur height={20} width={20} />;
   } else if (name === 'mute') {
-    return <Mute height={16} pathFill={white} width={16} />;
+    return <Mute height={20} fill={semantics.textSecondary} width={20} />;
   } else if (name === 'unban') {
-    return <UserAdd height={16} pathFill={white} width={16} />;
+    return <UserAdd height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'unmute') {
-    return <Sound pathFill={white} />;
+    return <Sound height={20} stroke={semantics.textSecondary} width={20} />;
   } else {
-    return <Lightning fill={white} size={16} />;
+    return <Lightning fill={semantics.textSecondary} height={16} width={16} />;
   }
 };
 
 export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
     theme: {
-      colors: { accent_blue },
-      messageInput: {
+      messageComposer: {
         suggestions: {
           command: { iconContainer },
         },
@@ -45,15 +44,7 @@ export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVaria
   } = useTheme();
 
   return (
-    <View
-      style={[
-        styles.iconContainer,
-        {
-          backgroundColor: accent_blue,
-        },
-        iconContainer,
-      ]}
-    >
+    <View style={[styles.iconContainer, iconContainer]}>
       <SuggestionCommandIcon name={name} />
     </View>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  AccessibilityInfo,
   AppState,
   AppStateStatus,
   Dimensions,
@@ -39,9 +40,9 @@ export class KeyboardCompatibleView extends React.Component<
     KeyboardAvoidingViewProps,
     'behavior' | 'enabled' | 'keyboardVerticalOffset'
   > = {
-    behavior: Platform.OS === 'ios' ? 'padding' : 'position',
+    behavior: 'padding',
     enabled: true,
-    keyboardVerticalOffset: Platform.OS === 'ios' ? 86.5 : -300, // default MessageInput height
+    keyboardVerticalOffset: Platform.OS === 'ios' ? 86.5 : -300, // default MessageComposer height
   };
 
   _frame: LayoutRectangle | null = null;
@@ -62,35 +63,40 @@ export class KeyboardCompatibleView extends React.Component<
     this.viewRef = React.createRef();
   }
 
-  _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics) {
+  async _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): Promise<number> {
     const frame = this._frame;
-    /**
-     * With iOS 14 & Reduce Motion > Prefer Cross-Fade Transitions enabled, the keyboard position
-     * height is reported differently (0 instead of Y position value) which caused the view to take full height
-     * of the screen.
-     */
-    if (!frame || !keyboardFrame || keyboardFrame.screenY === 0) {
+    if (!frame || !keyboardFrame) {
+      return 0;
+    }
+
+    if (
+      Platform.OS === 'ios' &&
+      keyboardFrame.screenY === 0 &&
+      (await AccessibilityInfo.prefersCrossFadeTransitions())
+    ) {
       return 0;
     }
 
     const keyboardY = keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
-    const relativeHeight = frame.y + frame.height - keyboardY;
 
-    /**
-     * When the StatusBar is translucent there is an issue
-     * where the relative keyboard height is returned incorrectly
-     * instead of 0 when closed.
-     */
-    if (Platform.OS === 'android') {
-      const barHeights = Dimensions.get('screen').height - Dimensions.get('window').height;
-      if (relativeHeight <= Math.max(barHeights, StatusBar.currentHeight ?? 0)) {
-        return 0;
-      }
+    if (this.props.behavior === 'height') {
+      return Math.max(this.state.bottom + frame.y + frame.height - keyboardY, 0);
     }
 
     // Calculate the displacement needed for the view such that it
     // no longer overlaps with the keyboard
-    return Math.max(relativeHeight, 0);
+    const relativeHeight = Math.max(frame.y + frame.height - keyboardY, 0);
+
+    if (Platform.OS === 'android') {
+      const barHeights = Dimensions.get('screen').height - Dimensions.get('window').height;
+      const systemInsetFloor = Math.max(barHeights, StatusBar.currentHeight ?? 0);
+
+      if (relativeHeight <= systemInsetFloor) {
+        return 0;
+      }
+    }
+
+    return relativeHeight;
   }
 
   _onKeyboardChange: KeyboardEventListener = (event) => {
@@ -98,7 +104,12 @@ export class KeyboardCompatibleView extends React.Component<
     this._updateBottomIfNecessary();
   };
 
-  _onLayout: (event: LayoutChangeEvent) => void = (event) => {
+  _onKeyboardHide: KeyboardEventListener = () => {
+    this._keyboardEvent = null;
+    this._updateBottomIfNecessary();
+  };
+
+  _onLayout: (event: LayoutChangeEvent) => void = async (event) => {
     event.persist();
 
     const oldFrame = this._frame;
@@ -110,7 +121,7 @@ export class KeyboardCompatibleView extends React.Component<
 
     // update bottom height for the first time or when the height is changed
     if (!oldFrame || oldFrame.height !== this._frame.height) {
-      this._updateBottomIfNecessary();
+      await this._updateBottomIfNecessary();
     }
 
     if (this.props.onLayout) {
@@ -127,14 +138,14 @@ export class KeyboardCompatibleView extends React.Component<
     }
   };
 
-  _updateBottomIfNecessary = () => {
+  _updateBottomIfNecessary = async () => {
     if (this._keyboardEvent == null) {
       this._setBottom(0);
       return;
     }
 
     const { duration, easing, endCoordinates } = this._keyboardEvent;
-    const height = this._relativeKeyboardHeight(endCoordinates);
+    const height = await this._relativeKeyboardHeight(endCoordinates);
 
     if (this._bottom === height) {
       return;
@@ -142,7 +153,8 @@ export class KeyboardCompatibleView extends React.Component<
 
     this._setBottom(height);
 
-    if (duration && easing) {
+    const enabled = this.props.enabled ?? true;
+    if (enabled && duration && easing) {
       LayoutAnimation.configureNext({
         // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
         duration: duration > 10 ? duration : 10,
@@ -169,11 +181,12 @@ export class KeyboardCompatibleView extends React.Component<
   setKeyboardListeners = () => {
     if (Platform.OS === 'ios') {
       this._subscriptions = [
-        Keyboard.addListener('keyboardWillChangeFrame', this._onKeyboardChange),
+        Keyboard.addListener('keyboardWillHide', this._onKeyboardHide),
+        Keyboard.addListener('keyboardWillShow', this._onKeyboardChange),
       ];
     } else {
       this._subscriptions = [
-        Keyboard.addListener('keyboardDidHide', this._onKeyboardChange),
+        Keyboard.addListener('keyboardDidHide', this._onKeyboardHide),
         Keyboard.addListener('keyboardDidShow', this._onKeyboardChange),
       ];
     }
@@ -218,6 +231,11 @@ export class KeyboardCompatibleView extends React.Component<
   }
 
   componentDidMount() {
+    if (!Keyboard.isVisible()) {
+      this._keyboardEvent = null;
+      this._setBottom(0);
+    }
+
     this._appStateSubscription = AppState.addEventListener('change', this._handleAppStateChange);
     this.setKeyboardListeners();
   }

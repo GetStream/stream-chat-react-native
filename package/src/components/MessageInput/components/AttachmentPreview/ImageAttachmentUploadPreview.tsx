@@ -1,19 +1,19 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { Image, StyleSheet, View } from 'react-native';
 
 import { LocalImageAttachment } from 'stream-chat';
 
-import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
-import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
-import { DismissAttachmentUpload } from './DismissAttachmentUpload';
+import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
-const IMAGE_PREVIEW_SIZE = 100;
+const IMAGE_PREVIEW_SIZE = 72;
 
 export type ImageAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<LocalImageAttachment<CustomLocalMetadata>>;
@@ -25,17 +25,23 @@ export const ImageAttachmentUploadPreview = ({
 }: ImageAttachmentUploadPreviewProps) => {
   const [loading, setLoading] = useState(true);
   const { enableOfflineSupport } = useChatContext();
+  const {
+    ImageUploadInProgressIndicator,
+    ImageUploadRetryIndicator,
+    ImageUploadNotSupportedIndicator,
+  } = useComponentsContext();
   const indicatorType = loading
     ? ProgressIndicatorTypes.IN_PROGRESS
     : getIndicatorTypeForFileState(attachment.localMetadata.uploadState, enableOfflineSupport);
 
   const {
     theme: {
-      messageInput: {
-        imageAttachmentUploadPreview: { itemContainer, upload },
+      messageComposer: {
+        imageAttachmentUploadPreview: { upload, wrapper },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onRetryHandler = useCallback(() => {
     handleRetry(attachment);
@@ -54,44 +60,56 @@ export const ImageAttachmentUploadPreview = ({
   }, []);
 
   return (
-    <View style={[styles.itemContainer, itemContainer]} testID={'image-attachment-upload-preview'}>
-      <AttachmentUploadProgressIndicator
-        onPress={onRetryHandler}
-        style={styles.upload}
-        type={indicatorType}
-      >
+    <View style={[styles.wrapper, wrapper]} testID={'image-attachment-upload-preview'}>
+      <View style={[styles.image, upload]}>
         <Image
           onError={onErrorHandler}
           onLoadEnd={onLoadEndHandler}
-          resizeMode='cover'
           source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
-          style={[styles.upload, upload]}
+          style={StyleSheet.absoluteFill}
           testID={'image-attachment-upload-preview-image'}
         />
-      </AttachmentUploadProgressIndicator>
+        {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && <ImageUploadInProgressIndicator />}
+        {indicatorType === ProgressIndicatorTypes.RETRY && (
+          <ImageUploadRetryIndicator onRetryHandler={onRetryHandler} />
+        )}
+        {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED && (
+          <ImageUploadNotSupportedIndicator />
+        )}
+      </View>
 
-      <DismissAttachmentUpload onPress={onDismissHandler} />
-      {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-        <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
-      ) : null}
+      <View style={styles.dismissWrapper}>
+        <AttachmentRemoveControl onPress={onDismissHandler} />
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  fileSizeText: {
-    fontSize: 12,
-    paddingHorizontal: 10,
-  },
-  flatList: { paddingBottom: 12 },
-  itemContainer: {
-    flexDirection: 'row',
-    height: IMAGE_PREVIEW_SIZE,
-    marginLeft: 8,
-  },
-  upload: {
-    borderRadius: 10,
-    height: IMAGE_PREVIEW_SIZE,
-    width: IMAGE_PREVIEW_SIZE,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  const { borderCoreOpacitySubtle } = semantics;
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        dismissWrapper: { position: 'absolute', right: 0, top: 0 },
+        image: {
+          height: IMAGE_PREVIEW_SIZE,
+          width: IMAGE_PREVIEW_SIZE,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: primitives.radiusLg,
+          borderColor: borderCoreOpacitySubtle,
+          borderWidth: 1,
+          overflow: 'hidden',
+        },
+        wrapper: {
+          padding: primitives.spacingXxs,
+        },
+      }),
+    [borderCoreOpacitySubtle],
+  );
+};

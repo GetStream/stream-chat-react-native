@@ -1,20 +1,26 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
+  I18nManager,
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+import Animated, { LinearTransition, ZoomIn } from 'react-native-reanimated';
 
 import { useTheme, useTranslationContext } from '../../../contexts';
+import { primitives } from '../../../theme';
+import { Button } from '../../ui';
 
 export type PollInputDialogProps = {
   closeDialog: () => void;
   onSubmit: (text: string) => void;
+  placeholder: string;
   title: string;
   visible: boolean;
   initialValue?: string;
@@ -24,6 +30,7 @@ export const PollInputDialog = ({
   closeDialog,
   initialValue = '',
   onSubmit,
+  placeholder,
   title,
   visible,
 }: PollInputDialogProps) => {
@@ -32,87 +39,120 @@ export const PollInputDialog = ({
 
   const {
     theme: {
-      colors: { accent_dark_blue, black, white },
+      semantics,
       poll: {
-        inputDialog: {
-          button,
-          buttonContainer,
-          container,
-          input,
-          title: titleStyle,
-          transparentContainer,
-        },
+        inputDialog: { buttonContainer, container, input, title: titleStyle, transparentContainer },
       },
     },
   } = useTheme();
 
+  const styles = useStyles();
+
   return (
     <Modal animationType='fade' onRequestClose={closeDialog} transparent={true} visible={visible}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[styles.transparentContainer, transparentContainer]}
-      >
-        <View style={[styles.container, { backgroundColor: white }, container]}>
-          <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
-          <TextInput
-            autoFocus={true}
-            onChangeText={setDialogInput}
-            placeholder={t('Ask a question')}
-            style={[styles.input, { color: black }, input]}
-            value={dialogInput}
-          />
-          <View style={[styles.buttonContainer, buttonContainer]}>
-            <Pressable
-              onPress={closeDialog}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-            >
-              <Text style={[styles.button, { color: accent_dark_blue }, button]}>
-                {t('Cancel')}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                onSubmit(dialogInput);
-                closeDialog();
-              }}
-              style={({ pressed }) => ({ marginLeft: 32, opacity: pressed ? 0.5 : 1 })}
-            >
-              <Text style={[styles.button, { color: accent_dark_blue }, button]}>{t('SEND')}</Text>
-            </Pressable>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
+      <GestureHandlerRootView style={styles.modalRoot}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={[styles.transparentContainer, transparentContainer]}
+        >
+          <Animated.View
+            entering={ZoomIn.duration(200)}
+            layout={LinearTransition.duration(200)}
+            style={[styles.container, container]}
+          >
+            <View style={styles.inputContainer}>
+              <Text style={[styles.title, titleStyle]}>{title}</Text>
+              <TextInput
+                autoFocus={true}
+                onChangeText={setDialogInput}
+                placeholder={placeholder}
+                placeholderTextColor={semantics.inputTextPlaceholder}
+                style={[styles.input, input]}
+                value={dialogInput}
+              />
+            </View>
+            <View style={[styles.buttonContainer, buttonContainer]}>
+              <Button
+                variant={'secondary'}
+                type={'ghost'}
+                label={t('Cancel')}
+                size='md'
+                onPress={closeDialog}
+                style={styles.button}
+              />
+              <Button
+                variant={'primary'}
+                type={'solid'}
+                label={t('Send')}
+                size='md'
+                onPress={() => {
+                  onSubmit(dialogInput);
+                  closeDialog();
+                }}
+                style={styles.button}
+                disabled={!dialogInput}
+              />
+            </View>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </GestureHandlerRootView>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({
-  button: { fontSize: 16, fontWeight: '500' },
-  buttonContainer: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 52 },
-  container: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    paddingTop: 32,
-    width: '80%',
-  },
-  input: {
-    alignItems: 'center',
-    borderColor: 'gray',
-    borderRadius: 18,
-    borderWidth: 1,
-    fontSize: 16,
-    height: 36,
-    marginTop: 16,
-    padding: 0,
-    paddingHorizontal: 16,
-  },
-  title: { fontSize: 17, fontWeight: '500', lineHeight: 20 },
-  transparentContainer: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    flex: 1,
-    justifyContent: 'center',
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      poll: {
+        inputDialog: { button },
+      },
+    },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        button: { flex: 1, width: undefined, ...button },
+        buttonContainer: { flexDirection: 'row', gap: primitives.spacingXs },
+        container: {
+          backgroundColor: semantics.backgroundCoreElevation1,
+          borderRadius: primitives.radiusXl,
+          paddingBottom: primitives.spacingXl,
+          paddingHorizontal: primitives.spacingXl,
+          paddingTop: primitives.spacing2xl,
+          gap: primitives.spacing2xl,
+          width: 304,
+        },
+        modalRoot: {
+          flex: 1,
+        },
+        inputContainer: {
+          gap: primitives.spacingXs,
+        },
+        input: {
+          alignItems: 'center',
+          borderColor: semantics.borderUtilityActive,
+          borderRadius: primitives.radiusMd,
+          borderWidth: 1,
+          fontSize: primitives.typographyFontSizeMd,
+          padding: primitives.spacingSm,
+          color: semantics.textPrimary,
+          textAlign: I18nManager.isRTL ? 'right' : 'left',
+        },
+        title: {
+          color: semantics.textPrimary,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightMedium,
+          lineHeight: primitives.typographyLineHeightNormal,
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
+        },
+        transparentContainer: {
+          alignItems: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          flex: 1,
+          justifyContent: 'center',
+        },
+      }),
+    [button, semantics],
+  );
+};

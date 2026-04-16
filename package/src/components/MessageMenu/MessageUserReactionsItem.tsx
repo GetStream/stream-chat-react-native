@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useMessageContext } from '../../contexts';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../hooks';
 import { Unknown } from '../../icons';
 
+import { primitives } from '../../theme';
 import type { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
-export type MessageUserReactionsItemProps = Pick<
-  MessagesContextValue,
-  'MessageUserReactionsAvatar'
-> & {
+export type MessageUserReactionsItemProps = {
   /**
    * The reaction object
    */
@@ -25,112 +26,99 @@ export type MessageUserReactionsItemProps = Pick<
 };
 
 export const MessageUserReactionsItem = ({
-  MessageUserReactionsAvatar,
   reaction,
   supportedReactions,
 }: MessageUserReactionsItemProps) => {
+  const { MessageUserReactionsAvatar } = useComponentsContext();
   const { id, name, type } = reaction;
   const {
     theme: {
-      colors: { accent_blue, black, grey, grey_gainsboro, light_blue, white },
       messageMenu: {
-        userReactions: {
-          avatarContainer,
-          avatarInnerContainer,
-          avatarName,
-          avatarNameContainer,
-          avatarSize,
-          filledBackgroundColor = light_blue,
-          iconFilledColor = accent_blue,
-          iconUnFilledColor = grey,
-          radius,
-          reactionBubbleBackground,
-          reactionBubbleBorderRadius,
-          unfilledBackgroundColor = grey_gainsboro,
-        },
+        userReactions: { avatarContainer, avatarName, avatarNameContainer },
       },
     },
   } = useTheme();
-  const { client } = useChatContext();
-  const alignment = client.userID && client.userID === id ? 'left' : 'right';
-  const x = avatarSize / 2 - (avatarSize / (radius * 4)) * (alignment === 'left' ? 1 : -1);
-  const y = avatarSize - radius;
+  const styles = useStyles();
 
-  const left =
-    alignment === 'left'
-      ? x -
-        (Number(reactionBubbleBackground.width || 0) || styles.reactionBubbleBackground.width) +
-        radius
-      : x - radius;
-  const top =
-    y -
-    radius -
-    (Number(reactionBubbleBackground.height || 0) || styles.reactionBubbleBackground.height);
+  const { client } = useChatContext();
+  const isOwnReaction = client.userID === id;
+  const { t } = useTranslationContext();
+
+  const { handleReaction } = useMessageContext();
+
+  const onPress = useStableCallback(() => {
+    if (isOwnReaction && handleReaction) {
+      handleReaction(type);
+    }
+  });
 
   const Icon = supportedReactions.find((reaction) => reaction.type === type)?.Icon ?? Unknown;
 
   return (
-    <View
+    <Pressable
       accessibilityLabel='Individual User Reaction on long press message'
+      accessibilityRole='button'
       style={[styles.avatarContainer, avatarContainer]}
+      onPress={onPress}
     >
-      <View style={[styles.avatarInnerContainer, avatarInnerContainer]}>
-        <MessageUserReactionsAvatar reaction={reaction} size={avatarSize} />
-        <View
-          style={[
-            styles.reactionBubbleBackground,
-            {
-              backgroundColor:
-                alignment === 'left' ? filledBackgroundColor : unfilledBackgroundColor,
-              borderColor: alignment === 'left' ? white : grey_gainsboro,
-              borderWidth: radius / 2,
-              left,
-              top,
-            },
-            reactionBubbleBackground,
-          ]}
-        >
-          <Icon
-            height={reactionBubbleBorderRadius / 2}
-            pathFill={alignment === 'left' ? iconFilledColor : iconUnFilledColor}
-            width={reactionBubbleBorderRadius / 2}
-          />
-        </View>
-      </View>
+      <MessageUserReactionsAvatar reaction={reaction} size={'md'} />
       <View style={[styles.avatarNameContainer, avatarNameContainer]}>
-        <Text numberOfLines={2} style={[styles.avatarName, { color: black }, avatarName]}>
-          {name}
+        <Text numberOfLines={1} style={[styles.avatarName, avatarName]}>
+          {isOwnReaction ? t('You') : name}
         </Text>
+        {isOwnReaction ? (
+          <Text numberOfLines={1} style={[styles.avatarSubtitle, null]}>
+            {t('Tap to remove')}
+          </Text>
+        ) : null}
       </View>
-    </View>
+      <Icon size={24} />
+    </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
-  avatarContainer: {
-    marginBottom: 8,
-  },
-  avatarInnerContainer: {
-    alignSelf: 'center',
-  },
-  avatarName: {
-    flex: 1,
-    fontSize: 12,
-    fontWeight: '700',
-    paddingTop: 6,
-    textAlign: 'center',
-  },
-  avatarNameContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flexGrow: 1,
-  },
-  reactionBubbleBackground: {
-    alignItems: 'center',
-    borderRadius: 24,
-    height: 24,
-    justifyContent: 'center',
-    position: 'absolute',
-    width: 24,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        avatarContainer: {
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'row',
+          paddingVertical: primitives.spacingXs,
+          paddingHorizontal: primitives.spacingMd,
+        },
+        avatarInnerContainer: {
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        avatarName: {
+          fontSize: primitives.typographyFontSizeMd,
+          color: semantics.textPrimary,
+          textAlign: 'left',
+        },
+        avatarSubtitle: {
+          fontSize: primitives.typographyFontSizeXs,
+          color: semantics.textTertiary,
+        },
+        avatarNameContainer: {
+          flex: 1,
+          paddingHorizontal: 8,
+          justifyContent: 'center',
+          textAlign: 'center',
+        },
+        reactionBubbleBackground: {
+          alignItems: 'center',
+          borderRadius: 24,
+          height: 24,
+          justifyContent: 'center',
+          width: 24,
+        },
+      }),
+    [semantics.textPrimary, semantics.textTertiary],
+  );
+};

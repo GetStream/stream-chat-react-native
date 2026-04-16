@@ -9,6 +9,7 @@ import { generateFileReference } from '../../../mock-builders/attachments';
 
 import { NativeHandlers } from '../../../native';
 
+import { AttachmentPickerProvider } from '../../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContextValue, ChannelProvider } from '../../channelContext/ChannelContext';
 import { MessageComposerProvider } from '../../messageComposerContext/MessageComposerContext';
 import {
@@ -31,17 +32,19 @@ const Wrapper = ({ channel, client, props }) => {
           } as ChannelContextValue
         }
       >
-        <MessageComposerProvider value={{ channel }}>
-          <MessageInputProvider
-            value={
-              {
-                ...props,
-              } as InputMessageInputContextValue
-            }
-          >
-            {props.children}
-          </MessageInputProvider>
-        </MessageComposerProvider>
+        <AttachmentPickerProvider value={{ disableAttachmentPicker: true }}>
+          <MessageComposerProvider value={{ channel }}>
+            <MessageInputProvider
+              value={
+                {
+                  ...props,
+                } as InputMessageInputContextValue
+              }
+            >
+              {props.children}
+            </MessageInputProvider>
+          </MessageComposerProvider>
+        </AttachmentPickerProvider>
       </ChannelProvider>
     </Chat>
   );
@@ -221,6 +224,47 @@ describe("MessageInputContext's pickAndUploadImageFromNativePicker", () => {
       });
     },
   );
+
+  it('does not crash when pickImage returns an asset with a null mime type', async () => {
+    const { attachmentManager } = channel.messageComposer;
+    jest.spyOn(NativeHandlers, 'pickImage').mockImplementation(
+      jest.fn().mockResolvedValue({
+        assets: [
+          {
+            duration: 0,
+            height: 100,
+            name: 'IMG_0001',
+            size: 123,
+            type: null,
+            uri: 'file:///tmp/IMG_0001',
+            width: 200,
+          },
+        ],
+        cancelled: false,
+      }),
+    );
+
+    jest.spyOn(attachmentManager, 'availableUploadSlots', 'get').mockReturnValue(2);
+
+    const { result } = renderHook(() => useMessageInputContext(), {
+      initialProps,
+      wrapper: (props) => <Wrapper channel={channel} client={chatClient} props={props} />,
+    });
+
+    const uploadFilesSpy = jest.spyOn(attachmentManager, 'uploadFiles');
+
+    await waitFor(() => {
+      result.current.pickAndUploadImageFromNativePicker();
+    });
+
+    await waitFor(() => {
+      expect(uploadFilesSpy).toHaveBeenCalledWith([
+        expect.objectContaining({
+          type: 'image/*',
+        }),
+      ]);
+    });
+  });
 });
 
 describe("MessageInputContext's takeAndUploadImage", () => {

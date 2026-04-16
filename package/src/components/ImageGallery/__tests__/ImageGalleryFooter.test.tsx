@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import { LocalMessage } from 'stream-chat';
+import { Attachment, LocalMessage } from 'stream-chat';
 
-import { Chat } from '../../../components/Chat/Chat';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -18,9 +17,9 @@ import {
   generateVideoAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { NativeHandlers } from '../../../native';
-import { ImageGallery, ImageGalleryCustomComponents } from '../ImageGallery';
+import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
+import { ImageGallery, ImageGalleryProps } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
   const { View } = require('react-native');
@@ -38,159 +37,122 @@ jest.mock('../../../native.ts', () => {
   };
 });
 
-describe('ImageGalleryFooter', () => {
-  it('render image gallery footer component with custom component footer props', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+const ImageGalleryComponentVideo = (props: ImageGalleryProps) => {
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
 
-    const CustomFooterLeftElement = () => (
-      <View>
-        <Text>Left element</Text>
-      </View>
-    );
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
 
-    const CustomFooterRightElement = () => (
-      <View>
-        <Text>Right element</Text>
-      </View>
-    );
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
 
-    const CustomFooterCenterElement = () => (
-      <View>
-        <Text>Center element</Text>
-      </View>
-    );
+  const attachment = generateVideoAttachment({ type: 'video' });
+  imageGalleryStateStore.openImageGallery({
+    messages: [
+      generateMessage({
+        attachments: [attachment],
+      }) as unknown as LocalMessage,
+    ],
+    selectedAttachmentUrl: attachment.asset_url,
+  });
 
-    const CustomFooterVideoControlElement = () => (
-      <View>
-        <Text>Video Control element</Text>
-      </View>
-    );
-
-    render(
-      <OverlayProvider>
+  return (
+    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
         <ImageGalleryContext.Provider
           value={
             {
-              messages: [
-                generateMessage({
-                  attachments: [generateVideoAttachment({ type: 'video' })],
-                }),
-              ] as unknown as LocalMessage[],
+              imageGalleryStateStore,
             } as unknown as ImageGalleryContextValue
           }
         >
-          <Chat client={chatClient}>
-            <ImageGallery
-              imageGalleryCustomComponents={
-                {
-                  footer: {
-                    centerElement: CustomFooterCenterElement,
-                    leftElement: CustomFooterLeftElement,
-                    rightElement: CustomFooterRightElement,
-                    videoControlElement: CustomFooterVideoControlElement,
-                  },
-                } as ImageGalleryCustomComponents['imageGalleryCustomComponents']
-              }
-              overlayOpacity={{ value: 1 } as SharedValue<number>}
-            />
-          </Chat>
+          <ImageGallery {...props} />
         </ImageGalleryContext.Provider>
-      </OverlayProvider>,
-    );
+      </WithComponents>
+    </OverlayProvider>
+  );
+};
+
+const ImageGalleryComponentImage = (
+  props: ImageGalleryProps & {
+    attachment: Attachment;
+  },
+) => {
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
+
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
+
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
+
+  imageGalleryStateStore.openImageGallery({
+    messages: [
+      generateMessage({
+        attachments: [props.attachment],
+      }) as unknown as LocalMessage,
+    ],
+    selectedAttachmentUrl: props.attachment.image_url as string,
+  });
+
+  return (
+    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
+        <ImageGalleryContext.Provider
+          value={
+            {
+              imageGalleryStateStore,
+            } as unknown as ImageGalleryContextValue
+          }
+        >
+          <ImageGallery {...props} />
+        </ImageGalleryContext.Provider>
+      </WithComponents>
+    </OverlayProvider>
+  );
+};
+
+describe('ImageGalleryFooter', () => {
+  it('render image gallery footer component with default footer elements', async () => {
+    render(<ImageGalleryComponentVideo />);
 
     await waitFor(() => {
-      expect(screen.queryAllByText('Left element')).toHaveLength(1);
-      expect(screen.queryAllByText('Right element')).toHaveLength(1);
-      expect(screen.queryAllByText('Center element')).toHaveLength(1);
-      expect(screen.queryAllByText('Video Control element')).toHaveLength(1);
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
+      expect(screen.getByLabelText('Center element')).toBeTruthy();
+      expect(screen.getByLabelText('Grid Icon')).toBeTruthy();
     });
   });
 
-  it('render image gallery footer component with custom component footer Grid Icon and Share Icon component', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-
-    const CustomShareIconElement = () => (
-      <View>
-        <Text>Share Icon element</Text>
-      </View>
-    );
-
-    const CustomGridIconElement = () => (
-      <View>
-        <Text>Grid Icon element</Text>
-      </View>
-    );
-
-    render(
-      <OverlayProvider>
-        <ImageGalleryContext.Provider
-          value={
-            {
-              messages: [
-                generateMessage({
-                  attachments: [generateVideoAttachment({ type: 'video' })],
-                }),
-              ] as unknown as LocalMessage[],
-            } as unknown as ImageGalleryContextValue
-          }
-        >
-          <Chat client={chatClient}>
-            <ImageGallery
-              imageGalleryCustomComponents={
-                {
-                  footer: {
-                    GridIcon: <CustomGridIconElement />,
-                    ShareIcon: <CustomShareIconElement />,
-                  },
-                } as ImageGalleryCustomComponents['imageGalleryCustomComponents']
-              }
-              overlayOpacity={{ value: 1 } as SharedValue<number>}
-            />
-          </Chat>
-        </ImageGalleryContext.Provider>
-      </OverlayProvider>,
-    );
+  it('render image gallery footer component with Share Button and Grid Icon', async () => {
+    render(<ImageGalleryComponentVideo />);
 
     await waitFor(() => {
-      expect(screen.queryAllByText('Share Icon element')).toHaveLength(1);
-      expect(screen.queryAllByText('Grid Icon element')).toHaveLength(1);
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
+      expect(screen.getByLabelText('Grid Icon')).toBeTruthy();
     });
   });
 
   it('should trigger the share button onPress Handler with local attachment and no mime_type', async () => {
     const user = userEvent.setup();
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
     const saveFileMock = jest.spyOn(NativeHandlers, 'saveFile');
     const shareImageMock = jest.spyOn(NativeHandlers, 'shareImage');
     const deleteFileMock = jest.spyOn(NativeHandlers, 'deleteFile');
 
     const attachment = generateImageAttachment();
 
-    render(
-      <OverlayProvider>
-        <ImageGalleryContext.Provider
-          value={
-            {
-              messages: [
-                generateMessage({
-                  attachments: [attachment],
-                }),
-              ] as unknown as LocalMessage[],
-            } as unknown as ImageGalleryContextValue
-          }
-        >
-          <Chat client={chatClient}>
-            <ImageGallery overlayOpacity={{ value: 1 } as SharedValue<number>} />
-          </Chat>
-        </ImageGalleryContext.Provider>
-      </OverlayProvider>,
-    );
-
-    const { getByLabelText } = screen;
+    render(<ImageGalleryComponentImage attachment={attachment} />);
 
     await waitFor(() => {
-      user.press(getByLabelText('Share Button'));
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
     });
+
+    await user.press(screen.getByLabelText('Share Button'));
 
     await waitFor(() => {
       expect(saveFileMock).not.toHaveBeenCalled();
@@ -204,38 +166,19 @@ describe('ImageGalleryFooter', () => {
 
   it('should trigger the share button onPress Handler with local attachment and existing mime_type', async () => {
     const user = userEvent.setup();
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
     const saveFileMock = jest.spyOn(NativeHandlers, 'saveFile');
     const shareImageMock = jest.spyOn(NativeHandlers, 'shareImage');
     const deleteFileMock = jest.spyOn(NativeHandlers, 'deleteFile');
 
     const attachment = { ...generateImageAttachment(), mime_type: 'image/png' };
 
-    render(
-      <OverlayProvider>
-        <ImageGalleryContext.Provider
-          value={
-            {
-              messages: [
-                generateMessage({
-                  attachments: [attachment],
-                }),
-              ] as unknown as LocalMessage[],
-            } as unknown as ImageGalleryContextValue
-          }
-        >
-          <Chat client={chatClient}>
-            <ImageGallery overlayOpacity={{ value: 1 } as SharedValue<number>} />
-          </Chat>
-        </ImageGalleryContext.Provider>
-      </OverlayProvider>,
-    );
-
-    const { getByLabelText } = screen;
+    render(<ImageGalleryComponentImage attachment={attachment} />);
 
     await waitFor(() => {
-      user.press(getByLabelText('Share Button'));
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
     });
+
+    await user.press(screen.getByLabelText('Share Button'));
 
     await waitFor(() => {
       expect(saveFileMock).not.toHaveBeenCalled();
@@ -249,7 +192,6 @@ describe('ImageGalleryFooter', () => {
 
   it('should trigger the share button onPress Handler with cdn attachment', async () => {
     const user = userEvent.setup();
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
     const saveFileMock = jest
       .spyOn(NativeHandlers, 'saveFile')
       .mockResolvedValue('file:///local/asset/url');
@@ -262,31 +204,13 @@ describe('ImageGalleryFooter', () => {
       mime_type: 'image/png',
     };
 
-    render(
-      <OverlayProvider>
-        <ImageGalleryContext.Provider
-          value={
-            {
-              messages: [
-                generateMessage({
-                  attachments: [attachment],
-                }),
-              ] as unknown as LocalMessage[],
-            } as unknown as ImageGalleryContextValue
-          }
-        >
-          <Chat client={chatClient}>
-            <ImageGallery overlayOpacity={{ value: 1 } as SharedValue<number>} />
-          </Chat>
-        </ImageGalleryContext.Provider>
-      </OverlayProvider>,
-    );
-
-    const { getByLabelText } = screen;
+    render(<ImageGalleryComponentImage attachment={attachment} />);
 
     await waitFor(() => {
-      user.press(getByLabelText('Share Button'));
+      expect(screen.getByLabelText('Share Button')).toBeTruthy();
     });
+
+    await user.press(screen.getByLabelText('Share Button'));
 
     await waitFor(() => {
       expect(saveFileMock).toHaveBeenCalled();

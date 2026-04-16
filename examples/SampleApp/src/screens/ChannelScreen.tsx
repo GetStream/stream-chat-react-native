@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
+  AlsoSentToChannelHeaderPressPayload,
   Channel,
-  ChannelAvatar,
-  MessageInput,
+  MessageComposer,
   MessageList,
   MessageFlashList,
   ThreadContextValue,
@@ -12,14 +12,14 @@ import {
   useChannelPreviewDisplayName,
   useChatContext,
   useTheme,
-  useTypingString,
   AITypingIndicatorView,
   useTranslationContext,
   MessageActionsParams,
+  ChannelAvatar,
+  PortalWhileClosingView,
 } from 'stream-chat-react-native';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppContext } from '../context/AppContext';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -28,12 +28,11 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
-import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
-import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
-import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
+// import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
+import { ThreadType } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
@@ -56,7 +55,6 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { isOnline } = useChatContext();
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
-  const typing = useTypingString();
 
   const isOneOnOneConversation =
     channel &&
@@ -103,29 +101,29 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
             opacity: pressed ? 0.5 : 1,
           })}
         >
-          <ChannelAvatar channel={channel} />
+          <ChannelAvatar channel={channel} size='xl' />
         </Pressable>
       )}
       showUnreadCountBadge
       Subtitle={isOnline ? undefined : NetworkDownIndicator}
-      subtitleText={typing ? typing : membersStatus}
+      subtitleText={membersStatus}
       titleText={displayName}
     />
   );
 };
 
 // Either provide channel or channelId.
-export const ChannelScreen: React.FC<ChannelScreenProps> = ({
-  navigation,
-  route: {
-    params: { channel: channelFromProp, channelId, messageId },
-  },
-}) => {
-  const { chatClient, messageListImplementation, messageListMode, messageListPruning } =
-    useAppContext();
-  const { bottom } = useSafeAreaInsets();
+export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route }) => {
+  const { channel: channelFromProp, channelId, messageId } = route.params;
   const {
-    theme: { colors },
+    chatClient,
+    messageListImplementation,
+    messageListMode,
+    messageListPruning,
+    messageInputFloating,
+  } = useAppContext();
+  const {
+    theme: { semantics, colors },
   } = useTheme();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
@@ -176,14 +174,61 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
       if (!thread || !channel) {
         return;
       }
+
+      if (messageId) {
+        navigation.setParams({ messageId: undefined });
+      }
+
       setSelectedThread(thread);
       setThread(thread);
       navigation.navigate('ThreadScreen', {
         channel,
         thread,
+        targetedMessageId: undefined,
       });
     },
-    [channel, navigation, setThread],
+    [channel, messageId, navigation, setThread],
+  );
+
+  const onAlsoSentToChannelHeaderPress = useCallback(
+    async ({ parentMessage, targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
+      if (!channel || !parentMessage) {
+        return;
+      }
+
+      if (messageId) {
+        navigation.setParams({ messageId: undefined });
+      }
+
+      setSelectedThread(parentMessage);
+      setThread(parentMessage);
+      const params: StackNavigatorParamList['ThreadScreen'] = {
+        channel,
+        targetedMessageId,
+        thread: parentMessage,
+      };
+      const hasThreadInStack = navigation.getState().routes.some((stackRoute) => {
+        if (stackRoute.name !== 'ThreadScreen') {
+          return false;
+        }
+        const routeParams = stackRoute.params as
+          | StackNavigatorParamList['ThreadScreen']
+          | undefined;
+        const routeThreadId =
+          (routeParams?.thread as LocalMessage)?.id ??
+          (routeParams?.thread as ThreadType)?.thread?.id;
+        const routeChannelId = routeParams?.channel?.id;
+        return routeThreadId === parentMessage.id && routeChannelId === channel.id;
+      });
+
+      if (hasThreadInStack) {
+        navigation.popTo('ThreadScreen', params);
+        return;
+      }
+
+      navigation.navigate('ThreadScreen', params);
+    },
+    [channel, messageId, navigation, setThread],
   );
 
   const handleMessageInfo = useCallback((message: LocalMessage) => {
@@ -205,10 +250,11 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         chatClient,
         t,
         colors,
+        semantics,
         handleMessageInfo,
       });
     },
-    [chatClient, colors, t, handleMessageInfo],
+    [chatClient, t, colors, semantics, handleMessageInfo],
   );
 
   if (!channel || !chatClient) {
@@ -216,25 +262,23 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   }
 
   return (
-    <View style={[styles.flex, { backgroundColor: colors.white_snow, paddingBottom: bottom }]}>
+    <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
       <Channel
         audioRecordingEnabled={true}
-        AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
+        messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
-        disableTypingIndicator
-        enforceUniqueReaction
         initialScrollToFirstUnreadMessage
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={0}
         messageActions={messageActions}
-        MessageHeader={MessageReminderHeader}
-        MessageLocation={MessageLocation}
         messageId={messageId}
-        NetworkDownIndicator={() => null}
+        onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}
         maximumMessageLimit={messageListPruning}
       >
-        <ChannelHeader channel={channel} />
+        <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
+          <ChannelHeader channel={channel} />
+        </PortalWhileClosingView>
         {messageListImplementation === 'flashlist' ? (
           <MessageFlashList
             onThreadSelect={onThreadSelect}
@@ -247,7 +291,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           />
         )}
         <AITypingIndicatorView channel={channel} />
-        <MessageInput />
+        <MessageComposer />
         {modalVisible && (
           <MessageInfoBottomSheet
             visible={modalVisible}

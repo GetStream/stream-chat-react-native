@@ -4,52 +4,32 @@ import { StyleSheet, View } from 'react-native';
 
 import { FileReference, LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
 
-import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
-import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
-import { DismissAttachmentUpload } from './DismissAttachmentUpload';
+import { AttachmentRemoveControl } from './AttachmentRemoveControl';
+import {
+  FileUploadNotSupportedIndicator,
+  FileUploadRetryIndicator,
+  FileUploadInProgressIndicator,
+} from './AttachmentUploadProgressIndicator';
 
-import { AudioAttachment } from '../../../../components/Attachment/AudioAttachment';
+import { AudioAttachment } from '../../../../components/Attachment/Audio';
+import { useTheme } from '../../../../contexts';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { AudioConfig, UploadAttachmentPreviewProps } from '../../../../types/types';
+import { primitives } from '../../../../theme';
+import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
 export type AudioAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<
     LocalAudioAttachment<CustomLocalMetadata> | LocalVoiceRecordingAttachment<CustomLocalMetadata>
-  > & {
-    /**
-     * The audio attachment config
-     *
-     * @deprecated This is deprecated and will be removed in the future.
-     */
-    audioAttachmentConfig: AudioConfig;
-    /**
-     * Callback to be called when the audio is loaded
-     * @deprecated This is deprecated and will be removed in the future.
-     */
-    onLoad: (index: string, duration: number) => void;
-    /**
-     * Callback to be called when the audio is played or paused
-     * @deprecated This is deprecated and will be removed in the future.
-     */
-    onPlayPause: (index: string, pausedStatus?: boolean) => void;
-    /**
-     * Callback to be called when the audio progresses
-     * @deprecated This is deprecated and will be removed in the future.
-     */
-    onProgress: (index: string, progress: number) => void;
-  };
+  >;
 
 export const AudioAttachmentUploadPreview = ({
   attachment,
-  audioAttachmentConfig,
   handleRetry,
   removeAttachments,
-  onLoad,
-  onPlayPause,
-  onProgress,
 }: AudioAttachmentUploadPreviewProps) => {
+  const styles = useStyles();
   const { enableOfflineSupport } = useChatContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
@@ -69,9 +49,8 @@ export const AudioAttachmentUploadPreview = ({
       ...attachment,
       asset_url: assetUrl,
       id: attachment.localMetadata.id,
-      ...audioAttachmentConfig,
     }),
-    [attachment, assetUrl, audioAttachmentConfig],
+    [attachment, assetUrl],
   );
 
   const onRetryHandler = useCallback(() => {
@@ -82,43 +61,58 @@ export const AudioAttachmentUploadPreview = ({
     removeAttachments([attachment.localMetadata.id]);
   }, [attachment, removeAttachments]);
 
+  const renderIndicator = useMemo(() => {
+    if (indicatorType === ProgressIndicatorTypes.IN_PROGRESS) {
+      return <FileUploadInProgressIndicator />;
+    }
+    if (indicatorType === ProgressIndicatorTypes.RETRY) {
+      return <FileUploadRetryIndicator onPress={onRetryHandler} />;
+    }
+    if (indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED) {
+      return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
+    }
+    return null;
+  }, [attachment.localMetadata, indicatorType, onRetryHandler]);
+
   return (
-    <View testID={'audio-attachment-upload-preview'}>
-      <AttachmentUploadProgressIndicator
-        onPress={onRetryHandler}
-        style={styles.overlay}
-        type={indicatorType}
-      >
-        <AudioAttachment
-          hideProgressBar={true}
-          isPreview={true}
-          item={finalAttachment}
-          onLoad={onLoad}
-          onPlayPause={onPlayPause}
-          onProgress={onProgress}
-          showSpeedSettings={false}
-          titleMaxLength={12}
-        />
-      </AttachmentUploadProgressIndicator>
+    <View style={styles.wrapper} testID={'audio-attachment-upload-preview'}>
+      <AudioAttachment
+        isPreview={true}
+        item={finalAttachment}
+        showSpeedSettings={true}
+        containerStyle={styles.audioAttachmentContainer}
+        indicator={renderIndicator}
+      />
       <View style={styles.dismissWrapper}>
-        <DismissAttachmentUpload onPress={onDismissHandler} />
+        <AttachmentRemoveControl onPress={onDismissHandler} />
       </View>
-      {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-        <AttachmentUnsupportedIndicator indicatorType={indicatorType} isImage={true} />
-      ) : null}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  dismissWrapper: {
-    position: 'absolute',
-    right: 8,
-    top: 0,
-  },
-  overlay: {
-    borderRadius: 12,
-    marginHorizontal: 8,
-    marginTop: 2,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        dismissWrapper: {
+          position: 'absolute',
+          right: 0,
+          top: 0,
+        },
+        wrapper: {
+          padding: primitives.spacingXxs,
+          width: '100%',
+        },
+        audioAttachmentContainer: {
+          borderRadius: primitives.radiusLg,
+          borderColor: semantics.borderCoreDefault,
+          borderWidth: 1,
+          width: '100%',
+        },
+      }),
+    [semantics.borderCoreDefault],
+  );
+};

@@ -7,6 +7,10 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ThreadType = { thread: LocalMessage; threadInstance: Thread };
+export type AlsoSentToChannelHeaderPressPayload = {
+  parentMessage?: LocalMessage;
+  targetedMessageId: string;
+};
 
 export type ThreadContextValue = {
   allowThreadMessagesInChannel: boolean;
@@ -26,6 +30,12 @@ export type ThreadContextValue = {
   threadInstance?: Thread | null;
   threadLoadingMore?: boolean;
   threadLoadingMoreRecent?: boolean;
+  /**
+   * Function to handle press on the "Also sent to channel" header action.
+   * @param payload - Navigation payload with optional parent thread message and targeted message id
+   * @returns void
+   */
+  onAlsoSentToChannelHeaderPress?: (payload: AlsoSentToChannelHeaderPressPayload) => void;
 };
 
 export const ThreadContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ThreadContextValue);

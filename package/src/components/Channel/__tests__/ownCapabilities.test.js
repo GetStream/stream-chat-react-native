@@ -1,6 +1,8 @@
 import React from 'react';
 import { FlatList } from 'react-native';
 
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -15,7 +17,7 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { registerNativeHandlers } from '../../../native';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { MessageInput } from '../../MessageInput/MessageInput';
+import { MessageComposer } from '../../MessageInput/MessageComposer';
 import { MessageList } from '../../MessageList/MessageList';
 
 describe('Own capabilities', () => {
@@ -47,14 +49,16 @@ describe('Own capabilities', () => {
   });
 
   const getComponent = (props = {}) => (
-    <OverlayProvider>
-      <Chat client={chatClient}>
-        <Channel channel={channel} {...props}>
-          <MessageList FlatList={FlatList} />
-          <MessageInput />
-        </Channel>
-      </Chat>
-    </OverlayProvider>
+    <SafeAreaProvider>
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} {...props}>
+            <MessageList FlatList={FlatList} />
+            <MessageComposer />
+          </Channel>
+        </Chat>
+      </OverlayProvider>
+    </SafeAreaProvider>
   );
 
   const generateChannelWithCapabilities = async (capabilities = []) => {

@@ -1,7 +1,9 @@
 import {
   Attachment,
+  AttachmentPreUploadMiddleware,
   FileReference,
   isLocalImageAttachment,
+  isLocalVideoAttachment,
   LocalAttachment,
   MessageComposer,
   MessageComposerMiddlewareState,
@@ -11,11 +13,13 @@ import {
   MiddlewareHandlerParams,
 } from 'stream-chat';
 
-const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
+import { isLocalUrl } from '../utils/utils';
+
+export const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
   const { localMetadata, ...attachment } = localAttachment;
 
   if (isLocalImageAttachment(localAttachment)) {
-    const isRemoteUri = !!attachment.image_url;
+    const isRemoteUri = !!attachment.image_url && !isLocalUrl(attachment.image_url);
 
     if (isRemoteUri) return attachment as Attachment;
 
@@ -25,7 +29,7 @@ const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
       originalFile: localMetadata.file,
     } as Attachment;
   } else {
-    const isRemoteUri = !!attachment.asset_url;
+    const isRemoteUri = !!attachment.asset_url && !isLocalUrl(attachment.asset_url);
     if (isRemoteUri) return attachment as Attachment;
 
     return {
@@ -98,3 +102,35 @@ export const createDraftAttachmentsCompositionMiddleware = (
   },
   id: 'stream-io/message-composer-middleware/draft-attachments',
 });
+
+const createVideoAttachmentPreviewMiddleware = (): AttachmentPreUploadMiddleware => ({
+  id: 'stream-io/message-composer-ui-middleware/video-attachment-preview',
+  handlers: {
+    prepare: ({ next, forward, state }) => {
+      const { attachment } = state;
+
+      if (!attachment || !isLocalVideoAttachment(attachment)) {
+        return forward();
+      }
+
+      return next({
+        ...state,
+        attachment: {
+          ...attachment,
+          localMetadata: {
+            ...attachment.localMetadata,
+            previewUri: attachment.thumb_url,
+          },
+        },
+      });
+    },
+  },
+});
+
+export const setupVideoAttachmentPreviewMiddleware = (messageComposer: MessageComposer) => {
+  messageComposer.attachmentManager.preUploadMiddlewareExecutor.insert({
+    middleware: [createVideoAttachmentPreviewMiddleware()],
+    position: { after: 'stream-io/attachment-manager-middleware/file-upload-config-check' },
+    unique: true,
+  });
+};

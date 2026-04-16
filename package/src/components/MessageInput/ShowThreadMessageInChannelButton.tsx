@@ -1,9 +1,14 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { MessageComposerState } from 'stream-chat';
 
-import { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
@@ -13,6 +18,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { Check } from '../../icons';
+import { primitives } from '../../theme';
 
 const stateSelector = (state: MessageComposerState) => ({
   showReplyInChannel: state.showReplyInChannel,
@@ -27,14 +33,14 @@ export type ShowThreadMessageInChannelButtonWithContextProps = Pick<
 export const ShowThreadMessageInChannelButtonWithContext = (
   props: ShowThreadMessageInChannelButtonWithContextProps,
 ) => {
+  const styles = useStyles();
   const { allowThreadMessagesInChannel, t, threadList } = props;
   const messageComposer = useMessageComposer();
   const { showReplyInChannel } = useStateStore(messageComposer.state, stateSelector);
 
   const {
     theme: {
-      colors: { accent_blue, grey, white },
-      messageInput: {
+      messageComposer: {
         showThreadMessageInChannelButton: {
           check,
           checkBoxActive,
@@ -44,6 +50,7 @@ export const ShowThreadMessageInChannelButtonWithContext = (
           text,
         },
       },
+      semantics,
     },
   } = useTheme();
 
@@ -56,7 +63,11 @@ export const ShowThreadMessageInChannelButtonWithContext = (
   }
 
   return (
-    <View style={[styles.container, container]} testID='show-thread-message-in-channel-button'>
+    <Animated.View
+      layout={LinearTransition.duration(200)}
+      style={[styles.container, container]}
+      testID='show-thread-message-in-channel-button'
+    >
       <Pressable onPress={onPressHandler} style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}>
         <View style={[styles.innerContainer, innerContainer]}>
           <View
@@ -64,19 +75,21 @@ export const ShowThreadMessageInChannelButtonWithContext = (
               styles.checkBox,
               showReplyInChannel
                 ? {
-                    backgroundColor: accent_blue,
-                    borderColor: accent_blue,
+                    backgroundColor: semantics.controlRadioCheckBgSelected,
+                    borderWidth: 0,
                     ...checkBoxActive,
                   }
-                : { borderColor: grey, ...checkBoxInactive },
+                : { ...checkBoxInactive },
             ]}
           >
-            {showReplyInChannel && <Check height={16} pathFill={white} width={16} {...check} />}
+            {showReplyInChannel && (
+              <Check width={16} height={16} stroke={semantics.controlRadioCheckIcon} {...check} />
+            )}
           </View>
-          <Text style={[styles.text, { color: grey }, text]}>{t('Also send to channel')}</Text>
+          <Text style={[styles.text, text]}>{t('Also send to channel')}</Text>
         </View>
       </Pressable>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -125,12 +138,14 @@ export type ShowThreadMessageInChannelButtonProps =
 export const ShowThreadMessageInChannelButton = (props: ShowThreadMessageInChannelButtonProps) => {
   const { t } = useTranslationContext();
   const { allowThreadMessagesInChannel } = useThreadContext();
+  const { threadList } = useChannelContext();
 
   return (
     <MemoizedShowThreadMessageInChannelButton
       {...{
         allowThreadMessagesInChannel,
         t,
+        threadList,
       }}
       {...props}
     />
@@ -138,27 +153,40 @@ export const ShowThreadMessageInChannelButton = (props: ShowThreadMessageInChann
 };
 
 ShowThreadMessageInChannelButton.displayName =
-  'ShowThreadMessageInChannelButton{messageInput{showThreadMessageInChannelButton}}';
+  'ShowThreadMessageInChannelButton{messageComposer{showThreadMessageInChannelButton}}';
 
-const styles = StyleSheet.create({
-  checkBox: {
-    alignItems: 'center',
-    borderRadius: 3,
-    borderWidth: 2,
-    height: 16,
-    justifyContent: 'center',
-    width: 16,
-  },
-  container: {
-    flexDirection: 'row',
-    marginHorizontal: 2,
-    marginTop: 8,
-  },
-  innerContainer: {
-    flexDirection: 'row',
-  },
-  text: {
-    fontSize: 13,
-    marginLeft: 12,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        checkBox: {
+          alignItems: 'center',
+          borderRadius: primitives.radiusSm,
+          borderColor: semantics.controlRadioCheckBorder,
+          borderWidth: 1,
+          height: 20,
+          justifyContent: 'center',
+          width: 20,
+        },
+        container: {
+          flexDirection: 'row',
+          paddingLeft: primitives.spacingSm,
+          paddingBottom: primitives.spacingSm,
+        },
+        innerContainer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: primitives.spacingXs,
+        },
+        text: {
+          fontSize: primitives.typographyFontSizeXs,
+          lineHeight: primitives.typographyLineHeightTight,
+          color: semantics.textTertiary,
+        },
+      }),
+    [semantics],
+  );
+};

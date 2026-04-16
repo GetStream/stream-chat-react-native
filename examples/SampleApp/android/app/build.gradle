@@ -4,6 +4,18 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: "com.facebook.react"
 
+// Some libraries look up the React Native location on the application project
+// instead of the root project. Mirror the root setting here so they never need
+// to shell out to a bare `node` binary just to resolve react-native.
+ext.REACT_NATIVE_NODE_MODULES_DIR =
+    rootProject.ext.has("REACT_NATIVE_NODE_MODULES_DIR")
+        ? rootProject.ext.get("REACT_NATIVE_NODE_MODULES_DIR")
+        : file("$rootDir/../node_modules/react-native").absolutePath
+ext.REACT_NATIVE_WORKLETS_NODE_MODULES_DIR =
+    rootProject.ext.has("REACT_NATIVE_WORKLETS_NODE_MODULES_DIR")
+        ? rootProject.ext.get("REACT_NATIVE_WORKLETS_NODE_MODULES_DIR")
+        : file("$rootDir/../node_modules/react-native-worklets").absolutePath
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -79,15 +91,15 @@ android {
 
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-    namespace "com.sampleapp"
+    namespace "io.getstream.reactnative.sampleapp"
 
     defaultConfig {
-        applicationId "com.sampleapp"
+        applicationId "io.getstream.reactnative.sampleapp"
         minSdkVersion rootProject.ext.minSdkVersion
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 22
+        versionCode 1
         versionName "0.0.22"
     }
 

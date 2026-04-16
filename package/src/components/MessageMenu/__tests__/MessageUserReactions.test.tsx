@@ -6,6 +6,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 
 import { LocalMessage, ReactionResponse } from 'stream-chat';
 
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessagesContextValue,
   MessagesProvider,
@@ -42,18 +43,18 @@ const renderComponent = (props = {}) =>
   render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider value={mockTranslations as unknown as TranslationContextValue}>
-        <MessagesProvider
-          value={
-            {
-              MessageUserReactionsAvatar: () => null,
-              MessageUserReactionsItem: (props: MessageUserReactionsItemProps) => (
-                <Text>{props.reaction.id + ' ' + props.reaction.type}</Text>
-              ),
-            } as unknown as MessagesContextValue
-          }
+        <WithComponents
+          overrides={{
+            MessageUserReactionsAvatar: () => null,
+            MessageUserReactionsItem: (itemProps: MessageUserReactionsItemProps) => (
+              <Text>{itemProps.reaction.id + ' ' + itemProps.reaction.type}</Text>
+            ),
+          }}
         >
-          <MessageUserReactions {...defaultProps} {...props} />
-        </MessagesProvider>
+          <MessagesProvider value={{} as unknown as MessagesContextValue}>
+            <MessageUserReactions {...defaultProps} {...props} />
+          </MessagesProvider>
+        </WithComponents>
       </TranslationProvider>
     </ThemeProvider>,
   );
@@ -82,38 +83,46 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
   it('renders correctly', () => {
     const { getByLabelText, getByText } = renderComponent();
     expect(getByLabelText('User Reactions on long press message')).toBeTruthy();
-    expect(getByText('Message Reactions')).toBeTruthy();
+    expect(getByText('{{count}} Reactions')).toBeTruthy();
   });
 
   it('renders reaction buttons', () => {
     const { getByLabelText } = renderComponent();
-    const likeReactionButton = getByLabelText('reaction-button-like-selected');
+    const likeReactionButton = getByLabelText('reaction-button-like-unselected');
     expect(likeReactionButton).toBeDefined();
     const loveReactionButton = getByLabelText('reaction-button-love-unselected');
     expect(loveReactionButton).toBeDefined();
   });
 
-  it('selects the first reaction by default', () => {
+  it('starts with no reaction filter selected by default', () => {
     const { getAllByLabelText } = renderComponent();
     const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-selected');
+    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
     expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
   });
 
-  it('changes selected reaction when a reaction button is pressed', () => {
+  it('toggles the selected reaction when a reaction button is pressed twice', () => {
     const { getAllByLabelText } = renderComponent();
-    const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+    let reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
 
     fireEvent.press(reactionButtons[1]);
 
     expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
     expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-selected');
+
+    fireEvent.press(reactionButtons[1]);
+
+    reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+
+    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
+    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
   });
 
   it('renders reactions list', () => {
     const { getByText } = renderComponent();
     const reactionItems = getByText('1 like');
     expect(reactionItems).toBeDefined();
+    expect(getByText('2 love')).toBeDefined();
   });
 
   it('uses provided reactions when passed as a prop', () => {

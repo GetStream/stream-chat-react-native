@@ -1,7 +1,12 @@
-import React from 'react';
-import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
+
+import { Pressable } from 'react-native-gesture-handler';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStableCallback } from '../../hooks';
+import { closeOverlay, scheduleActionOnClose } from '../../state-store';
+import { primitives } from '../../theme';
 
 export type ActionType =
   | 'banUser'
@@ -43,6 +48,8 @@ export type MessageActionType = {
    * Styles for underlying Text component of action title.
    */
   titleStyle?: StyleProp<TextStyle>;
+
+  type: 'standard' | 'destructive';
 };
 
 /**
@@ -55,34 +62,62 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
 
   const {
     theme: {
-      colors: { black },
+      semantics,
       messageMenu: {
         actionListItem: { container, icon: iconTheme, title: titleTheme },
       },
     },
   } = useTheme();
+  const styles = useStyles();
+
+  const onActionPress = useStableCallback(() => {
+    closeOverlay();
+    scheduleActionOnClose(() => action());
+  });
 
   return (
-    <Pressable onPress={action} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
+    <Pressable
+      onPress={onActionPress}
+      style={({ pressed }) => [
+        styles.buttonContainer,
+        { backgroundColor: pressed ? semantics.backgroundUtilityPressed : 'transparent' },
+      ]}
+    >
       <View
         accessibilityLabel={`${actionType} action list item`}
         style={[styles.container, container]}
       >
         <View style={iconTheme}>{icon}</View>
-        <Text style={[styles.titleStyle, { color: black }, titleStyle, titleTheme]}>{title}</Text>
+        <Text style={[styles.titleStyle, titleStyle, titleTheme]}>{title}</Text>
       </View>
     </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    paddingVertical: 8,
-  },
-  titleStyle: {
-    paddingLeft: 16,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        buttonContainer: {
+          borderRadius: primitives.radiusLg,
+        },
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          padding: primitives.spacingXs,
+        },
+        titleStyle: {
+          paddingLeft: primitives.spacingXs,
+          fontWeight: primitives.typographyFontWeightMedium,
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
+        },
+      }),
+    [semantics.textPrimary],
+  );
+};

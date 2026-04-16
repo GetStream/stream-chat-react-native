@@ -17,6 +17,7 @@ import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
 import { Settings } from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -90,9 +91,10 @@ type Props = {
 export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
   const {
     theme: {
-      colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
+      semantics,
     },
   } = useTheme();
+  const { black, grey, grey_gainsboro, grey_whisper, white_snow } = useLegacyColors();
   const { switchUser } = useAppContext();
   const { bottom } = useSafeAreaInsets();
 
@@ -125,7 +127,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
             onPress={() => {
               switchUser(u.id);
             }}
-            style={[styles.userContainer, { borderBottomColor: border }]}
+            style={[styles.userContainer, { borderBottomColor: semantics.borderCoreDefault }]}
             testID={`user-selector-button-${u.id}`}
           >
             <Image
@@ -156,7 +158,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
           onPress={() => {
             navigation.navigate('AdvancedUserSelectorScreen');
           }}
-          style={[styles.userContainer, { borderBottomColor: border }]}
+          style={[styles.userContainer, { borderBottomColor: semantics.borderCoreDefault }]}
         >
           <View
             style={{

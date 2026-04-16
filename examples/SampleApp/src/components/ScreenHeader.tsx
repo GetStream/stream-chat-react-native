@@ -7,6 +7,7 @@ import { useTheme } from 'stream-chat-react-native';
 import { ChannelsUnreadCountBadge } from './UnreadCountBadge';
 
 import { GoBack } from '../icons/GoBack';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -64,15 +65,17 @@ export const BackButton: React.FC<{
   return (
     <TouchableOpacity
       onPress={() => {
+        if (onBack) {
+          onBack();
+          return;
+        }
+
         if (!navigation.canGoBack()) {
           // if no previous screen was present in history, go to the list screen
           // this can happen when opened through push notification
           navigation.reset({ index: 0, routes: [{ name: 'HomeScreen' }] });
         } else {
           navigation.goBack();
-        }
-        if (onBack) {
-          onBack();
         }
       }}
       style={styles.backButton}
@@ -117,10 +120,9 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
   } = props;
 
   const {
-    theme: {
-      colors: { black, border, grey, white },
-    },
+    theme: { semantics },
   } = useTheme();
+  const { black, grey } = useLegacyColors();
   const insets = useSafeAreaInsets();
 
   return (
@@ -128,8 +130,8 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
       style={[
         styles.safeAreaContainer,
         {
-          backgroundColor: white,
-          borderBottomColor: border,
+          backgroundColor: semantics.backgroundCoreElevation1,
+          borderBottomColor: semantics.borderCoreSubtle,
           height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
         },
         style,

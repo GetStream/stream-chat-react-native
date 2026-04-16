@@ -1,33 +1,49 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import type { ChannelPreviewProps } from './ChannelPreview';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 
-const styles = StyleSheet.create({
-  title: { fontSize: 14, fontWeight: '700' },
-});
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 
 export type ChannelPreviewTitleProps = Pick<ChannelPreviewProps, 'channel'> & {
   /**
    * Formatted name for the previewed channel.
    */
-  displayName: string;
+  title?: string;
 };
 
-export const ChannelPreviewTitle = (props: ChannelPreviewTitleProps) => {
-  const { displayName } = props;
+export const ChannelPreviewTitle = ({ channel, title }: ChannelPreviewTitleProps) => {
+  const styles = useStyles();
+
+  const displayName = useChannelPreviewDisplayName(channel);
+
+  return (
+    <Text numberOfLines={1} style={styles.title}>
+      {title ?? displayName}
+    </Text>
+  );
+};
+
+const useStyles = () => {
   const {
     theme: {
       channelPreview: { title },
-      colors: { black },
+      semantics,
     },
   } = useTheme();
-
-  return (
-    <Text numberOfLines={1} style={[styles.title, { color: black }, title]}>
-      {displayName}
-    </Text>
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      title: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+        flexShrink: 1,
+        ...title,
+      },
+    });
+  }, [semantics, title]);
 };

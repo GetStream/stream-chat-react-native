@@ -1,80 +1,50 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
+import type { ImageGalleryHeaderProps } from './types';
+
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { Close } from '../../../icons';
+import { useStateStore } from '../../../hooks/useStateStore';
+import { ChevronLeft } from '../../../icons/chevron-left';
 
+import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
+import { primitives } from '../../../theme';
 import { getDateString } from '../../../utils/i18n/getDateString';
+import { Button } from '../../ui/Button/Button';
 import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
-import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
   : SafeAreaView;
 
-export type ImageGalleryHeaderCustomComponent = ({
-  hideOverlay,
-  photo,
-}: {
-  hideOverlay: () => void;
-  photo?: Photo;
-}) => React.ReactElement | null;
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  asset: state.assets[state.currentIndex],
+});
 
-export type ImageGalleryHeaderCustomComponentProps = {
-  centerElement?: ImageGalleryHeaderCustomComponent;
-  CloseIcon?: React.ReactElement;
-  leftElement?: ImageGalleryHeaderCustomComponent;
-  rightElement?: ImageGalleryHeaderCustomComponent;
-};
-
-type Props = ImageGalleryHeaderCustomComponentProps & {
-  opacity: SharedValue<number>;
-  visible: SharedValue<number>;
-  photo?: Photo;
-  /* Lookup key in the language corresponding translations sheet to perform date formatting */
-};
-
-export const ImageGalleryHeader = (props: Props) => {
-  const { centerElement, CloseIcon, leftElement, opacity, photo, rightElement, visible } = props;
+export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
+  const { opacity, visible } = props;
   const [height, setHeight] = useState(200);
-  const {
-    theme: {
-      colors: { black, white },
-      imageGallery: {
-        header: {
-          centerContainer,
-          container,
-          dateText,
-          innerContainer,
-          leftContainer,
-          rightContainer,
-          usernameText,
-        },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
   const { t, tDateTimeParser } = useTranslationContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { asset } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const { setOverlay } = useOverlayContext();
 
   const date = useMemo(
     () =>
       getDateString({
-        date: photo?.created_at,
+        date: asset?.created_at,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp/ImageGalleryHeader',
       }),
-    [photo?.created_at, t, tDateTimeParser],
+    [asset?.created_at, t, tDateTimeParser],
   );
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
@@ -90,40 +60,35 @@ export const ImageGalleryHeader = (props: Props) => {
     setOverlay('none');
   };
 
+  useEffect(() => {
+    return () => {
+      imageGalleryStateStore.clear();
+    };
+  }, [imageGalleryStateStore]);
+
   return (
     <View
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <ReanimatedSafeAreaView
-        edges={['top']}
-        style={[{ backgroundColor: white }, headerStyle, container]}
-      >
-        <View style={[styles.innerContainer, innerContainer]}>
-          {leftElement ? (
-            leftElement({ hideOverlay, photo })
-          ) : (
-            <Pressable accessibilityLabel='Hide Overlay' onPress={hideOverlay}>
-              <View style={[styles.leftContainer, leftContainer]}>
-                {CloseIcon ? CloseIcon : <Close />}
-              </View>
-            </Pressable>
-          )}
-          {centerElement ? (
-            centerElement({ hideOverlay, photo })
-          ) : (
-            <View style={[styles.centerContainer, centerContainer]}>
-              <Text style={[styles.userName, { color: black }, usernameText]}>
-                {photo?.user?.name || photo?.user?.id || t('Unknown User')}
-              </Text>
-              {date && <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>}
-            </View>
-          )}
-          {rightElement ? (
-            rightElement({ hideOverlay, photo })
-          ) : (
-            <View style={[styles.rightContainer, rightContainer]} />
-          )}
+      <ReanimatedSafeAreaView edges={['top']} style={[styles.container, headerStyle]}>
+        <View style={styles.innerContainer}>
+          <Button
+            accessibilityLabel='Hide Overlay'
+            variant='secondary'
+            type='ghost'
+            size='md'
+            onPress={hideOverlay}
+            LeadingIcon={ChevronLeft}
+            iconOnly
+          />
+          <View style={styles.centerContainer} accessibilityLabel='Center element'>
+            <Text style={styles.userName}>
+              {asset?.user?.name || asset?.user?.id || t('Unknown User')}
+            </Text>
+            {date ? <Text style={styles.date}>{date}</Text> : null}
+          </View>
+          <View style={styles.rightContainer} accessibilityLabel='Right element' />
         </View>
       </ReanimatedSafeAreaView>
     </View>
@@ -132,34 +97,55 @@ export const ImageGalleryHeader = (props: Props) => {
 
 ImageGalleryHeader.displayName = 'ImageGalleryHeader{imageGallery{header}}';
 
-const styles = StyleSheet.create({
-  centerContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  date: {
-    fontSize: 12,
-    fontWeight: '500',
-    opacity: 0.5,
-  },
-  innerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-  },
-  leftContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
-  rightContainer: {
-    marginRight: 8,
-    width: 24, // Width of icon currently on left
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 2,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      imageGallery: { header },
+    },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          backgroundColor: semantics.backgroundCoreElevation1,
+          gap: primitives.spacingXs,
+          ...header.container,
+        },
+        centerContainer: {
+          alignItems: 'center',
+          flex: 1,
+          justifyContent: 'center',
+          gap: primitives.spacingXxs,
+          ...header.centerContainer,
+        },
+        date: {
+          color: semantics.textSecondary,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
+          ...header.dateText,
+        },
+        innerContainer: {
+          padding: primitives.spacingSm,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          borderBottomWidth: 1,
+          borderBottomColor: semantics.borderCoreDefault,
+          ...header.innerContainer,
+        },
+        rightContainer: {
+          width: 24,
+          height: 24,
+        },
+        userName: {
+          color: semantics.textPrimary,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          ...header.usernameText,
+        },
+      }),
+    [semantics, header],
+  );
+};

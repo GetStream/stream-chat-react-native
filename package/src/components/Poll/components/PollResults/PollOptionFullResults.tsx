@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
 import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
@@ -11,14 +11,15 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 
+import { primitives } from '../../../../theme';
 import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagination';
 import { usePollState } from '../../hooks/usePollState';
 
 export type PollOptionFullResultsProps = PollContextValue & {
   option: PollOption;
   additionalFlatListProps?: Partial<FlatListProps<PollVoteClass>>;
-  PollOptionFullResultsContent?: React.ComponentType<{ option: PollOption }>;
 };
 
 export const renderPollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => (
@@ -35,32 +36,40 @@ export const PollOptionFullResultsContent = ({
 
   const {
     theme: {
-      colors: { bg_user, black, white },
       poll: {
-        fullResults: { container, contentContainer, headerContainer, headerText },
+        fullResults: { container, contentContainer, headerContainer, headerText, headerTitle },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const PollOptionFullResultsHeader = useCallback(
     () => (
       <View style={[styles.headerContainer, headerContainer]}>
-        <Text style={[styles.headerText, { color: black }, headerText]}>
+        <Text style={[styles.headerTitle, headerTitle]}>{option.text}</Text>
+        <Text style={[styles.headerText, headerText]}>
           {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
         </Text>
       </View>
     ),
-    [black, headerContainer, headerText, option.id, t, voteCountsByOption],
+    [
+      headerContainer,
+      headerText,
+      headerTitle,
+      option.id,
+      option.text,
+      styles.headerContainer,
+      styles.headerText,
+      styles.headerTitle,
+      t,
+      voteCountsByOption,
+    ],
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: white }, container]}>
+    <View style={[styles.container, container]}>
       <FlatList
-        contentContainerStyle={[
-          styles.contentContainer,
-          { backgroundColor: bg_user },
-          contentContainer,
-        ]}
+        contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={votes}
         keyExtractor={(item) => `option_full_results_${item.id}`}
         ListHeaderComponent={PollOptionFullResultsHeader}
@@ -77,30 +86,62 @@ export const PollOptionFullResults = ({
   message,
   option,
   poll,
-  PollOptionFullResultsContent: PollOptionFullResultsContentOverride,
-}: PollOptionFullResultsProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollOptionFullResultsContentOverride ? (
-      <PollOptionFullResultsContentOverride option={option} />
-    ) : (
-      <PollOptionFullResultsContent
+}: PollOptionFullResultsProps) => {
+  const { PollOptionFullResultsContent: PollOptionFullResultsContentComponent } =
+    useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollOptionFullResultsContentComponent
         additionalFlatListProps={additionalFlatListProps}
         option={option}
       />
-    )}
-  </PollContextProvider>
-);
+    </PollContextProvider>
+  );
+};
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: {
-    borderRadius: 12,
-    marginBottom: 8,
-    marginHorizontal: 16,
-    marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  headerContainer: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 },
-  headerText: { fontSize: 16, marginLeft: 16 },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: { flex: 1, backgroundColor: semantics.backgroundCoreElevation1 },
+      contentContainer: {
+        margin: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+        borderRadius: primitives.radiusLg,
+        paddingHorizontal: primitives.spacingMd,
+        paddingTop: primitives.spacingMd,
+        paddingBottom: primitives.spacingXs,
+      },
+      headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: primitives.spacingXs,
+      },
+      headerTitle: {
+        flex: 1,
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      headerText: {
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        marginStart: primitives.spacingMd,
+        textAlign: 'left',
+      },
+    });
+  }, [
+    semantics.backgroundCoreElevation1,
+    semantics.backgroundCoreSurfaceCard,
+    semantics.textPrimary,
+  ]);
+};

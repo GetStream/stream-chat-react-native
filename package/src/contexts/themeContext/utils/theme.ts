@@ -1,15 +1,23 @@
-import type { ColorValue, ImageStyle, TextStyle, ViewStyle } from 'react-native';
-import type { CircleProps, StopProps } from 'react-native-svg';
+import {
+  Appearance,
+  type ColorValue,
+  type ImageStyle,
+  type TextStyle,
+  type ViewStyle,
+} from 'react-native';
+import type { CircleProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
+import { primitives, lightSemantics, darkSemantics } from '../../../theme';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
-export const BASE_AVATAR_SIZE = 32;
+// TODO: Handle this better later depending on the size of the avatar used
+export const BASE_AVATAR_SIZE = 24;
 
 export const Colors = {
   accent_blue: '#005FFF',
   accent_dark_blue: '#005DFF',
-  accent_error: '#FF3842',
+  accent_error: '#D92F26',
   accent_green: '#20E070',
   accent_info: '#1FE06F',
   accent_red: '#FF3742',
@@ -18,7 +26,7 @@ export const Colors = {
   bg_user: '#F7F7F8',
   black: '#000000',
   blue_alice: '#E9F2FF',
-  border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
+  // border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
   code_block: '#DDDDDD',
   disabled: '#B4BBBA',
   grey: '#7A7A7A',
@@ -31,6 +39,7 @@ export const Colors = {
   light_gray: '#E9EAED',
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
+  selected: 'hsla(0, 0%, 0%, 0.15)',
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
   static_black: '#000000',
   static_white: '#ffffff',
@@ -97,9 +106,12 @@ export type Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: ViewStyle;
     durationText: TextStyle;
-    errorButtonText: TextStyle;
-    errorContainer: ViewStyle;
-    errorText: TextStyle;
+    content: {
+      actionContainer: ViewStyle;
+      container: ViewStyle;
+      infoContainer: ViewStyle;
+      text: TextStyle;
+    };
     image: ViewStyle;
     imageOverlay: ViewStyle;
     imageOverlaySelectedComponent: {
@@ -116,6 +128,8 @@ export type Theme = {
   };
   audioAttachment: {
     container: ViewStyle;
+    centerContainer: ViewStyle;
+    audioInfo: ViewStyle;
     leftContainer: ViewStyle;
     playPauseButton: ViewStyle;
     progressControlContainer: ViewStyle;
@@ -151,42 +165,84 @@ export type Theme = {
   channelListLoadingIndicator: {
     container: ViewStyle;
   };
-  channelListMessenger: {
+  channelListView: {
     flatList: ViewStyle;
     flatListContent: ViewStyle;
   };
+  channelDetailsMenu: {
+    contentContainer: ViewStyle;
+    header: {
+      container: ViewStyle;
+      metaContainer: ViewStyle;
+      metaText: TextStyle;
+    };
+    item: {
+      container: ViewStyle;
+      destructiveText: TextStyle;
+      standardText: TextStyle;
+    };
+  };
   channelListSkeleton: {
     animationTime: number;
-    background: ViewStyle;
+    avatar: ViewStyle;
+    badge: ViewStyle;
+    content: ViewStyle;
     container: ViewStyle;
-    gradientStart: StopProps;
-    gradientStop: StopProps;
-    height: number;
-    maskFillColor?: ColorValue;
+    headerRow: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  threadListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    body: ViewStyle;
+    content: ViewStyle;
+    contentContainer: ViewStyle;
+    container: ViewStyle;
+    footerIcon: ViewStyle;
+    footerPill: ViewStyle;
+    footerRow: ViewStyle;
+    headerLabel: ViewStyle;
+    textContainer: ViewStyle;
+    timestamp: ViewStyle;
   };
   channelPreview: {
-    avatar: {
-      size: number;
-    };
-    checkAllIcon: IconProps;
-    checkIcon: IconProps;
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
-    mutedStatus: {
-      height: number;
-      iconStyle: ViewStyle;
-      width: number;
-    };
-    message: {
+    mutedStatus: IconProps;
+    messageDeliveryStatus: {
       container: ViewStyle;
+      text: TextStyle;
+      checkAllIcon: IconProps;
+      checkIcon: IconProps;
+      timeIcon: IconProps;
     };
-    row: ViewStyle;
+    lowerRow: ViewStyle;
     title: TextStyle;
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
+    typingIndicatorPreview: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
+    upperRow: ViewStyle;
+    statusContainer: ViewStyle;
+    titleContainer: ViewStyle;
+    wrapper: ViewStyle;
+    message: {
+      container: ViewStyle;
+      subtitle: TextStyle;
+      errorText: TextStyle;
+      draftText: TextStyle;
+    };
+    messagePreview: {
+      container: ViewStyle;
+      draftText: TextStyle;
+      subtitle: TextStyle;
+    };
   };
-  colors: typeof Colors & { [key: string]: string };
   dateHeader: {
     container: ViewStyle;
     text: TextStyle;
@@ -217,15 +273,15 @@ export type Theme = {
       container: ViewStyle;
       imageCountText: TextStyle;
       innerContainer: ViewStyle;
-      leftContainer: ViewStyle;
-      rightContainer: ViewStyle;
+      activityIndicatorContainer: ViewStyle;
+      wrapper: ViewStyle;
     };
     grid: {
       container: ViewStyle;
       contentContainer: ViewStyle;
       gridAvatar: ImageStyle;
       gridAvatarWrapper: ViewStyle;
-      gridImage: ViewStyle;
+      gridImage: ImageStyle;
       handle: ViewStyle;
       handleText: TextStyle;
       overlay: ViewStyle;
@@ -235,15 +291,13 @@ export type Theme = {
       container: ViewStyle;
       dateText: TextStyle;
       innerContainer: ViewStyle;
-      leftContainer: ViewStyle;
-      rightContainer: ViewStyle;
       usernameText: TextStyle;
     };
     videoControl: {
+      container: ViewStyle;
       durationTextStyle: TextStyle;
-      progressDurationText: TextStyle;
-      roundedView: ViewStyle;
-      videoContainer: ViewStyle;
+      leftContainer: ViewStyle;
+      progressContainer: ViewStyle;
     };
     backgroundColor?: string;
     pager?: ViewStyle;
@@ -268,21 +322,16 @@ export type Theme = {
     loadingText: TextStyle;
   };
 
-  messageInput: {
+  messageComposer: {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
-    attachmentSeparator: ViewStyle;
-    attachmentUnsupportedIndicator: {
-      container: ViewStyle;
-      warningIcon: IconProps;
-      text: TextStyle;
-    };
     attachmentUploadPreviewList: {
-      filesFlatList: ViewStyle;
-      imagesFlatList: ViewStyle;
-      wrapper: ViewStyle;
+      audioAttachmentsContainer: ViewStyle;
+      flatList: ViewStyle;
+      itemSeparator: ViewStyle;
     };
+    audioRecordingButtonContainer: ViewStyle;
     audioRecorder: {
       arrowLeftIcon: IconProps;
       checkContainer: ViewStyle;
@@ -294,10 +343,6 @@ export type Theme = {
       pausedContainer: ViewStyle;
       sendCheckIcon: IconProps;
       slideToCancelContainer: ViewStyle;
-    };
-    audioRecordingButton: {
-      container: ViewStyle;
-      micIcon: IconProps;
     };
     audioRecordingInProgress: {
       container: ViewStyle;
@@ -320,17 +365,10 @@ export type Theme = {
       container: ViewStyle;
       waveform: ViewStyle;
     };
-    autoCompleteInputContainer: ViewStyle;
-    commandInput: {
-      closeButton: ViewStyle;
-      container: ViewStyle;
-      text: TextStyle;
-    };
-    commandsButton: ViewStyle;
-    composerContainer: ViewStyle;
     container: ViewStyle;
+    contentContainer: ViewStyle;
+    cooldownButtonContainer: ViewStyle;
     cooldownTimer: {
-      container: ViewStyle;
       text: TextStyle;
     };
     dismissAttachmentUpload: {
@@ -338,13 +376,8 @@ export type Theme = {
       dismissIcon: IconProps;
       dismissIconColor: ColorValue;
     };
-    editingBoxContainer: ViewStyle;
-    editingBoxHeader: ViewStyle;
-    editingBoxHeaderTitle: TextStyle;
-    editingStateHeader: {
-      editingBoxHeader: ViewStyle;
-      editingBoxHeaderTitle: TextStyle;
-    };
+    editButton: ViewStyle;
+    editButtonContainer: ViewStyle;
     fileAttachmentUploadPreview: {
       fileContainer: ViewStyle;
       filenameText: TextStyle;
@@ -353,37 +386,60 @@ export type Theme = {
       uploadProgressOverlay: ViewStyle;
       wrapper: ViewStyle;
     };
+    fileUploadInProgressIndicator: {
+      container: ViewStyle;
+      indicator: ViewStyle;
+    };
+    fileUploadRetryIndicator: {
+      container: ViewStyle;
+      networkErrorContainer: ViewStyle;
+      networkErrorText: TextStyle;
+      retryButton: ViewStyle;
+      retryText: TextStyle;
+    };
+    fileUploadNotSupportedIndicator: {
+      container: ViewStyle;
+      notSupportedText: TextStyle;
+    };
+    imageUploadInProgressIndicator: {
+      container: ViewStyle;
+      indicator: ViewStyle;
+    };
+    imageUploadRetryIndicator: {
+      container: ViewStyle;
+    };
+    imageUploadNotSupportedIndicator: {
+      container: ViewStyle;
+    };
     fileUploadPreview: {
       flatList: ViewStyle;
     };
+    floatingWrapper: ViewStyle;
     focusedInputBoxContainer: ViewStyle;
     imageAttachmentUploadPreview: {
-      itemContainer: ViewStyle;
+      container: ViewStyle;
       upload: ImageStyle;
+      wrapper: ViewStyle;
     };
-    imageUploadPreview: {
-      flatList: ViewStyle;
-    };
+    inputContainer: ViewStyle;
     inputBox: TextStyle;
     inputBoxContainer: ViewStyle;
+    inputBoxWrapper: ViewStyle;
+    inputButtonsContainer: ViewStyle;
+    inputFloatingContainer: ViewStyle;
     micButtonContainer: ViewStyle;
-    moreOptionsButton: ViewStyle;
     nativeAttachmentPicker: {
       buttonContainer: ViewStyle;
       buttonDimmerStyle: ViewStyle;
       container: ViewStyle;
     };
-    optionsContainer: ViewStyle;
-    replyContainer: ViewStyle;
-    searchIcon: IconProps;
+    outputButtonsContainer: ViewStyle;
     sendButton: ViewStyle;
     sendButtonContainer: ViewStyle;
     sendMessageDisallowedIndicator: {
       container: ViewStyle;
       text: TextStyle;
     };
-    sendRightIcon: IconProps;
-    sendUpIcon: IconProps;
     showThreadMessageInChannelButton: {
       check: IconProps;
       checkBoxActive: ViewStyle;
@@ -422,19 +478,26 @@ export type Theme = {
       container: ViewStyle;
       flatlist: ViewStyle;
     };
-    uploadProgressIndicator: {
-      container: ViewStyle;
-      indicatorColor: string;
-      overlay: ViewStyle;
-    };
     videoAttachmentUploadPreview: {
-      recorderIconContainer: ViewStyle;
-      recorderIcon: IconProps;
-      itemContainer: ViewStyle;
-      upload: ImageStyle;
+      durationContainer: ViewStyle;
+      durationText: TextStyle;
+    };
+    wrapper: ViewStyle;
+    linkPreviewList: {
+      linkContainer: ViewStyle;
+      linkIcon: ViewStyle;
+      container: ViewStyle;
+      imageWrapper: ViewStyle;
+      dismissWrapper: ViewStyle;
+      thumbnail: ImageStyle;
+      wrapper: ViewStyle;
+      metadataContainer: ViewStyle;
+      text: TextStyle;
+      titleText: TextStyle;
     };
   };
   messageList: {
+    systemMessageContainer: ViewStyle;
     container: ViewStyle;
     contentContainer: ViewStyle;
     errorNotification: ViewStyle;
@@ -445,6 +508,8 @@ export type Theme = {
     };
     listContainer: ViewStyle;
     messageContainer: ViewStyle;
+    inlineDateSeparatorContainer: ViewStyle;
+    unreadUnderlayContainer: ViewStyle;
     messageSystem: {
       container: ViewStyle;
       dateText: TextStyle;
@@ -452,20 +517,19 @@ export type Theme = {
       text: TextStyle;
       textContainer: ViewStyle;
     };
+    scrollToBottomButtonContainer: ViewStyle;
     scrollToBottomButton: {
       container: ViewStyle;
-      touchable: ViewStyle;
       unreadCountNotificationContainer: ViewStyle;
       unreadCountNotificationText: TextStyle;
-      wrapper: ViewStyle;
-      chevronColor?: ColorValue;
     };
+    stickyHeaderContainer: ViewStyle;
     typingIndicatorContainer: ViewStyle;
+    unreadMessagesNotificationContainer: ViewStyle;
     unreadMessagesNotification: {
-      closeButtonContainer: ViewStyle;
-      closeIcon: IconProps;
       container: ViewStyle;
-      text: TextStyle;
+      leftButtonContainer: ViewStyle;
+      rightButtonContainer: ViewStyle;
     };
   };
   messageMenu: {
@@ -492,6 +556,7 @@ export type Theme = {
       container: ViewStyle;
       contentContainer: ViewStyle;
       reactionIconSize: number;
+      emojiViewerButton: ViewStyle;
     };
     userReactions: {
       avatarContainer: ViewStyle;
@@ -502,7 +567,6 @@ export type Theme = {
       container: ViewStyle;
       contentContainer: ViewStyle;
       filledBackgroundColor?: ColorValue;
-      flatlistColumnContainer: ViewStyle;
       flatlistContainer: ViewStyle;
       iconFilledColor?: ColorValue;
       iconUnFilledColor?: ColorValue;
@@ -519,7 +583,12 @@ export type Theme = {
   messagePreview: {
     message: TextStyle;
   };
-  messageSimple: {
+  messageItemView: {
+    blockedMessageContainer: ViewStyle;
+    bubbleContentContainer: ViewStyle;
+    bubbleErrorContainer: ViewStyle;
+    bubbleReactionListTopContainer: ViewStyle;
+    bubbleWrapper: ViewStyle;
     actions: {
       button: ViewStyle & {
         defaultBackgroundColor?: ViewStyle['backgroundColor'];
@@ -533,44 +602,26 @@ export type Theme = {
       };
       container: ViewStyle;
     };
-    avatarWrapper: {
+    authorWrapper: {
       container: ViewStyle;
-      leftAlign: ViewStyle;
-      rightAlign: ViewStyle;
       spacer: ViewStyle;
     };
     card: {
-      authorName: TextStyle;
-      authorNameContainer: ViewStyle;
-      authorNameFooter: TextStyle;
-      authorNameFooterContainer: ViewStyle;
-      authorNameMask: ViewStyle;
       container: ViewStyle;
       cover: ImageStyle;
       footer: ViewStyle & {
         description: TextStyle;
         title: TextStyle;
       };
-      noURI: ViewStyle;
-      playButtonStyle: {
-        durationTextStyle: TextStyle;
-        roundedView: ViewStyle;
-        videoContainer: ViewStyle;
-      };
-      playIcon: IconProps;
+      linkPreview: ViewStyle;
+      linkPreviewText: TextStyle;
     };
     container: ViewStyle;
+    repliesContainer: ViewStyle;
     content: {
-      container: ViewStyle & {
-        borderRadiusL: ViewStyle['borderBottomLeftRadius' | 'borderTopLeftRadius'];
-        borderRadiusS: ViewStyle['borderBottomRightRadius' | 'borderTopRightRadius'];
-      };
+      container: ViewStyle;
       containerInner: ViewStyle;
-      deletedContainer: ViewStyle;
-      deletedContainerInner: ViewStyle;
-      deletedMetaText: TextStyle;
-      deletedText: MarkdownStyle;
-      editedLabel: TextStyle;
+      contentContainer: ViewStyle;
       editedTimestampContainer: ViewStyle;
       errorContainer: ViewStyle;
       errorIcon: IconProps;
@@ -584,25 +635,42 @@ export type Theme = {
       markdown: MarkdownStyle;
       messageGroupedSingleOrBottomContainer: ViewStyle;
       messageGroupedTopContainer: ViewStyle;
-      messageUser: TextStyle;
-      metaContainer: ViewStyle;
       metaText: TextStyle;
       replyBorder: ViewStyle;
       replyContainer: ViewStyle;
       textContainer: ViewStyle & {
         onlyEmojiMarkdown: MarkdownStyle;
       };
-      wrapper: ViewStyle;
-      receiverMessageBackgroundColor?: ColorValue;
-      senderMessageBackgroundColor?: ColorValue;
       timestampText?: TextStyle;
     };
+    deleted: {
+      containerInner: ViewStyle;
+      deletedText: TextStyle;
+      container: ViewStyle;
+    };
+    footer: {
+      container: ViewStyle;
+      name: TextStyle;
+      editedText: TextStyle;
+    };
     contentWrapper: ViewStyle;
+    contentContainer: ViewStyle;
+    leftAlignItems: ViewStyle;
+    rightAlignItems: ViewStyle;
+    messageGroupedSingleStyles: ViewStyle;
+    messageGroupedBottomStyles: ViewStyle;
+    messageGroupedTopStyles: ViewStyle;
+    messageGroupedMiddleStyles: ViewStyle;
     file: {
       container: ViewStyle;
       details: ViewStyle;
       fileSize: TextStyle;
       icon: IconProps;
+      title: TextStyle;
+    };
+    unsupportedAttachment: {
+      container: ViewStyle;
+      details: ViewStyle;
       title: TextStyle;
     };
     fileAttachmentGroup: {
@@ -632,22 +700,28 @@ export type Theme = {
       };
     };
     giphy: {
-      buttonContainer: ViewStyle;
-      cancel: TextStyle;
+      actionButtonContainer: ViewStyle;
+      actionButton: ViewStyle;
+      actionButtonText: TextStyle;
       container: ViewStyle;
       giphy: ImageStyle;
       giphyContainer: ViewStyle;
       giphyHeaderText: TextStyle;
-      giphyHeaderTitle: TextStyle;
       giphyMask: ViewStyle;
       giphyMaskText: TextStyle;
       header: ViewStyle;
-      selectionContainer: ViewStyle;
-      send: TextStyle;
-      shuffle: TextStyle;
-      title: TextStyle;
+      imageIndicatorContainer: ViewStyle;
     };
-    headerWrapper: ViewStyle;
+    compactUrlPreview: {
+      wrapper: ViewStyle;
+      container: ViewStyle;
+      cardCover: ImageStyle;
+      cardFooter: ViewStyle;
+      title: TextStyle;
+      description: TextStyle;
+      linkPreview: ViewStyle;
+      linkPreviewText: TextStyle;
+    };
     lastMessageContainer: ViewStyle;
     loadingIndicator: {
       container: ViewStyle;
@@ -657,56 +731,69 @@ export type Theme = {
     messageGroupedTopContainer: ViewStyle;
     messageBlocked: {
       container: ViewStyle;
-      line: ViewStyle;
       text: TextStyle;
-      textContainer: ViewStyle;
     };
     pinnedHeader: {
       container: ViewStyle;
       label: TextStyle;
     };
+    savedForLaterHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+    };
+    reminderHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+      dot: TextStyle;
+      time: TextStyle;
+    };
+    sentToChannelHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+      dot: TextStyle;
+      link: TextStyle;
+    };
     reactionListBottom: {
       contentContainer: ViewStyle;
-      item: {
-        container: ViewStyle;
-        countText: TextStyle;
-        filledBackgroundColor?: ColorValue;
-        icon: ViewStyle;
-        iconFillColor?: ColorValue;
-        iconSize: number;
-        iconUnFillColor?: ColorValue;
-        unfilledBackgroundColor?: ColorValue;
+      columnWrapper: ViewStyle;
+      rowSeparator: ViewStyle;
+    };
+    reactionListItem: {
+      reactionCount: TextStyle;
+      icon: {
+        size: number;
+        style: ViewStyle;
       };
+    };
+    reactionListClustered: {
+      contentContainer: ViewStyle;
+      reactionCount: TextStyle;
+      iconStyle: ViewStyle;
+      icon: {
+        size: number;
+        style: ViewStyle;
+      };
+    };
+    reactionListItemWrapper: {
+      wrapper: ViewStyle;
+      container: ViewStyle;
     };
     reactionListTop: {
       container: ViewStyle;
-      item: {
-        container: ViewStyle;
-        icon: ViewStyle;
-        iconFillColor: ColorValue;
-        iconSize: number;
-        iconUnFillColor: ColorValue;
-        reactionSize: number;
-      };
+      contentContainer: ViewStyle;
+      list: ViewStyle;
       position: number;
     };
     replies: {
-      avatar: ViewStyle;
-      avatarContainerMultiple: ViewStyle;
-      avatarContainerSingle: ViewStyle;
       container: ViewStyle;
-      leftAvatarsContainer: ViewStyle;
-      leftCurve: ViewStyle;
       messageRepliesText: TextStyle;
-      rightAvatarsContainer: ViewStyle;
-      rightCurve: ViewStyle;
-      avatarSize?: number;
+      content: ViewStyle;
+      avatarStackContainer: ViewStyle;
     };
     status: {
       checkAllIcon: IconProps;
       checkIcon: IconProps;
-      readByCount: TextStyle;
-      statusContainer: ViewStyle;
+      container: ViewStyle;
       timeIcon: IconProps;
     };
     swipeContentContainer: ViewStyle;
@@ -718,7 +805,6 @@ export type Theme = {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
-    unreadUnderlayColor?: ColorValue;
     wrapper: ViewStyle;
   };
   poll: {
@@ -729,24 +815,31 @@ export type Theme = {
       wrapper: ViewStyle;
     };
     answersList: {
-      buttonContainer: ViewStyle;
       container: ViewStyle;
+      contentContainer: ViewStyle;
       item: {
         answerText: TextStyle;
         container: ViewStyle;
         infoContainer: ViewStyle;
         userInfoContainer: ViewStyle;
+        wrapper: ViewStyle;
       };
     };
     button: { container: ViewStyle; text: TextStyle };
     createContent: {
       addComment: {
         title: TextStyle;
+        description: TextStyle;
         wrapper: ViewStyle;
+        optionCardContent: ViewStyle;
+        optionCardSwitch: ViewStyle;
       };
       anonymousPoll: {
         title: TextStyle;
+        description: TextStyle;
         wrapper: ViewStyle;
+        optionCardContent: ViewStyle;
+        optionCardSwitch: ViewStyle;
       };
       headerContainer: ViewStyle;
       maxVotes: {
@@ -755,14 +848,21 @@ export type Theme = {
         wrapper: ViewStyle;
       };
       multipleAnswers: {
+        description: TextStyle;
+        input: TextStyle;
         row: ViewStyle;
+        settingsWrapper: ViewStyle;
         title: TextStyle;
+        optionCard: ViewStyle;
+        optionCardContent: ViewStyle;
+        optionCardSwitch: ViewStyle;
         wrapper: ViewStyle;
       };
       name: {
         input: TextStyle;
         title: TextStyle;
       };
+      optionCardWrapper: ViewStyle;
       pollOptions: {
         addOption: {
           text: TextStyle;
@@ -770,9 +870,11 @@ export type Theme = {
         };
         container: ViewStyle;
         optionStyle: {
+          content: ViewStyle;
           input: TextStyle;
           validationErrorText: TextStyle;
           wrapper: ViewStyle;
+          validationErrorContainer: ViewStyle;
         };
         title: TextStyle;
       };
@@ -780,7 +882,10 @@ export type Theme = {
       sendButton: ViewStyle;
       suggestOption: {
         title: TextStyle;
+        description: TextStyle;
         wrapper: ViewStyle;
+        optionCardContent: ViewStyle;
+        optionCardSwitch: ViewStyle;
       };
     };
     fullResults: {
@@ -788,6 +893,7 @@ export type Theme = {
       contentContainer: ViewStyle;
       headerContainer: ViewStyle;
       headerText: TextStyle;
+      headerTitle: TextStyle;
     };
     inputDialog: {
       button: TextStyle;
@@ -805,14 +911,13 @@ export type Theme = {
       };
       option: {
         container: ViewStyle;
+        info: ViewStyle;
+        header: ViewStyle;
+        votesText: TextStyle;
+        progressBarContainer: ViewStyle;
         progressBar: ViewStyle;
-        progressBarEmptyFill: string;
-        progressBarVotedFill: string;
-        progressBarWinnerFill: string;
         text: TextStyle;
-        voteButtonActive: string;
         voteButtonContainer: ViewStyle;
-        voteButtonInactive: string;
         votesContainer: ViewStyle;
         wrapper: ViewStyle;
       };
@@ -828,36 +933,46 @@ export type Theme = {
         container: ViewStyle;
         headerContainer: ViewStyle;
         title: TextStyle;
+        titleMeta: TextStyle;
         voteCount: TextStyle;
       };
       scrollView: ViewStyle;
       title: TextStyle;
+      titleMeta: TextStyle;
       vote: { container: ViewStyle; dateText: TextStyle; userName: TextStyle };
     };
   };
   progressControl: {
     container: ViewStyle;
-    filledColor: ColorValue;
     filledStyles: ViewStyle;
     thumb: ViewStyle;
   };
   reply: {
+    audioIcon: IconProps;
     container: ViewStyle;
-    fileAttachmentContainer: ViewStyle;
-    imageAttachment: ImageStyle;
-    markdownStyles: MarkdownStyle;
-    messageContainer: ViewStyle;
-    secondaryText: ViewStyle;
-    textContainer: ViewStyle;
-    videoThumbnail: {
+    dismissWrapper: ViewStyle;
+    fileIcon: IconProps;
+    leftContainer: ViewStyle;
+    locationIcon: IconProps;
+    linkIcon: IconProps;
+    photoIcon: IconProps;
+    pollIcon: IconProps;
+    rightContainer: ViewStyle;
+    title: TextStyle;
+    subtitle: TextStyle;
+    subtitleContainer: ViewStyle;
+    videoIcon: IconProps;
+    wrapper: ViewStyle;
+    messagePreview: {
       container: ViewStyle;
-      image: ImageStyle;
+      subtitle: TextStyle;
     };
   };
   screenPadding: number;
   spinner: ViewStyle;
   thread: {
-    newThread: ViewStyle & {
+    newThread: {
+      container: ViewStyle;
       text: TextStyle;
       backgroundGradientStart?: string;
       backgroundGradientStop?: string;
@@ -865,25 +980,34 @@ export type Theme = {
     };
   };
   threadListItem: {
-    boldText: TextStyle;
-    contentRow: ViewStyle;
-    contentTextWrapper: ViewStyle;
+    wrapper: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    channelName: TextStyle;
     dateText: TextStyle;
-    headerRow: ViewStyle;
-    infoRow: ViewStyle;
-    parentMessagePreviewContainer: ViewStyle;
-    parentMessageText: TextStyle;
+    lowerRow: ViewStyle;
+    messageRepliesText: TextStyle;
     previewMessageContainer: ViewStyle;
-    touchableWrapper: ViewStyle;
-    unreadBubbleText: TextStyle;
     unreadBubbleWrapper: ViewStyle;
+    messagePreview: {
+      container: ViewStyle;
+      draftText: TextStyle;
+      subtitle: TextStyle;
+    };
+    messagePreviewDeliveryStatus: {
+      container: ViewStyle;
+      text: TextStyle;
+      username: TextStyle;
+    };
   };
   threadListUnreadBanner: {
     text: TextStyle;
-    touchableWrapper: ViewStyle;
+    container: ViewStyle;
   };
   typingIndicator: {
     container: ViewStyle;
+    loadingDotsBubble: ViewStyle;
+    avatarStackContainer: ViewStyle;
     text: TextStyle & {
       fontSize: TextStyle['fontSize'];
     };
@@ -893,9 +1017,11 @@ export type Theme = {
     thumb: ViewStyle;
     waveform: ViewStyle;
   };
+  semantics: typeof lightSemantics; // themed semantics have the same type
 };
 
 export const defaultTheme: Theme = {
+  semantics: Appearance.getColorScheme() === 'light' ? lightSemantics : darkSemantics,
   aiTypingIndicatorView: {
     container: {},
     text: {},
@@ -903,9 +1029,12 @@ export const defaultTheme: Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: {},
     durationText: {},
-    errorButtonText: {},
-    errorContainer: {},
-    errorText: {},
+    content: {
+      actionContainer: {},
+      container: {},
+      infoContainer: {},
+      text: {},
+    },
     handle: {
       container: {},
       indicator: {},
@@ -921,6 +1050,8 @@ export const defaultTheme: Theme = {
     icon: {},
   },
   audioAttachment: {
+    centerContainer: {},
+    audioInfo: {},
     container: {},
     leftContainer: {},
     playPauseButton: {},
@@ -966,52 +1097,83 @@ export const defaultTheme: Theme = {
   channelListLoadingIndicator: {
     container: {},
   },
-  channelListMessenger: {
+  channelListView: {
     flatList: {},
     flatListContent: {},
   },
+  channelDetailsMenu: {
+    contentContainer: {},
+    header: {
+      container: {},
+      metaContainer: {},
+      metaText: {},
+    },
+    item: {
+      container: {},
+      destructiveText: {},
+      standardText: {},
+    },
+  },
   channelListSkeleton: {
-    animationTime: 1800, // in milliseconds
-    background: {},
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    badge: {},
+    content: {},
     container: {},
-    gradientStart: {
-      stopOpacity: 0,
-    },
-    gradientStop: {
-      stopOpacity: 0.5,
-    },
-    height: 64,
+    headerRow: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  threadListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    body: {},
+    content: {},
+    contentContainer: {},
+    container: {},
+    footerIcon: {},
+    footerPill: {},
+    footerRow: {},
+    headerLabel: {},
+    textContainer: {},
+    timestamp: {},
   },
   channelPreview: {
-    avatar: {
-      size: 40,
-    },
-    checkAllIcon: {
-      height: DEFAULT_STATUS_ICON_SIZE,
-      width: DEFAULT_STATUS_ICON_SIZE,
-    },
-    checkIcon: {
-      height: DEFAULT_STATUS_ICON_SIZE,
-      width: DEFAULT_STATUS_ICON_SIZE,
-    },
     container: {},
     contentContainer: {},
     date: {},
     message: {
       container: {},
+      subtitle: {},
+      errorText: {},
+      draftText: {},
     },
-    mutedStatus: {
-      height: 20,
-      iconStyle: {},
-      width: 20,
+    messageDeliveryStatus: {
+      container: {},
+      text: {},
+      checkAllIcon: {},
+      checkIcon: {},
+      timeIcon: {},
     },
-    row: {},
+    mutedStatus: {},
+    lowerRow: {},
     title: {},
     unreadContainer: {},
     unreadText: {},
-  },
-  colors: {
-    ...Colors,
+    typingIndicatorPreview: {
+      container: {},
+      text: {},
+    },
+    upperRow: {},
+    statusContainer: {},
+    titleContainer: {},
+    wrapper: {},
+    messagePreview: {
+      container: {},
+      draftText: {},
+      subtitle: {},
+    },
   },
   dateHeader: {
     container: {},
@@ -1045,8 +1207,8 @@ export const defaultTheme: Theme = {
       container: {},
       imageCountText: {},
       innerContainer: {},
-      leftContainer: {},
-      rightContainer: {},
+      activityIndicatorContainer: {},
+      wrapper: {},
     },
     grid: {
       container: {},
@@ -1063,15 +1225,13 @@ export const defaultTheme: Theme = {
       container: {},
       dateText: {},
       innerContainer: {},
-      leftContainer: {},
-      rightContainer: {},
       usernameText: {},
     },
     videoControl: {
+      container: {},
       durationTextStyle: {},
-      progressDurationText: {},
-      roundedView: {},
-      videoContainer: {},
+      leftContainer: {},
+      progressContainer: {},
     },
   },
   inlineDateSeparator: {
@@ -1081,7 +1241,7 @@ export const defaultTheme: Theme = {
   loadingDots: {
     container: {},
     loadingDot: {},
-    spacing: 4,
+    spacing: primitives.spacingXxs,
   },
   loadingErrorIndicator: {
     container: {},
@@ -1092,20 +1252,14 @@ export const defaultTheme: Theme = {
     container: {},
     loadingText: {},
   },
-  messageInput: {
+  messageComposer: {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},
-    attachmentSeparator: {},
-    attachmentUnsupportedIndicator: {
-      container: {},
-      text: {},
-      warningIcon: {},
-    },
     attachmentUploadPreviewList: {
-      filesFlatList: {},
-      imagesFlatList: {},
-      wrapper: {},
+      audioAttachmentsContainer: {},
+      flatList: {},
+      itemSeparator: {},
     },
     audioRecorder: {
       arrowLeftIcon: {},
@@ -1119,7 +1273,7 @@ export const defaultTheme: Theme = {
       sendCheckIcon: {},
       slideToCancelContainer: {},
     },
-    audioRecordingButton: { container: {}, micIcon: {} },
+    audioRecordingButtonContainer: {},
     audioRecordingInProgress: { container: {}, durationText: {} },
     audioRecordingLockIndicator: { arrowUpIcon: {}, container: {}, lockIcon: {} },
     audioRecordingPreview: {
@@ -1131,17 +1285,10 @@ export const defaultTheme: Theme = {
       progressBar: {},
     },
     audioRecordingWaveform: { container: {}, waveform: {} },
-    autoCompleteInputContainer: {},
-    commandInput: {
-      closeButton: {},
-      container: {},
-      text: {},
-    },
-    commandsButton: {},
-    composerContainer: {},
     container: {},
+    contentContainer: {},
+    cooldownButtonContainer: {},
     cooldownTimer: {
-      container: {},
       text: {},
     },
     dismissAttachmentUpload: {
@@ -1149,13 +1296,8 @@ export const defaultTheme: Theme = {
       dismissIcon: {},
       dismissIconColor: '',
     },
-    editingBoxContainer: {},
-    editingBoxHeader: {},
-    editingBoxHeaderTitle: {},
-    editingStateHeader: {
-      editingBoxHeader: {},
-      editingBoxHeaderTitle: {},
-    },
+    editButton: {},
+    editButtonContainer: {},
     fileAttachmentUploadPreview: {
       fileContainer: {},
       filenameText: {},
@@ -1164,37 +1306,64 @@ export const defaultTheme: Theme = {
       uploadProgressOverlay: {},
       wrapper: {},
     },
+    fileUploadInProgressIndicator: {
+      container: {},
+      indicator: {},
+    },
+    fileUploadRetryIndicator: {
+      container: {},
+      networkErrorContainer: {},
+      networkErrorText: {},
+      retryButton: {},
+      retryText: {},
+    },
+    fileUploadNotSupportedIndicator: {
+      container: {},
+      notSupportedText: {},
+    },
+    imageUploadInProgressIndicator: {
+      container: {},
+      indicator: {},
+    },
+    imageUploadRetryIndicator: {
+      container: {},
+    },
+    imageUploadNotSupportedIndicator: {
+      container: {},
+    },
     fileUploadPreview: {
       flatList: {},
     },
+    floatingWrapper: {},
     focusedInputBoxContainer: {},
     imageAttachmentUploadPreview: {
-      itemContainer: {},
+      container: {},
       upload: {},
+      wrapper: {},
     },
-    imageUploadPreview: {
-      flatList: {},
+    videoAttachmentUploadPreview: {
+      durationContainer: {},
+      durationText: {},
     },
     inputBox: {},
     inputBoxContainer: {},
+    inputBoxWrapper: {},
+    inputButtonsContainer: {},
+    inputContainer: {},
+    inputFloatingContainer: {},
     micButtonContainer: {},
-    moreOptionsButton: {},
     nativeAttachmentPicker: {
       buttonContainer: {},
       buttonDimmerStyle: {},
       container: {},
     },
-    optionsContainer: {},
-    replyContainer: {},
-    searchIcon: {},
+    outputButtonsContainer: {},
     sendButton: {},
     sendButtonContainer: {},
     sendMessageDisallowedIndicator: {
       container: {},
       text: {},
     },
-    sendRightIcon: {},
-    sendUpIcon: {},
     showThreadMessageInChannelButton: {
       check: {},
       checkBoxActive: {},
@@ -1233,19 +1402,22 @@ export const defaultTheme: Theme = {
       container: {},
       flatlist: {},
     },
-    uploadProgressIndicator: {
+    wrapper: {},
+    linkPreviewList: {
+      linkContainer: {},
+      linkIcon: {},
       container: {},
-      indicatorColor: '',
-      overlay: {},
-    },
-    videoAttachmentUploadPreview: {
-      itemContainer: {},
-      recorderIcon: {},
-      recorderIconContainer: {},
-      upload: {},
+      imageWrapper: {},
+      dismissWrapper: {},
+      thumbnail: {},
+      wrapper: {},
+      metadataContainer: {},
+      text: {},
+      titleText: {},
     },
   },
   messageList: {
+    systemMessageContainer: {},
     container: {},
     contentContainer: {},
     errorNotification: {},
@@ -1256,6 +1428,8 @@ export const defaultTheme: Theme = {
     },
     listContainer: {},
     messageContainer: {},
+    inlineDateSeparatorContainer: {},
+    unreadUnderlayContainer: {},
     messageSystem: {
       container: {},
       dateText: {},
@@ -1265,18 +1439,18 @@ export const defaultTheme: Theme = {
     },
     scrollToBottomButton: {
       container: {},
-      touchable: {},
       unreadCountNotificationContainer: {},
       unreadCountNotificationText: {},
-      wrapper: {},
     },
+    scrollToBottomButtonContainer: {},
+    stickyHeaderContainer: {},
     typingIndicatorContainer: {},
     unreadMessagesNotification: {
-      closeButtonContainer: {},
-      closeIcon: {},
       container: {},
-      text: {},
+      leftButtonContainer: {},
+      rightButtonContainer: {},
     },
+    unreadMessagesNotificationContainer: {},
   },
   messageMenu: {
     actionList: {
@@ -1295,6 +1469,7 @@ export const defaultTheme: Theme = {
       container: {},
       contentContainer: {},
       reactionIconSize: 24,
+      emojiViewerButton: {},
     },
     userReactions: {
       avatarContainer: {},
@@ -1304,7 +1479,6 @@ export const defaultTheme: Theme = {
       avatarSize: 64,
       container: {},
       contentContainer: {},
-      flatlistColumnContainer: {},
       flatlistContainer: {},
       radius: 2,
       reactionBubble: {},
@@ -1318,73 +1492,50 @@ export const defaultTheme: Theme = {
   messagePreview: {
     message: {},
   },
-  messageSimple: {
+  messageItemView: {
+    blockedMessageContainer: {},
+    bubbleContentContainer: {},
+    bubbleErrorContainer: {},
+    bubbleReactionListTopContainer: {},
+    bubbleWrapper: {},
     actions: {
       button: {},
       buttonText: {},
       container: {},
     },
-    avatarWrapper: {
+    authorWrapper: {
       container: {},
-      leftAlign: {
-        marginRight: 8,
-      },
-      rightAlign: {
-        marginLeft: 8,
-      },
       spacer: {
         height: BASE_AVATAR_SIZE,
         width: BASE_AVATAR_SIZE, // same as BASE_AVATAR_SIZE
       },
     },
     card: {
-      authorName: {},
-      authorNameContainer: {},
-      authorNameFooter: {},
-      authorNameFooterContainer: {},
-      authorNameMask: {},
       container: {},
       cover: {},
       footer: {
         description: {},
-        title: {
-          fontWeight: '700',
-        },
+        title: {},
       },
-      noURI: {
-        borderLeftWidth: 2,
-        paddingLeft: 8,
-      },
-      playButtonStyle: {
-        durationTextStyle: {},
-        roundedView: {},
-        videoContainer: {},
-      },
-      playIcon: {
-        height: 32,
-        width: 32,
-      },
+      linkPreview: {},
+      linkPreviewText: {},
+    },
+    compactUrlPreview: {
+      wrapper: {},
+      container: {},
+      cardCover: {},
+      cardFooter: {},
+      title: {},
+      description: {},
+      linkPreview: {},
+      linkPreviewText: {},
     },
     container: {},
+    repliesContainer: {},
     content: {
-      container: {
-        borderRadiusL: 16,
-        borderRadiusS: 0,
-      },
+      container: {},
       containerInner: {},
-      deletedContainer: {},
-      deletedContainerInner: {},
-      deletedMetaText: {
-        paddingHorizontal: 5,
-      },
-      deletedText: {
-        em: {
-          fontSize: 15,
-          fontStyle: 'italic',
-          fontWeight: '400',
-        },
-      },
-      editedLabel: {},
+      contentContainer: {},
       editedTimestampContainer: {},
       errorContainer: {
         paddingRight: 12,
@@ -1407,12 +1558,6 @@ export const defaultTheme: Theme = {
       markdown: {},
       messageGroupedSingleOrBottomContainer: {},
       messageGroupedTopContainer: {},
-      messageUser: {
-        fontSize: 12,
-        fontWeight: '700',
-        paddingRight: 6,
-      },
-      metaContainer: {},
       metaText: {
         fontSize: 12,
       },
@@ -1422,14 +1567,35 @@ export const defaultTheme: Theme = {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
       timestampText: {},
-      wrapper: {},
+    },
+    deleted: {
+      containerInner: {},
+      deletedText: {},
+      container: {},
+    },
+    footer: {
+      container: {},
+      name: {},
+      editedText: {},
     },
     contentWrapper: {},
+    contentContainer: {},
+    leftAlignItems: {},
+    rightAlignItems: {},
+    messageGroupedSingleStyles: {},
+    messageGroupedBottomStyles: {},
+    messageGroupedTopStyles: {},
+    messageGroupedMiddleStyles: {},
     file: {
       container: {},
       details: {},
       fileSize: {},
       icon: {},
+      title: {},
+    },
+    unsupportedAttachment: {
+      container: {},
+      details: {},
       title: {},
     },
     fileAttachmentGroup: {
@@ -1439,37 +1605,33 @@ export const defaultTheme: Theme = {
     gallery: {
       galleryContainer: {},
       galleryItemColumn: {},
-      gridHeight: 195,
+      gridHeight: 192,
       gridWidth: 256,
       image: {},
       imageBorderRadius: undefined,
       imageContainer: {},
       imageContainerStyle: {},
-      maxHeight: 300,
+      maxHeight: 192,
       maxWidth: 256,
-      minHeight: 100,
-      minWidth: 170,
+      minHeight: 120,
+      minWidth: 120,
       moreImagesContainer: {},
       moreImagesText: {},
       thumbnail: {},
     },
     giphy: {
-      buttonContainer: {},
-      cancel: {},
+      actionButton: {},
+      actionButtonContainer: {},
+      actionButtonText: {},
       container: {},
       giphy: {},
       giphyContainer: {},
       giphyHeaderText: {},
-      giphyHeaderTitle: {},
       giphyMask: {},
       giphyMaskText: {},
       header: {},
-      selectionContainer: {},
-      send: {},
-      shuffle: {},
-      title: {},
+      imageIndicatorContainer: {},
     },
-    headerWrapper: {},
     lastMessageContainer: {},
     loadingIndicator: {
       container: {},
@@ -1477,9 +1639,7 @@ export const defaultTheme: Theme = {
     },
     messageBlocked: {
       container: {},
-      line: {},
       text: {},
-      textContainer: {},
     },
     messageGroupedSingleOrBottomContainer: {},
     messageGroupedTopContainer: {},
@@ -1487,53 +1647,64 @@ export const defaultTheme: Theme = {
       container: {},
       label: {},
     },
+    savedForLaterHeader: {
+      container: {},
+      label: {},
+    },
+    reminderHeader: {
+      container: {},
+      label: {},
+      dot: {},
+      time: {},
+    },
+    sentToChannelHeader: {
+      container: {},
+      label: {},
+      dot: {},
+      link: {},
+    },
     reactionListBottom: {
       contentContainer: {},
-      item: {
-        container: {},
-        countText: {},
-        icon: {},
-        iconSize: 16,
+      columnWrapper: {},
+      rowSeparator: {},
+    },
+    reactionListItem: {
+      reactionCount: {},
+      icon: {
+        size: 12,
+        style: {},
       },
+    },
+    reactionListItemWrapper: {
+      wrapper: {},
+      container: {},
     },
     reactionListTop: {
       container: {},
-      item: {
-        container: {},
-        icon: {},
-        iconFillColor: Colors.accent_blue,
-        iconSize: 24,
-        iconUnFillColor: Colors.grey,
-        reactionSize: 24,
+      contentContainer: {},
+      list: {},
+      position: 8,
+    },
+    reactionListClustered: {
+      contentContainer: {},
+      reactionCount: {},
+      iconStyle: {},
+      icon: {
+        size: 12,
+        style: {},
       },
-      position: 16,
     },
     replies: {
-      avatar: {},
-      avatarContainerMultiple: {},
-      avatarContainerSingle: {},
       container: {},
-      leftAvatarsContainer: {},
-      leftCurve: {},
+      content: {},
       messageRepliesText: {},
-      rightAvatarsContainer: {},
-      rightCurve: {},
+      avatarStackContainer: {},
     },
     status: {
-      checkAllIcon: {
-        height: DEFAULT_STATUS_ICON_SIZE,
-        width: DEFAULT_STATUS_ICON_SIZE,
-      },
-      checkIcon: {
-        height: DEFAULT_STATUS_ICON_SIZE,
-        width: DEFAULT_STATUS_ICON_SIZE,
-      },
-      readByCount: {},
-      statusContainer: {},
-      timeIcon: {
-        height: DEFAULT_STATUS_ICON_SIZE,
-        width: DEFAULT_STATUS_ICON_SIZE,
-      },
+      checkAllIcon: {},
+      checkIcon: {},
+      container: {},
+      timeIcon: {},
     },
     swipeContentContainer: {},
     swipeLeftContent: {
@@ -1554,24 +1725,31 @@ export const defaultTheme: Theme = {
       wrapper: {},
     },
     answersList: {
-      buttonContainer: {},
       container: {},
+      contentContainer: {},
       item: {
         answerText: {},
         container: {},
         infoContainer: {},
         userInfoContainer: {},
+        wrapper: {},
       },
     },
     button: { container: {}, text: {} },
     createContent: {
       addComment: {
         title: {},
+        description: {},
         wrapper: {},
+        optionCardContent: {},
+        optionCardSwitch: {},
       },
       anonymousPoll: {
         title: {},
+        description: {},
         wrapper: {},
+        optionCardContent: {},
+        optionCardSwitch: {},
       },
       headerContainer: {},
       maxVotes: {
@@ -1581,13 +1759,20 @@ export const defaultTheme: Theme = {
       },
       multipleAnswers: {
         row: {},
+        description: {},
+        input: {},
+        optionCardContent: {},
+        optionCardSwitch: {},
+        settingsWrapper: {},
         title: {},
+        optionCard: {},
         wrapper: {},
       },
       name: {
         input: {},
         title: {},
       },
+      optionCardWrapper: {},
       pollOptions: {
         addOption: {
           text: {},
@@ -1595,6 +1780,8 @@ export const defaultTheme: Theme = {
         },
         container: {},
         optionStyle: {
+          content: {},
+          validationErrorContainer: {},
           input: {},
           validationErrorText: {},
           wrapper: {},
@@ -1605,7 +1792,10 @@ export const defaultTheme: Theme = {
       sendButton: {},
       suggestOption: {
         title: {},
+        description: {},
         wrapper: {},
+        optionCardContent: {},
+        optionCardSwitch: {},
       },
     },
     fullResults: {
@@ -1613,6 +1803,7 @@ export const defaultTheme: Theme = {
       contentContainer: {},
       headerContainer: {},
       headerText: {},
+      headerTitle: {},
     },
     inputDialog: {
       button: {},
@@ -1630,16 +1821,15 @@ export const defaultTheme: Theme = {
       },
       option: {
         container: {},
-        progressBar: {},
-        progressBarEmptyFill: '',
-        progressBarVotedFill: '',
-        progressBarWinnerFill: '',
+        info: {},
+        header: {},
         text: {},
-        voteButtonActive: '',
-        voteButtonContainer: {},
-        voteButtonInactive: '',
+        progressBarContainer: {},
+        progressBar: {},
         votesContainer: {},
+        votesText: {},
         wrapper: {},
+        voteButtonContainer: {},
       },
       optionsWrapper: {},
     },
@@ -1653,59 +1843,78 @@ export const defaultTheme: Theme = {
         container: {},
         headerContainer: {},
         title: {},
+        titleMeta: {},
         voteCount: {},
       },
       scrollView: {},
       title: {},
+      titleMeta: {},
       vote: { container: {}, dateText: {}, userName: {} },
     },
   },
   progressControl: {
     container: {},
-    filledColor: '',
     filledStyles: {},
     thumb: {},
   },
   reply: {
+    audioIcon: {},
     container: {},
-    fileAttachmentContainer: {},
-    imageAttachment: {},
-    markdownStyles: {},
-    messageContainer: {},
-    secondaryText: {},
-    textContainer: {},
-    videoThumbnail: {
+    dismissWrapper: {},
+    fileIcon: {},
+    leftContainer: {},
+    linkIcon: {},
+    locationIcon: {},
+    photoIcon: {},
+    pollIcon: {},
+    rightContainer: {},
+    subtitle: {},
+    subtitleContainer: {},
+    title: {},
+    videoIcon: {},
+    wrapper: {},
+    messagePreview: {
       container: {},
-      image: {},
+      subtitle: {},
     },
   },
-  screenPadding: 8,
+  screenPadding: 16,
   spinner: {},
   thread: {
     newThread: {
+      container: {},
       text: {},
     },
   },
   threadListItem: {
-    boldText: {},
-    contentRow: {},
-    contentTextWrapper: {},
-    dateText: {},
-    headerRow: {},
-    infoRow: {},
-    parentMessagePreviewContainer: {},
-    parentMessageText: {},
     previewMessageContainer: {},
-    touchableWrapper: {},
-    unreadBubbleText: {},
     unreadBubbleWrapper: {},
+    wrapper: {},
+    container: {},
+    content: {},
+    channelName: {},
+    dateText: {},
+    lowerRow: {},
+    messageRepliesText: {},
+    messagePreview: {
+      container: {},
+      draftText: {},
+      subtitle: {},
+    },
+    messagePreviewDeliveryStatus: {
+      container: {},
+      text: {},
+      username: {},
+    },
   },
   threadListUnreadBanner: {
     text: {},
-    touchableWrapper: {},
+    container: {},
   },
   typingIndicator: {
     container: {},
+    loadingDotsBubble: {},
+    avatarStackContainer: {},
     text: {
       fontSize: 14,
     },

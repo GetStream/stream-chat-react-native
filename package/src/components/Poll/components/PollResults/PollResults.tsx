@@ -5,12 +5,18 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import { PollResultsItem } from './PollResultItem';
 
-import { PollContextProvider, PollContextValue, useTheme } from '../../../../contexts';
+import {
+  PollContextProvider,
+  PollContextValue,
+  useTheme,
+  useTranslationContext,
+} from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { primitives } from '../../../../theme';
 import { usePollState } from '../../hooks/usePollState';
 
 export type PollResultsProps = PollContextValue & {
   additionalScrollViewProps?: Partial<ScrollViewProps>;
-  PollResultsContent?: React.ComponentType;
 };
 
 export const PollResultsContent = ({
@@ -26,54 +32,81 @@ export const PollResultsContent = ({
     [voteCountsByOption, options],
   );
 
+  const { t } = useTranslationContext();
+
   const {
     theme: {
-      colors: { bg_user, black, white },
       poll: {
-        results: { container, scrollView, title },
+        results: { container, scrollView, title, titleMeta },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
     <ScrollView
-      style={[styles.scrollView, { backgroundColor: white }, scrollView]}
+      contentContainerStyle={styles.contentContainer}
+      style={[styles.scrollView, scrollView]}
       {...additionalScrollViewProps}
     >
-      <View style={[styles.container, { backgroundColor: bg_user }, container]}>
-        <Text style={[styles.title, { color: black }, title]}>{name}</Text>
+      <View style={[styles.container, container]}>
+        <Text style={[styles.titleMeta, titleMeta]}>{t('Question')}</Text>
+        <Text style={[styles.title, title]}>{name}</Text>
       </View>
-      <View style={{ marginTop: 16 }}>
-        {sortedOptions.map((option) => (
-          <PollResultsItem key={`results_${option.id}`} option={option} />
+      <View style={styles.resultsContainer}>
+        {sortedOptions.map((option, index) => (
+          <PollResultsItem key={`results_${option.id}`} option={option} index={index} />
         ))}
       </View>
     </ScrollView>
   );
 };
 
-export const PollResults = ({
-  additionalScrollViewProps,
-  message,
-  poll,
-  PollResultsContent: PollResultsContentOverride,
-}: PollResultsProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollResultsContentOverride ? (
-      <PollResultsContentOverride />
-    ) : (
-      <PollResultsContent additionalScrollViewProps={additionalScrollViewProps} />
-    )}
-  </PollContextProvider>
-);
+export const PollResults = ({ additionalScrollViewProps, message, poll }: PollResultsProps) => {
+  const { PollResultsContent: PollResultsContentComponent } = useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollResultsContentComponent additionalScrollViewProps={additionalScrollViewProps} />
+    </PollContextProvider>
+  );
+};
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 12,
-    marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  scrollView: { flex: 1, marginHorizontal: 16 },
-  title: { fontSize: 16, fontWeight: '500' },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      contentContainer: {
+        padding: primitives.spacingMd,
+      },
+      container: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+      },
+      scrollView: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreElevation1,
+      },
+      resultsContainer: {
+        paddingVertical: primitives.spacing2xl,
+      },
+      title: {
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      titleMeta: {
+        fontSize: primitives.typographyFontSizeSm,
+        color: semantics.textTertiary,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightMedium,
+        textAlign: 'left',
+      },
+    });
+  }, [semantics]);
+};

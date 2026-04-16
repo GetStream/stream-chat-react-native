@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { StyleSheet, Text } from 'react-native';
+
 import { Reaction } from '../../types/types';
-import { Avatar, AvatarProps } from '../Avatar/Avatar';
+import { getInitialsFromName } from '../../utils/utils';
+import { Avatar, AvatarProps } from '../ui';
 
 export type MessageUserReactionsAvatarProps = {
   /**
@@ -17,11 +19,15 @@ export const MessageUserReactionsAvatar = (props: MessageUserReactionsAvatarProp
     size,
   } = props;
 
-  const {
-    theme: {
-      avatar: { BASE_AVATAR_SIZE },
-    },
-  } = useTheme();
+  const placeholder = useMemo(() => {
+    return <Text style={styles.text}>{getInitialsFromName(name)}</Text>;
+  }, [name]);
 
-  return <Avatar image={image} name={name} size={size || BASE_AVATAR_SIZE} />;
+  return <Avatar imageUrl={image} placeholder={placeholder} size={size ?? 'lg'} />;
 };
+
+const styles = StyleSheet.create({
+  text: {
+    color: '#003179',
+  },
+});

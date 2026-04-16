@@ -1,86 +1,98 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Text, View } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { LocalMessage } from 'stream-chat';
+
 import {
-  TranslationContextValue,
-  TranslationProvider,
-} from '../../../contexts/translationContext/TranslationContext';
+  ImageGalleryContext,
+  ImageGalleryContextValue,
+} from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import {
   generateImageAttachment,
   generateVideoAttachment,
 } from '../../../mock-builders/generator/attachment';
-import { ImageGrid, ImageGridType } from '../components/ImageGrid';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
+import { ImageGalleryGrid, ImageGalleryGridProps } from '../components/ImageGrid';
 
-const getComponent = (props: Partial<ImageGridType> = {}) => {
-  const t = jest.fn((key) => key);
+const ImageGalleryGridComponent = (
+  props: Partial<ImageGalleryGridProps> & { message: LocalMessage },
+) => {
+  const { message, closeGridView = jest.fn(), ...rest } = props;
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
+
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
+
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
+
+  imageGalleryStateStore.openImageGallery({
+    messages: [message],
+    selectedAttachmentUrl:
+      message.attachments?.[0]?.asset_url || message.attachments?.[0]?.image_url || '',
+  });
 
   return (
-    <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-      <ThemeProvider theme={defaultTheme}>
-        <ImageGrid {...(props as unknown as ImageGridType)} />
-      </ThemeProvider>
-    </TranslationProvider>
+    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+      <ImageGalleryContext.Provider
+        value={{ imageGalleryStateStore } as unknown as ImageGalleryContextValue}
+      >
+        <ImageGalleryGrid closeGridView={closeGridView} {...rest} />
+      </ImageGalleryContext.Provider>
+    </OverlayProvider>
   );
 };
 
-describe('ImageGalleryOverlay', () => {
-  it('should render ImageGalleryGrid', () => {
-    render(getComponent({ photos: [generateImageAttachment(), generateImageAttachment()] }));
+describe('ImageGalleryGrid', () => {
+  it('should render ImageGalleryGrid', async () => {
+    const message = generateMessage({
+      attachments: [generateImageAttachment(), generateImageAttachment()],
+    }) as unknown as LocalMessage;
 
-    expect(screen.queryAllByLabelText('Image Grid')).toHaveLength(1);
+    render(<ImageGalleryGridComponent message={message} />);
+
+    await waitFor(() => {
+      expect(screen.queryAllByLabelText('Image Grid')).toHaveLength(1);
+    });
   });
 
-  it('should render ImageGalleryGrid individual images', () => {
-    render(
-      getComponent({
-        photos: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
-      }),
-    );
+  it('should render ImageGalleryGrid individual images', async () => {
+    const message = generateMessage({
+      attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
+    }) as unknown as LocalMessage;
 
-    expect(screen.queryAllByLabelText('Grid Image')).toHaveLength(2);
+    render(<ImageGalleryGridComponent message={message} />);
+
+    await waitFor(() => {
+      expect(screen.queryAllByLabelText('Grid Image')).toHaveLength(2);
+    });
   });
 
-  it('should render ImageGalleryGrid with custom image component', () => {
-    const CustomImageComponent = () => (
-      <View>
-        <Text>Image Attachment</Text>
-      </View>
-    );
-
-    render(
-      getComponent({
-        imageComponent: CustomImageComponent,
-        photos: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
-      }),
-    );
-
-    expect(screen.queryAllByText('Image Attachment')).toHaveLength(2);
-  });
-
-  it('should trigger the selectAndClose when the Image item is pressed', () => {
+  it('should trigger the selectAndClose when the Image item is pressed', async () => {
     const closeGridViewMock = jest.fn();
-    const setSelectedMessageMock = jest.fn();
+    const user = userEvent.setup();
 
-    render(
-      getComponent({
-        closeGridView: closeGridViewMock,
-        photos: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
-        setSelectedMessage: setSelectedMessageMock,
-      }),
-    );
+    const message = generateMessage({
+      attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
+    }) as unknown as LocalMessage;
 
-    const component = screen.getAllByLabelText('Grid Image');
+    render(<ImageGalleryGridComponent closeGridView={closeGridViewMock} message={message} />);
 
-    act(() => {
-      fireEvent(component[0], 'onPress');
+    await waitFor(() => {
+      expect(screen.getAllByLabelText('Grid Image')).toHaveLength(2);
     });
 
-    expect(closeGridViewMock).toHaveBeenCalledTimes(1);
-    expect(setSelectedMessageMock).toHaveBeenCalledTimes(1);
+    await user.press(screen.getAllByLabelText('Grid Image')[0]);
+
+    await waitFor(() => {
+      expect(closeGridViewMock).toHaveBeenCalledTimes(1);
+    });
   });
 });

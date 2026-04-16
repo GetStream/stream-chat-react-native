@@ -2,27 +2,16 @@ import React from 'react';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import { Audio } from '../../icons/Audio';
-import { CSV } from '../../icons/CSV';
-import { DOC } from '../../icons/DOC';
-import { DOCX } from '../../icons/DOCX';
-import { GenericFile } from '../../icons/GenericFile';
-import { HTML } from '../../icons/HTML';
-import { MD } from '../../icons/MD';
-import { ODT } from '../../icons/ODT';
-import { PDF } from '../../icons/PDF';
-import { PPT } from '../../icons/PPT';
-import { PPTX } from '../../icons/PPTX';
-import { RAR } from '../../icons/RAR';
-import { RTF } from '../../icons/RTF';
-import { SEVEN_Z } from '../../icons/SEVEN_Z';
-import { TAR } from '../../icons/TAR';
-import { TXT } from '../../icons/TXT';
+import { Audio } from '../../icons/filetype-audio-xl';
+import { Code } from '../../icons/filetype-code-xl';
+import { ZIP } from '../../icons/filetype-compression-xl';
+import { OtherFileIcon } from '../../icons/filetype-other-xl';
+import { PDF } from '../../icons/filetype-pdf-xl';
+import { Presentation } from '../../icons/filetype-presentation-xl';
+import { SpreadSheet } from '../../icons/filetype-spreadsheet-xl';
+import { DOC } from '../../icons/filetype-text-xl';
+import { Video } from '../../icons/filetype-video-xl';
 import type { IconProps } from '../../icons/utils/base';
-import { Video } from '../../icons/Video';
-import { XLS } from '../../icons/XLS';
-import { XLSX } from '../../icons/XLSX';
-import { ZIP } from '../../icons/ZIP';
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#audio
 const audioFileTypes = [
@@ -203,9 +192,7 @@ const docMimeTypes = [
   'application/vnd.oasis.opendocument.text-flat-xml',
   // .uot
   // NOTE: firefox doesn't know mimetype so maybe ignore
-];
 
-const docXMimeTypes = [
   // Microsoft Word
   // .docx
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -215,6 +202,14 @@ const docXMimeTypes = [
   'application/vnd.ms-word.document.macroEnabled.12',
   // .dotm (no test)
   'application/vnd.ms-word.template.macroEnabled.12',
+
+  // LibreOffice/OpenOffice Writer
+  // .odt
+  'application/vnd.oasis.opendocument.text',
+  // .ott
+  'application/vnd.oasis.opendocument.text-template',
+  // .fodt
+  'application/vnd.oasis.opendocument.text-flat-xml',
 ];
 
 const excelMimeTypes = [
@@ -229,9 +224,7 @@ const excelMimeTypes = [
   'application/vnd.oasis.opendocument.spreadsheet-template',
   // .fods
   'application/vnd.oasis.opendocument.spreadsheet-flat-xml',
-];
 
-const excelXMimeTypes = [
   // .xlsx
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   // .xltx (no test)
@@ -244,16 +237,6 @@ const excelXMimeTypes = [
   'application/vnd.ms-excel.addin.macroEnabled.12',
   // .xlsb (no test)
   'application/vnd.ms-excel.addin.macroEnabled.12',
-];
-
-const odtMimeTypes = [
-  // LibreOffice/OpenOffice Writer
-  // .odt
-  'application/vnd.oasis.opendocument.text',
-  // .ott
-  'application/vnd.oasis.opendocument.text-template',
-  // .fodt
-  'application/vnd.oasis.opendocument.text-flat-xml',
 ];
 
 const powerpointMimeTypes = [
@@ -270,9 +253,7 @@ const powerpointMimeTypes = [
   'application/vnd.oasis.opendocument.presentation-flat-xml',
   // .uop
   // NOTE: firefox doesn't know mimetype so maybe ignore
-];
 
-const powerpointXMimeTypes = [
   // .pptx
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   // .potx (no test)
@@ -289,7 +270,12 @@ const powerpointXMimeTypes = [
   'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
 ];
 
-const tarFileTypes = [
+const zipFileTypes = [
+  // .gzip
+  'application/gzip',
+  // .zip
+  'application/zip',
+
   // .ar
   'application/x-archive',
   // .tar
@@ -312,13 +298,6 @@ const tarFileTypes = [
   'application/x-xz',
   // .war
   'application/x-webarchive',
-];
-
-const zipFileTypes = [
-  // .gzip
-  'application/gzip',
-  // .zip
-  'application/zip',
 ];
 
 const videoFileTypes = [
@@ -361,15 +340,17 @@ const videoFileTypes = [
   'video/x-flv',
 ];
 
+const codeFileTypes = [
+  'text/html',
+  'text/css',
+  'text/javascript',
+  'text/xml',
+  'text/csv',
+  'text/plain',
+];
+
 const mimeTypeToIconMap: Record<string, React.ComponentType<IconProps>> = {
   'application/pdf': PDF, // .pdf
-  'application/rtf': RTF, // .rtf
-  'application/vnd.rar': RAR, // .rar
-  'application/x-7z-compressed': SEVEN_Z, // .z7
-  'text/csv': CSV, // .csv
-  'text/html': HTML, // .html .htm
-  'text/markdown': MD, // .md
-  'text/plain': TXT, // .txt
 };
 
 for (const type of audioFileTypes) {
@@ -380,32 +361,12 @@ for (const type of docMimeTypes) {
   mimeTypeToIconMap[type] = DOC;
 }
 
-for (const type of docXMimeTypes) {
-  mimeTypeToIconMap[type] = DOCX;
-}
-
 for (const type of excelMimeTypes) {
-  mimeTypeToIconMap[type] = XLS;
-}
-
-for (const type of excelXMimeTypes) {
-  mimeTypeToIconMap[type] = XLSX;
-}
-
-for (const type of odtMimeTypes) {
-  mimeTypeToIconMap[type] = ODT;
+  mimeTypeToIconMap[type] = SpreadSheet;
 }
 
 for (const type of powerpointMimeTypes) {
-  mimeTypeToIconMap[type] = PPT;
-}
-
-for (const type of powerpointXMimeTypes) {
-  mimeTypeToIconMap[type] = PPTX;
-}
-
-for (const type of tarFileTypes) {
-  mimeTypeToIconMap[type] = TAR;
+  mimeTypeToIconMap[type] = Presentation;
 }
 
 for (const type of zipFileTypes) {
@@ -416,9 +377,13 @@ for (const type of videoFileTypes) {
   mimeTypeToIconMap[type] = Video;
 }
 
+for (const type of codeFileTypes) {
+  mimeTypeToIconMap[type] = Code;
+}
+
 function mimeTypeToIcon(mimeType?: string): React.ComponentType<IconProps> {
   if (!mimeType) {
-    return GenericFile;
+    return OtherFileIcon;
   }
 
   const Icon = mimeTypeToIconMap[mimeType];
@@ -426,18 +391,37 @@ function mimeTypeToIcon(mimeType?: string): React.ComponentType<IconProps> {
     return Icon;
   }
 
-  return GenericFile;
+  return OtherFileIcon;
 }
 
 export type FileIconProps = {
   mimeType?: string;
-  size?: number;
+  size?: 'sm' | 'md' | 'lg';
 };
 
-export const FileIcon = ({ mimeType, size }: FileIconProps) => {
+const sizeToNumber = (size?: 'sm' | 'md' | 'lg') => {
+  if (size === 'sm') {
+    return {
+      height: 24,
+      width: 19,
+    };
+  }
+  if (size === 'md') {
+    return {
+      height: 40,
+      width: 32,
+    };
+  }
+  return {
+    height: 48,
+    width: 40,
+  };
+};
+
+export const FileIcon = ({ mimeType, size = 'md' }: FileIconProps) => {
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         file: { icon },
       },
     },
@@ -445,7 +429,7 @@ export const FileIcon = ({ mimeType, size }: FileIconProps) => {
 
   const Icon = mimeTypeToIcon(mimeType);
 
-  return <Icon {...(size ? { height: size, width: size } : {})} {...icon} />;
+  return <Icon {...(size ? sizeToNumber(size) : {})} {...icon} />;
 };
 
-FileIcon.displayName = 'FileIcon{messageSimple{file{icon}}}';
+FileIcon.displayName = 'FileIcon{messageItemView{file{icon}}}';

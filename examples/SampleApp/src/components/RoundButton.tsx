@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme } from 'stream-chat-react-native';
+
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,11 +33,7 @@ type RoundButtonProps = PropsWithChildren<{
 
 export const RoundButton: React.FC<RoundButtonProps> = (props) => {
   const { children, disabled, onPress } = props;
-  const {
-    theme: {
-      colors: { black, icon_background },
-    },
-  } = useTheme();
+  const { black, icon_background } = useLegacyColors();
 
   return (
     <TouchableOpacity

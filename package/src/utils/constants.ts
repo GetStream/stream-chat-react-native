@@ -4,4 +4,5 @@ export const defaultMentionAllAppUsersQuery = {
   options: {},
   sort: {},
 };
-export const POLL_OPTION_HEIGHT = 71;
+export const defaultPollOptionCount = 5;
+export const ONE_SECOND_IN_MILLISECONDS = 1000;

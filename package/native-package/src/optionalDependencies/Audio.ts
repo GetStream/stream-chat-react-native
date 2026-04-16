@@ -136,8 +136,7 @@ class _Audio {
   };
   startPlayer = async (uri, _, onPlaybackStatusUpdate) => {
     try {
-      const playback = await audioRecorderPlayer.startPlayer(uri);
-      console.log({ playback });
+      await audioRecorderPlayer.startPlayer(uri);
       audioRecorderPlayer.addPlayBackListener((status) => {
         onPlaybackStatusUpdate(status);
       });

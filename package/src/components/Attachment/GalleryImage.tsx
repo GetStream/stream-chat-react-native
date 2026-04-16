@@ -1,15 +1,16 @@
 import React from 'react';
-import { Image, ImageProps } from 'react-native';
+import { Image, ImageProps, StyleSheet } from 'react-native';
 
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 
 import { getUrlWithoutParams, isLocalUrl, makeImageCompatibleUrl } from '../../utils/utils';
 
-export type GalleryImageWithContextProps = GalleryImageProps &
-  Pick<ChatContextValue, 'ImageComponent'>;
+export type GalleryImageWithContextProps = GalleryImageProps & {
+  ImageComponent?: React.ComponentType<ImageProps>;
+};
 
 export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => {
-  const { ImageComponent = Image, uri, ...rest } = props;
+  const { ImageComponent = Image, uri, style, ...rest } = props;
 
   // Caching image components such as FastImage will not work with local images.
   // This for the case of local uris, we use the default Image component.
@@ -18,6 +19,7 @@ export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => 
       <ImageComponent
         {...rest}
         accessibilityLabel='Gallery Image'
+        style={[styles.image, style]}
         source={{
           uri: makeImageCompatibleUrl(uri),
         }}
@@ -29,6 +31,7 @@ export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => 
     <Image
       {...rest}
       accessibilityLabel='Gallery Image'
+      style={[styles.image, style]}
       source={{
         uri: makeImageCompatibleUrl(uri),
       }}
@@ -46,7 +49,13 @@ export type GalleryImageProps = Omit<ImageProps, 'height' | 'source'> & {
 };
 
 export const GalleryImage = (props: GalleryImageProps) => {
-  const { ImageComponent } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
 
   return <MemoizedGalleryImage ImageComponent={ImageComponent} {...props} />;
 };
+
+const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+  },
+});

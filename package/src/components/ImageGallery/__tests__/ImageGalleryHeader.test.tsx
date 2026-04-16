@@ -1,30 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Text, View } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
-import { act, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
 import { LocalMessage } from 'stream-chat';
 
-import { Chat } from '../../../components/Chat/Chat';
+import { ImageGalleryHeader as ImageGalleryHeaderDefault } from '../../../components/ImageGallery/components/ImageGalleryHeader';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
 } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
-import {
-  OverlayContext,
-  OverlayContextValue,
-} from '../../../contexts/overlayContext/OverlayContext';
+import * as overlayContext from '../../../contexts/overlayContext/OverlayContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
-import {
-  generateImageAttachment,
-  generateVideoAttachment,
-} from '../../../mock-builders/generator/attachment';
+import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
 
-import { ImageGallery, ImageGalleryCustomComponents } from '../ImageGallery';
+import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
+import { ImageGallery, ImageGalleryProps } from '../ImageGallery';
 
 jest.mock('../../../native.ts', () => {
   const { View } = require('react-native');
@@ -39,138 +32,62 @@ jest.mock('../../../native.ts', () => {
   };
 });
 
-describe('ImageGalleryHeader', () => {
-  it('render image gallery header component with custom component header props', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-
-    const CustomHeaderLeftElement = () => (
-      <View>
-        <Text>Left element</Text>
-      </View>
-    );
-
-    const CustomHeaderRightElement = () => (
-      <View>
-        <Text>Right element</Text>
-      </View>
-    );
-
-    const CustomHeaderCenterElement = () => (
-      <View>
-        <Text>Center element</Text>
-      </View>
-    );
-
-    render(
-      <OverlayProvider>
-        <ImageGalleryContext.Provider
-          value={
-            {
-              messages: [
-                generateMessage({
-                  attachments: [generateImageAttachment()],
-                }),
-              ] as unknown as LocalMessage[],
-            } as unknown as ImageGalleryContextValue
-          }
-        >
-          <Chat client={chatClient}>
-            <ImageGallery
-              imageGalleryCustomComponents={
-                {
-                  header: {
-                    centerElement: CustomHeaderCenterElement,
-                    leftElement: CustomHeaderLeftElement,
-                    rightElement: CustomHeaderRightElement,
-                  },
-                } as ImageGalleryCustomComponents['imageGalleryCustomComponents']
-              }
-              overlayOpacity={{ value: 1 } as SharedValue<number>}
-            />
-          </Chat>
-        </ImageGalleryContext.Provider>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.queryAllByText('Left element')).toHaveLength(1);
-      expect(screen.queryAllByText('Right element')).toHaveLength(1);
-      expect(screen.queryAllByText('Center element')).toHaveLength(1);
-    });
+const ImageGalleryComponent = (props: ImageGalleryProps) => {
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
+  const attachment = generateImageAttachment();
+  imageGalleryStateStore.openImageGallery({
+    messages: [generateMessage({ attachments: [attachment] }) as unknown as LocalMessage],
+    selectedAttachmentUrl: attachment.image_url,
   });
 
-  it('render image gallery header component with custom Close Icon component', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
 
-    const CustomCloseIconElement = () => (
-      <View>
-        <Text>Close Icon element</Text>
-      </View>
-    );
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
 
-    render(
-      <OverlayProvider>
-        <ImageGalleryContext.Provider
-          value={
-            {
-              messages: [
-                generateMessage({
-                  attachments: [generateVideoAttachment({ type: 'video' })],
-                }),
-              ] as unknown as LocalMessage[],
-            } as unknown as ImageGalleryContextValue
-          }
-        >
-          <Chat client={chatClient}>
-            <ImageGallery
-              imageGalleryCustomComponents={
-                {
-                  header: {
-                    CloseIcon: <CustomCloseIconElement />,
-                  },
-                } as ImageGalleryCustomComponents['imageGalleryCustomComponents']
-              }
-              overlayOpacity={{ value: 1 } as SharedValue<number>}
-            />
-          </Chat>
-        </ImageGalleryContext.Provider>
-      </OverlayProvider>,
-    );
+  return (
+    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+      <ImageGalleryContext.Provider
+        value={
+          {
+            imageGalleryStateStore,
+            ImageGalleryHeader: ImageGalleryHeaderDefault,
+          } as unknown as ImageGalleryContextValue
+        }
+      >
+        <ImageGallery {...props} />
+      </ImageGalleryContext.Provider>
+    </OverlayProvider>
+  );
+};
+
+describe('ImageGalleryHeader', () => {
+  it('render image gallery header component with default header elements', async () => {
+    render(<ImageGalleryComponent />);
+
     await waitFor(() => {
-      expect(screen.queryAllByText('Close Icon element')).toHaveLength(1);
+      expect(screen.getByLabelText('Hide Overlay')).toBeTruthy();
     });
   });
 
   it('should trigger the hideOverlay function on button onPress', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
     const setOverlayMock = jest.fn();
     const user = userEvent.setup();
 
-    render(
-      <OverlayContext.Provider
-        value={{ setOverlay: setOverlayMock } as unknown as OverlayContextValue}
-      >
-        <ImageGalleryContext.Provider
-          value={
-            {
-              messages: [
-                generateMessage({
-                  attachments: [generateImageAttachment()],
-                }),
-              ] as unknown as LocalMessage[],
-            } as unknown as ImageGalleryContextValue
-          }
-        >
-          <Chat client={chatClient}>
-            <ImageGallery overlayOpacity={{ value: 1 } as SharedValue<number>} />
-          </Chat>
-        </ImageGalleryContext.Provider>
-      </OverlayContext.Provider>,
-    );
+    jest.spyOn(overlayContext, 'useOverlayContext').mockImplementation(() => ({
+      setOverlay: setOverlayMock,
+    }));
 
-    act(() => {
-      user.press(screen.getByLabelText('Hide Overlay'));
+    render(<ImageGalleryComponent />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Hide Overlay')).toBeTruthy();
     });
+
+    await user.press(screen.getByLabelText('Hide Overlay'));
 
     await waitFor(() => {
       expect(setOverlayMock).toHaveBeenCalledWith('none');

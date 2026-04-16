@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react';
-import { Modal } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Modal, StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { GenericPollButton, PollButtonProps } from './Button';
 import { PollAnswersList } from './PollAnswersList';
@@ -9,7 +10,10 @@ import { PollAllOptions } from './PollOption';
 import { PollResults } from './PollResults';
 
 import { useChatContext, usePollContext, useTheme, useTranslationContext } from '../../../contexts';
+import { primitives } from '../../../theme';
+import { defaultPollOptionCount } from '../../../utils/constants';
 import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
+import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
 
 export const ViewResultsButton = (props: PollButtonProps) => {
@@ -27,11 +31,7 @@ export const ViewResultsButton = (props: PollButtonProps) => {
     setShowResults(true);
   }, [message, onPress, poll]);
 
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   const onRequestClose = useCallback(() => {
     setShowResults(false);
@@ -39,13 +39,20 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 
   return (
     <>
-      <GenericPollButton onPress={onPressHandler} title={t('View Results')} />
+      <GenericPollButton
+        label={t('View Results')}
+        onPress={onPressHandler}
+        style={styles.viewResultsButton}
+        type='outline'
+      />
       {showResults ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showResults}>
-          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
-            <PollResults message={message} poll={poll} />
-          </SafeAreaViewWrapper>
+          <GestureHandlerRootView style={styles.modalRoot}>
+            <SafeAreaViewWrapper style={styles.safeArea}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
+              <PollResults message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </GestureHandlerRootView>
         </Modal>
       ) : null}
     </>
@@ -72,26 +79,24 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
     setShowAllOptions(false);
   }, []);
 
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   return (
     <>
-      {options && options.length > 10 ? (
+      {options && options.length > defaultPollOptionCount ? (
         <GenericPollButton
           onPress={onPressHandler}
-          title={t('See all {{count}} options', { count: options.length })}
+          label={t('+{{count}} More Options', { count: options.length - defaultPollOptionCount })}
         />
       ) : null}
       {showAllOptions ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAllOptions}>
-          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
-            <PollAllOptions message={message} poll={poll} />
-          </SafeAreaViewWrapper>
+          <GestureHandlerRootView style={styles.modalRoot}>
+            <SafeAreaViewWrapper style={styles.safeArea}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
+              <PollAllOptions message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </GestureHandlerRootView>
         </Modal>
       ) : null}
     </>
@@ -114,11 +119,7 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
     setShowAnswers(true);
   }, [message, onPress, poll]);
 
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   const onRequestClose = useCallback(() => {
     setShowAnswers(false);
@@ -129,15 +130,17 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
       {answersCount && answersCount > 0 ? (
         <GenericPollButton
           onPress={onPressHandler}
-          title={t('View {{count}} comments', { count: answersCount })}
+          label={t('View {{count}} comments', { count: answersCount })}
         />
       ) : null}
       {showAnswers ? (
         <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAnswers}>
-          <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
-            <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
-            <PollAnswersList message={message} poll={poll} />
-          </SafeAreaViewWrapper>
+          <GestureHandlerRootView style={styles.modalRoot}>
+            <SafeAreaViewWrapper style={styles.safeArea}>
+              <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
+              <PollAnswersList message={message} poll={poll} />
+            </SafeAreaViewWrapper>
+          </GestureHandlerRootView>
         </Modal>
       ) : null}
     </>
@@ -167,12 +170,13 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
   return (
     <>
       {!isClosed && allowUserSuggestedOptions ? (
-        <GenericPollButton onPress={onPressHandler} title={t('Suggest an option')} />
+        <GenericPollButton onPress={onPressHandler} label={t('Suggest an option')} />
       ) : null}
       {showAddOptionDialog ? (
         <PollInputDialog
           closeDialog={onRequestClose}
           onSubmit={addOption}
+          placeholder={t('Enter a new option')}
           title={t('Suggest an option')}
           visible={showAddOptionDialog}
         />
@@ -204,13 +208,14 @@ export const AddCommentButton = (props: PollButtonProps) => {
   return (
     <>
       {!isClosed && allowAnswers ? (
-        <GenericPollButton onPress={onPressHandler} title={t('Add a comment')} />
+        <GenericPollButton onPress={onPressHandler} label={t('Add a comment')} />
       ) : null}
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={onRequestClose}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
+          placeholder={t('Your comment')}
           title={t('Add a comment')}
           visible={showAddCommentDialog}
         />
@@ -223,19 +228,56 @@ export const EndVoteButton = () => {
   const { t } = useTranslationContext();
   const { createdBy, endVote, isClosed } = usePollState();
   const { client } = useChatContext();
+  const styles = useStyles();
 
   return !isClosed && createdBy?.id === client.userID ? (
-    <GenericPollButton onPress={endVote} title={t('End Vote')} />
+    <GenericPollButton
+      label={t('End Vote')}
+      onPress={endVote}
+      style={styles.endVoteButton}
+      type='outline'
+    />
   ) : null;
 };
 
-export const PollButtons = () => (
-  <>
-    <ShowAllOptionsButton />
-    <ShowAllCommentsButton />
-    <SuggestOptionButton />
-    <AddCommentButton />
-    <ViewResultsButton />
-    <EndVoteButton />
-  </>
-);
+export const PollButtons = () => {
+  const styles = useStyles();
+  return (
+    <View style={styles.buttonsContainer}>
+      <ViewResultsButton />
+      <EndVoteButton />
+      <SuggestOptionButton />
+      <AddCommentButton />
+      <ShowAllCommentsButton />
+    </View>
+  );
+};
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
+  return useMemo(() => {
+    return StyleSheet.create({
+      buttonsContainer: { gap: primitives.spacingXs },
+      modalRoot: {
+        flex: 1,
+      },
+      endVoteButton: {
+        borderColor: isPollCreatedByClient
+          ? semantics.chatBorderOnChatOutgoing
+          : semantics.chatBorderOnChatIncoming,
+      },
+      viewResultsButton: {
+        borderColor: isPollCreatedByClient
+          ? semantics.chatBorderOnChatOutgoing
+          : semantics.chatBorderOnChatIncoming,
+      },
+      safeArea: {
+        backgroundColor: semantics.backgroundCoreElevation1,
+        flex: 1,
+      },
+    });
+  }, [semantics, isPollCreatedByClient]);
+};

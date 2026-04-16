@@ -1,7 +1,6 @@
 import React, { createContext, PropsWithChildren, useContext } from 'react';
 
 import { MessageListProps } from '../../components/MessageList/MessageList';
-import { MessagePreviousAndNextMessageStore } from '../../state-store/message-list-prev-next-state';
 
 import { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -16,10 +15,6 @@ export type MessageListItemContextValue = {
    */
   goToMessage: (messageId: string) => void;
   /**
-   * Store to get the previous and next message in the message list
-   */
-  messageListPreviousAndNextMessageStore: MessagePreviousAndNextMessageStore;
-  /**
    * Theme to use for the message list item
    */
   modifiedTheme: Theme;
@@ -33,6 +28,7 @@ export type MessageListItemContextValue = {
    * @param message A message object to open the thread upon.
    */
   onThreadSelect: MessageListProps['onThreadSelect'];
+  setNativeScrollability: (value: boolean) => void;
 };
 
 export const MessageListItemContext = createContext(

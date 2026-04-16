@@ -16,7 +16,7 @@ import {
   Channel,
   ChannelList,
   Chat,
-  MessageInput,
+  MessageComposer,
   MessageList,
   OverlayProvider,
   SqliteClient,
@@ -37,7 +37,6 @@ const options = {
   presence: true,
   state: true,
   watch: true,
-  limit: 30,
 };
 
 I18nManager.forceRTL(false);
@@ -133,7 +132,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
               }
             }}
           />
-          <MessageInput />
+          <MessageComposer />
         </View>
       </Channel>
     </SafeAreaView>

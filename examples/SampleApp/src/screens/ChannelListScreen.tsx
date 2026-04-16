@@ -2,6 +2,7 @@ import React, { RefObject, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   FlatListProps,
+  I18nManager,
   StyleSheet,
   Text,
   TextInput,
@@ -9,9 +10,8 @@ import {
   View,
 } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
+import { ChannelList, useTheme, useStableCallback, ChannelActionItem } from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
-import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { useAppContext } from '../context/AppContext';
@@ -19,6 +19,10 @@ import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessa
 
 import type { ChannelSort } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
+import { Search } from '../icons/Search';
+import { ChannelInfo } from '../icons/ChannelInfo.tsx';
+import { CircleClose } from '../icons/CircleClose.tsx';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -52,6 +56,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 0, // removal of iOS top padding for weird centering
     textAlignVertical: 'center', // for android vertical text centering
+    textAlign: I18nManager.isRTL ? 'right' : 'left',
   },
 });
 
@@ -66,18 +71,14 @@ const options = {
   presence: true,
   state: true,
   watch: true,
+  message_limit: 25,
 };
-
-const HeaderNetworkDownIndicator = () => null;
 
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation();
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro, grey_whisper, white, white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_gainsboro, grey_whisper, white, white_snow } = useLegacyColors();
   const { setChannel } = useStreamChatContext();
 
   const searchInputRef = useRef<TextInput | null>(null);
@@ -116,8 +117,8 @@ export const ChannelListScreen: React.FC = () => {
     () => ({
       getItemLayout: (_: unknown, index: number) => ({
         index,
-        length: 65,
-        offset: 65 * index,
+        length: 80,
+        offset: 80 * index,
       }),
       keyboardDismissMode: 'on-drag',
     }),
@@ -139,6 +140,37 @@ export const ChannelListScreen: React.FC = () => {
       scrollRef.current = ref;
     },
     [],
+  );
+
+  const getChannelActionItems = useStableCallback(
+    ({ context: { isDirectChat, channel }, defaultItems }) => {
+      const viewInfo = () => {
+        if (!channel) {
+          return;
+        }
+        if (navigation) {
+          if (isDirectChat) {
+            navigation.navigate('OneOnOneChannelDetailScreen', {
+              channel,
+            });
+          } else {
+            navigation.navigate('GroupChannelDetailsScreen', {
+              channel,
+            });
+          }
+        }
+      };
+
+      const viewInfoItem: ChannelActionItem = {
+        action: viewInfo,
+        Icon: ChannelInfo,
+        id: 'info',
+        label: 'View Info',
+        placement: 'sheet',
+        type: 'standard',
+      };
+      return [viewInfoItem, ...defaultItems];
+    },
   );
 
   if (!chatClient) {
@@ -217,12 +249,11 @@ export const ChannelListScreen: React.FC = () => {
             <ChannelList
               additionalFlatListProps={additionalFlatListProps}
               filters={filters}
-              HeaderNetworkDownIndicator={HeaderNetworkDownIndicator}
               maxUnreadCount={99}
               onSelect={onSelect}
               options={options}
-              Preview={ChannelPreview}
               setFlatListRef={setScrollRef}
+              getChannelActionItems={getChannelActionItems}
               sort={sort}
             />
           </View>

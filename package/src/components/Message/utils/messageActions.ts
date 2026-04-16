@@ -3,6 +3,7 @@ import type { MessagesContextValue } from '../../../contexts/messagesContext/Mes
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { isClipboardAvailable } from '../../../native';
 
+import { FileTypes } from '../../../types/types';
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
 export type MessageActionsParams = {
@@ -20,12 +21,9 @@ export type MessageActionsParams = {
   pinMessage: MessageActionType;
   quotedReply: MessageActionType;
   retry: MessageActionType;
-  /**
-   * Determines if the message actions are visible.
-   */
-  showMessageReactions: boolean;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
+  blockUser: MessageActionType;
   // Optional Actions
   deleteForMeMessage?: MessageActionType;
 } & Pick<MessageContextValue, 'message' | 'isMyMessage'> &
@@ -43,18 +41,19 @@ export const messageActions = ({
   isMyMessage,
   isThreadMessage,
   markUnread,
+  muteUser,
   message,
   ownCapabilities,
   pinMessage,
   quotedReply,
   retry,
-  showMessageReactions,
   threadReply,
   unpinMessage,
+  blockUser,
 }: MessageActionsParams) => {
-  if (showMessageReactions) {
-    return [];
-  }
+  const messageHasGiphyOrImgur = message.attachments?.some(
+    (attachment) => attachment.type === FileTypes.Giphy || attachment.type === FileTypes.Imgur,
+  );
 
   const actions: Array<MessageActionType> = [];
 
@@ -62,31 +61,12 @@ export const messageActions = ({
     actions.push(retry);
   }
 
-  if (ownCapabilities.quoteMessage && !isThreadMessage && !error) {
-    actions.push(quotedReply);
-  }
-
   if (ownCapabilities.sendReply && !isThreadMessage && !error) {
     actions.push(threadReply);
   }
 
-  if (
-    (isMyMessage && ownCapabilities.updateOwnMessage) ||
-    (!isMyMessage && ownCapabilities.updateAnyMessage)
-  ) {
-    actions.push(editMessage);
-  }
-
-  if (ownCapabilities.readEvents && !error && !isThreadMessage) {
-    actions.push(markUnread);
-  }
-
-  if (isClipboardAvailable() && message.text && !error) {
-    actions.push(copyMessage);
-  }
-
-  if (!isMyMessage && ownCapabilities.flagMessage) {
-    actions.push(flagMessage);
+  if (ownCapabilities.quoteMessage && !isThreadMessage && !error) {
+    actions.push(quotedReply);
   }
 
   if (ownCapabilities.pinMessage && !message.pinned) {
@@ -95,6 +75,23 @@ export const messageActions = ({
 
   if (ownCapabilities.pinMessage && message.pinned) {
     actions.push(unpinMessage);
+  }
+
+  if (
+    ((isMyMessage && ownCapabilities.updateOwnMessage) ||
+      (!isMyMessage && ownCapabilities.updateAnyMessage)) &&
+    !messageHasGiphyOrImgur &&
+    !message.poll_id
+  ) {
+    actions.push(editMessage);
+  }
+
+  if (isClipboardAvailable() && message.text && !error) {
+    actions.push(copyMessage);
+  }
+
+  if (ownCapabilities.readEvents && !error && !isThreadMessage && !isMyMessage) {
+    actions.push(markUnread);
   }
 
   if (!isMyMessage && ownCapabilities.banChannelMembers) {
@@ -106,6 +103,24 @@ export const messageActions = ({
     (!isMyMessage && ownCapabilities.deleteAnyMessage)
   ) {
     actions.push(deleteMessage);
+  }
+
+  if (!isMyMessage && ownCapabilities.flagMessage) {
+    actions.push(flagMessage);
+  }
+
+  if (!isMyMessage) {
+    actions.push(muteUser);
+    actions.push(blockUser);
+  }
+
+  if (error) {
+    return actions.filter(
+      (action) =>
+        action.actionType === 'deleteMessage' ||
+        action.actionType === 'retry' ||
+        action.actionType === 'editMessage',
+    );
   }
 
   return actions;

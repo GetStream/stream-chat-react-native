@@ -1,81 +1,34 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   AttachmentManagerState,
-  ChannelState,
   DraftMessage,
   LocalMessage,
-  MessageResponse,
   TextComposerState,
   Thread,
   ThreadState,
 } from 'stream-chat';
 
-import {
-  TranslationContextValue,
-  useChatContext,
-  useTheme,
-  useTranslationContext,
-} from '../../contexts';
+import { useChatContext, useTheme, useTranslationContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   ThreadListItemProvider,
   useThreadListItemContext,
 } from '../../contexts/threadsContext/ThreadListItemContext';
 import { useThreadsContext } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
-import { MessageBubble } from '../../icons';
-import { FileTypes } from '../../types/types';
+import { primitives } from '../../theme';
 import { getDateString } from '../../utils/i18n/getDateString';
-import { Avatar } from '../Avatar/Avatar';
+import { useChannelPreviewDisplayPresence } from '../ChannelPreview/hooks';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
-import { MessagePreview } from '../MessagePreview/MessagePreview';
+import { BadgeNotification, UserAvatarStack } from '../ui';
+import { UserAvatar } from '../ui/Avatar/UserAvatar';
 
 export type ThreadListItemProps = {
   thread: Thread;
   timestampTranslationKey?: string;
 };
-
-const styles = StyleSheet.create({
-  boldText: { fontSize: 14, fontWeight: '500' },
-  contentRow: {
-    flexDirection: 'row',
-    marginTop: 6,
-  },
-  contentTextWrapper: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  dateText: { alignSelf: 'flex-end' },
-  headerRow: {
-    flexDirection: 'row',
-  },
-  infoRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  parentMessagePreviewContainer: {
-    flex: 1,
-    marginVertical: 2,
-  },
-  previewMessageContainer: {
-    flex: 1,
-    marginTop: 4,
-  },
-  touchableWrapper: {
-    flex: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 14,
-  },
-  unreadBubbleWrapper: {
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    borderRadius: 50,
-    height: 22,
-    justifyContent: 'center',
-    width: 22,
-  },
-});
 
 export const attachmentTypeIconMap = {
   audio: '🔈',
@@ -85,166 +38,11 @@ export const attachmentTypeIconMap = {
   voiceRecording: '🎙️',
 } as const;
 
-type LatestMessage = ReturnType<ChannelState['formatMessage']> | MessageResponse;
-
-const getMessageSenderName = (
-  message: LatestMessage | undefined,
-  currentUserId: string | undefined,
-  t: (key: string) => string,
-) => {
-  if (message?.user?.id === currentUserId) {
-    return t('You');
-  }
-
-  return message?.user?.name || message?.user?.username || message?.user?.id || '';
-};
-
-const getPreviewFromMessage = ({
-  t,
-  currentUserId,
-  draftMessage,
-  parentMessage = false,
-  message,
-}: {
-  t: TranslationContextValue['t'];
-  currentUserId?: string;
-  draftMessage?: DraftMessage;
-  parentMessage?: boolean;
-  message?: LocalMessage;
-}) => {
-  if (draftMessage) {
-    if (draftMessage.attachments?.length) {
-      const attachment = draftMessage?.attachments?.at(0);
-
-      const attachmentIcon = attachment
-        ? `${
-            attachmentTypeIconMap[
-              (attachment.type as keyof typeof attachmentTypeIconMap) ?? 'file'
-            ] ?? attachmentTypeIconMap.file
-          } `
-        : '';
-
-      if (attachment?.type === FileTypes.VoiceRecording) {
-        return [
-          { bold: true, draft: true, text: 'Draft: ' },
-          { bold: false, text: attachmentIcon },
-          {
-            bold: false,
-            text: t('Voice message'),
-          },
-        ];
-      }
-      return [
-        { bold: true, draft: true, text: 'Draft: ' },
-        { bold: false, text: attachmentIcon },
-        {
-          bold: false,
-          text:
-            attachment?.type === FileTypes.Image
-              ? attachment?.fallback
-                ? attachment?.fallback
-                : 'N/A'
-              : attachment?.title
-                ? attachment?.title
-                : 'N/A',
-        },
-      ];
-    }
-
-    if (draftMessage.text) {
-      return [
-        { bold: true, draft: true, text: 'Draft: ' },
-        {
-          bold: false,
-          text: draftMessage.text,
-        },
-      ];
-    }
-  }
-
-  if (message) {
-    const messageSender = getMessageSenderName(message, currentUserId, t);
-    const messageSenderText = !parentMessage ? (messageSender ? `${messageSender}: ` : '') : '';
-    const isNotOwner = message.user?.id !== currentUserId;
-
-    if (message.text) {
-      return [
-        { bold: isNotOwner, text: messageSenderText },
-        { bold: false, text: message.text || 'N/A' },
-      ];
-    }
-    if (message.command) {
-      return [
-        { bold: isNotOwner, text: messageSenderText },
-        { bold: false, text: `/${message.command}` },
-      ];
-    }
-
-    if (message?.deleted_at && message.parent_id) {
-      return [
-        { bold: isNotOwner, text: messageSenderText },
-        { bold: false, text: `${t('This reply was deleted')}.` },
-      ];
-    }
-
-    if (message?.deleted_at && !message.parent_id) {
-      return [
-        { bold: isNotOwner, text: messageSenderText },
-        { bold: false, text: `${t('The source message was deleted')}.` },
-      ];
-    }
-
-    if (message?.attachments?.length) {
-      const attachment = message?.attachments?.at(0);
-
-      const attachmentIcon = attachment
-        ? `${
-            attachmentTypeIconMap[
-              (attachment.type as keyof typeof attachmentTypeIconMap) ?? 'file'
-            ] ?? attachmentTypeIconMap.file
-          } `
-        : '';
-
-      if (attachment?.type === FileTypes.VoiceRecording) {
-        return [
-          { bold: false, text: attachmentIcon },
-          {
-            bold: isNotOwner,
-            text: messageSenderText,
-          },
-          {
-            bold: false,
-            text: t('Voice message'),
-          },
-        ];
-      }
-
-      return [
-        { bold: false, text: attachmentIcon },
-        { bold: isNotOwner, text: messageSenderText },
-        {
-          bold: false,
-          text:
-            attachment?.type === FileTypes.Image
-              ? attachment?.fallback
-                ? attachment?.fallback
-                : 'N/A'
-              : attachment?.title
-                ? attachment?.title
-                : 'N/A',
-        },
-      ];
-    }
-  }
-
-  return [{ bold: false, text: t('Empty message...') }];
-};
-
 const textComposerStateSelector = (state: TextComposerState) => ({
   text: state.text,
 });
 
-const stateSelector = (state: AttachmentManagerState) => ({
+const attachmentManagerStateSelector = (state: AttachmentManagerState) => ({
   attachments: state.attachments,
 });
 
@@ -253,139 +51,86 @@ export const ThreadListItemComponent = () => {
     channel,
     dateString,
     deletedAtDateString,
+    draftMessage,
     lastReply,
     ownUnreadMessageCount,
     parentMessage,
     thread,
   } = useThreadListItemContext();
+  const online = useChannelPreviewDisplayPresence(channel);
   const displayName = useChannelPreviewDisplayName(channel);
   const { onThreadSelect } = useThreadsContext();
-  const { client } = useChatContext();
-  const { t } = useTranslationContext();
+  const { ThreadListItemMessagePreview, ThreadMessagePreviewDeliveryStatus } =
+    useComponentsContext();
   const {
-    theme: {
-      colors: { accent_red, text_low_emphasis, white },
-      threadListItem,
-    },
+    theme: { semantics },
   } = useTheme();
-  const { text: draftText } = useStateStore(
-    thread.messageComposer.textComposer.state,
-    textComposerStateSelector,
-  );
+  const styles = useStyles();
+  const { t } = useTranslationContext();
 
-  const { attachments } = useStateStore(
-    thread.messageComposer.attachmentManager.state,
-    stateSelector,
-  );
-
-  useEffect(() => {
-    const unsubscribe = thread.messageComposer.registerDraftEventSubscriptions();
-    return () => unsubscribe();
-  }, [thread.messageComposer]);
-
-  const draftMessage: DraftMessage | undefined = useMemo(
-    () =>
-      !thread.messageComposer.compositionIsEmpty
-        ? {
-            attachments,
-            id: thread.messageComposer.id,
-            text: draftText,
-          }
-        : undefined,
-    [thread.messageComposer, attachments, draftText],
-  );
-
-  const previews = useMemo(() => {
-    return getPreviewFromMessage({
-      currentUserId: client.userID,
-      draftMessage,
-      message: lastReply as LocalMessage,
-      t,
-    });
-  }, [client.userID, draftMessage, lastReply, t]);
-
-  const parentMessagePreview = useMemo(() => {
-    return [
-      {
-        bold: true,
-        text: `${t('replied to')}: `,
-      },
-      ...getPreviewFromMessage({
-        currentUserId: client.userID,
-        message: parentMessage as LocalMessage,
-        parentMessage: true,
-        t,
-      }),
-    ];
-  }, [client.userID, parentMessage, t]);
+  const shouldRenderPreview = !!draftMessage || !!lastReply;
 
   return (
-    <TouchableOpacity
-      onPress={() => {
-        if (onThreadSelect) {
-          onThreadSelect(
-            { thread: parentMessage as LocalMessage, threadInstance: thread },
-            channel,
-          );
-        }
-      }}
-      style={[styles.touchableWrapper, threadListItem.touchableWrapper]}
-      testID='thread-list-item'
-    >
-      <View style={[styles.headerRow, threadListItem.headerRow]}>
-        <MessageBubble />
-        <Text
-          numberOfLines={1}
-          style={[styles.boldText, { color: text_low_emphasis }, threadListItem.boldText]}
-        >
-          {displayName || 'N/A'}
-        </Text>
-      </View>
-      <View style={[styles.infoRow, threadListItem.infoRow]}>
-        <View
-          style={[
-            styles.parentMessagePreviewContainer,
-            threadListItem.parentMessagePreviewContainer,
-          ]}
-        >
-          <MessagePreview previews={parentMessagePreview} />
-        </View>
-        {ownUnreadMessageCount > 0 && !deletedAtDateString ? (
-          <View
-            style={[
-              styles.unreadBubbleWrapper,
-              { backgroundColor: accent_red },
-              threadListItem.unreadBubbleWrapper,
-            ]}
-          >
-            <Text style={[{ color: white }, threadListItem.unreadBubbleText]}>
-              {ownUnreadMessageCount}
+    <View style={styles.wrapper}>
+      <Pressable
+        onPress={() => {
+          if (onThreadSelect) {
+            onThreadSelect(
+              { thread: parentMessage as LocalMessage, threadInstance: thread },
+              channel,
+            );
+          }
+        }}
+        style={({ pressed }) => [
+          styles.container,
+          { backgroundColor: pressed ? semantics.backgroundUtilityPressed : 'transparent' },
+        ]}
+        testID='thread-list-item'
+      >
+        {lastReply?.user ? (
+          <UserAvatar user={lastReply?.user} size='xl' showOnlineIndicator={online} showBorder />
+        ) : null}
+
+        <View style={styles.content}>
+          <Text numberOfLines={1} style={styles.channelName}>
+            {displayName || 'N/A'}
+          </Text>
+          {shouldRenderPreview ? (
+            <View style={styles.previewMessageContainer}>
+              {!draftMessage ? (
+                <ThreadMessagePreviewDeliveryStatus
+                  channel={channel}
+                  message={parentMessage as LocalMessage}
+                />
+              ) : null}
+              <ThreadListItemMessagePreview message={parentMessage as LocalMessage} />
+            </View>
+          ) : null}
+          <View style={styles.lowerRow}>
+            <UserAvatarStack
+              users={parentMessage?.thread_participants || []}
+              avatarSize='sm'
+              maxVisible={3}
+              overlap={0.4}
+            />
+            <Text style={styles.messageRepliesText}>
+              {parentMessage?.reply_count === 1
+                ? t('1 Reply')
+                : t('{{ replyCount }} Replies', {
+                    replyCount: parentMessage?.reply_count,
+                  })}
             </Text>
+            <Text style={styles.dateText}>{deletedAtDateString ?? dateString}</Text>
+          </View>
+        </View>
+
+        {ownUnreadMessageCount > 0 && !deletedAtDateString ? (
+          <View style={styles.unreadBubbleWrapper}>
+            <BadgeNotification count={ownUnreadMessageCount} size='sm' />
           </View>
         ) : null}
-      </View>
-      <View style={[styles.contentRow, threadListItem.contentRow]}>
-        <Avatar
-          image={lastReply?.user?.image as string}
-          online={lastReply?.user?.online}
-          size={40}
-        />
-        <View style={[styles.contentTextWrapper, threadListItem.contentTextWrapper]}>
-          <Text style={[styles.boldText, { color: text_low_emphasis }, threadListItem.boldText]}>
-            {lastReply?.user?.name}
-          </Text>
-          <View style={[styles.headerRow, threadListItem.headerRow]}>
-            <View style={[styles.previewMessageContainer, threadListItem.previewMessageContainer]}>
-              <MessagePreview previews={previews} />
-            </View>
-
-            <Text style={[styles.dateText, { color: text_low_emphasis }, threadListItem.dateText]}>
-              {deletedAtDateString ?? dateString}
-            </Text>
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
+      </Pressable>
+    </View>
   );
 };
 
@@ -393,7 +138,15 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
   const { thread, timestampTranslationKey = 'timestamp/ThreadListItem' } = props;
-  const { ThreadListItem = ThreadListItemComponent } = useThreadsContext();
+  const { ThreadListItem: ThreadListItemOverride } = useComponentsContext();
+  const { text: draftText } = useStateStore(
+    thread.messageComposer.textComposer.state,
+    textComposerStateSelector,
+  );
+  const { attachments } = useStateStore(
+    thread.messageComposer.attachmentManager.state,
+    attachmentManagerStateSelector,
+  );
 
   const selector = useCallback(
     (nextValue: ThreadState) =>
@@ -414,6 +167,27 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   );
 
   const timestamp = lastReply?.created_at;
+
+  useEffect(() => {
+    const unsubscribe = thread.messageComposer.registerDraftEventSubscriptions();
+    return () => unsubscribe();
+  }, [thread.messageComposer]);
+
+  const draftMessage = useMemo<DraftMessage | undefined>(() => {
+    if (thread.messageComposer.compositionIsEmpty) {
+      return undefined;
+    }
+
+    if (!draftText && !attachments?.length) {
+      return undefined;
+    }
+
+    return {
+      attachments,
+      id: thread.messageComposer.id,
+      text: draftText ?? '',
+    };
+  }, [attachments, draftText, thread.messageComposer]);
 
   // TODO: Please rethink this, we have the same line of code in about 5 places in the SDK.
   const dateString = useMemo(
@@ -443,13 +217,82 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         channel,
         dateString,
         deletedAtDateString,
+        draftMessage,
         lastReply,
         ownUnreadMessageCount,
         parentMessage,
         thread,
       }}
     >
-      <ThreadListItem />
+      <ThreadListItemOverride />
     </ThreadListItemProvider>
+  );
+};
+
+const useStyles = () => {
+  const {
+    theme: { threadListItem, semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        wrapper: {
+          flex: 1,
+          padding: primitives.spacingXxs,
+          borderBottomWidth: 1,
+          borderBottomColor: semantics.borderCoreSubtle,
+          ...threadListItem.wrapper,
+        },
+        container: {
+          flexDirection: 'row',
+          gap: primitives.spacingSm,
+          padding: primitives.spacingSm,
+          borderRadius: primitives.radiusLg,
+          ...threadListItem.container,
+        },
+        channelName: {
+          color: semantics.textTertiary,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          textAlign: 'left',
+          ...threadListItem.channelName,
+        },
+        content: {
+          flex: 1,
+          gap: primitives.spacingXs,
+          ...threadListItem.content,
+        },
+        previewMessageContainer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: primitives.spacingXxs,
+          ...threadListItem.previewMessageContainer,
+        },
+        lowerRow: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: primitives.spacingXs,
+          ...threadListItem.lowerRow,
+        },
+        messageRepliesText: {
+          color: semantics.textLink,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          ...threadListItem.messageRepliesText,
+        },
+        dateText: {
+          color: semantics.textTertiary,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
+          ...threadListItem.dateText,
+        },
+        unreadBubbleWrapper: {
+          ...threadListItem.unreadBubbleWrapper,
+        },
+      }),
+    [semantics, threadListItem],
   );
 };

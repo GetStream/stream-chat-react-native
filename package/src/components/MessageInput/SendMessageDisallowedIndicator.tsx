@@ -1,49 +1,46 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderTopWidth: 1,
-    height: 50,
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 17,
-    fontWeight: '400',
-  },
-});
+import { primitives } from '../../theme';
 
 export const SendMessageDisallowedIndicator = () => {
   const { t } = useTranslationContext();
+
+  const styles = useStyles();
+
+  return (
+    <View style={styles.container} testID='send-message-disallowed-indicator'>
+      <Text style={styles.text}>{t("You can't send messages in this channel")}</Text>
+    </View>
+  );
+};
+
+const useStyles = () => {
   const {
     theme: {
-      colors: { border, grey_dark, white },
-      messageInput: {
+      semantics,
+      messageComposer: {
         sendMessageDisallowedIndicator: { container, text },
       },
     },
   } = useTheme();
-
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: white,
-          borderTopColor: border,
-          height: 50,
-        },
-        container,
-      ]}
-      testID='send-message-disallowed-indicator'
-    >
-      <Text style={[styles.text, { color: grey_dark }, text]}>
-        {t("You can't send messages in this channel")}
-      </Text>
-    </View>
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        backgroundColor: semantics.backgroundCoreApp,
+        borderTopColor: semantics.borderCoreDefault,
+        height: 48,
+        ...container,
+      },
+      text: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightNormal,
+        ...text,
+      },
+    });
+  }, [semantics, container, text]);
 };

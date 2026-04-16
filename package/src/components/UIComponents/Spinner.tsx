@@ -9,16 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Loading } from '../../icons/Loading';
-
-const styles = StyleSheet.create({
-  spinner: {
-    height: 16,
-    justifyContent: 'center',
-    margin: 5,
-    width: 16,
-  },
-});
+import { Loading } from '../../icons/loading';
 
 export type SpinnerProps = {
   height?: number;
@@ -31,10 +22,7 @@ export const Spinner = (props: SpinnerProps) => {
   const { height, style, width } = props;
 
   const {
-    theme: {
-      colors: { accent_blue },
-      spinner,
-    },
+    theme: { spinner, semantics },
   } = useTheme();
 
   const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
@@ -58,9 +46,23 @@ export const Spinner = (props: SpinnerProps) => {
 
   return (
     <Animated.View style={[style, styles.spinner, animatedStyle, spinner, { height, width }]}>
-      <Loading height={height} stopColor={accent_blue} width={width} />
+      <Loading
+        height={height}
+        startColor={semantics.accentPrimary}
+        stopColor={semantics.accentPrimary}
+        width={width}
+      />
     </Animated.View>
   );
 };
 
 Spinner.displayName = 'Spinner{spinner}';
+
+const styles = StyleSheet.create({
+  spinner: {
+    height: 16,
+    justifyContent: 'center',
+    margin: 5,
+    width: 16,
+  },
+});

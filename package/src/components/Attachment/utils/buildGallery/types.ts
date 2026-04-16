@@ -1,13 +1,12 @@
 import type { ImageResizeMode } from 'react-native';
 
 export type Thumbnail = {
-  height: number;
   resizeMode: ImageResizeMode;
   url: string;
-  width: number;
   id?: string;
   thumb_url?: string;
   type?: string;
+  flex?: number;
 };
 
 export type GallerySizeConfig = {

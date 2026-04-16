@@ -8,14 +8,13 @@ import {
   screen,
   userEvent,
   waitFor,
-  waitForElementToBeRemoved,
 } from '@testing-library/react-native';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { mergeThemes, ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateGiphyAttachment } from '../../../mock-builders/generator/attachment';
@@ -37,12 +36,14 @@ const streami18n = new Streami18n({
 });
 
 describe('Giphy', () => {
-  const getAttachmentComponent = (props) => {
+  const lightTheme = mergeThemes({ scheme: 'light' });
+
+  const getAttachmentComponent = (props, messageContextValue = {}) => {
     const message = generateMessage();
     return (
       <ThemeProvider>
         <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
-          <MessageProvider value={{ message }}>
+          <MessageProvider value={{ message, ...messageContextValue }}>
             <Giphy {...props} />
           </MessageProvider>
         </MessagesProvider>
@@ -116,6 +117,61 @@ describe('Giphy', () => {
     });
   });
 
+  it('uses the outgoing attachment background for outgoing giphys', async () => {
+    render(getAttachmentComponent({ attachment }, { isMyMessage: true }));
+
+    await waitFor(() => {
+      const style = screen.getByTestId('giphy-attachment').props.style;
+      expect(style).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            backgroundColor: lightTheme.semantics.chatBgAttachmentOutgoing,
+          }),
+        ]),
+      );
+    });
+  });
+
+  it('uses the incoming attachment background for incoming giphys', async () => {
+    render(getAttachmentComponent({ attachment }, { isMyMessage: false }));
+
+    await waitFor(() => {
+      const style = screen.getByTestId('giphy-attachment').props.style;
+      expect(style).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            backgroundColor: lightTheme.semantics.chatBgAttachmentIncoming,
+          }),
+        ]),
+      );
+    });
+  });
+
+  it('uses the outgoing bubble background for ephemeral giphy previews', async () => {
+    render(
+      getAttachmentComponent(
+        {
+          attachment: {
+            ...attachment,
+            actions,
+          },
+        },
+        { isMyMessage: false },
+      ),
+    );
+
+    await waitFor(() => {
+      const style = screen.getByTestId('giphy-action-attachment').props.style;
+      expect(style).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            backgroundColor: lightTheme.semantics.chatBgOutgoing,
+          }),
+        ]),
+      );
+    });
+  });
+
   it('"giphy" attachment size should be customisable', async () => {
     attachment.giphy = giphy;
     render(getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }));
@@ -130,7 +186,7 @@ describe('Giphy', () => {
         expect(imageProps.source.uri).toBe(specificSizedGiphyData.url);
       };
       checkImageProps(
-        screen.getByTestId('giphy-attachment-image').props,
+        screen.getByLabelText('Giphy Attachment Image').props,
         attachment.giphy.fixed_height,
       );
     });
@@ -146,7 +202,7 @@ describe('Giphy', () => {
         expect(imageProps.source.uri).toBe(specificSizedGiphyData.url);
       };
       checkImageProps(
-        screen.getByTestId('giphy-attachment-image').props,
+        screen.getByLabelText('Giphy Attachment Image').props,
         attachment.giphy.original,
       );
     });
@@ -321,7 +377,38 @@ describe('Giphy', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading-error')).toBeTruthy();
+      expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
+    });
+  });
+
+  it('should trigger long press on a failed giphy image indicator', async () => {
+    const onLongPress = jest.fn();
+
+    render(getAttachmentComponent({ attachment }, { onLongPress }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('giphy-attachment')).toBeTruthy();
+    });
+
+    act(() => {
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'error');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Image Loading Error Indicator')).toBeTruthy();
+    });
+
+    act(() => {
+      fireEvent(screen.getByLabelText('Image Loading Error Indicator'), 'longPress');
+    });
+
+    await waitFor(() => {
+      expect(onLongPress).toHaveBeenCalledTimes(1);
+      expect(onLongPress).toHaveBeenCalledWith(
+        expect.objectContaining({
+          emitter: 'failed-image',
+        }),
+      );
     });
   });
 
@@ -335,23 +422,21 @@ describe('Giphy', () => {
         </Chat>
       </OverlayProvider>,
     );
-    await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
-    });
-
     act(() => {
-      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoadStart');
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'loadStart');
     });
 
     await waitFor(() => {
-      expect(screen.getByAccessibilityHint('image-loading')).toBeTruthy();
+      expect(screen.getByLabelText('Image Loading Indicator')).toBeTruthy();
     });
 
     act(() => {
-      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'onLoad');
+      fireEvent(screen.getByLabelText('Giphy Attachment Image'), 'loadEnd');
     });
 
-    waitForElementToBeRemoved(() => screen.getByAccessibilityHint('image-loading'));
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Image Loading Indicator')).toBeNull();
+    });
 
     await waitFor(() => {
       expect(screen.getByLabelText('Giphy Attachment Image')).toBeTruthy();

@@ -1,9 +1,10 @@
 import React, { PropsWithChildren, useContext } from 'react';
+import type { View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
-import { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
+import type { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
 import type {
   MessagePressableHandlerPayload,
   PressableHandlerPayload,
@@ -14,7 +15,7 @@ import type { MessageContentType } from '../../contexts/messagesContext/Messages
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 
-import { MessageComposerAPIContextValue } from '../messageComposerContext/MessageComposerAPIContext';
+import type { MessageComposerAPIContextValue } from '../messageComposerContext/MessageComposerAPIContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type Alignment = 'right' | 'left';
@@ -39,13 +40,15 @@ export type MessageContextValue = {
   groupStyles: GroupType[];
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
   handleAction: ActionHandler;
+  /** Whether or not any message attachment exposes actions. */
+  hasAttachmentActions: boolean;
   handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
+  /** Whether or not message has only a single attachment */
+  messageHasOnlySingleAttachment: boolean;
   /** The images attached to a message */
   images: Attachment[];
-  /** Boolean that determines if the edited message is pressed. */
-  isEditedMessageOpen: boolean;
   /**
    * A factory function that determines whether a message is AI generated or not.
    */
@@ -56,6 +59,16 @@ export type MessageContextValue = {
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: LocalMessage;
+  /**
+   * Ref to the view that the message context menu should align with.
+   * Custom message renderers can attach this to a different subview if needed.
+   */
+  contextMenuAnchorRef: React.RefObject<View | null>;
+  /**
+   * Stable UI-instance identifier for the rendered message.
+   * Used for overlay state so two rendered instances of the same message do not collide.
+   */
+  messageOverlayId: string;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
@@ -92,14 +105,13 @@ export type MessageContextValue = {
   readBy: number | boolean;
   /** Delivery count of the message */
   deliveredToCount: number;
-  /** React set state function to set the state of `isEditedMessageOpen` */
-  setIsEditedMessageOpen: React.Dispatch<React.SetStateAction<boolean>>;
   /**
    * Function to show the menu with all the message actions.
    * @param showMessageReactions
    * @returns void
    */
-  showMessageOverlay: (showMessageReactions?: boolean, selectedReaction?: string) => void;
+  showMessageOverlay: () => void;
+  showReactionsOverlay: (selectedReaction?: string) => void;
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
@@ -113,11 +125,6 @@ export type MessageContextValue = {
    */
   handleReaction?: (reactionType: string) => Promise<void>;
   /**
-   * Latest message id on current channel
-   * @deprecated and will be removed in the future. This is pretty much accessible through the message-list itself.
-   */
-  lastReceivedId?: string;
-  /**
    * Theme provided only to messages that are the current users
    */
   myMessageTheme?: DeepPartial<Theme>;
@@ -125,6 +132,15 @@ export type MessageContextValue = {
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
+  /**
+   * Function to handle thread select
+   * @param message - The message to select
+   * @param targetedMessageId - The id of the targeted message
+   * @returns void
+   *
+   * TODO: V9: Change function params to an object
+   */
+  onThreadSelect?: (message: LocalMessage, targetedMessageId?: string) => void;
 } & Pick<ChannelContextValue, 'channel' | 'members'> &
   Pick<MessageComposerAPIContextValue, 'setQuotedMessage'>;
 

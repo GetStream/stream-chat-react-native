@@ -32,6 +32,7 @@ export type UsePollStateSelectorReturnType = {
   ownVotesByOptionId: Record<string, PollVote>;
   voteCountsByOption: Record<string, number>;
   votingVisibility: VotingVisibility | undefined;
+  voteCount: number;
 };
 
 export type UsePollStateReturnType = UsePollStateSelectorReturnType & {
@@ -56,6 +57,7 @@ const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
   ownVotesByOptionId: nextValue.ownVotesByOptionId,
   voteCountsByOption: nextValue.vote_counts_by_option,
   votingVisibility: nextValue.voting_visibility,
+  voteCount: nextValue.vote_count,
 });
 
 export const usePollState = (): UsePollStateReturnType => {
@@ -76,14 +78,14 @@ export const usePollState = (): UsePollStateReturnType => {
     ownVotesByOptionId,
     voteCountsByOption,
     votingVisibility,
+    voteCount,
   } = usePollStateStore(selector);
 
   const addOption = useCallback(
     async (optionText: string) => {
-      const { poll_option } = await poll.createOption({ text: optionText });
-      await poll.castVote(poll_option.id, message.id);
+      await poll.createOption({ text: optionText });
     },
-    [message, poll],
+    [poll],
   );
   const addComment = useCallback(
     (answerText: string) => poll.addAnswer(answerText, message.id),
@@ -110,5 +112,6 @@ export const usePollState = (): UsePollStateReturnType => {
     ownVotesByOptionId,
     voteCountsByOption,
     votingVisibility,
+    voteCount,
   };
 };

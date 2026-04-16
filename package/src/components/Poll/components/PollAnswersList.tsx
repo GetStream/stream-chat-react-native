@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, type FlatListProps, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
 import { PollAnswer, VotingVisibility } from 'stream-chat';
 
@@ -9,12 +9,16 @@ import { PollInputDialog } from './PollInputDialog';
 import {
   PollContextProvider,
   PollContextValue,
+  useChatContext,
   usePollContext,
   useTheme,
   useTranslationContext,
 } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { primitives } from '../../../theme';
 import { getDateString } from '../../../utils/i18n/getDateString';
-import { Avatar } from '../../Avatar/Avatar';
+import { Button } from '../../ui';
+import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
 import { usePollState } from '../hooks/usePollState';
 
@@ -25,6 +29,8 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
   const { onPress } = props;
 
+  const styles = useStyles();
+
   const onPressHandler = useCallback(() => {
     if (onPress) {
       onPress({ message, poll });
@@ -34,61 +40,46 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
     setShowAddCommentDialog(true);
   }, [message, onPress, poll]);
 
-  const {
-    theme: {
-      colors: { accent_dark_blue, bg_user },
-      poll: {
-        answersList: { buttonContainer },
-        button: { text },
-      },
-    },
-  } = useTheme();
-
   return (
-    <>
-      <Pressable
+    <View style={styles.inlineButton}>
+      <Button
+        variant={'secondary'}
+        type={'ghost'}
+        size={'lg'}
+        label={ownAnswer ? t('Update your comment') : t('Add a comment')}
         onPress={onPressHandler}
-        style={({ pressed }) => [
-          { opacity: pressed ? 0.5 : 1 },
-          styles.addCommentButtonContainer,
-          { backgroundColor: bg_user },
-          buttonContainer,
-        ]}
-      >
-        <Text style={[styles.addCommentButtonText, { color: accent_dark_blue }, text]}>
-          {ownAnswer ? t('Update your comment') : t('Add a comment')}
-        </Text>
-      </Pressable>
+      />
       {showAddCommentDialog ? (
         <PollInputDialog
           closeDialog={() => setShowAddCommentDialog(false)}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
+          placeholder={t('Your comment')}
           title={t('Add a comment')}
           visible={showAddCommentDialog}
         />
       ) : null}
-    </>
+    </View>
   );
 };
 
 export type PollAnswersListProps = PollContextValue & {
   additionalFlatListProps?: Partial<FlatListProps<PollAnswer>>;
-  PollAnswersListContent?: React.ComponentType;
 };
 
 export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
+  const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
   const { votingVisibility } = usePollState();
 
   const {
     theme: {
-      colors: { bg_user, black },
       poll: {
         answersList: { item: itemStyle },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const dateString = useMemo(
     () =>
@@ -101,27 +92,32 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
     [answer.updated_at, t, tDateTimeParser],
   );
 
+  const isMyAnswer = client.userID === answer.user?.id;
+
   const isAnonymous = useMemo(
-    () => votingVisibility === VotingVisibility.anonymous,
-    [votingVisibility],
+    () => votingVisibility === VotingVisibility.anonymous && !isMyAnswer,
+    [votingVisibility, isMyAnswer],
   );
 
+  const answerAuthorName = isMyAnswer ? t('You') : answer.user?.name;
+
   return (
-    <View style={[styles.listItemContainer, { backgroundColor: bg_user }, itemStyle.container]}>
-      <Text style={[styles.listItemAnswerText, { color: black }, itemStyle.answerText]}>
-        {answer.answer_text}
-      </Text>
-      <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
-        <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
-          {!isAnonymous && answer.user?.image ? (
-            <Avatar image={answer.user?.image as string} size={20} />
-          ) : null}
-          <Text style={{ color: black, fontSize: 14, marginLeft: 2 }}>
-            {isAnonymous ? t('Anonymous') : answer.user?.name}
-          </Text>
+    <View style={[styles.listItemWrapper, itemStyle.wrapper]}>
+      <View style={[styles.listItemContainer, itemStyle.container]}>
+        <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>{answer.answer_text}</Text>
+        <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
+          <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
+            {!isAnonymous && answer.user?.image ? (
+              <UserAvatar user={answer.user} size='sm' showBorder />
+            ) : null}
+            <Text style={styles.listItemInfoUserName}>
+              {isAnonymous ? t('Anonymous') : answerAuthorName}
+            </Text>
+            <Text style={styles.listItemInfoDate}>{dateString}</Text>
+          </View>
         </View>
-        <Text style={{ color: black }}>{dateString}</Text>
       </View>
+      {isMyAnswer ? <AnswerListAddCommentButton /> : null}
     </View>
   );
 };
@@ -136,23 +132,23 @@ export const PollAnswersListContent = ({
   const { hasNextPage, loadMore, pollAnswers } = usePollAnswersPagination();
   const {
     theme: {
-      colors: { white },
       poll: {
-        answersList: { container },
+        answersList: { container, contentContainer },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, { backgroundColor: white }, container]}>
+    <View style={[styles.container, container]}>
       <FlatList
         data={pollAnswers}
         keyExtractor={(item) => `poll_answer_${item.id}`}
+        contentContainerStyle={[styles.contentContainer, contentContainer]}
         onEndReached={() => hasNextPage && loadMore()}
         renderItem={renderPollAnswerListItem}
         {...additionalFlatListProps}
       />
-      <AnswerListAddCommentButton />
     </View>
   );
 };
@@ -161,34 +157,65 @@ export const PollAnswersList = ({
   additionalFlatListProps,
   message,
   poll,
-  PollAnswersListContent: PollAnswersListOverride,
-}: PollAnswersListProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollAnswersListOverride ? (
-      <PollAnswersListOverride />
-    ) : (
-      <PollAnswersListContent additionalFlatListProps={additionalFlatListProps} />
-    )}
-  </PollContextProvider>
-);
+}: PollAnswersListProps) => {
+  const { PollAnswersListContent: PollAnswersListContentComponent } = useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollAnswersListContentComponent additionalFlatListProps={additionalFlatListProps} />
+    </PollContextProvider>
+  );
+};
 
-const styles = StyleSheet.create({
-  addCommentButtonContainer: {
-    alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  addCommentButtonText: { fontSize: 16 },
-  container: { flex: 1, margin: 16 },
-  listItemAnswerText: { fontSize: 16, fontWeight: '500' },
-  listItemContainer: {
-    borderRadius: 12,
-    marginBottom: 8,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-  },
-  listItemInfoContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 24 },
-  listItemUserInfoContainer: { alignItems: 'center', flexDirection: 'row' },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        contentContainer: { gap: primitives.spacingMd, padding: primitives.spacingMd },
+        container: {
+          flex: 1,
+          backgroundColor: semantics.backgroundCoreElevation1,
+        },
+        listItemAnswerText: {
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
+        },
+        listItemWrapper: {
+          borderRadius: primitives.radiusLg,
+          backgroundColor: semantics.backgroundCoreSurfaceCard,
+        },
+        listItemContainer: {
+          padding: primitives.spacingMd,
+          gap: primitives.spacingXs,
+        },
+        listItemInfoContainer: {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        },
+        listItemInfoUserName: {
+          color: semantics.chatTextUsername,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+        },
+        listItemInfoDate: {
+          fontSize: primitives.typographyFontSizeSm,
+          color: semantics.textTertiary,
+        },
+        listItemUserInfoContainer: {
+          gap: primitives.spacingXs,
+          alignItems: 'center',
+          flexDirection: 'row',
+        },
+        inlineButton: {
+          borderColor: semantics.borderCoreDefault,
+          borderTopWidth: 1,
+        },
+      }),
+    [semantics],
+  );
+};

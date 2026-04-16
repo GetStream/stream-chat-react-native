@@ -46,14 +46,15 @@ export type AudioPlayerOptions = AudioDescriptor & {
 export class AudioPlayer {
   state: StateStore<AudioPlayerState>;
   playerRef: SoundReturnType | null = null;
+  private initRequestId = 0;
   private _id: string;
   private type: 'voiceRecording' | 'audio';
   private isExpoCLI: boolean;
   private _pool: AudioPlayerPool | null = null;
 
   /**
-   * This is a temporary flag to manage audio player for voice recording in preview as the one in message list uses react-native-video.
-   * We can get rid of this when we migrate to the react-native-nitro-sound everywhere.
+   * This keeps the composer preview on the recorder-backed player until preview
+   * and attachment playback are fully unified under the same sound service.
    */
   private previewVoiceRecording?: boolean;
 
@@ -72,11 +73,13 @@ export class AudioPlayer {
     this.initPlayer({ uri: options.uri });
   }
 
-  // Initialize the expo player
-  // In the future we will also initialize the native cli player here.
   initPlayer = async ({ uri, playerRef }: { uri?: string; playerRef?: SoundReturnType }) => {
+    const requestId = ++this.initRequestId;
+
     if (playerRef) {
-      this.playerRef = playerRef;
+      if (requestId === this.initRequestId) {
+        this.playerRef = playerRef;
+      }
       return;
     }
     if (this.previewVoiceRecording) {
@@ -92,16 +95,27 @@ export class AudioPlayer {
       }
       return;
     }
-    if (!this.isExpoCLI || !uri) {
+    if (!uri || !NativeHandlers.Sound?.initializeSound) {
       return;
     }
-    if (NativeHandlers.Sound?.initializeSound) {
-      this.playerRef = await NativeHandlers.Sound?.initializeSound(
-        { uri },
-        DEFAULT_PLAYER_SETTINGS,
-        this.onPlaybackStatusUpdate,
-      );
+
+    const player = await NativeHandlers.Sound.initializeSound(
+      { uri },
+      DEFAULT_PLAYER_SETTINGS,
+      this.onPlaybackStatusUpdate,
+    );
+
+    if (requestId !== this.initRequestId) {
+      if (player?.stopAsync) {
+        player.stopAsync();
+      }
+      if (player?.unloadAsync) {
+        player.unloadAsync();
+      }
+      return;
     }
+
+    this.playerRef = player;
   };
 
   private onVoiceRecordingPreviewPlaybackStatusUpdate = async (playbackStatus: PlaybackStatus) => {
@@ -309,26 +323,28 @@ export class AudioPlayer {
   }
 
   async seek(positionInSeconds: number) {
+    const positionInMillis = positionInSeconds * 1000;
+
     if (this.previewVoiceRecording) {
-      this.position = positionInSeconds;
+      this.position = positionInMillis;
       if (NativeHandlers.Audio?.seekToPlayer) {
-        NativeHandlers.Audio.seekToPlayer(positionInSeconds * 1000);
+        await NativeHandlers.Audio.seekToPlayer(positionInMillis);
       }
       return;
     }
     if (!this.playerRef) {
       return;
     }
-    this.position = positionInSeconds;
+    this.position = positionInMillis;
     if (this.isExpoCLI) {
-      if (positionInSeconds === 0) {
+      if (positionInMillis === 0) {
         // If currentTime is 0, we should replay the video from 0th position.
         if (this.playerRef?.replayAsync) {
           await this.playerRef.replayAsync({});
         }
       } else {
         if (this.playerRef?.setPositionAsync) {
-          await this.playerRef.setPositionAsync(positionInSeconds);
+          await this.playerRef.setPositionAsync(positionInMillis);
         }
       }
     } else {
@@ -345,6 +361,8 @@ export class AudioPlayer {
   }
 
   onRemove() {
+    this.initRequestId += 1;
+
     if (this.previewVoiceRecording) {
       if (NativeHandlers.Audio?.stopPlayer) {
         NativeHandlers.Audio.stopPlayer();
@@ -356,12 +374,15 @@ export class AudioPlayer {
       });
       return;
     }
-    if (this.isExpoCLI) {
-      if (this.playerRef?.stopAsync && this.playerRef.unloadAsync) {
-        this.playerRef.stopAsync();
-        this.playerRef.unloadAsync();
-      }
+
+    if (this.playerRef?.stopAsync) {
+      this.playerRef.stopAsync();
     }
+
+    if (this.playerRef?.unloadAsync) {
+      this.playerRef.unloadAsync();
+    }
+
     this.playerRef = null;
     this.state.partialNext({
       ...INITIAL_STATE,

@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
-import { useSharedValue } from 'react-native-reanimated';
+import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
 
-import { PollComposerState, VotingVisibility } from 'stream-chat';
+import { PollComposerState, StateStore, VotingVisibility } from 'stream-chat';
 
 import { CreatePollOptions, CurrentOptionPositionsCache } from './components';
 
@@ -13,16 +13,18 @@ import { MultipleAnswersField } from './components/MultipleAnswersField';
 import { NameField } from './components/NameField';
 
 import {
+  CreatePollModalState,
   CreatePollContentContextValue,
   CreatePollContentProvider,
-  InputMessageInputContextValue,
   useCreatePollContentContext,
   useTheme,
   useTranslationContext,
 } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
-import { POLL_OPTION_HEIGHT } from '../../utils/constants';
+import { primitives } from '../../theme';
+import { useRtlMirrorSwitchStyle } from '../../utils/rtlMirrorSwitchStyle';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   options: state.data.options,
@@ -39,45 +41,76 @@ export const CreatePollContent = () => {
   const { pollComposer } = messageComposer;
   const { options } = useStateStore(pollComposer.state, pollComposerStateSelector);
 
-  const { createPollOptionHeight, closePollCreationDialog, createAndSendPoll } =
-    useCreatePollContentContext();
+  const {
+    createPollOptionGap = 8,
+    closePollCreationDialog,
+    createAndSendPoll,
+  } = useCreatePollContentContext();
+  const normalizedCreatePollOptionGap =
+    Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
+  const optionIdsKey = useMemo(() => options.map((option) => option.id).join('|'), [options]);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   // positions and index lookup map
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
   const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
     inverseIndexCache: {},
     positionCache: {},
+    totalHeight: 0,
   });
 
   const {
     theme: {
-      colors: { bg_user, black, white },
       poll: {
-        createContent: { addComment, anonymousPoll, scrollView, suggestOption },
+        createContent: { addComment, anonymousPoll, optionCardWrapper, scrollView, suggestOption },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   useEffect(() => {
-    if (!createPollOptionHeight) return;
+    const latestOptions = optionsRef.current;
+    const currentPositions = currentOptionPositions.value;
+    const isCacheAlignedWithOptions =
+      latestOptions.length === Object.keys(currentPositions.inverseIndexCache).length &&
+      latestOptions.every(
+        (option, index) =>
+          currentPositions.inverseIndexCache[index] === option.id &&
+          currentPositions.positionCache[option.id] !== undefined,
+      );
+
+    // Avoid overwriting freshly measured heights/tops from CreatePollOptions onLayout.
+    // We only need this effect when options ids/order introduced missing cache entries.
+    if (isCacheAlignedWithOptions) {
+      return;
+    }
+
+    const previousPositionCache = currentOptionPositions.value.positionCache;
     const newCurrentOptionPositions: CurrentOptionPositionsCache = {
       inverseIndexCache: {},
       positionCache: {},
+      totalHeight: 0,
     };
-    options.forEach((option, index) => {
+    let runningTop = 0;
+    latestOptions.forEach((option, index) => {
+      const preservedHeight = previousPositionCache[option.id]?.updatedHeight ?? 0;
       newCurrentOptionPositions.inverseIndexCache[index] = option.id;
       newCurrentOptionPositions.positionCache[option.id] = {
+        updatedHeight: preservedHeight,
         updatedIndex: index,
-        updatedTop: index * createPollOptionHeight,
+        updatedTop: runningTop,
       };
+      const gap = index === latestOptions.length - 1 ? 0 : normalizedCreatePollOptionGap;
+      runningTop += preservedHeight + gap;
+      newCurrentOptionPositions.totalHeight = runningTop;
     });
     currentOptionPositions.value = newCurrentOptionPositions;
-  }, [createPollOptionHeight, currentOptionPositions, options]);
+  }, [currentOptionPositions, normalizedCreatePollOptionGap, optionIdsKey]);
 
   const onBackPressHandler = useCallback(() => {
-    pollComposer.initState();
     closePollCreationDialog?.();
-  }, [pollComposer, closePollCreationDialog]);
+  }, [closePollCreationDialog]);
 
   const onCreatePollPressHandler = useCallback(async () => {
     await createAndSendPoll();
@@ -116,37 +149,62 @@ export const CreatePollContent = () => {
         onCreatePollPressHandler={onCreatePollPressHandler}
       />
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 70 }}
-        style={[styles.scrollView, { backgroundColor: white }, scrollView]}
+        contentContainerStyle={styles.contentContainerStyle}
+        style={[styles.scrollView, scrollView]}
       >
         <NameField />
         <CreatePollOptions currentOptionPositions={currentOptionPositions} />
-        <MultipleAnswersField />
-        <View
-          style={[styles.textInputWrapper, { backgroundColor: bg_user }, anonymousPoll.wrapper]}
+        <Animated.View
+          layout={LinearTransition.duration(200)}
+          style={[styles.optionCardWrapper, optionCardWrapper]}
         >
-          <Text style={[styles.text, { color: black }, anonymousPoll.title]}>
-            {t('Anonymous poll')}
-          </Text>
-          <Switch onValueChange={onAnonymousPollChangeHandler} value={isAnonymousPoll} />
-        </View>
-        <View
-          style={[styles.textInputWrapper, { backgroundColor: bg_user }, suggestOption.wrapper]}
-        >
-          <Text style={[styles.text, { color: black }, suggestOption.title]}>
-            {t('Suggest an option')}
-          </Text>
-          <Switch
-            onValueChange={onAllowUserSuggestedOptionsChangeHandler}
-            value={allowUserSuggestedOptions}
-          />
-        </View>
-        <View style={[styles.textInputWrapper, { backgroundColor: bg_user }, addComment.wrapper]}>
-          <Text style={[styles.text, { color: black }, addComment.title]}>
-            {t('Add a comment')}
-          </Text>
-          <Switch onValueChange={onAllowAnswersChangeHandler} value={allowAnswers} />
-        </View>
+          <MultipleAnswersField />
+          <Animated.View
+            layout={LinearTransition.duration(200)}
+            style={[styles.optionCardWrapper, optionCardWrapper]}
+          >
+            <View style={[styles.optionCard, anonymousPoll.wrapper]}>
+              <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
+                <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous voting')}</Text>
+                <Text style={[styles.description, anonymousPoll.description]}>Hide who voted</Text>
+              </View>
+
+              <Switch
+                onValueChange={onAnonymousPollChangeHandler}
+                value={isAnonymousPoll}
+                style={[styles.optionCardSwitch, anonymousPoll.optionCardSwitch]}
+              />
+            </View>
+            <View style={[styles.optionCard, suggestOption.wrapper]}>
+              <View style={[styles.optionCardContent, suggestOption.optionCardContent]}>
+                <Text style={[styles.title, suggestOption.title]}>{t('Suggest an option')}</Text>
+                <Text style={[styles.description, suggestOption.description]}>
+                  Let others add options
+                </Text>
+              </View>
+
+              <Switch
+                onValueChange={onAllowUserSuggestedOptionsChangeHandler}
+                value={allowUserSuggestedOptions}
+                style={[styles.optionCardSwitch, suggestOption.optionCardSwitch]}
+              />
+            </View>
+            <View style={[styles.optionCard, addComment.wrapper]}>
+              <View style={[styles.optionCardContent, addComment.optionCardContent]}>
+                <Text style={[styles.title, addComment.title]}>{t('Add a comment')}</Text>
+                <Text style={[styles.description, addComment.description]}>
+                  Add a comment to the poll
+                </Text>
+              </View>
+
+              <Switch
+                onValueChange={onAllowAnswersChangeHandler}
+                value={allowAnswers}
+                style={[styles.optionCardSwitch, addComment.optionCardSwitch]}
+              />
+            </View>
+          </Animated.View>
+        </Animated.View>
       </ScrollView>
     </>
   );
@@ -154,49 +212,116 @@ export const CreatePollContent = () => {
 
 export const CreatePoll = ({
   closePollCreationDialog,
-  CreatePollContent: CreatePollContentOverride,
-  createPollOptionHeight = POLL_OPTION_HEIGHT,
+  createPollOptionGap = 8,
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
-  'createPollOptionHeight' | 'closePollCreationDialog' | 'sendMessage'
-> &
-  Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
+  'createPollOptionGap' | 'closePollCreationDialog' | 'sendMessage'
+>) => {
+  const { CreatePollContent: CreatePollContentOverride } = useComponentsContext();
   const messageComposer = useMessageComposer();
+  const [modalStateStore] = useState(
+    () => new StateStore<CreatePollModalState>({ isClosing: false }),
+  );
+  const closeFrameRef = useRef<number | null>(null);
+
+  const closeCreatePollDialog = useCallback(() => {
+    if (closeFrameRef.current !== null || modalStateStore.getLatestValue().isClosing) {
+      return;
+    }
+
+    // Let the modal render once with exit animations disabled before we dismiss it.
+    modalStateStore.partialNext({ isClosing: true });
+    closeFrameRef.current = requestAnimationFrame(() => {
+      closeFrameRef.current = null;
+      closePollCreationDialog?.();
+    });
+  }, [closePollCreationDialog, modalStateStore]);
+
+  useEffect(() => {
+    return () => {
+      if (closeFrameRef.current !== null) {
+        cancelAnimationFrame(closeFrameRef.current);
+      }
+      // Reset after teardown so poll field exit animations do not delay modal dismissal.
+      messageComposer.pollComposer.initState();
+    };
+  }, [messageComposer]);
 
   const createAndSendPoll = useCallback(async () => {
     try {
       await messageComposer.createPoll();
       await sendMessage();
-      closePollCreationDialog?.();
-      // it's important that the reset of the pollComposer state happens
-      // after we've already closed the modal; as otherwise we'd get weird
-      // UI behaviour.
-      messageComposer.pollComposer.initState();
+      closeCreatePollDialog();
     } catch (error) {
       console.log('Error creating a poll and sending a message:', error);
     }
-  }, [messageComposer, sendMessage, closePollCreationDialog]);
+  }, [closeCreatePollDialog, messageComposer, sendMessage]);
 
   return (
     <CreatePollContentProvider
-      value={{ closePollCreationDialog, createAndSendPoll, createPollOptionHeight, sendMessage }}
+      value={{
+        closePollCreationDialog: closeCreatePollDialog,
+        createAndSendPoll,
+        createPollOptionGap,
+        modalStateStore,
+        sendMessage,
+      }}
     >
       {CreatePollContentOverride ? <CreatePollContentOverride /> : <CreatePollContent />}
     </CreatePollContentProvider>
   );
 };
 
-const styles = StyleSheet.create({
-  scrollView: { flex: 1, padding: 16 },
-  text: { fontSize: 16 },
-  textInputWrapper: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
+  return useMemo(() => {
+    return StyleSheet.create({
+      scrollView: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreElevation1,
+      },
+      contentContainerStyle: {
+        alignItems: 'stretch',
+        padding: primitives.spacingMd,
+        paddingBottom: 70,
+        width: '100%',
+      },
+      title: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
+      },
+      description: {
+        color: semantics.textTertiary,
+        fontSize: primitives.typographyFontSizeSm,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
+      },
+      optionCardContent: {
+        gap: primitives.spacingXxs,
+        flex: 1,
+        alignItems: 'flex-start',
+      },
+      optionCard: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+        padding: primitives.spacingMd,
+        borderRadius: primitives.radiusLg,
+      },
+      optionCardWrapper: {
+        gap: primitives.spacingMd,
+      },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
+    });
+  }, [rtlMirrorSwitchStyle, semantics]);
+};

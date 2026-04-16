@@ -1,40 +1,47 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 8,
-    height: 16,
-    justifyContent: 'center',
-    marginTop: 8,
-    paddingHorizontal: 8,
-  },
-  text: {
-    fontSize: 12,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-  },
-});
+import { primitives } from '../../theme';
 
 export type DateHeaderProps = {
   dateString?: string | number;
 };
 
 export const DateHeader = ({ dateString }: DateHeaderProps) => {
+  const styles = useStyles();
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>{dateString}</Text>
+    </View>
+  );
+};
+
+const useStyles = () => {
   const {
     theme: {
-      colors: { overlay, white },
+      semantics,
       dateHeader: { container, text },
     },
   } = useTheme();
-
-  return (
-    <View style={[styles.container, { backgroundColor: overlay }, container]}>
-      <Text style={[styles.text, { color: white }, text]}>{dateString}</Text>
-    </View>
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        alignSelf: 'center',
+        borderRadius: primitives.radiusMax,
+        paddingHorizontal: primitives.spacingSm,
+        paddingVertical: primitives.spacingXxs,
+        backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+        ...container,
+      },
+      text: {
+        color: semantics.chatTextSystem,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightTight,
+        ...text,
+      },
+    });
+  }, [semantics, container, text]);
 };

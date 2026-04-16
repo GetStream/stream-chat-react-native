@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
-import { MessageComposer } from 'stream-chat';
+import { MessageComposer as StreamMessageComposer } from 'stream-chat';
 
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import * as UseMessageComposerHooks from '../../../contexts/messageInputContext/hooks/useMessageComposer';
@@ -16,20 +16,28 @@ import { generateLocalFileUploadAttachmentData } from '../../../mock-builders/at
 
 import { generateMessage } from '../../../mock-builders/generator/message';
 
+import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
+import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
+import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-import { MessageInput } from '../MessageInput';
+import { MessageComposer } from '../MessageComposer';
 
 jest.spyOn(Alert, 'alert');
 jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
-  jest.fn(() => ({
-    closePicker: jest.fn(),
-    openPicker: jest.fn(),
-    selectedPicker: 'images',
-    setBottomInset: jest.fn(),
-    setSelectedPicker: jest.fn(),
-    setTopInset: jest.fn(),
-  })),
+  jest.fn(() => {
+    const attachmentPickerStore = new AttachmentPickerStore();
+    attachmentPickerStore.setSelectedPicker('images');
+    return {
+      AttachmentPickerSelectionBar,
+      AttachmentPickerContent,
+      closePicker: jest.fn(),
+      openPicker: jest.fn(),
+      setBottomInset: jest.fn(),
+      setTopInset: jest.fn(),
+      attachmentPickerStore,
+    };
+  }),
 );
 
 const renderComponent = ({ channelProps, client, props }) => {
@@ -37,7 +45,7 @@ const renderComponent = ({ channelProps, client, props }) => {
     <OverlayProvider>
       <Chat client={client}>
         <Channel {...channelProps}>
-          <MessageInput {...props} />
+          <MessageComposer {...props} />
         </Channel>
       </Chat>
     </OverlayProvider>,
@@ -48,7 +56,7 @@ const editedMessageSetup = async ({ composerConfig, composition } = {}) => {
   const { client: chatClient, channels } = await initiateClientWithChannels();
   const channel = channels[0];
 
-  const messageComposer = new MessageComposer({
+  const messageComposer = new StreamMessageComposer({
     client: chatClient,
     composition,
     compositionContext: composition,

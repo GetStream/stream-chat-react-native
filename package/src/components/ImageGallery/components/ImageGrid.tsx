@@ -1,143 +1,90 @@
-import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+
+import type { ImageGalleryGridProps } from './types';
 
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { useViewport } from '../../../hooks/useViewport';
+import type {
+  ImageGalleryAsset,
+  ImageGalleryState,
+} from '../../../state-store/image-gallery-state-store';
+import { primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
-import { BottomSheetFlatList } from '../../BottomSheetCompatibility/BottomSheetFlatList';
-import { BottomSheetTouchableOpacity } from '../../BottomSheetCompatibility/BottomSheetTouchableOpacity';
-
-import type { Photo } from '../ImageGallery';
-
-const styles = StyleSheet.create({
-  avatarImage: {
-    borderRadius: 22,
-    height: 22,
-    width: 22,
-  },
-  avatarImageWrapper: {
-    borderRadius: 24,
-    borderWidth: 1,
-    height: 24,
-    margin: 8,
-    width: 24,
-  },
-  contentContainer: {
-    flexGrow: 1,
-  },
-  image: {
-    margin: 1,
-  },
-});
+import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 
 export type ImageGalleryGridImageComponent = ({
   item,
 }: {
-  item: Photo & {
+  item: ImageGalleryAsset & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
   };
 }) => React.ReactElement | null;
 
-export type ImageGalleryGridImageComponents = {
-  avatarComponent?: ImageGalleryGridImageComponent;
-  imageComponent?: ImageGalleryGridImageComponent;
+export type GridImageItem = ImageGalleryAsset & {
+  selectAndClose: () => void;
+  numberOfImageGalleryGridColumns?: number;
 };
 
-export type GridImageItem = Photo &
-  ImageGalleryGridImageComponents & {
-    selectAndClose: () => void;
-    numberOfImageGalleryGridColumns?: number;
-  };
-
 const GridImage = ({ item }: { item: GridImageItem }) => {
-  const {
-    theme: {
-      imageGallery: {
-        grid: { gridImage },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
   const { vw } = useViewport();
-  const { imageComponent, ...restItem } = item;
+  const { ...restItem } = item;
 
   const { numberOfImageGalleryGridColumns, selectAndClose, thumb_url, type, uri } = restItem;
 
   const size = vw(100) / (numberOfImageGalleryGridColumns || 3) - 2;
 
-  if (imageComponent) {
-    return imageComponent({ item: restItem });
-  }
-
   return (
-    <BottomSheetTouchableOpacity accessibilityLabel='Grid Image' onPress={selectAndClose}>
+    <Pressable accessibilityLabel='Grid Image' onPress={selectAndClose}>
       {type === FileTypes.Video ? (
-        <View style={[styles.image, { height: size, width: size }, gridImage]}>
+        <View style={[styles.image, { height: size, width: size }]}>
           <VideoThumbnail thumb_url={thumb_url} />
         </View>
       ) : (
         <Image source={{ uri }} style={[styles.image, { height: size, width: size }]} />
       )}
-    </BottomSheetTouchableOpacity>
+    </Pressable>
   );
 };
 
 const renderItem = ({ item }: { item: GridImageItem }) => <GridImage item={item} />;
 
-export type ImageGridType = ImageGalleryGridImageComponents & {
-  closeGridView: () => void;
-  photos: Photo[];
-  setSelectedMessage: React.Dispatch<
-    React.SetStateAction<
-      | {
-          messageId?: string | undefined;
-          url?: string | undefined;
-        }
-      | undefined
-    >
-  >;
-  numberOfImageGalleryGridColumns?: number;
-};
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  assets: state.assets,
+});
 
-export const ImageGrid = (props: ImageGridType) => {
-  const {
-    avatarComponent,
-    closeGridView,
-    imageComponent,
-    numberOfImageGalleryGridColumns,
-    photos,
-    setSelectedMessage,
-  } = props;
+export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
+  const { closeGridView, numberOfImageGalleryGridColumns } = props;
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { assets } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
   const {
     theme: {
-      colors: { white },
       imageGallery: {
-        grid: { container, contentContainer },
+        grid: { container },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
-  const imageGridItems = photos.map((photo) => ({
+  const imageGridItems = assets.map((photo, index) => ({
     ...photo,
-    avatarComponent,
-    imageComponent,
     numberOfImageGalleryGridColumns,
     selectAndClose: () => {
-      setSelectedMessage({ messageId: photo.messageId, url: photo.uri });
+      imageGalleryStateStore.currentIndex = index;
       closeGridView();
     },
   }));
 
   return (
-    <BottomSheetFlatList<GridImageItem>
+    <StreamBottomSheetModalFlatList<GridImageItem>
       accessibilityLabel='Image Grid'
-      contentContainerStyle={[
-        styles.contentContainer,
-        { backgroundColor: white },
-        contentContainer,
-      ]}
+      contentContainerStyle={styles.contentContainer}
       data={imageGridItems as GridImageItem[]}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}
@@ -147,4 +94,26 @@ export const ImageGrid = (props: ImageGridType) => {
   );
 };
 
-ImageGrid.displayName = 'ImageGrid{imageGallery{grid}}';
+ImageGalleryGrid.displayName = 'ImageGalleryGrid{imageGallery{grid}}';
+
+const useStyles = () => {
+  const {
+    theme: {
+      imageGallery: {
+        grid: { contentContainer, gridImage },
+      },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      contentContainer: {
+        flexGrow: 1,
+        backgroundColor: semantics.backgroundCoreApp,
+        marginTop: primitives.spacingSm,
+        ...contentContainer,
+      },
+      image: { margin: 1, ...gridImage },
+    });
+  }, [contentContainer, gridImage, semantics]);
+};

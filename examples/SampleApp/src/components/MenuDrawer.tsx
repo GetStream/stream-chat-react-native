@@ -1,19 +1,25 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  I18nManager,
   Image,
+  Pressable,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
-  Pressable,
   View,
 } from 'react-native';
-import { Edit, Group, User, useTheme } from 'stream-chat-react-native';
+import { Edit, useTheme } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { SecretMenu } from './SecretMenu.tsx';
 
 import type { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Group } from '../icons/Group.tsx';
+import { User } from '../icons/User';
+import { useLegacyColors } from '../theme/useLegacyColors';
+import { useRtlMirrorSwitchStyle } from '../utils/rtlMirrorSwitchStyle';
 
 export const styles = StyleSheet.create({
   avatar: {
@@ -35,15 +41,39 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
+  menuItemContent: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+  },
   menuTitle: {
     fontSize: 14,
     fontWeight: '500',
-    marginLeft: 16,
+    marginStart: 16,
+  },
+  rtlDescription: {
+    fontSize: 12,
+    marginStart: 16,
+    marginTop: 2,
+  },
+  rtlMenuItem: {
+    justifyContent: 'space-between',
+  },
+  rtlMenuItemContent: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+  },
+  rtlTextContainer: {
+    flex: 1,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
   },
   userName: {
     fontSize: 16,
     fontWeight: '600',
-    marginLeft: 16,
+    marginStart: 16,
   },
   userRow: {
     alignItems: 'center',
@@ -55,12 +85,9 @@ export const styles = StyleSheet.create({
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   const [secretMenuPressCounter, setSecretMenuPressCounter] = useState(0);
   const [secretMenuVisible, setSecretMenuVisible] = useState(false);
-
-  const {
-    theme: {
-      colors: { black, grey, white },
-    },
-  } = useTheme();
+  const isRTL = I18nManager.isRTL;
+  useTheme();
+  const { black, grey, white } = useLegacyColors();
 
   useEffect(() => {
     if (!secretMenuVisible && secretMenuPressCounter >= 7) {
@@ -73,7 +100,8 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
     setSecretMenuVisible(false);
   }, []);
 
-  const { chatClient, logout } = useAppContext();
+  const { chatClient, logout, rtlEnabled, setRTLEnabled } = useAppContext();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
 
   if (!chatClient) {
     return null;
@@ -82,7 +110,10 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   return (
     <View style={[styles.container, { backgroundColor: white }]}>
       <SafeAreaView style={{ flex: 1 }}>
-        <Pressable onPress={() => setSecretMenuPressCounter((c) => c + 1)} style={[styles.userRow]}>
+        <Pressable
+          onPress={() => setSecretMenuPressCounter((c) => c + 1)}
+          style={[styles.userRow, isRTL && styles.rowReverse]}
+        >
           <Image
             source={{
               uri: chatClient.user?.image,
@@ -92,6 +123,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
           <Text
             style={[
               styles.userName,
+              isRTL && { textAlign: 'right' },
               {
                 color: black,
               },
@@ -113,12 +145,13 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
                   screen: 'NewDirectMessagingScreen',
                 })
               }
-              style={styles.menuItem}
+              style={[styles.menuItem, isRTL && styles.rowReverse]}
             >
-              <Edit height={24} pathFill={grey} width={24} />
+              <Edit height={24} stroke={grey} width={24} />
               <Text
                 style={[
                   styles.menuTitle,
+                  isRTL && { textAlign: 'right' },
                   {
                     color: black,
                   },
@@ -133,12 +166,13 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
                   screen: 'NewGroupChannelAddMemberScreen',
                 })
               }
-              style={styles.menuItem}
+              style={[styles.menuItem, isRTL && styles.rowReverse]}
             >
               <Group height={24} pathFill={grey} width={24} />
               <Text
                 style={[
                   styles.menuTitle,
+                  isRTL && { textAlign: 'right' },
                   {
                     color: black,
                   },
@@ -147,17 +181,68 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
                 New Group
               </Text>
             </TouchableOpacity>
+            <View
+              style={[
+                styles.menuItem,
+                styles.rtlMenuItem,
+                isRTL && styles.rowReverse,
+              ]}
+            >
+              <View
+                style={[
+                  styles.rtlMenuItemContent,
+                  isRTL && styles.rowReverse,
+                ]}
+              >
+                <User height={24} pathFill={grey} width={24} />
+                <View style={styles.rtlTextContainer}>
+                  <Text
+                    style={[
+                      styles.menuTitle,
+                      isRTL && { textAlign: 'right' },
+                      {
+                        color: black,
+                      },
+                    ]}
+                  >
+                    RTL Layout
+                  </Text>
+                  <Text
+                    style={[
+                      styles.rtlDescription,
+                      isRTL && { textAlign: 'right' },
+                      {
+                        color: grey,
+                      },
+                    ]}
+                  >
+                    Enable RTL layout
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                onValueChange={setRTLEnabled}
+                style={rtlMirrorSwitchStyle}
+                thumbColor={white}
+                trackColor={{
+                  false: grey,
+                  true: black,
+                }}
+                value={rtlEnabled}
+              />
+            </View>
           </View>
           <TouchableOpacity
             onPress={() => {
               logout();
             }}
-            style={styles.menuItem}
+            style={[styles.menuItem, isRTL && styles.rowReverse]}
           >
             <User height={24} pathFill={grey} width={24} />
             <Text
               style={[
                 styles.menuTitle,
+                isRTL && { textAlign: 'right' },
                 {
                   color: black,
                 },

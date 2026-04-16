@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { Channel, LocalMessage, Thread } from 'stream-chat';
+import { Channel, DraftMessage, LocalMessage, Thread } from 'stream-chat';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -8,6 +8,7 @@ export type ThreadListItemContextValue = {
   channel: Channel;
   dateString: string | number | undefined;
   deletedAtDateString: string | number | undefined;
+  draftMessage?: DraftMessage;
   lastReply: LocalMessage | undefined;
   ownUnreadMessageCount: number;
   parentMessage: LocalMessage | undefined;

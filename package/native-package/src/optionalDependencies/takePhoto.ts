@@ -1,5 +1,9 @@
 import { AppState, Image, PermissionsAndroid, Platform } from 'react-native';
 
+import mime from 'mime';
+
+import { generateThumbnails } from './generateThumbnail';
+
 let ImagePicker;
 
 try {
@@ -46,16 +50,24 @@ export const takePhoto = ImagePicker
             cancelled: true,
           };
         }
-        if (asset.type.includes('video')) {
+        const assetType =
+          asset.type ||
+          mime.getType(asset.fileName || asset.uri) ||
+          (mediaType === 'video' || asset.duration ? 'video/*' : 'image/*');
+        if (assetType.includes('video')) {
           const clearFilter = new RegExp('[.:]', 'g');
           const date = new Date().toISOString().replace(clearFilter, '_');
+          const thumbnailResults = await generateThumbnails([asset.uri]);
+          const thumbnailResult = thumbnailResults[asset.uri];
+
           return {
             ...asset,
             cancelled: false,
             duration: asset.duration * 1000,
             name: 'video_recording_' + date + '.' + asset.fileName.split('.').pop(),
             size: asset.fileSize,
-            type: asset.type,
+            thumb_url: thumbnailResult?.uri || undefined,
+            type: assetType,
             uri: asset.uri,
           };
         } else {
@@ -90,7 +102,7 @@ export const takePhoto = ImagePicker
               cancelled: false,
               name: 'image_' + date + '.' + asset.uri.split('.').pop(),
               size: asset.fileSize,
-              type: asset.type,
+              type: assetType,
               uri: asset.uri,
               ...size,
             };

@@ -1,18 +1,18 @@
 import React, { useMemo } from 'react';
 import {
-  Avatar,
   BottomSheetModal,
   useChatContext,
   useMessageDeliveredData,
   useMessageReadData,
   useTheme,
+  UserAvatar,
 } from 'stream-chat-react-native';
 import { LocalMessage, UserResponse } from 'stream-chat';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 const renderUserItem = ({ item }: { item: UserResponse }) => (
   <View style={styles.userItem}>
-    <Avatar image={item.image} name={item.name ?? item.id} size={32} />
+    <UserAvatar user={item} size={'md'} />
     <Text style={styles.userName}>{item.name ?? item.id}</Text>
   </View>
 );

@@ -18,7 +18,9 @@
     "experiments": {
       "reactCompiler": true
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "usesIcloudStorage": true,
@@ -86,16 +88,21 @@
         "expo-build-properties",
         {
           "android": {
-            "extraMavenRepos": ["$rootDir/../../../node_modules/@notifee/react-native/android/libs"]
+            "extraMavenRepos": [
+              "$rootDir/../../../node_modules/@notifee/react-native/android/libs"
+            ]
           },
           "ios": {
             "useFrameworks": "static",
-            "forceStaticLinking": ["RNFBApp", "RNFBMessaging"]
+            "forceStaticLinking": [
+              "RNFBApp",
+              "RNFBMessaging"
+            ]
           }
         }
       ],
-      "./plugins/keyboardInsetMainActivityListener.js",
-      "./plugins/opSqliteSwiftPlugin.js"
+      "./plugins/opSqliteSwiftPlugin.js",
+      "expo-sharing"
     ]
   }
 }

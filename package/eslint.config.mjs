@@ -75,7 +75,18 @@ export default tsEslint.config(
     settings: {
       'import/resolver': {
         node: {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          extensions: [
+            '.js',
+            '.jsx',
+            '.ts',
+            '.tsx',
+            '.ios.ts',
+            '.android.ts',
+            '.web.ts',
+            '.ios.tsx',
+            '.android.tsx',
+            '.web.tsx',
+          ],
           paths: ['src'],
         },
       },
@@ -127,31 +138,9 @@ export default tsEslint.config(
       'no-var': 2,
       'object-shorthand': 1,
       'prefer-const': 1,
-      'react/jsx-sort-props': [
-        'error',
-        {
-          callbacksLast: false,
-          ignoreCase: true,
-          noSortAlphabetically: false,
-          reservedFirst: false,
-          shorthandFirst: false,
-          shorthandLast: false,
-        },
-      ],
       'react/prop-types': 0,
       'require-await': 2,
       semi: [1, 'always'],
-      'sort-imports': [
-        'error',
-        {
-          allowSeparatedGroups: true,
-          ignoreCase: true,
-          ignoreDeclarationSort: true,
-          ignoreMemberSort: false,
-          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-        },
-      ],
-      'sort-keys': ['error', 'asc', { caseSensitive: false, minKeys: 2, natural: false }],
       'valid-typeof': 2,
       '@typescript-eslint/explicit-module-boundary-types': 0,
       '@typescript-eslint/no-empty-interface': 0,

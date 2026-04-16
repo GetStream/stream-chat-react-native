@@ -1,8 +1,17 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import {
+  I18nManager,
+  LayoutChangeEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
+  LinearTransition,
   runOnJS,
   SharedValue,
   useAnimatedReaction,
@@ -11,7 +20,6 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated';
 
 import { PollComposerOption, PollComposerState } from 'stream-chat';
@@ -19,8 +27,10 @@ import { PollComposerOption, PollComposerState } from 'stream-chat';
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { DragHandle } from '../../../icons';
-import { POLL_OPTION_HEIGHT } from '../../../utils/constants';
+import { InfoTooltip } from '../../../icons/info';
+import { CircleMinus } from '../../../icons/minus-circle';
+import { DotGrid } from '../../../icons/reorder';
+import { primitives } from '../../../theme';
 
 export type CurrentOptionPositionsCache = {
   inverseIndexCache: {
@@ -28,14 +38,16 @@ export type CurrentOptionPositionsCache = {
   };
   positionCache: {
     [key: string]: {
+      updatedHeight: number;
       updatedIndex: number;
       updatedTop: number;
     };
   };
+  totalHeight: number;
 };
 
 export type CreatePollOptionType = {
-  boundaries: { maxBound: number; minBound: number };
+  optionsCount: number;
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   draggedItemId: SharedValue<string | null>;
   error?: string;
@@ -43,17 +55,223 @@ export type CreatePollOptionType = {
   handleBlur: () => void;
   index: number;
   isDragging: SharedValue<1 | 0>;
-  option: PollComposerOption;
+  optionId: string;
+  onOptionLayout: (optionId: string, height: number) => void;
   /**
    *
    * @param newOrder The inverse index object of the new options position after re-ordering.
    * @returns
    */
   onNewOrder: (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => void;
+  onRemoveOption: (optionId: string) => void;
+};
+
+// Run after two frames so nested layout (including error rows) has settled.
+const runAfterNextPaint = (cb: () => void) => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(cb);
+  });
+};
+
+const recalculatePositionCache = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  positionCache: CurrentOptionPositionsCache['positionCache'],
+  gap: number,
+) => {
+  'worklet';
+
+  const updatedPositionCache = { ...positionCache };
+  const indices = Object.keys(inverseIndexCache)
+    .map((key) => Number(key))
+    .sort((a, b) => a - b);
+
+  let runningTop = 0;
+
+  for (let i = 0; i < indices.length; i++) {
+    const index = indices[i];
+    const optionId = inverseIndexCache[index];
+    const currentPosition = optionId ? updatedPositionCache[optionId] : undefined;
+
+    if (!optionId) {
+      continue;
+    }
+
+    const updatedHeight =
+      currentPosition &&
+      Number.isFinite(currentPosition.updatedHeight) &&
+      currentPosition.updatedHeight > 0
+        ? currentPosition.updatedHeight
+        : 0;
+    updatedPositionCache[optionId] = {
+      ...(currentPosition ?? {}),
+      updatedHeight,
+      updatedIndex: index,
+      updatedTop: runningTop,
+    };
+    runningTop += updatedHeight + (i === indices.length - 1 ? 0 : gap);
+  }
+
+  return {
+    positionCache: updatedPositionCache,
+    totalHeight: runningTop,
+  };
+};
+
+const findTargetIndex = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  positionCache: CurrentOptionPositionsCache['positionCache'],
+  currentIndex: number,
+  draggedTop: number,
+  draggedBottom: number,
+  translationY: number,
+) => {
+  'worklet';
+
+  const indices = Object.keys(inverseIndexCache)
+    .map((key) => Number(key))
+    .sort((a, b) => a - b);
+
+  if (!indices.length) {
+    return 0;
+  }
+
+  let targetIndex = currentIndex;
+
+  if (translationY > 0) {
+    // Moving down: cross next sibling center with dragged bottom edge.
+    while (targetIndex < indices.length - 1) {
+      const nextIndex = targetIndex + 1;
+      const nextOptionId = inverseIndexCache[nextIndex];
+      if (!nextOptionId) {
+        break;
+      }
+      const nextPosition = positionCache[nextOptionId];
+      if (!nextPosition) {
+        break;
+      }
+      const nextCenter = nextPosition.updatedTop + nextPosition.updatedHeight / 2;
+      if (draggedBottom > nextCenter) {
+        targetIndex = nextIndex;
+        continue;
+      }
+      break;
+    }
+  } else if (translationY < 0) {
+    // Moving up: cross previous sibling center with dragged top edge.
+    while (targetIndex > 0) {
+      const previousIndex = targetIndex - 1;
+      const previousOptionId = inverseIndexCache[previousIndex];
+      if (!previousOptionId) {
+        break;
+      }
+      const previousPosition = positionCache[previousOptionId];
+      if (!previousPosition) {
+        break;
+      }
+      const previousCenter = previousPosition.updatedTop + previousPosition.updatedHeight / 2;
+      if (draggedTop < previousCenter) {
+        targetIndex = previousIndex;
+        continue;
+      }
+      break;
+    }
+  }
+
+  return targetIndex;
+};
+
+const getSortedIndices = (inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache']) =>
+  Object.keys(inverseIndexCache)
+    .map((key) => Number(key))
+    .sort((a, b) => a - b);
+
+const reconcileInverseIndexCacheWithOptionIds = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  latestOptionIds: string[],
+) => {
+  const existingOrder: string[] = [];
+  const latestIdSet = new Set(latestOptionIds);
+  const sortedIndices = getSortedIndices(inverseIndexCache);
+
+  for (let i = 0; i < sortedIndices.length; i++) {
+    const optionId = inverseIndexCache[sortedIndices[i]];
+    if (!optionId || !latestIdSet.has(optionId)) {
+      continue;
+    }
+    existingOrder.push(optionId);
+  }
+
+  const existingIdSet = new Set(existingOrder);
+  const missingOptionIds = latestOptionIds.filter((id) => !existingIdSet.has(id));
+  const nextOrder = [...existingOrder, ...missingOptionIds];
+
+  const nextInverse: CurrentOptionPositionsCache['inverseIndexCache'] = {};
+  for (let i = 0; i < nextOrder.length; i++) {
+    nextInverse[i] = nextOrder[i];
+  }
+
+  return nextInverse;
+};
+
+const reorderInverseIndexCache = (
+  inverseIndexCache: CurrentOptionPositionsCache['inverseIndexCache'],
+  draggedItemId: string,
+  targetIndex: number,
+) => {
+  'worklet';
+
+  const indices = Object.keys(inverseIndexCache)
+    .map((key) => Number(key))
+    .sort((a, b) => a - b);
+  const orderedIds: string[] = [];
+
+  for (let i = 0; i < indices.length; i++) {
+    const optionId = inverseIndexCache[indices[i]];
+    if (!optionId || optionId === draggedItemId) {
+      continue;
+    }
+    orderedIds.push(optionId);
+  }
+
+  const boundedIndex = Math.min(Math.max(targetIndex, 0), orderedIds.length);
+  orderedIds.splice(boundedIndex, 0, draggedItemId);
+
+  const nextInverse: CurrentOptionPositionsCache['inverseIndexCache'] = {};
+  for (let i = 0; i < orderedIds.length; i++) {
+    nextInverse[i] = orderedIds[i];
+  }
+
+  return nextInverse;
+};
+
+const getFallbackTopForIndex = (
+  index: number,
+  positionCache: CurrentOptionPositionsCache['positionCache'],
+  gap: number,
+) => {
+  const knownPositions = Object.values(positionCache)
+    .filter(
+      (position) =>
+        Number.isFinite(position.updatedIndex) &&
+        position.updatedIndex >= 0 &&
+        Number.isFinite(position.updatedHeight) &&
+        position.updatedHeight >= 0,
+    )
+    .sort((a, b) => a.updatedIndex - b.updatedIndex);
+
+  let runningTop = 0;
+  for (let i = 0; i < knownPositions.length; i++) {
+    if (knownPositions[i].updatedIndex >= index) {
+      break;
+    }
+    runningTop += knownPositions[i].updatedHeight + gap;
+  }
+
+  return runningTop;
 };
 
 export const CreatePollOption = ({
-  boundaries,
+  optionsCount,
   currentOptionPositions,
   draggedItemId,
   error,
@@ -61,18 +279,31 @@ export const CreatePollOption = ({
   handleChangeText,
   index,
   isDragging,
-  option,
+  optionId,
+  onOptionLayout,
   onNewOrder,
+  onRemoveOption,
 }: CreatePollOptionType) => {
   const { t } = useTranslationContext();
-  const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
-  const top = useSharedValue(index * createPollOptionHeight);
+  const { createPollOptionGap = 8 } = useCreatePollContentContext();
+  const normalizedCreatePollOptionGap =
+    Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
+  const initialTop =
+    currentOptionPositions.value.positionCache[optionId]?.updatedTop ??
+    getFallbackTopForIndex(
+      index,
+      currentOptionPositions.value.positionCache,
+      normalizedCreatePollOptionGap,
+    );
+  const top = useSharedValue(initialTop);
+  const optionContainerRef = useRef<View>(null);
+  const isMeasurementScheduledRef = useRef(false);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 
   const draggedItemIdDerived = useDerivedValue(() => draggedItemId.value);
 
   const isCurrentDraggingItem = useDerivedValue(
-    () => isDraggingDerived.value && draggedItemIdDerived.value === option.id,
+    () => isDraggingDerived.value && draggedItemIdDerived.value === optionId,
   );
 
   const animatedStyles = useAnimatedStyle(() => ({
@@ -89,128 +320,134 @@ export const CreatePollOption = ({
     () => currentOptionPositions.value,
   );
 
-  // used for swapping with currentIndex
+  // Target index computed during drag.
   const newIndex = useSharedValue<number | null>(null);
 
-  // used for swapping with newIndex
+  // Current dragged item's index in the live reorder cache.
   const currentIndex = useSharedValue<number | null>(null);
 
-  // The sanity check for position cache updated index, is added because after a poll is sent its been reset
-  // by the composer and it throws an undefined error. This can be removed in future.
+  // Keep drag translation anchored to drag-start top.
+  const dragStartTop = useSharedValue(0);
+  const previousDragTop = useSharedValue(0);
+
   useAnimatedReaction(
-    () => currentOptionPositionsDerived.value.positionCache[option.id]?.updatedIndex ?? 0,
+    () => currentOptionPositionsDerived.value.positionCache[optionId]?.updatedTop ?? 0,
     (currentValue, previousValue) => {
-      if (currentValue !== previousValue) {
-        const updatedIndex =
-          currentOptionPositionsDerived.value.positionCache[option.id]?.updatedIndex ?? 0;
-        top.value = withSpring(updatedIndex * createPollOptionHeight);
+      if (currentValue !== previousValue && !isCurrentDraggingItem.value) {
+        top.value = withSpring(currentValue);
       }
     },
   );
 
   const gesture = Gesture.Pan()
     .onStart(() => {
+      const currentPosition = currentOptionPositionsDerived.value.positionCache[optionId];
+      if (!currentPosition) {
+        return;
+      }
+
       // start dragging
       isDragging.value = withSpring(1);
 
       // keep track of dragged item
-      draggedItemId.value = option.id;
+      draggedItemId.value = optionId;
 
-      // store dragged item id for future swap
-      currentIndex.value =
-        currentOptionPositionsDerived.value.positionCache[option.id].updatedIndex;
+      // capture drag start position/index
+      currentIndex.value = currentPosition.updatedIndex;
+      dragStartTop.value = currentPosition.updatedTop;
+      previousDragTop.value = currentPosition.updatedTop;
     })
     .onUpdate((e) => {
-      const { inverseIndexCache, positionCache } = currentOptionPositionsDerived.value;
+      const { inverseIndexCache, positionCache, totalHeight } = currentOptionPositionsDerived.value;
       if (draggedItemIdDerived.value === null || currentIndex.value === null) {
         return;
       }
-      const newTop = positionCache[draggedItemIdDerived.value].updatedTop + e.translationY;
+
+      const draggedItemPosition = positionCache[draggedItemIdDerived.value];
+      if (!draggedItemPosition) {
+        return;
+      }
+
+      const maxBound = Math.max(totalHeight - draggedItemPosition.updatedHeight, 0);
+      const newTop = dragStartTop.value + e.translationY;
+      const frameDeltaY = newTop - previousDragTop.value;
+      previousDragTop.value = newTop;
+
       // we add a small leeway to account for sharp animations which tend to bug out otherwise
-      if (newTop < boundaries.minBound - 10 || newTop > boundaries.maxBound + 10) {
+      if (newTop < -10 || newTop > maxBound + 10) {
         // out of bounds, exit out of the animation early
         return;
       }
       top.value = newTop;
 
       // calculate the new index where drag is headed to
-      newIndex.value = Math.floor((newTop + createPollOptionHeight / 2) / createPollOptionHeight);
+      const draggedTop = newTop;
+      const draggedBottom = newTop + draggedItemPosition.updatedHeight;
+      newIndex.value = findTargetIndex(
+        inverseIndexCache,
+        positionCache,
+        currentIndex.value,
+        draggedTop,
+        draggedBottom,
+        frameDeltaY,
+      );
 
-      // swap the items present at newIndex and currentIndex
+      // Reorder by inserting dragged item into target slot.
       if (newIndex.value !== currentIndex.value) {
-        // find id of the item that currently resides at newIndex
-        const newIndexItemKey = inverseIndexCache[newIndex.value];
+        const nextInverseIndexCache = reorderInverseIndexCache(
+          inverseIndexCache,
+          draggedItemIdDerived.value,
+          newIndex.value,
+        );
+        const recalculated = recalculatePositionCache(
+          nextInverseIndexCache,
+          positionCache,
+          normalizedCreatePollOptionGap,
+        );
 
-        // find id of the item that currently resides at currentIndex
-        const currentDragIndexItemKey = inverseIndexCache[currentIndex.value];
+        currentOptionPositions.value = {
+          inverseIndexCache: nextInverseIndexCache,
+          positionCache: recalculated.positionCache,
+          totalHeight: recalculated.totalHeight,
+        };
 
-        if (newIndexItemKey !== undefined && currentDragIndexItemKey !== undefined) {
-          // if we indeed have a candidate for a new index, we update our cache so that
-          // it can be reflected through animations
-          currentOptionPositions.value = {
-            inverseIndexCache: {
-              ...inverseIndexCache,
-              [newIndex.value]: currentDragIndexItemKey,
-              [currentIndex.value]: newIndexItemKey,
-            },
-            positionCache: {
-              ...positionCache,
-              [currentDragIndexItemKey]: {
-                ...positionCache[currentDragIndexItemKey],
-                updatedIndex: newIndex.value,
-              },
-              [newIndexItemKey]: {
-                ...positionCache[newIndexItemKey],
-                updatedIndex: currentIndex.value,
-                updatedTop: currentIndex.value * createPollOptionHeight,
-              },
-            },
-          };
-
-          // update new index as current index
-          currentIndex.value = newIndex.value;
-        }
+        currentIndex.value = newIndex.value;
       }
     })
     .onEnd(() => {
       const { inverseIndexCache, positionCache } = currentOptionPositionsDerived.value;
-      if (currentIndex.value === null || newIndex.value === null) {
+      if (currentIndex.value === null) {
+        isDragging.value = withDelay(200, withSpring(0));
+        draggedItemId.value = null;
         return;
       }
 
-      top.value = withSpring(newIndex.value * createPollOptionHeight);
-
-      // find original id of the item that currently resides at currentIndex
       const currentDragIndexItemKey = inverseIndexCache[currentIndex.value];
+      const currentDragTop =
+        currentDragIndexItemKey !== undefined
+          ? positionCache[currentDragIndexItemKey]?.updatedTop
+          : undefined;
+      top.value = withSpring(currentDragTop ?? top.value);
 
-      if (currentDragIndexItemKey !== undefined) {
-        // update the values for item whose drag we just stopped
-        currentOptionPositions.value = {
-          ...currentOptionPositionsDerived.value,
-          positionCache: {
-            ...positionCache,
-            [currentDragIndexItemKey]: {
-              ...positionCache[currentDragIndexItemKey],
-              updatedTop: newIndex.value * createPollOptionHeight,
-            },
-          },
-        };
-      }
       // stop dragging
       isDragging.value = withDelay(200, withSpring(0));
+      draggedItemId.value = null;
+      currentIndex.value = null;
+      newIndex.value = null;
       runOnJS(onNewOrder)(currentOptionPositionsDerived.value.inverseIndexCache);
     });
 
   const {
     theme: {
-      colors: { accent_error, bg_user, black, text_low_emphasis },
       poll: {
         createContent: {
           pollOptions: { optionStyle },
         },
       },
+      semantics,
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onChangeTextHandler = useCallback(
     (newText: string) => {
@@ -219,42 +456,86 @@ export const CreatePollOption = ({
     [handleChangeText, index],
   );
 
+  const onRemoveOptionHandler = useCallback(() => {
+    onRemoveOption(optionId);
+  }, [onRemoveOption, optionId]);
+
+  const onLayoutHandler = useCallback(
+    (event: LayoutChangeEvent) => {
+      onOptionLayout(optionId, event.nativeEvent.layout.height);
+    },
+    [onOptionLayout, optionId],
+  );
+
+  const measureOptionHeight = useCallback(() => {
+    if (isMeasurementScheduledRef.current) {
+      return;
+    }
+    isMeasurementScheduledRef.current = true;
+    runAfterNextPaint(() => {
+      const currentOptionContainer = optionContainerRef.current;
+      if (!currentOptionContainer) {
+        isMeasurementScheduledRef.current = false;
+        return;
+      }
+      currentOptionContainer.measure((_x, _y, _width, height) => {
+        isMeasurementScheduledRef.current = false;
+        if (Number.isFinite(height) && height > 0) {
+          onOptionLayout(optionId, height);
+        }
+      });
+    });
+  }, [onOptionLayout, optionId]);
+  const onErrorLayoutHandler = useCallback(() => {
+    measureOptionHeight();
+  }, [measureOptionHeight]);
+
+  useEffect(() => {
+    measureOptionHeight();
+  }, [error, measureOptionHeight, optionsCount]);
+
   return (
     <Animated.View
+      onLayout={onLayoutHandler}
+      ref={optionContainerRef}
       style={[
         styles.optionWrapper,
         optionStyle.wrapper,
         {
-          backgroundColor: bg_user,
-          borderColor: error ? accent_error : bg_user,
           position: 'absolute',
-          width: '100%',
         },
         animatedStyles,
       ]}
     >
+      <Animated.View layout={LayoutTransition} style={[styles.optionContent, optionStyle.content]}>
+        <GestureDetector gesture={gesture}>
+          <Animated.View>
+            <DotGrid height={20} width={20} stroke={semantics.inputTextIcon} />
+          </Animated.View>
+        </GestureDetector>
+        <TextInput
+          onBlur={handleBlur}
+          onChangeText={onChangeTextHandler}
+          placeholder={t('Add an option')}
+          placeholderTextColor={semantics.inputTextPlaceholder}
+          style={[styles.optionInput, optionStyle.input]}
+        />
+        <Pressable onPress={onRemoveOptionHandler}>
+          <CircleMinus height={20} width={20} stroke={semantics.inputTextIcon} />
+        </Pressable>
+      </Animated.View>
+
       {error ? (
-        <Text
-          style={[
-            styles.optionValidationError,
-            { color: accent_error },
-            optionStyle.validationErrorText,
-          ]}
+        <View
+          onLayout={onErrorLayoutHandler}
+          style={[styles.optionValidationErrorContainer, optionStyle.validationErrorContainer]}
         >
-          {t(error)}
-        </Text>
+          <InfoTooltip height={20} width={20} fill={semantics.accentError} />
+          <Text style={[styles.optionValidationError, optionStyle.validationErrorText]}>
+            {t(error)}
+          </Text>
+        </View>
       ) : null}
-      <TextInput
-        onBlur={handleBlur}
-        onChangeText={onChangeTextHandler}
-        placeholder={t('Add an option')}
-        style={[styles.optionInput, { color: black }, optionStyle.input]}
-      />
-      <GestureDetector gesture={gesture}>
-        <Animated.View>
-          <DragHandle pathFill={text_low_emphasis} />
-        </Animated.View>
-      </GestureDetector>
     </Animated.View>
   );
 };
@@ -275,7 +556,11 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
   const { errors, options } = useStateStore(pollComposer.state, pollComposerStateSelector);
-  const { createPollOptionHeight = POLL_OPTION_HEIGHT } = useCreatePollContentContext();
+  const { createPollOptionGap = 8 } = useCreatePollContentContext();
+  const normalizedCreatePollOptionGap =
+    Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   const updateOption = useCallback(
     (newText: string, index: number) => {
@@ -297,26 +582,25 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   const draggedItemId = useSharedValue<string | null>(null);
 
   // holds the animated height of the option container
-  const animatedOptionsContainerHeight = useSharedValue(createPollOptionHeight * options.length);
+  const animatedOptionsContainerHeight = useSharedValue(currentOptionPositions.value.totalHeight);
 
-  useEffect(() => {
-    animatedOptionsContainerHeight.value = withTiming(createPollOptionHeight * options.length, {
-      duration: 200,
-    });
-  }, [animatedOptionsContainerHeight, createPollOptionHeight, options.length]);
+  useAnimatedReaction(
+    () => currentOptionPositions.value.totalHeight,
+    (currentValue, previousValue) => {
+      if (currentValue === previousValue) {
+        return;
+      }
+
+      animatedOptionsContainerHeight.value = currentValue;
+    },
+  );
 
   const animatedOptionsContainerStyle = useAnimatedStyle(() => ({
     height: animatedOptionsContainerHeight.value,
   }));
 
-  const boundaries = useMemo(
-    () => ({ maxBound: (options.length - 1) * createPollOptionHeight, minBound: 0 }),
-    [createPollOptionHeight, options.length],
-  );
-
   const {
     theme: {
-      colors: { black },
       poll: {
         createContent: {
           pollOptions: { container, title },
@@ -324,13 +608,23 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const onNewOrderChange = useCallback(
     async (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => {
-      const reorderedPollOptions = [];
+      const latestOptions = optionsRef.current;
+      const optionById: Record<string, PollComposerOption> = {};
+      for (let i = 0; i < latestOptions.length; i++) {
+        optionById[latestOptions[i].id] = latestOptions[i];
+      }
 
-      for (let i = 0; i < options.length; i++) {
-        const currentOption = options.find((option) => option.id === newOrder[i]);
+      const reorderedPollOptions: PollComposerOption[] = [];
+      for (let i = 0; i < latestOptions.length; i++) {
+        const optionId = newOrder[i];
+        if (!optionId) {
+          continue;
+        }
+        const currentOption = optionById[optionId];
         if (currentOption) {
           reorderedPollOptions.push(currentOption);
         }
@@ -340,26 +634,102 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         options: reorderedPollOptions,
       });
     },
-    [options, pollComposer],
+    [pollComposer],
+  );
+
+  const onRemoveOptionHandler = useCallback(
+    (optionId: string) => {
+      const latestOptions = optionsRef.current;
+      if (latestOptions.length === 1) {
+        return;
+      }
+      pollComposer.updateFields({
+        options: latestOptions.filter((option) => option.id !== optionId),
+      });
+    },
+    [pollComposer],
+  );
+
+  const onOptionLayout = useCallback(
+    (optionId: string, height: number) => {
+      if (!Number.isFinite(height) || height <= 0) {
+        return;
+      }
+
+      const { inverseIndexCache, positionCache } = currentOptionPositions.value;
+      const currentPosition = positionCache[optionId];
+      if (currentPosition && Math.abs(currentPosition.updatedHeight - height) < 1) {
+        return;
+      }
+
+      const latestOptions = optionsRef.current;
+      const latestOptionIds = latestOptions.map((option) => option.id);
+      const isKnownOption = latestOptionIds.includes(optionId);
+      if (!isKnownOption) {
+        return;
+      }
+
+      const nextInverseIndexCache = reconcileInverseIndexCacheWithOptionIds(
+        inverseIndexCache,
+        latestOptionIds,
+      );
+
+      const nextPositionCache: CurrentOptionPositionsCache['positionCache'] = {};
+      const sortedIndices = getSortedIndices(nextInverseIndexCache);
+      sortedIndices.forEach((index) => {
+        const currentOptionId = nextInverseIndexCache[index];
+        if (!currentOptionId) {
+          return;
+        }
+        const cachedPosition = positionCache[currentOptionId];
+        nextPositionCache[currentOptionId] = cachedPosition
+          ? cachedPosition
+          : {
+              updatedHeight: 0,
+              updatedIndex: index,
+              updatedTop: 0,
+            };
+      });
+
+      nextPositionCache[optionId] = {
+        ...nextPositionCache[optionId],
+        updatedHeight: height,
+      };
+
+      const recalculated = recalculatePositionCache(
+        nextInverseIndexCache,
+        nextPositionCache,
+        normalizedCreatePollOptionGap,
+      );
+
+      currentOptionPositions.value = {
+        inverseIndexCache: nextInverseIndexCache,
+        positionCache: recalculated.positionCache,
+        totalHeight: recalculated.totalHeight,
+      };
+    },
+    [currentOptionPositions, normalizedCreatePollOptionGap],
   );
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.text, { color: black }, title]}>{t('Options')}</Text>
-      <Animated.View style={animatedOptionsContainerStyle}>
+      <Text style={[styles.title, title]}>{t('Options')}</Text>
+      <Animated.View layout={LinearTransition.duration(200)} style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption
-            boundaries={boundaries}
+            optionsCount={options.length}
             currentOptionPositions={currentOptionPositions}
             draggedItemId={draggedItemId}
             error={errors?.[option.id]}
             handleBlur={handleBlur}
             handleChangeText={updateOption}
+            onOptionLayout={onOptionLayout}
+            onRemoveOption={onRemoveOptionHandler}
             index={index}
             isDragging={isDragging}
             key={option.id}
             onNewOrder={onNewOrderChange}
-            option={option}
+            optionId={option.id}
           />
         ))}
       </Animated.View>
@@ -367,30 +737,61 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   );
 };
 
-const styles = StyleSheet.create({
-  addOptionWrapper: {
-    borderRadius: 12,
-    marginTop: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  container: { marginVertical: 16 },
-  optionInput: {
-    flex: 1,
-    fontSize: 16,
-    paddingRight: 4,
-    paddingVertical: 0, // android is adding extra padding so we remove it
-  },
-  optionValidationError: { fontSize: 12, left: 16, position: 'absolute', top: 4 },
-  optionWrapper: {
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  text: { fontSize: 16 },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        paddingVertical: primitives.spacingXl,
+        gap: primitives.spacingXs,
+      },
+      optionInput: {
+        flex: 1,
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightRegular,
+        color: semantics.inputTextDefault,
+        paddingVertical: 0, // android is adding extra padding so we remove it
+        textAlign: I18nManager.isRTL ? 'right' : 'left',
+      },
+      optionValidationErrorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: primitives.spacingXs,
+        paddingHorizontal: primitives.spacingMd,
+        paddingBottom: primitives.spacingSm,
+      },
+      optionValidationError: {
+        color: semantics.accentError,
+        fontSize: primitives.typographyFontSizeSm,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightRegular,
+        textAlign: 'left',
+      },
+      optionWrapper: {
+        width: '100%',
+        borderWidth: 1,
+        borderColor: semantics.borderCoreDefault,
+        borderRadius: primitives.radiusLg,
+      },
+      optionContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: primitives.spacingXs,
+        paddingHorizontal: primitives.spacingMd,
+        paddingVertical: primitives.spacingSm,
+      },
+      title: {
+        color: semantics.textPrimary,
+        fontSize: primitives.typographyFontSizeMd,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
+      },
+    });
+  }, [semantics]);
+};
+
+const LayoutTransition = LinearTransition.duration(200).springify();

@@ -1,13 +1,12 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import {
-  generateAttachmentAction,
   generateAudioAttachment,
   generateFileAttachment,
   generateImageAttachment,
@@ -18,17 +17,24 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Attachment } from '../Attachment';
-import { AttachmentActions } from '../AttachmentActions';
+import { FilePreview as FilePreviewDefault } from '../FilePreview';
 
 jest.mock('../../../native.ts', () => ({
   isVideoPlayerAvailable: jest.fn(() => false),
+  isSoundPackageAvailable: jest.fn(() => false),
 }));
 
 const getAttachmentComponent = (props) => {
   const message = generateMessage();
   return (
     <ThemeProvider>
-      <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
+      <MessagesProvider
+        value={{
+          ImageLoadingFailedIndicator,
+          ImageLoadingIndicator,
+          FilePreview: FilePreviewDefault,
+        }}
+      >
         <MessageProvider value={{ message }}>
           <Attachment {...props} />
         </MessageProvider>
@@ -36,11 +42,6 @@ const getAttachmentComponent = (props) => {
     </ThemeProvider>
   );
 };
-const getActionComponent = (props) => (
-  <ThemeProvider>
-    <AttachmentActions {...props} />;
-  </ThemeProvider>
-);
 
 describe('Attachment', () => {
   it('should render File component for "audio" type attachment', async () => {
@@ -88,42 +89,6 @@ describe('Attachment', () => {
 
     await waitFor(() => {
       expect(getByTestId('gallery-container')).toBeTruthy();
-    });
-  });
-
-  it('should render AttachmentActions component if attachment has actions', async () => {
-    const attachment = generateImageAttachment({
-      actions: [generateAttachmentAction(), generateAttachmentAction()],
-      title_link: null,
-    });
-    const { getByTestId } = render(getAttachmentComponent({ actionHandler: () => {}, attachment }));
-
-    await waitFor(() => {
-      expect(getByTestId('attachment-actions')).toBeTruthy();
-    });
-  });
-
-  it('should call actionHandler on click', async () => {
-    const handleAction = jest.fn();
-    const action = generateAttachmentAction();
-    const { getByTestId } = render(
-      getActionComponent({
-        actions: [action],
-        handleAction,
-      }),
-    );
-
-    await waitFor(() => getByTestId(`attachment-actions-button-${action.name}`));
-
-    expect(getByTestId('attachment-actions')).toContainElement(
-      getByTestId(`attachment-actions-button-${action.name}`),
-    );
-
-    fireEvent.press(getByTestId(`attachment-actions-button-${action.name}`));
-    fireEvent.press(getByTestId(`attachment-actions-button-${action.name}`));
-
-    await waitFor(() => {
-      expect(handleAction).toHaveBeenCalledTimes(2);
     });
   });
 });

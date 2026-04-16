@@ -10,8 +10,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 
 import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
-import type { FileUpload } from '../../../types/types';
-import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAttachment';
+import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/Audio';
 
 jest.mock('../../../native.ts', () => ({
   isSoundPackageAvailable: jest.fn(() => true),

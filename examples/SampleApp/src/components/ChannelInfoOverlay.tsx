@@ -1,40 +1,34 @@
-import React, { useEffect } from 'react';
-import { FlatList, Keyboard, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
-import Animated, {
-  cancelAnimation,
-  Easing,
-  Extrapolation,
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withDecay,
-  withTiming,
-} from 'react-native-reanimated';
+import { Pressable } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 import {
-  Avatar,
   CircleClose,
   Delete,
-  User,
   UserMinus,
   useTheme,
   useViewport,
+  UserAvatar,
+  BottomSheetModal,
+  useStableCallback,
 } from 'stream-chat-react-native';
 import { ChannelMemberResponse } from 'stream-chat';
 
+import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
 import { Archive } from '../icons/Archive';
-import { Pin } from '../icons/Pin';
 import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pin } from '../icons/Pin.tsx';
+import { User } from '../icons/User';
+import { useLegacyColors } from '../theme/useLegacyColors';
+
+import type { ConfirmationData } from './ConfirmationBottomSheet';
 
 dayjs.extend(relativeTime);
-
-const avatarSize = 64;
 
 const styles = StyleSheet.create({
   avatarPresenceIndicator: {
@@ -83,7 +77,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
-  userItemContainer: { marginHorizontal: 8, width: 64 },
+  userItemContainer: { marginHorizontal: 8, alignItems: 'center' },
   userName: {
     fontSize: 12,
     fontWeight: '600',
@@ -98,128 +92,20 @@ export type ChannelInfoOverlayProps = {
 };
 
 export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
-  const { overlayOpacity, visible } = props;
+  const { visible } = props;
 
-  const { overlay, setOverlay } = useAppOverlayContext();
-  const { data, reset } = useChannelInfoOverlayContext();
-  const { vh, vw } = useViewport();
+  const { setOverlay } = useAppOverlayContext();
+  const { data } = useChannelInfoOverlayContext();
+  const { vw } = useViewport();
 
-  const screenHeight = vh(100);
-  const halfScreenHeight = vh(50);
   const width = vw(100) - 60;
 
   const { channel, clientId, membership, navigation } = data || {};
 
   const {
-    theme: {
-      colors: { accent_red, black, border, grey, white },
-    },
+    theme: { semantics },
   } = useTheme();
-
-  const offsetY = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const viewHeight = useSharedValue(0);
-
-  const showScreen = useSharedValue(0);
-  const fadeScreen = (show: boolean) => {
-    'worklet';
-    if (show) {
-      offsetY.value = 0;
-      translateY.value = 0;
-    }
-    showScreen.value = show
-      ? withTiming(1, {
-          duration: 150,
-          easing: Easing.in(Easing.ease),
-        })
-      : withTiming(
-          0,
-          {
-            duration: 150,
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            runOnJS(reset)();
-          },
-        );
-  };
-
-  useEffect(() => {
-    if (visible) {
-      Keyboard.dismiss();
-    }
-    fadeScreen(!!visible);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
-
-  const pan = Gesture.Pan()
-    .enabled(overlay === 'channelInfo')
-    .maxPointers(1)
-    .minDistance(10)
-    .onBegin(() => {
-      cancelAnimation(translateY);
-      offsetY.value = translateY.value;
-    })
-    .onUpdate((evt) => {
-      translateY.value = offsetY.value + evt.translationY;
-      overlayOpacity.value = interpolate(
-        translateY.value,
-        [0, halfScreenHeight],
-        [1, 0.75],
-        Extrapolation.CLAMP,
-      );
-    })
-    .onEnd((evt) => {
-      const finalYPosition = evt.translationY + evt.velocityY * 0.1;
-
-      if (finalYPosition > halfScreenHeight && translateY.value > 0) {
-        cancelAnimation(translateY);
-        overlayOpacity.value = withTiming(
-          0,
-          {
-            duration: 200,
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            runOnJS(setOverlay)('none');
-          },
-        );
-        translateY.value =
-          evt.velocityY > 1000
-            ? withDecay({
-                velocity: evt.velocityY,
-              })
-            : withTiming(screenHeight, {
-                duration: 200,
-                easing: Easing.out(Easing.ease),
-              });
-      } else {
-        translateY.value = withTiming(0);
-        overlayOpacity.value = withTiming(1);
-      }
-    });
-
-  const tap = Gesture.Tap()
-    .maxDistance(32)
-    .onEnd(() => {
-      runOnJS(setOverlay)('none');
-    });
-
-  const panStyle = useAnimatedStyle<ViewStyle>(() => ({
-    transform: [
-      {
-        translateY: translateY.value > 0 ? translateY.value : 0,
-      },
-    ],
-  }));
-
-  const showScreenStyle = useAnimatedStyle<ViewStyle>(() => ({
-    transform: [
-      {
-        translateY: interpolate(showScreen.value, [0, 1], [viewHeight.value / 2, 0]),
-      },
-    ],
-  }));
+  const { accent_red, black, grey } = useLegacyColors();
 
   // magic number 8 used as fontSize is 16 so assuming average character width of half
   const maxWidth = channel
@@ -254,180 +140,175 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
       )
     : [];
 
+  const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
+
+  const showConfirmation = useCallback((_data: ConfirmationData) => {
+    setConfirmationData(_data);
+  }, []);
+
+  const closeConfirmation = useCallback(() => {
+    setConfirmationData(null);
+  }, []);
+
   const { viewInfo, pinUnpin, archiveUnarchive, leaveGroup, deleteConversation, cancel } =
-    useChannelInfoOverlayActions({ channel, navigation, otherMembers });
+    useChannelInfoOverlayActions({ channel, navigation, otherMembers, showConfirmation });
+
+  const onClose = useStableCallback(() => {
+    setOverlay('none');
+  });
 
   return (
-    <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
-      <GestureDetector gesture={pan}>
-        <Animated.View style={StyleSheet.absoluteFillObject}>
-          <GestureDetector gesture={tap}>
-            <Animated.View
-              onLayout={({
-                nativeEvent: {
-                  layout: { height },
-                },
-              }) => {
-                viewHeight.value = height;
-              }}
-              style={[styles.container, panStyle]}
-            >
-              <Animated.View
-                style={[styles.containerInner, { backgroundColor: white }, showScreenStyle]}
-              >
-                <SafeAreaView edges={['bottom']}>
-                  {channel && (
-                    <>
-                      <View style={styles.detailsContainer}>
-                        <Text numberOfLines={1} style={[styles.channelName, { color: black }]}>
-                          {channelName}
-                        </Text>
-                        <Text style={[styles.channelStatus, { color: grey }]}>
-                          {otherMembers.length === 1
-                            ? otherMembers[0].user?.online
-                              ? 'Online'
-                              : `Last Seen ${dayjs(otherMembers[0].user?.last_active).fromNow()}`
-                            : `${Object.keys(channel.state.members).length} Members, ${
-                                Object.values<ChannelMemberResponse>(channel.state.members).filter(
-                                  (member) => !!member.user?.online,
-                                ).length
-                              } Online`}
-                        </Text>
-                        <FlatList
-                          contentContainerStyle={styles.flatListContent}
-                          data={Object.values<ChannelMemberResponse>(channel.state.members)
-                            .map((member) => member.user)
-                            .sort((a, b) =>
-                              !!a?.online && !b?.online
-                                ? -1
-                                : a?.id === clientId && b?.id !== clientId
-                                  ? -1
-                                  : !!a?.online && !!b?.online
-                                    ? 0
-                                    : 1,
-                            )}
-                          horizontal
-                          keyExtractor={(item, index) => `${item?.id}_${index}`}
-                          renderItem={({ item }) =>
-                            item ? (
-                              <View style={styles.userItemContainer}>
-                                <Avatar
-                                  image={item.image}
-                                  name={item.name || item.id}
-                                  online={item.online}
-                                  presenceIndicatorContainerStyle={styles.avatarPresenceIndicator}
-                                  size={avatarSize}
-                                />
-                                <Text style={[styles.userName, { color: black }]}>
-                                  {item.name || item.id || ''}
-                                </Text>
-                              </View>
-                            ) : null
-                          }
-                          style={styles.flatList}
-                        />
-                      </View>
-                      <Pressable onPress={viewInfo}>
-                        <View
-                          style={[
-                            styles.row,
-                            {
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <User pathFill={grey} />
-                          </View>
-                          <Text style={[styles.rowText, { color: black }]}>View info</Text>
-                        </View>
-                      </Pressable>
-                      <Pressable onPress={pinUnpin}>
-                        <View
-                          style={[
-                            styles.row,
-                            {
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <Pin height={24} width={24} />
-                          </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            {membership?.pinned_at ? 'Unpin' : 'Pin'}
-                          </Text>
-                        </View>
-                      </Pressable>
-                      <Pressable onPress={archiveUnarchive}>
-                        <View
-                          style={[
-                            styles.row,
-                            {
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <Archive height={24} width={24} />
-                          </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            {membership?.archived_at ? 'Unarchive' : 'Archive'}
-                          </Text>
-                        </View>
-                      </Pressable>
-
-                      {otherMembers.length > 1 && (
-                        <Pressable onPress={leaveGroup}>
-                          <View style={[styles.row, { borderTopColor: border }]}>
-                            <View style={styles.rowInner}>
-                              <UserMinus pathFill={grey} />
-                            </View>
-                            <Text style={[styles.rowText, { color: black }]}>Leave Group</Text>
-                          </View>
-                        </Pressable>
-                      )}
-                      <Pressable onPress={deleteConversation}>
-                        <View
-                          style={[
-                            styles.row,
-                            {
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <Delete size={24} fill={accent_red} />
-                          </View>
-                          <Text style={[styles.rowText, { color: accent_red }]}>
-                            Delete conversation
-                          </Text>
-                        </View>
-                      </Pressable>
-                      <Pressable onPress={cancel}>
-                        <View
-                          style={[
-                            styles.lastRow,
-                            {
-                              borderBottomColor: border,
-                              borderTopColor: border,
-                            },
-                          ]}
-                        >
-                          <View style={styles.rowInner}>
-                            <CircleClose pathFill={grey} />
-                          </View>
-                          <Text style={[styles.rowText, { color: black }]}>Cancel</Text>
-                        </View>
-                      </Pressable>
-                    </>
+    <BottomSheetModal visible={!!visible} onClose={onClose}>
+      <SafeAreaView edges={['bottom']}>
+        {channel && (
+          <>
+            <View style={styles.detailsContainer}>
+              <Text numberOfLines={1} style={[styles.channelName, { color: black }]}>
+                {channelName}
+              </Text>
+              <Text style={[styles.channelStatus, { color: grey }]}>
+                {otherMembers.length === 1
+                  ? otherMembers[0].user?.online
+                    ? 'Online'
+                    : `Last Seen ${dayjs(otherMembers[0].user?.last_active).fromNow()}`
+                  : `${Object.keys(channel.state.members).length} Members, ${
+                      Object.values<ChannelMemberResponse>(channel.state.members).filter(
+                        (member) => !!member.user?.online,
+                      ).length
+                    } Online`}
+              </Text>
+              <FlatList
+                contentContainerStyle={styles.flatListContent}
+                data={Object.values<ChannelMemberResponse>(channel.state.members)
+                  .map((member) => member.user)
+                  .sort((a, b) =>
+                    !!a?.online && !b?.online
+                      ? -1
+                      : a?.id === clientId && b?.id !== clientId
+                        ? -1
+                        : !!a?.online && !!b?.online
+                          ? 0
+                          : 1,
                   )}
-                </SafeAreaView>
-              </Animated.View>
-            </Animated.View>
-          </GestureDetector>
-        </Animated.View>
-      </GestureDetector>
-    </Animated.View>
+                horizontal
+                keyExtractor={(item, index) => `${item?.id}_${index}`}
+                renderItem={({ item }) =>
+                  item ? (
+                    <View style={styles.userItemContainer}>
+                      <UserAvatar user={item} size='lg' showOnlineIndicator={item.online} />
+
+                      <Text style={[styles.userName, { color: black }]}>
+                        {item.name || item.id || ''}
+                      </Text>
+                    </View>
+                  ) : null
+                }
+                style={styles.flatList}
+              />
+            </View>
+            <Pressable onPress={viewInfo}>
+              <View
+                style={[
+                  styles.row,
+                  {
+                    borderTopColor: semantics.borderCoreDefault,
+                  },
+                ]}
+              >
+                <View style={styles.rowInner}>
+                  <User pathFill={grey} />
+                </View>
+                <Text style={[styles.rowText, { color: black }]}>View info</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={pinUnpin}>
+              <View
+                style={[
+                  styles.row,
+                  {
+                    borderTopColor: semantics.borderCoreDefault,
+                  },
+                ]}
+              >
+                <View style={styles.rowInner}>
+                  <Pin height={24} width={24} />
+                </View>
+                <Text style={[styles.rowText, { color: black }]}>
+                  {membership?.pinned_at ? 'Unpin' : 'Pin'}
+                </Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={archiveUnarchive}>
+              <View
+                style={[
+                  styles.row,
+                  {
+                    borderTopColor: semantics.borderCoreDefault,
+                  },
+                ]}
+              >
+                <View style={styles.rowInner}>
+                  <Archive height={24} width={24} />
+                </View>
+                <Text style={[styles.rowText, { color: black }]}>
+                  {membership?.archived_at ? 'Unarchive' : 'Archive'}
+                </Text>
+              </View>
+            </Pressable>
+
+            {otherMembers.length > 1 && (
+              <Pressable onPress={leaveGroup}>
+                <View style={[styles.row, { borderTopColor: semantics.borderCoreDefault }]}>
+                  <View style={styles.rowInner}>
+                    <UserMinus pathFill={grey} />
+                  </View>
+                  <Text style={[styles.rowText, { color: black }]}>Leave Group</Text>
+                </View>
+              </Pressable>
+            )}
+            <Pressable onPress={deleteConversation}>
+              <View
+                style={[
+                  styles.row,
+                  {
+                    borderTopColor: semantics.borderCoreDefault,
+                  },
+                ]}
+              >
+                <View style={styles.rowInner}>
+                  <Delete height={24} width={24} stroke={accent_red} />
+                </View>
+                <Text style={[styles.rowText, { color: accent_red }]}>Delete conversation</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={cancel}>
+              <View
+                style={[
+                  styles.lastRow,
+                  {
+                    borderBottomColor: semantics.borderCoreDefault,
+                    borderTopColor: semantics.borderCoreDefault,
+                  },
+                ]}
+              >
+                <View style={styles.rowInner}>
+                  <CircleClose pathFill={grey} />
+                </View>
+                <Text style={[styles.rowText, { color: black }]}>Cancel</Text>
+              </View>
+            </Pressable>
+          </>
+        )}
+      </SafeAreaView>
+      <ConfirmationBottomSheet
+        cancelText={confirmationData?.cancelText}
+        confirmText={confirmationData?.confirmText}
+        onClose={closeConfirmation}
+        onConfirm={confirmationData?.onConfirm}
+        subtext={confirmationData?.subtext}
+        title={confirmationData?.title}
+        visible={!!confirmationData}
+      />
+    </BottomSheetModal>
   );
 };

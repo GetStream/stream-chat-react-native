@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { StreamingMessageViewProps } from '../MessageSimple/StreamingMessageView';
+import { StreamingMessageViewProps } from '../MessageItemView/StreamingMessageView';
 
 export type UseStreamingMessageProps = Pick<
   StreamingMessageViewProps,

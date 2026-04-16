@@ -3,10 +3,10 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
     ext {
-        buildToolsVersion = "35.0.0"
+        buildToolsVersion = "36.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 35
-        targetSdkVersion = 35
+        compileSdkVersion = 36
+        targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.1.20"
         androidXCore = "1.0.2"
@@ -26,6 +26,10 @@ buildscript {
     }
 }
 
+ext.REACT_NATIVE_NODE_MODULES_DIR = file("$rootDir/../node_modules/react-native").absolutePath
+ext.REACT_NATIVE_WORKLETS_NODE_MODULES_DIR =
+    file("$rootDir/../node_modules/react-native-worklets").absolutePath
+
 allprojects {
     repositories {
         maven {
@@ -34,19 +38,6 @@ allprojects {
         // this is how Notifee finds it's Android library:
         maven {
             url "$rootDir/../node_modules/@notifee/react-native/android/libs"
-        }
-    }
-}
-
-project(':app') {
-    afterEvaluate {
-        if (tasks.findByName("preBuild")) {
-            tasks.preBuild.doFirst {
-                exec {
-                    workingDir rootDir
-                    commandLine './gradlew', 'generateCodegenArtifactsFromSchema'
-                }
-            }
         }
     }
 }

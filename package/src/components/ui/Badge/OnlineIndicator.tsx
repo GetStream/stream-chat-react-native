@@ -1,0 +1,63 @@
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../theme';
+
+export type OnlineIndicatorProps = {
+  online: boolean;
+  size: 'xl' | 'lg' | 'sm' | 'md';
+};
+
+const sizes = {
+  xl: {
+    borderWidth: 2,
+    height: 16,
+    width: 16,
+  },
+  lg: {
+    borderWidth: 2,
+    height: 14,
+    width: 14,
+  },
+  md: {
+    borderWidth: 2,
+    height: 12,
+    width: 12,
+  },
+  sm: {
+    borderWidth: 1,
+    height: 8,
+    width: 8,
+  },
+};
+
+export const OnlineIndicator = ({ online, size = 'md' }: OnlineIndicatorProps) => {
+  const styles = useStyles();
+  return <View style={[styles.indicator, sizes[size], online ? styles.online : styles.offline]} />;
+};
+
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  const { presenceBorder, presenceBgOffline, presenceBgOnline } = semantics;
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        indicator: {
+          borderColor: presenceBorder,
+          borderRadius: primitives.radiusMax,
+        },
+        online: {
+          backgroundColor: presenceBgOnline,
+        },
+        offline: {
+          backgroundColor: presenceBgOffline,
+        },
+      }),
+    [presenceBgOnline, presenceBgOffline, presenceBorder],
+  );
+};

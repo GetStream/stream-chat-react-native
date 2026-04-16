@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
+
 import {
+  AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageActionsParams,
   Thread,
@@ -10,22 +11,23 @@ import {
   useTheme,
   useTranslationContext,
   useTypingString,
+  PortalWhileClosingView,
 } from 'stream-chat-react-native';
 import { useStateStore } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
-import type { RouteProp } from '@react-navigation/native';
+import { type RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
 import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
-import { MessageReminderHeader } from '../components/Reminders/MessageReminderHeader.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
-import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
+// import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
+import { useAppContext } from '../context/AppContext.ts';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -64,7 +66,6 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 
   return (
     <ScreenHeader
-      inSafeArea
       subtitleText={typing ? typing : `with ${subtitleText}`}
       titleText='Thread Reply'
     />
@@ -73,18 +74,19 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   navigation,
-  route: {
-    params: { channel, thread },
-  },
+  route,
 }) => {
+  const { channel, thread, targetedMessageId: targetedMessageIdFromParams } = route.params;
   const {
     theme: {
-      colors: { white },
+      semantics,
     },
   } = useTheme();
+  const { white } = useLegacyColors();
   const { client: chatClient } = useChatContext();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
+  const { messageInputFloating, messageListImplementation } = useAppContext();
 
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,
@@ -105,36 +107,70 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       return channelMessageActions({
         params,
         chatClient,
+        semantics,
         t,
       });
     },
-    [chatClient, t],
+    [chatClient, semantics, t],
   );
 
   const onThreadDismount = useCallback(() => {
     setThread(null);
   }, [setThread]);
 
+  const onAlsoSentToChannelHeaderPress = useCallback(
+    ({ targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
+      const params: StackNavigatorParamList['ChannelScreen'] = {
+        channel,
+        messageId: targetedMessageId,
+      };
+      const hasChannelInStack = navigation
+        .getState()
+        .routes.some((stackRoute) => {
+          if (stackRoute.name !== 'ChannelScreen') {
+            return false;
+          }
+          const routeParams = stackRoute.params as StackNavigatorParamList['ChannelScreen'] | undefined;
+          const routeChannelId = routeParams?.channel?.id ?? routeParams?.channelId;
+          return routeChannelId === channel.id;
+        });
+
+      if (hasChannelInStack) {
+        navigation.popTo('ChannelScreen', params);
+        return;
+      }
+
+      navigation.navigate('ChannelScreen', params);
+    },
+    [channel, navigation],
+  );
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
+    <View style={[styles.container, { backgroundColor: white }]}>
       <Channel
         audioRecordingEnabled={true}
-        AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
         channel={channel}
         enforceUniqueReaction
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={0}
         messageActions={messageActions}
-        MessageHeader={MessageReminderHeader}
-        MessageLocation={MessageLocation}
+        messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         thread={thread}
         threadList
+        onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+        messageId={targetedMessageIdFromParams}
       >
-        <View style={styles.container}>
+        <PortalWhileClosingView
+          portalHostName='overlay-header'
+          portalName='channel-header'
+        >
           <ThreadHeader thread={thread} />
-          <Thread onThreadDismount={onThreadDismount} />
-        </View>
+        </PortalWhileClosingView>
+        <Thread
+          onThreadDismount={onThreadDismount}
+          shouldUseFlashList={messageListImplementation === 'flashlist'}
+        />
       </Channel>
-    </SafeAreaView>
+    </View>
   );
 };

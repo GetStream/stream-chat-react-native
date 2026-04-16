@@ -8,6 +8,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -58,13 +59,13 @@ const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
   const { disabled, onPress } = props;
   const {
     theme: {
-      colors: { accent_blue, grey },
+      semantics,
     },
   } = useTheme();
 
   return (
     <RoundButton disabled={disabled} onPress={onPress}>
-      <Check pathFill={!disabled ? accent_blue : grey} />
+      <Check pathFill={!disabled ? semantics.accentPrimary : semantics.textPrimary} />
     </RoundButton>
   );
 };
@@ -86,9 +87,10 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
 
   const {
     theme: {
-      colors: { bg_gradient_end, bg_gradient_start, black, border, grey, white_snow },
+      semantics,
     },
   } = useTheme();
+  const { bg_gradient_end, bg_gradient_start, black, grey, white_snow } = useLegacyColors();
   const { vw } = useViewport();
 
   const [groupName, setGroupName] = useState('');
@@ -128,7 +130,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
             styles.inputBoxContainer,
             {
               backgroundColor: white_snow,
-              borderColor: border,
+              borderColor: semantics.borderCoreDefault,
             },
           ]}
         >

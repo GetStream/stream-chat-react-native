@@ -15,6 +15,7 @@ import { getOrCreateChannelApi } from '../../mock-builders/api/getOrCreateChanne
 import { sendMessageApi } from '../../mock-builders/api/sendMessage';
 import { sendReactionApi } from '../../mock-builders/api/sendReaction';
 import { useMockedApis } from '../../mock-builders/api/useMockedApis';
+import { generateFileReference } from '../../mock-builders/attachments';
 import dispatchConnectionChangedEvent from '../../mock-builders/event/connectionChanged';
 import { generateChannelResponse } from '../../mock-builders/generator/channel';
 import { generateMember } from '../../mock-builders/generator/member';
@@ -25,6 +26,7 @@ import { getTestClientWithUser } from '../../mock-builders/mock';
 import { upsertChannels } from '../../store/apis';
 import { SqliteClient } from '../../store/SqliteClient';
 import { BetterSqlite } from '../../test-utils/BetterSqlite';
+import { MessageStatusTypes } from '../../utils/utils';
 
 test('Workaround to allow exporting tests', () => expect(true).toBe(true));
 
@@ -397,6 +399,229 @@ export const OptimisticUpdates = () => {
       });
     });
 
+    describe('edit message', () => {
+      it('should keep the optimistic edit in state and DB if the LLC queues the edit', async () => {
+        const message = channel.state.messages[0];
+        const editedText = 'edited while offline';
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel
+              channel={channel}
+              doUpdateMessageRequest={async (_channelId, localMessage, options) => {
+                await chatClient.offlineDb.addPendingTask({
+                  channelId: channel.id,
+                  channelType: channel.type,
+                  messageId: message.id,
+                  payload: [localMessage, undefined, options],
+                  type: 'update-message',
+                });
+                return {
+                  message: {
+                    ...localMessage,
+                    message_text_updated_at: new Date(),
+                    updated_at: new Date(),
+                  },
+                };
+              }}
+            >
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  await editMessage({
+                    localMessage: {
+                      ...message,
+                      cid: channel.cid,
+                      text: editedText,
+                    },
+                    options: {},
+                  });
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(async () => {
+          const updatedMessage = channel.state.findMessage(message.id);
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          const dbMessages = await BetterSqlite.selectFromTable('messages');
+          const dbMessage = dbMessages.find((row) => row.id === message.id);
+
+          expect(updatedMessage.text).toBe(editedText);
+          expect(updatedMessage.message_text_updated_at).toBeTruthy();
+          expect(pendingTasksRows).toHaveLength(1);
+          expect(pendingTasksRows[0].type).toBe('update-message');
+          expect(dbMessage.text).toBe(editedText);
+          expect(dbMessage.messageTextUpdatedAt).toBeTruthy();
+        });
+      });
+
+      it('should keep the optimistic edit if the request fails', async () => {
+        const message = channel.state.messages[0];
+        const editedText = 'should stay optimistic';
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel
+              channel={channel}
+              doUpdateMessageRequest={() => {
+                throw new Error('validation');
+              }}
+            >
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  try {
+                    await editMessage({
+                      localMessage: {
+                        ...message,
+                        cid: channel.cid,
+                        text: editedText,
+                      },
+                      options: {},
+                    });
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(async () => {
+          const updatedMessage = channel.state.findMessage(message.id);
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          const dbMessages = await BetterSqlite.selectFromTable('messages');
+          const dbMessage = dbMessages.find((row) => row.id === message.id);
+
+          expect(updatedMessage.text).toBe(editedText);
+          expect(pendingTasksRows).toHaveLength(0);
+          expect(dbMessage.text).toBe(editedText);
+        });
+      });
+
+      it('should not set message_text_updated_at during optimistic edit of a failed message', async () => {
+        const message = channel.state.messages[0];
+        const optimisticStateSpy = jest.fn();
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel
+              channel={channel}
+              doUpdateMessageRequest={() => {
+                const optimisticMessage = channel.state.findMessage(message.id);
+                optimisticStateSpy(optimisticMessage);
+
+                return {
+                  message: {
+                    ...optimisticMessage,
+                  },
+                };
+              }}
+            >
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  await editMessage({
+                    localMessage: {
+                      ...message,
+                      cid: channel.cid,
+                      status: MessageStatusTypes.FAILED,
+                      text: 'edited failed message',
+                    },
+                    options: {},
+                  });
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(() => {
+          expect(optimisticStateSpy).toHaveBeenCalled();
+          expect(optimisticStateSpy.mock.calls[0][0].message_text_updated_at).toBeUndefined();
+        });
+      });
+
+      it('should keep the optimistic edit for attachment updates without auto-queueing', async () => {
+        const message = channel.state.messages[0];
+        const editedText = 'edited attachment message';
+        const localUri = 'file://edited-attachment.png';
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel
+              channel={channel}
+              doUpdateMessageRequest={() => {
+                throw new Error('offline');
+              }}
+            >
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  try {
+                    await editMessage({
+                      localMessage: {
+                        ...message,
+                        attachments: [
+                          {
+                            asset_url: localUri,
+                            originalFile: generateFileReference({
+                              name: 'edited-attachment.png',
+                              type: 'image/png',
+                              uri: localUri,
+                            }),
+                            type: 'file',
+                          },
+                        ],
+                        cid: channel.cid,
+                        text: editedText,
+                      },
+                      options: {},
+                    });
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(async () => {
+          const updatedMessage = channel.state.findMessage(message.id);
+          const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
+          const dbMessages = await BetterSqlite.selectFromTable('messages');
+          const dbMessage = dbMessages.find((row) => row.id === message.id);
+          const storedAttachments = JSON.parse(dbMessage.attachments);
+
+          expect(updatedMessage.text).toBe(editedText);
+          expect(updatedMessage.attachments[0].asset_url).toBe(localUri);
+          expect(pendingTasksRows).toHaveLength(0);
+          expect(dbMessage.text).toBe(editedText);
+          expect(storedAttachments[0].asset_url).toBe(localUri);
+        });
+      });
+    });
+
     describe('pending task execution', () => {
       it('pending task should be executed after connection is recovered', async () => {
         const message = channel.state.messages[0];
@@ -493,6 +718,131 @@ export const OptimisticUpdates = () => {
 
         await waitFor(() => {
           expect(sendMessageSpy).toHaveBeenCalled();
+        });
+      });
+
+      it('should not re-add a failed local message after reconnect when its pending send task was resolved', async () => {
+        const localMessage = generateMessage({
+          status: MessageStatusTypes.SENDING,
+          text: 'offline resend',
+          user: chatClient.user,
+          userId: chatClient.userID,
+        });
+        const serverMessage = generateMessage({
+          id: localMessage.id,
+          text: localMessage.text,
+          user: chatClient.user,
+          userId: chatClient.userID,
+        });
+
+        jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue({
+          localMessage,
+          message: localMessage,
+          options: {},
+        });
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel} initialValue={localMessage.text}>
+              <CallbackEffectWithContext
+                callback={async ({ sendMessage }) => {
+                  useMockedApis(chatClient, [erroredPostApi()]);
+                  await sendMessage();
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        let pendingTask;
+        await waitFor(async () => {
+          const pendingTasks = await chatClient.offlineDb.getPendingTasks();
+          expect(pendingTasks).toHaveLength(1);
+          pendingTask = pendingTasks[0];
+        });
+
+        expect(channel.state.messages.some((message) => message.id === localMessage.id)).toBe(true);
+
+        jest.spyOn(channel, 'watch').mockResolvedValue({});
+
+        channel.state.removeMessage(localMessage);
+        channel.state.addMessageSorted(serverMessage, true);
+        await chatClient.offlineDb.deletePendingTask({ id: pendingTask.id });
+
+        await act(async () => {
+          await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true);
+        });
+
+        await waitFor(() => {
+          const matchingMessages = channel.state.messages.filter(
+            (message) => message.text === localMessage.text,
+          );
+
+          expect(matchingMessages).toHaveLength(1);
+          expect(matchingMessages[0].id).toBe(serverMessage.id);
+          expect(matchingMessages[0].status).not.toBe(MessageStatusTypes.FAILED);
+        });
+      });
+
+      it('should re-add a failed local message after reconnect when fresh state still does not contain it', async () => {
+        const localMessage = generateMessage({
+          status: MessageStatusTypes.SENDING,
+          text: 'offline resend unresolved',
+          user: chatClient.user,
+          userId: chatClient.userID,
+        });
+
+        jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue({
+          localMessage,
+          message: localMessage,
+          options: {},
+        });
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel} initialValue={localMessage.text}>
+              <CallbackEffectWithContext
+                callback={async ({ sendMessage }) => {
+                  useMockedApis(chatClient, [erroredPostApi()]);
+                  await sendMessage();
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        let pendingTask;
+        await waitFor(async () => {
+          const pendingTasks = await chatClient.offlineDb.getPendingTasks();
+          expect(pendingTasks).toHaveLength(1);
+          pendingTask = pendingTasks[0];
+        });
+
+        jest.spyOn(channel, 'watch').mockResolvedValue({});
+
+        channel.state.removeMessage(localMessage);
+        await chatClient.offlineDb.deletePendingTask({ id: pendingTask.id });
+
+        await act(async () => {
+          await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true);
+        });
+
+        await waitFor(() => {
+          const matchingMessages = channel.state.messages.filter(
+            (message) => message.id === localMessage.id,
+          );
+
+          expect(matchingMessages).toHaveLength(1);
+          expect(matchingMessages[0].status).toBe(MessageStatusTypes.FAILED);
+          expect(matchingMessages[0].text).toBe(localMessage.text);
         });
       });
     });

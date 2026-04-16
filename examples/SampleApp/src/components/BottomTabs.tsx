@@ -13,6 +13,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { Route } from '@react-navigation/native';
 import { DraftsTab } from '../icons/DraftsTab';
 import { RemindersTab } from '../icons/ReminderTab';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   notification: {
@@ -84,11 +85,8 @@ type TabProps = Pick<BottomTabBarProps, 'navigation' | 'state'> & {
 
 const Tab = (props: TabProps) => {
   const { navigation, state, route, index } = props;
-  const {
-    theme: {
-      colors: { black, grey },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey } = useLegacyColors();
   const tab = getTab(route.name);
 
   const isFocused = state.index === index;
@@ -130,11 +128,8 @@ const Tab = (props: TabProps) => {
 
 export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
   const { navigation, state } = props;
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
+  useTheme();
+  const { white } = useLegacyColors();
   const { bottom } = useSafeAreaInsets();
 
   return (

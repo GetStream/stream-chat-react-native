@@ -1,13 +1,14 @@
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
-import { useChatContext, useTheme } from 'stream-chat-react-native';
+import { useChatContext } from 'stream-chat-react-native';
 
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';
 
 import { useAppContext } from '../context/AppContext';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -29,11 +30,7 @@ type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
 >;
 
 export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream Chat' }) => {
-  const {
-    theme: {
-      colors: { accent_blue },
-    },
-  } = useTheme();
+  const { accent_blue } = useLegacyColors();
 
   const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
   const { chatClient } = useAppContext();

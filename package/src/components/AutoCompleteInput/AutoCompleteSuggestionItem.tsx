@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
@@ -7,10 +7,10 @@ import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionComma
 
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { AtMentions } from '../../icons/AtMentions';
+import { primitives } from '../../theme';
 import type { Emoji } from '../../types/types';
 
-import { Avatar } from '../Avatar/Avatar';
+import { UserAvatar } from '../ui/Avatar/UserAvatar';
 
 export type AutoCompleteSuggestionItemProps = {
   itemProps: TextComposerSuggestion;
@@ -18,26 +18,26 @@ export type AutoCompleteSuggestionItemProps = {
 };
 
 export const MentionSuggestionItem = (item: UserSuggestion) => {
-  const { id, image, name, online } = item;
+  const { id, name, online } = item;
   const {
     theme: {
-      colors: { accent_blue, black },
-      messageInput: {
+      messageComposer: {
         suggestions: {
-          mention: { avatarSize, column, container: mentionContainer, name: nameStyle },
+          mention: { column, container: mentionContainer, name: nameStyle },
         },
       },
     },
   } = useTheme();
+  const styles = useStyles();
+
   return (
     <View style={[styles.container, mentionContainer]}>
-      <Avatar image={image} name={name} online={online} size={avatarSize} />
+      <UserAvatar user={item} size='md' showOnlineIndicator={online} />
       <View style={[styles.column, column]}>
-        <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
+        <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
           {name || id}
         </Text>
       </View>
-      <AtMentions pathFill={accent_blue} />
     </View>
   );
 };
@@ -46,20 +46,21 @@ export const EmojiSuggestionItem = (item: Emoji) => {
   const { native, name } = item;
   const {
     theme: {
-      colors: { black },
-      messageInput: {
+      messageComposer: {
         suggestions: {
           emoji: { container: emojiContainer, text },
         },
       },
     },
   } = useTheme();
+  const styles = useStyles();
+
   return (
     <View style={[styles.container, emojiContainer]}>
-      <Text style={[styles.text, { color: black }, text]} testID='emojis-item-unicode'>
+      <Text style={[styles.text, text]} testID='emojis-item-unicode'>
         {native}
       </Text>
-      <Text style={[styles.text, { color: black }, text]} testID='emojis-item-name'>
+      <Text style={[styles.text, text]} testID='emojis-item-name'>
         {` ${name}`}
       </Text>
     </View>
@@ -70,22 +71,29 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
   const { args, name } = item;
   const {
     theme: {
-      colors: { black, grey },
-      messageInput: {
+      semantics,
+      messageComposer: {
         suggestions: {
           command: { args: argsStyle, container: commandContainer, title },
         },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, commandContainer]}>
+    <View style={[styles.commandContainer, commandContainer]}>
       {name ? <AutoCompleteSuggestionCommandIcon name={name} /> : null}
-      <Text style={[styles.title, { color: black }, title]} testID='commands-item-title'>
+      <Text
+        style={[styles.title, { color: semantics.textPrimary }, title]}
+        testID='commands-item-title'
+      >
         {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
       </Text>
-      <Text style={[styles.args, { color: grey }, argsStyle]} testID='commands-item-args'>
+      <Text
+        style={[styles.args, { color: semantics.textTertiary }, argsStyle]}
+        testID='commands-item-args'
+      >
         {`/${name} ${args}`}
       </Text>
     </View>
@@ -120,7 +128,7 @@ const UnMemoizedAutoCompleteSuggestionItem = ({
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         suggestions: { item: itemStyle },
       },
     },
@@ -167,36 +175,58 @@ export const AutoCompleteSuggestionItem = (props: AutoCompleteSuggestionItemProp
   <MemoizedAutoCompleteSuggestionItem {...props} />
 );
 
-const styles = StyleSheet.create({
-  args: {
-    fontSize: 14,
-  },
-  column: {
-    flex: 1,
-    justifyContent: 'space-evenly',
-    paddingLeft: 8,
-  },
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  name: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingBottom: 2,
-  },
-  tag: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  text: {
-    fontSize: 14,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingHorizontal: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        args: {
+          fontSize: primitives.typographyFontSizeMd,
+          color: semantics.textTertiary,
+        },
+        column: {
+          flex: 1,
+          justifyContent: 'space-evenly',
+          paddingLeft: 8,
+        },
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          paddingHorizontal: 16,
+          paddingVertical: 8,
+        },
+        commandContainer: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          paddingHorizontal: primitives.spacingSm,
+          paddingVertical: primitives.spacingXs,
+        },
+        name: {
+          fontSize: primitives.typographyFontSizeMd,
+          lineHeight: primitives.typographyLineHeightNormal,
+          color: semantics.textPrimary,
+          paddingBottom: 2,
+        },
+        tag: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
+        text: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightRegular,
+          color: semantics.textPrimary,
+          lineHeight: primitives.typographyLineHeightNormal,
+        },
+        title: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          color: semantics.textPrimary,
+          width: 80,
+        },
+      }),
+    [semantics.textPrimary, semantics.textTertiary],
+  );
+};

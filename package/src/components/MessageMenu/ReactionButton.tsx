@@ -1,10 +1,11 @@
-import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../icons';
+import { Button, ButtonProps } from '../ui';
 
-type ReactionButtonProps = {
+export type ReactionButtonProps = {
   /**
    * Icon to display for the reaction button
    */
@@ -23,24 +24,20 @@ type ReactionButtonProps = {
    * @returns
    */
   onPress?: (reactionType: string) => void;
+  count?: string;
+  size?: ButtonProps['size'];
 };
 
 export const ReactionButton = (props: ReactionButtonProps) => {
-  const { Icon, onPress, selected, type } = props;
+  const { Icon, onPress, selected, type, size, count } = props;
   const {
     theme: {
-      colors: { light_blue, accent_blue, white, grey },
       messageMenu: {
-        reactionButton: {
-          filledBackgroundColor = light_blue,
-          filledColor = accent_blue,
-          unfilledBackgroundColor = white,
-          unfilledColor = grey,
-        },
-        reactionPicker: { buttonContainer, reactionIconSize },
+        reactionPicker: { reactionIconSize },
       },
     },
   } = useTheme();
+  const styles = useStyles(!!count);
 
   const onPressHandler = () => {
     if (onPress) {
@@ -48,30 +45,52 @@ export const ReactionButton = (props: ReactionButtonProps) => {
     }
   };
 
+  const EmojiIcon = useCallback(
+    () => <Icon size={reactionIconSize ?? 24} />,
+    [Icon, reactionIconSize],
+  );
+
   return (
-    <Pressable
-      accessibilityLabel={`reaction-button-${type}-${selected ? 'selected' : 'unselected'}`}
-      onPress={onPressHandler}
-      style={({ pressed }) => [
-        styles.reactionButton,
-        { backgroundColor: pressed || selected ? filledBackgroundColor : unfilledBackgroundColor },
-        buttonContainer,
-      ]}
-    >
-      <Icon
-        height={reactionIconSize}
-        pathFill={selected ? filledColor : unfilledColor}
-        width={reactionIconSize}
+    <View style={styles.reactionButton}>
+      <Button
+        accessibilityLabel={`reaction-button-${type}-${selected ? 'selected' : 'unselected'}`}
+        variant={'secondary'}
+        type={'outline'}
+        iconOnly={!count}
+        size={size ?? 'md'}
+        label={count}
+        onPress={onPressHandler}
+        selected={selected}
+        style={styles.buttonContainer}
+        LeadingIcon={EmojiIcon}
       />
-    </Pressable>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  reactionButton: {
-    alignItems: 'center',
-    borderRadius: 8,
-    justifyContent: 'center',
-    padding: 8,
-  },
-});
+const useStyles = (hasCount: boolean) => {
+  const {
+    theme: {
+      messageMenu: {
+        reactionPicker: { buttonContainer },
+      },
+    },
+  } = useTheme();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        reactionButton: {
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        buttonContainer: hasCount
+          ? buttonContainer
+          : {
+              ...buttonContainer,
+              borderWidth: 0,
+            },
+      }),
+    [buttonContainer, hasCount],
+  );
+};

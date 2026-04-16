@@ -1,17 +1,20 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { I18nManager, StyleSheet, View } from 'react-native';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+
+import { ProgressControlThumb } from './ProgressThumb';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 import { resampleWaveformData } from '../MessageInput/utils/audioSampling';
 
 export type WaveProgressBarProps = {
+  /**
+   * If true, the underlying attachment is playing.
+   */
+  isPlaying?: boolean;
   /**
    * The progress of the waveform in percentage
    */
@@ -25,18 +28,9 @@ export type WaveProgressBarProps = {
    */
   amplitudesCount?: number;
   /**
-   * The color of the filled waveform
-   */
-  filledColor?: string;
-  /**
    * The function to be called when the user ends dragging the waveform
    */
   onEndDrag?: (progress: number) => void;
-  /**
-   * The function to be called when the user plays or pauses the audio
-   * @deprecated Use onStartDrag and onEndDrag instead
-   */
-  onPlayPause?: (status?: boolean) => void;
   /**
    * The function to be called when the user is dragging the waveform
    */
@@ -48,100 +42,158 @@ export type WaveProgressBarProps = {
 };
 
 const WAVEFORM_WIDTH = 2;
-const WAVE_MAX_HEIGHT = 25;
-const WAVE_MIN_HEIGHT = 3;
-
-const ProgressControlThumb = ({ style }: { style?: StyleProp<ViewStyle> }) => {
-  const {
-    theme: {
-      colors: { black, grey_dark, static_white },
-    },
-  } = useTheme();
-  return (
-    <View
-      hitSlop={{ bottom: 20, left: 20, right: 20, top: 20 }}
-      style={[
-        styles.progressControlThumbStyle,
-        {
-          backgroundColor: static_white,
-          borderColor: grey_dark,
-          shadowColor: black,
-        },
-        style,
-      ]}
-    />
-  );
+const WAVEFORM_GAP = 2;
+const WAVE_MAX_HEIGHT = 20;
+const WAVE_MIN_HEIGHT = 2;
+const DRAG_HIT_SLOP = {
+  bottom: 12,
+  left: 12,
+  right: 12,
+  top: 12,
 };
+
+const clampProgress = (progress: number) => {
+  'worklet';
+  return Math.max(0, Math.min(progress, 1));
+};
+
+type WaveformBarsProps = {
+  color: ColorValue;
+  heights: number[];
+  waveformStyle?: StyleProp<ViewStyle>;
+};
+
+const WaveformBars = React.memo(({ color, heights, waveformStyle }: WaveformBarsProps) => (
+  <View style={styles.waveformLayer}>
+    {heights.map((height, index) => (
+      <View
+        key={index}
+        style={[
+          styles.waveform,
+          {
+            backgroundColor: color,
+            height,
+          },
+          waveformStyle,
+        ]}
+      />
+    ))}
+  </View>
+));
+
+WaveformBars.displayName = 'WaveformBars';
 
 export const WaveProgressBar = React.memo(
   (props: WaveProgressBarProps) => {
-    /* On Android, the seek doesn't work for AAC files, hence we disable progress drag for now */
-    const showProgressDrag = Platform.OS === 'ios';
+    const [width, setWidth] = useState<number>(0);
     const {
-      amplitudesCount = 70,
-      filledColor,
+      amplitudesCount = Math.max(20, Math.floor(width / (WAVEFORM_WIDTH + WAVEFORM_GAP))),
+      isPlaying = false,
       onEndDrag,
       onProgressDrag,
       onStartDrag,
       progress,
       waveformData,
     } = props;
-    const eachWaveformWidth = WAVEFORM_WIDTH * 2;
+    const [showInteractiveLayer, setShowInteractiveLayer] = useState(
+      () => progress > 0 || isPlaying,
+    );
+    const isRTL = I18nManager.isRTL;
+    const thumbDirectionMultiplier = isRTL ? -1 : 1;
+    const eachWaveformWidth = WAVEFORM_WIDTH + WAVEFORM_GAP;
     const fullWidth = (amplitudesCount - 1) * eachWaveformWidth;
-    const state = useSharedValue(progress);
-    const [currentWaveformProgress, setCurrentWaveformProgress] = useState<number>(0);
-
-    const waveFormNumberFromProgress = useCallback(
-      (progress: number) => {
-        'worklet';
-        const progressInPrecision = Number(progress.toFixed(2));
-        const progressInWaveformWidth = Number((progressInPrecision * fullWidth).toFixed(0));
-        const progressInWaveformNumber = Math.floor(progressInWaveformWidth / 4);
-        runOnJS(setCurrentWaveformProgress)(progressInWaveformNumber);
-      },
-      [fullWidth],
-    );
-
-    useAnimatedReaction(
-      () => progress,
-      (newProgress) => {
-        state.value = newProgress;
-        waveFormNumberFromProgress(newProgress);
-      },
-      [progress],
-    );
+    const maxThumbTranslateX = Math.max(fullWidth - eachWaveformWidth, 0);
+    const maxProgressWidth = fullWidth + WAVEFORM_WIDTH;
+    const dragStartProgress = useSharedValue(0);
+    const isDragging = useSharedValue(false);
+    const visualProgress = useSharedValue(progress);
 
     const {
       theme: {
-        colors: { accent_blue, grey_dark },
+        semantics,
         waveProgressBar: { container, thumb, waveform: waveformTheme },
       },
     } = useTheme();
 
+    useEffect(() => {
+      if (!isDragging.value) {
+        visualProgress.value = progress;
+      }
+    }, [isDragging, progress, visualProgress]);
+
+    useEffect(() => {
+      setShowInteractiveLayer(progress > 0 || isPlaying);
+    }, [isPlaying, progress]);
+
+    const handleStartDrag = useCallback(
+      (nextProgress: number) => {
+        setShowInteractiveLayer(true);
+        onStartDrag?.(nextProgress);
+      },
+      [onStartDrag],
+    );
+
+    const handleProgressDrag = useCallback(
+      (nextProgress: number) => {
+        onProgressDrag?.(nextProgress);
+      },
+      [onProgressDrag],
+    );
+
+    const handleEndDrag = useCallback(
+      (nextProgress: number) => {
+        onEndDrag?.(nextProgress);
+      },
+      [onEndDrag],
+    );
+
     const pan = useMemo(
       () =>
         Gesture.Pan()
-          .enabled(showProgressDrag)
+          .hitSlop(DRAG_HIT_SLOP)
           .maxPointers(1)
           .onStart(() => {
+            const nextProgress = clampProgress(visualProgress.value);
+            dragStartProgress.value = nextProgress;
+            isDragging.value = true;
             if (onStartDrag) {
-              runOnJS(onStartDrag)(state.value);
+              runOnJS(handleStartDrag)(nextProgress);
             }
           })
           .onUpdate((event) => {
-            const newProgress = Math.max(0, Math.min(event.x / fullWidth, 1));
-            state.value = newProgress;
-            waveFormNumberFromProgress(newProgress);
+            if (fullWidth <= 0) {
+              return;
+            }
+            const nextProgress = clampProgress(
+              dragStartProgress.value + (event.translationX * thumbDirectionMultiplier) / fullWidth,
+            );
+            visualProgress.value = nextProgress;
+            if (onProgressDrag) {
+              runOnJS(handleProgressDrag)(nextProgress);
+            }
           })
           .onEnd(() => {
+            isDragging.value = false;
             if (onEndDrag) {
-              runOnJS(onEndDrag)(state.value);
+              runOnJS(handleEndDrag)(visualProgress.value);
             }
           }),
-      [fullWidth, onEndDrag, onStartDrag, showProgressDrag, state, waveFormNumberFromProgress],
+      [
+        dragStartProgress,
+        fullWidth,
+        handleEndDrag,
+        handleProgressDrag,
+        handleStartDrag,
+        isDragging,
+        onEndDrag,
+        onProgressDrag,
+        onStartDrag,
+        thumbDirectionMultiplier,
+        visualProgress,
+      ],
     );
 
-    const stringifiedWaveformData = waveformData.toString();
+    const stringifiedWaveformData = useMemo(() => waveformData.toString(), [waveformData]);
 
     const resampledWaveformData = useMemo(
       () => resampleWaveformData(waveformData, amplitudesCount),
@@ -149,45 +201,81 @@ export const WaveProgressBar = React.memo(
       [amplitudesCount, stringifiedWaveformData],
     );
 
+    const waveformHeights = useMemo(
+      () =>
+        resampledWaveformData.map((waveform) =>
+          waveform * WAVE_MAX_HEIGHT > WAVE_MIN_HEIGHT
+            ? waveform * WAVE_MAX_HEIGHT
+            : WAVE_MIN_HEIGHT,
+        ),
+      [resampledWaveformData],
+    );
+
+    const progressOverlayStyles = useAnimatedStyle(
+      () => ({
+        width: clampProgress(visualProgress.value) * maxProgressWidth,
+      }),
+      [maxProgressWidth],
+    );
+
     const thumbStyles = useAnimatedStyle(
       () => ({
         position: 'absolute',
-        transform: [{ translateX: currentWaveformProgress * eachWaveformWidth }],
+        transform: [
+          {
+            translateX:
+              Math.min(clampProgress(visualProgress.value) * fullWidth, maxThumbTranslateX) *
+              thumbDirectionMultiplier,
+          },
+        ],
       }),
-      [currentWaveformProgress, fullWidth],
+      [fullWidth, maxThumbTranslateX, thumbDirectionMultiplier],
     );
 
     return (
       <GestureDetector gesture={pan}>
-        <View style={[styles.container, container]}>
-          {resampledWaveformData.map((waveform, index) => (
+        <View
+          onLayout={({ nativeEvent }) => {
+            setWidth(nativeEvent.layout.width);
+          }}
+          style={[styles.container, container]}
+        >
+          <WaveformBars
+            color={semantics.chatWaveformBar}
+            heights={waveformHeights}
+            waveformStyle={waveformTheme}
+          />
+          {showInteractiveLayer ? (
             <Animated.View
-              key={index}
-              style={[
-                styles.waveform,
-                {
-                  backgroundColor:
-                    index < currentWaveformProgress ? filledColor || accent_blue : grey_dark,
-                  height:
-                    waveform * WAVE_MAX_HEIGHT > WAVE_MIN_HEIGHT
-                      ? waveform * WAVE_MAX_HEIGHT
-                      : WAVE_MIN_HEIGHT,
-                },
-                waveformTheme,
-              ]}
-            />
-          ))}
-          {showProgressDrag && (onEndDrag || onProgressDrag) && (
-            <Animated.View style={[thumbStyles, thumb]}>
-              <ProgressControlThumb />
+              pointerEvents='none'
+              style={[styles.progressOverlay, progressOverlayStyles]}
+            >
+              <WaveformBars
+                color={semantics.chatWaveformBarPlaying}
+                heights={waveformHeights}
+                waveformStyle={waveformTheme}
+              />
             </Animated.View>
-          )}
+          ) : null}
+          {(onEndDrag || onProgressDrag) &&
+            (showInteractiveLayer ? (
+              <Animated.View style={[thumbStyles, thumb]}>
+                <ProgressControlThumb isPlaying={isPlaying} />
+              </Animated.View>
+            ) : (
+              <View style={[styles.idleThumb, thumb]}>
+                <ProgressControlThumb isPlaying={isPlaying} />
+              </View>
+            ))}
         </View>
       </GestureDetector>
     );
   },
   (prevProps, nextProps) => {
     if (prevProps.amplitudesCount !== nextProps.amplitudesCount) {
+      return false;
+    }
+    if (prevProps.isPlaying !== nextProps.isPlaying) {
       return false;
     }
     if (prevProps.progress !== nextProps.progress) {
@@ -202,24 +290,26 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flexDirection: 'row',
+    position: 'relative',
   },
-  progressControlThumbStyle: {
-    borderRadius: 5,
-    borderWidth: 0.2,
-    elevation: 6,
-    height: 28,
-    shadowOffset: {
-      height: 3,
-      width: 0,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    width: WAVEFORM_WIDTH * 2,
+  idleThumb: {
+    left: 0,
+    position: 'absolute',
+  },
+  progressOverlay: {
+    left: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    top: 0,
+  },
+  waveformLayer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: WAVEFORM_GAP,
   },
   waveform: {
     alignSelf: 'center',
-    borderRadius: 2,
-    marginRight: WAVEFORM_WIDTH,
+    borderRadius: primitives.radiusXxs,
     width: WAVEFORM_WIDTH,
   },
 });

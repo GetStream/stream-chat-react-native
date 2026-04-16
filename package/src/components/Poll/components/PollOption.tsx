@@ -4,7 +4,7 @@ import { Pressable, ScrollViewProps, StyleSheet, Text, View } from 'react-native
 
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { PollOption as PollOptionClass, PollVote } from 'stream-chat';
+import { PollOption as PollOptionClass, PollVote, UserResponse } from 'stream-chat';
 
 import { PollVoteButtonProps } from './Button';
 
@@ -14,49 +14,56 @@ import {
   useOwnCapabilitiesContext,
   usePollContext,
   useTheme,
+  useTranslationContext,
 } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 
 import { Check } from '../../../icons';
-import { Avatar } from '../../Avatar/Avatar';
+import { primitives } from '../../../theme';
+import { ProgressBar } from '../../ProgressControl/ProgressBar';
+import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
+import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
 
 export type PollOptionProps = {
   option: PollOptionClass;
   showProgressBar?: boolean;
+  forceIncoming?: boolean;
 };
 
 export type PollAllOptionsContentProps = PollContextValue & {
   additionalScrollViewProps?: Partial<ScrollViewProps>;
-  PollAllOptionsContent?: React.ComponentType;
 };
 
 export const PollAllOptionsContent = ({
   additionalScrollViewProps,
 }: Pick<PollAllOptionsContentProps, 'additionalScrollViewProps'>) => {
+  const { t } = useTranslationContext();
   const { name, options } = usePollState();
 
   const {
     theme: {
-      colors: { bg_user, black, white },
       poll: {
         allOptions: { listContainer, titleContainer, titleText, wrapper },
       },
     },
   } = useTheme();
+  const styles = useAllOptionStyles();
 
   return (
     <ScrollView
-      contentContainerStyle={{ paddingBottom: 70 }}
-      style={[styles.allOptionsWrapper, { backgroundColor: white }, wrapper]}
+      contentContainerStyle={styles.allOptionsContentContainer}
+      style={[styles.allOptionsWrapper, wrapper]}
       {...additionalScrollViewProps}
     >
-      <View style={[styles.allOptionsTitleContainer, { backgroundColor: bg_user }, titleContainer]}>
-        <Text style={[styles.allOptionsTitleText, { color: black }, titleText]}>{name}</Text>
+      <View style={[styles.allOptionsTitleContainer, titleContainer]}>
+        <Text style={styles.allOptionsTitleMeta}>{t('Question')}</Text>
+        <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
       </View>
-      <View style={[styles.allOptionsListContainer, { backgroundColor: bg_user }, listContainer]}>
+      <View style={[styles.allOptionsListContainer, listContainer]}>
         {options?.map((option: PollOptionClass) => (
-          <View key={`full_poll_options_${option.id}`} style={{ paddingVertical: 16 }}>
-            <PollOption key={option.id} option={option} showProgressBar={false} />
+          <View key={`full_poll_options_${option.id}`} style={styles.optionWrapper}>
+            <PollOption key={option.id} option={option} forceIncoming />
           </View>
         ))}
       </View>
@@ -68,82 +75,79 @@ export const PollAllOptions = ({
   additionalScrollViewProps,
   message,
   poll,
-  PollAllOptionsContent: PollAllOptionsContentOverride,
-}: PollAllOptionsContentProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollAllOptionsContentOverride ? (
-      <PollAllOptionsContentOverride />
-    ) : (
-      <PollAllOptionsContent additionalScrollViewProps={additionalScrollViewProps} />
-    )}
-  </PollContextProvider>
-);
+}: PollAllOptionsContentProps) => {
+  const { PollAllOptionsContent: PollAllOptionsContentComponent } = useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollAllOptionsContentComponent additionalScrollViewProps={additionalScrollViewProps} />
+    </PollContextProvider>
+  );
+};
 
-export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { isClosed, latestVotesByOption, maxVotedOptionIds, voteCountsByOption } = usePollState();
+export const PollOption = ({ option, showProgressBar = true, forceIncoming }: PollOptionProps) => {
+  const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();
+  const styles = useStyles();
 
   const relevantVotes = useMemo(
-    () => latestVotesByOption?.[option.id]?.slice(0, 2) || [],
+    () => latestVotesByOption?.[option.id] || [],
     [latestVotesByOption, option.id],
   );
-  const maxVotes = useMemo(
-    () =>
-      maxVotedOptionIds?.[0] && voteCountsByOption ? voteCountsByOption[maxVotedOptionIds[0]] : 0,
-    [maxVotedOptionIds, voteCountsByOption],
-  );
+
   const votes = voteCountsByOption[option.id] || 0;
 
   const {
     theme: {
-      colors: { accent_dark_blue, accent_info, black, grey },
       poll: {
         message: {
-          option: {
-            container,
-            progressBar,
-            progressBarEmptyFill,
-            progressBarVotedFill,
-            progressBarWinnerFill,
-            text,
-            votesContainer,
-            wrapper,
-          },
+          option: { text, votesContainer, container, info, header, votesText },
         },
       },
+      semantics,
     },
   } = useTheme();
+  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
+
+  const unFilledColor =
+    isPollCreatedByClient && !forceIncoming
+      ? semantics.chatPollProgressTrackOutgoing
+      : semantics.chatPollProgressTrackIncoming;
+
+  const filledColor =
+    isPollCreatedByClient && !forceIncoming
+      ? semantics.chatPollProgressFillOutgoing
+      : semantics.chatPollProgressFillIncoming;
 
   return (
-    <View style={[styles.wrapper, wrapper]}>
-      <View style={[styles.container, container]}>
-        <VoteButton option={option} />
-        <Text style={[styles.text, { color: black }, text]}>{option.text}</Text>
-        <View style={[styles.votesContainer, votesContainer]}>
-          {relevantVotes.map((vote: PollVote) => (
-            <Avatar image={vote.user?.image as string} key={vote.id} size={20} />
-          ))}
-          <Text style={{ color: black, marginLeft: 2 }}>{voteCountsByOption[option.id] || 0}</Text>
+    <View style={[styles.container, container]}>
+      <VoteButton option={option} />
+      <View style={[styles.info, info]}>
+        <View style={[styles.header, header]}>
+          <Text ellipsizeMode='tail' numberOfLines={2} style={[styles.text, text]}>
+            {option.text}
+          </Text>
+          <View style={[styles.votesContainer, votesContainer]}>
+            {relevantVotes.length > 0 ? (
+              <UserAvatarStack
+                users={relevantVotes.map((vote: PollVote) => vote.user as UserResponse)}
+                overlap={0.2}
+                maxVisible={3}
+                avatarSize='xs'
+              />
+            ) : null}
+
+            <Text style={[styles.votesText, votesText]}>{voteCountsByOption[option.id] || 0}</Text>
+          </View>
         </View>
+        {showProgressBar ? (
+          <View style={styles.progressBarContainer}>
+            <ProgressBar
+              progress={votes / voteCount}
+              filledColor={filledColor}
+              emptyColor={unFilledColor}
+            />
+          </View>
+        ) : null}
       </View>
-      {showProgressBar ? (
-        <View style={[styles.progressBar, progressBar]}>
-          <View
-            style={{
-              backgroundColor:
-                isClosed && maxVotedOptionIds.length === 1 && maxVotedOptionIds[0] === option.id
-                  ? progressBarWinnerFill || accent_info
-                  : progressBarVotedFill || accent_dark_blue,
-              flex: maxVotes > 0 ? votes / maxVotes : 0,
-            }}
-          />
-          <View
-            style={{
-              backgroundColor: progressBarEmptyFill || grey,
-              flex: maxVotes > 0 ? (maxVotes - votes) / maxVotes : 1,
-            }}
-          />
-        </View>
-      ) : null}
     </View>
   );
 };
@@ -152,13 +156,17 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   const { message, poll } = usePollContext();
   const { isClosed, ownVotesByOptionId } = usePollState();
   const ownCapabilities = useOwnCapabilitiesContext();
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
+  const styles = useStyles();
 
   const {
     theme: {
-      colors: { accent_dark_blue, disabled },
       poll: {
         message: {
-          option: { voteButtonActive, voteButtonContainer, voteButtonInactive },
+          option: { voteButtonContainer },
         },
       },
     },
@@ -190,48 +198,122 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
         { opacity: pressed ? 0.5 : 1 },
         styles.voteContainer,
         {
-          backgroundColor: hasVote ? voteButtonActive || accent_dark_blue : 'transparent',
-          borderColor: hasVote
-            ? voteButtonActive || accent_dark_blue
-            : voteButtonInactive || disabled,
+          borderWidth: hasVote ? 0 : 1,
+          backgroundColor: hasVote ? semantics.accentPrimary : 'transparent',
+          borderColor: isPollCreatedByClient
+            ? semantics.chatBorderOnChatOutgoing
+            : semantics.chatBorderOnChatIncoming,
         },
         voteButtonContainer,
       ]}
     >
-      {hasVote ? <Check height={15} pathFill='white' width={20} /> : null}
+      {hasVote ? <Check height={20} stroke={semantics.textOnAccent} width={20} /> : null}
     </Pressable>
   ) : null;
 };
 
-const styles = StyleSheet.create({
-  allOptionsListContainer: {
-    borderRadius: 12,
-    marginTop: 32,
-    paddingBottom: 18,
-    paddingHorizontal: 16,
-  },
-  allOptionsTitleContainer: {
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-  },
-  allOptionsTitleText: { fontSize: 16, fontWeight: '500' },
-  allOptionsWrapper: { flex: 1, marginBottom: 16, padding: 16 },
-  container: { flexDirection: 'row' },
-  progressBar: { borderRadius: 4, flex: 1, flexDirection: 'row', height: 4, marginTop: 2 },
-  text: {
-    flex: 1,
-    fontSize: 16,
-    marginLeft: 4,
-  },
-  voteContainer: {
-    alignItems: 'center',
-    borderRadius: 18,
-    borderWidth: 1,
-    height: 18,
-    justifyContent: 'center',
-    width: 18,
-  },
-  votesContainer: { flexDirection: 'row', marginLeft: 4 },
-  wrapper: { marginTop: 8, paddingVertical: 8 },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        flexDirection: 'row',
+        gap: primitives.spacingXs,
+        alignItems: 'center',
+      },
+      header: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: primitives.spacingXs,
+        minWidth: 0,
+      },
+      text: {
+        color: semantics.chatTextIncoming,
+        flexGrow: 1,
+        flexShrink: 1,
+        fontSize: primitives.typographyFontSizeSm,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+        textAlign: 'left',
+      },
+      info: {
+        flexGrow: 1,
+        flexShrink: 1,
+        gap: primitives.spacingXs,
+        minWidth: 0,
+      },
+      votesContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexShrink: 0,
+        gap: primitives.spacingXs,
+        minHeight: 20,
+      },
+      votesText: {
+        color: semantics.chatTextIncoming,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightRegular,
+        lineHeight: primitives.typographyLineHeightTight,
+        textAlign: 'left',
+      },
+      progressBarContainer: {
+        flex: 1,
+      },
+      voteContainer: {
+        borderRadius: primitives.radiusMax,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 24,
+      },
+    });
+  }, [semantics]);
+};
+
+const useAllOptionStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      allOptionsContentContainer: {
+        padding: primitives.spacingMd,
+      },
+      allOptionsListContainer: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+        marginTop: primitives.spacing2xl,
+      },
+      allOptionsTitleContainer: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+      },
+      allOptionsTitleText: {
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      allOptionsTitleMeta: {
+        fontSize: primitives.typographyFontSizeSm,
+        color: semantics.textTertiary,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightMedium,
+        textAlign: 'left',
+      },
+      allOptionsWrapper: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreElevation1,
+      },
+      optionWrapper: {
+        paddingVertical: primitives.spacingMd,
+      },
+    });
+  }, [semantics]);
+};

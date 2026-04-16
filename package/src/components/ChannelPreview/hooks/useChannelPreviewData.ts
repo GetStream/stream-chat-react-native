@@ -5,8 +5,6 @@ import type { Channel, Event, LocalMessage, MessageResponse, StreamChat } from '
 
 import { useIsChannelMuted } from './useIsChannelMuted';
 
-import { useLatestMessagePreview } from './useLatestMessagePreview';
-
 import { useChannelsContext } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 
@@ -16,7 +14,7 @@ const setLastMessageThrottleOptions = { leading: true, trailing: true };
 const refreshUnreadCountThrottleTimeout = 400;
 const refreshUnreadCountThrottleOptions = setLastMessageThrottleOptions;
 
-type LastMessageType = LocalMessage | MessageResponse;
+export type LastMessageType = LocalMessage | MessageResponse;
 
 export const useChannelPreviewData = (
   channel: Channel,
@@ -25,7 +23,7 @@ export const useChannelPreviewData = (
 ) => {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [lastMessage, setLastMessageInner] = useState<LastMessageType>(
-    () => channel.state.messages[channel.state.messages.length - 1],
+    () => channel.state.latestMessages[channel.state.latestMessages.length - 1],
   );
   const throttledSetLastMessage = useMemo(
     () =>
@@ -44,7 +42,7 @@ export const useChannelPreviewData = (
   const { forceUpdate: contextForceUpdate } = useChannelsContext();
   const channelListForceUpdate = forceUpdateOverride ?? contextForceUpdate;
 
-  const channelLastMessage = channel.lastMessage();
+  const channelLastMessage = channel.state.latestMessages[channel.state.latestMessages.length - 1];
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
 
   const refreshUnreadCount = useMemo(
@@ -172,11 +170,5 @@ export const useChannelPreviewData = (
     return () => listeners.forEach((l) => l.unsubscribe());
   }, [channel, refreshUnreadCount, forceUpdate, channelListForceUpdate, setLastMessage]);
 
-  const latestMessagePreview = useLatestMessagePreview(
-    channel,
-    forceUpdate,
-    lastMessage as LocalMessage,
-  );
-
-  return { latestMessagePreview, muted, unread };
+  return { lastMessage, muted, unread };
 };

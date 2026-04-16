@@ -74,7 +74,7 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
   /**
    * This function loads more messages before the first message in current channel state.
    */
-  const loadMore = useStableCallback(async (limit: number = 20) => {
+  const loadMore = useStableCallback(async (limit: number = 25) => {
     if (!channel.state.messagePagination.hasPrev) {
       return;
     }

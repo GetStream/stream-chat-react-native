@@ -1,43 +1,38 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { I18nManager, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LocalAudioAttachment, LocalFileAttachment, LocalVideoAttachment } from 'stream-chat';
 
-import { AttachmentUnsupportedIndicator } from './AttachmentUnsupportedIndicator';
-import { AttachmentUploadProgressIndicator } from './AttachmentUploadProgressIndicator';
-import { DismissAttachmentUpload } from './DismissAttachmentUpload';
+import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
-import { getFileSizeDisplayText } from '../../../../components/Attachment/FileAttachment';
-import { WritingDirectionAwareText } from '../../../../components/RTLComponents/WritingDirectionAwareText';
+import { FilePreview } from '../../../../components/Attachment/FilePreview';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-import { useMessagesContext } from '../../../../contexts/messagesContext/MessagesContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
-import { getTrimmedAttachmentTitle } from '../../../../utils/getTrimmedAttachmentTitle';
-import {
-  getDurationLabelFromDuration,
-  getIndicatorTypeForFileState,
-  ProgressIndicatorTypes,
-} from '../../../../utils/utils';
+import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
 
 export type FileAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<
     | LocalFileAttachment<CustomLocalMetadata>
     | LocalVideoAttachment<CustomLocalMetadata>
     | LocalAudioAttachment<CustomLocalMetadata>
-  > & {
-    flatListWidth: number;
-  };
+  >;
 
 export const FileAttachmentUploadPreview = ({
   attachment,
-  flatListWidth,
   handleRetry,
   removeAttachments,
 }: FileAttachmentUploadPreviewProps) => {
+  const styles = useStyles();
+  const {
+    FileUploadInProgressIndicator,
+    FileUploadRetryIndicator,
+    FileUploadNotSupportedIndicator,
+  } = useComponentsContext();
   const { enableOfflineSupport } = useChatContext();
-  const { FileAttachmentIcon } = useMessagesContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
     enableOfflineSupport,
@@ -45,16 +40,8 @@ export const FileAttachmentUploadPreview = ({
 
   const {
     theme: {
-      colors: { black, grey, grey_whisper },
-      messageInput: {
-        fileAttachmentUploadPreview: {
-          fileContainer,
-          filenameText,
-          fileSizeText,
-          fileTextContainer,
-          uploadProgressOverlay,
-          wrapper,
-        },
+      messageComposer: {
+        fileAttachmentUploadPreview: { wrapper },
       },
     },
   } = useTheme();
@@ -67,95 +54,63 @@ export const FileAttachmentUploadPreview = ({
     removeAttachments([attachment.localMetadata.id]);
   }, [attachment, removeAttachments]);
 
+  const renderIndicator = useMemo(() => {
+    if (indicatorType === ProgressIndicatorTypes.IN_PROGRESS) {
+      return <FileUploadInProgressIndicator />;
+    }
+    if (indicatorType === ProgressIndicatorTypes.RETRY) {
+      return <FileUploadRetryIndicator onPress={onRetryHandler} />;
+    }
+    if (indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED) {
+      return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
+    }
+    return null;
+  }, [
+    FileUploadInProgressIndicator,
+    FileUploadNotSupportedIndicator,
+    FileUploadRetryIndicator,
+    attachment.localMetadata,
+    indicatorType,
+    onRetryHandler,
+  ]);
+
   return (
     <View style={[styles.wrapper, wrapper]} testID={'file-attachment-upload-preview'}>
-      <AttachmentUploadProgressIndicator
-        onPress={onRetryHandler}
-        style={[styles.overlay, { width: flatListWidth - 16 }, uploadProgressOverlay]}
-        type={indicatorType}
-      >
-        <View
-          style={[
-            styles.fileContainer,
-            {
-              borderColor: grey_whisper,
-            },
-            fileContainer,
-          ]}
-        >
-          <View style={styles.fileIcon}>
-            <FileAttachmentIcon mimeType={attachment.mime_type} />
-          </View>
-          <View style={[styles.fileTextContainer, fileTextContainer]}>
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.filenameText,
-                {
-                  color: black,
-                  width:
-                    flatListWidth -
-                    16 - // 16 = horizontal padding
-                    40 - // 40 = file icon size
-                    24 - // 24 = close icon size
-                    24, // 24 = internal padding
-                },
-                I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
-                filenameText,
-              ]}
-            >
-              {getTrimmedAttachmentTitle(attachment.title)}
-            </Text>
-            {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-              <AttachmentUnsupportedIndicator indicatorType={indicatorType} />
-            ) : (
-              <WritingDirectionAwareText
-                style={[styles.fileSizeText, { color: grey }, fileSizeText]}
-              >
-                {attachment.duration
-                  ? getDurationLabelFromDuration(attachment.duration)
-                  : getFileSizeDisplayText(attachment.file_size)}
-              </WritingDirectionAwareText>
-            )}
-          </View>
-        </View>
-      </AttachmentUploadProgressIndicator>
-      <DismissAttachmentUpload onPress={onDismissHandler} />
+      <FilePreview
+        attachment={attachment}
+        titleNumberOfLines={1}
+        styles={{ container: styles.fileContainer }}
+        indicator={renderIndicator}
+      />
+      <View style={styles.dismissWrapper}>
+        <AttachmentRemoveControl onPress={onDismissHandler} />
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  fileContainer: {
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    paddingHorizontal: 8,
-  },
-  fileIcon: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  filenameText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  fileSizeText: {
-    fontSize: 12,
-    marginTop: 10,
-  },
-  fileTextContainer: {
-    justifyContent: 'space-around',
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  overlay: {
-    borderRadius: 12,
-    marginTop: 2,
-  },
-  wrapper: {
-    flexDirection: 'row',
-    marginHorizontal: 8,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  const { borderCoreDefault } = semantics;
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        dismissWrapper: { position: 'absolute', right: 0, top: 0 },
+        fileContainer: {
+          borderRadius: primitives.radiusLg,
+          borderColor: borderCoreDefault,
+          borderWidth: 1,
+          padding: primitives.spacingMd,
+          paddingRight: primitives.spacingSm,
+        },
+        wrapper: {
+          padding: primitives.spacingXxs,
+        },
+      }),
+    [borderCoreDefault],
+  );
+};

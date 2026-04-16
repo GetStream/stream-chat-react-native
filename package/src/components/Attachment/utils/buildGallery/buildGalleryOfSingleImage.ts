@@ -84,6 +84,8 @@ export function buildGalleryOfSingleImage({
   const thumbnail = buildThumbnail({
     image,
     resizableCDNHosts,
+    flex: 1,
+    resizeMode: 'cover',
     ...container,
   });
 

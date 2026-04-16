@@ -1,34 +1,23 @@
-import React, { useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import React, { useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
-import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
+import type { ImageGalleryFooterProps, ImageGalleryVideoControlProps } from './types';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
-import {
-  isFileSystemAvailable,
-  isShareImageAvailable,
-  NativeHandlers,
-  VideoType,
-} from '../../../native';
+import { useStateStore } from '../../../hooks/useStateStore';
+import { Share as ShareIconDefault } from '../../../icons';
+import { ImageGrid } from '../../../icons/gallery';
+import { isFileSystemAvailable, isShareImageAvailable, NativeHandlers } from '../../../native';
 
+import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
+import { components, primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
+import { Button } from '../../ui/Button/Button';
 import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
-import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
@@ -36,89 +25,34 @@ const ReanimatedSafeAreaView = Animated.createAnimatedComponent
 
 export type ImageGalleryFooterCustomComponent = ({
   openGridView,
-  photo,
   share,
   shareMenuOpen,
 }: {
   openGridView: () => void;
   share: () => Promise<void>;
   shareMenuOpen: boolean;
-  photo?: Photo;
 }) => React.ReactElement | null;
 
-export type ImageGalleryFooterVideoControlProps = {
-  duration: number;
-  onPlayPause: (status?: boolean) => void;
-  paused: boolean;
-  progress: number;
-  videoRef: React.RefObject<VideoType>;
-};
+export type ImageGalleryVideoControlComponent = ({
+  attachmentId,
+}: ImageGalleryVideoControlProps) => React.ReactElement | null;
 
-export type ImageGalleryFooterVideoControlComponent = ({
-  duration,
-  onPlayPause,
-  paused,
-  progress,
-}: ImageGalleryFooterVideoControlProps) => React.ReactElement | null;
+const imageGallerySelector = (state: ImageGalleryState) => ({
+  asset: state.assets[state.currentIndex],
+  currentIndex: state.currentIndex,
+});
 
-export type ImageGalleryFooterCustomComponentProps = {
-  centerElement?: ImageGalleryFooterCustomComponent;
-  GridIcon?: React.ReactElement;
-  leftElement?: ImageGalleryFooterCustomComponent;
-  rightElement?: ImageGalleryFooterCustomComponent;
-  ShareIcon?: React.ReactElement;
-  videoControlElement?: ImageGalleryFooterVideoControlComponent;
-};
-
-type ImageGalleryFooterPropsWithContext = ImageGalleryFooterCustomComponentProps & {
-  accessibilityLabel: string;
-  duration: number;
-  onPlayPause: () => void;
-  opacity: SharedValue<number>;
-  openGridView: () => void;
-  paused: boolean;
-  photo: Photo;
-  photoLength: number;
-  progress: number;
-  selectedIndex: number;
-  videoRef: React.RefObject<VideoType>;
-  visible: SharedValue<number>;
-};
-
-export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWithContext) => {
-  const {
-    accessibilityLabel,
-    centerElement,
-    duration,
-    GridIcon,
-    leftElement,
-    onPlayPause,
-    opacity,
-    openGridView,
-    paused,
-    photo,
-    photoLength,
-    progress,
-    rightElement,
-    selectedIndex,
-    ShareIcon,
-    videoControlElement,
-    videoRef,
-    visible,
-  } = props;
+export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) => {
+  const { accessibilityLabel, opacity, openGridView, visible } = props;
+  const { ImageGalleryVideoControls } = useComponentsContext();
 
   const [height, setHeight] = useState(200);
   const [savingInProgress, setSavingInProgress] = useState(false);
   const shareIsInProgressRef = useRef<boolean>(false);
-  const {
-    theme: {
-      colors: { black, white },
-      imageGallery: {
-        footer: { centerContainer, container, imageCountText, innerContainer, rightContainer },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
   const { t } = useTranslationContext();
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { asset, currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
   const footerStyle = useAnimatedStyle<ViewStyle>(
     () => ({
@@ -141,26 +75,26 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
       if (!NativeHandlers.shareImage || !NativeHandlers.deleteFile) {
         return;
       }
-      const extension = photo.mime_type?.split('/')[1] || 'jpg';
-      const shouldDownload = photo.uri && photo.uri.includes('http');
+      const extension = asset.mime_type?.split('/')[1] || 'jpg';
+      const shouldDownload = asset.uri && asset.uri.includes('http');
       let localFile;
       // If the file is already uploaded to a CDN, create a local reference to
       // it first; otherwise just use the local file
       if (shouldDownload) {
         setSavingInProgress(true);
         localFile = await NativeHandlers.saveFile({
-          fileName: `${photo.user?.id || 'ChatPhoto'}-${
-            photo.messageId
-          }-${selectedIndex}.${extension}`,
-          fromUrl: photo.uri,
+          fileName: `${asset.user?.id || 'ChatPhoto'}-${
+            asset.messageId
+          }-${currentIndex}.${extension}`,
+          fromUrl: asset.uri,
         });
         setSavingInProgress(false);
       } else {
-        localFile = photo.uri;
+        localFile = asset.uri;
       }
 
       // `image/jpeg` is added for the case where the mime_type isn't available for a file/image
-      await NativeHandlers.shareImage({ type: photo.mime_type || 'image/jpeg', url: localFile });
+      await NativeHandlers.shareImage({ type: asset.mime_type || 'image/jpeg', url: localFile });
       // Only delete the file if a local reference has been created beforehand
       if (shouldDownload) {
         await NativeHandlers.deleteFile({ uri: localFile });
@@ -172,6 +106,10 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
     shareIsInProgressRef.current = false;
   };
 
+  if (!asset) {
+    return null;
+  }
+
   return (
     <Animated.View
       accessibilityLabel={accessibilityLabel}
@@ -179,50 +117,31 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView
-        edges={['bottom']}
-        style={[{ backgroundColor: white }, footerStyle, container]}
-      >
-        {photo.type === FileTypes.Video ? (
-          videoControlElement ? (
-            videoControlElement({ duration, onPlayPause, paused, progress, videoRef })
-          ) : (
-            <ImageGalleryVideoControl
-              duration={duration}
-              onPlayPause={onPlayPause}
-              paused={paused}
-              progress={progress}
-              videoRef={videoRef}
-            />
-          )
+      <ReanimatedSafeAreaView edges={['bottom']} style={[styles.container, footerStyle]}>
+        {asset.type === FileTypes.Video ? (
+          ImageGalleryVideoControls ? (
+            <ImageGalleryVideoControls attachmentId={asset.id} />
+          ) : null
         ) : null}
-        <View style={[styles.innerContainer, { backgroundColor: white }, innerContainer]}>
-          {leftElement ? (
-            leftElement({ openGridView, photo, share, shareMenuOpen: savingInProgress })
-          ) : (
-            <ShareButton savingInProgress={savingInProgress} share={share} ShareIcon={ShareIcon} />
-          )}
-          {centerElement ? (
-            centerElement({ openGridView, photo, share, shareMenuOpen: savingInProgress })
-          ) : (
-            <View style={[styles.centerContainer, centerContainer]}>
-              <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
-                {t('{{ index }} of {{ photoLength }}', {
-                  index: selectedIndex + 1,
-                  photoLength,
-                })}
-              </Text>
-            </View>
-          )}
-          {rightElement ? (
-            rightElement({ openGridView, photo, share, shareMenuOpen: savingInProgress })
-          ) : (
-            <TouchableOpacity onPress={openGridView}>
-              <View style={[styles.rightContainer, rightContainer]}>
-                {GridIcon ? GridIcon : <GridIconDefault />}
-              </View>
-            </TouchableOpacity>
-          )}
+        <View style={styles.innerContainer}>
+          <ShareButton savingInProgress={savingInProgress} share={share} />
+          <View style={styles.centerContainer} accessibilityLabel='Center element'>
+            <Text style={styles.imageCountText}>
+              {t('{{ index }} of {{ photoLength }}', {
+                index: currentIndex + 1,
+                photoLength: imageGalleryStateStore.assets.length,
+              })}
+            </Text>
+          </View>
+          <Button
+            accessibilityLabel='Grid Icon'
+            variant='secondary'
+            type='ghost'
+            size='md'
+            onPress={openGridView}
+            LeadingIcon={ImageGrid}
+            iconOnly
+          />
         </View>
       </ReanimatedSafeAreaView>
     </Animated.View>
@@ -232,85 +151,35 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterPropsWith
 type ShareButtonProps = {
   share: () => Promise<void>;
   savingInProgress: boolean;
-  ShareIcon?: React.ReactElement;
 };
 
-const ShareButton = ({ share, ShareIcon, savingInProgress }: ShareButtonProps) => {
-  const {
-    theme: {
-      colors: { black },
-      imageGallery: {
-        footer: { leftContainer },
-      },
-    },
-  } = useTheme();
-
+const ShareButton = ({ share, savingInProgress }: ShareButtonProps) => {
+  const styles = useStyles();
   // If the shareImage, saveFile or deleteFile is null, we don't want to render the share button
   if (!isShareImageAvailable() || !isFileSystemAvailable()) {
     return null;
   }
 
-  return (
-    <TouchableOpacity accessibilityLabel='Share Button' onPress={share}>
-      <View style={[styles.leftContainer, leftContainer]}>
-        {savingInProgress ? (
-          <ActivityIndicator size='small' />
-        ) : ShareIcon ? (
-          ShareIcon
-        ) : (
-          <ShareIconDefault pathFill={black} />
-        )}
-      </View>
-    </TouchableOpacity>
+  return savingInProgress ? (
+    <View style={styles.activityIndicatorContainer}>
+      <ActivityIndicator size='small' />
+    </View>
+  ) : (
+    <Button
+      accessibilityLabel='Share Button'
+      variant='secondary'
+      type='ghost'
+      size='md'
+      onPress={share}
+      LeadingIcon={ShareIconDefault}
+      iconOnly
+    />
   );
-};
-
-const areEqual = (
-  prevProps: ImageGalleryFooterPropsWithContext,
-  nextProps: ImageGalleryFooterPropsWithContext,
-) => {
-  const {
-    duration: prevDuration,
-    paused: prevPaused,
-    progress: prevProgress,
-    selectedIndex: prevSelectedIndex,
-  } = prevProps;
-  const {
-    duration: nextDuration,
-    paused: nextPaused,
-    progress: nextProgress,
-    selectedIndex: nextSelectedIndex,
-  } = nextProps;
-
-  const isDurationEqual = prevDuration === nextDuration;
-  if (!isDurationEqual) {
-    return false;
-  }
-
-  const isPausedEqual = prevPaused === nextPaused;
-  if (!isPausedEqual) {
-    return false;
-  }
-
-  const isProgressEqual = prevProgress === nextProgress;
-  if (!isProgressEqual) {
-    return false;
-  }
-
-  const isSelectedIndexEqual = prevSelectedIndex === nextSelectedIndex;
-  if (!isSelectedIndexEqual) {
-    return false;
-  }
-
-  return true;
 };
 
 const MemoizedImageGalleryFooter = React.memo(
   ImageGalleryFooterWithContext,
-  areEqual,
 ) as typeof ImageGalleryFooterWithContext;
-
-export type ImageGalleryFooterProps = ImageGalleryFooterPropsWithContext;
 
 export const ImageGalleryFooter = (props: ImageGalleryFooterProps) => (
   <MemoizedImageGalleryFooter {...props} />
@@ -318,34 +187,54 @@ export const ImageGalleryFooter = (props: ImageGalleryFooterProps) => (
 
 ImageGalleryFooter.displayName = 'ImageGalleryFooter{imageGallery{footer}}';
 
-const styles = StyleSheet.create({
-  centerContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  imageCountText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  innerContainer: {
-    flexDirection: 'row',
-    paddingVertical: 4,
-  },
-  leftContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
-  rightContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  wrapper: {
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-  },
-});
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      imageGallery: { footer },
+    },
+  } = useTheme();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          backgroundColor: semantics.backgroundCoreElevation1,
+          borderTopWidth: 1,
+          borderTopColor: semantics.borderCoreDefault,
+          ...footer.container,
+        },
+        centerContainer: {
+          alignItems: 'center',
+          flex: 1,
+          gap: primitives.spacingXxs,
+          ...footer.centerContainer,
+        },
+        imageCountText: {
+          color: semantics.textPrimary,
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          ...footer.imageCountText,
+        },
+        innerContainer: {
+          alignItems: 'center',
+          padding: primitives.spacingSm,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          ...footer.innerContainer,
+        },
+        wrapper: {
+          bottom: 0,
+          left: 0,
+          position: 'absolute',
+          right: 0,
+          ...footer.wrapper,
+        },
+        activityIndicatorContainer: {
+          padding: components.buttonPaddingXIconOnlyMd,
+          ...footer.activityIndicatorContainer,
+        },
+      }),
+    [semantics, footer],
+  );
+};

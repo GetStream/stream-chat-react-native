@@ -1,56 +1,43 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
-import { LocalMessage } from 'stream-chat';
+import {
+  ImageGalleryContext,
+  type ImageGalleryContextValue,
+  type ImageGalleryProviderProps,
+  useImageGalleryContext,
+} from './ImageGalleryContextBase';
 
-import type { UnknownType } from '../../types/types';
-import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+import { ImageGalleryStateStore } from '../../state-store/image-gallery-state-store';
 
-import { isTestEnvironment } from '../utils/isTestEnvironment';
+export const ImageGalleryProvider = ({
+  children,
+  value,
+}: PropsWithChildren<{ value: ImageGalleryProviderProps }>) => {
+  const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore(value));
 
-type SelectedMessage = {
-  messageId?: string;
-  url?: string;
-};
+  useEffect(() => {
+    const unsubscribe = imageGalleryStateStore.registerSubscriptions();
+    return () => {
+      unsubscribe();
+    };
+  }, [imageGalleryStateStore]);
 
-export type ImageGalleryContextValue = {
-  messages: LocalMessage[];
-  setMessages: React.Dispatch<React.SetStateAction<LocalMessage[]>>;
-  setSelectedMessage: React.Dispatch<React.SetStateAction<SelectedMessage | undefined>>;
-  selectedMessage?: SelectedMessage;
-};
-
-export const ImageGalleryContext = React.createContext(
-  DEFAULT_BASE_CONTEXT_VALUE as ImageGalleryContextValue,
-);
-
-export const ImageGalleryProvider = ({ children }: PropsWithChildren<UnknownType>) => {
-  const [messages, setMessages] = useState<LocalMessage[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState<SelectedMessage>();
+  const imageGalleryContextValue = useMemo(
+    () => ({
+      autoPlayVideo: value?.autoPlayVideo,
+      imageGalleryStateStore,
+      ...value,
+    }),
+    [imageGalleryStateStore, value],
+  );
 
   return (
     <ImageGalleryContext.Provider
-      value={
-        {
-          messages,
-          selectedMessage,
-          setMessages,
-          setSelectedMessage,
-        } as unknown as ImageGalleryContextValue
-      }
+      value={imageGalleryContextValue as unknown as ImageGalleryContextValue}
     >
       {children}
     </ImageGalleryContext.Provider>
   );
 };
-
-export const useImageGalleryContext = () => {
-  const contextValue = useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue;
-
-  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
-    throw new Error(
-      'The useImageGalleryContext hook was called outside the ImageGalleryContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider',
-    );
-  }
-
-  return contextValue as ImageGalleryContextValue;
-};
+export { ImageGalleryContext, useImageGalleryContext };
+export type { ImageGalleryContextValue, ImageGalleryProviderProps };

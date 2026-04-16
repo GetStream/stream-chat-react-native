@@ -1,3 +1,8 @@
+def kotlinVersion =
+  rootProject.ext.has("kotlinVersion")
+    ? rootProject.ext.get("kotlinVersion")
+    : project.properties["ImageResizer_kotlinVersion"]
+
 buildscript {
   repositories {
     google()
@@ -6,7 +11,7 @@ buildscript {
 
   dependencies {
     classpath "com.android.tools.build:gradle:7.2.1"
-
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
   }
 }
 
@@ -15,6 +20,7 @@ def isNewArchitectureEnabled() {
 }
 
 apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
 
 
 def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
@@ -29,6 +35,11 @@ def getExtOrDefault(name) {
 
 def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["ImageResizer_" + name]).toInteger()
+}
+def localSharedNativeRootDir = new File(projectDir, "src/main/java/com/streamchatreactnative/shared")
+def sharedNativeRootDir = new File(projectDir, "../../shared-native/android")
+def hasNativeSources = { File dir ->
+  dir.exists() && !fileTree(dir).matching { include "**/*.kt"; include "**/*.java" }.files.isEmpty()
 }
 
 android {
@@ -65,11 +76,16 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
+  kotlinOptions {
+    jvmTarget = "17"
+  }
+
   sourceSets {
     main {
       if (isNewArchitectureEnabled()) {
         java.srcDirs += [
           "src/newarch",
+          "src/main/java/com/streamchatreactnative/shared",
           // This is needed to build Kotlin project with NewArch enabled
           "${project.buildDir}/generated/source/codegen/java"
         ]
@@ -78,6 +94,44 @@ android {
       }
     }
   }
+}
+
+tasks.register("syncSharedShimmerSources") {
+  outputs.dir(localSharedNativeRootDir)
+  outputs.upToDateWhen { false }
+  doLast {
+    def sourceRootDir = null
+    if (hasNativeSources(localSharedNativeRootDir)) {
+      sourceRootDir = localSharedNativeRootDir
+    } else if (hasNativeSources(sharedNativeRootDir)) {
+      sourceRootDir = sharedNativeRootDir
+    }
+
+    if (sourceRootDir == null) {
+      throw new GradleException(
+        "Missing shared native Android sources. Expected either src/main/java/com/streamchatreactnative/shared/**/*.{kt,java} " +
+          "or ../../shared-native/android/**/*.{kt,java}."
+      )
+    }
+
+    if (sourceRootDir != localSharedNativeRootDir) {
+      project.delete(localSharedNativeRootDir)
+      project.copy {
+        from(sourceRootDir)
+        into(localSharedNativeRootDir)
+      }
+    } else if (!hasNativeSources(localSharedNativeRootDir)) {
+      throw new GradleException("Shared native source directory exists but has no Kotlin/Java files.")
+    }
+  }
+}
+
+tasks.matching { it.name == "preBuild" }.configureEach {
+  dependsOn("syncSharedShimmerSources")
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+  dependsOn("syncSharedShimmerSources")
 }
 
 repositories {
@@ -99,5 +153,35 @@ if (isNewArchitectureEnabled()) {
     jsRootDir = file("../src/")
     libraryName = "StreamChatReactNative"
     codegenJavaPackageName = "com.streamchatreactnative"
+  }
+}
+
+if (isNewArchitectureEnabled()) {
+  gradle.projectsEvaluated {
+    if (rootProject.ext.has("streamChatReactNativeCodegenHookInstalled")) {
+      return
+    }
+
+    def androidAppProject = rootProject.subprojects.find { it.plugins.hasPlugin("com.android.application") }
+    if (androidAppProject == null) {
+      return
+    }
+
+    def dependencyCodegenTasks = rootProject.subprojects
+      .findAll { it != androidAppProject }
+      .collect { it.tasks.findByName("generateCodegenArtifactsFromSchema") }
+      .findAll { it != null }
+
+    if (dependencyCodegenTasks.isEmpty()) {
+      return
+    }
+
+    rootProject.ext.set("streamChatReactNativeCodegenHookInstalled", true)
+
+    androidAppProject.tasks.matching { task ->
+      task.name.startsWith("configureCMake")
+    }.configureEach {
+      dependsOn(dependencyCodegenTasks)
+    }
   }
 }

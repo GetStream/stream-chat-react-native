@@ -4,14 +4,15 @@ import { Alert, AlertButton, Pressable, StyleSheet, Text, View } from 'react-nat
 import { ReminderResponse } from 'stream-chat';
 import {
   Delete,
-  MessagePreview,
+  useMessagePreviewText,
+  useMessagePreviewIcon,
   useChatContext,
   useTheme,
   useTranslationContext,
 } from 'stream-chat-react-native';
 import { ReminderBanner } from './ReminderBanner';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { getPreviewFromMessage } from '../../utils/getPreviewOfMessage';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 export const ReminderItem = (
   item: ReminderResponse & { onDeleteHandler?: (id: string) => void },
@@ -23,9 +24,12 @@ export const ReminderItem = (
   const channelName = channel?.name ? channel.name : 'Channel';
   const {
     theme: {
-      colors: { accent_red, white_smoke, grey_gainsboro },
+      semantics,
     },
   } = useTheme();
+  const { accent_red, white_smoke, grey_gainsboro } = useLegacyColors();
+  const messagePreviewText = useMessagePreviewText({ message });
+  const MessagePreviewIcon = useMessagePreviewIcon({ message });
 
   const onNavigationHandler = async () => {
     if (channel?.type && channel.id) {
@@ -39,10 +43,6 @@ export const ReminderItem = (
       }
     }
   };
-
-  const previews = useMemo(() => {
-    return getPreviewFromMessage({ message: message, t });
-  }, [message, t]);
 
   const onDeleteReminder = useCallback(() => {
     Alert.alert('Remove Reminder', 'Are you sure you want to remove this reminder?', [
@@ -131,7 +131,10 @@ export const ReminderItem = (
           <ReminderBanner {...item} />
         </View>
         <View style={styles.content}>
-          <MessagePreview previews={previews} />
+          {MessagePreviewIcon ? (
+            <MessagePreviewIcon height={20} stroke={semantics.textPrimary} width={20} />
+          ) : null}
+          <Text style={styles.text}>{messagePreviewText}</Text>
         </View>
       </Pressable>
     </Swipeable>
@@ -157,6 +160,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 8,
+    gap: 4,
   },
   text: {
     fontSize: 16,

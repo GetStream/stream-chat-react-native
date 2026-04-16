@@ -15,6 +15,12 @@ import { ValueOf } from '../types/types';
 export type ReactionData = {
   Icon: React.ComponentType<IconProps>;
   type: string;
+  /**
+   * Whether the reaction should appear inside of the reaction picker in the
+   * context menu or not. If `true`, it will consequently not appear in the
+   * extra reactions bottom sheet.
+   */
+  isMain?: boolean;
 };
 
 export const FileState = Object.freeze({
@@ -224,13 +230,29 @@ export const getDurationLabelFromDuration = (duration: number) => {
   const ONE_HOUR_IN_MILLISECONDS = ONE_HOUR_IN_SECONDS * 1000;
   let durationLabel = '00:00';
   const isDurationLongerThanHour = duration / ONE_HOUR_IN_MILLISECONDS >= 1;
-  const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
+  const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'm:ss';
   const formattedVideoDuration = dayjs
     .duration(duration, 'milliseconds')
     .format(formattedDurationParam);
   durationLabel = formattedVideoDuration;
 
   return durationLabel;
+};
+
+export const formatMsToMinSec = (ms: number) => {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const totalHours = Math.floor(totalMinutes / 60);
+
+  if (totalHours >= 1) {
+    return `${totalHours}h`;
+  }
+
+  if (totalMinutes >= 1) {
+    return `${totalMinutes}m`;
+  }
+
+  return `${totalSeconds}s`;
 };
 
 /**
@@ -353,4 +375,49 @@ export const checkQuotedMessageEquality = (
     prevQuotedMessage?.deleted_at?.getTime?.() === nextQuotedMessage?.deleted_at?.getTime?.();
 
   return quotedMessageEqual;
+};
+
+/**
+ * Utility to get initials from name.
+ * @param name string
+ * @param numberOfInitials number - optional, default is 2
+ * @returns string
+ */
+export const getInitialsFromName = (name: string, numberOfInitials: number = 2) => {
+  if (!name) return '';
+  const trimmed = name.trim();
+
+  if (!trimmed) return '';
+  return trimmed
+    .split(/\s+/)
+    .slice(0, numberOfInitials)
+    .map((n) => n.charAt(0).toUpperCase())
+    .join('');
+};
+
+// Utility to hash a string to a number
+export const hashStringToNumber = (str: string) => {
+  let hash = 0;
+
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+
+  return Math.abs(hash) ?? 0;
+};
+
+export const getFileSizeDisplayText = (size?: number | string) => {
+  if (!size) {
+    return;
+  }
+  if (typeof size === 'string') {
+    size = parseFloat(size);
+  }
+
+  if (size < 1000 * 1000) {
+    return `${Math.floor(Math.floor(size / 10) / 100)} KB`;
+  }
+
+  return `${Math.floor(Math.floor(size / 10000) / 100)} MB`;
 };

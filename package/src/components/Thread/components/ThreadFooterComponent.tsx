@@ -1,13 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import type { ThreadState } from 'stream-chat';
 
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
@@ -15,42 +11,19 @@ import {
 } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks';
-import { useViewport } from '../../../hooks/useViewport';
+import { primitives } from '../../../theme';
 
-const styles = StyleSheet.create({
-  absolute: { position: 'absolute' },
-  activityIndicatorContainer: {
-    padding: 10,
-    width: '100%',
-  },
-  messagePadding: {
-    paddingHorizontal: 8,
-  },
-  newThread: {
-    alignItems: 'center',
-    height: 24,
-    justifyContent: 'center',
-    marginTop: 8,
-  },
-  text: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  threadHeaderContainer: {
-    marginVertical: 8,
-  },
-});
-
-type ThreadFooterComponentPropsWithContext = Pick<MessagesContextValue, 'Message'> &
-  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread' | 'threadInstance'>;
+type ThreadFooterComponentPropsWithContext = Pick<
+  ThreadContextValue,
+  'parentMessagePreventPress' | 'thread' | 'threadInstance'
+>;
 
 export const InlineLoadingMoreThreadIndicator = () => {
   const { threadLoadingMore } = useThreadContext();
   const {
-    theme: {
-      colors: { accent_blue },
-    },
+    theme: { semantics },
   } = useTheme();
+  const styles = useStyles();
 
   if (!threadLoadingMore) {
     return null;
@@ -58,7 +31,7 @@ export const InlineLoadingMoreThreadIndicator = () => {
 
   return (
     <View style={styles.activityIndicatorContainer}>
-      <ActivityIndicator color={accent_blue} size='small' />
+      <ActivityIndicator color={semantics.accentPrimary} size='small' />
     </View>
   );
 };
@@ -69,24 +42,11 @@ const selector = (nextValue: ThreadState) =>
   }) as const;
 
 const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithContext) => {
-  const { Message, parentMessagePreventPress, thread, threadInstance } = props;
+  const { parentMessagePreventPress, thread, threadInstance } = props;
+  const { Message } = useComponentsContext();
   const { t } = useTranslationContext();
-  const { vw } = useViewport();
 
-  const {
-    theme: {
-      colors: { bg_gradient_end, bg_gradient_start, grey },
-      thread: {
-        newThread: {
-          backgroundGradientStart,
-          backgroundGradientStop,
-          text,
-          threadHeight,
-          ...newThread
-        },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
 
   const { replyCount = thread?.reply_count } = useStateStore(threadInstance?.state, selector) ?? {};
 
@@ -96,41 +56,15 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
 
   return (
     <View style={styles.threadHeaderContainer} testID='thread-footer-component'>
-      <View style={styles.messagePadding}>
-        <Message
-          groupStyles={['single']}
-          message={thread}
-          preventPress={parentMessagePreventPress}
-          readBy={0}
-          threadList
-        />
-      </View>
-      <View style={[styles.newThread, newThread]}>
-        <Svg height={threadHeight ?? 24} style={styles.absolute} width={vw(100)}>
-          <Rect fill='url(#gradient)' height={threadHeight ?? 24} width={vw(100)} x={0} y={0} />
-          <Defs>
-            <LinearGradient
-              gradientUnits='userSpaceOnUse'
-              id='gradient'
-              x1={0}
-              x2={0}
-              y1={0}
-              y2={threadHeight ?? 24}
-            >
-              <Stop
-                offset={1}
-                stopColor={backgroundGradientStart || bg_gradient_end}
-                stopOpacity={1}
-              />
-              <Stop
-                offset={0}
-                stopColor={backgroundGradientStop || bg_gradient_start}
-                stopOpacity={1}
-              />
-            </LinearGradient>
-          </Defs>
-        </Svg>
-        <Text style={[styles.text, { color: grey }, text]}>
+      <Message
+        groupStyles={['single']}
+        message={thread}
+        preventPress={parentMessagePreventPress}
+        readBy={0}
+        threadList
+      />
+      <View style={styles.newThread}>
+        <Text style={styles.text}>
           {replyCount === 1
             ? t('1 Reply')
             : t('{{ replyCount }} Replies', {
@@ -197,18 +131,17 @@ const MemoizedThreadFooter = React.memo(
   areEqual,
 ) as typeof ThreadFooterComponentWithContext;
 
-export type ThreadFooterComponentProps = Partial<Pick<MessagesContextValue, 'Message'>> &
-  Partial<Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>>;
+export type ThreadFooterComponentProps = Partial<
+  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>
+>;
 
 export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
-  const { Message } = useMessagesContext();
   const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
     useThreadContext();
 
   return (
     <MemoizedThreadFooter
       {...{
-        Message,
         parentMessagePreventPress,
         thread,
         threadInstance,
@@ -217,4 +150,44 @@ export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
       {...props}
     />
   );
+};
+
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      thread: {
+        newThread: { container, text },
+      },
+    },
+  } = useTheme();
+
+  return useMemo(() => {
+    return StyleSheet.create({
+      activityIndicatorContainer: {
+        padding: primitives.spacingXs,
+        width: '100%',
+      },
+      newThread: {
+        backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+        paddingVertical: primitives.spacingXs,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderTopWidth: 1,
+        borderTopColor: semantics.borderCoreSubtle,
+        borderBottomWidth: 1,
+        borderBottomColor: semantics.borderCoreSubtle,
+        marginVertical: primitives.spacingXs,
+        ...container,
+      },
+      text: {
+        color: semantics.chatTextSystem,
+        fontSize: primitives.typographyFontSizeXs,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        lineHeight: primitives.typographyLineHeightTight,
+        ...text,
+      },
+      threadHeaderContainer: {},
+    });
+  }, [semantics, container, text]);
 };
