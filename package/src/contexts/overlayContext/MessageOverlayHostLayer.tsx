@@ -4,8 +4,10 @@ import {
   Platform,
   Pressable,
   StyleSheet,
+  StyleProp,
   useWindowDimensions,
   View,
+  ViewStyle,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -28,11 +30,12 @@ import {
   Rect,
   useOverlayController,
 } from '../../state-store';
+import { useComponentsContext } from '../componentsContext/ComponentsContext';
 import { useTheme } from '../themeContext/ThemeContext';
 
 const DURATION = 300;
 
-const DefaultMessageOverlayBackground = () => {
+export const DefaultMessageOverlayBackground = () => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -52,11 +55,15 @@ const DefaultMessageOverlayBackground = () => {
   );
 };
 
-type MessageOverlayHostLayerProps = {
-  BackgroundComponent?: React.ComponentType;
+export type MessageActionsProps = {
+  bottomItemStyle: StyleProp<ViewStyle>;
+  hostStyle: StyleProp<ViewStyle>;
+  portalHostStyle: StyleProp<ViewStyle>;
+  topItemStyle: StyleProp<ViewStyle>;
 };
 
-export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayHostLayerProps) => {
+export const MessageOverlayHostLayer = () => {
+  const { MessageActions, MessageOverlayBackground } = useComponentsContext();
   const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
@@ -123,7 +130,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     opacity: backdrop.value,
   }));
 
-  const OverlayBackground = BackgroundComponent ?? DefaultMessageOverlayBackground;
+  const OverlayBackground = MessageOverlayBackground;
 
   const messageShiftY = useDerivedValue(() => {
     if (!messageH.value || !topH.value || !bottomH.value) return 0;
@@ -261,21 +268,32 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
             />
           ) : null}
 
-          <Animated.View style={topItemStyle} testID='message-overlay-top'>
-            <PortalHost name='top-item' style={styles.absoluteFill} />
-          </Animated.View>
+          {MessageActions ? (
+            <MessageActions
+              bottomItemStyle={bottomItemStyle}
+              hostStyle={hostStyle}
+              portalHostStyle={styles.absoluteFill}
+              topItemStyle={topItemStyle}
+            />
+          ) : (
+            <>
+              <Animated.View style={topItemStyle} testID='message-overlay-top'>
+                <PortalHost name='top-item' style={styles.absoluteFill} />
+              </Animated.View>
 
-          <Animated.View
-            pointerEvents='box-none'
-            style={hostStyle}
-            testID='message-overlay-message'
-          >
-            <PortalHost name='message-overlay' style={styles.absoluteFill} />
-          </Animated.View>
+              <Animated.View
+                pointerEvents='box-none'
+                style={hostStyle}
+                testID='message-overlay-message'
+              >
+                <PortalHost name='message-overlay' style={styles.absoluteFill} />
+              </Animated.View>
 
-          <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
-            <PortalHost name='bottom-item' style={styles.absoluteFill} />
-          </Animated.View>
+              <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
+                <PortalHost name='bottom-item' style={styles.absoluteFill} />
+              </Animated.View>
+            </>
+          )}
         </View>
 
         <ClosingPortalHostsLayer closeCoverOpacity={closeCoverOpacity} />

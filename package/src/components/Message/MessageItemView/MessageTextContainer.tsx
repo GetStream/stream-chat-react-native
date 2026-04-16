@@ -5,6 +5,7 @@ import { LocalMessage } from 'stream-chat';
 
 import { renderText, RenderTextParams } from './utils/renderText';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -32,10 +33,7 @@ export type MessageTextContainerPropsWithContext = Pick<
   MessageContextValue,
   'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress' | 'isMyMessage'
 > &
-  Pick<
-    MessagesContextValue,
-    'markdownRules' | 'MessageText' | 'myMessageTheme' | 'messageTextNumberOfLines'
-  > & {
+  Pick<MessagesContextValue, 'markdownRules' | 'myMessageTheme' | 'messageTextNumberOfLines'> & {
     markdownStyles?: MarkdownStyle;
     messageOverlay?: boolean;
     styles?: Partial<{
@@ -52,7 +50,6 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
     markdownStyles: markdownStylesProp = {},
     message,
     messageOverlay,
-    MessageText,
     messageTextNumberOfLines,
     onLongPress,
     onlyEmojis,
@@ -60,6 +57,7 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
     preventPress,
     styles: stylesProp = {},
   } = props;
+  const { MessageText } = useComponentsContext();
 
   const {
     theme: {
@@ -186,8 +184,7 @@ export type MessageTextContainerProps = Partial<MessageTextContainerPropsWithCon
 export const MessageTextContainer = (props: MessageTextContainerProps) => {
   const { message, onLongPress, onlyEmojis, onPress, preventPress, isMyMessage } =
     useMessageContext();
-  const { markdownRules, MessageText, messageTextNumberOfLines, myMessageTheme } =
-    useMessagesContext();
+  const { markdownRules, messageTextNumberOfLines, myMessageTheme } = useMessagesContext();
 
   return (
     <MemoizedMessageTextContainer
@@ -195,7 +192,6 @@ export const MessageTextContainer = (props: MessageTextContainerProps) => {
         markdownRules,
         message,
         isMyMessage,
-        MessageText,
         messageTextNumberOfLines,
         myMessageTheme,
         onLongPress,

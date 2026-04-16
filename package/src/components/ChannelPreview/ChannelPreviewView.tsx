@@ -2,11 +2,6 @@ import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { ChannelPreviewProps } from './ChannelPreview';
-import { ChannelPreviewMessage } from './ChannelPreviewMessage';
-import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
-import { ChannelPreviewStatus } from './ChannelPreviewStatus';
-import { ChannelPreviewTitle } from './ChannelPreviewTitle';
-import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
 
 import type { LastMessageType } from './hooks/useChannelPreviewData';
 
@@ -14,25 +9,14 @@ import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
-import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
 
 export type ChannelPreviewViewPropsWithContext = Pick<ChannelPreviewProps, 'channel'> &
-  Pick<
-    ChannelsContextValue,
-    | 'maxUnreadCount'
-    | 'onSelect'
-    | 'PreviewAvatar'
-    | 'PreviewMessage'
-    | 'PreviewMutedStatus'
-    | 'PreviewStatus'
-    | 'PreviewTitle'
-    | 'PreviewUnreadCount'
-    | 'mutedStatusPosition'
-  > & {
+  Pick<ChannelsContextValue, 'maxUnreadCount' | 'onSelect' | 'mutedStatusPosition'> & {
     /**
      * Formatter function for date of latest message.
      * @param date Message date
@@ -57,16 +41,18 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
     maxUnreadCount,
     muted,
     onSelect,
-    PreviewAvatar = ChannelAvatar,
-    PreviewMessage = ChannelPreviewMessage,
-    PreviewMutedStatus = ChannelPreviewMutedStatus,
-    PreviewStatus = ChannelPreviewStatus,
-    PreviewTitle = ChannelPreviewTitle,
-    PreviewUnreadCount = ChannelPreviewUnreadCount,
     unread,
     mutedStatusPosition,
     lastMessage,
   } = props;
+  const {
+    ChannelPreviewAvatar,
+    ChannelPreviewMessage,
+    ChannelPreviewMutedStatus,
+    ChannelPreviewStatus,
+    ChannelPreviewTitle,
+    ChannelPreviewUnreadCount,
+  } = useComponentsContext();
 
   const {
     theme: {
@@ -111,24 +97,26 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
         ]}
         testID='channel-preview-button'
       >
-        <PreviewAvatar channel={channel} size='xl' />
+        <ChannelPreviewAvatar channel={channel} size='xl' />
         <View
           style={[styles.contentContainer, contentContainer]}
           testID={`channel-preview-content-${channel.id}`}
         >
           <View style={[styles.upperRow, upperRow]}>
             <View style={[styles.titleContainer, titleContainer]}>
-              <PreviewTitle channel={channel} />
-              {muted && mutedStatusPosition === 'inlineTitle' ? <PreviewMutedStatus /> : null}
+              <ChannelPreviewTitle channel={channel} />
+              {muted && mutedStatusPosition === 'inlineTitle' ? (
+                <ChannelPreviewMutedStatus />
+              ) : null}
             </View>
 
             <View style={[styles.statusContainer, statusContainer]}>
-              <PreviewStatus
+              <ChannelPreviewStatus
                 channel={channel}
                 formatLatestMessageDate={formatLatestMessageDate}
                 lastMessage={lastMessage}
               />
-              <PreviewUnreadCount
+              <ChannelPreviewUnreadCount
                 channel={channel}
                 maxUnreadCount={maxUnreadCount}
                 unread={unread}
@@ -137,8 +125,10 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
           </View>
 
           <View style={[styles.lowerRow, lowerRow]}>
-            <PreviewMessage channel={channel} lastMessage={lastMessage} />
-            {muted && mutedStatusPosition === 'trailingBottom' ? <PreviewMutedStatus /> : null}
+            <ChannelPreviewMessage channel={channel} lastMessage={lastMessage} />
+            {muted && mutedStatusPosition === 'trailingBottom' ? (
+              <ChannelPreviewMutedStatus />
+            ) : null}
           </View>
         </View>
       </Pressable>
@@ -158,28 +148,13 @@ const MemoizedChannelPreviewViewWithContext = React.memo(
  * from the ChannelPreview component.
  */
 export const ChannelPreviewView = (props: ChannelPreviewViewProps) => {
-  const {
-    forceUpdate,
-    maxUnreadCount,
-    onSelect,
-    PreviewMessage,
-    PreviewMutedStatus,
-    PreviewStatus,
-    PreviewTitle,
-    PreviewUnreadCount,
-    mutedStatusPosition,
-  } = useChannelsContext();
+  const { forceUpdate, maxUnreadCount, onSelect, mutedStatusPosition } = useChannelsContext();
   return (
     <MemoizedChannelPreviewViewWithContext
       {...{
         forceUpdate,
         maxUnreadCount,
         onSelect,
-        PreviewMessage,
-        PreviewMutedStatus,
-        PreviewStatus,
-        PreviewTitle,
-        PreviewUnreadCount,
         mutedStatusPosition,
       }}
       {...props}

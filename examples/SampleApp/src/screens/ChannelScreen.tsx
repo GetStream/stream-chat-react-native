@@ -31,11 +31,9 @@ import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
-import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 // import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
-import { CustomAttachmentPickerContent } from '../components/AttachmentPickerContent.tsx';
 import { ThreadType } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
@@ -277,19 +275,14 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
       <Channel
         audioRecordingEnabled={true}
-        // AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
-        AttachmentPickerContent={CustomAttachmentPickerContent}
         channel={channel}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={0}
         messageActions={messageActions}
-        MessageContent={OverlayTargetedMessageContent}
-        MessageLocation={MessageLocation}
         messageId={messageId}
         messageOverlayTargetId='message-content'
-        NetworkDownIndicator={() => null}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}
         maximumMessageLimit={messageListPruning}

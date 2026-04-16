@@ -3,7 +3,7 @@ import { ColorValue, StyleProp, StyleSheet, View, ViewStyle } from 'react-native
 
 import { avatarSizes } from './constants';
 
-import { useChatContext } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
 
@@ -21,7 +21,7 @@ export const Avatar = (props: AvatarProps) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { ImageComponent } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
   const defaultAvatarBg = semantics.avatarPaletteBg1;
   const {
     backgroundColor = defaultAvatarBg,

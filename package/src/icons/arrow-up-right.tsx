@@ -1,5 +1,6 @@
 import React from 'react';
-import Svg, { Path } from 'react-native-svg';
+import { I18nManager } from 'react-native';
+import Svg, { G, Path } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
@@ -12,13 +13,15 @@ export const ArrowUpRight = ({ height, size, width, ...rest }: IconProps) => {
       fill={'none'}
       {...rest}
     >
-      <Path
-        d='M5 15L15 5M15 5H6.875M15 5V13.125'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth={1.5}
-        {...rest}
-      />
+      <G transform={I18nManager.isRTL ? 'matrix(-1 0 0 1 20 0)' : undefined}>
+        <Path
+          d='M5 15L15 5M15 5H6.875M15 5V13.125'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          strokeWidth={1.5}
+          {...rest}
+        />
+      </G>
     </Svg>
   );
 };

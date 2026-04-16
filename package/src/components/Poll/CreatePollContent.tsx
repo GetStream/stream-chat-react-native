@@ -16,14 +16,15 @@ import {
   CreatePollModalState,
   CreatePollContentContextValue,
   CreatePollContentProvider,
-  InputMessageInputContextValue,
   useCreatePollContentContext,
   useTheme,
   useTranslationContext,
 } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { useRtlMirrorSwitchStyle } from '../../utils/rtlMirrorSwitchStyle';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   options: state.data.options,
@@ -211,14 +212,13 @@ export const CreatePollContent = () => {
 
 export const CreatePoll = ({
   closePollCreationDialog,
-  CreatePollContent: CreatePollContentOverride,
   createPollOptionGap = 8,
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
   'createPollOptionGap' | 'closePollCreationDialog' | 'sendMessage'
-> &
-  Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
+>) => {
+  const { CreatePollContent: CreatePollContentOverride } = useComponentsContext();
   const messageComposer = useMessageComposer();
   const [modalStateStore] = useState(
     () => new StateStore<CreatePollModalState>({ isClosing: false }),
@@ -277,6 +277,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   return useMemo(() => {
     return StyleSheet.create({
       scrollView: {
@@ -320,7 +321,7 @@ const useStyles = () => {
       optionCardWrapper: {
         gap: primitives.spacingMd,
       },
-      optionCardSwitch: { width: 64 },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
     });
-  }, [semantics]);
+  }, [rtlMirrorSwitchStyle, semantics]);
 };

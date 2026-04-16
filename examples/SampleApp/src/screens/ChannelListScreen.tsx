@@ -2,6 +2,7 @@ import React, { RefObject, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   FlatListProps,
+  I18nManager,
   StyleSheet,
   Text,
   TextInput,
@@ -11,7 +12,6 @@ import {
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelList, useTheme, useStableCallback, ChannelActionItem } from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
-import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { useAppContext } from '../context/AppContext';
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 0, // removal of iOS top padding for weird centering
     textAlignVertical: 'center', // for android vertical text centering
+    textAlign: I18nManager.isRTL ? 'right' : 'left',
   },
 });
 
@@ -72,8 +73,6 @@ const options = {
   watch: true,
   message_limit: 25,
 };
-
-const HeaderNetworkDownIndicator = () => null;
 
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
@@ -143,34 +142,36 @@ export const ChannelListScreen: React.FC = () => {
     [],
   );
 
-  const getChannelActionItems = useStableCallback(({ context: { isDirectChat, channel }, defaultItems }) => {
-    const viewInfo = () => {
-      if (!channel) {
-        return;
-      }
-      if (navigation) {
-        if (isDirectChat) {
-          navigation.navigate('OneOnOneChannelDetailScreen', {
-            channel,
-          });
-        } else {
-          navigation.navigate('GroupChannelDetailsScreen', {
-            channel,
-          });
+  const getChannelActionItems = useStableCallback(
+    ({ context: { isDirectChat, channel }, defaultItems }) => {
+      const viewInfo = () => {
+        if (!channel) {
+          return;
         }
-      }
-    };
+        if (navigation) {
+          if (isDirectChat) {
+            navigation.navigate('OneOnOneChannelDetailScreen', {
+              channel,
+            });
+          } else {
+            navigation.navigate('GroupChannelDetailsScreen', {
+              channel,
+            });
+          }
+        }
+      };
 
-    const viewInfoItem: ChannelActionItem = {
-      action: viewInfo,
-      Icon: ChannelInfo,
-      id: 'info',
-      label: 'View Info',
-      placement: 'sheet',
-      type: 'standard',
-    }
-    return [viewInfoItem, ...defaultItems]
-  })
+      const viewInfoItem: ChannelActionItem = {
+        action: viewInfo,
+        Icon: ChannelInfo,
+        id: 'info',
+        label: 'View Info',
+        placement: 'sheet',
+        type: 'standard',
+      };
+      return [viewInfoItem, ...defaultItems];
+    },
+  );
 
   if (!chatClient) {
     return null;
@@ -248,11 +249,9 @@ export const ChannelListScreen: React.FC = () => {
             <ChannelList
               additionalFlatListProps={additionalFlatListProps}
               filters={filters}
-              HeaderNetworkDownIndicator={HeaderNetworkDownIndicator}
               maxUnreadCount={99}
               onSelect={onSelect}
               options={options}
-              Preview={ChannelPreview}
               setFlatListRef={setScrollRef}
               getChannelActionItems={getChannelActionItems}
               sort={sort}

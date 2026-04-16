@@ -3,9 +3,6 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { Channel, ChannelState } from 'stream-chat';
 
 import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
-import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
-import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
-import { StickyHeaderProps } from '../../components/MessageList/StickyHeader';
 import {
   ChannelUnreadStateStore,
   ChannelUnreadStateStoreType,
@@ -38,12 +35,6 @@ export type ChannelContextValue = {
    * @overrideType Channel
    */
   channel: Channel;
-  /**
-   * Custom UI component to display empty state when channel has no messages.
-   *
-   * **Default** [EmptyStateIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Indicators/EmptyStateIndicator.tsx)
-   */
-  EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   /**
    * When set to true, reactions will be limited to 1 per user. If user selects another reaction
    * then his previous reaction will be removed and replaced with new one.
@@ -90,10 +81,6 @@ export type ChannelContextValue = {
     setTargetedMessage?: (messageId: string) => void;
   }) => Promise<void>;
 
-  /**
-   * Custom loading indicator to override the Stream default
-   */
-  LoadingIndicator: React.ComponentType<LoadingProps>;
   markRead: (options?: MarkReadFunctionOptions) => void;
   /**
    *
@@ -119,10 +106,6 @@ export type ChannelContextValue = {
    * ```
    */
   members: ChannelState['members'];
-  /**
-   * Custom network down indicator to override the Stream default
-   */
-  NetworkDownIndicator: React.ComponentType;
   read: ChannelState['read'];
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
@@ -156,13 +139,6 @@ export type ChannelContextValue = {
    * currently near them within the viewport.
    */
   maximumMessageLimit?: number;
-  /**
-   * Custom UI component for sticky header of channel.
-   *
-   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
-   */
-  StickyHeader?: React.ComponentType<StickyHeaderProps>;
-
   /**
    * Id of message, around which Channel/MessageList gets loaded when opened.
    * You will see a highlighted background for targetted message, when opened.

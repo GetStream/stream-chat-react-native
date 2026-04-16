@@ -5,9 +5,9 @@ import { Thread, ThreadManagerState } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
 import { ThreadListItemSkeleton } from './ThreadListItemSkeleton';
-import { ThreadListUnreadBanner as DefaultThreadListBanner } from './ThreadListUnreadBanner';
 
 import { useChatContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   ThreadsContextValue,
   ThreadsProvider,
@@ -27,14 +27,8 @@ const selector = (nextValue: ThreadManagerState) =>
 
 export type ThreadListProps = Pick<
   ThreadsContextValue,
-  | 'additionalFlatListProps'
-  | 'isFocused'
-  | 'onThreadSelect'
-  | 'ThreadListItem'
-  | 'ThreadListEmptyPlaceholder'
-  | 'ThreadListLoadingIndicator'
-  | 'ThreadListUnreadBanner'
-> & { ThreadList?: React.ComponentType };
+  'additionalFlatListProps' | 'isFocused' | 'onThreadSelect'
+>;
 
 export const DefaultThreadListEmptyPlaceholder = () => <EmptyStateIndicator listType='threads' />;
 
@@ -49,18 +43,15 @@ export const DefaultThreadListLoadingNextIndicator = () => <LoadingIndicator lis
 
 const renderItem = (props: { item: Thread }) => <ThreadListItem thread={props.item} />;
 
-const ThreadListComponent = () => {
+export const DefaultThreadListComponent = () => {
+  const { additionalFlatListProps, isLoading, isLoadingNext, loadMore, threads } =
+    useThreadsContext();
   const {
-    additionalFlatListProps,
-    isLoading,
-    isLoadingNext,
-    loadMore,
-    ThreadListEmptyPlaceholder = DefaultThreadListEmptyPlaceholder,
-    ThreadListLoadingIndicator = DefaultThreadListLoadingIndicator,
-    ThreadListLoadingMoreIndicator = DefaultThreadListLoadingNextIndicator,
-    ThreadListUnreadBanner = DefaultThreadListBanner,
-    threads,
-  } = useThreadsContext();
+    ThreadListEmptyPlaceholder,
+    ThreadListLoadingIndicator,
+    ThreadListLoadingMoreIndicator,
+    ThreadListUnreadBanner,
+  } = useComponentsContext();
 
   if (isLoading) {
     return <ThreadListLoadingIndicator />;
@@ -85,7 +76,8 @@ const ThreadListComponent = () => {
 };
 
 export const ThreadList = (props: ThreadListProps) => {
-  const { isFocused = true, ThreadList = ThreadListComponent } = props;
+  const { isFocused = true } = props;
+  const { ThreadListComponent: ThreadListContent } = useComponentsContext();
   const { client } = useChatContext();
 
   useEffect(() => {
@@ -120,7 +112,7 @@ export const ThreadList = (props: ThreadListProps) => {
     <ThreadsProvider
       value={{ isLoading, isLoadingNext, loadMore: client.threads.loadNextPage, threads, ...props }}
     >
-      <ThreadList />
+      <ThreadListContent />
     </ThreadsProvider>
   );
 };

@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, ImageProps, StyleSheet, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
-import { ChatContextValue, useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 
 import {
   MessagesContextValue,
@@ -15,27 +15,19 @@ import { useLoadingImage } from '../../../hooks/useLoadingImage';
 import { makeImageCompatibleUrl } from '../../../utils/utils';
 import { GiphyBadge } from '../../ui/Badge/GiphyBadge';
 
-export type GiphyImagePropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
-  Pick<
-    MessagesContextValue,
-    'giphyVersion' | 'ImageLoadingIndicator' | 'ImageLoadingFailedIndicator'
-  > & {
-    attachment: Attachment;
-    /**
-     * Whether to render the preview image or the full image
-     */
-    preview?: boolean;
-  };
+export type GiphyImagePropsWithContext = Pick<MessagesContextValue, 'giphyVersion'> & {
+  ImageComponent?: React.ComponentType<ImageProps>;
+} & {
+  attachment: Attachment;
+  /**
+   * Whether to render the preview image or the full image
+   */
+  preview?: boolean;
+};
 
 const GiphyImageWithContext = (props: GiphyImagePropsWithContext) => {
-  const {
-    attachment,
-    giphyVersion,
-    ImageComponent = Image,
-    ImageLoadingFailedIndicator,
-    ImageLoadingIndicator,
-    preview = false,
-  } = props;
+  const { attachment, giphyVersion, ImageComponent = Image, preview = false } = props;
+  const { ImageLoadingFailedIndicator, ImageLoadingIndicator } = useComponentsContext();
 
   const { giphy: giphyData, image_url, thumb_url, type } = attachment;
 
@@ -168,25 +160,11 @@ export type GiphyImageProps = Partial<GiphyImagePropsWithContext> & {
  * UI component for card in attachments.
  */
 export const GiphyImage = (props: GiphyImageProps) => {
-  const { ImageComponent } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
   const { giphyVersion } = useMessagesContext();
 
-  const {
-    ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
-    ImageLoadingIndicator: ContextImageLoadingIndicator,
-  } = useMessagesContext();
-  const ImageLoadingFailedIndicator =
-    ContextImageLoadingFailedIndicator || props.ImageLoadingFailedIndicator;
-  const ImageLoadingIndicator = ContextImageLoadingIndicator || props.ImageLoadingIndicator;
-
   return (
-    <MemoizedGiphyImage
-      giphyVersion={giphyVersion}
-      ImageComponent={ImageComponent}
-      ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
-      ImageLoadingIndicator={ImageLoadingIndicator}
-      {...props}
-    />
+    <MemoizedGiphyImage giphyVersion={giphyVersion} ImageComponent={ImageComponent} {...props} />
   );
 };
 

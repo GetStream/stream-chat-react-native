@@ -3,32 +3,27 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
-import { FileIconProps } from './FileIcon';
+import type { FileIconProps } from './FileIcon';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../theme';
 
-export type UnsupportedAttachmentProps = Partial<
-  Pick<MessagesContextValue, 'FileAttachmentIcon'> & Pick<MessageContextValue, 'isMyMessage'>
-> & {
+export type UnsupportedAttachmentProps = Partial<Pick<MessageContextValue, 'isMyMessage'>> & {
   /** The attachment to render */
   attachment: Attachment;
   attachmentIconSize?: FileIconProps['size'];
 };
 
 export const UnsupportedAttachment = (props: UnsupportedAttachmentProps) => {
-  const { FileAttachmentIcon: FileAttachmentIconDefault } = useMessagesContext();
+  const { FileAttachmentIcon } = useComponentsContext();
   const { isMyMessage } = useMessageContext();
-  const { attachment, attachmentIconSize, FileAttachmentIcon = FileAttachmentIconDefault } = props;
+  const { attachment, attachmentIconSize } = props;
 
   const styles = useStyles({ isMyMessage });
 

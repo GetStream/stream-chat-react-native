@@ -3,28 +3,24 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { PollOption as PollOptionClass } from 'stream-chat';
 
-import { PollButtons, PollOption, ShowAllOptionsButton } from './components';
+import { PollOption, ShowAllOptionsButton } from './components';
 
 import { usePollState } from './hooks/usePollState';
 
 import {
-  MessagesContextValue,
   PollContextProvider,
   PollContextValue,
   useTheme,
   useTranslationContext,
 } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 
 import { primitives } from '../../theme';
 import { defaultPollOptionCount } from '../../utils/constants';
 
-export type PollProps = Pick<PollContextValue, 'poll' | 'message'> &
-  Pick<MessagesContextValue, 'PollContent'>;
+export type PollProps = Pick<PollContextValue, 'poll' | 'message'>;
 
-export type PollContentProps = {
-  PollButtons?: React.ComponentType;
-  PollHeader?: React.ComponentType;
-};
+export type PollContentProps = Record<string, never>;
 
 export const PollHeader = () => {
   const styles = useStyles();
@@ -60,12 +56,11 @@ export const PollHeader = () => {
   );
 };
 
-export const PollContent = ({
-  PollButtons: PollButtonsOverride,
-  PollHeader: PollHeaderOverride,
-}: PollContentProps) => {
+export const PollContent = () => {
   const { options } = usePollState();
   const styles = useStyles();
+  const { PollButtons: PollButtonsComponent, PollHeader: PollHeaderComponent } =
+    useComponentsContext();
 
   const {
     theme: {
@@ -77,7 +72,7 @@ export const PollContent = ({
 
   return (
     <View style={[styles.container, container]}>
-      {PollHeaderOverride ? <PollHeaderOverride /> : <PollHeader />}
+      <PollHeaderComponent />
       <View style={[styles.optionsWrapper, optionsWrapper]}>
         {options
           ?.slice(0, defaultPollOptionCount)
@@ -86,21 +81,24 @@ export const PollContent = ({
           ))}
         <ShowAllOptionsButton />
       </View>
-      {PollButtonsOverride ? <PollButtonsOverride /> : <PollButtons />}
+      <PollButtonsComponent />
     </View>
   );
 };
 
-export const Poll = ({ message, poll, PollContent: PollContentOverride }: PollProps) => (
-  <PollContextProvider
-    value={{
-      message,
-      poll,
-    }}
-  >
-    {PollContentOverride ? <PollContentOverride /> : <PollContent />}
-  </PollContextProvider>
-);
+export const Poll = ({ message, poll }: PollProps) => {
+  const { PollContent: PollContentOverride } = useComponentsContext();
+  return (
+    <PollContextProvider
+      value={{
+        message,
+        poll,
+      }}
+    >
+      {PollContentOverride ? <PollContentOverride /> : <PollContent />}
+    </PollContextProvider>
+  );
+};
 
 const useStyles = () => {
   const {

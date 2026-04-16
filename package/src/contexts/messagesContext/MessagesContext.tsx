@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { PressableProps, View, ViewProps } from 'react-native';
+import { PressableProps, ViewProps } from 'react-native';
 
 import type {
   Attachment,
@@ -12,79 +12,14 @@ import type {
   MessageResponse,
 } from 'stream-chat';
 
-import type {
-  InlineUnreadIndicatorProps,
-  PollContentProps,
-  StreamingMessageViewProps,
-} from '../../components';
-import type { AttachmentProps } from '../../components/Attachment/Attachment';
-import type { AudioAttachmentProps } from '../../components/Attachment/Audio';
-import type { FileAttachmentProps } from '../../components/Attachment/FileAttachment';
-import type { FileAttachmentGroupProps } from '../../components/Attachment/FileAttachmentGroup';
-import type { FileIconProps } from '../../components/Attachment/FileIcon';
-import { FilePreviewProps } from '../../components/Attachment/FilePreview';
-import type { GalleryProps } from '../../components/Attachment/Gallery';
-import type { GiphyProps } from '../../components/Attachment/Giphy';
-import type { ImageLoadingFailedIndicatorProps } from '../../components/Attachment/ImageLoadingFailedIndicator';
-import { UnsupportedAttachmentProps } from '../../components/Attachment/UnsupportedAttachment';
-import type {
-  URLPreviewCompactProps,
-  URLPreviewProps,
-} from '../../components/Attachment/UrlPreview';
-import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
-import type {
-  MessagePressableHandlerPayload,
-  MessageProps,
-} from '../../components/Message/Message';
-import type { MessagePinnedHeaderProps } from '../../components/Message/MessageItemView/Headers/MessagePinnedHeader';
-import type { MessageReminderHeaderProps } from '../../components/Message/MessageItemView/Headers/MessageReminderHeader';
-import type { MessageSavedForLaterHeaderProps } from '../../components/Message/MessageItemView/Headers/MessageSavedForLaterHeader';
-import type { SentToChannelHeaderProps } from '../../components/Message/MessageItemView/Headers/SentToChannelHeader';
-import type { MessageAuthorProps } from '../../components/Message/MessageItemView/MessageAuthor';
-import type { MessageBlockedProps } from '../../components/Message/MessageItemView/MessageBlocked';
-import type { MessageBounceProps } from '../../components/Message/MessageItemView/MessageBounce';
-import type { MessageContentProps } from '../../components/Message/MessageItemView/MessageContent';
-import type { MessageDeletedProps } from '../../components/Message/MessageItemView/MessageDeleted';
-import type { MessageFooterProps } from '../../components/Message/MessageItemView/MessageFooter';
-import { MessageHeaderProps } from '../../components/Message/MessageItemView/MessageHeader';
-import type { MessageItemViewProps } from '../../components/Message/MessageItemView/MessageItemView';
-import type { MessageRepliesProps } from '../../components/Message/MessageItemView/MessageReplies';
-import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageItemView/MessageRepliesAvatars';
-import type { MessageStatusProps } from '../../components/Message/MessageItemView/MessageStatus';
-import type { MessageTextProps } from '../../components/Message/MessageItemView/MessageTextContainer';
-import { MessageTimestampProps } from '../../components/Message/MessageItemView/MessageTimestamp';
-import { ReactionListBottomProps } from '../../components/Message/MessageItemView/ReactionList/ReactionListBottom';
-import { ReactionListClusteredProps } from '../../components/Message/MessageItemView/ReactionList/ReactionListClustered';
-import {
-  ReactionListItemProps,
-  ReactionListCountItemProps,
-} from '../../components/Message/MessageItemView/ReactionList/ReactionListItem';
-import { ReactionListItemWrapperProps } from '../../components/Message/MessageItemView/ReactionList/ReactionListItemWrapper';
-import type { ReactionListTopProps } from '../../components/Message/MessageItemView/ReactionList/ReactionListTop';
+import type { MessagePressableHandlerPayload } from '../../components/Message/Message';
 import type { MarkdownRules } from '../../components/Message/MessageItemView/utils/renderText';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
-import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
-import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';
-import type { MessageListProps } from '../../components/MessageList/MessageList';
-import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
-import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
-import { TypingIndicatorContainerProps } from '../../components/MessageList/TypingIndicatorContainer';
-import { UnreadMessagesNotificationProps } from '../../components/MessageList/UnreadMessagesNotification';
 import type {
   GroupStyle,
   MessageGroupStylesParams,
 } from '../../components/MessageList/utils/getGroupStyles';
-import { MessageActionListProps } from '../../components/MessageMenu/MessageActionList';
-import type {
-  MessageActionListItemProps,
-  MessageActionType,
-} from '../../components/MessageMenu/MessageActionListItem';
-import { MessageMenuProps } from '../../components/MessageMenu/MessageMenu';
-import type { MessageReactionPickerProps } from '../../components/MessageMenu/MessageReactionPicker';
-import { MessageUserReactionsProps } from '../../components/MessageMenu/MessageUserReactions';
-import { MessageUserReactionsAvatarProps } from '../../components/MessageMenu/MessageUserReactionsAvatar';
-import { MessageUserReactionsItemProps } from '../../components/MessageMenu/MessageUserReactionsItem';
-import type { ReplyProps } from '../../components/Reply/Reply';
+import type { MessageActionType } from '../../components/MessageMenu/MessageActionListItem';
 import { NativeHandlers } from '../../native';
 
 import type { ReactionData } from '../../utils/utils';
@@ -104,25 +39,12 @@ export type MessageContentType =
   | 'ai_text'
   | 'text'
   | 'location';
-export type DeletedMessagesVisibilityType = 'always' | 'never' | 'receiver' | 'sender';
 
 export type MessageLocationProps = {
   message: LocalMessage;
 };
 
 export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerated'> & {
-  /**
-   * UI component for Attachment.
-   * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Attachment.tsx)
-   */
-  Attachment: React.ComponentType<AttachmentProps>;
-  /** Custom UI component for AudioAttachment. */
-  AudioAttachment: React.ComponentType<AudioAttachmentProps>;
-  /**
-   * UI component for DateHeader
-   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
-   **/
-  DateHeader: React.ComponentType<DateHeaderProps>;
   // FIXME: Remove the signature with optionsOrHardDelete boolean with the next major release
   deleteMessage: (
     message: LocalMessage,
@@ -141,122 +63,16 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   urlPreviewType: 'compact' | 'full';
 
-  /**
-   * UI component to display unsupported attachment.
-   * Defaults to: [UnsupportedAttachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/UnsupportedAttachment.tsx)
-   */
-  UnsupportedAttachment: React.ComponentType<UnsupportedAttachmentProps>;
-
-  /**
-   * UI component for FilePreview
-   * Defaults to: [FilePreview](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FilePreview.tsx)
-   */
-  FilePreview: React.ComponentType<FilePreviewProps>;
-
-  /**
-   * UI component to display File type attachment.
-   * Defaults to: [FilePickerIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachment.tsx)
-   */
-  FileAttachment: React.ComponentType<FileAttachmentProps>;
-  /**
-   * UI component to display group of File type attachments or multiple file attachments (in single message).
-   * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachmentGroup.tsx)
-   */
-  FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps>;
-  /**
-   * UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileIcon.tsx
-   */
-  FileAttachmentIcon: React.ComponentType<FileIconProps>;
   FlatList: typeof NativeHandlers.FlatList | undefined;
-  /**
-   * UI component to display image attachments
-   * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Gallery.tsx)
-   */
-  Gallery: React.ComponentType<GalleryProps>;
-  /**
-   * UI component for Giphy
-   * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Giphy.tsx)
-   */
-  Giphy: React.ComponentType<GiphyProps>;
   /**
    * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
    * */
   giphyVersion: keyof NonNullable<Attachment['giphy']>;
 
   /**
-   * The indicator rendered when loading an image fails.
-   */
-  ImageLoadingFailedIndicator: React.ComponentType<ImageLoadingFailedIndicatorProps>;
-
-  /**
-   * The indicator rendered when image is loading. By default renders <ActivityIndicator/>
-   */
-  ImageLoadingIndicator: React.ComponentType;
-
-  /**
    * When true, messageList will be scrolled at first unread message, when opened.
    */
   initialScrollToFirstUnreadMessage: boolean;
-  /**
-   * UI component for Message Date Separator Component
-   * Defaults to: [InlineDateSeparator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/InlineDateSeparator.tsx)
-   */
-  InlineDateSeparator: React.ComponentType<InlineDateSeparatorProps>;
-  /**
-   * UI component for InlineUnreadIndicator
-   * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/InlineUnreadIndicator.tsx)
-   **/
-  InlineUnreadIndicator: React.ComponentType<InlineUnreadIndicatorProps>;
-
-  Message: React.ComponentType<MessageProps>;
-  /**
-   * Custom UI component for rendering Message actions in message menu.
-   *
-   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageActionList.tsx)
-   */
-  MessageActionList: React.ComponentType<MessageActionListProps>;
-  /**
-   * Custom UI component for rendering Message action item in message menu.
-   *
-   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageActionList.tsx)
-   */
-  MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
-  /**
-   * UI component for MessageAuthor
-   * Defaults to: [MessageAuthor](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageAuthor.tsx)
-   **/
-  MessageAuthor: React.ComponentType<MessageAuthorProps>;
-  /**
-   * UI component for MessageBlocked
-   * Defaults to: [MessageBlocked](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageBlocked.tsx)
-   */
-  MessageBlocked: React.ComponentType<MessageBlockedProps>;
-  /**
-   * UI Component for MessageBounce
-   */
-  MessageBounce: React.ComponentType<MessageBounceProps>;
-  /**
-   * UI component for MessageContent
-   * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageContent.tsx)
-   */
-  MessageContent: React.ComponentType<MessageContentProps>;
-  /**
-   * Optional UI component rendered above the message content body.
-   */
-  MessageContentTopView?: React.ComponentType;
-  /**
-   * Optional UI component rendered to the left of the message content body.
-   */
-  MessageContentLeadingView?: React.ComponentType;
-  /**
-   * Optional UI component rendered to the right of the message content body.
-   */
-  MessageContentTrailingView?: React.ComponentType;
-  /**
-   * Optional UI component rendered below the message content body.
-   */
-  MessageContentBottomView?: React.ComponentType;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
@@ -264,131 +80,12 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Custom `MessageOverlayWrapper` usages should pass a matching `targetId`.
    */
   messageOverlayTargetId?: string;
-  /**
-   * UI component for MessageDeleted
-   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageDeleted.tsx)
-   */
-  MessageDeleted: React.ComponentType<MessageDeletedProps>;
-  /**
-   * UI component for the MessageError.
-   */
-  MessageError: React.ComponentType;
-  /**
-   * Custom message footer component
-   */
-  MessageFooter: React.ComponentType<MessageFooterProps>;
-  MessageList: React.ComponentType<MessageListProps>;
-  MessageLocation?: React.ComponentType<MessageLocationProps>;
-  /**
-   * UI component for MessageMenu
-   */
-  MessageMenu: React.ComponentType<MessageMenuProps>;
-  /**
-   * Custom message pinned component
-   */
-  MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps>;
-  /**
-   * Custom message reminder component
-   */
-  MessageReminderHeader: React.ComponentType<MessageReminderHeaderProps>;
-  /**
-   * Custom message saved for later component
-   */
-  MessageSavedForLaterHeader: React.ComponentType<MessageSavedForLaterHeaderProps>;
-  /**
-   * Custom message sent to channel component
-   */
-  SentToChannelHeader: React.ComponentType<SentToChannelHeaderProps>;
-  /**
-   * UI component for MessageReactionPicker
-   */
-  MessageReactionPicker: React.ComponentType<MessageReactionPickerProps>;
-  /**
-   * UI component for MessageReplies
-   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageReplies.tsx)
-   */
-  MessageReplies: React.ComponentType<MessageRepliesProps>;
-  /**
-   * UI Component for MessageRepliesAvatars
-   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageRepliesAvatars.tsx)
-   */
-  MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps>;
-  /**
-   * Optional UI component for overriding the empty space on a message row. If the message is left aligned, it will be to the right of it - otherwise left.
-   */
-  MessageSpacer?: React.ComponentType;
-  /**
-   * UI component for MessageItemView. It encapsulates the entirety of a message row.
-   * Defaults to: [MessageItemView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageItemView.tsx)
-   */
-  MessageItemView: React.ComponentType<
-    MessageItemViewProps & { ref?: React.RefObject<View | null> }
-  >;
-  /**
-   * UI component for MessageStatus (delivered/read)
-   * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageItemView/MessageStatus.tsx)
-   */
-  MessageStatus: React.ComponentType<MessageStatusProps>;
-  /**
-   * UI component for MessageSystem
-   * Defaults to: [MessageSystem](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-system/)
-   */
-  MessageSystem: React.ComponentType<MessageSystemProps>;
-  /**
-   * UI component for MessageTimestamp
-   * Defaults to: [MessageTimestamp](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/components/Message/MessageItemView/MessageTimestamp.tsx)
-   */
-  MessageTimestamp: React.ComponentType<MessageTimestampProps>;
-  /**
-   * Custom UI component for rendering user reactions, in message menu.
-   *
-   * **Default** [MessageUserReactions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageUserReactions.tsx)
-   */
-  MessageUserReactions: React.ComponentType<MessageUserReactionsProps>;
-  /**
-   * Custom UI component for rendering user reactions avatar under `MessageUserReactionsItem`, in message menu.
-   *
-   * **Default** [MessageUserReactionsAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageUserReactionsAvatar.tsx)
-   */
-  MessageUserReactionsAvatar: React.ComponentType<MessageUserReactionsAvatarProps>;
-  /**
-   * Custom UI component for rendering individual user reactions item under `MessageUserReactions`, in message menu.
-   *
-   * **Default** [MessageUserReactionsItem](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageMenu/MessageUserReactionsItem.tsx)
-   */
-  MessageUserReactionsItem: React.ComponentType<MessageUserReactionsItemProps>;
-
   removeMessage: (message: { id: string; parent_id?: string }) => Promise<void>;
-  /**
-   * UI component for Reply
-   * Defaults to: [Reply](https://getstream.io/chat/docs/sdk/reactnative/ui-components/reply/)
-   */
-  Reply: React.ComponentType<ReplyProps>;
   /**
    * Override the api request for retry message functionality.
    */
   retrySendMessage: (message: LocalMessage) => Promise<void>;
-  /**
-   * UI component for ScrollToBottomButton
-   * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
-   */
-  ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   sendReaction: (type: string, messageId: string) => Promise<void>;
-  /**
-   * UI component for StreamingMessageView. Displays the text of a message with a typewriter animation.
-   */
-  StreamingMessageView: React.ComponentType<StreamingMessageViewProps>;
-  /**
-   * UI component for TypingIndicator
-   * Defaults to: [TypingIndicator](https://getstream.io/chat/docs/sdk/reactnative/ui-components/typing-indicator/)
-   */
-  TypingIndicator: React.ComponentType;
-  /**
-   * UI component for TypingIndicatorContainer
-   * Defaults to: [TypingIndicatorContainer](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/#typingindicatorcontainer)
-   */
-  TypingIndicatorContainer: React.ComponentType<TypingIndicatorContainerProps>;
-  UnreadMessagesNotification: React.ComponentType<UnreadMessagesNotificationProps>;
   updateMessage: (
     updatedMessage: MessageResponse | LocalMessage,
     extraState?: {
@@ -398,17 +95,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
     },
     throttled?: boolean,
   ) => void;
-  /**
-   * Custom UI component to display enriched url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/UrlPreview/URLPreview.tsx
-   */
-  UrlPreview: React.ComponentType<URLPreviewProps>;
-  /**
-   * Custom UI component to display compact url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/UrlPreview/URLPreviewCompact.tsx
-   */
-  URLPreviewCompact: React.ComponentType<URLPreviewCompactProps>;
-  VideoThumbnail: React.ComponentType<VideoThumbnailProps>;
   /**
    * Provide any additional props for `Pressable` which wraps inner MessageContent component here.
    * Please check docs for Pressable for supported props - https://reactnative.dev/docs/pressable#props
@@ -429,14 +115,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
     channel: Channel;
     message: LocalMessage;
   }) => void;
-
-  /**
-   * Full override of the delete message button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   */
-  /** Control if the deleted message is visible to both the send and reciever, either of them or none  */
-  deletedMessagesVisibilityType?: DeletedMessagesVisibilityType;
 
   disableTypingIndicator?: boolean;
   /**
@@ -543,16 +221,9 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   messageActions?: (param: MessageActionsParams) => MessageActionType[];
 
   /**
-   * Custom message header component
-   */
-  MessageHeader: React.ComponentType<MessageHeaderProps>;
-  MessageSwipeContent?: React.ComponentType;
-  /**
    * HitSlop for the message swipe to reply gesture
    */
   messageSwipeToReplyHitSlop?: ViewProps['hitSlop'];
-  /** Custom UI component for message text */
-  MessageText?: React.ComponentType<MessageTextProps>;
   /**
    * The number of lines of the message text to be displayed
    */
@@ -642,17 +313,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * ```
    */
   onPressMessage?: (payload: MessagePressableHandlerPayload) => void;
-  /**
-   * Override the entire content of the Poll component. The component has full access to the
-   * usePollState() and usePollContext() hooks.
-   * */
-  PollContent?: React.ComponentType<PollContentProps>;
   quotedMessage?: LocalMessage | null;
-  /**
-   * UI component for ReactionListTop
-   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
-   */
-  ReactionListBottom?: React.ComponentType<ReactionListBottomProps>;
   /**
    * The position of the reaction list in the message
    */
@@ -662,31 +323,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * The alignment of the reaction list
    */
   reactionListType?: 'clustered' | 'segmented';
-
-  /**
-   * UI component for ReactionListTop
-   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
-   */
-  ReactionListTop?: React.ComponentType<ReactionListTopProps>;
-
-  /**
-   * UI component for ReactionListBottom
-   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
-   */
-  ReactionListClustered: React.ComponentType<ReactionListClusteredProps>;
-  /**
-   * UI component for ReactionListSegmented
-   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
-   */
-  ReactionListItem: React.ComponentType<ReactionListItemProps>;
-
-  /**
-   * UI component for ReactionListItemWrapper
-   * Defaults to: [ReactionListItemWrapper](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionListItemWrapper.tsx)
-   */
-  ReactionListItemWrapper: React.ComponentType<ReactionListItemWrapperProps>;
-
-  ReactionListCountItem: React.ComponentType<ReactionListCountItemProps>;
 
   /**
    * Full override of the reaction function on Message and Message Overlay

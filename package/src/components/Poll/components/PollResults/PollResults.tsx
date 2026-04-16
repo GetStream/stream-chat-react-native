@@ -11,12 +11,12 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { primitives } from '../../../../theme';
 import { usePollState } from '../../hooks/usePollState';
 
 export type PollResultsProps = PollContextValue & {
   additionalScrollViewProps?: Partial<ScrollViewProps>;
-  PollResultsContent?: React.ComponentType;
 };
 
 export const PollResultsContent = ({
@@ -62,20 +62,14 @@ export const PollResultsContent = ({
   );
 };
 
-export const PollResults = ({
-  additionalScrollViewProps,
-  message,
-  poll,
-  PollResultsContent: PollResultsContentOverride,
-}: PollResultsProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollResultsContentOverride ? (
-      <PollResultsContentOverride />
-    ) : (
-      <PollResultsContent additionalScrollViewProps={additionalScrollViewProps} />
-    )}
-  </PollContextProvider>
-);
+export const PollResults = ({ additionalScrollViewProps, message, poll }: PollResultsProps) => {
+  const { PollResultsContent: PollResultsContentComponent } = useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollResultsContentComponent additionalScrollViewProps={additionalScrollViewProps} />
+    </PollContextProvider>
+  );
+};
 
 const useStyles = () => {
   const {

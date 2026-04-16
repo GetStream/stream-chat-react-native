@@ -22,7 +22,6 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 
-import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import type { StackNavigatorParamList } from '../types';
 import { Group } from '../icons/Group';
 
@@ -84,7 +83,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const EmptyMessagesIndicator = () => {
+export const EmptyMessagesIndicator = () => {
   const { grey } = useLegacyColors();
   return (
     <View style={styles.emptyMessageContainer}>
@@ -350,12 +349,10 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         }}
         audioRecordingEnabled={true}
         channel={currentChannel.current}
-        EmptyStateIndicator={EmptyMessagesIndicator}
         enforceUniqueReaction
         keyboardVerticalOffset={0}
         onChangeText={setMessageInputText}
         overrideOwnCapabilities={{ sendMessage: true }}
-        SendButton={NewDirectMessagingSendButton}
         setInputRef={(ref) => (messageInputRef.current = ref)}
       >
         {renderUserSearch({ inSafeArea: true })}

@@ -1,5 +1,14 @@
 import React, { useMemo } from 'react';
-import { I18nManager, Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import {
+  I18nManager,
+  Image,
+  ImageProps,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import {
   isFileAttachment,
@@ -10,7 +19,8 @@ import {
 
 import { ReplyMessageView } from './ReplyMessageView';
 
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -18,6 +28,7 @@ import {
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks';
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
@@ -78,8 +89,10 @@ const RightContent = React.memo(
   },
 );
 
-export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
-  Pick<MessageContextValue, 'message'> &
+export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageProps> } & Pick<
+  MessageContextValue,
+  'message'
+> &
   Pick<MessagesContextValue, 'quotedMessage'> & {
     isMyMessage: boolean;
     onDismiss?: () => void;
@@ -96,6 +109,7 @@ export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
   };
 
 export const ReplyWithContext = (props: ReplyPropsWithContext) => {
+  const { t } = useTranslationContext();
   const {
     isMyMessage,
     ImageComponent,
@@ -122,13 +136,13 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   const title = useMemo(
     () =>
       mode === 'edit'
-        ? 'Edit Message'
+        ? t('Edit Message')
         : isMyMessage
-          ? 'You'
+          ? t('You')
           : quotedMessage?.user?.name
-            ? `Reply to ${quotedMessage?.user?.name}`
-            : 'Reply',
-    [mode, isMyMessage, quotedMessage?.user?.name],
+            ? t('Reply to {{name}}', { name: quotedMessage?.user?.name })
+            : t('Reply'),
+    [mode, isMyMessage, quotedMessage?.user?.name, t],
   );
 
   if (!quotedMessage) {
@@ -214,7 +228,8 @@ export type ReplyProps = Partial<ReplyPropsWithContext> &
 
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();
-  const { client, ImageComponent } = useChatContext();
+  const { client } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
 
   const messageComposer = useMessageComposer();
   const { quotedMessage: quotedMessageFromComposer } = useStateStore(

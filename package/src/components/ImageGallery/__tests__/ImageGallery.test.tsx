@@ -9,10 +9,6 @@ import duration from 'dayjs/plugin/duration';
 
 import { LocalMessage } from 'stream-chat';
 
-import { ImageGalleryFooter as ImageGalleryFooterDefault } from '../../../components/ImageGallery/components/ImageGalleryFooter';
-import { ImageGalleryHeader as ImageGalleryHeaderDefault } from '../../../components/ImageGallery/components/ImageGalleryHeader';
-import { ImageGalleryVideoControl as ImageGalleryVideoControlDefault } from '../../../components/ImageGallery/components/ImageGalleryVideoControl';
-import { ImageGalleryGrid as ImageGalleryGridDefault } from '../../../components/ImageGallery/components/ImageGrid';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -66,10 +62,6 @@ const ImageGalleryComponent = (props: ImageGalleryProps & { message: LocalMessag
         value={
           {
             imageGalleryStateStore,
-            ImageGalleryHeader: ImageGalleryHeaderDefault,
-            ImageGalleryFooter: ImageGalleryFooterDefault,
-            ImageGalleryVideoControls: ImageGalleryVideoControlDefault,
-            ImageGalleryGrid: ImageGalleryGridDefault,
           } as unknown as ImageGalleryContextValue
         }
       >

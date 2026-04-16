@@ -38,6 +38,7 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 
 import {
@@ -196,18 +197,14 @@ type MessageListPropsWithContext = Pick<
     | 'channel'
     | 'channelUnreadStateStore'
     | 'disabled'
-    | 'EmptyStateIndicator'
     | 'hideStickyDateHeader'
     | 'loadChannelAroundMessage'
     | 'loading'
-    | 'LoadingIndicator'
     | 'markRead'
-    | 'NetworkDownIndicator'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'setChannelUnreadState'
     | 'setTargetedMessage'
-    | 'StickyHeader'
     | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
@@ -216,17 +213,7 @@ type MessageListPropsWithContext = Pick<
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent' | 'hasMore'> &
   Pick<
     MessagesContextValue,
-    | 'DateHeader'
-    | 'disableTypingIndicator'
-    | 'FlatList'
-    | 'InlineDateSeparator'
-    | 'InlineUnreadIndicator'
-    | 'Message'
-    | 'ScrollToBottomButton'
-    | 'myMessageTheme'
-    | 'TypingIndicator'
-    | 'TypingIndicatorContainer'
-    | 'UnreadMessagesNotification'
+    'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
   Pick<
@@ -326,10 +313,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     channelUnreadStateStore,
     client,
     closePicker,
-    DateHeader,
     disabled,
     disableTypingIndicator,
-    EmptyStateIndicator,
     FlatList,
     FooterComponent = InlineLoadingMoreIndicator,
     HeaderComponent,
@@ -338,7 +323,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     isLiveStreaming = false,
     loadChannelAroundMessage,
     loading,
-    LoadingIndicator,
     loadMore,
     loadMoreRecent,
     loadMoreRecentThread,
@@ -348,27 +332,31 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputFloating,
     messageInputHeightStore,
     myMessageTheme,
-    NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
     readEvents,
     reloadChannel,
-    ScrollToBottomButton,
     setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
-    StickyHeader,
     targetedMessage,
     thread,
     threadInstance,
     threadList = false,
-    TypingIndicator,
-    TypingIndicatorContainer,
-    UnreadMessagesNotification,
     hasMore,
     threadHasMore,
   } = props;
+  const {
+    EmptyStateIndicator,
+    MessageListLoadingIndicator: LoadingIndicator,
+    NetworkDownIndicator,
+    ScrollToBottomButton,
+    StickyHeader,
+    TypingIndicator,
+    TypingIndicatorContainer,
+    UnreadMessagesNotification,
+  } = useComponentsContext();
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
   const styles = useStyles();
@@ -1306,7 +1294,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       )}
       <View style={styles.stickyHeaderContainer}>
         {messageListLengthAfterUpdate && StickyHeader ? (
-          <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
+          <StickyHeader date={stickyHeaderDate} />
         ) : null}
       </View>
       {scrollToBottomButtonVisible ? (
@@ -1350,42 +1338,25 @@ export const MessageList = (props: MessageListProps) => {
     channel,
     channelUnreadStateStore,
     disabled,
-    EmptyStateIndicator,
     enableMessageGroupingByUser,
     error,
     hideStickyDateHeader,
     highlightedMessageId,
     loadChannelAroundMessage,
     loading,
-    LoadingIndicator,
     maximumMessageLimit,
     markRead,
-    NetworkDownIndicator,
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
     setTargetedMessage,
-    StickyHeader,
     targetedMessage,
     threadList,
   } = useChannelContext();
   const { client } = useChatContext();
   const { readEvents } = useOwnCapabilitiesContext();
-  const {
-    DateHeader,
-    disableTypingIndicator,
-    FlatList,
-    InlineDateSeparator,
-    InlineUnreadIndicator,
-    Message,
-    MessageSystem,
-    myMessageTheme,
-    ScrollToBottomButton,
-    shouldShowUnreadUnderlay,
-    TypingIndicator,
-    TypingIndicatorContainer,
-    UnreadMessagesNotification,
-  } = useMessagesContext();
+  const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
+    useMessagesContext();
   const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
   const { loadMore, loadMoreRecent, hasMore } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, threadHasMore, thread, threadInstance } =
@@ -1399,47 +1370,34 @@ export const MessageList = (props: MessageListProps) => {
         channelUnreadStateStore,
         client,
         closePicker,
-        DateHeader,
         disabled,
         disableTypingIndicator,
-        EmptyStateIndicator,
         enableMessageGroupingByUser,
         error,
         FlatList,
         hideStickyDateHeader,
         highlightedMessageId,
-        InlineDateSeparator,
-        InlineUnreadIndicator,
         loadChannelAroundMessage,
         loading,
-        LoadingIndicator,
         loadMore,
         loadMoreRecent,
         loadMoreRecentThread,
         loadMoreThread,
         markRead,
         maximumMessageLimit,
-        Message,
         messageInputFloating,
         messageInputHeightStore,
-        MessageSystem,
         myMessageTheme,
-        NetworkDownIndicator,
         readEvents,
         reloadChannel,
-        ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
         setChannelUnreadState,
         setTargetedMessage,
         shouldShowUnreadUnderlay,
-        StickyHeader,
         targetedMessage,
         thread,
         threadInstance,
         threadList,
-        TypingIndicator,
-        TypingIndicatorContainer,
-        UnreadMessagesNotification,
         hasMore,
         threadHasMore,
       }}

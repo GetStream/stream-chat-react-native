@@ -10,11 +10,8 @@ import {
   ThreadState,
 } from 'stream-chat';
 
-import { ThreadListItemMessagePreview as ThreadListItemMessagePreviewDefault } from './ThreadListItemMessagePreview';
-
-import { ThreadMessagePreviewDeliveryStatus as ThreadMessagePreviewDeliveryStatusDefault } from './ThreadMessagePreviewDeliveryStatus';
-
 import { useChatContext, useTheme, useTranslationContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   ThreadListItemProvider,
   useThreadListItemContext,
@@ -62,11 +59,9 @@ export const ThreadListItemComponent = () => {
   } = useThreadListItemContext();
   const online = useChannelPreviewDisplayPresence(channel);
   const displayName = useChannelPreviewDisplayName(channel);
-  const {
-    onThreadSelect,
-    ThreadListItemMessagePreview = ThreadListItemMessagePreviewDefault,
-    ThreadMessagePreviewDeliveryStatus = ThreadMessagePreviewDeliveryStatusDefault,
-  } = useThreadsContext();
+  const { onThreadSelect } = useThreadsContext();
+  const { ThreadListItemMessagePreview, ThreadMessagePreviewDeliveryStatus } =
+    useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -143,7 +138,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
   const { thread, timestampTranslationKey = 'timestamp/ThreadListItem' } = props;
-  const { ThreadListItem = ThreadListItemComponent } = useThreadsContext();
+  const { ThreadListItem: ThreadListItemOverride } = useComponentsContext();
   const { text: draftText } = useStateStore(
     thread.messageComposer.textComposer.state,
     textComposerStateSelector,
@@ -229,7 +224,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         thread,
       }}
     >
-      <ThreadListItem />
+      <ThreadListItemOverride />
     </ThreadListItemProvider>
   );
 };

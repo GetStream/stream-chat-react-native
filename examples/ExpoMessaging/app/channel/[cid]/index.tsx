@@ -11,8 +11,6 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
-import InputButtons from '../../../components/InputButtons';
-import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
 import { StyleSheet, View } from 'react-native';
 
 export default function ChannelScreen() {
@@ -75,7 +73,6 @@ export default function ChannelScreen() {
         channel={channel}
         onPressMessage={onPressMessage}
         keyboardVerticalOffset={headerHeight}
-        MessageLocation={MessageLocation}
         thread={thread}
       >
         <MessageList
@@ -84,7 +81,7 @@ export default function ChannelScreen() {
             router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
           }}
         />
-        <MessageComposer InputButtons={InputButtons} />
+        <MessageComposer />
       </Channel>
     </View>
   );

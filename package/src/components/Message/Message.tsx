@@ -29,6 +29,7 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   KeyboardContextValue,
   useKeyboardContext,
@@ -211,13 +212,9 @@ export type MessagePropsWithContext = Pick<
     | 'handleThreadReply'
     | 'handleBlockUser'
     | 'isAttachmentEqual'
-    | 'MessageMenu'
     | 'messageActions'
     | 'messageOverlayTargetId'
     | 'messageContentOrder'
-    | 'MessageBounce'
-    | 'MessageBlocked'
-    | 'MessageItemView'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
@@ -227,14 +224,6 @@ export type MessagePropsWithContext = Pick<
     | 'selectReaction'
     | 'supportedReactions'
     | 'updateMessage'
-    | 'PollContent'
-    // TODO: remove this comment later, using it as a pragma mark
-    | 'MessageUserReactions'
-    | 'MessageUserReactionsAvatar'
-    | 'MessageUserReactionsItem'
-    | 'MessageReactionPicker'
-    | 'MessageActionList'
-    | 'MessageActionListItem'
   > &
   Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -297,11 +286,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     message,
     messageActions: messageActionsProp = defaultMessageActions,
     messageOverlayTargetId = DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
-    MessageBlocked,
-    MessageBounce,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
-    MessageItemView,
     onLongPressMessage: onLongPressMessageProp,
     onPressInMessage: onPressInMessageProp,
     onPressMessage: onPressMessageProp,
@@ -322,13 +308,15 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     updateMessage,
     readBy,
     setQuotedMessage,
-    MessageUserReactions,
-    MessageUserReactionsAvatar,
-    MessageUserReactionsItem,
-    MessageReactionPicker,
-    MessageActionList,
-    MessageActionListItem,
   } = props;
+  const {
+    MessageActionList,
+    MessageBlocked,
+    MessageBounce,
+    MessageItemView,
+    MessageReactionPicker,
+    MessageUserReactions,
+  } = useComponentsContext();
   // TODO: V9: Reconsider using safe area insets in every message.
   const insets = useSafeAreaInsets();
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
@@ -900,8 +888,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             >
               <MessageUserReactions
                 message={message}
-                MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-                MessageUserReactionsItem={MessageUserReactionsItem}
                 selectedReaction={selectedReaction}
               />
             </BottomSheetModal>
@@ -924,7 +910,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
               >
                 <MessageActionList
                   dismissOverlay={dismissOverlay}
-                  MessageActionListItem={MessageActionListItem}
                   messageActions={messageActions}
                 />
               </View>

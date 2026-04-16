@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 import { act, render } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
 import * as ChannelActionItemsModule from '../../ChannelList/hooks/useChannelActionItems';
 import * as ChannelActionsModule from '../../ChannelList/hooks/useChannelActions';
@@ -115,9 +116,11 @@ describe('ChannelSwipableWrapper', () => {
     });
 
     render(
-      <ChannelSwipableWrapper channel={channel} ChannelDetailsBottomSheet={customBottomSheet}>
-        <Text>child</Text>
-      </ChannelSwipableWrapper>,
+      <WithComponents overrides={{ ChannelDetailsBottomSheet: customBottomSheet }}>
+        <ChannelSwipableWrapper channel={channel}>
+          <Text>child</Text>
+        </ChannelSwipableWrapper>
+      </WithComponents>,
     );
 
     expect(customBottomSheet).toHaveBeenCalledWith(
@@ -181,9 +184,11 @@ describe('ChannelSwipableWrapper', () => {
     });
 
     render(
-      <ChannelSwipableWrapper channel={channel} ChannelDetailsBottomSheet={customBottomSheet}>
-        <Text>child</Text>
-      </ChannelSwipableWrapper>,
+      <WithComponents overrides={{ ChannelDetailsBottomSheet: customBottomSheet }}>
+        <ChannelSwipableWrapper channel={channel}>
+          <Text>child</Text>
+        </ChannelSwipableWrapper>
+      </WithComponents>,
     );
 
     expect(customBottomSheet).toHaveBeenCalledWith(

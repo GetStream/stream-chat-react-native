@@ -6,7 +6,7 @@ import { render, screen, userEvent, waitFor } from '@testing-library/react-nativ
 
 import { Attachment, LocalMessage } from 'stream-chat';
 
-import { ImageGalleryFooter as ImageGalleryFooterDefault } from '../../../components/ImageGallery/components/ImageGalleryFooter';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -60,16 +60,18 @@ const ImageGalleryComponentVideo = (props: ImageGalleryProps) => {
 
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
-      <ImageGalleryContext.Provider
-        value={
-          {
-            imageGalleryStateStore,
-            ImageGalleryFooter: ImageGalleryFooterDefault,
-          } as unknown as ImageGalleryContextValue
-        }
-      >
-        <ImageGallery {...props} />
-      </ImageGalleryContext.Provider>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
+        <ImageGalleryContext.Provider
+          value={
+            {
+              imageGalleryStateStore,
+            } as unknown as ImageGalleryContextValue
+          }
+        >
+          <ImageGallery {...props} />
+        </ImageGalleryContext.Provider>
+      </WithComponents>
     </OverlayProvider>
   );
 };
@@ -100,16 +102,18 @@ const ImageGalleryComponentImage = (
 
   return (
     <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
-      <ImageGalleryContext.Provider
-        value={
-          {
-            imageGalleryStateStore,
-            ImageGalleryFooter: ImageGalleryFooterDefault,
-          } as unknown as ImageGalleryContextValue
-        }
-      >
-        <ImageGallery {...props} />
-      </ImageGalleryContext.Provider>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
+        <ImageGalleryContext.Provider
+          value={
+            {
+              imageGalleryStateStore,
+            } as unknown as ImageGalleryContextValue
+          }
+        >
+          <ImageGallery {...props} />
+        </ImageGalleryContext.Provider>
+      </WithComponents>
     </OverlayProvider>
   );
 };

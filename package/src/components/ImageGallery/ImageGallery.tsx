@@ -13,9 +13,15 @@ import Animated, {
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
+import type {
+  ImageGalleryFooterProps,
+  ImageGalleryGridProps,
+  ImageGalleryHeaderProps,
+} from './components/types';
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   ImageGalleryProviderProps,
   useImageGalleryContext,
@@ -63,13 +69,13 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 
 type ImageGalleryWithContextProps = Pick<
   ImageGalleryProviderProps,
-  | 'numberOfImageGalleryGridColumns'
-  | 'ImageGalleryHeader'
-  | 'ImageGalleryFooter'
-  | 'ImageGalleryVideoControls'
-  | 'ImageGalleryGrid'
+  'numberOfImageGalleryGridColumns'
 > &
-  Pick<OverlayContextValue, 'overlayOpacity'>;
+  Pick<OverlayContextValue, 'overlayOpacity'> & {
+    ImageGalleryHeader?: React.ComponentType<ImageGalleryHeaderProps>;
+    ImageGalleryFooter?: React.ComponentType<ImageGalleryFooterProps>;
+    ImageGalleryGrid?: React.ComponentType<ImageGalleryGridProps>;
+  };
 
 export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
   const {
@@ -77,7 +83,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     overlayOpacity,
     ImageGalleryHeader,
     ImageGalleryFooter,
-    ImageGalleryVideoControls,
     ImageGalleryGrid,
   } = props;
   const [isGridViewVisible, setIsGridViewVisible] = useState(false);
@@ -345,7 +350,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
           opacity={headerFooterOpacity}
           openGridView={openGridView}
           visible={headerFooterVisible}
-          ImageGalleryVideoControls={ImageGalleryVideoControls}
         />
       ) : null}
 
@@ -370,13 +374,8 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
 export type ImageGalleryProps = Partial<ImageGalleryWithContextProps>;
 
 export const ImageGallery = (props: ImageGalleryProps) => {
-  const {
-    numberOfImageGalleryGridColumns,
-    ImageGalleryHeader,
-    ImageGalleryFooter,
-    ImageGalleryVideoControls,
-    ImageGalleryGrid,
-  } = useImageGalleryContext();
+  const { numberOfImageGalleryGridColumns } = useImageGalleryContext();
+  const { ImageGalleryHeader, ImageGalleryFooter, ImageGalleryGrid } = useComponentsContext();
   const { overlayOpacity } = useOverlayContext();
   return (
     <ImageGalleryWithContext
@@ -384,7 +383,6 @@ export const ImageGallery = (props: ImageGalleryProps) => {
       overlayOpacity={overlayOpacity}
       ImageGalleryHeader={ImageGalleryHeader}
       ImageGalleryFooter={ImageGalleryFooter}
-      ImageGalleryVideoControls={ImageGalleryVideoControls}
       ImageGalleryGrid={ImageGalleryGrid}
       {...props}
     />

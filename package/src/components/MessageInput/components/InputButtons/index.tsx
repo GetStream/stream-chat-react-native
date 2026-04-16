@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { OwnCapabilitiesContextValue } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useActiveCommand } from '../../../../contexts/messageInputContext/hooks/useActiveCommand';
 import {
   MessageInputContextValue,
@@ -23,19 +24,19 @@ export type InputButtonsProps = Partial<InputButtonsWithContextProps>;
 
 export type InputButtonsWithContextProps = Pick<
   MessageInputContextValue,
-  'AttachButton' | 'hasCameraPicker' | 'hasCommands' | 'hasFilePicker' | 'hasImagePicker'
+  'hasCameraPicker' | 'hasCommands' | 'hasFilePicker' | 'hasImagePicker'
 > &
   Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
 export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => {
   const {
-    AttachButton,
     hasCameraPicker,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
     uploadFile: ownCapabilitiesUploadFile,
   } = props;
+  const { AttachButton } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
   const rotation = useSharedValue(0);
   const command = useActiveCommand();
@@ -107,14 +108,12 @@ const MemoizedInputButtonsWithContext = React.memo(
 ) as typeof InputButtonsWithContext;
 
 export const InputButtons = (props: InputButtonsProps) => {
-  const { AttachButton, hasCameraPicker, hasCommands, hasFilePicker, hasImagePicker } =
-    useMessageInputContext();
+  const { hasCameraPicker, hasCommands, hasFilePicker, hasImagePicker } = useMessageInputContext();
   const { uploadFile } = useOwnCapabilitiesContext();
 
   return (
     <MemoizedInputButtonsWithContext
       {...{
-        AttachButton,
         hasCameraPicker,
         hasCommands,
         hasFilePicker,

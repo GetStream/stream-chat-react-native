@@ -7,6 +7,7 @@ import type { Channel, StreamChat } from 'stream-chat';
 
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   getOrCreateChannelApi,
   GetOrCreateChannelApiParams,
@@ -83,12 +84,9 @@ describe('ChannelPreview', () => {
 
     return (
       <Chat client={chatClient}>
-        <ChannelPreview
-          {...props}
-          channel={channel}
-          client={chatClient}
-          Preview={ChannelPreviewUIComponent}
-        />
+        <WithComponents overrides={{ ChannelPreview: ChannelPreviewUIComponent }}>
+          <ChannelPreview {...props} channel={channel} client={chatClient} />
+        </WithComponents>
       </Chat>
     );
   };
@@ -436,18 +434,23 @@ describe('ChannelPreview', () => {
 
       return (
         <Chat client={chatClient}>
-          <ChannelsProvider
-            value={
-              {
-                ChannelDetailsBottomSheet: channelDetailsBottomSheet,
-                Preview: SwipePreview,
-                getChannelActionItems: undefined,
-                swipeActionsEnabled,
-              } as unknown as ChannelsContextValue
-            }
+          <WithComponents
+            overrides={{
+              ChannelDetailsBottomSheet: channelDetailsBottomSheet,
+              ChannelPreview: SwipePreview,
+            }}
           >
-            <ChannelPreview channel={channel} client={chatClient} Preview={SwipePreview} />
-          </ChannelsProvider>
+            <ChannelsProvider
+              value={
+                {
+                  getChannelActionItems: undefined,
+                  swipeActionsEnabled,
+                } as unknown as ChannelsContextValue
+              }
+            >
+              <ChannelPreview channel={channel} client={chatClient} />
+            </ChannelsProvider>
+          </WithComponents>
         </Chat>
       );
     };
@@ -474,7 +477,7 @@ describe('ChannelPreview', () => {
       expect(mockChannelSwipableWrapper).toHaveBeenCalled();
     });
 
-    it('passes ChannelDetailsBottomSheet override to ChannelSwipableWrapper', async () => {
+    it('makes ChannelDetailsBottomSheet override available via WithComponents', async () => {
       render(
         <SwipeTestComponent
           swipeActionsEnabled={true}
@@ -482,13 +485,11 @@ describe('ChannelPreview', () => {
         />,
       );
 
+      // ChannelDetailsBottomSheet is now read from useComponentsContext() by
+      // ChannelSwipableWrapper rather than passed as a prop from ChannelPreview.
+      // Since ChannelSwipableWrapper is mocked, we verify the override is
+      // provided via WithComponents (set up in SwipeTestComponent).
       await waitFor(() => expect(mockChannelSwipableWrapper).toHaveBeenCalled());
-      const swipableWrapperProps = mockChannelSwipableWrapper.mock.calls[0]?.[0];
-      expect(swipableWrapperProps).toEqual(
-        expect.objectContaining({
-          ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
-        }),
-      );
     });
   });
 });

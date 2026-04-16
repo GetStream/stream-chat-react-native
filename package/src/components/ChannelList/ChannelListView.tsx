@@ -10,6 +10,7 @@ import {
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
@@ -18,24 +19,15 @@ import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 
 export type ChannelListViewPropsWithContext = Omit<
   ChannelsContextValue,
-  | 'HeaderErrorIndicator'
-  | 'HeaderNetworkDownIndicator'
-  | 'maxUnreadCount'
-  | 'numberOfSkeletons'
-  | 'onSelect'
-  | 'Preview'
-  | 'PreviewTitle'
-  | 'PreviewStatus'
-  | 'PreviewAvatar'
-  | 'previewMessage'
-  | 'Skeleton'
+  'maxUnreadCount' | 'numberOfSkeletons' | 'onSelect'
 >;
 
 const StatusIndicator = () => {
   const { isOnline } = useChatContext();
   const styles = useStyles();
-  const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
-    useChannelsContext();
+  const { error, loadingChannels, refreshList } = useChannelsContext();
+  const { ChannelListHeaderErrorIndicator, ChannelListHeaderNetworkDownIndicator } =
+    useComponentsContext();
 
   if (loadingChannels) {
     return null;
@@ -44,13 +36,13 @@ const StatusIndicator = () => {
   if (!isOnline) {
     return (
       <View style={styles.statusIndicator}>
-        <HeaderNetworkDownIndicator />
+        <ChannelListHeaderNetworkDownIndicator />
       </View>
     );
   } else if (error) {
     return (
       <View style={styles.statusIndicator}>
-        <HeaderErrorIndicator onPress={refreshList} />
+        <ChannelListHeaderErrorIndicator onPress={refreshList} />
       </View>
     );
   }
@@ -67,15 +59,10 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
     additionalFlatListProps,
     channelListInitialized,
     channels,
-    EmptyStateIndicator,
     error,
-    FooterLoadingIndicator,
     forceUpdate,
     hasNextPage,
-    ListHeaderComponent,
     loadingChannels,
-    LoadingErrorIndicator,
-    LoadingIndicator,
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
@@ -84,6 +71,13 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
     reloadList,
     setFlatListRef,
   } = props;
+  const {
+    EmptyStateIndicator,
+    ChannelListFooterLoadingIndicator,
+    ListHeaderComponent,
+    LoadingErrorIndicator,
+    ChannelListLoadingIndicator: LoadingIndicator,
+  } = useComponentsContext();
 
   /**
    * In order to prevent the EmptyStateIndicator component from showing up briefly on mount,
@@ -143,13 +137,9 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
         extraData={forceUpdate}
         keyExtractor={keyExtractor}
         ListEmptyComponent={
-          loading ? (
-            <LoadingIndicator listType='channel' />
-          ) : (
-            <EmptyStateIndicator listType='channel' />
-          )
+          loading ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
         }
-        ListFooterComponent={loadingNextPage ? <FooterLoadingIndicator /> : undefined}
+        ListFooterComponent={loadingNextPage ? <ChannelListFooterLoadingIndicator /> : undefined}
         ListHeaderComponent={ListHeaderComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
@@ -180,15 +170,10 @@ export const ChannelListView = (props: ChannelListViewProps) => {
     additionalFlatListProps,
     channelListInitialized,
     channels,
-    EmptyStateIndicator,
     error,
-    FooterLoadingIndicator,
     forceUpdate,
     hasNextPage,
-    ListHeaderComponent,
     loadingChannels,
-    LoadingErrorIndicator,
-    LoadingIndicator,
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
@@ -204,15 +189,10 @@ export const ChannelListView = (props: ChannelListViewProps) => {
         additionalFlatListProps,
         channelListInitialized,
         channels,
-        EmptyStateIndicator,
         error,
-        FooterLoadingIndicator,
         forceUpdate,
         hasNextPage,
-        ListHeaderComponent,
         loadingChannels,
-        LoadingErrorIndicator,
-        LoadingIndicator,
         loadingNextPage,
         loadMoreThreshold,
         loadNextPage,
@@ -231,17 +211,23 @@ ChannelListView.displayName = 'ChannelListView{channelListView}';
 const useStyles = () => {
   const {
     theme: {
+      semantics,
       channelListView: { flatList, flatListContent },
     },
   } = useTheme();
   return useMemo(() => {
     return StyleSheet.create({
-      flatList: { flex: 1, ...flatList },
+      flatList: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreApp,
+        ...flatList,
+      },
       flatListContentContainer: {
         flexGrow: 1,
+        backgroundColor: semantics.backgroundCoreApp,
         ...flatListContent,
       },
       statusIndicator: { left: 0, position: 'absolute', right: 0, top: 0 },
     });
-  }, [flatList, flatListContent]);
+  }, [flatList, flatListContent, semantics]);
 };

@@ -16,6 +16,7 @@ import { openUrlSafely } from './utils/openUrlSafely';
 
 import { useTranslationContext } from '../../contexts';
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -54,14 +55,7 @@ export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalle
     | 'message'
     | 'messageContentOrder'
   > &
-  Pick<
-    MessagesContextValue,
-    | 'additionalPressableProps'
-    | 'VideoThumbnail'
-    | 'ImageLoadingIndicator'
-    | 'ImageLoadingFailedIndicator'
-    | 'myMessageTheme'
-  > &
+  Pick<MessagesContextValue, 'additionalPressableProps' | 'myMessageTheme'> &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
     messageHasOnlyOneMedia: boolean;
@@ -72,8 +66,6 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     additionalPressableProps,
     alignment,
     imageGalleryStateStore,
-    ImageLoadingFailedIndicator,
-    ImageLoadingIndicator,
     images,
     message,
     onLongPress,
@@ -82,10 +74,8 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     preventPress,
     setOverlay,
     videos,
-    VideoThumbnail,
     messageHasOnlyOneMedia = false,
   } = props;
-
   const { resizableCDNHosts } = useChatConfigContext();
   const {
     theme: {
@@ -103,9 +93,7 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
       },
     },
   } = useTheme();
-
   const styles = useStyles();
-
   const sizeConfig = {
     gridHeight,
     gridWidth,
@@ -114,12 +102,10 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     minHeight,
     minWidth,
   };
-
   const imagesAndVideos = [...(images || []), ...(videos || [])];
   const imagesAndVideosValue = `${images?.length}${videos?.length}${images
     ?.map((i) => `${i.image_url}${i.thumb_url}`)
     .join('')}${videos?.map((i) => `${i.image_url}${i.thumb_url}`).join('')}`;
-
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
@@ -130,12 +116,10 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [imagesAndVideosValue],
   );
-
   if (!imagesAndVideos?.length) {
     return null;
   }
   const numOfColumns = thumbnailGrid.length;
-
   return (
     <View
       style={[
@@ -180,19 +164,15 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                 width,
                 messageHasOnlyOneMedia,
               });
-
               if (!message) {
                 return null;
               }
-
               return (
                 <GalleryThumbnail
                   additionalPressableProps={additionalPressableProps}
                   borderRadius={borderRadius}
                   colIndex={colIndex}
                   imageGalleryStateStore={imageGalleryStateStore}
-                  ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
-                  ImageLoadingIndicator={ImageLoadingIndicator}
                   imagesAndVideos={imagesAndVideos}
                   invertedDirections={invertedDirections || false}
                   key={rowIndex}
@@ -206,7 +186,6 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
                   rowIndex={rowIndex}
                   setOverlay={setOverlay}
                   thumbnail={thumbnail}
-                  VideoThumbnail={VideoThumbnail}
                 />
               );
             })}
@@ -216,7 +195,6 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     </View>
   );
 };
-
 type GalleryThumbnailProps = {
   borderRadius: GalleryImageBorderRadius;
   colIndex: number;
@@ -227,24 +205,15 @@ type GalleryThumbnailProps = {
   numOfRows: number;
   rowIndex: number;
   thumbnail: Thumbnail;
-} & Pick<
-  MessagesContextValue,
-  | 'additionalPressableProps'
-  | 'VideoThumbnail'
-  | 'ImageLoadingIndicator'
-  | 'ImageLoadingFailedIndicator'
-> &
+} & Pick<MessagesContextValue, 'additionalPressableProps'> &
   Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
   Pick<MessageContextValue, 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'> &
   Pick<OverlayContextValue, 'setOverlay'>;
-
 const GalleryThumbnail = ({
   additionalPressableProps,
   borderRadius,
   colIndex,
   imageGalleryStateStore,
-  ImageLoadingFailedIndicator,
-  ImageLoadingIndicator,
   imagesAndVideos,
   invertedDirections,
   message,
@@ -257,8 +226,8 @@ const GalleryThumbnail = ({
   rowIndex,
   setOverlay,
   thumbnail,
-  VideoThumbnail,
 }: GalleryThumbnailProps) => {
+  const { VideoThumbnail } = useComponentsContext();
   const {
     theme: {
       messageItemView: {
@@ -269,7 +238,6 @@ const GalleryThumbnail = ({
   } = useTheme();
   const { t } = useTranslationContext();
   const styles = useStyles();
-
   const openImageViewer = () => {
     if (!message) {
       return;
@@ -280,7 +248,6 @@ const GalleryThumbnail = ({
     });
     setOverlay('gallery');
   };
-
   const defaultOnPress = () => {
     // If the url is defined then only try to open the file.
     if (thumbnail.url) {
@@ -293,7 +260,6 @@ const GalleryThumbnail = ({
       }
     }
   };
-
   return (
     <Pressable
       disabled={preventPress}
@@ -339,8 +305,6 @@ const GalleryThumbnail = ({
       ) : (
         <GalleryImageThumbnail
           borderRadius={imageBorderRadius ?? borderRadius}
-          ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
-          ImageLoadingIndicator={ImageLoadingIndicator}
           thumbnail={thumbnail}
         />
       )}
@@ -362,16 +326,11 @@ const GalleryThumbnail = ({
     </Pressable>
   );
 };
-
 const GalleryImageThumbnail = ({
   borderRadius,
-  ImageLoadingFailedIndicator,
-  ImageLoadingIndicator,
   thumbnail,
-}: Pick<
-  GalleryThumbnailProps,
-  'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
->) => {
+}: Pick<GalleryThumbnailProps, 'thumbnail' | 'borderRadius'>) => {
+  const { ImageLoadingFailedIndicator, ImageLoadingIndicator } = useComponentsContext();
   const {
     isLoadingImage,
     isLoadingImageError,
@@ -379,33 +338,27 @@ const GalleryImageThumbnail = ({
     setLoadingImage,
     setLoadingImageError,
   } = useLoadingImage();
-
   const {
     theme: {
       messageItemView: { gallery },
     },
   } = useTheme();
-
   const styles = useStyles();
-
   const onLoadStart = useStableCallback(() => {
     setLoadingImageError(false);
     setLoadingImage(true);
   });
-
   const onLoad = useStableCallback(() => {
     setTimeout(() => {
       setLoadingImage(false);
       setLoadingImageError(false);
     }, 0);
   });
-
   const onError = useStableCallback(({ nativeEvent: { error } }: ImageErrorEvent) => {
     console.warn(error);
     setLoadingImage(false);
     setLoadingImageError(true);
   });
-
   return (
     <View style={[styles.image, borderRadius]}>
       {isLoadingImageError ? (
@@ -426,7 +379,6 @@ const GalleryImageThumbnail = ({
     </View>
   );
 };
-
 const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWithContext) => {
   const {
     alignment: prevAlignment,
@@ -442,19 +394,16 @@ const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWit
     myMessageTheme: nextMyMessageTheme,
     videos: nextVideos,
   } = nextProps;
-
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) {
     return false;
   }
-
   const messageEqual =
     prevMessage?.id === nextMessage?.id &&
     `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
   if (!messageEqual) {
     return false;
   }
-
   const imagesEqual =
     prevImages.length === nextImages.length &&
     prevImages.every(
@@ -465,7 +414,6 @@ const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWit
   if (!imagesEqual) {
     return false;
   }
-
   const videosEqual =
     prevVideos.length === nextVideos.length &&
     prevVideos.every(
@@ -476,20 +424,15 @@ const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWit
   if (!videosEqual) {
     return false;
   }
-
   const messageThemeEqual =
     JSON.stringify(prevMyMessageTheme) === JSON.stringify(nextMyMessageTheme);
   if (!messageThemeEqual) {
     return false;
   }
-
   return true;
 };
-
 const MemoizedGallery = React.memo(GalleryWithContext, areEqual) as typeof GalleryWithContext;
-
 export type GalleryProps = Partial<GalleryPropsWithContext>;
-
 /**
  * UI component for card in attachments.
  */
@@ -497,8 +440,6 @@ export const Gallery = (props: GalleryProps) => {
   const {
     alignment: propAlignment,
     additionalPressableProps: propAdditionalPressableProps,
-    ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
-    ImageLoadingIndicator: PropImageLoadingIndicator,
     images: propImages,
     message: propMessage,
     myMessageTheme: propMyMessageTheme,
@@ -508,10 +449,8 @@ export const Gallery = (props: GalleryProps) => {
     preventPress: propPreventPress,
     setOverlay: propSetOverlay,
     videos: propVideos,
-    VideoThumbnail: PropVideoThumbnail,
     messageContentOrder: propMessageContentOrder,
   } = props;
-
   const { imageGalleryStateStore } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
@@ -526,13 +465,9 @@ export const Gallery = (props: GalleryProps) => {
   } = useMessageContext();
   const {
     additionalPressableProps: contextAdditionalPressableProps,
-    ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
-    ImageLoadingIndicator: ContextImageLoadingIndicator,
     myMessageTheme: contextMyMessageTheme,
-    VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
-
   const images = propImages ?? contextImages ?? [];
   const videos = propVideos ?? contextVideos ?? [];
   const imagesAndVideos = [...images, ...videos];
@@ -541,7 +476,6 @@ export const Gallery = (props: GalleryProps) => {
   if (!images.length && !videos.length) {
     return null;
   }
-
   const additionalPressableProps = propAdditionalPressableProps || contextAdditionalPressableProps;
   const onLongPress = propOnLongPress || contextOnLongPress;
   const onPressIn = propOnPressIn || contextOnPressIn;
@@ -549,18 +483,12 @@ export const Gallery = (props: GalleryProps) => {
   const preventPress =
     typeof propPreventPress === 'boolean' ? propPreventPress : contextPreventPress;
   const setOverlay = propSetOverlay || contextSetOverlay;
-  const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
-  const ImageLoadingFailedIndicator =
-    PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
-  const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
   const myMessageTheme = propMyMessageTheme || contextMyMessageTheme;
   const messageContentOrder = propMessageContentOrder || contextMessageContentOrder;
-
   const messageHasOnlyOneMedia =
     messageContentOrder?.length === 1 &&
     messageContentOrder?.includes('gallery') &&
     imagesAndVideos.length === 1;
-
   return (
     <MemoizedGallery
       {...{
@@ -568,8 +496,6 @@ export const Gallery = (props: GalleryProps) => {
         alignment,
         channelId: message?.cid,
         imageGalleryStateStore,
-        ImageLoadingFailedIndicator,
-        ImageLoadingIndicator,
         images,
         message,
         myMessageTheme,
@@ -579,14 +505,12 @@ export const Gallery = (props: GalleryProps) => {
         preventPress,
         setOverlay,
         videos,
-        VideoThumbnail,
         messageHasOnlyOneMedia,
         messageContentOrder,
       }}
     />
   );
 };
-
 const useStyles = () => {
   const {
     theme: { semantics },
@@ -675,5 +599,4 @@ const useStyles = () => {
     });
   }, [semantics, isMyMessage]);
 };
-
 Gallery.displayName = 'Gallery{messageItemView{gallery}}';

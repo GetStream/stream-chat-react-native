@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import {
   GestureResponderEvent,
+  I18nManager,
   Linking,
   Platform,
   Text,
@@ -294,6 +295,7 @@ export const renderText = (params: RenderTextParams) => {
       ...defaultMarkdownStyles.text,
       color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
       ...markdownStyles?.text,
+      writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
     },
   };
 

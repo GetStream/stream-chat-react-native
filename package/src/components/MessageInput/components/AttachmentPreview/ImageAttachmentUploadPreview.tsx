@@ -7,7 +7,7 @@ import { LocalImageAttachment } from 'stream-chat';
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
@@ -29,7 +29,7 @@ export const ImageAttachmentUploadPreview = ({
     ImageUploadInProgressIndicator,
     ImageUploadRetryIndicator,
     ImageUploadNotSupportedIndicator,
-  } = useMessageInputContext();
+  } = useComponentsContext();
   const indicatorType = loading
     ? ProgressIndicatorTypes.IN_PROGRESS
     : getIndicatorTypeForFileState(attachment.localMetadata.uploadState, enableOfflineSupport);

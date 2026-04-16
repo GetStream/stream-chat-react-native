@@ -6,6 +6,7 @@ import {
   SqliteClient,
   Streami18n,
   useCreateChatClient,
+  WithComponents,
 } from 'stream-chat-expo';
 import { UserResponse } from 'stream-chat';
 import { AuthProgressLoader } from './AuthProgressLoader';
@@ -13,6 +14,7 @@ import { useStreamChatTheme } from '../hooks/useStreamChatTheme';
 import { useUserContext } from '@/context/UserContext';
 import { STREAM_API_KEY, USER_TOKENS } from '@/constants/ChatUsers';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useExpoMessagingComponentOverrides } from './ExpoMessagingComponentOverrides';
 import '../utils/backgroundMessageHandler';
 
 const streami18n = new Streami18n({
@@ -39,16 +41,19 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
   });
 
   const theme = useStreamChatTheme();
+  const componentOverrides = useExpoMessagingComponentOverrides();
 
   if (!chatClient) {
     return <AuthProgressLoader />;
   }
 
   return (
-    <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
-      <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
-        {children}
-      </Chat>
-    </OverlayProvider>
+    <WithComponents overrides={componentOverrides}>
+      <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
+        <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
+          {children}
+        </Chat>
+      </OverlayProvider>
+    </WithComponents>
   );
 };

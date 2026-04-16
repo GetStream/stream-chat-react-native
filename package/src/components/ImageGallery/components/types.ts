@@ -1,5 +1,3 @@
-import type React from 'react';
-
 import type { SharedValue } from 'react-native-reanimated';
 
 export type ImageGalleryVideoControlProps = {
@@ -13,7 +11,6 @@ export type ImageGalleryHeaderProps = {
 
 export type ImageGalleryFooterProps = {
   accessibilityLabel: string;
-  ImageGalleryVideoControls?: React.ComponentType<ImageGalleryVideoControlProps>;
   opacity: SharedValue<number>;
   openGridView: () => void;
   visible: SharedValue<number>;

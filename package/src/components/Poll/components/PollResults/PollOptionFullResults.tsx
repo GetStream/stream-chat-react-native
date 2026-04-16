@@ -11,6 +11,7 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 
 import { primitives } from '../../../../theme';
 import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagination';
@@ -19,7 +20,6 @@ import { usePollState } from '../../hooks/usePollState';
 export type PollOptionFullResultsProps = PollContextValue & {
   option: PollOption;
   additionalFlatListProps?: Partial<FlatListProps<PollVoteClass>>;
-  PollOptionFullResultsContent?: React.ComponentType<{ option: PollOption }>;
 };
 
 export const renderPollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => (
@@ -86,19 +86,18 @@ export const PollOptionFullResults = ({
   message,
   option,
   poll,
-  PollOptionFullResultsContent: PollOptionFullResultsContentOverride,
-}: PollOptionFullResultsProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollOptionFullResultsContentOverride ? (
-      <PollOptionFullResultsContentOverride option={option} />
-    ) : (
-      <PollOptionFullResultsContent
+}: PollOptionFullResultsProps) => {
+  const { PollOptionFullResultsContent: PollOptionFullResultsContentComponent } =
+    useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollOptionFullResultsContentComponent
         additionalFlatListProps={additionalFlatListProps}
         option={option}
       />
-    )}
-  </PollContextProvider>
-);
+    </PollContextProvider>
+  );
+};
 
 const useStyles = () => {
   const {
