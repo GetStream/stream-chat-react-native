@@ -21,6 +21,10 @@ export type MessageOverlayWrapperProps = PropsWithChildren<{
   testID?: string;
 }>;
 
+/**
+ * Wraps the primary message overlay target so the active message can be teleported
+ * into the overlay host while a placeholder preserves its original layout space.
+ */
 export const MessageOverlayWrapper = ({
   children,
   targetId,
