@@ -13,6 +13,7 @@ import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from '../../components/Message/mess
 import type { GroupType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
+import type { Rect } from '../../state-store/message-overlay-store';
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 
@@ -173,11 +174,13 @@ export const useMessageContext = () => {
 };
 
 type MessageOverlayRuntimeContextValue = {
+  overlayTargetRectRef: { current: Rect };
   messageOverlayTargetId: string;
   overlayActive: boolean;
 };
 
 const MessageOverlayRuntimeContext = React.createContext<MessageOverlayRuntimeContextValue>({
+  overlayTargetRectRef: { current: undefined },
   messageOverlayTargetId: DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
   overlayActive: false,
 });

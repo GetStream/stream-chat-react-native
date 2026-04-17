@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
-import { LayoutChangeEvent, View } from 'react-native';
+import React, { PropsWithChildren, useCallback, useEffect } from 'react';
+import { View } from 'react-native';
 
 import { Portal } from 'react-native-teleport';
 
@@ -8,7 +8,6 @@ import {
   useMessageContext,
   useMessageOverlayRuntimeContext,
 } from '../../contexts/messageContext/MessageContext';
-import { useStableCallback } from '../../hooks';
 
 export type MessageOverlayWrapperProps = PropsWithChildren<{
   /**
@@ -28,9 +27,10 @@ export const MessageOverlayWrapper = ({
   testID,
 }: MessageOverlayWrapperProps) => {
   const { registerMessageOverlayTarget, unregisterMessageOverlayTarget } = useMessageContext();
-  const { messageOverlayTargetId, overlayActive } = useMessageOverlayRuntimeContext();
-  const placeholderLayoutRef = useRef({ h: 0, w: 0 });
+  const { messageOverlayTargetId, overlayActive, overlayTargetRectRef } =
+    useMessageOverlayRuntimeContext();
   const isActiveTarget = messageOverlayTargetId === targetId;
+  const placeholderLayout = overlayTargetRectRef.current;
 
   const handleTargetRef = useCallback(
     (view: View | null) => {
@@ -42,31 +42,11 @@ export const MessageOverlayWrapper = ({
     [registerMessageOverlayTarget, targetId],
   );
 
-  const handleLayout = useStableCallback((event: LayoutChangeEvent) => {
-    const {
-      nativeEvent: {
-        layout: { height, width },
-      },
-    } = event;
-
-    placeholderLayoutRef.current = {
-      h: height,
-      w: width,
-    };
-  });
-
   useEffect(
     () => () => {
       unregisterMessageOverlayTarget(targetId);
     },
     [targetId, unregisterMessageOverlayTarget],
-  );
-
-  const placeholderLayout = placeholderLayoutRef.current;
-  const target = (
-    <View collapsable={false} onLayout={handleLayout} ref={handleTargetRef} testID={testID}>
-      <MessageOverlayTargetProvider value={isActiveTarget}>{children}</MessageOverlayTargetProvider>
-    </View>
   );
 
   if (!isActiveTarget) {
@@ -75,13 +55,19 @@ export const MessageOverlayWrapper = ({
 
   return (
     <>
-      <Portal hostName={overlayActive ? 'message-overlay' : undefined}>{target}</Portal>
+      <Portal hostName={overlayActive ? 'message-overlay' : undefined}>
+        <View collapsable={false} ref={handleTargetRef} testID={testID}>
+          <MessageOverlayTargetProvider value={isActiveTarget}>
+            {children}
+          </MessageOverlayTargetProvider>
+        </View>
+      </Portal>
       {overlayActive ? (
         <View
           pointerEvents='none'
           style={{
-            height: placeholderLayout.h,
-            width: placeholderLayout.w > 0 ? placeholderLayout.w : '100%',
+            height: placeholderLayout?.h ?? 0,
+            width: placeholderLayout?.w && placeholderLayout.w > 0 ? placeholderLayout.w : '100%',
           }}
           testID={testID ? `${testID}-placeholder` : 'message-overlay-wrapper-placeholder'}
         />

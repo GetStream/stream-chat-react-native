@@ -59,6 +59,7 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
 const createWrapper = (
   value: MessageContextValue,
   runtimeValue = {
+    overlayTargetRectRef: { current: undefined },
     messageOverlayTargetId: DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
     overlayActive: false,
   },

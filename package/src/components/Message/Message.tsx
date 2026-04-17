@@ -808,6 +808,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   });
   const messageOverlayRuntimeContext = useMemo(
     () => ({
+      overlayTargetRectRef: rectRef,
       messageOverlayTargetId,
       overlayActive,
     }),
