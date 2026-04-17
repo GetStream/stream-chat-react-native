@@ -5,10 +5,8 @@ import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageComposer,
-  MessageContent as DefaultMessageContent,
   MessageList,
   MessageFlashList,
-  MessageOverlayWrapper,
   ThreadContextValue,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
@@ -19,7 +17,6 @@ import {
   MessageActionsParams,
   ChannelAvatar,
   PortalWhileClosingView,
-  WithComponents,
 } from 'stream-chat-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -50,14 +47,6 @@ export type ChannelScreenProps = {
 export type ChannelHeaderProps = {
   channel: StreamChatChannel;
 };
-
-const OverlayTargetedMessageContent = (
-  props: React.ComponentProps<typeof DefaultMessageContent>,
-) => (
-  <MessageOverlayWrapper targetId='message-content'>
-    <DefaultMessageContent {...props} />
-  </MessageOverlayWrapper>
-);
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { closePicker } = useAttachmentPickerContext();
@@ -274,46 +263,43 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
 
   return (
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
-      {/*<WithComponents overrides={{ MessageContent: OverlayTargetedMessageContent }}>*/}
-        <Channel
-          audioRecordingEnabled={true}
-          channel={channel}
-          messageInputFloating={messageInputFloating}
-          onPressMessage={onPressMessage}
-          initialScrollToFirstUnreadMessage
-          keyboardVerticalOffset={0}
-          messageActions={messageActions}
-          messageId={messageId}
-          // messageOverlayTargetId='message-content'
-          onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
-          thread={selectedThread}
-          maximumMessageLimit={messageListPruning}
-        >
-          <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
-            <ChannelHeader channel={channel} />
-          </PortalWhileClosingView>
-          {messageListImplementation === 'flashlist' ? (
-            <MessageFlashList
-              onThreadSelect={onThreadSelect}
-              isLiveStreaming={messageListMode === 'livestream'}
-            />
-          ) : (
-            <MessageList
-              onThreadSelect={onThreadSelect}
-              isLiveStreaming={messageListMode === 'livestream'}
-            />
-          )}
-          <AITypingIndicatorView channel={channel} />
-          <MessageComposer />
-          {modalVisible && (
-            <MessageInfoBottomSheet
-              visible={modalVisible}
-              message={selectedMessage}
-              onClose={handleMessageInfoClose}
-            />
-          )}
-        </Channel>
-      {/*</WithComponents>*/}
+      <Channel
+        audioRecordingEnabled={true}
+        channel={channel}
+        messageInputFloating={messageInputFloating}
+        onPressMessage={onPressMessage}
+        initialScrollToFirstUnreadMessage
+        keyboardVerticalOffset={0}
+        messageActions={messageActions}
+        messageId={messageId}
+        onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+        thread={selectedThread}
+        maximumMessageLimit={messageListPruning}
+      >
+        <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
+          <ChannelHeader channel={channel} />
+        </PortalWhileClosingView>
+        {messageListImplementation === 'flashlist' ? (
+          <MessageFlashList
+            onThreadSelect={onThreadSelect}
+            isLiveStreaming={messageListMode === 'livestream'}
+          />
+        ) : (
+          <MessageList
+            onThreadSelect={onThreadSelect}
+            isLiveStreaming={messageListMode === 'livestream'}
+          />
+        )}
+        <AITypingIndicatorView channel={channel} />
+        <MessageComposer />
+        {modalVisible && (
+          <MessageInfoBottomSheet
+            visible={modalVisible}
+            message={selectedMessage}
+            onClose={handleMessageInfoClose}
+          />
+        )}
+      </Channel>
     </View>
   );
 };

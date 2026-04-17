@@ -13,9 +13,9 @@ import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from '../../components/Message/mess
 import type { GroupType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
-import type { Rect } from '../../state-store/message-overlay-store';
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
+import type { Rect } from '../../state-store/message-overlay-store';
 
 import type { MessageComposerAPIContextValue } from '../messageComposerContext/MessageComposerAPIContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';

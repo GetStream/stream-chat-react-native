@@ -368,7 +368,9 @@ exports[`Thread should match thread snapshot 1`] = `
                 >
                   <View />
                   <View>
-                    <View>
+                    <View
+                      collapsable={false}
+                    >
                       <View
                         collapsable={false}
                         hitSlop={
@@ -707,7 +709,9 @@ exports[`Thread should match thread snapshot 1`] = `
                 >
                   <View />
                   <View>
-                    <View>
+                    <View
+                      collapsable={false}
+                    >
                       <View
                         collapsable={false}
                         hitSlop={
@@ -1079,7 +1083,9 @@ exports[`Thread should match thread snapshot 1`] = `
                 >
                   <View />
                   <View>
-                    <View>
+                    <View
+                      collapsable={false}
+                    >
                       <View
                         collapsable={false}
                         hitSlop={
@@ -1408,7 +1414,9 @@ exports[`Thread should match thread snapshot 1`] = `
               >
                 <View />
                 <View>
-                  <View>
+                  <View
+                    collapsable={false}
+                  >
                     <View
                       collapsable={false}
                       hitSlop={
