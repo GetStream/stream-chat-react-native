@@ -12,7 +12,7 @@ export * from './useClientNotifications';
 export * from './useInAppNotificationsState';
 export * from './usePortalSettledCallback';
 export * from './useRAFCoalescedValue';
-export * from './useAudioPlayerControl';
+export * from './useAudioPlayer';
 export * from './useAttachmentPickerState';
 export * from './messagePreview/useMessageDeliveryStatus';
 export * from './messagePreview/useGroupedAttachments';

@@ -163,7 +163,6 @@ export * from './MessageList/hooks/useMessageGroupStyles';
 
 export * from './MessageMenu/MessageActionList';
 export * from './MessageMenu/MessageActionListItem';
-export * from './MessageMenu/MessageMenu';
 export * from './MessageMenu/MessageUserReactions';
 export * from './MessageMenu/MessageUserReactionsAvatar';
 export * from './MessageMenu/MessageReactionPicker';
