@@ -3,6 +3,7 @@ import {
   I18nManager,
   Image,
   ImageProps,
+  Platform,
   StyleSheet,
   Text,
   TextStyle,
@@ -303,19 +304,26 @@ const useStyles = () => {
           paddingHorizontal: primitives.spacingXs,
           gap: primitives.spacingXxxs,
           alignItems: 'flex-start',
-          ...(isRTL
+          ...(Platform.OS === 'android'
             ? {
-                borderRightColor: isMyMessage
-                  ? semantics.chatReplyIndicatorOutgoing
-                  : semantics.chatReplyIndicatorIncoming,
-                borderRightWidth: 2,
-              }
-            : {
                 borderLeftColor: isMyMessage
                   ? semantics.chatReplyIndicatorOutgoing
                   : semantics.chatReplyIndicatorIncoming,
                 borderLeftWidth: 2,
-              }),
+              }
+            : isRTL
+              ? {
+                  borderRightColor: isMyMessage
+                    ? semantics.chatReplyIndicatorOutgoing
+                    : semantics.chatReplyIndicatorIncoming,
+                  borderRightWidth: 2,
+                }
+              : {
+                  borderLeftColor: isMyMessage
+                    ? semantics.chatReplyIndicatorOutgoing
+                    : semantics.chatReplyIndicatorIncoming,
+                  borderLeftWidth: 2,
+                }),
         },
         rightContainer: {},
         title: {
