@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { Profiler, useEffect, useMemo, useRef, useState } from 'react';
 import {
   GestureResponderEvent,
   I18nManager,
@@ -848,76 +848,92 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   }
 
   return (
-    <MessageProvider value={messageContext}>
-      <MessageOverlayRuntimeProvider value={messageOverlayRuntimeContext}>
-        <View style={[style, styles.wrapper]} testID='message-wrapper'>
-          {/*TODO: V9: Find a way to separate these in a dedicated file*/}
-          <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
-            {overlayActive && rect && overlayItemsAnchorRect ? (
-              <View
-                onLayout={(e) => {
-                  const { width: w, height: h } = e.nativeEvent.layout;
+    <Profiler
+      id={`Message:${message.id ?? 'unknown'}`}
+      onRender={(id, phase, actualDuration, baseDuration, startTime, commitTime) => {
+        console.log('[MessageProfiler]', {
+          actualDuration,
+          baseDuration,
+          commitTime,
+          id,
+          messageId: message.id,
+          overlayActive,
+          phase,
+          startTime,
+        });
+      }}
+    >
+      <MessageProvider value={messageContext}>
+        <MessageOverlayRuntimeProvider value={messageOverlayRuntimeContext}>
+          <View style={[style, styles.wrapper]} testID='message-wrapper'>
+            {/*TODO: V9: Find a way to separate these in a dedicated file*/}
+            <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
+              {overlayActive && rect && overlayItemsAnchorRect ? (
+                <View
+                  onLayout={(e) => {
+                    const { width: w, height: h } = e.nativeEvent.layout;
 
-                  setOverlayTopH({
-                    h,
-                    w,
-                    x:
-                      overlayItemAlignment === 'right'
-                        ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
-                        : overlayItemsAnchorRect.x,
-                    y: rect.y - h,
-                  });
-                }}
+                    setOverlayTopH({
+                      h,
+                      w,
+                      x:
+                        overlayItemAlignment === 'right'
+                          ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
+                          : overlayItemsAnchorRect.x,
+                      y: rect.y - h,
+                    });
+                  }}
+                >
+                  <MessageReactionPicker
+                    dismissOverlay={dismissOverlay}
+                    handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+                  />
+                </View>
+              ) : null}
+            </Portal>
+            <MessageOverlayWrapper targetId={DEFAULT_MESSAGE_OVERLAY_TARGET_ID}>
+              <MessageItemView />
+            </MessageOverlayWrapper>
+            {showMessageReactions ? (
+              <BottomSheetModal
+                lazy={true}
+                onClose={() => setShowMessageReactions(false)}
+                visible={showMessageReactions}
+                height={424}
               >
-                <MessageReactionPicker
-                  dismissOverlay={dismissOverlay}
-                  handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-                />
-              </View>
+                <MessageUserReactions message={message} selectedReaction={selectedReaction} />
+              </BottomSheetModal>
             ) : null}
-          </Portal>
-          <MessageOverlayWrapper targetId={DEFAULT_MESSAGE_OVERLAY_TARGET_ID}>
-            <MessageItemView />
-          </MessageOverlayWrapper>
-          {showMessageReactions ? (
-            <BottomSheetModal
-              lazy={true}
-              onClose={() => setShowMessageReactions(false)}
-              visible={showMessageReactions}
-              height={424}
-            >
-              <MessageUserReactions message={message} selectedReaction={selectedReaction} />
-            </BottomSheetModal>
-          ) : null}
-          <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
-            {overlayActive && rect && overlayItemsAnchorRect ? (
-              <View
-                onLayout={(e) => {
-                  const { width: w, height: h } = e.nativeEvent.layout;
-                  setOverlayBottomH({
-                    h,
-                    w,
-                    x:
-                      overlayItemAlignment === 'right'
-                        ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
-                        : overlayItemsAnchorRect.x,
-                    y: rect.y + rect.h,
-                  });
-                }}
-              >
-                <MessageActionList
-                  dismissOverlay={dismissOverlay}
-                  messageActions={messageActions}
-                />
-              </View>
+            <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
+              {overlayActive && rect && overlayItemsAnchorRect ? (
+                <View
+                  onLayout={(e) => {
+                    const { width: w, height: h } = e.nativeEvent.layout;
+                    setOverlayBottomH({
+                      h,
+                      w,
+                      x:
+                        overlayItemAlignment === 'right'
+                          ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
+                          : overlayItemsAnchorRect.x,
+                      y: rect.y + rect.h,
+                    });
+                  }}
+                >
+                  <MessageActionList
+                    dismissOverlay={dismissOverlay}
+                    messageActions={messageActions}
+                  />
+                </View>
+              ) : null}
+            </Portal>
+            {isBounceDialogOpen ? (
+              <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
             ) : null}
-          </Portal>
-          {isBounceDialogOpen ? (
-            <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
-          ) : null}
-        </View>
-      </MessageOverlayRuntimeProvider>
-    </MessageProvider>
+          </View>
+        </MessageOverlayRuntimeProvider>
+      </MessageProvider>
+    </Profiler>
   );
 };
 

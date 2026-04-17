@@ -274,7 +274,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
 
   return (
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
-      <WithComponents overrides={{ MessageContent: OverlayTargetedMessageContent }}>
+      {/*<WithComponents overrides={{ MessageContent: OverlayTargetedMessageContent }}>*/}
         <Channel
           audioRecordingEnabled={true}
           channel={channel}
@@ -284,7 +284,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
           keyboardVerticalOffset={0}
           messageActions={messageActions}
           messageId={messageId}
-          messageOverlayTargetId='message-content'
+          // messageOverlayTargetId='message-content'
           onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
           thread={selectedThread}
           maximumMessageLimit={messageListPruning}
@@ -313,7 +313,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
             />
           )}
         </Channel>
-      </WithComponents>
+      {/*</WithComponents>*/}
     </View>
   );
 };
