@@ -7674,10 +7674,10 @@ react-native-svg@^15.15.4:
     css-tree "^1.1.3"
     warn-once "0.1.1"
 
-react-native-teleport@^0.5.4:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/react-native-teleport/-/react-native-teleport-0.5.4.tgz#6af16e3984ee0fc002e5d6c6dae0ad40f22699c2"
-  integrity sha512-kiNbB27lJHAO7DdG7LlPi6DaFnYusVQV9rqp0q5WoRpnqKNckIvzXULox6QpZBstaTF/jkO+xmlkU+pnQqKSAQ==
+react-native-teleport@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-teleport/-/react-native-teleport-1.1.2.tgz#23deea2a34f6b1bb378e0305d44deeb93d51d490"
+  integrity sha512-64dcEkxlVKzxIts2FAVhzI2tDExcD23T13c2yDC/E+1dA1vP9UlDwPYUEkHvnoTOFtMDGrKLH03RJahIWfQC1g==
 
 react-native-url-polyfill@^2.0.0:
   version "2.0.0"
@@ -8270,10 +8270,10 @@ stream-chat-react-native-core@8.1.0:
   version "0.0.0"
   uid ""
 
-stream-chat@^9.40.0:
-  version "9.40.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.40.0.tgz#32ee29ae3442744fb7068b0ecaa3cc1a3b456b97"
-  integrity sha512-IH3MdxS1zGwOob1dBqRTIqS7wB2Y6Spu4ufo4/yVKW/IFEYRs38BSLHcMsJISvUbPpBleXKIrUOQZu6VsgJpdw==
+stream-chat@^9.41.1:
+  version "9.41.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.41.1.tgz#a877c8aa800d78b497eec2fad636345d4422309c"
+  integrity sha512-W8zjfINYol2UtdRMz2t/NN2GyjDrvb4pJgKmhtuRYzCY1u0Cjezcsu5OCNgyAM0QsenlY6tRqnvAU8Qam5R49Q==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

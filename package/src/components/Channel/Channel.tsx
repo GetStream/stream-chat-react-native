@@ -261,6 +261,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'markdownRules'
       | 'messageActions'
       | 'messageContentOrder'
+      | 'messageOverlayTargetId'
       | 'messageTextNumberOfLines'
       | 'messageSwipeToReplyHitSlop'
       | 'myMessageTheme'
@@ -464,6 +465,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'text',
       'location',
     ],
+    messageOverlayTargetId,
     messageInputFloating = false,
     messageId,
     messageSwipeToReplyHitSlop,
@@ -1665,6 +1667,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     markdownRules,
     messageActions,
     messageContentOrder,
+    messageOverlayTargetId,
     messageSwipeToReplyHitSlop,
     messageTextNumberOfLines,
     myMessageTheme,

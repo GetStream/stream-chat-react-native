@@ -87,6 +87,7 @@ export * from './Message/hooks/useStreamingMessage';
 export * from './Message/hooks/useMessageDeliveryData';
 export * from './Message/hooks/useMessageReadData';
 export * from './Message/Message';
+export * from './Message/MessageOverlayWrapper';
 export * from './Message/MessageItemView/MessageAuthor';
 export * from './Message/MessageItemView/MessageBounce';
 export * from './Message/MessageItemView/MessageBlocked';
@@ -163,7 +164,6 @@ export * from './MessageList/hooks/useMessageGroupStyles';
 
 export * from './MessageMenu/MessageActionList';
 export * from './MessageMenu/MessageActionListItem';
-export * from './MessageMenu/MessageMenu';
 export * from './MessageMenu/MessageUserReactions';
 export * from './MessageMenu/MessageUserReactionsAvatar';
 export * from './MessageMenu/MessageReactionPicker';

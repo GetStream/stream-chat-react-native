@@ -19,6 +19,8 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
 import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
+import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
+import { MessageOverlayWrapper } from './MessageOverlayWrapper';
 import { measureInWindow } from './utils/measureInWindow';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
@@ -36,7 +38,11 @@ import {
   MessageComposerAPIContextValue,
   useMessageComposerAPIContext,
 } from '../../contexts/messageComposerContext/MessageComposerAPIContext';
-import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
+import {
+  MessageContextValue,
+  MessageOverlayRuntimeProvider,
+  MessageProvider,
+} from '../../contexts/messageContext/MessageContext';
 import { useMessageListItemContext } from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
@@ -207,6 +213,7 @@ export type MessagePropsWithContext = Pick<
     | 'handleBlockUser'
     | 'isAttachmentEqual'
     | 'messageActions'
+    | 'messageOverlayTargetId'
     | 'messageContentOrder'
     | 'onLongPressMessage'
     | 'onPressInMessage'
@@ -278,6 +285,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     members,
     message,
     messageActions: messageActionsProp = defaultMessageActions,
+    messageOverlayTargetId = DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
     onLongPressMessage: onLongPressMessageProp,
@@ -323,11 +331,28 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const rectRef = useRef<Rect>(undefined);
   const bubbleRect = useRef<Rect>(undefined);
   const contextMenuAnchorRef = useRef<View>(null);
+  const messageOverlayTargetsRef = useRef<Record<string, View | null>>({});
+  const registerMessageOverlayTarget = useStableCallback(
+    ({ id, view }: { id: string; view: View | null }) => {
+      messageOverlayTargetsRef.current[id] = view;
+    },
+  );
+  const unregisterMessageOverlayTarget = useStableCallback((id: string) => {
+    delete messageOverlayTargetsRef.current[id];
+  });
 
   const showMessageOverlay = useStableCallback(async () => {
     dismissKeyboard();
     try {
-      const layout = await measureInWindow(messageWrapperRef, insets);
+      const activeTargetView = messageOverlayTargetsRef.current[messageOverlayTargetId];
+
+      if (!activeTargetView) {
+        throw new Error(
+          `No message overlay target is registered for target id "${messageOverlayTargetId}".`,
+        );
+      }
+
+      const layout = await measureInWindow({ current: activeTargetView }, insets);
       const bubbleLayout = await measureInWindow(contextMenuAnchorRef, insets).catch(() => layout);
 
       rectRef.current = layout;
@@ -655,8 +680,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     unpinMessage: handleTogglePinMessage,
   };
 
-  const messageWrapperRef = useRef<View>(null);
-
   const onLongPress = () => {
     setNativeScrollability(false);
     if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
@@ -771,6 +794,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onThreadSelect,
     otherAttachments: attachments.other,
     preventPress: overlayActive ? true : preventPress,
+    registerMessageOverlayTarget,
+    unregisterMessageOverlayTarget,
     reactions,
     readBy,
     setQuotedMessage,
@@ -781,6 +806,14 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     threadList,
     videos: attachments.videos,
   });
+  const messageOverlayRuntimeContext = useMemo(
+    () => ({
+      overlayTargetRectRef: rectRef,
+      messageOverlayTargetId,
+      overlayActive,
+    }),
+    [messageOverlayTargetId, overlayActive],
+  );
 
   const prevActive = useRef<boolean>(overlayActive);
 
@@ -817,82 +850,74 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   return (
     <MessageProvider value={messageContext}>
-      <View style={[style, styles.wrapper]} testID='message-wrapper'>
-        {overlayActive && rect ? (
-          <View
-            style={{
-              height: rect.h,
-              width: rect.w,
-            }}
-          />
-        ) : null}
-        {/*TODO: V9: Find a way to separate these in a dedicated file*/}
-        <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
-          {overlayActive && rect && overlayItemsAnchorRect ? (
-            <View
-              onLayout={(e) => {
-                const { width: w, height: h } = e.nativeEvent.layout;
+      <MessageOverlayRuntimeProvider value={messageOverlayRuntimeContext}>
+        <View style={[style, styles.wrapper]} testID='message-wrapper'>
+          {/*TODO: V9: Find a way to separate these in a dedicated file*/}
+          <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
+            {overlayActive && rect && overlayItemsAnchorRect ? (
+              <View
+                onLayout={(e) => {
+                  const { width: w, height: h } = e.nativeEvent.layout;
 
-                setOverlayTopH({
-                  h,
-                  w,
-                  x:
-                    overlayItemAlignment === 'right'
-                      ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
-                      : overlayItemsAnchorRect.x,
-                  y: rect.y - h,
-                });
-              }}
-            >
-              <MessageReactionPicker
-                dismissOverlay={dismissOverlay}
-                handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-              />
-            </View>
-          ) : null}
-        </Portal>
-        <Portal
-          hostName={overlayActive ? 'message-overlay' : undefined}
-          style={overlayActive && rect ? { width: rect.w } : undefined}
-        >
-          <View ref={messageWrapperRef}>
+                  setOverlayTopH({
+                    h,
+                    w,
+                    x:
+                      overlayItemAlignment === 'right'
+                        ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
+                        : overlayItemsAnchorRect.x,
+                    y: rect.y - h,
+                  });
+                }}
+              >
+                <MessageReactionPicker
+                  dismissOverlay={dismissOverlay}
+                  handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+                />
+              </View>
+            ) : null}
+          </Portal>
+          <MessageOverlayWrapper targetId={DEFAULT_MESSAGE_OVERLAY_TARGET_ID}>
             <MessageItemView />
-          </View>
-        </Portal>
-        {showMessageReactions ? (
-          <BottomSheetModal
-            lazy={true}
-            onClose={() => setShowMessageReactions(false)}
-            visible={showMessageReactions}
-            height={424}
-          >
-            <MessageUserReactions message={message} selectedReaction={selectedReaction} />
-          </BottomSheetModal>
-        ) : null}
-        <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
-          {overlayActive && rect && overlayItemsAnchorRect ? (
-            <View
-              onLayout={(e) => {
-                const { width: w, height: h } = e.nativeEvent.layout;
-                setOverlayBottomH({
-                  h,
-                  w,
-                  x:
-                    overlayItemAlignment === 'right'
-                      ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
-                      : overlayItemsAnchorRect.x,
-                  y: rect.y + rect.h,
-                });
-              }}
+          </MessageOverlayWrapper>
+          {showMessageReactions ? (
+            <BottomSheetModal
+              lazy={true}
+              onClose={() => setShowMessageReactions(false)}
+              visible={showMessageReactions}
+              height={424}
             >
-              <MessageActionList dismissOverlay={dismissOverlay} messageActions={messageActions} />
-            </View>
+              <MessageUserReactions message={message} selectedReaction={selectedReaction} />
+            </BottomSheetModal>
           ) : null}
-        </Portal>
-        {isBounceDialogOpen ? (
-          <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
-        ) : null}
-      </View>
+          <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
+            {overlayActive && rect && overlayItemsAnchorRect ? (
+              <View
+                onLayout={(e) => {
+                  const { width: w, height: h } = e.nativeEvent.layout;
+                  setOverlayBottomH({
+                    h,
+                    w,
+                    x:
+                      overlayItemAlignment === 'right'
+                        ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
+                        : overlayItemsAnchorRect.x,
+                    y: rect.y + rect.h,
+                  });
+                }}
+              >
+                <MessageActionList
+                  dismissOverlay={dismissOverlay}
+                  messageActions={messageActions}
+                />
+              </View>
+            ) : null}
+          </Portal>
+          {isBounceDialogOpen ? (
+            <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
+          ) : null}
+        </View>
+      </MessageOverlayRuntimeProvider>
     </MessageProvider>
   );
 };
@@ -905,6 +930,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
+    messageOverlayTargetId: prevMessageOverlayTargetId,
     members: prevMembers,
     message: prevMessage,
     messagesContext: prevMessagesContext,
@@ -918,6 +944,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
+    messageOverlayTargetId: nextMessageOverlayTargetId,
     members: nextMembers,
     message: nextMessage,
     messagesContext: nextMessagesContext,
@@ -955,6 +982,11 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const groupStylesEqual = prevGroupStyles === nextGroupStyles;
   if (!groupStylesEqual) {
+    return false;
+  }
+
+  const messageOverlayTargetIdEqual = prevMessageOverlayTargetId === nextMessageOverlayTargetId;
+  if (!messageOverlayTargetIdEqual) {
     return false;
   }
 

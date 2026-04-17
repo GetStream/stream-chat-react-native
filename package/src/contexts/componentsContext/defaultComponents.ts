@@ -123,7 +123,6 @@ import { TypingIndicatorContainer } from '../../components/MessageList/TypingInd
 import { UnreadMessagesNotification } from '../../components/MessageList/UnreadMessagesNotification';
 import { MessageActionList } from '../../components/MessageMenu/MessageActionList';
 import { MessageActionListItem } from '../../components/MessageMenu/MessageActionListItem';
-import { MessageMenu } from '../../components/MessageMenu/MessageMenu';
 import { MessageReactionPicker } from '../../components/MessageMenu/MessageReactionPicker';
 import { MessageUserReactions } from '../../components/MessageMenu/MessageUserReactions';
 import { MessageUserReactionsAvatar } from '../../components/MessageMenu/MessageUserReactionsAvatar';
@@ -226,7 +225,6 @@ const components = {
   MessageInputTrailingView,
   MessageItemView,
   MessageList,
-  MessageMenu,
   MessagePinnedHeader,
   MessageReactionPicker,
   MessageReminderHeader,

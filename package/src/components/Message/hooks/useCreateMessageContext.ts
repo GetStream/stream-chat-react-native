@@ -47,6 +47,8 @@ export const useCreateMessageContext = ({
   onThreadSelect,
   otherAttachments,
   preventPress,
+  registerMessageOverlayTarget,
+  unregisterMessageOverlayTarget,
   reactions,
   readBy,
   showAvatar,
@@ -102,6 +104,8 @@ export const useCreateMessageContext = ({
       onThreadSelect,
       otherAttachments,
       preventPress,
+      registerMessageOverlayTarget,
+      unregisterMessageOverlayTarget,
       reactions,
       readBy,
       setQuotedMessage,
@@ -134,6 +138,7 @@ export const useCreateMessageContext = ({
       showMessageStatus,
       threadList,
       preventPress,
+      unregisterMessageOverlayTarget,
     ],
   );
 
