@@ -4,10 +4,12 @@ import { act, cleanup, renderHook } from '@testing-library/react-native';
 
 import {
   MessageContextValue,
+  MessageOverlayRuntimeProvider,
   MessageProvider,
 } from '../../../../contexts/messageContext/MessageContext';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { finalizeCloseOverlay, openOverlay, overlayStore } from '../../../../state-store';
+import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from '../../messageOverlayConstants';
 
 import { useShouldUseOverlayStyles } from '../useShouldUseOverlayStyles';
 
@@ -22,6 +24,7 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
     groupStyles: [],
     handleAction: jest.fn(),
     handleToggleReaction: jest.fn(),
+    hasAttachmentActions: false,
     hasReactions: false,
     images: [],
     isMessageAIGenerated: jest.fn(),
@@ -29,6 +32,7 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
     lastGroupMessage: false,
     members: {},
     message: generateMessage({ id: 'shared-message-id' }),
+    contextMenuAnchorRef: { current: null },
     messageContentOrder: [],
     messageHasOnlySingleAttachment: false,
     messageOverlayId: 'message-overlay-default',
@@ -38,6 +42,7 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
     onPress: jest.fn(),
     onPressIn: null,
     otherAttachments: [],
+    registerMessageOverlayTarget: jest.fn(),
     reactions: [],
     readBy: false,
     setQuotedMessage: jest.fn(),
@@ -46,13 +51,23 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
     showReactionsOverlay: jest.fn(),
     showMessageStatus: false,
     threadList: false,
+    unregisterMessageOverlayTarget: jest.fn(),
     videos: [],
     ...overrides,
   }) as MessageContextValue;
 
-const createWrapper = (value: MessageContextValue) => {
+const createWrapper = (
+  value: MessageContextValue,
+  runtimeValue = {
+    overlayTargetRectRef: { current: undefined },
+    messageOverlayTargetId: DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
+    overlayActive: false,
+  },
+) => {
   const Wrapper = ({ children }: PropsWithChildren) => (
-    <MessageProvider value={value}>{children}</MessageProvider>
+    <MessageProvider value={value}>
+      <MessageOverlayRuntimeProvider value={runtimeValue}>{children}</MessageOverlayRuntimeProvider>
+    </MessageProvider>
   );
 
   return Wrapper;

@@ -75,6 +75,11 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
   initialScrollToFirstUnreadMessage: boolean;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
+  /**
+   * Overlay target id that should be teleported when a message overlay opens.
+   * Custom `MessageOverlayWrapper` usages should pass a matching `targetId`.
+   */
+  messageOverlayTargetId?: string;
   removeMessage: (message: { id: string; parent_id?: string }) => Promise<void>;
   /**
    * Override the api request for retry message functionality.
