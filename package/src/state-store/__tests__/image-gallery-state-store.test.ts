@@ -31,15 +31,18 @@ const { isVideoPlayerAvailable } = jest.requireMock('../../native') as {
 const createGiphyAttachment = (overrides: Partial<Attachment> = {}): Attachment => ({
   giphy: {
     fixed_height: {
-      height: 200,
+      height: '200',
       url: 'https://giphy.com/test.gif',
-      width: 200,
+      width: '200',
     },
-  },
+  } as unknown as Attachment['giphy'],
   thumb_url: 'https://giphy.com/thumb.gif',
   type: 'giphy',
   ...overrides,
 });
+
+const toLocalMessage = (msg: unknown): LocalMessage => msg as LocalMessage;
+const toLocalMessages = (msgs: unknown[]): LocalMessage[] => msgs as LocalMessage[];
 
 describe('ImageGalleryStateStore', () => {
   beforeEach(() => {
@@ -103,18 +106,18 @@ describe('ImageGalleryStateStore', () => {
   describe('messages getter and setter', () => {
     it('should get messages from state', () => {
       const store = new ImageGalleryStateStore();
-      const messages = [generateMessage({ id: 1 }), generateMessage({ id: 2 })];
+      const messages = [generateMessage({ id: '1' }), generateMessage({ id: '2' })];
 
-      store.messages = messages;
+      store.messages = toLocalMessages(messages);
 
       expect(store.messages).toEqual(messages);
     });
 
     it('should update state when setting messages', () => {
       const store = new ImageGalleryStateStore();
-      const messages = [generateMessage({ id: 1 })];
+      const messages = [generateMessage({ id: '1' })];
 
-      store.messages = messages;
+      store.messages = toLocalMessages(messages);
 
       expect(store.state.getLatestValue().messages).toEqual(messages);
     });
@@ -192,9 +195,9 @@ describe('ImageGalleryStateStore', () => {
       const imageAttachment = generateImageAttachment({
         image_url: 'https://example.com/image.jpg',
       });
-      const message = generateMessage({ attachments: [imageAttachment], id: 1 });
+      const message = generateMessage({ attachments: [imageAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(1);
       expect(store.attachmentsWithMessage[0].attachments).toContain(imageAttachment);
@@ -205,9 +208,9 @@ describe('ImageGalleryStateStore', () => {
       const videoAttachment = generateVideoAttachment({
         asset_url: 'https://example.com/video.mp4',
       });
-      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
+      const message = generateMessage({ attachments: [videoAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(1);
       expect(store.attachmentsWithMessage[0].attachments).toContain(videoAttachment);
@@ -216,9 +219,9 @@ describe('ImageGalleryStateStore', () => {
     it('should filter messages with giphy attachments', () => {
       const store = new ImageGalleryStateStore();
       const giphyAttachment = createGiphyAttachment();
-      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
+      const message = generateMessage({ attachments: [giphyAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(1);
       expect(store.attachmentsWithMessage[0].attachments).toContain(giphyAttachment);
@@ -230,9 +233,9 @@ describe('ImageGalleryStateStore', () => {
       const videoAttachment = generateVideoAttachment({
         asset_url: 'https://example.com/video.mp4',
       });
-      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
+      const message = generateMessage({ attachments: [videoAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(0);
     });
@@ -243,9 +246,9 @@ describe('ImageGalleryStateStore', () => {
         image_url: 'https://example.com/image.jpg',
         title_link: 'https://example.com',
       });
-      const message = generateMessage({ attachments: [linkPreviewAttachment], id: 1 });
+      const message = generateMessage({ attachments: [linkPreviewAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(0);
     });
@@ -256,9 +259,9 @@ describe('ImageGalleryStateStore', () => {
         image_url: 'https://example.com/image.jpg',
         og_scrape_url: 'https://example.com',
       });
-      const message = generateMessage({ attachments: [linkAttachment], id: 1 });
+      const message = generateMessage({ attachments: [linkAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(0);
     });
@@ -270,9 +273,9 @@ describe('ImageGalleryStateStore', () => {
         image_url: 'https://example.com/preview.jpg',
         title_link: 'https://example.com',
       });
-      const message = generateMessage({ attachments: [viewableImage, linkPreview], id: 1 });
+      const message = generateMessage({ attachments: [viewableImage, linkPreview], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(1);
     });
@@ -283,27 +286,27 @@ describe('ImageGalleryStateStore', () => {
         asset_url: 'https://example.com/file.pdf',
         type: 'file',
       };
-      const message = generateMessage({ attachments: [fileAttachment], id: 1 });
+      const message = generateMessage({ attachments: [fileAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(0);
     });
 
     it('should handle null attachments gracefully', () => {
       const store = new ImageGalleryStateStore();
-      const message = generateMessage({ attachments: [null as unknown as Attachment], id: 1 });
+      const message = generateMessage({ attachments: [null as unknown as Attachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(0);
     });
 
     it('should handle messages without attachments array', () => {
       const store = new ImageGalleryStateStore();
-      const message = generateMessage({ attachments: undefined, id: 1 });
+      const message = generateMessage({ attachments: undefined, id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(0);
     });
@@ -340,7 +343,7 @@ describe('ImageGalleryStateStore', () => {
         original_width: 800,
         thumb_url: 'https://example.com/thumb.jpg',
       });
-      const user: Partial<UserResponse> = { id: 'user-1', name: 'Test User' };
+      const user: UserResponse = { id: 'user-1', name: 'Test User' } as UserResponse;
       const message = generateMessage({
         attachments: [imageAttachment],
         cid: 'channel-msg-1',
@@ -349,7 +352,7 @@ describe('ImageGalleryStateStore', () => {
         user_id: user.id,
       });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       const assets = store.assets;
       expect(assets).toHaveLength(1);
@@ -372,9 +375,9 @@ describe('ImageGalleryStateStore', () => {
         asset_url: 'https://example.com/video.mp4',
         thumb_url: 'https://example.com/video-thumb.jpg',
       });
-      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
+      const message = generateMessage({ attachments: [videoAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       const assets = store.assets;
       expect(assets).toHaveLength(1);
@@ -388,9 +391,9 @@ describe('ImageGalleryStateStore', () => {
     it('should transform giphy attachments with correct mime type', () => {
       const store = new ImageGalleryStateStore();
       const giphyAttachment = createGiphyAttachment();
-      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
+      const message = generateMessage({ attachments: [giphyAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       const assets = store.assets;
       expect(assets).toHaveLength(1);
@@ -405,9 +408,9 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const attachment1 = generateImageAttachment({ image_url: 'https://example.com/image1.jpg' });
       const attachment2 = generateImageAttachment({ image_url: 'https://example.com/image2.jpg' });
-      const message = generateMessage({ attachments: [attachment1, attachment2], id: 1 });
+      const message = generateMessage({ attachments: [attachment1, attachment2], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       const assets = store.assets;
       expect(assets).toHaveLength(2);
@@ -418,14 +421,14 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore({ giphyVersion: 'original' });
       const giphyAttachment: Attachment = {
         giphy: {
-          fixed_height: { height: 200, url: 'https://giphy.com/fixed.gif', width: 200 },
-          original: { height: 400, url: 'https://giphy.com/original.gif', width: 400 },
-        },
+          fixed_height: { height: '200', url: 'https://giphy.com/fixed.gif', width: '200' },
+          original: { height: '400', url: 'https://giphy.com/original.gif', width: '400' },
+        } as unknown as Attachment['giphy'],
         type: 'giphy',
       };
-      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
+      const message = generateMessage({ attachments: [giphyAttachment], id: '1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(getUrlOfImageAttachment(giphyAttachment, 'original')).toBe(
         'https://giphy.com/original.gif',
@@ -439,14 +442,14 @@ describe('ImageGalleryStateStore', () => {
           generateImageAttachment({ image_url: 'https://example.com/image1.jpg' }),
           generateImageAttachment({ image_url: 'https://example.com/image2.jpg' }),
         ],
-        id: 1,
+        id: '1',
       });
       const message2 = generateMessage({
         attachments: [generateVideoAttachment({ asset_url: 'https://example.com/video.mp4' })],
-        id: 2,
+        id: '2',
       });
 
-      store.messages = [message1, message2];
+      store.messages = toLocalMessages([message1, message2]);
 
       expect(store.assets).toHaveLength(3);
     });
@@ -458,8 +461,8 @@ describe('ImageGalleryStateStore', () => {
       const initialMessages = [generateMessage({ id: 'msg-1' })];
       const newMessages = [generateMessage({ id: 'msg-2' }), generateMessage({ id: 'msg-3' })];
 
-      store.messages = initialMessages;
-      store.appendMessages(newMessages);
+      store.messages = toLocalMessages(initialMessages);
+      store.appendMessages(toLocalMessages(newMessages));
 
       expect(store.messages).toHaveLength(3);
       expect(store.messages).toEqual([...initialMessages, ...newMessages]);
@@ -469,7 +472,7 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const newMessages = [generateMessage({ id: 'msg-1' })];
 
-      store.appendMessages(newMessages);
+      store.appendMessages(toLocalMessages(newMessages));
 
       expect(store.messages).toEqual(newMessages);
     });
@@ -478,7 +481,7 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const initialMessages = [generateMessage({ id: 'msg-1' })];
 
-      store.messages = initialMessages;
+      store.messages = toLocalMessages(initialMessages);
       store.appendMessages([]);
 
       expect(store.messages).toEqual(initialMessages);
@@ -492,8 +495,8 @@ describe('ImageGalleryStateStore', () => {
       const message2 = generateMessage({ id: 'msg-2' });
       const message3 = generateMessage({ id: 'msg-3' });
 
-      store.messages = [message1, message2, message3];
-      store.removeMessages([message2]);
+      store.messages = toLocalMessages([message1, message2, message3]);
+      store.removeMessages([toLocalMessage(message2)]);
 
       expect(store.messages).toHaveLength(2);
       expect(store.messages).toEqual([message1, message3]);
@@ -505,8 +508,8 @@ describe('ImageGalleryStateStore', () => {
       const message2 = generateMessage({ id: 'msg-2' });
       const message3 = generateMessage({ id: 'msg-3' });
 
-      store.messages = [message1, message2, message3];
-      store.removeMessages([message1, message3]);
+      store.messages = toLocalMessages([message1, message2, message3]);
+      store.removeMessages(toLocalMessages([message1, message3]));
 
       expect(store.messages).toHaveLength(1);
       expect(store.messages).toEqual([message2]);
@@ -518,8 +521,8 @@ describe('ImageGalleryStateStore', () => {
       const message2 = generateMessage({ id: 'msg-2' });
       const nonExistentMessage = generateMessage({ id: 'non-existent' });
 
-      store.messages = [message1, message2];
-      store.removeMessages([nonExistentMessage]);
+      store.messages = toLocalMessages([message1, message2]);
+      store.removeMessages([toLocalMessage(nonExistentMessage)]);
 
       expect(store.messages).toHaveLength(2);
       expect(store.messages).toEqual([message1, message2]);
@@ -529,7 +532,7 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const message1 = generateMessage({ id: 'msg-1' });
 
-      store.messages = [message1];
+      store.messages = toLocalMessages([message1]);
       store.removeMessages([]);
 
       expect(store.messages).toEqual([message1]);
@@ -547,7 +550,10 @@ describe('ImageGalleryStateStore', () => {
       ];
       const selectedUrl = 'https://example.com/1.jpg';
 
-      store.openImageGallery({ messages, selectedAttachmentUrl: selectedUrl });
+      store.openImageGallery({
+        messages: toLocalMessages(messages),
+        selectedAttachmentUrl: selectedUrl,
+      });
 
       expect(store.messages).toEqual(messages);
       expect(store.selectedAttachmentUrl).toBe(selectedUrl);
@@ -557,7 +563,7 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const messages = [generateMessage({ id: 'msg-1' })];
 
-      store.openImageGallery({ messages });
+      store.openImageGallery({ messages: toLocalMessages(messages) });
 
       expect(store.messages).toEqual(messages);
       expect(store.selectedAttachmentUrl).toBeUndefined();
@@ -568,8 +574,8 @@ describe('ImageGalleryStateStore', () => {
       const oldMessages = [generateMessage({ id: 'msg-1' })];
       const newMessages = [generateMessage({ id: 'msg-2' })];
 
-      store.messages = oldMessages;
-      store.openImageGallery({ messages: newMessages });
+      store.messages = toLocalMessages(oldMessages);
+      store.openImageGallery({ messages: toLocalMessages(newMessages) });
 
       expect(store.messages).toEqual(newMessages);
     });
@@ -584,7 +590,7 @@ describe('ImageGalleryStateStore', () => {
         attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
         id: 'msg-1',
       });
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.state.getLatestValue().assets).toHaveLength(1);
 
@@ -604,20 +610,22 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const unsubscribe = store.subscribeToMessages();
 
-      store.messages = [
+      store.messages = toLocalMessages([
         generateMessage({
           attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
           id: 'msg-1',
         }),
-      ];
+      ]);
       expect(store.state.getLatestValue().assets).toHaveLength(1);
 
-      store.appendMessages([
-        generateMessage({
-          attachments: [generateImageAttachment({ image_url: 'https://example.com/2.jpg' })],
-          id: 'msg-2',
-        }),
-      ]);
+      store.appendMessages(
+        toLocalMessages([
+          generateMessage({
+            attachments: [generateImageAttachment({ image_url: 'https://example.com/2.jpg' })],
+            id: 'msg-2',
+          }),
+        ]),
+      );
       expect(store.state.getLatestValue().assets).toHaveLength(2);
 
       unsubscribe();
@@ -645,7 +653,7 @@ describe('ImageGalleryStateStore', () => {
         }),
       ];
 
-      store.messages = messages;
+      store.messages = toLocalMessages(messages);
       store.selectedAttachmentUrl = 'https://example.com/2.jpg';
 
       expect(store.state.getLatestValue().currentIndex).toBe(1);
@@ -658,12 +666,12 @@ describe('ImageGalleryStateStore', () => {
       store.subscribeToMessages();
       const unsubscribe = store.subscribeToSelectedAttachmentUrl();
 
-      store.messages = [
+      store.messages = toLocalMessages([
         generateMessage({
           attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
           id: 'msg-1',
         }),
-      ];
+      ]);
       store.selectedAttachmentUrl = 'https://example.com/non-existent.jpg';
 
       expect(store.state.getLatestValue().currentIndex).toBe(0);
@@ -688,14 +696,14 @@ describe('ImageGalleryStateStore', () => {
       store.subscribeToMessages();
       const unsubscribe = store.subscribeToSelectedAttachmentUrl();
 
-      store.messages = [
+      store.messages = toLocalMessages([
         generateMessage({
           attachments: [
             generateImageAttachment({ image_url: 'https://example.com/image.jpg?size=small' }),
           ],
           id: 'msg-1',
         }),
-      ];
+      ]);
       store.selectedAttachmentUrl = 'https://example.com/image.jpg?size=large';
 
       expect(store.state.getLatestValue().currentIndex).toBe(0);
@@ -719,12 +727,12 @@ describe('ImageGalleryStateStore', () => {
       const unsubscribe = store.registerSubscriptions();
 
       // Test that message subscription is working
-      store.messages = [
+      store.messages = toLocalMessages([
         generateMessage({
           attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
           id: 'msg-1',
         }),
-      ];
+      ]);
       expect(store.state.getLatestValue().assets).toHaveLength(1);
 
       // Test that selectedAttachmentUrl subscription is working
@@ -759,12 +767,12 @@ describe('ImageGalleryStateStore', () => {
   describe('clear', () => {
     it('should reset state to initial values', () => {
       const store = new ImageGalleryStateStore();
-      store.messages = [
+      store.messages = toLocalMessages([
         generateMessage({
           attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
           id: 'msg-1',
         }),
-      ];
+      ]);
       store.selectedAttachmentUrl = 'https://example.com/1.jpg';
       store.currentIndex = 5;
 
@@ -795,9 +803,9 @@ describe('ImageGalleryStateStore', () => {
           id: 'msg-1',
         }),
         user: undefined,
-      } as LocalMessage;
+      } as unknown as LocalMessage;
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.assets).toHaveLength(1);
       expect(store.assets[0].user).toBeUndefined();
@@ -807,8 +815,11 @@ describe('ImageGalleryStateStore', () => {
       const store1 = new ImageGalleryStateStore({ autoPlayVideo: true });
       const store2 = new ImageGalleryStateStore({ autoPlayVideo: false });
 
-      store1.messages = [generateMessage({ id: 'msg-1' })];
-      store2.messages = [generateMessage({ id: 'msg-2' }), generateMessage({ id: 'msg-3' })];
+      store1.messages = toLocalMessages([generateMessage({ id: 'msg-1' })]);
+      store2.messages = toLocalMessages([
+        generateMessage({ id: 'msg-2' }),
+        generateMessage({ id: 'msg-3' }),
+      ]);
 
       expect(store1.messages).toHaveLength(1);
       expect(store2.messages).toHaveLength(2);
@@ -821,14 +832,14 @@ describe('ImageGalleryStateStore', () => {
       store.subscribeToMessages();
 
       for (let i = 0; i < 100; i++) {
-        store.messages = [
+        store.messages = toLocalMessages([
           generateMessage({
             attachments: [
               generateImageAttachment({ image_url: `https://example.com/image-${i}.jpg` }),
             ],
             id: `msg-${i}`,
           }),
-        ];
+        ]);
       }
 
       expect(store.state.getLatestValue().assets).toHaveLength(1);
@@ -839,7 +850,7 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const message = generateMessage({ attachments: [], id: 'msg-1' });
 
-      store.messages = [message];
+      store.messages = toLocalMessages([message]);
 
       expect(store.attachmentsWithMessage).toHaveLength(0);
       expect(store.assets).toEqual([]);
@@ -862,7 +873,7 @@ describe('ImageGalleryStateStore', () => {
         }),
       ];
 
-      store.messages = messages;
+      store.messages = toLocalMessages(messages);
 
       const assets = store.assets;
       expect(assets[0].uri).toBe('https://example.com/first.jpg');
@@ -882,7 +893,7 @@ describe('ImageGalleryStateStore', () => {
       );
 
       const newMessages = [generateMessage({ id: 'msg-1' })];
-      store.messages = newMessages;
+      store.messages = toLocalMessages(newMessages);
 
       expect(callback).toHaveBeenCalledWith(newMessages);
     });
