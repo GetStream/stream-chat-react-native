@@ -1,6 +1,7 @@
 import type {
   ChannelMemberResponse,
   ChannelResponse,
+  LocalMessage,
   MessageResponse,
   ReadResponse,
 } from 'stream-chat';
@@ -114,10 +115,12 @@ export const generateChannel = (
     return { ...accumulated, [current]: customValues[current] } as GeneratedChannel;
   }, getChannelDefaults());
 
+type ChannelResponseMessage = Partial<MessageResponse> | LocalMessage;
+
 export type GeneratedChannelResponseCustomValues = {
   channel?: Partial<ChannelResponse>;
   id?: string;
-  messages?: Partial<MessageResponse>[];
+  messages?: ChannelResponseMessage[];
   members?: Partial<ChannelMemberResponse>[];
   read?: Partial<ReadResponse>[];
   type?: string;

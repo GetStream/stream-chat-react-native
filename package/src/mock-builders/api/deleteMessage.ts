@@ -1,4 +1,4 @@
-import type { MessageResponse } from 'stream-chat';
+import type { LocalMessage, MessageResponse } from 'stream-chat';
 
 import { mockedApiResponse, type MockedApiResponse } from './utils';
 
@@ -10,7 +10,7 @@ import { generateMessage } from '../generator/message';
  * api - /channels/{type}/{id}/message
  */
 export const deleteMessageApi = (
-  message: MessageResponse = generateMessage(),
+  message: MessageResponse | LocalMessage = generateMessage(),
 ): MockedApiResponse => {
   const result = {
     duration: 0.01,

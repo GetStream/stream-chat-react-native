@@ -6,7 +6,7 @@ import { act, cleanup, render, screen, waitFor } from '@testing-library/react-na
 import type {
   ChannelAPIResponse,
   ChannelMemberResponse,
-  MessageResponse,
+  LocalMessage,
   ReactionResponse,
 } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
@@ -50,7 +50,7 @@ export const OptimisticUpdates = () => {
     const getRandomInt = (lower, upper) => Math.floor(lower + Math.random() * (upper - lower + 1));
     const createChannel = () => {
       const allUsers = Array(20).fill(1).map(generateUser);
-      const allMessages: MessageResponse[] = [];
+      const allMessages: LocalMessage[] = [];
       const allMembers: ChannelMemberResponse[] = [];
       const allReactions: ReactionResponse[] = [];
       const allReads: Array<{

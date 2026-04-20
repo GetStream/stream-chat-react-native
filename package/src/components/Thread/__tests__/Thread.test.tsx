@@ -66,7 +66,7 @@ describe('Thread', () => {
     const thread = generateMessage({ cid, text: 'Thread Message Text' });
     const parent_id = thread.id;
     const props = {
-      thread: thread as unknown as LocalMessage,
+      thread,
     };
 
     const threadResponses = [
@@ -79,7 +79,7 @@ describe('Thread', () => {
       threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
     );
 
-    renderComponent({ channel, chatClient, props, thread: thread as unknown as LocalMessage });
+    renderComponent({ channel, chatClient, props, thread });
 
     const { getAllByText, getByText, queryByText } = screen;
 
@@ -158,12 +158,7 @@ describe('Thread', () => {
             <ImageGalleryProvider
               value={{} as unknown as React.ComponentProps<typeof ImageGalleryProvider>['value']}
             >
-              <Channel
-                channel={channel}
-                client={chatClient}
-                thread={thread as unknown as LocalMessage}
-                threadList
-              >
+              <Channel channel={channel} client={chatClient} thread={thread} threadList>
                 <ChannelContext.Consumer>
                   {(c) => {
                     setLastRead = c.setLastRead;

@@ -3,8 +3,6 @@ import { Text } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { LocalMessage } from 'stream-chat';
-
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
@@ -33,7 +31,7 @@ describe('MessageTextContainer', () => {
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
       <ThemeProvider theme={defaultTheme}>
-        <MessageTextContainer message={message as unknown as LocalMessage} />
+        <MessageTextContainer message={message} />
       </ThemeProvider>,
     );
 
@@ -49,7 +47,7 @@ describe('MessageTextContainer', () => {
             MessageText: ({ message }) => <Text testID='message-text'>{message?.text}</Text>,
           }}
         >
-          <MessageTextContainer message={message as unknown as LocalMessage} />
+          <MessageTextContainer message={message} />
         </WithComponents>
       </ThemeProvider>,
     );
@@ -66,7 +64,7 @@ describe('MessageTextContainer', () => {
 
     rerender(
       <ThemeProvider theme={defaultTheme}>
-        <MessageTextContainer message={staticMessage as unknown as LocalMessage} />
+        <MessageTextContainer message={staticMessage} />
       </ThemeProvider>,
     );
 

@@ -3,8 +3,6 @@ import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
 import { render, renderHook, waitFor } from '@testing-library/react-native';
 
-import { LocalMessage } from 'stream-chat';
-
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -24,7 +22,7 @@ const ImageGalleryComponentWrapper = ({ children }: PropsWithChildren) => {
         attachments: [attachment],
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         user: {} as any,
-      }) as unknown as LocalMessage,
+      }),
     ],
     selectedAttachmentUrl: (attachment as unknown as { url?: string }).url,
   });

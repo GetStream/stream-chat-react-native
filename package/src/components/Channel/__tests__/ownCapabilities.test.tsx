@@ -4,7 +4,7 @@ import { FlatList } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, MessageResponse, StreamChat } from 'stream-chat';
+import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { allOwnCapabilities } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
@@ -73,7 +73,7 @@ describe('Own capabilities', () => {
   };
 
   const renderChannelAndOpenMessageActionsList = async (
-    targetMessage: MessageResponse,
+    targetMessage: LocalMessage,
     props: Partial<React.ComponentProps<typeof Channel>> = {},
   ) => {
     const { findByTestId, queryByLabelText, queryByText, unmount } = render(getComponent(props));

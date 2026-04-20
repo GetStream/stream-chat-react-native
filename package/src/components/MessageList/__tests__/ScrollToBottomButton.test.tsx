@@ -70,12 +70,7 @@ describe('ScrollToBottomButton', () => {
     const { getByTestId, getByText } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, t } as unknown as TranslationContextValue}>
-          <ScrollToBottomButton
-            {...({ t } as unknown as React.ComponentProps<typeof ScrollToBottomButton>)}
-            onPress={() => null}
-            showNotification={true}
-            unreadCount={3}
-          />
+          <ScrollToBottomButton onPress={() => null} showNotification={true} unreadCount={3} />
         </TranslationProvider>
       </ThemeProvider>,
     );

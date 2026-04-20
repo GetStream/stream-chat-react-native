@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
-import type { LocalMessage } from 'stream-chat';
 
 import type { DeepPartial } from '../../../../contexts/themeContext/ThemeContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
@@ -12,7 +11,6 @@ import { TranslationProvider } from '../../../../contexts/translationContext/Tra
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateStaticUser, generateUser } from '../../../../mock-builders/generator/user';
 import { MessageReplies } from '../MessageReplies';
-import { MessageRepliesAvatars } from '../MessageRepliesAvatars';
 
 afterEach(cleanup);
 
@@ -29,15 +27,7 @@ describe('MessageReplies', () => {
     render(
       <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
         <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
-          <MessageReplies
-            {...({
-              alignment: 'right',
-              groupStyles: ['bottom'],
-              MessageRepliesAvatars,
-              openThread: onPressMock,
-            } as unknown as React.ComponentProps<typeof MessageReplies>)}
-            message={message as unknown as LocalMessage}
-          />
+          <MessageReplies alignment='right' message={message} />
         </ThemeProvider>
       </TranslationProvider>,
     );
@@ -58,15 +48,7 @@ describe('MessageReplies', () => {
     screen.rerender(
       <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
         <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
-          <MessageReplies
-            {...({
-              alignment: 'left',
-              groupStyles: ['bottom'],
-              MessageRepliesAvatars,
-              onPress: onPressMock,
-            } as unknown as React.ComponentProps<typeof MessageReplies>)}
-            message={message2 as unknown as LocalMessage}
-          />
+          <MessageReplies alignment='left' message={message2} onPress={onPressMock} />
         </ThemeProvider>
       </TranslationProvider>,
     );
@@ -90,14 +72,7 @@ describe('MessageReplies', () => {
     render(
       <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
         <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
-          <MessageReplies
-            {...({
-              alignment: 'right',
-              groupStyles: ['bottom'],
-              onPress: () => null,
-            } as unknown as React.ComponentProps<typeof MessageReplies>)}
-            message={message as unknown as LocalMessage}
-          />
+          <MessageReplies alignment='right' message={message} onPress={() => null} />
         </ThemeProvider>
       </TranslationProvider>,
     );
@@ -114,15 +89,7 @@ describe('MessageReplies', () => {
     screen.rerender(
       <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
         <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
-          <MessageReplies
-            {...({
-              alignment: 'right',
-              groupStyles: ['bottom'],
-              onPress: () => null,
-            } as unknown as React.ComponentProps<typeof MessageReplies>)}
-            message={message2 as unknown as LocalMessage}
-            threadList
-          />
+          <MessageReplies alignment='right' message={message2} onPress={() => null} threadList />
         </ThemeProvider>
       </TranslationProvider>,
     );

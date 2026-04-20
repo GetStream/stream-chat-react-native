@@ -2,18 +2,24 @@ import type {
   ChannelMemberResponse,
   ChannelResponse,
   DraftResponse,
+  LocalMessage,
   MessageResponse,
   ReadResponse,
 } from 'stream-chat';
 
 import { mockedApiResponse, type MockedApiResponse } from './utils';
 
+// Mock message input is either a `MessageResponse` (server shape) or a
+// `LocalMessage` (client shape — what `generateMessage` produces). The
+// downstream stream-chat client formats these interchangeably.
+type MockMessage = Partial<MessageResponse> | LocalMessage;
+
 export type GetOrCreateChannelApiParams = {
   draft?: Partial<DraftResponse>;
   channel?: Partial<ChannelResponse>;
   members?: Partial<ChannelMemberResponse>[];
-  messages?: Partial<MessageResponse>[];
-  pinnedMessages?: Partial<MessageResponse>[];
+  messages?: MockMessage[];
+  pinnedMessages?: MockMessage[];
   read?: Partial<ReadResponse>[];
 };
 

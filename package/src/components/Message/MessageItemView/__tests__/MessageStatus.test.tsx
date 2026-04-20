@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { Channel } from '../../..';
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
@@ -75,7 +75,7 @@ describe('MessageStatus', () => {
 
     const { getByText, rerender, toJSON } = renderMessageStatus({
       deliveredToCount: 2,
-      message: message as unknown as LocalMessage,
+      message,
       readBy,
     });
 
@@ -90,7 +90,7 @@ describe('MessageStatus', () => {
       <ChannelsStateProvider>
         <Chat client={chatClient} i18nInstance={i18nInstance}>
           <Channel channel={channel}>
-            <MessageStatus message={staticMessage as unknown as LocalMessage} readBy={readBy} />
+            <MessageStatus message={staticMessage} readBy={readBy} />
           </Channel>
         </Chat>
       </ChannelsStateProvider>,
@@ -114,7 +114,7 @@ describe('MessageStatus', () => {
       const message = generateMessage({ user });
       const { getByLabelText } = renderMessageStatus({
         deliveredToCount,
-        message: { ...message, status } as unknown as LocalMessage,
+        message: { ...message, status },
         readBy,
       });
       await waitFor(() => {

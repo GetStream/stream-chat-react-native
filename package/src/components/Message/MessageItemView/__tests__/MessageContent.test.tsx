@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
@@ -24,15 +24,13 @@ import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { Message } from '../../Message';
 
-const toLocalMessage = (m: unknown): LocalMessage => m as LocalMessage;
-
 describe('MessageContent', () => {
   let channel: ChannelType;
   let chatClient: StreamChat;
-  let renderMessage: (options: {
-    message: unknown;
-    [key: string]: unknown;
-  }) => ReturnType<typeof render>;
+  let renderMessage: (
+    options: Omit<React.ComponentProps<typeof Message>, 'groupStyles'> &
+      Partial<Pick<React.ComponentProps<typeof Message>, 'groupStyles'>>,
+  ) => ReturnType<typeof render>;
 
   const user = generateUser({ id: 'id', name: 'name' });
   const messages = [generateMessage({ user })];
@@ -52,12 +50,7 @@ describe('MessageContent', () => {
       render(
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <Message
-              {...({
-                groupStyles: ['bottom'],
-                ...options,
-              } as unknown as React.ComponentProps<typeof Message>)}
-            />
+            <Message groupStyles={['bottom']} {...options} />
           </Channel>
         </Chat>,
       );
@@ -131,7 +124,7 @@ describe('MessageContent', () => {
         <Chat client={chatClient}>
           <WithComponents overrides={{ MessageHeader: ContextMessageHeader }}>
             <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={toLocalMessage(message)} />
+              <Message groupStyles={['bottom']} message={message} />
             </Channel>
           </WithComponents>
         </Chat>
@@ -155,7 +148,7 @@ describe('MessageContent', () => {
         <Chat client={chatClient}>
           <WithComponents overrides={{ MessageFooter: ContextMessageFooter }}>
             <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={toLocalMessage(message)} />
+              <Message groupStyles={['bottom']} message={message} />
             </Channel>
           </WithComponents>
         </Chat>
@@ -182,7 +175,7 @@ describe('MessageContent', () => {
             }}
           >
             <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={toLocalMessage(message)} />
+              <Message groupStyles={['bottom']} message={message} />
             </Channel>
           </WithComponents>
         </Chat>
@@ -210,7 +203,7 @@ describe('MessageContent', () => {
             }}
           >
             <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={toLocalMessage(message)} />
+              <Message groupStyles={['bottom']} message={message} />
             </Channel>
           </WithComponents>
         </Chat>
@@ -239,7 +232,7 @@ describe('MessageContent', () => {
             }}
           >
             <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={toLocalMessage(leftAlignedMessage)} />
+              <Message groupStyles={['bottom']} message={leftAlignedMessage} />
             </Channel>
           </WithComponents>
         </Chat>
@@ -264,7 +257,7 @@ describe('MessageContent', () => {
             }}
           >
             <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={toLocalMessage(rightAlignedMessage)} />
+              <Message groupStyles={['bottom']} message={rightAlignedMessage} />
             </Channel>
           </WithComponents>
         </Chat>
@@ -284,10 +277,7 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    renderMessage({
-      message,
-      MessageFooter: null,
-    });
+    renderMessage({ message });
 
     await waitFor(() => {
       expect(screen.getByTestId('message-content-wrapper')).toBeTruthy();
@@ -463,13 +453,7 @@ describe('MessageContent', () => {
       <ChannelsStateProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <Message
-              {...({
-                groupStyles: ['bottom'],
-                message: toLocalMessage(message),
-                reactionsEnabled: true,
-              } as unknown as React.ComponentProps<typeof Message>)}
-            />
+            <Message groupStyles={['bottom']} message={message} />
           </Channel>
         </Chat>
       </ChannelsStateProvider>,

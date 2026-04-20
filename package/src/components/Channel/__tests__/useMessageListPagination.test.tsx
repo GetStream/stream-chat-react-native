@@ -1,5 +1,5 @@
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, MessageResponse, StreamChat } from 'stream-chat';
+import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -393,15 +393,15 @@ describe('useMessageListPagination', () => {
     };
 
     type TestCase = {
-      channelUnreadState: (messages: MessageResponse[]) => TestCaseUnreadState;
+      channelUnreadState: (messages: LocalMessage[]) => TestCaseUnreadState;
       expectedCalls: {
         jumpToMessageFinishedCalls: number;
         loadMessageIntoStateCalls: number;
         setChannelUnreadStateCalls: number;
         setTargetedMessageIdCalls: number;
-        targetedMessageId: (messages: MessageResponse[]) => string;
+        targetedMessageId: (messages: LocalMessage[]) => string;
       };
-      initialMessages: MessageResponse[];
+      initialMessages: LocalMessage[];
       name: string;
       setupLoadMessageIntoState: ((channel: ChannelType) => jest.Mock) | null;
     };
@@ -569,7 +569,7 @@ describe('useMessageListPagination', () => {
 
     const messages = Array.from({ length: 20 }, (_, i) =>
       generateMessage({
-        created_at: new Date('2021-09-01T00:00:00.000Z') as unknown as string,
+        created_at: new Date('2021-09-01T00:00:00.000Z'),
         id: String(i),
         text: `message-${i}`,
       }),

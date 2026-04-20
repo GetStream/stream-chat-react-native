@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
-import type { LocalMessage } from 'stream-chat';
 
 import type { DeepPartial } from '../../../../contexts/themeContext/ThemeContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
@@ -25,7 +24,7 @@ describe('MessagePinnedHeader', () => {
     });
     render(
       <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
-        <MessagePinnedHeader message={message as unknown as LocalMessage} />
+        <MessagePinnedHeader message={message} />
       </ThemeProvider>,
     );
 
@@ -35,7 +34,7 @@ describe('MessagePinnedHeader', () => {
 
     screen.rerender(
       <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
-        <MessagePinnedHeader message={message as unknown as LocalMessage} />
+        <MessagePinnedHeader message={message} />
       </ThemeProvider>,
     );
 
@@ -46,7 +45,7 @@ describe('MessagePinnedHeader', () => {
 
     screen.rerender(
       <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
-        <MessagePinnedHeader message={staticMessage as unknown as LocalMessage} />
+        <MessagePinnedHeader message={staticMessage} />
       </ThemeProvider>,
     );
 

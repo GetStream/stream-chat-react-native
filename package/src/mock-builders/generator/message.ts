@@ -1,28 +1,32 @@
 import { fromPartial } from '@total-typescript/shoehorn';
-import type { MessageResponse } from 'stream-chat';
+import type { LocalMessage } from 'stream-chat';
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 
 import { generateUser } from './user';
 
-type GenerateMessageOptions = Partial<MessageResponse> & { timestamp?: Date };
+type GenerateMessageOptions = Partial<LocalMessage> & { timestamp?: Date };
 
-export const generateMessage = (options: GenerateMessageOptions = {}): MessageResponse => {
+// Returns a `LocalMessage`-shaped mock. Components across this SDK consume
+// `LocalMessage` (with `Date` objects for `created_at`/`updated_at`/`pinned_at`/
+// `deleted_at`), so the mock matches that shape. For tests that feed mock data
+// into an API response where the server returns `MessageResponse` (strings for
+// dates), cast at the call site — runtime values are the same either way.
+export const generateMessage = (options: GenerateMessageOptions = {}): LocalMessage => {
   const timestamp =
     options.timestamp || new Date(new Date().getTime() - Math.floor(Math.random() * 100000));
 
-  // NOTE: `created_at` / `updated_at` on `MessageResponse` are typed as `string`,
-  // but tests here treat the generated message as if it were a `LocalMessage`
-  // (where those fields are `Date`). Keeping `Date` objects at runtime preserves
-  // behavior of component code that calls e.g. `.toDateString()` on them.
-  return fromPartial<MessageResponse>({
+  return fromPartial<LocalMessage>({
     attachments: [],
-    created_at: timestamp as unknown as string,
+    created_at: timestamp,
+    deleted_at: null,
     html: '<p>regular</p>',
     id: uuidv4(),
-    message_text_updated_at: timestamp as unknown as string,
+    message_text_updated_at: timestamp.toISOString(),
+    pinned_at: null,
+    status: 'received',
     text: uuidv4(),
     type: 'regular',
-    updated_at: timestamp.toString(),
+    updated_at: timestamp,
     user: generateUser(),
     ...options,
   });
@@ -32,13 +36,15 @@ const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 export const generateStaticMessage = (
   seed: string,
   options?: GenerateMessageOptions,
-  date?: string,
-): MessageResponse =>
-  generateMessage({
-    created_at: date || '2020-04-27T13:39:49.331742Z',
+  date?: string | Date,
+): LocalMessage => {
+  const staticDate = date ? new Date(date) : new Date('2020-04-27T13:39:49.331742Z');
+  return generateMessage({
+    created_at: staticDate,
     id: uuidv5(seed, StreamReactNativeNamespace),
-    message_text_updated_at: date || '2020-04-27T13:39:49.331742Z',
+    message_text_updated_at: staticDate.toISOString(),
     text: seed,
-    updated_at: date || '2020-04-27T13:39:49.331742Z',
+    updated_at: staticDate,
     ...options,
   });
+};

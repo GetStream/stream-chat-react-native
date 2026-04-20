@@ -2,8 +2,6 @@ import React from 'react';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
-import type { LocalMessage } from 'stream-chat';
-
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
@@ -16,8 +14,6 @@ import { MessageSystem } from '../MessageSystem';
 afterEach(cleanup);
 
 let i18nInstance: Streami18n;
-
-const toLocalMessage = (m: unknown): LocalMessage => m as LocalMessage;
 
 describe('MessageSystem', () => {
   beforeAll(() => {
@@ -35,7 +31,7 @@ describe('MessageSystem', () => {
         <TranslationProvider
           value={translators as unknown as Parameters<typeof TranslationProvider>[0]['value']}
         >
-          <MessageSystem message={toLocalMessage(message)} />
+          <MessageSystem message={message} />
         </TranslationProvider>
       </ThemeProvider>,
     );
@@ -56,7 +52,7 @@ describe('MessageSystem', () => {
         <TranslationProvider
           value={translators as unknown as Parameters<typeof TranslationProvider>[0]['value']}
         >
-          <MessageSystem message={toLocalMessage(message)} />
+          <MessageSystem message={message} />
         </TranslationProvider>
       </ThemeProvider>,
     );

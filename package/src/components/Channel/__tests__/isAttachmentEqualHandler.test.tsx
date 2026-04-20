@@ -110,7 +110,7 @@ describe('isAttachmentEqualHandler', () => {
           attachments: [
             { customField: 'custom-field-2', type: 'test' } as AttachmentWithCustomField,
           ],
-          updated_at: new Date() as unknown as string,
+          updated_at: new Date(),
         },
         channel,
       );

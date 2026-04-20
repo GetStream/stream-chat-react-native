@@ -1,4 +1,4 @@
-import type { MessageResponse } from 'stream-chat';
+import type { LocalMessage, MessageResponse } from 'stream-chat';
 
 import { mockedApiResponse, type MockedApiResponse } from './utils';
 
@@ -7,7 +7,9 @@ import { mockedApiResponse, type MockedApiResponse } from './utils';
  *
  * api - /messages/${parent_id}/replies
  */
-export const threadRepliesApi = (replies: MessageResponse[] = []): MockedApiResponse => {
+export const threadRepliesApi = (
+  replies: Array<MessageResponse | LocalMessage> = [],
+): MockedApiResponse => {
   const result = {
     messages: replies,
   };

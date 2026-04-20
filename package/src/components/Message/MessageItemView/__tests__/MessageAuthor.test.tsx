@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
-import type { LocalMessage, StreamChat } from 'stream-chat';
+import type { StreamChat } from 'stream-chat';
 
 import type { DeepPartial } from '../../../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../../../contexts/themeContext/utils/theme';
@@ -31,13 +31,7 @@ describe('MessageAuthor', () => {
     });
     render(
       <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
-        <MessageAuthor
-          {...({
-            alignment: 'right',
-            groupStyles: ['bottom'],
-          } as unknown as React.ComponentProps<typeof MessageAuthor>)}
-          message={message as unknown as LocalMessage}
-        />
+        <MessageAuthor message={message} />
       </Chat>,
     );
 
@@ -47,13 +41,7 @@ describe('MessageAuthor', () => {
 
     screen.rerender(
       <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
-        <MessageAuthor
-          {...({
-            alignment: 'right',
-            groupStyles: [],
-          } as unknown as React.ComponentProps<typeof MessageAuthor>)}
-          message={message as unknown as LocalMessage}
-        />
+        <MessageAuthor message={message} />
       </Chat>,
     );
 
@@ -68,14 +56,7 @@ describe('MessageAuthor', () => {
 
     screen.rerender(
       <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
-        <MessageAuthor
-          {...({
-            alignment: 'left',
-            groupStyles: ['single'],
-          } as unknown as React.ComponentProps<typeof MessageAuthor>)}
-          message={staticMessage as unknown as LocalMessage}
-          showAvatar
-        />
+        <MessageAuthor message={staticMessage} showAvatar />
       </Chat>,
     );
 

@@ -1,7 +1,6 @@
 import React, { ComponentProps } from 'react';
 
 import { render, waitFor } from '@testing-library/react-native';
-import type { LocalMessage } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
@@ -28,7 +27,7 @@ jest.mock('../../../native.ts', () => ({
 }));
 
 const getAttachmentComponent = (props: ComponentProps<typeof Attachment>) => {
-  const message = generateMessage() as unknown as LocalMessage;
+  const message = generateMessage();
   return (
     <ThemeProvider>
       <MessagesProvider

@@ -2,8 +2,6 @@ import React from 'react';
 
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react-native';
 
-import { LocalMessage } from 'stream-chat';
-
 import { Chat } from '../../../components';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 
@@ -244,7 +242,7 @@ describe("MessageInputContext's editMessage", () => {
       attachments: [generateLocalFileUploadAttachmentData()],
       cid: 'messaging:channel-id',
       text: 'test',
-    }) as unknown as LocalMessage;
+    });
 
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps,

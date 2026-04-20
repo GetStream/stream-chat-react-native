@@ -9,12 +9,7 @@ import {
   userEvent,
   waitFor,
 } from '@testing-library/react-native';
-import type {
-  Channel as ChannelType,
-  ChannelResponse,
-  LocalMessage,
-  StreamChat,
-} from 'stream-chat';
+import type { Channel as ChannelType, ChannelResponse, StreamChat } from 'stream-chat';
 
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
@@ -47,10 +42,10 @@ describe('Giphy', () => {
   const lightTheme = mergeThemes({ scheme: 'light' });
 
   const getAttachmentComponent = (
-    props: Record<string, unknown>,
+    props: ComponentProps<typeof Giphy>,
     messageContextValue: Partial<MessageContextValue> = {},
   ) => {
-    const message = generateMessage() as unknown as LocalMessage;
+    const message = generateMessage();
     return (
       <ThemeProvider>
         <MessagesProvider
@@ -64,7 +59,7 @@ describe('Giphy', () => {
           <MessageProvider
             value={{ message, ...messageContextValue } as unknown as MessageContextValue}
           >
-            <Giphy {...(props as unknown as ComponentProps<typeof Giphy>)} />
+            <Giphy {...props} />
           </MessageProvider>
         </MessagesProvider>
       </ThemeProvider>

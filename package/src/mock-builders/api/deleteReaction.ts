@@ -1,4 +1,4 @@
-import type { MessageResponse, ReactionResponse } from 'stream-chat';
+import type { LocalMessage, MessageResponse, ReactionResponse } from 'stream-chat';
 
 import { mockedApiResponse, type MockedApiResponse } from './utils';
 
@@ -10,7 +10,7 @@ import { generateReaction } from '../generator/reaction';
  * api - /messages/{id}/reaction
  */
 export const deleteReactionApi = (
-  message: MessageResponse,
+  message: MessageResponse | LocalMessage,
   reaction: ReactionResponse = generateReaction(),
 ): MockedApiResponse => {
   const result = {

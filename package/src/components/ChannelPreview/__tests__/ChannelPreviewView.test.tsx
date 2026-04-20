@@ -21,25 +21,7 @@ describe('ChannelPreviewView', () => {
 
   const getComponent = (props: Partial<React.ComponentProps<typeof ChannelPreviewView>> = {}) => (
     <Chat client={chatClient}>
-      <ChannelPreviewView
-        {...({
-          channel,
-          client: chatClient,
-          latestMessagePreview: {
-            created_at: '',
-            messageObject: generateMessage(),
-            previews: [
-              {
-                bold: true,
-                text: 'This is the message preview text',
-              },
-            ],
-            status: 1, // read states of latest message.
-          },
-          onSelect: jest.fn(),
-        } as unknown as React.ComponentProps<typeof ChannelPreviewView>)}
-        {...props}
-      />
+      <ChannelPreviewView channel={channel as ChannelType} onSelect={jest.fn()} {...props} />
     </Chat>
   );
 
@@ -63,14 +45,7 @@ describe('ChannelPreviewView', () => {
     const onSelect = jest.fn();
     await initializeChannel(generateChannelResponse());
 
-    render(
-      getComponent({
-        onSelect,
-        ...({ watchers: {} } as unknown as Partial<
-          React.ComponentProps<typeof ChannelPreviewView>
-        >),
-      }),
-    );
+    render(getComponent({ onSelect }));
 
     await waitFor(() => screen.getByTestId('channel-preview-button'));
 
@@ -115,14 +90,7 @@ describe('ChannelPreviewView', () => {
     const message = generateMessage();
     await initializeChannel(generateChannelResponse());
 
-    render(
-      getComponent({
-        ...({
-          latestMessage: message,
-          latestMessageLength: 6,
-        } as unknown as Partial<React.ComponentProps<typeof ChannelPreviewView>>),
-      }),
-    );
+    render(getComponent());
 
     const expectedMessagePreview = truncate(message.text, { length: 6 });
     await waitFor(() => screen.queryByText(expectedMessagePreview));
