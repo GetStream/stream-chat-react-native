@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
+import type { Attachment, Channel as ChannelType, LocalAttachment, StreamChat } from 'stream-chat';
+
 import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
-import { generateAudioAttachment } from '../../../mock-builders/attachments';
+import { generateAudioAttachment as generateAudioAttachmentBase } from '../../../mock-builders/attachments';
 
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { AttachmentUploadPreviewList } from '../components/AttachmentPreview/AttachmentUploadPreviewList';
+
+const generateAudioAttachment = (a?: unknown): LocalAttachment =>
+  generateAudioAttachmentBase(a as Partial<Attachment>) as unknown as LocalAttachment;
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native').View;
@@ -28,7 +33,15 @@ jest.mock('../../../native.ts', () => {
   };
 });
 
-const renderComponent = ({ client, channel, props }) => {
+const renderComponent = ({
+  client,
+  channel,
+  props,
+}: {
+  client: StreamChat;
+  channel: ChannelType;
+  props: Partial<ComponentProps<typeof AttachmentUploadPreviewList>>;
+}) => {
   return render(
     <OverlayProvider>
       <Chat client={client}>
@@ -41,8 +54,8 @@ const renderComponent = ({ client, channel, props }) => {
 };
 
 describe('AudioAttachmentUploadPreview render', () => {
-  let client;
-  let channel;
+  let client: StreamChat;
+  let channel: ChannelType;
 
   beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();

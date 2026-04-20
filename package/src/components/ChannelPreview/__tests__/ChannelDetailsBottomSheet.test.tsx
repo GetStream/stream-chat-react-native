@@ -10,10 +10,13 @@ import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelAction
 import type { ChannelDetailsHeaderProps } from '../ChannelDetailsBottomSheet';
 import { ChannelDetailsBottomSheet } from '../ChannelDetailsBottomSheet';
 
-const mockStreamBottomSheetModalFlatList = jest.fn(() => null);
+const mockStreamBottomSheetModalFlatList = jest.fn(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_props: Record<string, unknown>) => null,
+);
 
 jest.mock('../../UIComponents/StreamBottomSheetModalFlatList', () => ({
-  StreamBottomSheetModalFlatList: (...args: unknown[]) =>
+  StreamBottomSheetModalFlatList: (...args: [Record<string, unknown>]) =>
     mockStreamBottomSheetModalFlatList(...args),
 }));
 
@@ -73,7 +76,9 @@ describe('ChannelDetailsBottomSheet', () => {
     );
 
     expect(mockStreamBottomSheetModalFlatList).toHaveBeenCalled();
-    const flatListProps = mockStreamBottomSheetModalFlatList.mock.calls[0]?.[0];
+    const flatListProps = (
+      mockStreamBottomSheetModalFlatList.mock.calls[0] as unknown as [Record<string, unknown>]
+    )?.[0];
     expect(flatListProps).toEqual(
       expect.objectContaining({
         onEndReached,

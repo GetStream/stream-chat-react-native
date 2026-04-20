@@ -2,6 +2,8 @@ import React from 'react';
 
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
+import type { LocalAudioAttachment } from 'stream-chat';
+
 import {
   MessageInputContext,
   MessageInputContextValue,
@@ -23,9 +25,15 @@ jest.mock('../../../native.ts', () => {
   };
 });
 
-const getComponent = (
-  props: Partial<AudioAttachmentProps & Pick<MessageInputContextValue, 'fileUploads'>>,
-) => (
+type GetComponentProps = Omit<Partial<AudioAttachmentProps>, 'item'> & {
+  fileUploads?: unknown[];
+  item?: unknown;
+  onLoad?: (...args: unknown[]) => unknown;
+  onPlayPause?: (...args: unknown[]) => unknown;
+  onProgress?: (...args: unknown[]) => unknown;
+};
+
+const getComponent = (props: GetComponentProps) => (
   <ThemeProvider theme={defaultTheme}>
     <MessageInputContext.Provider
       value={{ fileUploads: props.fileUploads } as unknown as MessageInputContextValue}
@@ -47,8 +55,16 @@ describe.skip('AudioAttachment', () => {
     const onPlayPauseMock = jest.fn();
     render(
       getComponent({
-        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
-        item: { file: { name: 'audio.mp3' }, paused: true, progress: 1 } as unknown as FileUpload,
+        fileUploads: [
+          generateFileUploadPreview({ type: 'audio/mp3' } as unknown as Parameters<
+            typeof generateFileUploadPreview
+          >[0]),
+        ],
+        item: {
+          file: { name: 'audio.mp3' },
+          paused: true,
+          progress: 1,
+        } as unknown as LocalAudioAttachment,
         onPlayPause: onPlayPauseMock,
       }),
     );
@@ -71,8 +87,12 @@ describe.skip('AudioAttachment', () => {
 
     render(
       getComponent({
-        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
-        item: { file: { name: 'audio.mp3' }, paused: true } as unknown as FileUpload,
+        fileUploads: [
+          generateFileUploadPreview({ type: 'audio/mp3' } as unknown as Parameters<
+            typeof generateFileUploadPreview
+          >[0]),
+        ],
+        item: { file: { name: 'audio.mp3' }, paused: true } as unknown as LocalAudioAttachment,
         onPlayPause: onPlayPauseMock,
       }),
     );
@@ -98,8 +118,12 @@ describe.skip('AudioAttachment', () => {
 
     render(
       getComponent({
-        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
-        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
+        fileUploads: [
+          generateFileUploadPreview({ type: 'audio/mp3' } as unknown as Parameters<
+            typeof generateFileUploadPreview
+          >[0]),
+        ],
+        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as LocalAudioAttachment,
         onPlayPause: onPlayPauseMock,
       }),
     );
@@ -118,8 +142,12 @@ describe.skip('AudioAttachment', () => {
 
     render(
       getComponent({
-        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
-        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
+        fileUploads: [
+          generateFileUploadPreview({ type: 'audio/mp3' } as unknown as Parameters<
+            typeof generateFileUploadPreview
+          >[0]),
+        ],
+        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as LocalAudioAttachment,
         onLoad: onLoadMock,
       }),
     );
@@ -141,8 +169,12 @@ describe.skip('AudioAttachment', () => {
 
     render(
       getComponent({
-        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
-        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
+        fileUploads: [
+          generateFileUploadPreview({ type: 'audio/mp3' } as unknown as Parameters<
+            typeof generateFileUploadPreview
+          >[0]),
+        ],
+        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as LocalAudioAttachment,
         onPlayPause: onPlayPauseMock,
         onProgress: onProgressMock,
       }),
@@ -163,8 +195,12 @@ describe.skip('AudioAttachment', () => {
 
     render(
       getComponent({
-        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
-        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
+        fileUploads: [
+          generateFileUploadPreview({ type: 'audio/mp3' } as unknown as Parameters<
+            typeof generateFileUploadPreview
+          >[0]),
+        ],
+        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as LocalAudioAttachment,
         onProgress: onProgressMock,
       }),
     );
@@ -193,8 +229,12 @@ describe.skip('AudioAttachment', () => {
 
     render(
       getComponent({
-        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
-        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
+        fileUploads: [
+          generateFileUploadPreview({ type: 'audio/mp3' } as unknown as Parameters<
+            typeof generateFileUploadPreview
+          >[0]),
+        ],
+        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as LocalAudioAttachment,
         onProgress: onProgressMock,
       }),
     );

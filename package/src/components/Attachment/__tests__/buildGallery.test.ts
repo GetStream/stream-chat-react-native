@@ -1,3 +1,5 @@
+import type { Attachment } from 'stream-chat';
+
 import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
 import { buildGallery } from '../utils/buildGallery/buildGallery';
 
@@ -20,7 +22,7 @@ describe('buildGallery', () => {
     ];
 
     imageSizeTestCases.forEach((size) => {
-      const attachments = [];
+      const attachments: Attachment[] = [];
       for (let numOfImages = 0; numOfImages < 4; numOfImages++) {
         const a1 = generateImageAttachment({
           ...size,
@@ -77,7 +79,7 @@ describe('buildGallery', () => {
   });
 
   it('gallery size should default to gridHeight and gridWidth if original image size is unavailable', () => {
-    const attachments = [];
+    const attachments: Attachment[] = [];
     for (let numOfImages = 0; numOfImages < 4; numOfImages++) {
       // During each iteration, size of attachments goes up.
       attachments.push(generateImageAttachment());

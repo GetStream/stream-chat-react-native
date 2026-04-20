@@ -17,21 +17,19 @@ import { Chat } from '../../Chat/Chat';
 import { MessageComposer } from '../MessageComposer';
 
 jest.spyOn(Alert, 'alert');
-jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
-  jest.fn(() => {
-    const attachmentPickerStore = new AttachmentPickerStore();
-    attachmentPickerStore.setSelectedPicker('images');
-    return {
-      AttachmentPickerSelectionBar,
-      AttachmentPickerContent,
-      closePicker: jest.fn(),
-      openPicker: jest.fn(),
-      setBottomInset: jest.fn(),
-      setTopInset: jest.fn(),
-      attachmentPickerStore,
-    };
-  }),
-);
+jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(() => {
+  const attachmentPickerStore = new AttachmentPickerStore();
+  attachmentPickerStore.setSelectedPicker('images');
+  return {
+    AttachmentPickerSelectionBar,
+    AttachmentPickerContent,
+    closePicker: jest.fn(),
+    openPicker: jest.fn(),
+    setBottomInset: jest.fn(),
+    setTopInset: jest.fn(),
+    attachmentPickerStore,
+  } as unknown as ReturnType<typeof AttachmentPickerUtils.useAttachmentPickerContext>;
+});
 
 const renderComponent = ({ channelProps, client, props }) => {
   return render(

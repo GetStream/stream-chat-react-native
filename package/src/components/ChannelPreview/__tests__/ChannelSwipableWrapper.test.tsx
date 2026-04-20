@@ -60,7 +60,8 @@ jest.mock('../../UIComponents/SwipableWrapper', () => ({
     rightActionsProbe.items = items;
     return null;
   },
-  SwipableWrapper: (...args: unknown[]) => mockSwipableWrapper(...args),
+  SwipableWrapper: (...args: [React.PropsWithChildren<Record<string, unknown>>]) =>
+    mockSwipableWrapper(...args),
 }));
 
 describe('ChannelSwipableWrapper', () => {

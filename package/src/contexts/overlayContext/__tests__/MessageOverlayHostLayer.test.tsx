@@ -36,9 +36,9 @@ jest.mock('react-native-reanimated', () => {
   const { View } = require('react-native');
 
   const useStableSharedValue = (init: unknown) => {
-    const ref = React.useRef<{
+    const ref = React.useRef(null) as React.MutableRefObject<{
       value: unknown;
-    }>();
+    } | null>;
 
     if (!ref.current) {
       const value = { value: init };

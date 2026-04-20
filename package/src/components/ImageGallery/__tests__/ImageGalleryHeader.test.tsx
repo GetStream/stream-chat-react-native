@@ -77,9 +77,12 @@ describe('ImageGalleryHeader', () => {
     const setOverlayMock = jest.fn();
     const user = userEvent.setup();
 
-    jest.spyOn(overlayContext, 'useOverlayContext').mockImplementation(() => ({
-      setOverlay: setOverlayMock,
-    }));
+    jest.spyOn(overlayContext, 'useOverlayContext').mockImplementation(
+      () =>
+        ({
+          setOverlay: setOverlayMock,
+        }) as unknown as ReturnType<typeof overlayContext.useOverlayContext>,
+    );
 
     render(<ImageGalleryComponent />);
 

@@ -2,6 +2,8 @@ import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
+import type { Event, StreamChat } from 'stream-chat';
+
 import { TypingProvider } from '../../../contexts/typingContext/TypingContext';
 
 import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
@@ -12,7 +14,7 @@ import { TypingIndicator } from '../TypingIndicator';
 afterEach(cleanup);
 
 describe('TypingIndicator', () => {
-  let chatClient;
+  let chatClient: StreamChat;
 
   it('should render typing indicator for two users', async () => {
     const user0 = generateUser();
@@ -25,7 +27,7 @@ describe('TypingIndicator', () => {
 
     const { getAllByTestId, getByTestId } = render(
       <Chat client={chatClient}>
-        <TypingProvider value={{ typing }}>
+        <TypingProvider value={{ typing: typing as unknown as Record<string, Event> }}>
           <TypingIndicator />
         </TypingProvider>
       </Chat>,
@@ -46,7 +48,7 @@ describe('TypingIndicator', () => {
 
     const { getAllByTestId, getByTestId } = render(
       <Chat client={chatClient}>
-        <TypingProvider value={{ typing }}>
+        <TypingProvider value={{ typing: typing as unknown as Record<string, Event> }}>
           <TypingIndicator />
         </TypingProvider>
       </Chat>,
@@ -68,7 +70,7 @@ describe('TypingIndicator', () => {
 
     const { toJSON } = render(
       <Chat client={chatClient}>
-        <TypingProvider value={{ typing }}>
+        <TypingProvider value={{ typing: typing as unknown as Record<string, Event> }}>
           <TypingIndicator />
         </TypingProvider>
       </Chat>,

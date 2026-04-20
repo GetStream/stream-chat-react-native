@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import type { Attachment, ChannelResponse } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
@@ -31,7 +32,10 @@ describe('Gallery', () => {
 
   const user1 = generateUser();
 
-  const getComponent = async (attachments = [], channelProps = {}) => {
+  const getComponent = async (
+    attachments: Attachment[] = [],
+    channelProps: Partial<ComponentProps<typeof Channel>> = {},
+  ) => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
 
     const mockedChannel = generateChannelResponse({
@@ -39,7 +43,10 @@ describe('Gallery', () => {
       messages: [generateMessage({ attachments, user: user1 })],
     });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel(
+      'messaging',
+      (mockedChannel.channel as unknown as ChannelResponse).id,
+    );
     await channel.watch();
 
     return (

@@ -17,7 +17,8 @@ import {
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
-import { ImageGalleryGrid, ImageGalleryGridProps } from '../components/ImageGrid';
+import { ImageGalleryGrid } from '../components/ImageGrid';
+import type { ImageGalleryGridProps } from '../components/types';
 
 const ImageGalleryGridComponent = (
   props: Partial<ImageGalleryGridProps> & { message: LocalMessage },

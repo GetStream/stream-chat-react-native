@@ -32,8 +32,20 @@ const Wrapper = ({ channel, client, props }) => {
           } as ChannelContextValue
         }
       >
-        <AttachmentPickerProvider value={{ disableAttachmentPicker: true }}>
-          <MessageComposerProvider value={{ channel }}>
+        <AttachmentPickerProvider
+          value={
+            { disableAttachmentPicker: true } as unknown as React.ComponentProps<
+              typeof AttachmentPickerProvider
+            >['value']
+          }
+        >
+          <MessageComposerProvider
+            value={
+              { channel } as unknown as React.ComponentProps<
+                typeof MessageComposerProvider
+              >['value']
+            }
+          >
             <MessageInputProvider
               value={
                 {

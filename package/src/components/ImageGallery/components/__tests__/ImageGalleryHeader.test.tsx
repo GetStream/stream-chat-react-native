@@ -19,11 +19,14 @@ const ImageGalleryComponentWrapper = ({ children }: PropsWithChildren) => {
   const initialImageGalleryStateStore = new ImageGalleryStateStore();
   const attachment = generateImageAttachment();
   initialImageGalleryStateStore.openImageGallery({
-    message: generateMessage({
-      attachments: [attachment],
-      user: {},
-    }) as unknown as LocalMessage,
-    selectedAttachmentUrl: attachment.url,
+    messages: [
+      generateMessage({
+        attachments: [attachment],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        user: {} as any,
+      }) as unknown as LocalMessage,
+    ],
+    selectedAttachmentUrl: (attachment as unknown as { url?: string }).url,
   });
 
   const [imageGalleryStateStore] = useState(initialImageGalleryStateStore);

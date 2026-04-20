@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 
 import {
   act,
@@ -9,8 +9,16 @@ import {
   userEvent,
   waitFor,
 } from '@testing-library/react-native';
+import type {
+  Channel as ChannelType,
+  ChannelResponse,
+  LocalMessage,
+  StreamChat,
+} from 'stream-chat';
 
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
@@ -38,21 +46,34 @@ const streami18n = new Streami18n({
 describe('Giphy', () => {
   const lightTheme = mergeThemes({ scheme: 'light' });
 
-  const getAttachmentComponent = (props, messageContextValue = {}) => {
-    const message = generateMessage();
+  const getAttachmentComponent = (
+    props: Record<string, unknown>,
+    messageContextValue: Partial<MessageContextValue> = {},
+  ) => {
+    const message = generateMessage() as unknown as LocalMessage;
     return (
       <ThemeProvider>
-        <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
-          <MessageProvider value={{ message, ...messageContextValue }}>
-            <Giphy {...props} />
+        <MessagesProvider
+          value={
+            {
+              ImageLoadingFailedIndicator,
+              ImageLoadingIndicator,
+            } as unknown as MessagesContextValue
+          }
+        >
+          <MessageProvider
+            value={{ message, ...messageContextValue } as unknown as MessageContextValue}
+          >
+            <Giphy {...(props as unknown as ComponentProps<typeof Giphy>)} />
           </MessageProvider>
         </MessagesProvider>
       </ThemeProvider>
     );
   };
-  let chatClient;
-  let channel;
-  let attachment;
+  let chatClient: StreamChat;
+  let channel: ChannelType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let attachment: any;
 
   const actions = [
     { name: 'image_action', text: 'Send', value: 'send' },
@@ -91,7 +112,10 @@ describe('Giphy', () => {
 
     chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    channel = chatClient.channel('messaging', mockedChannel.id);
+    channel = chatClient.channel(
+      'messaging',
+      (mockedChannel.channel as unknown as ChannelResponse).id,
+    );
     await channel.watch();
   };
 
@@ -321,7 +345,10 @@ describe('Giphy', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel(
+      'messaging',
+      (mockedChannel.channel as unknown as ChannelResponse).id,
+    );
     await channel.watch();
 
     render(

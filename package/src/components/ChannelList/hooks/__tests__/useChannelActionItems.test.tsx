@@ -149,7 +149,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       muteActive: false,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
     const actionItems = getChannelActionItems({
       context: {
@@ -159,7 +159,7 @@ describe('getChannelActionItems', () => {
         isDirectChat: false,
         isPinned: false,
         muteActive: false,
-        t: (value) => value,
+        t: ((value: string) => value) as TranslationContextValue['t'],
       },
       defaultItems,
     });
@@ -186,7 +186,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: true,
       isPinned: false,
       muteActive: true,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
 
     expect(actionItems.map((item) => item.id)).toEqual(['mute', 'block', 'leave', 'deleteChannel']);
@@ -213,7 +213,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       muteActive: false,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
 
     expect(actionItems.map((item) => item.id)).toEqual(['mute', 'leave']);
@@ -228,7 +228,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       muteActive: true,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
 
     expect(actionItems[0].action).toBe(channelActions.unmuteChannel);
@@ -251,7 +251,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       muteActive: false,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
 
     const deleteItem = actionItems.find((item) => item.id === 'deleteChannel');

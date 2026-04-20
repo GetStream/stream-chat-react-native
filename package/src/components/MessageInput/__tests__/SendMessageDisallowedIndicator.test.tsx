@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 
 import { Alert } from 'react-native';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { MessageComposer as StreamMessageComposer } from 'stream-chat';
 
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
@@ -24,23 +25,29 @@ import { Chat } from '../../Chat/Chat';
 import { MessageComposer } from '../MessageComposer';
 
 jest.spyOn(Alert, 'alert');
-jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(
-  jest.fn(() => {
-    const attachmentPickerStore = new AttachmentPickerStore();
-    attachmentPickerStore.setSelectedPicker('images');
-    return {
-      AttachmentPickerSelectionBar,
-      AttachmentPickerContent,
-      closePicker: jest.fn(),
-      openPicker: jest.fn(),
-      setBottomInset: jest.fn(),
-      setTopInset: jest.fn(),
-      attachmentPickerStore,
-    };
-  }),
-);
+jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(() => {
+  const attachmentPickerStore = new AttachmentPickerStore();
+  attachmentPickerStore.setSelectedPicker('images');
+  return {
+    AttachmentPickerSelectionBar,
+    AttachmentPickerContent,
+    closePicker: jest.fn(),
+    openPicker: jest.fn(),
+    setBottomInset: jest.fn(),
+    setTopInset: jest.fn(),
+    attachmentPickerStore,
+  } as unknown as ReturnType<typeof AttachmentPickerUtils.useAttachmentPickerContext>;
+});
 
-const renderComponent = ({ channelProps, client, props }) => {
+const renderComponent = ({
+  channelProps,
+  client,
+  props,
+}: {
+  channelProps: Partial<ComponentProps<typeof Channel>> & { channel: ChannelType };
+  client: StreamChat;
+  props: Partial<ComponentProps<typeof MessageComposer>>;
+}) => {
   return render(
     <OverlayProvider>
       <Chat client={client}>
@@ -52,14 +59,22 @@ const renderComponent = ({ channelProps, client, props }) => {
   );
 };
 
-const editedMessageSetup = async ({ composerConfig, composition } = {}) => {
+const editedMessageSetup = async ({
+  composerConfig,
+  composition,
+}: {
+  composerConfig?: ConstructorParameters<typeof StreamMessageComposer>[0]['config'];
+  composition?: ConstructorParameters<typeof StreamMessageComposer>[0]['composition'];
+} = {}) => {
   const { client: chatClient, channels } = await initiateClientWithChannels();
   const channel = channels[0];
 
   const messageComposer = new StreamMessageComposer({
     client: chatClient,
     composition,
-    compositionContext: composition,
+    compositionContext: composition as unknown as ConstructorParameters<
+      typeof StreamMessageComposer
+    >[0]['compositionContext'],
     config: composerConfig,
   });
 
@@ -70,8 +85,8 @@ const editedMessageSetup = async ({ composerConfig, composition } = {}) => {
 };
 
 describe('SendMessageDisallowedIndicator', () => {
-  let client;
-  let channel;
+  let client: StreamChat;
+  let channel: ChannelType;
 
   beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
@@ -101,8 +116,8 @@ describe('SendMessageDisallowedIndicator', () => {
 
     act(() => {
       client.dispatchEvent({
-        cid: channel.data.cid,
-        own_capabilities: channel.data.own_capabilities.filter(
+        cid: channel.data!.cid,
+        own_capabilities: channel.data!.own_capabilities!.filter(
           (capability) => capability !== 'send-message',
         ),
         type: 'capabilities.changed',
@@ -139,11 +154,12 @@ describe('SendMessageDisallowedIndicator', () => {
       client.dispatchEvent({
         channel: {
           ...channel.data,
-          own_capabilities: channel.data.own_capabilities.filter(
-            (capability) => capability !== 'send-message',
+          own_capabilities: channel.data!.own_capabilities!.filter(
+            (capability: string) => capability !== 'send-message',
           ),
-        },
-        cid: channel.data.cid,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
+        cid: channel.data!.cid,
         type: 'channel.updated',
       });
     });
@@ -180,9 +196,9 @@ describe("SendMessageDisallowedIndicator's edited state", () => {
 
     act(() => {
       chatClient.dispatchEvent({
-        cid: customChannel.data.cid,
-        own_capabilities: customChannel.data.own_capabilities.filter(
-          (capability) => capability !== 'send-message',
+        cid: customChannel.data!.cid,
+        own_capabilities: customChannel.data!.own_capabilities!.filter(
+          (capability: string) => capability !== 'send-message',
         ),
         type: 'capabilities.changed',
       });

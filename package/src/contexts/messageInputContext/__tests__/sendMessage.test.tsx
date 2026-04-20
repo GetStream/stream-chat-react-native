@@ -244,7 +244,7 @@ describe("MessageInputContext's editMessage", () => {
       attachments: [generateLocalFileUploadAttachmentData()],
       cid: 'messaging:channel-id',
       text: 'test',
-    }) as LocalMessage;
+    }) as unknown as LocalMessage;
 
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps,

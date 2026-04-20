@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 
 import { render, waitFor } from '@testing-library/react-native';
+import type { LocalMessage } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import {
@@ -24,18 +27,20 @@ jest.mock('../../../native.ts', () => ({
   isSoundPackageAvailable: jest.fn(() => false),
 }));
 
-const getAttachmentComponent = (props) => {
-  const message = generateMessage();
+const getAttachmentComponent = (props: ComponentProps<typeof Attachment>) => {
+  const message = generateMessage() as unknown as LocalMessage;
   return (
     <ThemeProvider>
       <MessagesProvider
-        value={{
-          ImageLoadingFailedIndicator,
-          ImageLoadingIndicator,
-          FilePreview: FilePreviewDefault,
-        }}
+        value={
+          {
+            ImageLoadingFailedIndicator,
+            ImageLoadingIndicator,
+            FilePreview: FilePreviewDefault,
+          } as unknown as MessagesContextValue
+        }
       >
-        <MessageProvider value={{ message }}>
+        <MessageProvider value={{ message } as unknown as MessageContextValue}>
           <Attachment {...props} />
         </MessageProvider>
       </MessagesProvider>

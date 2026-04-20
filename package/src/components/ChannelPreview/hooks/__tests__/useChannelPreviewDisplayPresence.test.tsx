@@ -19,7 +19,7 @@ describe('useChannelPreviewDisplayPresence', () => {
     chatClient = await getTestClientWithUser({
       id: currentUserId,
       userID: currentUserId,
-    });
+    } as unknown as Parameters<typeof getTestClientWithUser>[0]);
 
     // Create mock channel
     mockChannel = {

@@ -43,7 +43,7 @@ describe('AutoCompleteInput', () => {
 
     const { queryByTestId } = screen;
 
-    const input = queryByTestId('auto-complete-text-input');
+    const input = queryByTestId('auto-complete-text-input')!;
 
     await waitFor(() => {
       expect(input).toBeTruthy();
@@ -60,7 +60,7 @@ describe('AutoCompleteInput', () => {
 
     const { queryByTestId } = screen;
 
-    const input = queryByTestId('auto-complete-text-input');
+    const input = queryByTestId('auto-complete-text-input')!;
 
     await waitFor(() => {
       expect(input.props.editable).toBeFalsy();
@@ -78,7 +78,7 @@ describe('AutoCompleteInput', () => {
 
     const { queryByTestId } = screen;
 
-    const input = queryByTestId('auto-complete-text-input');
+    const input = queryByTestId('auto-complete-text-input')!;
 
     await waitFor(() => {
       expect(input.props.maxLength).toBe(10);
@@ -97,7 +97,7 @@ describe('AutoCompleteInput', () => {
 
     const { queryByTestId } = screen;
 
-    const input = queryByTestId('auto-complete-text-input');
+    const input = queryByTestId('auto-complete-text-input')!;
 
     act(() => {
       fireEvent.changeText(input, 'hello');
@@ -125,7 +125,7 @@ describe('AutoCompleteInput', () => {
 
     const { queryByTestId } = screen;
 
-    const input = queryByTestId('auto-complete-text-input');
+    const input = queryByTestId('auto-complete-text-input')!;
 
     act(() => {
       fireEvent(input, 'selectionChange', {
@@ -155,7 +155,7 @@ describe('AutoCompleteInput', () => {
 
     const { queryByTestId } = screen;
 
-    const input = queryByTestId('auto-complete-text-input');
+    const input = queryByTestId('auto-complete-text-input')!;
 
     await waitFor(() => {
       expect(input.props.placeholder).toBe(data.result);
