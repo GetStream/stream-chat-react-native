@@ -1,21 +1,26 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { mockedApiResponse } from './utils';
+import type {
+  ChannelMemberResponse,
+  ChannelResponse,
+  DraftResponse,
+  MessageResponse,
+  ReadResponse,
+} from 'stream-chat';
+
+import { mockedApiResponse, type MockedApiResponse } from './utils';
 
 export type GetOrCreateChannelApiParams = {
-  draft?: Record<string, any>;
-  channel?: Record<string, any>;
-  members?: Record<string, any>[];
-  messages?: Record<string, any>[];
-  pinnedMessages?: Record<string, any>[];
-  read?: Record<string, any>[];
+  draft?: Partial<DraftResponse>;
+  channel?: Partial<ChannelResponse>;
+  members?: Partial<ChannelMemberResponse>[];
+  messages?: Partial<MessageResponse>[];
+  pinnedMessages?: Partial<MessageResponse>[];
+  read?: Partial<ReadResponse>[];
 };
 
 /**
  * Returns the api response for queryChannel api.
  *
  * api - /channels/{type}/{id}/query
- *
- * @param {*} channel
  */
 export const getOrCreateChannelApi = (
   channel: GetOrCreateChannelApiParams = {
@@ -26,7 +31,7 @@ export const getOrCreateChannelApi = (
     pinnedMessages: [],
     read: [],
   },
-) => {
+): MockedApiResponse => {
   const result = {
     channel: channel.channel,
     draft: channel.draft,

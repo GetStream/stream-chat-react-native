@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import type {
+  ChannelMemberResponse,
+  ChannelResponse,
+  MessageResponse,
+  ReadResponse,
+} from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 import { generateUser, getUserDefaults } from './user';
@@ -54,9 +59,21 @@ const defaultState = {
   setIsUpToDate: jest.fn(),
 };
 
+export type GeneratedChannel = {
+  _client: Record<string, unknown>;
+  channel: Partial<ChannelResponse> & { config: typeof defaultConfig };
+  cid: string;
+  id: string;
+  messages: Partial<MessageResponse>[];
+  state: typeof defaultState;
+  type: string;
+};
+
+type GeneratedChannelIdType = { id?: string; type?: string };
+
 const getChannelDefaults = (
-  { id, type }: { [key: string]: any } = { id: uuidv4(), type: 'messaging' },
-) => ({
+  { id, type }: GeneratedChannelIdType = { id: uuidv4(), type: 'messaging' },
+): GeneratedChannel => ({
   _client: {},
   channel: {
     cid: `${type}:${id}`,
@@ -74,34 +91,45 @@ const getChannelDefaults = (
     updated_at: '2020-04-28T11:20:48.578147Z',
   },
   cid: `${type}:${id}`,
-  id,
+  id: id as string,
   messages: [],
   state: defaultState,
-  type,
+  type: type as string,
 });
 
-export const generateChannel = (customValues: { [key: string]: any }) =>
-  Object.keys(customValues).reduce((accumulated, current) => {
+export const generateChannel = (
+  customValues: Partial<GeneratedChannel> & Record<string, unknown> = {},
+): GeneratedChannel =>
+  Object.keys(customValues).reduce<GeneratedChannel>((accumulated, current) => {
+    const key = current as keyof GeneratedChannel;
     if (current in accumulated) {
-      const key = current as keyof typeof accumulated;
-      accumulated[key] =
+      (accumulated as Record<string, unknown>)[current] =
         typeof accumulated[key] === 'object'
-          ? { ...accumulated[key], ...customValues[key] }
-          : (accumulated[key] = customValues[key]);
+          ? { ...(accumulated[key] as object), ...(customValues[current] as object) }
+          : customValues[current];
       return accumulated;
     }
-    return { ...accumulated, [current]: customValues[current] };
+    return { ...accumulated, [current]: customValues[current] } as GeneratedChannel;
   }, getChannelDefaults());
 
+export type GeneratedChannelResponseCustomValues = {
+  channel?: Partial<ChannelResponse>;
+  id?: string;
+  messages?: Partial<MessageResponse>[];
+  members?: Partial<ChannelMemberResponse>[];
+  read?: Partial<ReadResponse>[];
+  type?: string;
+};
+
 export const generateChannelResponse = (
-  customValues: {
-    channel?: Record<string, any>;
-    id?: string;
-    messages?: Record<string, any>[];
-    members?: Record<string, any>[];
-    read?: Record<string, any>[];
-    type?: string;
-  } = { channel: {}, id: uuidv4(), members: [], messages: [], read: [], type: 'messaging' },
+  customValues: GeneratedChannelResponseCustomValues = {
+    channel: {},
+    id: uuidv4(),
+    members: [],
+    messages: [],
+    read: [],
+    type: 'messaging',
+  },
 ) => {
   const {
     channel = {},

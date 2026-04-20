@@ -5,11 +5,11 @@ import { mockedApiResponse, type MockedApiResponse } from './utils';
 import { generateReaction } from '../generator/reaction';
 
 /**
- * Returns the api response for sendReaction api.
+ * Returns the api response for deleteReaction api.
  *
  * api - /messages/{id}/reaction
  */
-export const sendReactionApi = (
+export const deleteReactionApi = (
   message: MessageResponse,
   reaction: ReactionResponse = generateReaction(),
 ): MockedApiResponse => {
@@ -19,5 +19,5 @@ export const sendReactionApi = (
     reaction,
   };
 
-  return mockedApiResponse(result, 'post');
+  return mockedApiResponse(result, 'delete');
 };
