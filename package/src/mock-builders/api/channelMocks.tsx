@@ -143,8 +143,8 @@ const LATEST_MESSAGE = {
 
 const FORMATTED_MESSAGE: LocalMessage = {
   created_at: new Date('2021-02-12T12:12:35.862282Z'),
+  deleted_at: null,
   id: '',
-  message: {} as unknown as MessageResponse,
   pinned_at: new Date('2021-02-12T12:12:35.862282Z'),
   status: 'received',
   type: 'regular',

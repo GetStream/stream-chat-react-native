@@ -1,7 +1,7 @@
 /* eslint no-underscore-dangle: 0 */
 /* eslint no-param-reassign: 0 */
 
-import { StreamChat, type UserResponse } from 'stream-chat';
+import { StreamChat, type OwnUserResponse, type UserResponse } from 'stream-chat';
 
 const apiKey = 'API_KEY';
 const token = 'dummy_token';
@@ -12,7 +12,8 @@ type MockClientOptions = { disableAppSettings?: boolean };
 // authenticated client without going through the real network handshake.
 type MockableStreamChat = StreamChat & {
   connectionId?: string;
-  _user?: UserResponse;
+  user?: OwnUserResponse;
+  _user?: OwnUserResponse;
   userToken?: string;
   setUser?: (user: UserResponse) => Promise<void>;
   wsPromise?: Promise<unknown>;
@@ -24,9 +25,8 @@ export const setUser = (client: StreamChat, user: UserResponse): Promise<void> =
   new Promise<void>((resolve) => {
     const c = client as MockableStreamChat;
     c.connectionId = 'dumm_connection_id';
-    c.user = user;
-    if (c.user) (c.user as { mutes?: unknown[] }).mutes = [];
-    c._user = { ...user };
+    c.user = { ...user, mutes: [] } as unknown as OwnUserResponse;
+    c._user = { ...c.user };
     c.userID = user.id;
     c.userToken = token;
     resolve();

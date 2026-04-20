@@ -10,12 +10,16 @@ export const generateMessage = (options: GenerateMessageOptions = {}): MessageRe
   const timestamp =
     options.timestamp || new Date(new Date().getTime() - Math.floor(Math.random() * 100000));
 
+  // NOTE: `created_at` / `updated_at` on `MessageResponse` are typed as `string`,
+  // but tests here treat the generated message as if it were a `LocalMessage`
+  // (where those fields are `Date`). Keeping `Date` objects at runtime preserves
+  // behavior of component code that calls e.g. `.toDateString()` on them.
   return fromPartial<MessageResponse>({
     attachments: [],
-    created_at: timestamp,
+    created_at: timestamp as unknown as string,
     html: '<p>regular</p>',
     id: uuidv4(),
-    message_text_updated_at: timestamp,
+    message_text_updated_at: timestamp as unknown as string,
     text: uuidv4(),
     type: 'regular',
     updated_at: timestamp.toString(),

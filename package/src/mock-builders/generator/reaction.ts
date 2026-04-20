@@ -6,7 +6,7 @@ import { generateUser } from './user';
 export const generateReaction = (options: Partial<ReactionResponse> = {}): ReactionResponse => {
   const user = options.user || generateUser();
   return fromPartial<ReactionResponse>({
-    created_at: new Date(),
+    created_at: new Date() as unknown as string,
     type: 'love',
     user,
     user_id: user.id,

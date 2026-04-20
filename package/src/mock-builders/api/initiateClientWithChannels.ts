@@ -25,7 +25,7 @@ const initChannelFromData = async ({
   });
 
   useMockedApis(client, [getOrCreateChannelApi(mockedChannelData)]);
-  const channel = client.channel(mockedChannelData.channel.type, mockedChannelData.channel.id);
+  const channel = client.channel(mockedChannelData.type, mockedChannelData.id);
   await channel.watch();
   jest.spyOn(channel, 'getConfig').mockImplementation(() => mockedChannelData.channel.config);
   // jest

@@ -34,8 +34,8 @@ const defaultConfig = {
     {
       args: '[text]',
       description: 'Post a random gif to the channel',
-      name: 'giphy',
-      set: 'fun_set',
+      name: 'giphy' as const,
+      set: 'fun_set' as const,
     },
   ],
   connect_events: true,
@@ -46,6 +46,7 @@ const defaultConfig = {
   name: 'messaging',
   reactions: true,
   read_events: true,
+  reminders: false,
   replies: true,
   search: true,
   typing_events: true,
@@ -71,31 +72,32 @@ export type GeneratedChannel = {
 
 type GeneratedChannelIdType = { id?: string; type?: string };
 
-const getChannelDefaults = (
-  { id, type }: GeneratedChannelIdType = { id: uuidv4(), type: 'messaging' },
-): GeneratedChannel => ({
-  _client: {},
-  channel: {
-    cid: `${type}:${id}`,
-    config: {
-      ...defaultConfig,
-      name: type,
+const getChannelDefaults = (opts: GeneratedChannelIdType = {}): GeneratedChannel => {
+  const id = opts.id ?? uuidv4();
+  const type = opts.type ?? 'messaging';
+  return {
+    _client: {},
+    channel: {
+      cid: `${type}:${id}`,
+      config: {
+        ...defaultConfig,
+        name: type,
+      },
+      created_at: '2020-04-28T11:20:48.578147Z',
+      created_by: getUserDefaults(),
+      frozen: false,
+      id,
+      own_capabilities: defaultCapabilities,
       type,
+      updated_at: '2020-04-28T11:20:48.578147Z',
     },
-    created_at: '2020-04-28T11:20:48.578147Z',
-    created_by: getUserDefaults(),
-    frozen: false,
+    cid: `${type}:${id}`,
     id,
-    own_capabilities: defaultCapabilities,
+    messages: [],
+    state: defaultState,
     type,
-    updated_at: '2020-04-28T11:20:48.578147Z',
-  },
-  cid: `${type}:${id}`,
-  id: id as string,
-  messages: [],
-  state: defaultState,
-  type: type as string,
-});
+  };
+};
 
 export const generateChannel = (
   customValues: Partial<GeneratedChannel> & Record<string, unknown> = {},

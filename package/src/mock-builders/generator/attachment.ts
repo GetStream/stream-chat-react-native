@@ -21,7 +21,6 @@ export const generateVideoAttachment = (a?: Partial<Attachment>): Attachment => 
 });
 
 export const generateImageAttachment = (a?: Partial<Attachment>): Attachment => ({
-  id: uuidv4(),
   image_url: uuidv4(),
   title: uuidv4(),
   type: 'image',
@@ -45,7 +44,6 @@ export const generateImageUploadPreview = (a?: Partial<UploadPreview>): UploadPr
 
 export const generateAudioAttachment = (a?: Partial<Attachment>): Attachment => ({
   asset_url: 'http://www.jackblack.com/tribute.mp3',
-  description: uuidv4(),
   image_url,
   text: uuidv4(),
   title: uuidv4(),
@@ -55,7 +53,6 @@ export const generateAudioAttachment = (a?: Partial<Attachment>): Attachment => 
 
 export const generateFileAttachment = (a?: Partial<Attachment>): Attachment => ({
   asset_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-  description: uuidv4(),
   file_size: 1337,
   mime_type: uuidv4(),
   text: uuidv4(),

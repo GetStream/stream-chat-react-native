@@ -7,7 +7,7 @@ export default (
   payload: Partial<Event> = {},
   user: Partial<UserResponse> = {},
 ) => {
-  const newDate = new Date();
+  const newDate = new Date() as unknown as string;
   client.dispatchEvent(
     fromPartial<Event>({
       channel,

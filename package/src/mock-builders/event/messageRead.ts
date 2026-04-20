@@ -7,7 +7,7 @@ export default (
   channel: Partial<ChannelResponse> = {},
   payload: Partial<Event> = {},
 ): Event => {
-  const newDate = new Date();
+  const newDate = new Date() as unknown as string;
   const event = fromPartial<Event>({
     channel,
     cid: channel.cid,
