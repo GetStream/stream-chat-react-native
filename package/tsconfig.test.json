@@ -3,6 +3,9 @@
   "compilerOptions": {
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    // TODO: flip to `true` after annotating the ~630 remaining implicit-any
+    // errors in test files (mostly destructured-parameter and `let`-variable
+    // annotations). See follow-up issue.
     "noImplicitAny": false
   },
   "include": ["./src/**/*"],
