@@ -5,8 +5,7 @@ import type { ReactTestInstance } from 'react-test-renderer';
 
 import { render, waitFor, within } from '@testing-library/react-native';
 
-// @ts-ignore
-import { ASTNode, SingleASTNode } from 'simple-markdown';
+import type { ASTNode, SingleASTNode } from 'simple-markdown';
 
 import { ListOutput, ListOutputProps } from './renderText';
 
@@ -26,8 +25,7 @@ describe('list', () => {
     type: 'text',
   });
 
-  // @ts-ignore
-  const mockOutput = (node: ASTNode) => <Text>{node}</Text>;
+  const mockOutput = (node: ASTNode) => <Text>{JSON.stringify(node)}</Text>;
   const MockText = ({ node, output, state }: ListOutputProps) => (
     <>
       <ListOutput node={node} output={output} state={state} styles={{}} />
