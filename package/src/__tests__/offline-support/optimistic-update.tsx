@@ -3,9 +3,15 @@ import { View } from 'react-native';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
+import type {
+  ChannelAPIResponse,
+  ChannelMemberResponse,
+  MessageResponse,
+  ReactionResponse,
+} from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Channel } from '../../components/Channel/Channel';
+import { Channel as ChannelRaw } from '../../components/Channel/Channel';
 import { Chat } from '../../components/Chat/Chat';
 import { MessageInputContext, MessagesContext } from '../../contexts';
 import { deleteMessageApi } from '../../mock-builders/api/deleteMessage';
@@ -28,6 +34,13 @@ import { SqliteClient } from '../../store/SqliteClient';
 import { BetterSqlite } from '../../test-utils/BetterSqlite';
 import { MessageStatusTypes } from '../../utils/utils';
 
+// `initialValue` is not part of Channel's props today, but these legacy tests pass it to
+// mimic a pre-populated input. Keep the runtime behavior unchanged and widen the prop type
+// at the component boundary so TS stops complaining.
+const Channel = ChannelRaw as unknown as React.ComponentType<
+  React.ComponentProps<typeof ChannelRaw> & { initialValue?: string }
+>;
+
 test('Workaround to allow exporting tests', () => expect(true).toBe(true));
 
 export const OptimisticUpdates = () => {
@@ -37,10 +50,14 @@ export const OptimisticUpdates = () => {
     const getRandomInt = (lower, upper) => Math.floor(lower + Math.random() * (upper - lower + 1));
     const createChannel = () => {
       const allUsers = Array(20).fill(1).map(generateUser);
-      const allMessages = [];
-      const allMembers = [];
-      const allReactions = [];
-      const allReads = [];
+      const allMessages: MessageResponse[] = [];
+      const allMembers: ChannelMemberResponse[] = [];
+      const allReactions: ReactionResponse[] = [];
+      const allReads: Array<{
+        last_read: Date;
+        unread_messages: number;
+        user: ReturnType<typeof generateUser> | undefined;
+      }> = [];
       const id = uuidv4();
       const cid = `messaging:${id}`;
       const begin = getRandomInt(0, allUsers.length - 2); // begin shouldn't be the end of users.length
@@ -48,7 +65,6 @@ export const OptimisticUpdates = () => {
       const usersForMembers = allUsers.slice(begin, end);
       const members = usersForMembers.map((user) =>
         generateMember({
-          cid,
           user,
         }),
       );
@@ -74,7 +90,7 @@ export const OptimisticUpdates = () => {
             id,
             latest_reactions: reactions,
             user,
-            userId: user.id,
+            user_id: user.id,
           });
         });
 
@@ -88,12 +104,17 @@ export const OptimisticUpdates = () => {
       allMembers.push(...members);
       allReads.push(...reads);
 
+      // `cid` is not part of `GeneratedChannelResponseCustomValues`, but tests rely on reading it
+      // back as a top-level field on the generated channel response — keep the runtime shape and
+      // widen the input type.
       return generateChannelResponse({
         cid,
         id,
         members,
         messages,
-      });
+      } as unknown as Parameters<typeof generateChannelResponse>[0]) as ReturnType<
+        typeof generateChannelResponse
+      > & { cid: string; id: string };
     };
 
     beforeEach(async () => {
@@ -112,7 +133,7 @@ export const OptimisticUpdates = () => {
       await SqliteClient.initializeDatabase();
       await BetterSqlite.openDB();
       await upsertChannels({
-        channels: [channelResponse],
+        channels: [channelResponse] as unknown as ChannelAPIResponse[],
         isLatestMessagesSet: true,
       });
       chatClient.wsConnection = { isHealthy: true, onlineStatusChanged: jest.fn() };
@@ -175,7 +196,7 @@ export const OptimisticUpdates = () => {
         await waitFor(async () => {
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
-          const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
+          const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('delete-message');
           expect(pendingTaskPayload[0]).toBe(message.id);
         });
@@ -235,7 +256,7 @@ export const OptimisticUpdates = () => {
         await waitFor(async () => {
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
-          const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
+          const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('send-reaction');
           expect(pendingTaskPayload[0]).toBe(targetMessage.id);
         });
@@ -301,7 +322,7 @@ export const OptimisticUpdates = () => {
         await waitFor(async () => {
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
-          const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
+          const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('send-message');
           expect(pendingTaskPayload[0].id).toEqual(newMessage.id);
           expect(pendingTaskPayload[0].text).toEqual(newMessage.text);
@@ -365,7 +386,7 @@ export const OptimisticUpdates = () => {
         await waitFor(async () => {
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const pendingTaskType = pendingTasksRows?.[0]?.type;
-          const pendingTaskPayload = JSON.parse(pendingTasksRows?.[0]?.payload || '{}');
+          const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('delete-reaction');
           expect(pendingTaskPayload[0]).toBe(targetMessage.id);
         });
@@ -408,22 +429,24 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
               channel={channel}
-              doUpdateMessageRequest={async (_channelId, localMessage, options) => {
-                await chatClient.offlineDb.addPendingTask({
-                  channelId: channel.id,
-                  channelType: channel.type,
-                  messageId: message.id,
-                  payload: [localMessage, undefined, options],
-                  type: 'update-message',
-                });
-                return {
-                  message: {
-                    ...localMessage,
-                    message_text_updated_at: new Date(),
-                    updated_at: new Date(),
-                  },
-                };
-              }}
+              doUpdateMessageRequest={
+                (async (_channelId, localMessage, options) => {
+                  await chatClient.offlineDb.addPendingTask({
+                    channelId: channel.id,
+                    channelType: channel.type,
+                    messageId: message.id,
+                    payload: [localMessage, undefined, options],
+                    type: 'update-message',
+                  });
+                  return {
+                    message: {
+                      ...localMessage,
+                      message_text_updated_at: new Date(),
+                      updated_at: new Date(),
+                    },
+                  };
+                }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
+              }
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
@@ -456,8 +479,8 @@ export const OptimisticUpdates = () => {
           expect(updatedMessage.message_text_updated_at).toBeTruthy();
           expect(pendingTasksRows).toHaveLength(1);
           expect(pendingTasksRows[0].type).toBe('update-message');
-          expect(dbMessage.text).toBe(editedText);
-          expect(dbMessage.messageTextUpdatedAt).toBeTruthy();
+          expect(dbMessage!.text).toBe(editedText);
+          expect(dbMessage!.messageTextUpdatedAt).toBeTruthy();
         });
       });
 
@@ -506,7 +529,7 @@ export const OptimisticUpdates = () => {
 
           expect(updatedMessage.text).toBe(editedText);
           expect(pendingTasksRows).toHaveLength(0);
-          expect(dbMessage.text).toBe(editedText);
+          expect(dbMessage!.text).toBe(editedText);
         });
       });
 
@@ -518,16 +541,18 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
               channel={channel}
-              doUpdateMessageRequest={() => {
-                const optimisticMessage = channel.state.findMessage(message.id);
-                optimisticStateSpy(optimisticMessage);
+              doUpdateMessageRequest={
+                (() => {
+                  const optimisticMessage = channel.state.findMessage(message.id);
+                  optimisticStateSpy(optimisticMessage);
 
-                return {
-                  message: {
-                    ...optimisticMessage,
-                  },
-                };
-              }}
+                  return {
+                    message: {
+                      ...optimisticMessage,
+                    },
+                  };
+                }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
+              }
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
@@ -611,12 +636,12 @@ export const OptimisticUpdates = () => {
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const dbMessages = await BetterSqlite.selectFromTable('messages');
           const dbMessage = dbMessages.find((row) => row.id === message.id);
-          const storedAttachments = JSON.parse(dbMessage.attachments);
+          const storedAttachments = JSON.parse(dbMessage!.attachments as string);
 
           expect(updatedMessage.text).toBe(editedText);
           expect(updatedMessage.attachments[0].asset_url).toBe(localUri);
           expect(pendingTasksRows).toHaveLength(0);
-          expect(dbMessage.text).toBe(editedText);
+          expect(dbMessage!.text).toBe(editedText);
           expect(storedAttachments[0].asset_url).toBe(localUri);
         });
       });
@@ -726,13 +751,13 @@ export const OptimisticUpdates = () => {
           status: MessageStatusTypes.SENDING,
           text: 'offline resend',
           user: chatClient.user,
-          userId: chatClient.userID,
+          user_id: chatClient.userID,
         });
         const serverMessage = generateMessage({
           id: localMessage.id,
           text: localMessage.text,
           user: chatClient.user,
-          userId: chatClient.userID,
+          user_id: chatClient.userID,
         });
 
         jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue({
@@ -793,7 +818,7 @@ export const OptimisticUpdates = () => {
           status: MessageStatusTypes.SENDING,
           text: 'offline resend unresolved',
           user: chatClient.user,
-          userId: chatClient.userID,
+          user_id: chatClient.userID,
         });
 
         jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue({

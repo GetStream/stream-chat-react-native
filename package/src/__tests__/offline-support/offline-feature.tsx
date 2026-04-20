@@ -5,6 +5,13 @@ import { Text, View } from 'react-native';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
+import type {
+  ChannelMemberResponse,
+  ChannelSort,
+  Event,
+  MessageResponse,
+  ReactionResponse,
+} from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ChannelList } from '../../components/ChannelList/ChannelList';
@@ -88,7 +95,7 @@ export const Generic = () => {
       await waitFor(() => expect(screen.getByTestId('test-child')).toBeTruthy());
 
       await waitFor(async () => {
-        const tablesInDb = await BetterSqlite.getTables();
+        const tablesInDb = (await BetterSqlite.getTables()) as Array<{ name: string }>;
         const tableNamesInDB = tablesInDb.map((table) => table.name);
         const tablesNamesInSchema = Object.keys(tables);
 
@@ -109,7 +116,7 @@ export const Generic = () => {
     let allReactions;
     let allReads;
     const getRandomInt = (lower, upper) => Math.floor(lower + Math.random() * (upper - lower + 1));
-    const createChannel = (messagesOverride) => {
+    const createChannel = (messagesOverride?: Partial<MessageResponse>[]) => {
       const id = uuidv4();
       const cid = `messaging:${id}`;
       // always guarantee at least 2 members for ease of use; cases that need to test specific behaviour
@@ -117,13 +124,19 @@ export const Generic = () => {
       const begin = getRandomInt(0, allUsers.length - 3); // begin shouldn't be the end of users.length
       const end = getRandomInt(begin + 2, allUsers.length - 1);
       const usersForMembers = allUsers.slice(begin, end);
-      const members = usersForMembers.map((user) =>
-        generateMember({
-          cid,
-          user,
-        }),
+      const members = usersForMembers.map(
+        (user) =>
+          // `cid` is not part of `ChannelMemberResponse`, but tests rely on reading it back from
+          // the generated member objects — keep the runtime shape and widen the type.
+          ({
+            ...generateMember({ user }),
+            cid,
+          }) as unknown as ChannelMemberResponse & { cid: string },
       );
-      members.push(generateMember({ cid, user: chatClient.user }));
+      members.push({
+        ...generateMember({ user: chatClient.user }),
+        cid,
+      } as unknown as ChannelMemberResponse & { cid: string });
 
       const messages =
         messagesOverride ||
@@ -149,7 +162,7 @@ export const Generic = () => {
               id,
               latest_reactions: reactions,
               user,
-              userId: user.id,
+              user_id: user.id,
             });
           });
 
@@ -164,13 +177,18 @@ export const Generic = () => {
       allMembers.push(...members);
       allReads.push(...reads);
 
+      // `cid` is not part of `GeneratedChannelResponseCustomValues`, but tests rely on reading it
+      // back as a top-level field on the generated channel response — keep the runtime shape and
+      // widen the input type.
       return generateChannelResponse({
         cid,
         id,
         members,
         messages,
         read: reads,
-      });
+      } as unknown as Parameters<typeof generateChannelResponse>[0]) as ReturnType<
+        typeof generateChannelResponse
+      > & { cid: string };
     };
 
     beforeEach(async () => {
@@ -202,7 +220,7 @@ export const Generic = () => {
       foo: 'bar',
       type: 'messaging',
     };
-    const sort = { last_updated: 1 };
+    const sort: ChannelSort = { last_updated: 1 };
 
     const renderComponent = () =>
       render(
@@ -215,12 +233,14 @@ export const Generic = () => {
 
     const expectCIDsOnUIToBeInDB = async (queryAllByLabelText) => {
       const channelIdsOnUI = queryAllByLabelText('list-item').map(
-        (node) => node._fiber.pendingProps.testID,
+        (node) =>
+          (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber.pendingProps
+            .testID,
       );
 
       await waitFor(async () => {
         const channelQueriesRows = await BetterSqlite.selectFromTable('channelQueries');
-        const cidsInDB = JSON.parse(channelQueriesRows[0].cids);
+        const cidsInDB = JSON.parse(channelQueriesRows[0].cids as string);
         const filterSortQueryInDB = channelQueriesRows[0].id;
         const actualFilterSortQueryInDB = convertFilterSortToQuery({ filters, sort });
 
@@ -237,7 +257,9 @@ export const Generic = () => {
 
     const expectAllChannelsWithStateToBeInDB = async (queryAllByLabelText) => {
       const channelIdsOnUI = queryAllByLabelText('list-item').map(
-        (node) => node._fiber.pendingProps.testID,
+        (node) =>
+          (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber.pendingProps
+            .testID,
       );
 
       await waitFor(async () => {
@@ -289,7 +311,7 @@ export const Generic = () => {
 
       await waitFor(() => expect(screen.getByTestId('test-child')).toBeTruthy());
 
-      const tablesInDb = await BetterSqlite.getTables();
+      const tablesInDb = (await BetterSqlite.getTables()) as Array<{ name: string }>;
       const tableNamesInDB = tablesInDb.map((table) => table.name);
       const tablesNamesInSchema = Object.keys(tables);
 
@@ -520,7 +542,11 @@ export const Generic = () => {
       await waitFor(() => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(newChannel.channel.cid)).toBeTruthy();
       });
 
@@ -571,7 +597,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
         await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -598,7 +628,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
         await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -625,7 +659,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
         await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -656,7 +694,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
         await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -678,7 +720,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
         await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -713,7 +759,11 @@ export const Generic = () => {
       await waitFor(() => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(newChannel.channel.cid)).toBeTruthy();
       });
 
@@ -744,7 +794,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
         expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -786,7 +840,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
         expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -827,7 +885,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
         expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -862,7 +924,11 @@ export const Generic = () => {
       await waitFor(async () => {
         const channelIdsOnUI = screen
           .queryAllByLabelText('list-item')
-          .map((node) => node._fiber.pendingProps.testID);
+          .map(
+            (node) =>
+              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                .pendingProps.testID,
+          );
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
         expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
@@ -955,7 +1021,7 @@ export const Generic = () => {
         ...targetMessage,
         latest_reactions: [...targetMessage.latest_reactions],
       };
-      const newLatestReactions = [];
+      const newLatestReactions: ReactionResponse[] = [];
 
       newReactions.forEach((newReaction) => {
         newLatestReactions.push(newReaction);
@@ -980,7 +1046,7 @@ export const Generic = () => {
             !messageWithNewReactionBase.latest_reactions.some(
               (initialReaction) =>
                 initialReaction.type === newReaction.type &&
-                initialReaction.user.id === newReaction.user.id,
+                initialReaction.user!.id === newReaction.user!.id,
             ),
         ).length;
 
@@ -995,7 +1061,7 @@ export const Generic = () => {
           expect(
             matchingReactionsRows.filter(
               (reaction) =>
-                reaction.type === newReaction.type && reaction.userId === newReaction.user.id,
+                reaction.type === newReaction.type && reaction.userId === newReaction.user!.id,
             ).length,
           ).toBe(1);
         });
@@ -1036,7 +1102,7 @@ export const Generic = () => {
         ...targetMessage,
         latest_reactions: [...targetMessage.latest_reactions],
       };
-      const newLatestReactions = [];
+      const newLatestReactions: ReactionResponse[] = [];
 
       newReactions.forEach((newReaction) => {
         newLatestReactions.push(newReaction);
@@ -1188,7 +1254,7 @@ export const Generic = () => {
         ...targetMessage,
         latest_reactions: [...targetMessage.latest_reactions],
       };
-      const newLatestReactions = [];
+      const newLatestReactions: ReactionResponse[] = [];
 
       newReactions.forEach((newReaction) => {
         newLatestReactions.push(newReaction);
@@ -1218,7 +1284,7 @@ export const Generic = () => {
           expect(
             matchingReactionsRows.filter(
               (reaction) =>
-                reaction.type === newReaction.type && reaction.userId === newReaction.user.id,
+                reaction.type === newReaction.type && reaction.userId === newReaction.user!.id,
             ).length,
           ).toBe(1);
         });
@@ -1306,7 +1372,7 @@ export const Generic = () => {
           (m) => m.id === messageWithNewReaction.id,
         )[0];
 
-        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups as string);
 
         expect(reactionGroups[newReaction.type]?.count).toBe(999);
         expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
@@ -1363,7 +1429,7 @@ export const Generic = () => {
           (m) => m.id === messageWithNewReaction.id,
         )[0];
 
-        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups as string);
 
         expect(reactionGroups[newReaction.type]?.count).toBe(999);
         expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
@@ -1420,7 +1486,7 @@ export const Generic = () => {
           (m) => m.id === messageWithNewReaction.id,
         )[0];
 
-        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups);
+        const reactionGroups = JSON.parse(messageWithReactionRow.reactionGroups as string);
 
         expect(reactionGroups[newReaction.type]?.count).toBe(999);
         expect(reactionGroups[newReaction.type]?.sum_scores).toBe(999);
@@ -1532,7 +1598,7 @@ export const Generic = () => {
 
         expect(matchingChannelsRows.length).toBe(1);
 
-        const extraData = JSON.parse(matchingChannelsRows[0].extraData);
+        const extraData = JSON.parse(matchingChannelsRows[0].extraData as string);
 
         expect(extraData.name).toBe(targetChannel.channel.name);
       });
@@ -1551,11 +1617,14 @@ export const Generic = () => {
       const readTimestamp = new Date().toISOString();
 
       act(() => {
+        // `last_read` is not on `Event` (the real field is `last_read_at`), but the test fixture
+        // has historically passed `last_read`. Preserve the runtime payload shape exactly and
+        // widen the type at the call site.
         dispatchMessageReadEvent(chatClient, targetMember.user, targetChannel.channel, {
           first_unread_message_id: '123',
           last_read: readTimestamp,
           last_read_message_id: '321',
-        });
+        } as unknown as Partial<Event>);
       });
 
       await waitFor(async () => {
@@ -1571,7 +1640,8 @@ export const Generic = () => {
         // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
         expect(
           Math.abs(
-            new Date(matchingReadRows[0].lastRead).getTime() - new Date(readTimestamp).getTime(),
+            new Date(matchingReadRows[0].lastRead as string).getTime() -
+              new Date(readTimestamp).getTime(),
           ),
         ).toBeLessThanOrEqual(1);
       });
@@ -1596,12 +1666,13 @@ export const Generic = () => {
         dispatchNotificationMarkUnread(
           chatClient,
           targetChannel.channel,
+          // `last_read` is not on `Event`; see note above.
           {
             first_unread_message_id: '123',
             last_read: readTimestamp,
             last_read_message_id: '321',
             unread_messages: 5,
-          },
+          } as unknown as Partial<Event>,
           targetMember.user,
         );
       });
@@ -1619,7 +1690,8 @@ export const Generic = () => {
         // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
         expect(
           Math.abs(
-            new Date(matchingReadRows[0].lastRead).getTime() - new Date(readTimestamp).getTime(),
+            new Date(matchingReadRows[0].lastRead as string).getTime() -
+              new Date(readTimestamp).getTime(),
           ),
         ).toBeLessThanOrEqual(1);
       });
