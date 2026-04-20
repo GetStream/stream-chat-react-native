@@ -311,25 +311,17 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
-    const channelUnreadState = {
-      last_read: new Date(),
-      unread_messages: 0,
-    };
-
     channel.state = {
       ...channelInitialState,
       latestMessages: [],
       messages,
     } as unknown as typeof channel.state;
 
-    const messageListProps = { channelUnreadState } as unknown as React.ComponentProps<
-      typeof MessageList
-    >;
     const { queryByLabelText } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <MessageList {...messageListProps} />
+            <MessageList />
           </Channel>
         </Chat>
       </OverlayProvider>,

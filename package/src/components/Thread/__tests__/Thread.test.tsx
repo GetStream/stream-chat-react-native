@@ -158,7 +158,7 @@ describe('Thread', () => {
             <ImageGalleryProvider
               value={{} as unknown as React.ComponentProps<typeof ImageGalleryProvider>['value']}
             >
-              <Channel channel={channel} client={chatClient} thread={thread} threadList>
+              <Channel channel={channel} thread={thread} threadList>
                 <ChannelContext.Consumer>
                   {(c) => {
                     setLastRead = c.setLastRead;

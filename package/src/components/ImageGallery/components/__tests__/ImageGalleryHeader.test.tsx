@@ -50,12 +50,7 @@ it('doesnt fail if fromNow is not available on first render', async () => {
     });
     const { getAllByText } = render(
       <ImageGalleryComponentWrapper>
-        <ImageGalleryHeader
-          // @ts-ignore
-          opacity={sharedValueOpacity}
-          // @ts-ignore
-          visible={sharedValueVisible}
-        />
+        <ImageGalleryHeader opacity={sharedValueOpacity!} visible={sharedValueVisible!} />
       </ImageGalleryComponentWrapper>,
     );
     await waitFor(() => {
