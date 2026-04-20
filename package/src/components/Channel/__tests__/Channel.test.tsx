@@ -219,9 +219,7 @@ describe('Channel', () => {
     await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });
 
-  const queryChannelWithNewMessages = (
-    newMessages: ReturnType<typeof generateMessage>[],
-  ) =>
+  const queryChannelWithNewMessages = (newMessages: ReturnType<typeof generateMessage>[]) =>
     // generate new channel mock from existing channel with new messages added
     getOrCreateChannelApi(
       generateChannelResponse({
@@ -229,9 +227,7 @@ describe('Channel', () => {
           config: channel.getConfig(),
           id: channel.id,
           type: channel.type,
-        } as unknown as NonNullable<
-          Parameters<typeof generateChannelResponse>[0]
-        >['channel'],
+        } as unknown as NonNullable<Parameters<typeof generateChannelResponse>[0]>['channel'],
         messages: newMessages,
       }),
     );
@@ -387,9 +383,7 @@ describe('Channel initial load useEffect', () => {
   const renderComponent = (props: RenderComponentProps = {}) =>
     render(
       <Chat client={chatClient}>
-        <Channel {...(props as React.ComponentProps<typeof Channel>)}>
-          {props.children}
-        </Channel>
+        <Channel {...(props as React.ComponentProps<typeof Channel>)}>{props.children}</Channel>
       </Chat>,
     );
 

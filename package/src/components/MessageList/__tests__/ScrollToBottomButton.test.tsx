@@ -69,9 +69,7 @@ describe('ScrollToBottomButton', () => {
     const translators = await i18nInstance.getTranslators();
     const { getByTestId, getByText } = render(
       <ThemeProvider>
-        <TranslationProvider
-          value={{ ...translators, t } as unknown as TranslationContextValue}
-        >
+        <TranslationProvider value={{ ...translators, t } as unknown as TranslationContextValue}>
           <ScrollToBottomButton
             {...({ t } as unknown as React.ComponentProps<typeof ScrollToBottomButton>)}
             onPress={() => null}

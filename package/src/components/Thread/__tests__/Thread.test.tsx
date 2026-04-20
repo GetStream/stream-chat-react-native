@@ -156,9 +156,7 @@ describe('Thread', () => {
             }
           >
             <ImageGalleryProvider
-              value={
-                {} as unknown as React.ComponentProps<typeof ImageGalleryProvider>['value']
-              }
+              value={{} as unknown as React.ComponentProps<typeof ImageGalleryProvider>['value']}
             >
               <Channel
                 channel={channel}

@@ -66,7 +66,9 @@ describe('ChannelPreviewView', () => {
     render(
       getComponent({
         onSelect,
-        ...({ watchers: {} } as unknown as Partial<React.ComponentProps<typeof ChannelPreviewView>>),
+        ...({ watchers: {} } as unknown as Partial<
+          React.ComponentProps<typeof ChannelPreviewView>
+        >),
       }),
     );
 

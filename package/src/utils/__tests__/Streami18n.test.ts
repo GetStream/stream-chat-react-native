@@ -102,12 +102,17 @@ describe('Streami18n instance - with built-in language', () => {
       dayjsLocaleConfigForLanguage: customDayjsLocaleConfig,
       language: 'nl',
     };
-    const streami18n = new Streami18n(streami18nOptions as unknown as ConstructorParameters<typeof Streami18n>[0]);
+    const streami18n = new Streami18n(
+      streami18nOptions as unknown as ConstructorParameters<typeof Streami18n>[0],
+    );
 
     it('should provide dayjs with given custom locale config', async () => {
       const { tDateTimeParser } = await streami18n.getTranslators();
       expect(tDateTimeParser() instanceof Dayjs).toBe(true);
-      const localeConfig = (tDateTimeParser() as Dayjs.Dayjs).localeData() as unknown as Record<string, unknown>;
+      const localeConfig = (tDateTimeParser() as Dayjs.Dayjs).localeData() as unknown as Record<
+        string,
+        unknown
+      >;
       for (const key in streami18nOptions.dayjsLocaleConfigForLanguage) {
         if (typeof localeConfig[key] === 'function') {
           expect((localeConfig[key] as () => unknown)()).toStrictEqual(
@@ -268,7 +273,10 @@ describe('Streami18n timezone', () => {
       it('allows to override the default timestampFormatter', async () => {
         const i18n = new Streami18n({
           formatters: { timestampFormatter: () => () => 'custom' },
-          translationsForLanguage: { abc: '{{ value | timestampFormatter }}' } as unknown as Record<string, string>,
+          translationsForLanguage: { abc: '{{ value | timestampFormatter }}' } as unknown as Record<
+            string,
+            string
+          >,
         });
         await (i18n as unknown as { init: () => Promise<void> }).init();
         expect(i18n.t('abc')).toBe('custom');
@@ -276,7 +284,10 @@ describe('Streami18n timezone', () => {
       it('allows to add new custom formatter', async () => {
         const i18n = new Streami18n({
           formatters: { customFormatter: () => () => 'custom' },
-          translationsForLanguage: { abc: '{{ value | customFormatter }}' } as unknown as Record<string, string>,
+          translationsForLanguage: { abc: '{{ value | customFormatter }}' } as unknown as Record<
+            string,
+            string
+          >,
         });
         await (i18n as unknown as { init: () => Promise<void> }).init();
         expect(i18n.t('abc')).toBe('custom');

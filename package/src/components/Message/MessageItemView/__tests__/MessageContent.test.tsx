@@ -264,10 +264,7 @@ describe('MessageContent', () => {
             }}
           >
             <Channel channel={channel}>
-              <Message
-                groupStyles={['bottom']}
-                message={toLocalMessage(rightAlignedMessage)}
-              />
+              <Message groupStyles={['bottom']} message={toLocalMessage(rightAlignedMessage)} />
             </Channel>
           </WithComponents>
         </Chat>

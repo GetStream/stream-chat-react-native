@@ -227,9 +227,7 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={
-              staleFilter as unknown as React.ComponentProps<typeof ChannelList>['filters']
-            }
+            filters={staleFilter as unknown as React.ComponentProps<typeof ChannelList>['filters']}
           />
         </WithComponents>
       </Chat>,
@@ -252,9 +250,7 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={
-              freshFilter as unknown as React.ComponentProps<typeof ChannelList>['filters']
-            }
+            filters={freshFilter as unknown as React.ComponentProps<typeof ChannelList>['filters']}
           />
         </WithComponents>
       </Chat>,

@@ -163,7 +163,8 @@ describe('TranslationContext', () => {
     const { t, tDateTimeParser } = await i18nInstance.getTranslators();
 
     i18nInstance.t = (() => 't') as unknown as typeof i18nInstance.t;
-    i18nInstance.tDateTimeParser = (() => 'tDateTimeParser') as unknown as typeof i18nInstance.tDateTimeParser;
+    i18nInstance.tDateTimeParser = (() =>
+      'tDateTimeParser') as unknown as typeof i18nInstance.tDateTimeParser;
 
     render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
@@ -188,7 +189,8 @@ describe('TranslationContext', () => {
     const i18nInstance = new Streami18n();
 
     i18nInstance.t = (() => 't') as unknown as typeof i18nInstance.t;
-    i18nInstance.tDateTimeParser = (() => 'tDateTimeParser') as unknown as typeof i18nInstance.tDateTimeParser;
+    i18nInstance.tDateTimeParser = (() =>
+      'tDateTimeParser') as unknown as typeof i18nInstance.tDateTimeParser;
 
     const { rerender } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>

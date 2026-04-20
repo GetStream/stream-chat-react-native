@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+// @ts-ignore -- no type definitions available for `react-native-markdown-package`
 import Markdown from 'react-native-markdown-package';
 import Animated, { clamp, scrollTo, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 
