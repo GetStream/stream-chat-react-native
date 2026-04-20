@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 
@@ -16,9 +17,12 @@ import { Chat } from '../../../Chat/Chat';
 import { ReactionListTop } from '../ReactionList/ReactionListTop';
 
 describe('ReactionListTop', () => {
-  let channel;
-  let chatClient;
-  let renderMessage;
+  let channel: ChannelType;
+  let chatClient: StreamChat;
+  let renderMessage: (
+    options: React.ComponentProps<typeof ReactionListTop>,
+    channelProps?: Partial<React.ComponentProps<typeof Channel>>,
+  ) => ReturnType<typeof render>;
 
   const user = generateUser({ id: 'id', name: 'name' });
   const messages = [generateMessage({ user })];

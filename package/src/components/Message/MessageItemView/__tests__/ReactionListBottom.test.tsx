@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 
@@ -17,9 +18,13 @@ import { Chat } from '../../../Chat/Chat';
 import { Message } from '../../Message';
 
 describe('ReactionListBottom', () => {
-  let channel;
-  let chatClient;
-  let renderMessage;
+  let channel: ChannelType;
+  let chatClient: StreamChat;
+  let renderMessage: (
+    options: Omit<React.ComponentProps<typeof Message>, 'groupStyles'> &
+      Partial<Pick<React.ComponentProps<typeof Message>, 'groupStyles'>>,
+    channelProps?: Partial<React.ComponentProps<typeof Channel>>,
+  ) => ReturnType<typeof render>;
 
   const user = generateUser({ id: 'id', name: 'name' });
   const messages = [generateMessage({ user })];
@@ -159,7 +164,7 @@ describe('ReactionListBottom', () => {
       {
         handleReaction: handleReactionMock,
         message,
-      },
+      } as unknown as React.ComponentProps<typeof Message>,
       { reactionListPosition: 'bottom', reactionListType: 'segmented' },
     );
 

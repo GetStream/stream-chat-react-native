@@ -1,19 +1,29 @@
 import React from 'react';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts';
 
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
+import type { ChannelProps } from '../../Channel/Channel';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { InputButtons } from '../components/InputButtons/index';
 
-const renderComponent = ({ channelProps, client, props }) => {
+const renderComponent = ({
+  channelProps,
+  client,
+  props,
+}: {
+  channelProps: Partial<ChannelProps>;
+  client: StreamChat;
+  props: React.ComponentProps<typeof InputButtons>;
+}) => {
   return render(
     <OverlayProvider>
       <Chat client={client}>
-        <Channel {...channelProps}>
+        <Channel {...(channelProps as ChannelProps)}>
           <InputButtons {...props} />
         </Channel>
       </Chat>
@@ -22,8 +32,8 @@ const renderComponent = ({ channelProps, client, props }) => {
 };
 
 describe('InputButtons', () => {
-  let client;
-  let channel;
+  let client: StreamChat;
+  let channel: ChannelType;
 
   beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();

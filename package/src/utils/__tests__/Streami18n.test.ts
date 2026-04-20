@@ -50,7 +50,7 @@ describe('Streami18n instance - with built-in language', () => {
     it('should provide dutch translator', async () => {
       const { t: _t } = await streami18n.getTranslators();
       for (const key in nlTranslations) {
-        const value = nlTranslations[key];
+        const value = nlTranslations[key as keyof typeof nlTranslations];
         const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
         const hasTemplateInValue =
           typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
@@ -58,7 +58,7 @@ describe('Streami18n instance - with built-in language', () => {
           continue;
         }
 
-        expect(_t(key)).toBe(nlTranslations[key]);
+        expect(_t(key)).toBe(nlTranslations[key as keyof typeof nlTranslations]);
       }
     });
     it('should provide dayjs with `nl` locale', async () => {
@@ -78,7 +78,7 @@ describe('Streami18n instance - with built-in language', () => {
     it('should provide dutch translator', async () => {
       const { t: _t } = await streami18n.getTranslators();
       for (const key in nlTranslations) {
-        const value = nlTranslations[key];
+        const value = nlTranslations[key as keyof typeof nlTranslations];
         const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
         const hasTemplateInValue =
           typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
@@ -86,7 +86,7 @@ describe('Streami18n instance - with built-in language', () => {
           continue;
         }
 
-        expect(_t(key)).toBe(nlTranslations[key]);
+        expect(_t(key)).toBe(nlTranslations[key as keyof typeof nlTranslations]);
       }
     });
 
@@ -219,7 +219,7 @@ describe('setLanguage - switch to french', () => {
     const { t: _t } = await streami18n.getTranslators();
     for (const key in frTranslations) {
       // Skip keys with template strings or duration keys
-      const value = frTranslations[key];
+      const value = frTranslations[key as keyof typeof frTranslations];
       const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
       const hasTemplateInValue =
         typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
@@ -227,7 +227,7 @@ describe('setLanguage - switch to french', () => {
         continue;
       }
 
-      expect(_t(key)).toBe(frTranslations[key]);
+      expect(_t(key)).toBe(frTranslations[key as keyof typeof frTranslations]);
     }
   });
 });

@@ -3,6 +3,7 @@ import React from 'react';
 import { Alert } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -12,6 +13,7 @@ import { initiateClientWithChannels } from '../../../mock-builders/api/initiateC
 import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
 import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
+import type { ChannelProps } from '../../Channel/Channel';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageComposer } from '../MessageComposer';
@@ -31,11 +33,19 @@ jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementati
   } as unknown as ReturnType<typeof AttachmentPickerUtils.useAttachmentPickerContext>;
 });
 
-const renderComponent = ({ channelProps, client, props }) => {
+const renderComponent = ({
+  channelProps,
+  client,
+  props,
+}: {
+  channelProps: Partial<ChannelProps>;
+  client: StreamChat;
+  props: React.ComponentProps<typeof MessageComposer>;
+}) => {
   return render(
     <OverlayProvider>
       <Chat client={client}>
-        <Channel {...channelProps}>
+        <Channel {...(channelProps as ChannelProps)}>
           <MessageComposer {...props} />
         </Channel>
       </Chat>
@@ -44,8 +54,8 @@ const renderComponent = ({ channelProps, client, props }) => {
 };
 
 describe('MessageComposer', () => {
-  let client;
-  let channel;
+  let client: StreamChat;
+  let channel: ChannelType;
 
   beforeEach(async () => {
     jest.clearAllMocks();

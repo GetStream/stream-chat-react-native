@@ -1,18 +1,28 @@
 import React from 'react';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
+import type { ChannelProps } from '../../Channel/Channel';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { AutoCompleteInput } from '../AutoCompleteInput';
 
-const renderComponent = ({ channelProps, client, props }) => {
+const renderComponent = ({
+  channelProps,
+  client,
+  props,
+}: {
+  channelProps: Partial<ChannelProps>;
+  client: StreamChat;
+  props: React.ComponentProps<typeof AutoCompleteInput>;
+}) => {
   return render(
     <OverlayProvider>
       <Chat client={client}>
-        <Channel {...channelProps}>
+        <Channel {...(channelProps as ChannelProps)}>
           <AutoCompleteInput {...props} />
         </Channel>
       </Chat>
@@ -21,8 +31,8 @@ const renderComponent = ({ channelProps, client, props }) => {
 };
 
 describe('AutoCompleteInput', () => {
-  let client;
-  let channel;
+  let client: StreamChat;
+  let channel: ChannelType;
 
   beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();
@@ -70,7 +80,7 @@ describe('AutoCompleteInput', () => {
   it('should have the maxLength same as the one on the config of channel', async () => {
     jest.spyOn(channel, 'getConfig').mockReturnValue({
       max_message_length: 10,
-    });
+    } as unknown as ReturnType<typeof channel.getConfig>);
     const channelProps = { channel };
     const props = {};
 

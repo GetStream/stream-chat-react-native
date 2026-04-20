@@ -117,7 +117,9 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const ContextMessageHeader = (props) => <View {...props} testID='message-header' />;
+    const ContextMessageHeader = (props: Record<string, unknown>) => (
+      <View {...props} testID='message-header' />
+    );
 
     render(
       <ChannelsStateProvider>
@@ -141,7 +143,9 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const ContextMessageFooter = (props) => <View {...props} testID='message-footer' />;
+    const ContextMessageFooter = (props: Record<string, unknown>) => (
+      <View {...props} testID='message-footer' />
+    );
 
     render(
       <ChannelsStateProvider>

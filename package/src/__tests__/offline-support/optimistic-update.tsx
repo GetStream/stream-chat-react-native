@@ -4,10 +4,13 @@ import { View } from 'react-native';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import type {
+  Channel as ChannelLLC,
   ChannelAPIResponse,
   ChannelMemberResponse,
   LocalMessage,
   ReactionResponse,
+  StreamChat,
+  UserResponse,
 } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -41,13 +44,40 @@ const Channel = ChannelRaw as unknown as React.ComponentType<
   React.ComponentProps<typeof ChannelRaw> & { initialValue?: string }
 >;
 
+// Tests reach into internal / private StreamChat + LLC Channel APIs (sync manager, legacy
+// `wsConnection`, `_deleteMessage`, `_sendReaction`, `_sendMessage`). Helpers narrow at the
+// call sites without sprinkling `any` everywhere.
+type TestPendingTask = { id: number; type: string; payload: unknown };
+type TestSyncManager = {
+  invokeSyncStatusListeners: (recovered: boolean) => Promise<void>;
+};
+// Intentionally not intersected with the real `StreamChat['offlineDb']` — the
+// real `syncManager` member is a class with `invokeSyncStatusListeners` marked
+// private, which conflicts with the test-only accessor. Kept as a standalone
+// test shim shape.
+type TestOfflineDb = {
+  addPendingTask: (task: {
+    channelId: string | undefined;
+    channelType: string;
+    messageId: string;
+    payload: unknown;
+    type: string;
+  }) => Promise<void>;
+  deletePendingTask: (params: { id: number }) => Promise<void>;
+  getPendingTasks: () => Promise<TestPendingTask[]>;
+  syncManager: TestSyncManager;
+};
+const getOfflineDb = (client: StreamChat): TestOfflineDb =>
+  client.offlineDb as unknown as TestOfflineDb;
+
 test('Workaround to allow exporting tests', () => expect(true).toBe(true));
 
 export const OptimisticUpdates = () => {
   describe('Optimistic Updates', () => {
-    let chatClient;
+    let chatClient: StreamChat;
 
-    const getRandomInt = (lower, upper) => Math.floor(lower + Math.random() * (upper - lower + 1));
+    const getRandomInt = (lower: number, upper: number) =>
+      Math.floor(lower + Math.random() * (upper - lower + 1));
     const createChannel = () => {
       const allUsers = Array(20).fill(1).map(generateUser);
       const allMessages: LocalMessage[] = [];
@@ -63,7 +93,7 @@ export const OptimisticUpdates = () => {
       const begin = getRandomInt(0, allUsers.length - 2); // begin shouldn't be the end of users.length
       const end = getRandomInt(begin + 1, allUsers.length - 1);
       const usersForMembers = allUsers.slice(begin, end);
-      const members = usersForMembers.map((user) =>
+      const members = usersForMembers.map((user: UserResponse) =>
         generateMember({
           user,
         }),
@@ -78,7 +108,7 @@ export const OptimisticUpdates = () => {
           const end = getRandomInt(begin + 1, usersForMembers.length - 1);
 
           const usersForReactions = usersForMembers.slice(begin, end);
-          const reactions = usersForReactions.map((user) =>
+          const reactions = usersForReactions.map((user: UserResponse) =>
             generateReaction({
               message_id: id,
               user,
@@ -94,7 +124,7 @@ export const OptimisticUpdates = () => {
           });
         });
 
-      const reads = members.map((member) => ({
+      const reads = members.map((member: ChannelMemberResponse) => ({
         last_read: new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
         unread_messages: getRandomInt(0, messages.length),
         user: member.user,
@@ -136,7 +166,10 @@ export const OptimisticUpdates = () => {
         channels: [channelResponse] as unknown as ChannelAPIResponse[],
         isLatestMessagesSet: true,
       });
-      chatClient.wsConnection = { isHealthy: true, onlineStatusChanged: jest.fn() };
+      chatClient.wsConnection = {
+        isHealthy: true,
+        onlineStatusChanged: jest.fn(),
+      } as unknown as StreamChat['wsConnection'];
     });
 
     afterEach(() => {
@@ -146,11 +179,19 @@ export const OptimisticUpdates = () => {
       jest.clearAllMocks();
     });
 
-    let channel;
+    let channel: ChannelLLC;
     // This component is used for performing effects in a component that consumes ChannelContext,
     // i.e. making use of the callbacks & values provided by the Channel component.
     // the effect is called every time channelContext changes
-    const CallbackEffectWithContext = ({ callback, children, context }) => {
+    const CallbackEffectWithContext = <T,>({
+      callback,
+      children,
+      context,
+    }: {
+      callback: (ctx: T) => Promise<void> | void;
+      children: React.ReactNode;
+      context: React.Context<T>;
+    }) => {
       const ctx = useContext(context);
       const [ready, setReady] = useState(false);
       useEffect(() => {
@@ -166,7 +207,7 @@ export const OptimisticUpdates = () => {
         return null;
       }
 
-      return children;
+      return <>{children}</>;
     };
 
     describe('delete message', () => {
@@ -297,7 +338,7 @@ export const OptimisticUpdates = () => {
           localMessage: newMessage,
           message: newMessage,
           options: {},
-        });
+        } as unknown as Awaited<ReturnType<typeof channel.messageComposer.compose>>);
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -340,7 +381,7 @@ export const OptimisticUpdates = () => {
               <CallbackEffectWithContext
                 callback={async ({ sendMessage }) => {
                   useMockedApis(chatClient, [sendMessageApi(newMessage)]);
-                  await sendMessage({ customMessageData: newMessage });
+                  await sendMessage();
                 }}
                 context={MessageInputContext}
               >
@@ -430,8 +471,8 @@ export const OptimisticUpdates = () => {
             <Channel
               channel={channel}
               doUpdateMessageRequest={
-                (async (_channelId, localMessage, options) => {
-                  await chatClient.offlineDb.addPendingTask({
+                (async (_channelId: string, localMessage: LocalMessage, options: unknown) => {
+                  await getOfflineDb(chatClient).addPendingTask({
                     channelId: channel.id,
                     channelType: channel.type,
                     messageId: message.id,
@@ -475,8 +516,8 @@ export const OptimisticUpdates = () => {
           const dbMessages = await BetterSqlite.selectFromTable('messages');
           const dbMessage = dbMessages.find((row) => row.id === message.id);
 
-          expect(updatedMessage.text).toBe(editedText);
-          expect(updatedMessage.message_text_updated_at).toBeTruthy();
+          expect(updatedMessage!.text).toBe(editedText);
+          expect(updatedMessage!.message_text_updated_at).toBeTruthy();
           expect(pendingTasksRows).toHaveLength(1);
           expect(pendingTasksRows[0].type).toBe('update-message');
           expect(dbMessage!.text).toBe(editedText);
@@ -527,7 +568,7 @@ export const OptimisticUpdates = () => {
           const dbMessages = await BetterSqlite.selectFromTable('messages');
           const dbMessage = dbMessages.find((row) => row.id === message.id);
 
-          expect(updatedMessage.text).toBe(editedText);
+          expect(updatedMessage!.text).toBe(editedText);
           expect(pendingTasksRows).toHaveLength(0);
           expect(dbMessage!.text).toBe(editedText);
         });
@@ -638,8 +679,8 @@ export const OptimisticUpdates = () => {
           const dbMessage = dbMessages.find((row) => row.id === message.id);
           const storedAttachments = JSON.parse(dbMessage!.attachments as string);
 
-          expect(updatedMessage.text).toBe(editedText);
-          expect(updatedMessage.attachments[0].asset_url).toBe(localUri);
+          expect(updatedMessage!.text).toBe(editedText);
+          expect(updatedMessage!.attachments![0].asset_url).toBe(localUri);
           expect(pendingTasksRows).toHaveLength(0);
           expect(dbMessage!.text).toBe(editedText);
           expect(storedAttachments[0].asset_url).toBe(localUri);
@@ -706,7 +747,7 @@ export const OptimisticUpdates = () => {
           localMessage: newMessage,
           message: newMessage,
           options: {},
-        });
+        } as unknown as Awaited<ReturnType<typeof channel.messageComposer.compose>>);
 
         // initialValue is needed as a prop to trick the message input ctx into thinking
         // we are sending a message.
@@ -760,11 +801,11 @@ export const OptimisticUpdates = () => {
           user_id: chatClient.userID,
         });
 
-        jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue({
-          localMessage,
-          message: localMessage,
-          options: {},
-        });
+        jest
+          .spyOn(channel.messageComposer, 'compose')
+          .mockResolvedValue({ localMessage, message: localMessage } as unknown as Awaited<
+            ReturnType<typeof channel.messageComposer.compose>
+          >);
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -783,23 +824,25 @@ export const OptimisticUpdates = () => {
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
-        let pendingTask;
+        let pendingTask: TestPendingTask | undefined;
         await waitFor(async () => {
-          const pendingTasks = await chatClient.offlineDb.getPendingTasks();
+          const pendingTasks = await getOfflineDb(chatClient).getPendingTasks();
           expect(pendingTasks).toHaveLength(1);
           pendingTask = pendingTasks[0];
         });
 
         expect(channel.state.messages.some((message) => message.id === localMessage.id)).toBe(true);
 
-        jest.spyOn(channel, 'watch').mockResolvedValue({});
+        jest
+          .spyOn(channel, 'watch')
+          .mockResolvedValue({} as Awaited<ReturnType<typeof channel.watch>>);
 
         channel.state.removeMessage(localMessage);
         channel.state.addMessageSorted(serverMessage, true);
-        await chatClient.offlineDb.deletePendingTask({ id: pendingTask.id });
+        await getOfflineDb(chatClient).deletePendingTask({ id: pendingTask!.id });
 
         await act(async () => {
-          await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true);
+          await getOfflineDb(chatClient).syncManager.invokeSyncStatusListeners(true);
         });
 
         await waitFor(() => {
@@ -821,11 +864,11 @@ export const OptimisticUpdates = () => {
           user_id: chatClient.userID,
         });
 
-        jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue({
-          localMessage,
-          message: localMessage,
-          options: {},
-        });
+        jest
+          .spyOn(channel.messageComposer, 'compose')
+          .mockResolvedValue({ localMessage, message: localMessage } as unknown as Awaited<
+            ReturnType<typeof channel.messageComposer.compose>
+          >);
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -844,20 +887,22 @@ export const OptimisticUpdates = () => {
         );
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
-        let pendingTask;
+        let pendingTask: TestPendingTask | undefined;
         await waitFor(async () => {
-          const pendingTasks = await chatClient.offlineDb.getPendingTasks();
+          const pendingTasks = await getOfflineDb(chatClient).getPendingTasks();
           expect(pendingTasks).toHaveLength(1);
           pendingTask = pendingTasks[0];
         });
 
-        jest.spyOn(channel, 'watch').mockResolvedValue({});
+        jest
+          .spyOn(channel, 'watch')
+          .mockResolvedValue({} as Awaited<ReturnType<typeof channel.watch>>);
 
         channel.state.removeMessage(localMessage);
-        await chatClient.offlineDb.deletePendingTask({ id: pendingTask.id });
+        await getOfflineDb(chatClient).deletePendingTask({ id: pendingTask!.id });
 
         await act(async () => {
-          await chatClient.offlineDb.syncManager.invokeSyncStatusListeners(true);
+          await getOfflineDb(chatClient).syncManager.invokeSyncStatusListeners(true);
         });
 
         await waitFor(() => {

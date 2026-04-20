@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Alert } from 'react-native';
 
 import { cleanup, renderHook, waitFor } from '@testing-library/react-native';
+import type { Channel, StreamChat } from 'stream-chat';
 
 import { Chat } from '../../../components';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -20,7 +21,15 @@ import {
 
 jest.spyOn(Alert, 'alert');
 
-const Wrapper = ({ channel, client, props }) => {
+const Wrapper = ({
+  channel,
+  client,
+  props,
+}: {
+  channel: Channel;
+  client: StreamChat;
+  props: PropsWithChildren<Partial<InputMessageInputContextValue>>;
+}) => {
   return (
     <Chat client={client}>
       <ChannelProvider
@@ -63,8 +72,8 @@ const Wrapper = ({ channel, client, props }) => {
 };
 
 describe("MessageInputContext's pickFile", () => {
-  let channel;
-  let chatClient;
+  let channel: Channel;
+  let chatClient: StreamChat;
 
   beforeEach(async () => {
     const { client, channels } = await initiateClientWithChannels();
@@ -140,8 +149,8 @@ describe("MessageInputContext's pickFile", () => {
 });
 
 describe("MessageInputContext's pickAndUploadImageFromNativePicker", () => {
-  let channel;
-  let chatClient;
+  let channel: Channel;
+  let chatClient: StreamChat;
 
   beforeEach(async () => {
     const { client, channels } = await initiateClientWithChannels();
@@ -280,8 +289,8 @@ describe("MessageInputContext's pickAndUploadImageFromNativePicker", () => {
 });
 
 describe("MessageInputContext's takeAndUploadImage", () => {
-  let channel;
-  let chatClient;
+  let channel: Channel;
+  let chatClient: StreamChat;
 
   beforeEach(async () => {
     const { client, channels } = await initiateClientWithChannels();

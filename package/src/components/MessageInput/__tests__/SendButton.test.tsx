@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts';
 
@@ -9,12 +10,20 @@ import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { SendButton } from '../components/OutputButtons/SendButton';
 
-const renderComponent = ({ client, channel, props }) => {
+const renderComponent = ({
+  client,
+  channel,
+  props,
+}: {
+  channel: ChannelType;
+  client: StreamChat;
+  props: Partial<React.ComponentProps<typeof SendButton>>;
+}) => {
   return render(
     <OverlayProvider>
       <Chat client={client}>
         <Channel channel={channel}>
-          <SendButton {...props} />
+          <SendButton {...(props as React.ComponentProps<typeof SendButton>)} />
         </Channel>
       </Chat>
     </OverlayProvider>,
@@ -22,8 +31,8 @@ const renderComponent = ({ client, channel, props }) => {
 };
 
 describe('SendButton', () => {
-  let client;
-  let channel;
+  let client: StreamChat;
+  let channel: ChannelType;
 
   beforeEach(async () => {
     const { client: chatClient, channels } = await initiateClientWithChannels();

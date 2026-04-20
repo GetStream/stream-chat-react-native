@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react-native';
+import type { Channel, StreamChat } from 'stream-chat';
 
 import { Chat } from '../../../components';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -10,6 +11,7 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import * as UseMessageComposerAPIContext from '../../messageComposerContext/MessageComposerAPIContext';
 
 import { MessageComposerAPIContextValue } from '../../messageComposerContext/MessageComposerAPIContext';
+import type { MessageComposerContextValue } from '../../messageComposerContext/MessageComposerContext';
 import { MessageComposerProvider } from '../../messageComposerContext/MessageComposerContext';
 import {
   OwnCapabilitiesContextValue,
@@ -21,11 +23,19 @@ import {
   useMessageInputContext,
 } from '../MessageInputContext';
 
-const Wrapper = ({ messageComposerContextValue, client, props }) => {
+const Wrapper = ({
+  messageComposerContextValue,
+  client,
+  props,
+}: {
+  client: StreamChat;
+  messageComposerContextValue: Partial<MessageComposerContextValue>;
+  props: PropsWithChildren<Partial<InputMessageInputContextValue>>;
+}) => {
   return (
     <Chat client={client}>
       <OwnCapabilitiesProvider value={{ sendMessage: true } as OwnCapabilitiesContextValue}>
-        <MessageComposerProvider value={messageComposerContextValue}>
+        <MessageComposerProvider value={messageComposerContextValue as MessageComposerContextValue}>
           <MessageInputProvider
             value={
               {
@@ -42,8 +52,8 @@ const Wrapper = ({ messageComposerContextValue, client, props }) => {
 };
 
 describe("MessageInputContext's sendMessage", () => {
-  let channel;
-  let chatClient;
+  let channel: Channel;
+  let chatClient: StreamChat;
 
   beforeEach(async () => {
     const { client, channels } = await initiateClientWithChannels();
@@ -136,7 +146,11 @@ describe("MessageInputContext's sendMessage", () => {
       sendMessage: sendMessageMock,
     };
     const { pollComposer } = channel.messageComposer;
-    jest.spyOn(chatClient, 'createPoll').mockResolvedValue({ poll: { id: 'test-poll-id' } });
+    jest
+      .spyOn(chatClient, 'createPoll')
+      .mockResolvedValue({ poll: { id: 'test-poll-id' } } as unknown as Awaited<
+        ReturnType<StreamChat['createPoll']>
+      >);
 
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps,
@@ -157,7 +171,7 @@ describe("MessageInputContext's sendMessage", () => {
           { id: 1, text: '1' },
           { id: 2, text: '2' },
         ],
-      });
+      } as unknown as Parameters<typeof pollComposer.updateFields>[0]);
       await channel.messageComposer.createPoll();
     });
 
@@ -212,8 +226,8 @@ describe("MessageInputContext's sendMessage", () => {
 });
 
 describe("MessageInputContext's editMessage", () => {
-  let channel;
-  let chatClient;
+  let channel: Channel;
+  let chatClient: StreamChat;
 
   beforeAll(async () => {
     const { client, channels } = await initiateClientWithChannels();

@@ -4,7 +4,9 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
+import type { ComponentOverrides } from '../../../../contexts/componentsContext/ComponentsContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 import { MessageListItemProvider } from '../../../../contexts/messageListItemContext/MessageListItemContext';
@@ -24,7 +26,7 @@ import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles
 import { Message } from '../../Message';
 import { MessageOverlayWrapper } from '../../MessageOverlayWrapper';
 
-const OverlayStateText = ({ label }) => {
+const OverlayStateText = ({ label }: { label: string }) => {
   const shouldUseOverlayStyles = useShouldUseOverlayStyles();
 
   return <Text>{`${label}:${shouldUseOverlayStyles ? 'overlay' : 'normal'}`}</Text>;
@@ -54,9 +56,14 @@ const CustomMessageItemView = () => (
 );
 
 describe('Message', () => {
-  let channel;
-  let chatClient;
-  let renderMessage;
+  let channel: ChannelType;
+  let chatClient: StreamChat;
+  let renderMessage: (
+    options: Omit<React.ComponentProps<typeof Message>, 'groupStyles'> &
+      Partial<Pick<React.ComponentProps<typeof Message>, 'groupStyles'>>,
+    channelProps?: Partial<React.ComponentProps<typeof Channel>>,
+    componentOverrides?: ComponentOverrides,
+  ) => ReturnType<typeof render>;
 
   const user = generateUser({ id: 'id', name: 'name' });
   const messages = [generateMessage({ user })];

@@ -466,7 +466,9 @@ describe('MessageList pagination', () => {
     jest.clearAllMocks();
   });
 
-  const mockedHook = (values) => {
+  const mockedHook = (
+    values: Partial<ReturnType<typeof MessageListPaginationHook.useMessageListPagination>>,
+  ) => {
     const messages = Array.from({ length: 100 }, (_, i) =>
       generateMessage({ text: `message-${i}` }),
     );

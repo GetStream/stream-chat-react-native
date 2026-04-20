@@ -5,8 +5,10 @@ import NetInfo from '@react-native-community/netinfo';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
+import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
+import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
@@ -14,12 +16,12 @@ import { getTestClient, getTestClientWithUser, setUser } from '../../../mock-bui
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Chat } from '../Chat';
 
-const ChatContextConsumer = ({ fn }) => {
+const ChatContextConsumer = ({ fn }: { fn: (ctx: ChatContextValue) => void }) => {
   fn(useChatContext());
   return <View testID='children' />;
 };
 
-const TranslationContextConsumer = ({ fn }) => {
+const TranslationContextConsumer = ({ fn }: { fn: (ctx: TranslationContextValue) => void }) => {
   fn(useTranslationContext());
   return <View testID='children' />;
 };
@@ -42,7 +44,7 @@ describe('Chat', () => {
   });
 
   it('listens and updates state on a connection changed event', async () => {
-    let context;
+    let context: ChatContextValue = {} as ChatContextValue;
 
     render(
       <Chat client={chatClient}>
@@ -65,7 +67,7 @@ describe('Chat', () => {
   });
 
   it('listens and updates state on a connection recovered event', async () => {
-    let context;
+    let context: ChatContextValue = {} as ChatContextValue;
 
     render(
       <Chat client={chatClient}>
@@ -87,7 +89,7 @@ describe('ChatContext', () => {
   afterEach(cleanup);
   const chatClient = getTestClient();
   it('exposes the chat context', async () => {
-    let context;
+    let context: ChatContextValue = {} as ChatContextValue;
 
     render(
       <Chat client={chatClient}>
@@ -109,7 +111,7 @@ describe('ChatContext', () => {
   });
 
   it('calls setActiveChannel to set a new channel in context', async () => {
-    let context;
+    let context: ChatContextValue = {} as ChatContextValue;
 
     render(
       <Chat client={chatClient}>
@@ -124,7 +126,11 @@ describe('ChatContext', () => {
     const channel = { cid: 'cid', id: 'cid', query: jest.fn() };
 
     await waitFor(() => expect(context.channel).toBeUndefined());
-    act(() => context.setActiveChannel(channel));
+    act(() =>
+      context.setActiveChannel(
+        channel as unknown as Parameters<typeof context.setActiveChannel>[0],
+      ),
+    );
 
     await waitFor(() => expect(context.channel).toStrictEqual(channel));
   });
@@ -138,7 +144,7 @@ describe('TranslationContext', () => {
 
   const chatClient = getTestClient();
   it('exposes the translation context', async () => {
-    let context;
+    let context: TranslationContextValue = {} as TranslationContextValue;
 
     render(
       <Chat client={chatClient}>
@@ -158,7 +164,7 @@ describe('TranslationContext', () => {
   });
 
   it('uses the i18nInstance provided in props', async () => {
-    let context;
+    let context: TranslationContextValue = {} as TranslationContextValue;
     const i18nInstance = new Streami18n();
     const { t, tDateTimeParser } = await i18nInstance.getTranslators();
 
@@ -185,7 +191,7 @@ describe('TranslationContext', () => {
   });
 
   it('updates the context when props change', async () => {
-    let context;
+    let context: TranslationContextValue = {} as TranslationContextValue;
     const i18nInstance = new Streami18n();
 
     i18nInstance.t = (() => 't') as unknown as typeof i18nInstance.t;
@@ -236,8 +242,8 @@ describe('TranslationContext', () => {
     // initial mount and render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport key={1} />);
 
-    let unsubscribeSpy;
-    let listenersAfterInitialMount;
+    let unsubscribeSpy: jest.SpyInstance | undefined;
+    let listenersAfterInitialMount: Array<unknown> = [];
     const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
 
     await waitFor(() => {
@@ -267,8 +273,8 @@ describe('TranslationContext', () => {
     // initial render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
 
-    let unsubscribeSpy;
-    let listenersAfterInitialMount;
+    let unsubscribeSpy: jest.SpyInstance | undefined;
+    let listenersAfterInitialMount: Array<unknown> = [];
     const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
 
     await waitFor(() => {
@@ -302,7 +308,7 @@ describe('TranslationContext', () => {
     // initial render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
 
-    let unsubscribeSpy;
+    let unsubscribeSpy: jest.SpyInstance | undefined;
     const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
 
     await waitFor(() => {
