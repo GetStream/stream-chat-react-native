@@ -57,7 +57,7 @@ const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => {
 
 const initChannelFromData = async (
   chatClient: StreamChat,
-  overrides: Record<string, unknown> = {},
+  overrides: Parameters<typeof generateChannelResponse>[0] = {},
 ) => {
   const mockedChannel = generateChannelResponse(overrides);
   useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
@@ -98,14 +98,14 @@ describe('ChannelPreview', () => {
     );
   };
 
-  const generateChannelWrapper = (overrides: Record<string, unknown>) =>
+  const generateChannelWrapper = (overrides: Partial<Channel>) =>
     generateChannel({
       countUnread: jest.fn().mockReturnValue(0),
       initialized: true,
       lastMessage: jest.fn().mockReturnValue(generateMessage()),
       muteStatus: jest.fn().mockReturnValue({ muted: false }),
       ...overrides,
-    });
+    } as unknown as Parameters<typeof generateChannel>[0]);
 
   const useInitializeChannel = async (c: GetOrCreateChannelApiParams) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);

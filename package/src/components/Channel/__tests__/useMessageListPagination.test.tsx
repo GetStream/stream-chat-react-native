@@ -15,7 +15,10 @@ describe('useMessageListPagination', () => {
   let chatClient: StreamChat;
   let channel: ChannelType;
 
-  const mockedHook = (state: Record<string, unknown>, values?: Record<string, unknown>) =>
+  const mockedHook = (
+    state: Partial<typeof channelInitialState>,
+    values?: Partial<ReturnType<typeof ChannelStateHooks.useChannelMessageDataState>>,
+  ) =>
     jest.spyOn(ChannelStateHooks, 'useChannelMessageDataState').mockImplementation(
       () =>
         ({

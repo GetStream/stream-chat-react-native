@@ -1,4 +1,5 @@
 import React, { ComponentProps } from 'react';
+import type { Image, ImageStyle, StyleProp } from 'react-native';
 
 import {
   act,
@@ -196,21 +197,15 @@ describe('Giphy', () => {
     render(getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }));
     await waitFor(() => {
       const checkImageProps = (
-        imageProps: Record<string, unknown>,
+        imageProps: ComponentProps<typeof Image>,
         specificSizedGiphyData: { height: string; url: string; width: string },
       ) => {
-        let imageStyle = imageProps.style as
-          | Record<string, unknown>
-          | Array<Record<string, unknown>>;
+        let imageStyle = imageProps.style as StyleProp<ImageStyle>;
         if (Array.isArray(imageStyle)) {
           imageStyle = Object.assign({}, ...imageStyle);
         }
-        expect((imageStyle as Record<string, unknown>).height).toBe(
-          parseFloat(specificSizedGiphyData.height),
-        );
-        expect((imageStyle as Record<string, unknown>).width).toBe(
-          parseFloat(specificSizedGiphyData.width),
-        );
+        expect((imageStyle as ImageStyle).height).toBe(parseFloat(specificSizedGiphyData.height));
+        expect((imageStyle as ImageStyle).width).toBe(parseFloat(specificSizedGiphyData.width));
         expect((imageProps.source as { uri: string }).uri).toBe(specificSizedGiphyData.url);
       };
       checkImageProps(
@@ -221,21 +216,15 @@ describe('Giphy', () => {
     render(getAttachmentComponent({ attachment, giphyVersion: 'original' }));
     await waitFor(() => {
       const checkImageProps = (
-        imageProps: Record<string, unknown>,
+        imageProps: ComponentProps<typeof Image>,
         specificSizedGiphyData: { height: string; url: string; width: string },
       ) => {
-        let imageStyle = imageProps.style as
-          | Record<string, unknown>
-          | Array<Record<string, unknown>>;
+        let imageStyle = imageProps.style as StyleProp<ImageStyle>;
         if (Array.isArray(imageStyle)) {
           imageStyle = Object.assign({}, ...imageStyle);
         }
-        expect((imageStyle as Record<string, unknown>).height).toBe(
-          parseFloat(specificSizedGiphyData.height),
-        );
-        expect((imageStyle as Record<string, unknown>).width).toBe(
-          parseFloat(specificSizedGiphyData.width),
-        );
+        expect((imageStyle as ImageStyle).height).toBe(parseFloat(specificSizedGiphyData.height));
+        expect((imageStyle as ImageStyle).width).toBe(parseFloat(specificSizedGiphyData.width));
         expect((imageProps.source as { uri: string }).uri).toBe(specificSizedGiphyData.url);
       };
       checkImageProps(

@@ -36,10 +36,10 @@ function mockClient(client: StreamChat, options: MockClientOptions = {}): Stream
   const { disableAppSettings = true } = options;
   const c = client as MockableStreamChat;
 
-  jest.spyOn(c as unknown as Record<string, unknown>, '_setToken' as never).mockImplementation();
-  jest
-    .spyOn(c as unknown as Record<string, unknown>, '_setupConnection' as never)
-    .mockImplementation();
+  type WithPrivates = { _setToken: () => void; _setupConnection: () => void };
+  const withPrivates = c as unknown as WithPrivates;
+  jest.spyOn(withPrivates, '_setToken').mockImplementation();
+  jest.spyOn(withPrivates, '_setupConnection').mockImplementation();
   c.tokenManager = {
     getToken: jest.fn(() => token),
     tokenReady: jest.fn(() => true),

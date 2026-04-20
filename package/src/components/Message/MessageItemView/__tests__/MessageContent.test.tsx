@@ -23,6 +23,8 @@ import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { Message } from '../../Message';
+import type { MessageFooterProps } from '../MessageFooter';
+import type { MessageHeaderProps } from '../MessageHeader';
 
 describe('MessageContent', () => {
   let channel: ChannelType;
@@ -117,7 +119,7 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const ContextMessageHeader = (props: Record<string, unknown>) => (
+    const ContextMessageHeader = (props: MessageHeaderProps) => (
       <View {...props} testID='message-header' />
     );
 
@@ -143,7 +145,7 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const ContextMessageFooter = (props: Record<string, unknown>) => (
+    const ContextMessageFooter = (props: MessageFooterProps) => (
       <View {...props} testID='message-footer' />
     );
 

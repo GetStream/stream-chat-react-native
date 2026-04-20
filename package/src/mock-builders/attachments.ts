@@ -20,7 +20,7 @@ export const generateLocalAttachmentData = (): LocalAttachmentData => ({
 });
 
 export const generateLocalFileUploadAttachmentData = (
-  overrides?: Partial<{ file: Partial<FileReference> } & Record<string, unknown>>,
+  overrides?: Partial<LocalAttachmentData & { file: Partial<FileReference> }>,
   attachmentData?: Partial<Attachment>,
 ) => ({
   localMetadata: {

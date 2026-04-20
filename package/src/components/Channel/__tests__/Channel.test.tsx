@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { type ComponentProps, useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
 import { act, cleanup, render, renderHook, waitFor } from '@testing-library/react-native';
@@ -73,7 +73,10 @@ let channel: ChannelType;
 const user = generateUser({ id: 'id', name: 'name' });
 const messages = [generateMessage({ cid: channelCid, user })];
 
-type RenderComponentProps = Record<string, unknown> & { children?: React.ReactNode };
+type RenderComponentProps = Partial<Omit<ComponentProps<typeof Channel>, 'channel'>> & {
+  channel?: unknown;
+  children?: React.ReactNode;
+};
 
 const renderComponent = (
   props: RenderComponentProps = {},
@@ -282,7 +285,7 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        const ctx = context as unknown as Record<string, unknown>;
+        const ctx = context as unknown as typeof mockContext;
         expect(ctx.channel).toBeInstanceOf(Object);
         expect(ctx.client).toBeInstanceOf(StreamChat);
         expect(ctx.markRead).toBeInstanceOf(Function);
@@ -325,7 +328,7 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        const ctx = context as unknown as Record<string, unknown>;
+        const ctx = context as unknown as typeof mockContext;
         expect(ctx.Attachment).toBeInstanceOf(Function);
         expect(ctx.editing).toBe(false);
         expect(ctx.messages).toBeInstanceOf(Array);
@@ -461,11 +464,7 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(Object.keys(channelState.current.state.members!)).toHaveLength(10));
   });
 
-  function getElementsAround<T extends Record<string, unknown>>(
-    array: T[],
-    key: keyof T,
-    id: unknown,
-  ) {
+  function getElementsAround<T extends object>(array: T[], key: keyof T, id: unknown) {
     const index = array.findIndex((obj) => obj[key] === id);
 
     if (index === -1) {
@@ -490,7 +489,7 @@ describe('Channel initial load useEffect', () => {
 
     const loadMessageIntoState = jest.fn(() => {
       const newMessages = getElementsAround(
-        messages as unknown as Record<string, unknown>[],
+        messages as unknown as typeof channel.state.messages,
         'id',
         messageToSearch.id,
       );
@@ -532,7 +531,9 @@ describe('Channel initial load useEffect', () => {
       jest.restoreAllMocks();
       cleanup();
     });
-    const mockedHook = (values: Record<string, unknown>) =>
+    const mockedHook = (
+      values: Partial<ReturnType<typeof MessageListPaginationHooks.useMessageListPagination>>,
+    ) =>
       jest.spyOn(MessageListPaginationHooks, 'useMessageListPagination').mockImplementation(
         () =>
           ({
@@ -556,12 +557,12 @@ describe('Channel initial load useEffect', () => {
       const channel = chatClient.channel('messaging', mockedChannel.channel.id);
       await channel.watch();
       const user = generateUser();
-      const read_data: Record<string, unknown> = {};
+      const read_data: typeof channel.state.read = {};
 
       read_data[chatClient.user!.id] = {
         last_read: new Date(),
         user,
-      };
+      } as unknown as (typeof channel.state.read)[string];
 
       channel.state = {
         ...channelInitialState,
@@ -591,7 +592,7 @@ describe('Channel initial load useEffect', () => {
 
       const user = generateUser();
       const numberOfUnreadMessages = 15;
-      const read_data: Record<string, unknown> = {};
+      const read_data: typeof channel.state.read = {};
 
       read_data[chatClient.user!.id] = {
         last_read: new Date(),
@@ -626,7 +627,7 @@ describe('Channel initial load useEffect', () => {
 
       const user = generateUser();
       const numberOfUnreadMessages = 2;
-      const read_data: Record<string, unknown> = {};
+      const read_data: typeof channel.state.read = {};
 
       read_data[chatClient.user!.id] = {
         last_read: new Date(),

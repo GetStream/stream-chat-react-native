@@ -62,7 +62,6 @@ const defaultState = {
 };
 
 export type GeneratedChannel = {
-  _client: Record<string, unknown>;
   channel: Partial<ChannelResponse> & { config: typeof defaultConfig };
   cid: string;
   id: string;
@@ -77,7 +76,6 @@ const getChannelDefaults = (opts: GeneratedChannelIdType = {}): GeneratedChannel
   const id = opts.id ?? uuidv4();
   const type = opts.type ?? 'messaging';
   return {
-    _client: {},
     channel: {
       cid: `${type}:${id}`,
       config: {

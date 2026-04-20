@@ -215,7 +215,7 @@ describe('ChannelList', () => {
     const staleChannel = [createMockChannel('stale-channel')];
     const freshChannel = [createMockChannel('new-channel')];
     const spy = jest.spyOn(chatClient, 'queryChannels');
-    spy.mockImplementation(((filters: Record<string, unknown> = {}) => {
+    spy.mockImplementation(((filters: Parameters<typeof chatClient.queryChannels>[0] = {}) => {
       if (Object.prototype.hasOwnProperty.call(filters, 'new-filter')) {
         return deferredCallForFreshFilter.promise;
       }

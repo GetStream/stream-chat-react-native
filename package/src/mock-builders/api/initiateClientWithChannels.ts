@@ -8,7 +8,7 @@ import { generateMember } from '../generator/member';
 import { generateUser } from '../generator/user';
 import { getTestClientWithUser } from '../mock';
 
-type ChannelData = Record<string, unknown>;
+type ChannelData = Parameters<typeof generateChannel>[0];
 
 const initChannelFromData = async ({
   channelData,
