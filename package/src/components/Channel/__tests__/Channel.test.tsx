@@ -2,15 +2,19 @@ import React, { useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
 import { act, cleanup, render, renderHook, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
 import { StreamChat } from 'stream-chat';
 
+import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import {
   MessagesContext,
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
 
+import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/ThreadContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -34,7 +38,13 @@ import * as MessageListPaginationHooks from '../hooks/useMessageListPagination';
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
 // the effect is called every time channelContext changes
-const CallbackEffectWithContext = ({ callback, context }) => {
+const CallbackEffectWithContext = ({
+  callback,
+  context,
+}: {
+  callback: (ctx: unknown) => void;
+  context: React.Context<unknown>;
+}) => {
   const ctx = useContext(context);
   useEffect(() => {
     callback(ctx);
@@ -43,7 +53,13 @@ const CallbackEffectWithContext = ({ callback, context }) => {
   return <View />;
 };
 
-const ContextConsumer = ({ context, fn }) => {
+const ContextConsumer = ({
+  context,
+  fn,
+}: {
+  context: React.Context<unknown>;
+  fn: (ctx: unknown) => void;
+}) => {
   fn(useContext(context));
   return <View testID='children' />;
 };
@@ -51,17 +67,23 @@ const ContextConsumer = ({ context, fn }) => {
 const channelType = 'messaging';
 const channelId = 'test-channel';
 const channelCid = `${channelType}:${channelId}`;
-let chatClient;
-let channel;
+let chatClient: StreamChatType;
+let channel: ChannelType;
 
 const user = generateUser({ id: 'id', name: 'name' });
 const messages = [generateMessage({ cid: channelCid, user })];
 
-const renderComponent = (props = {}, callback = () => {}, context = ChannelContext) =>
+type RenderComponentProps = Record<string, unknown> & { children?: React.ReactNode };
+
+const renderComponent = (
+  props: RenderComponentProps = {},
+  callback: (ctx: unknown) => void = () => {},
+  context: React.Context<unknown> = ChannelContext as unknown as React.Context<unknown>,
+) =>
   render(
     <ChannelsStateProvider>
       <Chat client={chatClient}>
-        <Channel {...props}>
+        <Channel {...(props as React.ComponentProps<typeof Channel>)}>
           {props.children}
           <CallbackEffectWithContext {...{ callback, context }} />
         </Channel>
@@ -73,7 +95,7 @@ describe('Channel', () => {
   beforeEach(async () => {
     const members = [generateMember({ user })];
     const mockedChannel = generateChannelResponse({
-      cid: channelCid,
+      channel: { cid: channelCid },
       id: channelId,
       members,
       messages,
@@ -81,8 +103,8 @@ describe('Channel', () => {
     });
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    channel = chatClient.channel('messaging', mockedChannel.id);
-    channel.cid = mockedChannel.channel.cid;
+    channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    channel.cid = mockedChannel.channel.cid as string;
     const getConfigSpy = jest.fn();
     channel.getConfig = getConfigSpy;
   });
@@ -158,14 +180,18 @@ describe('Channel', () => {
     // and then calls hasThread with the thread id if it was set.
     const { rerender } = renderComponent(
       { channel },
-      ({ openThread, thread }) => {
+      (ctx) => {
+        const { openThread, thread } = ctx as {
+          openThread: (m: unknown) => void;
+          thread: { id: string } | null;
+        };
         if (!thread) {
           openThread(threadMessage);
         } else {
           hasThread(thread.id);
         }
       },
-      ThreadContext,
+      ThreadContext as unknown as React.Context<unknown>,
     );
 
     rerender(
@@ -173,14 +199,18 @@ describe('Channel', () => {
         <Chat client={chatClient}>
           <Channel channel={channel}>
             <CallbackEffectWithContext
-              callback={({ openThread, thread }) => {
+              callback={(ctx) => {
+                const { openThread, thread } = ctx as {
+                  openThread: (m: unknown) => void;
+                  thread: { id: string } | null;
+                };
                 if (!thread) {
                   openThread(threadMessage);
                 } else {
                   hasThread(thread.id);
                 }
               }}
-              context={ThreadContext}
+              context={ThreadContext as unknown as React.Context<unknown>}
             />
           </Channel>
         </Chat>
@@ -189,7 +219,9 @@ describe('Channel', () => {
     await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });
 
-  const queryChannelWithNewMessages = (newMessages) =>
+  const queryChannelWithNewMessages = (
+    newMessages: ReturnType<typeof generateMessage>[],
+  ) =>
     // generate new channel mock from existing channel with new messages added
     getOrCreateChannelApi(
       generateChannelResponse({
@@ -197,7 +229,9 @@ describe('Channel', () => {
           config: channel.getConfig(),
           id: channel.id,
           type: channel.type,
-        },
+        } as unknown as NonNullable<
+          Parameters<typeof generateChannelResponse>[0]
+        >['channel'],
         messages: newMessages,
       }),
     );
@@ -212,7 +246,7 @@ describe('Channel', () => {
       () => {
         useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
       },
-      MessagesContext,
+      MessagesContext as unknown as React.Context<unknown>,
     );
 
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
@@ -221,7 +255,7 @@ describe('Channel', () => {
   describe('ChannelContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <ChannelProvider>
+        <ChannelProvider value={{} as unknown as ChannelContextValue}>
           <View testID='children' />
         </ChannelProvider>,
       );
@@ -230,7 +264,7 @@ describe('Channel', () => {
     });
 
     it('exposes the channel context', async () => {
-      let context;
+      let context: ChannelContextValue | undefined;
 
       const mockContext = {
         channel,
@@ -240,11 +274,11 @@ describe('Channel', () => {
       };
 
       render(
-        <ChannelProvider value={mockContext}>
+        <ChannelProvider value={mockContext as unknown as ChannelContextValue}>
           <ContextConsumer
-            context={ChannelContext}
+            context={ChannelContext as unknown as React.Context<unknown>}
             fn={(ctx) => {
-              context = ctx;
+              context = ctx as ChannelContextValue;
             }}
           />
         </ChannelProvider>,
@@ -252,10 +286,11 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        expect(context.channel).toBeInstanceOf(Object);
-        expect(context.client).toBeInstanceOf(StreamChat);
-        expect(context.markRead).toBeInstanceOf(Function);
-        expect(context.watcherCount).toBe(5);
+        const ctx = context as unknown as Record<string, unknown>;
+        expect(ctx.channel).toBeInstanceOf(Object);
+        expect(ctx.client).toBeInstanceOf(StreamChat);
+        expect(ctx.markRead).toBeInstanceOf(Function);
+        expect(ctx.watcherCount).toBe(5);
       });
     });
   });
@@ -263,7 +298,7 @@ describe('Channel', () => {
   describe('MessagesContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <MessagesProvider>
+        <MessagesProvider value={{} as unknown as MessagesContextValue}>
           <View testID='children' />
         </MessagesProvider>,
       );
@@ -272,7 +307,7 @@ describe('Channel', () => {
     });
 
     it('exposes the messages context', async () => {
-      let context;
+      let context: MessagesContextValue | undefined;
 
       const mockContext = {
         Attachment,
@@ -282,11 +317,11 @@ describe('Channel', () => {
       };
 
       render(
-        <MessagesProvider value={mockContext}>
+        <MessagesProvider value={mockContext as unknown as MessagesContextValue}>
           <ContextConsumer
-            context={MessagesContext}
+            context={MessagesContext as unknown as React.Context<unknown>}
             fn={(ctx) => {
-              context = ctx;
+              context = ctx as MessagesContextValue;
             }}
           />
         </MessagesProvider>,
@@ -294,10 +329,11 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        expect(context.Attachment).toBeInstanceOf(Function);
-        expect(context.editing).toBe(false);
-        expect(context.messages).toBeInstanceOf(Array);
-        expect(context.sendMessage).toBeInstanceOf(Function);
+        const ctx = context as unknown as Record<string, unknown>;
+        expect(ctx.Attachment).toBeInstanceOf(Function);
+        expect(ctx.editing).toBe(false);
+        expect(ctx.messages).toBeInstanceOf(Array);
+        expect(ctx.sendMessage).toBeInstanceOf(Function);
       });
     });
   });
@@ -305,7 +341,7 @@ describe('Channel', () => {
   describe('ThreadContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <ThreadProvider>
+        <ThreadProvider value={{} as unknown as ThreadContextValue}>
           <View testID='children' />
         </ThreadProvider>,
       );
@@ -314,7 +350,7 @@ describe('Channel', () => {
     });
 
     it('exposes the thread context', async () => {
-      let context;
+      let context: ThreadContextValue | undefined;
 
       const mockContext = {
         openThread: () => {},
@@ -324,11 +360,11 @@ describe('Channel', () => {
       };
 
       render(
-        <ThreadProvider value={mockContext}>
+        <ThreadProvider value={mockContext as unknown as ThreadContextValue}>
           <ContextConsumer
-            context={ThreadContext}
+            context={ThreadContext as unknown as React.Context<unknown>}
             fn={(ctx) => {
-              context = ctx;
+              context = ctx as ThreadContextValue;
             }}
           />
         </ThreadProvider>,
@@ -336,22 +372,24 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        expect(context.openThread).toBeInstanceOf(Function);
-        expect(context.thread).toBeInstanceOf(Object);
-        expect(context.threadHasMore).toBe(true);
-        expect(context.threadLoadingMore).toBe(false);
+        expect(context!.openThread).toBeInstanceOf(Function);
+        expect(context!.thread).toBeInstanceOf(Object);
+        expect(context!.threadHasMore).toBe(true);
+        expect(context!.threadLoadingMore).toBe(false);
       });
     });
   });
 });
 
 describe('Channel initial load useEffect', () => {
-  let chatClient;
+  let chatClient: StreamChatType;
 
-  const renderComponent = (props = {}) =>
+  const renderComponent = (props: RenderComponentProps = {}) =>
     render(
       <Chat client={chatClient}>
-        <Channel {...props}>{props.children}</Channel>
+        <Channel {...(props as React.ComponentProps<typeof Channel>)}>
+          {props.children}
+        </Channel>
       </Chat>,
     );
 
@@ -365,13 +403,13 @@ describe('Channel initial load useEffect', () => {
   });
 
   it('should still call channel.watch if we are online and DB channels are loaded', async () => {
-    const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: i }));
+    const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) }));
     const mockedChannel = generateChannelResponse({
       messages,
     });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
     channel.offlineMode = true;
     channel.state = {
@@ -379,7 +417,7 @@ describe('Channel initial load useEffect', () => {
       messagePagination: {
         hasPrev: true,
       },
-    };
+    } as unknown as typeof channel.state;
     const watchSpy = jest.fn();
     channel.watch = watchSpy;
 
@@ -389,29 +427,34 @@ describe('Channel initial load useEffect', () => {
   });
 
   it("should call channel.watch if channel is initialized and it's not in offline mode", async () => {
-    const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: i }));
+    const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) }));
     const mockedChannel = generateChannelResponse({
       messages,
     });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     channel.state = {
       ...channelInitialState,
       members: Object.fromEntries(
-        Array.from({ length: 10 }, (_, i) => [i, generateMember({ id: i })]),
+        Array.from({ length: 10 }, (_, i) => [
+          i,
+          generateMember({ user_id: String(i) } as unknown as Partial<
+            Parameters<typeof generateMember>[0]
+          >),
+        ]),
       ),
       messagePagination: {
         hasPrev: true,
       },
-      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: i })),
-    };
+      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
+    } as unknown as typeof channel.state;
     const watchSpy = jest.fn();
 
     channel.offlineMode = false;
-    channel.initialied = false;
+    (channel as unknown as { initialied: boolean }).initialied = false;
     channel.watch = watchSpy;
 
     renderComponent({ channel });
@@ -420,11 +463,15 @@ describe('Channel initial load useEffect', () => {
     const { result: channelState } = renderHook(() => useChannelDataState(channel));
 
     await waitFor(() => expect(watchSpy).toHaveBeenCalled());
-    await waitFor(() => expect(channelMessageState.current.state.messages).toHaveLength(10));
-    await waitFor(() => expect(Object.keys(channelState.current.state.members)).toHaveLength(10));
+    await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(10));
+    await waitFor(() => expect(Object.keys(channelState.current.state.members!)).toHaveLength(10));
   });
 
-  function getElementsAround(array, key, id) {
+  function getElementsAround<T extends Record<string, unknown>>(
+    array: T[],
+    key: keyof T,
+    id: unknown,
+  ) {
     const index = array.findIndex((obj) => obj[key] === id);
 
     if (index === -1) {
@@ -437,19 +484,23 @@ describe('Channel initial load useEffect', () => {
   }
 
   it('should call the loadChannelAroundMessage when messageId is passed to a channel', async () => {
-    const messages = Array.from({ length: 105 }, (_, i) => generateMessage({ id: i }));
+    const messages = Array.from({ length: 105 }, (_, i) => generateMessage({ id: String(i) }));
     const messageToSearch = messages[50];
     const mockedChannel = generateChannelResponse({
       messages,
     });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const loadMessageIntoState = jest.fn(() => {
-      const newMessages = getElementsAround(messages, 'id', messageToSearch.id);
-      channel.state.messages = newMessages;
+      const newMessages = getElementsAround(
+        messages as unknown as Record<string, unknown>[],
+        'id',
+        messageToSearch.id,
+      );
+      channel.state.messages = newMessages as unknown as typeof channel.state.messages;
     });
 
     channel.state = {
@@ -460,7 +511,7 @@ describe('Channel initial load useEffect', () => {
         hasPrev: true,
       },
       messages,
-    };
+    } as unknown as typeof channel.state;
 
     renderComponent({ channel, messageId: messageToSearch.id });
 
@@ -469,10 +520,10 @@ describe('Channel initial load useEffect', () => {
     });
 
     const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-    await waitFor(() => expect(channelMessageState.current.state.messages).toHaveLength(25));
+    await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(25));
     await waitFor(() =>
       expect(
-        channelMessageState.current.state.messages.find(
+        channelMessageState.current.state.messages!.find(
           (message) => message.id === messageToSearch.id,
         ),
       ).toBeTruthy(),
@@ -487,30 +538,33 @@ describe('Channel initial load useEffect', () => {
       jest.restoreAllMocks();
       cleanup();
     });
-    const mockedHook = (values) =>
-      jest.spyOn(MessageListPaginationHooks, 'useMessageListPagination').mockImplementation(() => ({
-        copyMessagesStateFromChannel: jest.fn(),
-        loadChannelAroundMessage: jest.fn(),
-        loadChannelAtFirstUnreadMessage: jest.fn(),
-        loadInitialMessagesStateFromChannel: jest.fn(),
-        loadLatestMessages: jest.fn(),
-        loadMore: jest.fn(),
-        loadMoreRecent: jest.fn(),
-        state: { ...channelInitialState },
-        ...values,
-      }));
+    const mockedHook = (values: Record<string, unknown>) =>
+      jest.spyOn(MessageListPaginationHooks, 'useMessageListPagination').mockImplementation(
+        () =>
+          ({
+            copyMessagesStateFromChannel: jest.fn(),
+            loadChannelAroundMessage: jest.fn(),
+            loadChannelAtFirstUnreadMessage: jest.fn(),
+            loadInitialMessagesStateFromChannel: jest.fn(),
+            loadLatestMessages: jest.fn(),
+            loadMore: jest.fn(),
+            loadMoreRecent: jest.fn(),
+            state: { ...channelInitialState },
+            ...values,
+          }) as unknown as ReturnType<typeof MessageListPaginationHooks.useMessageListPagination>,
+      );
     it("should not call loadChannelAtFirstUnreadMessage if channel's unread count is 0", async () => {
       const mockedChannel = generateChannelResponse({
         messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
       });
 
       useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-      const channel = chatClient.channel('messaging', mockedChannel.id);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
       await channel.watch();
       const user = generateUser();
-      const read_data = {};
+      const read_data: Record<string, unknown> = {};
 
-      read_data[chatClient.user.id] = {
+      read_data[chatClient.user!.id] = {
         last_read: new Date(),
         user,
       };
@@ -518,7 +572,7 @@ describe('Channel initial load useEffect', () => {
       channel.state = {
         ...channelInitialState,
         read: read_data,
-      };
+      } as unknown as typeof channel.state;
       jest.spyOn(channel, 'countUnread').mockImplementation(() => 0);
 
       const loadChannelAtFirstUnreadMessageFn = jest.fn();
@@ -538,14 +592,14 @@ describe('Channel initial load useEffect', () => {
       });
 
       useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-      const channel = chatClient.channel('messaging', mockedChannel.id);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
       await channel.watch();
 
       const user = generateUser();
       const numberOfUnreadMessages = 15;
-      const read_data = {};
+      const read_data: Record<string, unknown> = {};
 
-      read_data[chatClient.user.id] = {
+      read_data[chatClient.user!.id] = {
         last_read: new Date(),
         unread_messages: numberOfUnreadMessages,
         user,
@@ -553,7 +607,7 @@ describe('Channel initial load useEffect', () => {
       channel.state = {
         ...channelInitialState,
         read: read_data,
-      };
+      } as unknown as typeof channel.state;
 
       jest.spyOn(channel, 'countUnread').mockImplementation(() => numberOfUnreadMessages);
       const loadChannelAtFirstUnreadMessageFn = jest.fn();
@@ -573,14 +627,14 @@ describe('Channel initial load useEffect', () => {
       });
 
       useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-      const channel = chatClient.channel('messaging', mockedChannel.id);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
       await channel.watch();
 
       const user = generateUser();
       const numberOfUnreadMessages = 2;
-      const read_data = {};
+      const read_data: Record<string, unknown> = {};
 
-      read_data[chatClient.user.id] = {
+      read_data[chatClient.user!.id] = {
         last_read: new Date(),
         unread_messages: numberOfUnreadMessages,
         user,
@@ -588,7 +642,7 @@ describe('Channel initial load useEffect', () => {
       channel.state = {
         ...channelInitialState,
         read: read_data,
-      };
+      } as unknown as typeof channel.state;
 
       jest.spyOn(channel, 'countUnread').mockImplementation(() => numberOfUnreadMessages);
       const loadChannelAtFirstUnreadMessageFn = jest.fn();
@@ -609,7 +663,7 @@ describe('Channel initial load useEffect', () => {
     });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     renderComponent({ channel });

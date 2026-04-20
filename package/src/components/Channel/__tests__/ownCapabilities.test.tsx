@@ -4,6 +4,7 @@ import { FlatList } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, MessageResponse, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { allOwnCapabilities } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
@@ -31,10 +32,10 @@ describe('Own capabilities', () => {
     user: otherUser,
   });
 
-  let chatClient;
-  let channel;
+  let chatClient: StreamChat;
+  let channel: ChannelType;
 
-  const initializeChannel = async (c) => {
+  const initializeChannel = async (c: ReturnType<typeof generateChannelResponse>) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
     channel = chatClient.channel('messaging');
 
@@ -48,7 +49,7 @@ describe('Own capabilities', () => {
     });
   });
 
-  const getComponent = (props = {}) => (
+  const getComponent = (props: Partial<React.ComponentProps<typeof Channel>> = {}) => (
     <SafeAreaProvider>
       <OverlayProvider>
         <Chat client={chatClient}>
@@ -61,7 +62,7 @@ describe('Own capabilities', () => {
     </SafeAreaProvider>
   );
 
-  const generateChannelWithCapabilities = async (capabilities = []) => {
+  const generateChannelWithCapabilities = async (capabilities: string[] = []) => {
     const c = generateChannelResponse({
       channel: {
         own_capabilities: capabilities,
@@ -71,12 +72,15 @@ describe('Own capabilities', () => {
     await initializeChannel(c);
   };
 
-  const renderChannelAndOpenMessageActionsList = async (targetMessage, props = {}) => {
+  const renderChannelAndOpenMessageActionsList = async (
+    targetMessage: MessageResponse,
+    props: Partial<React.ComponentProps<typeof Channel>> = {},
+  ) => {
     const { findByTestId, queryByLabelText, queryByText, unmount } = render(getComponent(props));
-    await waitFor(() => queryByText(targetMessage.text));
+    await waitFor(() => queryByText(targetMessage.text as string));
 
     act(() => {
-      fireEvent(queryByText(targetMessage.text), 'onLongPress');
+      fireEvent(queryByText(targetMessage.text as string)!, 'onLongPress');
     });
 
     await waitFor(() => expect(!!queryByLabelText('Message action list')).toBeTruthy());
@@ -363,7 +367,7 @@ describe('Own capabilities', () => {
       const sendMessage = jest.fn();
       channel.sendMessage = sendMessage;
       act(() => {
-        fireEvent(queryByTestId('send-button'), 'onPress');
+        fireEvent(queryByTestId('send-button')!, 'onPress');
       });
 
       await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(0));
@@ -378,10 +382,10 @@ describe('Own capabilities', () => {
     const mockFn = jest.fn();
     const { queryByTestId } = render(
       getComponent({
-        doSendMessageRequest: () => {
+        doSendMessageRequest: (() => {
           mockFn();
           return sendMessageApi();
-        },
+        }) as unknown as React.ComponentProps<typeof Channel>['doSendMessageRequest'],
       }),
     );
 
@@ -397,7 +401,7 @@ describe('Own capabilities', () => {
     });
 
     act(() => {
-      fireEvent(queryByTestId('send-button'), 'onPress');
+      fireEvent(queryByTestId('send-button')!, 'onPress');
     });
 
     await waitFor(() => expect(mockFn).toHaveBeenCalledTimes(1));

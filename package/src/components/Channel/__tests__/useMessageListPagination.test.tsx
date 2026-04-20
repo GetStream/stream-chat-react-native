@@ -1,4 +1,5 @@
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, MessageResponse, StreamChat } from 'stream-chat';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -11,23 +12,26 @@ import * as ChannelStateHooks from '../hooks/useChannelDataState';
 import { useMessageListPagination } from '../hooks/useMessageListPagination';
 
 describe('useMessageListPagination', () => {
-  let chatClient;
-  let channel;
+  let chatClient: StreamChat;
+  let channel: ChannelType;
 
-  const mockedHook = (state, values) =>
-    jest.spyOn(ChannelStateHooks, 'useChannelMessageDataState').mockImplementation(() => ({
-      copyMessagesStateFromChannel: jest.fn(),
-      jumpToLatestMessage: jest.fn(),
-      jumpToMessageFinished: jest.fn(),
-      loadInitialMessagesStateFromChannel: jest.fn(),
-      loadMoreFinished: jest.fn(),
-      loadMoreRecentFinished: jest.fn(),
-      setLoading: jest.fn(),
-      setLoadingMore: jest.fn(),
-      setLoadingMoreRecent: jest.fn(),
-      state: { ...channelInitialState, ...state },
-      ...values,
-    }));
+  const mockedHook = (state: Record<string, unknown>, values?: Record<string, unknown>) =>
+    jest.spyOn(ChannelStateHooks, 'useChannelMessageDataState').mockImplementation(
+      () =>
+        ({
+          copyMessagesStateFromChannel: jest.fn(),
+          jumpToLatestMessage: jest.fn(),
+          jumpToMessageFinished: jest.fn(),
+          loadInitialMessagesStateFromChannel: jest.fn(),
+          loadMoreFinished: jest.fn(),
+          loadMoreRecentFinished: jest.fn(),
+          setLoading: jest.fn(),
+          setLoadingMore: jest.fn(),
+          setLoadingMoreRecent: jest.fn(),
+          state: { ...channelInitialState, ...state },
+          ...values,
+        }) as unknown as ReturnType<typeof ChannelStateHooks.useChannelMessageDataState>,
+    );
 
   beforeEach(async () => {
     // Reset all modules before each test
@@ -40,7 +44,7 @@ describe('useMessageListPagination', () => {
     });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    channel = chatClient.channel('messaging', mockedChannel.id);
+    channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
   });
 
@@ -56,8 +60,8 @@ describe('useMessageListPagination', () => {
     const loadMessageIntoState = jest.fn(() => {
       channel.state.messages = Array.from({ length: 20 }, (_, i) =>
         generateMessage({ text: `message-${i}` }),
-      );
-      channel.state.messagePagination.hasPrev = true;
+      ) as unknown as typeof channel.state.messages;
+      (channel.state.messagePagination as { hasPrev: boolean }).hasPrev = true;
     });
     channel.state = {
       ...channelInitialState,
@@ -66,7 +70,7 @@ describe('useMessageListPagination', () => {
         hasNext: true,
         hasPrev: true,
       },
-    };
+    } as unknown as typeof channel.state;
     const { result } = renderHook(() => useMessageListPagination({ channel }));
 
     await act(async () => {
@@ -76,7 +80,7 @@ describe('useMessageListPagination', () => {
     await waitFor(() => {
       expect(loadMessageIntoState).toHaveBeenCalledTimes(1);
       expect(result.current.state.hasMore).toBe(true);
-      expect(result.current.state.messages.length).toBe(20);
+      expect(result.current.state.messages!.length).toBe(20);
     });
   });
 
@@ -96,8 +100,8 @@ describe('useMessageListPagination', () => {
           hasNext: true,
           hasPrev: false,
         },
-      };
-      channel.query = queryFn;
+      } as unknown as typeof channel.state;
+      channel.query = queryFn as unknown as typeof channel.query;
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
       await act(async () => {
@@ -117,8 +121,8 @@ describe('useMessageListPagination', () => {
           hasNext: true,
           hasPrev: true,
         },
-      };
-      channel.query = queryFn;
+      } as unknown as typeof channel.state;
+      channel.query = queryFn as unknown as typeof channel.query;
 
       mockedHook({ loadingMore: true, loadingMoreRecent: true });
 
@@ -140,8 +144,8 @@ describe('useMessageListPagination', () => {
       const queryFn = jest.fn(() => {
         channel.state.messages = Array.from({ length: 40 }, (_, i) =>
           generateMessage({ text: `message-${i}` }),
-        );
-        channel.state.messagePagination.hasPrev = true;
+        ) as unknown as typeof channel.state.messages;
+        (channel.state.messagePagination as { hasPrev: boolean }).hasPrev = true;
       });
       channel.state = {
         ...channelInitialState,
@@ -150,8 +154,8 @@ describe('useMessageListPagination', () => {
           hasPrev: true,
         },
         messages,
-      };
-      channel.query = queryFn;
+      } as unknown as typeof channel.state;
+      channel.query = queryFn as unknown as typeof channel.query;
 
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
@@ -167,7 +171,7 @@ describe('useMessageListPagination', () => {
           },
         });
         expect(result.current.state.hasMore).toBe(true);
-        expect(result.current.state.messages.length).toBe(40);
+        expect(result.current.state.messages!.length).toBe(40);
       });
     });
   });
@@ -189,8 +193,8 @@ describe('useMessageListPagination', () => {
           hasNext: false,
           hasPrev: true,
         },
-      };
-      channel.query = queryFn;
+      } as unknown as typeof channel.state;
+      channel.query = queryFn as unknown as typeof channel.query;
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
       await act(async () => {
@@ -210,8 +214,8 @@ describe('useMessageListPagination', () => {
           hasNext: true,
           hasPrev: true,
         },
-      };
-      channel.query = queryFn;
+      } as unknown as typeof channel.state;
+      channel.query = queryFn as unknown as typeof channel.query;
 
       mockedHook({ loadingMore: true, loadingMoreRecent: true });
 
@@ -233,8 +237,8 @@ describe('useMessageListPagination', () => {
       const queryFn = jest.fn(() => {
         channel.state.messages = Array.from({ length: 40 }, (_, i) =>
           generateMessage({ text: `message-${i}` }),
-        );
-        channel.state.messagePagination.hasPrev = true;
+        ) as unknown as typeof channel.state.messages;
+        (channel.state.messagePagination as { hasPrev: boolean }).hasPrev = true;
       });
       channel.state = {
         ...channelInitialState,
@@ -243,8 +247,8 @@ describe('useMessageListPagination', () => {
           hasPrev: true,
         },
         messages,
-      };
-      channel.query = queryFn;
+      } as unknown as typeof channel.state;
+      channel.query = queryFn as unknown as typeof channel.query;
 
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
@@ -258,7 +262,7 @@ describe('useMessageListPagination', () => {
           watchers: { limit: 10 },
         });
         expect(result.current.state.hasMore).toBe(true);
-        expect(result.current.state.messages.length).toBe(40);
+        expect(result.current.state.messages!.length).toBe(40);
       });
     });
   });
@@ -276,8 +280,8 @@ describe('useMessageListPagination', () => {
       const loadMessageIntoState = jest.fn(() => {
         channel.state.messages = Array.from({ length: 20 }, (_, i) =>
           generateMessage({ text: `message-${i}` }),
-        );
-        channel.state.messagePagination.hasPrev = true;
+        ) as unknown as typeof channel.state.messages;
+        (channel.state.messagePagination as { hasPrev: boolean }).hasPrev = true;
       });
       channel.state = {
         ...channelInitialState,
@@ -286,7 +290,7 @@ describe('useMessageListPagination', () => {
           hasNext: true,
           hasPrev: true,
         },
-      };
+      } as unknown as typeof channel.state;
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
       await act(async () => {
@@ -302,8 +306,8 @@ describe('useMessageListPagination', () => {
       const loadMessageIntoState = jest.fn(() => {
         channel.state.messages = Array.from({ length: 20 }, (_, i) =>
           generateMessage({ text: `message-${i}` }),
-        );
-        channel.state.messagePagination.hasPrev = true;
+        ) as unknown as typeof channel.state.messages;
+        (channel.state.messagePagination as { hasPrev: boolean }).hasPrev = true;
       });
       channel.state = {
         ...channelInitialState,
@@ -312,7 +316,7 @@ describe('useMessageListPagination', () => {
           hasNext: false,
           hasPrev: true,
         },
-      };
+      } as unknown as typeof channel.state;
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
       await act(async () => {
@@ -323,7 +327,7 @@ describe('useMessageListPagination', () => {
         expect(loadMessageIntoState).toHaveBeenCalledTimes(1);
         expect(result.current.state.hasMore).toBe(true);
         expect(result.current.state.hasMoreNewer).toBe(false);
-        expect(result.current.state.messages.length).toBe(20);
+        expect(result.current.state.messages!.length).toBe(20);
         expect(result.current.state.targetedMessageId).toBe('message-5');
       });
     });
@@ -343,8 +347,8 @@ describe('useMessageListPagination', () => {
         generateMessage({ text: `message-${i}` }),
       );
       const loadMessageIntoState = jest.fn(() => {
-        channel.state.messages = messages;
-        channel.state.messagePagination.hasPrev = true;
+        channel.state.messages = messages as unknown as typeof channel.state.messages;
+        (channel.state.messagePagination as { hasPrev: boolean }).hasPrev = true;
       });
       channel.state = {
         ...channelInitialState,
@@ -353,7 +357,7 @@ describe('useMessageListPagination', () => {
           hasNext: true,
           hasPrev: true,
         },
-      };
+      } as unknown as typeof channel.state;
 
       const user = generateUser();
       const channelUnreadState = {
@@ -367,7 +371,11 @@ describe('useMessageListPagination', () => {
       const { result } = renderHook(() => useMessageListPagination({ channel }));
 
       await act(async () => {
-        await result.current.loadChannelAtFirstUnreadMessage({ channelUnreadState });
+        await result.current.loadChannelAtFirstUnreadMessage({
+          channelUnreadState: channelUnreadState as unknown as Parameters<
+            typeof result.current.loadChannelAtFirstUnreadMessage
+          >[0]['channelUnreadState'],
+        });
       });
 
       await waitFor(() => {
@@ -376,10 +384,32 @@ describe('useMessageListPagination', () => {
     });
 
     const generateMessageArray = (length = 20) =>
-      Array.from({ length }, (_, i) => generateMessage({ id: i, text: `message-${i}` }));
+      Array.from({ length }, (_, i) => generateMessage({ id: String(i), text: `message-${i}` }));
+
+    type TestCaseUnreadState = {
+      first_unread_message_id?: string;
+      last_read_message_id?: string;
+      unread_messages: number;
+    };
+
+    type TestCase = {
+      channelUnreadState: (messages: MessageResponse[]) => TestCaseUnreadState;
+      expectedCalls: {
+        jumpToMessageFinishedCalls: number;
+        loadMessageIntoStateCalls: number;
+        setChannelUnreadStateCalls: number;
+        setTargetedMessageIdCalls: number;
+        targetedMessageId: (messages: MessageResponse[]) => string;
+      };
+      initialMessages: MessageResponse[];
+      name: string;
+      setupLoadMessageIntoState:
+        | ((channel: ChannelType) => jest.Mock)
+        | null;
+    };
 
     // Test cases with different scenarios
-    const testCases = [
+    const testCases: TestCase[] = [
       {
         channelUnreadState: (messages) => ({
           first_unread_message_id: messages[2].id,
@@ -398,7 +428,7 @@ describe('useMessageListPagination', () => {
       },
       {
         channelUnreadState: () => ({
-          first_unread_message_id: 21,
+          first_unread_message_id: '21',
           unread_messages: 2,
         }),
         expectedCalls: {
@@ -406,19 +436,21 @@ describe('useMessageListPagination', () => {
           loadMessageIntoStateCalls: 1,
           setChannelUnreadStateCalls: 0,
           setTargetedMessageIdCalls: 1,
-          targetedMessageId: () => 21,
+          targetedMessageId: () => '21',
         },
         initialMessages: generateMessageArray(),
         name: 'first_unread_message_id not present in current message set',
         setupLoadMessageIntoState: (channel) => {
           const loadMessageIntoState = jest.fn(() => {
             const newMessages = Array.from({ length: 20 }, (_, i) =>
-              generateMessage({ id: i + 21, text: `message-${i + 21}` }),
+              generateMessage({ id: String(i + 21), text: `message-${i + 21}` }),
             );
-            channel.state.messages = newMessages;
-            channel.state.messagePagination.hasPrev = true;
+            channel.state.messages = newMessages as unknown as typeof channel.state.messages;
+            (channel.state.messagePagination as { hasPrev: boolean }).hasPrev = true;
           });
-          channel.state.loadMessageIntoState = loadMessageIntoState;
+          (
+            channel.state as unknown as { loadMessageIntoState: jest.Mock }
+          ).loadMessageIntoState = loadMessageIntoState;
           return loadMessageIntoState;
         },
       },
@@ -440,7 +472,7 @@ describe('useMessageListPagination', () => {
       },
       {
         channelUnreadState: () => ({
-          last_read_message_id: 21,
+          last_read_message_id: '21',
           unread_messages: 2,
         }),
         expectedCalls: {
@@ -448,19 +480,21 @@ describe('useMessageListPagination', () => {
           loadMessageIntoStateCalls: 1,
           setChannelUnreadStateCalls: 1,
           setTargetedMessageIdCalls: 1,
-          targetedMessageId: () => 22,
+          targetedMessageId: () => '22',
         },
         initialMessages: generateMessageArray(),
         name: 'last_read_message_id not present in current message set',
         setupLoadMessageIntoState: (channel) => {
           const loadMessageIntoState = jest.fn(() => {
             const newMessages = Array.from({ length: 20 }, (_, i) =>
-              generateMessage({ id: i + 21, text: `message-${i + 21}` }),
+              generateMessage({ id: String(i + 21), text: `message-${i + 21}` }),
             );
-            channel.state.messages = newMessages;
-            channel.state.messagePagination.hasPrev = true;
+            channel.state.messages = newMessages as unknown as typeof channel.state.messages;
+            (channel.state.messagePagination as { hasPrev: boolean }).hasPrev = true;
           });
-          channel.state.loadMessageIntoState = loadMessageIntoState;
+          (
+            channel.state as unknown as { loadMessageIntoState: jest.Mock }
+          ).loadMessageIntoState = loadMessageIntoState;
           return loadMessageIntoState;
         },
       },
@@ -476,7 +510,7 @@ describe('useMessageListPagination', () => {
           hasPrev: true,
         },
         messages,
-      };
+      } as unknown as typeof channel.state;
 
       // Setup additional mocks if needed
       const loadMessageIntoStateMock = testCase.setupLoadMessageIntoState
@@ -502,7 +536,9 @@ describe('useMessageListPagination', () => {
       // Execute the method
       await act(async () => {
         await result.current.loadChannelAtFirstUnreadMessage({
-          channelUnreadState,
+          channelUnreadState: channelUnreadState as unknown as Parameters<
+            typeof result.current.loadChannelAtFirstUnreadMessage
+          >[0]['channelUnreadState'],
           setChannelUnreadState: setChannelUnreadStateMock,
           setTargetedMessage: setTargetedMessageIdMock,
         });
@@ -537,8 +573,8 @@ describe('useMessageListPagination', () => {
 
     const messages = Array.from({ length: 20 }, (_, i) =>
       generateMessage({
-        created_at: new Date('2021-09-01T00:00:00.000Z'),
-        id: i,
+        created_at: new Date('2021-09-01T00:00:00.000Z') as unknown as string,
+        id: String(i),
         text: `message-${i}`,
       }),
     );
@@ -546,9 +582,9 @@ describe('useMessageListPagination', () => {
     const user = generateUser();
 
     it.each`
-      scenario                                       | last_read                               | expectedQueryCalls | expectedJumpToMessageFinishedCalls | expectedSetChannelUnreadStateCalls | expectedSetTargetedMessageCalls | expectedTargetedMessageId
-      ${'when last_read matches a message'}          | ${new Date(messages[10].created_at)}    | ${0}               | ${1}                               | ${1}                               | ${1}                            | ${10}
-      ${'when last_read does not match any message'} | ${new Date('2021-09-02T00:00:00.000Z')} | ${1}               | ${0}                               | ${0}                               | ${0}                            | ${undefined}
+      scenario                                       | last_read                                              | expectedQueryCalls | expectedJumpToMessageFinishedCalls | expectedSetChannelUnreadStateCalls | expectedSetTargetedMessageCalls | expectedTargetedMessageId
+      ${'when last_read matches a message'}          | ${new Date(messages[10].created_at as unknown as Date)} | ${0}               | ${1}                               | ${1}                               | ${1}                            | ${'10'}
+      ${'when last_read does not match any message'} | ${new Date('2021-09-02T00:00:00.000Z')}                | ${1}               | ${0}                               | ${0}                               | ${0}                            | ${undefined}
     `(
       '$scenario',
       async ({
@@ -558,6 +594,13 @@ describe('useMessageListPagination', () => {
         expectedSetTargetedMessageCalls,
         expectedTargetedMessageId,
         last_read,
+      }: {
+        expectedJumpToMessageFinishedCalls: number;
+        expectedQueryCalls: number;
+        expectedSetChannelUnreadStateCalls: number;
+        expectedSetTargetedMessageCalls: number;
+        expectedTargetedMessageId: string | undefined;
+        last_read: Date;
       }) => {
         // Set up channel state
         channel.state = {
@@ -567,7 +610,7 @@ describe('useMessageListPagination', () => {
             hasPrev: true,
           },
           messages,
-        };
+        } as unknown as typeof channel.state;
 
         const channelUnreadState = {
           last_read,
@@ -577,7 +620,7 @@ describe('useMessageListPagination', () => {
 
         // Mock query if needed
         const queryMock = jest.fn();
-        channel.query = queryMock;
+        channel.query = queryMock as unknown as typeof channel.query;
 
         // Set up mocks
         const jumpToMessageFinishedMock = jest.fn();

@@ -41,7 +41,7 @@ describe('MessageItemView', () => {
 
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    channel = chatClient.channel('messaging', mockedChannel.id);
+    channel = chatClient.channel('messaging', mockedChannel.channel.id);
 
     renderMessage = (options, channelProps, componentOverrides) =>
       render(

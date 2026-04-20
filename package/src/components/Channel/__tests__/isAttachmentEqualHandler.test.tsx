@@ -3,6 +3,7 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import type { Attachment, Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -19,14 +20,16 @@ import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
 
+type AttachmentWithCustomField = Attachment & { customField?: string };
+
 describe('isAttachmentEqualHandler', () => {
-  let channel;
-  let chatClient;
+  let channel: ChannelType;
+  let chatClient: StreamChat;
 
   const user = generateUser({ id: 'id', name: 'name' });
   const messages = [
     generateMessage({
-      attachments: [{ customField: 'custom-field', type: 'test' }],
+      attachments: [{ customField: 'custom-field', type: 'test' } as AttachmentWithCustomField],
       user,
     }),
   ];
@@ -40,7 +43,7 @@ describe('isAttachmentEqualHandler', () => {
 
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    channel = chatClient.channel('messaging', mockedChannel.id);
+    channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
   });
 
@@ -50,7 +53,10 @@ describe('isAttachmentEqualHandler', () => {
   });
 
   const getMessageWithCustomFields = () => {
-    const isAttachmentEqualHandler = (prevProps, nextProps) => {
+    const isAttachmentEqualHandler = (
+      prevProps: AttachmentWithCustomField,
+      nextProps: AttachmentWithCustomField,
+    ) => {
       const propsEqual =
         prevProps.customField === nextProps.customField && prevProps.type === nextProps.type;
       if (!propsEqual) {
@@ -64,14 +70,23 @@ describe('isAttachmentEqualHandler', () => {
         <Chat client={chatClient}>
           <WithComponents
             overrides={{
-              UnsupportedAttachment: ({ attachment: { customField, type } }) => {
+              UnsupportedAttachment: ({ attachment }) => {
+                const { customField, type } = attachment as AttachmentWithCustomField;
                 if (type === 'test') {
                   return <Text testID='attachment-custom-field'>{customField}</Text>;
                 }
+                return null;
               },
             }}
           >
-            <Channel channel={channel} isAttachmentEqual={isAttachmentEqualHandler}>
+            <Channel
+              channel={channel}
+              isAttachmentEqual={
+                isAttachmentEqualHandler as unknown as React.ComponentProps<
+                  typeof Channel
+                >['isAttachmentEqual']
+              }
+            >
               <MessageList />
             </Channel>
           </WithComponents>
@@ -92,8 +107,10 @@ describe('isAttachmentEqualHandler', () => {
         chatClient,
         {
           ...messages[0],
-          attachments: [{ customField: 'custom-field-2', type: 'test' }],
-          updated_at: new Date(),
+          attachments: [
+            { customField: 'custom-field-2', type: 'test' } as AttachmentWithCustomField,
+          ],
+          updated_at: new Date() as unknown as string,
         },
         channel,
       );

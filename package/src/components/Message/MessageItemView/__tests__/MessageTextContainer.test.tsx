@@ -39,7 +39,7 @@ describe('MessageTextContainer', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-text-container')).toBeTruthy();
-      expect(getByText(message.text)).toBeTruthy();
+      expect(getByText(message.text as string)).toBeTruthy();
     });
 
     rerender(
@@ -57,7 +57,7 @@ describe('MessageTextContainer', () => {
     await waitFor(() => {
       expect(getByTestId('message-text-container')).toBeTruthy();
       expect(getByTestId('message-text')).toBeTruthy();
-      expect(getByText(message.text)).toBeTruthy();
+      expect(getByText(message.text as string)).toBeTruthy();
     });
 
     const staticMessage = generateStaticMessage('Hello World', {
@@ -87,7 +87,9 @@ describe('MessageTextContainer', () => {
 
     const mockedChannel = generateChannelResponse({
       id: 'chans',
-      messages: [message],
+      messages: [message] as unknown as NonNullable<
+        Parameters<typeof generateChannelResponse>[0]
+      >['messages'],
     });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);

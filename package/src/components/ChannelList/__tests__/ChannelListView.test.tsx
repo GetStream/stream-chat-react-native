@@ -1,7 +1,9 @@
 import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
+import type { StreamChat } from 'stream-chat';
 
+import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -13,7 +15,7 @@ import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
 import { ChannelListView } from '../ChannelListView';
 
-let chatClient;
+let chatClient: StreamChat;
 
 /**
  * Renders the full ChannelList (which now always uses ChannelListView internally).
@@ -42,30 +44,38 @@ const noop = () => {};
  * Renders ChannelListView directly with a mock ChannelsContext for testing
  * error and loading states.
  */
-const ComponentWithContextOverrides = ({ error, loadingChannels }) => (
+const ComponentWithContextOverrides = ({
+  error,
+  loadingChannels,
+}: {
+  error: boolean;
+  loadingChannels: boolean;
+}) => (
   <Chat client={chatClient}>
     <ChatContext.Consumer>
       {(context) => (
         <ChatProvider value={{ ...context, isOnline: true }}>
           <ChannelsProvider
-            value={{
-              additionalFlatListProps: {},
-              channelListInitialized: !loadingChannels && !error,
-              channels: error ? null : [],
-              error: error ? new Error('test error') : undefined,
-              forceUpdate: 0,
-              hasNextPage: false,
-              loadingChannels,
-              loadingNextPage: false,
-              loadMoreThreshold: 0.1,
-              loadNextPage: noop,
-              maxUnreadCount: 255,
-              numberOfSkeletons: 8,
-              refreshing: false,
-              refreshList: noop,
-              reloadList: noop,
-              setFlatListRef: noop,
-            }}
+            value={
+              {
+                additionalFlatListProps: {},
+                channelListInitialized: !loadingChannels && !error,
+                channels: error ? null : [],
+                error: error ? new Error('test error') : undefined,
+                forceUpdate: 0,
+                hasNextPage: false,
+                loadingChannels,
+                loadingNextPage: false,
+                loadMoreThreshold: 0.1,
+                loadNextPage: noop,
+                maxUnreadCount: 255,
+                numberOfSkeletons: 8,
+                refreshing: false,
+                refreshList: noop,
+                reloadList: noop,
+                setFlatListRef: noop,
+              } as unknown as ChannelsContextValue
+            }
           >
             <ChannelListView />
           </ChannelsProvider>

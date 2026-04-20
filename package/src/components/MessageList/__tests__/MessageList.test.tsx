@@ -38,7 +38,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const { getByText, queryAllByTestId } = render(
@@ -56,7 +56,7 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(queryAllByTestId('scroll-to-bottom-button')).toHaveLength(0);
-      expect(getByText(newMessage.text)).toBeTruthy();
+      expect(getByText(newMessage.text as string)).toBeTruthy();
     });
   }, 10000);
 
@@ -73,7 +73,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const { getByTestId } = render(
@@ -105,7 +105,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const { getByTestId, queryByTestId } = render(
@@ -133,7 +133,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const { getByTestId, queryAllByTestId } = render(
@@ -165,7 +165,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const { getByTestId } = render(
@@ -192,7 +192,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const { getByTestId, getByText, queryAllByTestId } = render(
@@ -216,7 +216,7 @@ describe('MessageList', () => {
   it('should scroll to a message even if out of the loaded window', async () => {
     const user1 = generateUser();
 
-    const mockedLongMessagesList = [];
+    const mockedLongMessagesList: ReturnType<typeof generateMessage>[] = [];
     // we need a long enough list to make sure elements aren't preloaded by the underlying FlatList
     for (let i = 0; i <= 150; i += 1) {
       mockedLongMessagesList.push(generateMessage({ timestamp: new Date(), user: user1 }));
@@ -233,7 +233,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     render(
@@ -247,8 +247,8 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(targetedMessageText)).toBeOnTheScreen();
-      expect(() => screen.getByText(latestMessageText)).toThrow();
+      expect(screen.getByText(targetedMessageText as string)).toBeOnTheScreen();
+      expect(() => screen.getByText(latestMessageText as string)).toThrow();
     });
   });
 
@@ -271,7 +271,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: user1.id });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     channel.state = {
@@ -279,7 +279,7 @@ describe('MessageList', () => {
       latestMessages: [],
       messages,
       read: read_data,
-    };
+    } as unknown as typeof channel.state;
 
     const { queryByLabelText } = render(
       <OverlayProvider>
@@ -308,7 +308,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: user1.id });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const channelUnreadState = {
@@ -320,13 +320,16 @@ describe('MessageList', () => {
       ...channelInitialState,
       latestMessages: [],
       messages,
-    };
+    } as unknown as typeof channel.state;
 
+    const messageListProps = { channelUnreadState } as unknown as React.ComponentProps<
+      typeof MessageList
+    >;
     const { queryByLabelText } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <MessageList channelUnreadState={channelUnreadState} />
+            <MessageList {...messageListProps} />
           </Channel>
         </Chat>
       </OverlayProvider>,
@@ -345,7 +348,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: user.id });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const user2 = generateUser();
@@ -382,7 +385,7 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: user.id });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const targetedMessage = messages[15].id;
@@ -391,7 +394,7 @@ describe('MessageList', () => {
       ...channelInitialState,
       latestMessages: [],
       messages,
-    };
+    } as unknown as typeof channel.state;
 
     const flatListRefMock = jest
       .spyOn(FlatList.prototype, 'scrollToIndex')
@@ -428,17 +431,17 @@ describe('MessageList', () => {
 
     const chatClient = await getTestClientWithUser({ id: user.id });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
-    const targetedMessage = 21;
+    const targetedMessage = '21';
     const setTargetedMessage = jest.fn();
 
     channel.state = {
       ...channelInitialState,
       latestMessages: [],
       messages,
-    };
+    } as unknown as typeof channel.state;
 
     const loadChannelAroundMessage = jest.fn(() => Promise.resolve());
 
@@ -499,7 +502,7 @@ describe('MessageList pagination', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const loadMoreRecent = jest.fn(() => Promise.resolve());
@@ -541,7 +544,7 @@ describe('MessageList pagination', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     const loadMore = jest.fn(() => Promise.resolve());
@@ -586,18 +589,23 @@ describe('MessageList pagination', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
     channel.state = {
       ...channelInitialState,
       latestMessages: [],
       members: Object.fromEntries(
-        Array.from({ length: 10 }, (_, i) => [i, generateMember({ id: i })]),
+        Array.from({ length: 10 }, (_, i) => [
+          i,
+          generateMember({ user_id: String(i) } as unknown as Partial<
+            Parameters<typeof generateMember>[0]
+          >),
+        ]),
       ),
-      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: i })),
+      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
       messageSets: [{ isCurrent: true, isLatest: true }],
-    };
+    } as unknown as typeof channel.state;
 
     const loadLatestMessages = jest.fn(() => Promise.resolve());
     mockedHook({ loadLatestMessages });

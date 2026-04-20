@@ -2,6 +2,7 @@ import React from 'react';
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import truncate from 'lodash/truncate';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -15,32 +16,34 @@ import { ChannelPreviewView } from '../ChannelPreviewView';
 
 describe('ChannelPreviewView', () => {
   const clientUser = generateUser();
-  let chatClient;
-  let channel;
+  let chatClient: StreamChat;
+  let channel: ChannelType | null;
 
-  const getComponent = (props = {}) => (
+  const getComponent = (props: Partial<React.ComponentProps<typeof ChannelPreviewView>> = {}) => (
     <Chat client={chatClient}>
       <ChannelPreviewView
-        channel={channel}
-        client={chatClient}
-        latestMessagePreview={{
-          created_at: '',
-          messageObject: generateMessage(),
-          previews: [
-            {
-              bold: true,
-              text: 'This is the message preview text',
-            },
-          ],
-          status: 1, // read states of latest message.
-        }}
-        onSelect={jest.fn()}
+        {...({
+          channel,
+          client: chatClient,
+          latestMessagePreview: {
+            created_at: '',
+            messageObject: generateMessage(),
+            previews: [
+              {
+                bold: true,
+                text: 'This is the message preview text',
+              },
+            ],
+            status: 1, // read states of latest message.
+          },
+          onSelect: jest.fn(),
+        } as unknown as React.ComponentProps<typeof ChannelPreviewView>)}
         {...props}
       />
     </Chat>
   );
 
-  const initializeChannel = async (c) => {
+  const initializeChannel = async (c: ReturnType<typeof generateChannelResponse>) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
 
     channel = chatClient.channel('messaging');
@@ -63,7 +66,7 @@ describe('ChannelPreviewView', () => {
     render(
       getComponent({
         onSelect,
-        watchers: {},
+        ...({ watchers: {} } as unknown as Partial<React.ComponentProps<typeof ChannelPreviewView>>),
       }),
     );
 
@@ -101,7 +104,7 @@ describe('ChannelPreviewView', () => {
     );
 
     render(getComponent());
-    const expectedDisplayName = `${m1.user.name}, ${m2.user.name}, ${m3.user.name}`;
+    const expectedDisplayName = `${m1.user!.name}, ${m2.user!.name}, ${m3.user!.name}`;
 
     await waitFor(() => screen.queryByText(expectedDisplayName));
   });
@@ -112,8 +115,10 @@ describe('ChannelPreviewView', () => {
 
     render(
       getComponent({
-        latestMessage: message,
-        latestMessageLength: 6,
+        ...({
+          latestMessage: message,
+          latestMessageLength: 6,
+        } as unknown as Partial<React.ComponentProps<typeof ChannelPreviewView>>),
       }),
     );
 

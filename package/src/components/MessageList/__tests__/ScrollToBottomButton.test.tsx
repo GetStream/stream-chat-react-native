@@ -3,6 +3,7 @@ import React from 'react';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { ScrollToBottomButton } from '../ScrollToBottomButton';
@@ -20,7 +21,7 @@ describe('ScrollToBottomButton', () => {
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators}>
+        <TranslationProvider value={translators as unknown as TranslationContextValue}>
           <ScrollToBottomButton onPress={() => null} showNotification={false} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -36,7 +37,7 @@ describe('ScrollToBottomButton', () => {
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators}>
+        <TranslationProvider value={translators as unknown as TranslationContextValue}>
           <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -53,7 +54,7 @@ describe('ScrollToBottomButton', () => {
     const onPress = jest.fn();
     const { getByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators}>
+        <TranslationProvider value={translators as unknown as TranslationContextValue}>
           <ScrollToBottomButton onPress={onPress} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -63,16 +64,18 @@ describe('ScrollToBottomButton', () => {
   });
 
   it('should display the unread count', async () => {
-    const t = jest.fn((key) => key);
+    const t = jest.fn((key: string) => key);
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const { getByTestId, getByText } = render(
       <ThemeProvider>
-        <TranslationProvider value={{ ...translators, t }}>
+        <TranslationProvider
+          value={{ ...translators, t } as unknown as TranslationContextValue}
+        >
           <ScrollToBottomButton
+            {...({ t } as unknown as React.ComponentProps<typeof ScrollToBottomButton>)}
             onPress={() => null}
             showNotification={true}
-            t={t}
             unreadCount={3}
           />
         </TranslationProvider>
@@ -89,7 +92,7 @@ describe('ScrollToBottomButton', () => {
     const translators = await i18nInstance.getTranslators();
     const { toJSON } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators}>
+        <TranslationProvider value={translators as unknown as TranslationContextValue}>
           <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,

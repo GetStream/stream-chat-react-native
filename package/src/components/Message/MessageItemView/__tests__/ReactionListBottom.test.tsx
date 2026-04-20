@@ -33,7 +33,7 @@ describe('ReactionListBottom', () => {
 
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    channel = chatClient.channel('messaging', mockedChannel.id);
+    channel = chatClient.channel('messaging', mockedChannel.channel.id);
 
     renderMessage = (options, channelProps) =>
       render(
@@ -56,7 +56,9 @@ describe('ReactionListBottom', () => {
     const user = generateUser();
     const reaction = generateReaction();
     const message = generateMessage({
-      reaction_groups: { [reaction.type]: reaction },
+      reaction_groups: { [reaction.type]: reaction } as unknown as ReturnType<
+        typeof generateMessage
+      >['reaction_groups'],
       user,
     });
 
@@ -71,7 +73,9 @@ describe('ReactionListBottom', () => {
     const user = generateUser();
     const reaction = generateReaction();
     const message = generateMessage({
-      reaction_groups: { [reaction.type]: reaction },
+      reaction_groups: { [reaction.type]: reaction } as unknown as ReturnType<
+        typeof generateMessage
+      >['reaction_groups'],
       user,
     });
 
@@ -145,7 +149,9 @@ describe('ReactionListBottom', () => {
     const user = generateUser();
     const reaction = generateReaction();
     const message = generateMessage({
-      reaction_groups: { [reaction.type]: reaction },
+      reaction_groups: { [reaction.type]: reaction } as unknown as ReturnType<
+        typeof generateMessage
+      >['reaction_groups'],
       user,
     });
 

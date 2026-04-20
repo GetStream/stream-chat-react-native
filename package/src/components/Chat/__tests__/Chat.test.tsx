@@ -162,8 +162,8 @@ describe('TranslationContext', () => {
     const i18nInstance = new Streami18n();
     const { t, tDateTimeParser } = await i18nInstance.getTranslators();
 
-    i18nInstance.t = () => 't';
-    i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
+    i18nInstance.t = (() => 't') as unknown as typeof i18nInstance.t;
+    i18nInstance.tDateTimeParser = (() => 'tDateTimeParser') as unknown as typeof i18nInstance.tDateTimeParser;
 
     render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
@@ -187,8 +187,8 @@ describe('TranslationContext', () => {
     let context;
     const i18nInstance = new Streami18n();
 
-    i18nInstance.t = () => 't';
-    i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
+    i18nInstance.t = (() => 't') as unknown as typeof i18nInstance.t;
+    i18nInstance.tDateTimeParser = (() => 'tDateTimeParser') as unknown as typeof i18nInstance.tDateTimeParser;
 
     const { rerender } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
@@ -207,8 +207,9 @@ describe('TranslationContext', () => {
 
     const newI18nInstance = new Streami18n();
 
-    newI18nInstance.t = () => 'newT';
-    newI18nInstance.tDateTimeParser = () => 'newtDateTimeParser';
+    newI18nInstance.t = (() => 'newT') as unknown as typeof newI18nInstance.t;
+    newI18nInstance.tDateTimeParser = (() =>
+      'newtDateTimeParser') as unknown as typeof newI18nInstance.tDateTimeParser;
 
     rerender(
       <Chat client={chatClient} i18nInstance={newI18nInstance}>
@@ -235,13 +236,13 @@ describe('TranslationContext', () => {
 
     let unsubscribeSpy;
     let listenersAfterInitialMount;
-    const initSpy = jest.spyOn(chatClientWithUser.offlineDb.syncManager, 'init');
+    const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
 
     await waitFor(() => {
       // the unsubscribe fn changes during init(), so we keep a reference to the spy
       unsubscribeSpy = jest.spyOn(
-        chatClientWithUser.offlineDb.syncManager.connectionChangedListener,
-        'unsubscribe',
+        chatClientWithUser.offlineDb!.syncManager.connectionChangedListener as object,
+        'unsubscribe' as never,
       );
       listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
     });
@@ -266,13 +267,13 @@ describe('TranslationContext', () => {
 
     let unsubscribeSpy;
     let listenersAfterInitialMount;
-    const initSpy = jest.spyOn(chatClientWithUser.offlineDb.syncManager, 'init');
+    const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
 
     await waitFor(() => {
       // the unsubscribe fn changes during init(), so we keep a reference to the spy
       unsubscribeSpy = jest.spyOn(
-        chatClientWithUser.offlineDb.syncManager.connectionChangedListener,
-        'unsubscribe',
+        chatClientWithUser.offlineDb!.syncManager.connectionChangedListener as object,
+        'unsubscribe' as never,
       );
       listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
     });
@@ -300,13 +301,13 @@ describe('TranslationContext', () => {
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
 
     let unsubscribeSpy;
-    const initSpy = jest.spyOn(chatClientWithUser.offlineDb.syncManager, 'init');
+    const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
 
     await waitFor(() => {
       // the unsubscribe fn changes during init(), so we keep a reference to the spy
       unsubscribeSpy = jest.spyOn(
-        chatClientWithUser.offlineDb.syncManager.connectionChangedListener,
-        'unsubscribe',
+        chatClientWithUser.offlineDb!.syncManager.connectionChangedListener as object,
+        'unsubscribe' as never,
       );
     });
 

@@ -1,7 +1,10 @@
 import React from 'react';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import type { LocalMessage, StreamChat } from 'stream-chat';
 
+import type { DeepPartial } from '../../../../contexts/themeContext/ThemeContext';
+import type { Theme } from '../../../../contexts/themeContext/utils/theme';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
   generateMessage,
@@ -15,7 +18,7 @@ import { MessageAuthor } from '../MessageAuthor';
 afterEach(cleanup);
 
 describe('MessageAuthor', () => {
-  let chatClient;
+  let chatClient: StreamChat;
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser({ id: 'me' });
@@ -27,8 +30,14 @@ describe('MessageAuthor', () => {
       user: { ...staticUser, image: undefined },
     });
     render(
-      <Chat client={chatClient} style={defaultTheme}>
-        <MessageAuthor alignment='right' groupStyles={['bottom']} message={message} />
+      <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
+        <MessageAuthor
+          {...({
+            alignment: 'right',
+            groupStyles: ['bottom'],
+          } as unknown as React.ComponentProps<typeof MessageAuthor>)}
+          message={message as unknown as LocalMessage}
+        />
       </Chat>,
     );
 
@@ -37,8 +46,14 @@ describe('MessageAuthor', () => {
     });
 
     screen.rerender(
-      <Chat client={chatClient} style={defaultTheme}>
-        <MessageAuthor alignment='right' groupStyles={[]} message={message} />
+      <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
+        <MessageAuthor
+          {...({
+            alignment: 'right',
+            groupStyles: [],
+          } as unknown as React.ComponentProps<typeof MessageAuthor>)}
+          message={message as unknown as LocalMessage}
+        />
       </Chat>,
     );
 
@@ -52,11 +67,13 @@ describe('MessageAuthor', () => {
     });
 
     screen.rerender(
-      <Chat client={chatClient} style={defaultTheme}>
+      <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
         <MessageAuthor
-          alignment='left'
-          groupStyles={['single']}
-          message={staticMessage}
+          {...({
+            alignment: 'left',
+            groupStyles: ['single'],
+          } as unknown as React.ComponentProps<typeof MessageAuthor>)}
+          message={staticMessage as unknown as LocalMessage}
           showAvatar
         />
       </Chat>,

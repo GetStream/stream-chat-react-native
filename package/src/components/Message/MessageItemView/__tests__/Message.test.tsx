@@ -70,19 +70,21 @@ describe('Message', () => {
 
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    channel = chatClient.channel('messaging', mockedChannel.id);
+    channel = chatClient.channel('messaging', mockedChannel.channel.id);
 
     renderMessage = (options, channelProps, componentOverrides) =>
       render(
         <SafeAreaProvider>
           <OverlayProvider>
             <MessageListItemProvider
-              value={{
-                goToMessage: jest.fn(),
-                modifiedTheme: {},
-                onThreadSelect: jest.fn(),
-                setNativeScrollability: jest.fn(),
-              }}
+              value={
+                {
+                  goToMessage: jest.fn(),
+                  modifiedTheme: {},
+                  onThreadSelect: jest.fn(),
+                  setNativeScrollability: jest.fn(),
+                } as unknown as React.ComponentProps<typeof MessageListItemProvider>['value']
+              }
             >
               <Chat client={chatClient}>
                 {componentOverrides ? (

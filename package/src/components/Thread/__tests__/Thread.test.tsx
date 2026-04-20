@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
 import { v5 as uuidv5 } from 'uuid';
 
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
@@ -23,7 +24,17 @@ import { Thread } from '../Thread';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 
-const renderComponent = ({ chatClient, channel, props, thread }) => {
+const renderComponent = ({
+  chatClient,
+  channel,
+  props,
+  thread,
+}: {
+  channel: ChannelType;
+  chatClient: StreamChat;
+  props?: Partial<React.ComponentProps<typeof Thread>>;
+  thread: LocalMessage;
+}) => {
   return render(
     <OverlayProvider>
       <Chat client={chatClient}>
@@ -36,8 +47,8 @@ const renderComponent = ({ chatClient, channel, props, thread }) => {
 };
 
 describe('Thread', () => {
-  let chatClient;
-  let channel;
+  let chatClient: StreamChat;
+  let channel: ChannelType;
 
   beforeEach(async () => {
     const { client: client, channels } = await initiateClientWithChannels();
@@ -55,7 +66,7 @@ describe('Thread', () => {
     const thread = generateMessage({ cid, text: 'Thread Message Text' });
     const parent_id = thread.id;
     const props = {
-      thread,
+      thread: thread as unknown as LocalMessage,
     };
 
     const threadResponses = [
@@ -64,9 +75,11 @@ describe('Thread', () => {
       generateMessage({ cid, parent_id }),
     ];
 
-    channel.state.addMessagesSorted(threadResponses);
+    channel.state.addMessagesSorted(
+      threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
+    );
 
-    renderComponent({ channel, chatClient, props, thread });
+    renderComponent({ channel, chatClient, props, thread: thread as unknown as LocalMessage });
 
     const { getAllByText, getByText, queryByText } = screen;
 
@@ -122,19 +135,37 @@ describe('Thread', () => {
 
     const chatClient = await getTestClientWithUser({ id: 'testID2' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.query();
 
-    channel.state.addMessagesSorted(threadResponses);
+    channel.state.addMessagesSorted(
+      threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
+    );
 
-    let setLastRead;
+    let setLastRead: ((date?: Date) => void) | undefined;
 
     const { getByText, toJSON } = render(
       <ChannelsStateProvider>
         <Chat client={chatClient} i18nInstance={i18nInstance}>
-          <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
-            <ImageGalleryProvider>
-              <Channel channel={channel} client={chatClient} thread={thread} threadList>
+          <AttachmentPickerProvider
+            value={
+              {
+                closePicker: jest.fn(),
+                openPicker: jest.fn(),
+              } as unknown as React.ComponentProps<typeof AttachmentPickerProvider>['value']
+            }
+          >
+            <ImageGalleryProvider
+              value={
+                {} as unknown as React.ComponentProps<typeof ImageGalleryProvider>['value']
+              }
+            >
+              <Channel
+                channel={channel}
+                client={chatClient}
+                thread={thread as unknown as LocalMessage}
+                threadList
+              >
                 <ChannelContext.Consumer>
                   {(c) => {
                     setLastRead = c.setLastRead;
@@ -154,9 +185,13 @@ describe('Thread', () => {
       expect(getByText('Message6')).toBeTruthy();
     });
 
-    act(() => setLastRead(new Date('2020-08-17T18:08:03.196Z')));
+    act(() => setLastRead!(new Date('2020-08-17T18:08:03.196Z')));
 
-    const snapshot = toJSON();
+    const snapshot = toJSON() as unknown as {
+      children: Array<{
+        children: Array<{ children: Array<{ props: { ListFooterComponent: unknown } }> }>;
+      }>;
+    };
     snapshot.children[0].children[0].children[0].props.ListFooterComponent = null;
 
     await waitFor(() => {

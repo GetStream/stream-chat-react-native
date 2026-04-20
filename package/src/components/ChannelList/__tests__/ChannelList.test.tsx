@@ -10,6 +10,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react-native';
+import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
 import {
@@ -37,21 +38,22 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
 
-const mockChannelSwipableWrapper = jest.fn(({ children }) => (
+const mockChannelSwipableWrapper = jest.fn(({ children }: { children: React.ReactNode }) => (
   <View testID='swipe-wrapper'>{children}</View>
 ));
 
 jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
-  ChannelSwipableWrapper: (...args) => mockChannelSwipableWrapper(...args),
+  ChannelSwipableWrapper: (...args: unknown[]) =>
+    (mockChannelSwipableWrapper as unknown as (...a: unknown[]) => React.ReactElement)(...args),
 }));
 
 /**
  * Custom ChannelPreview component used via WithComponents to verify channel rendering.
  * Receives { channel, muted, unread, lastMessage } from ChannelPreview.
  */
-const ChannelPreviewComponent = ({ channel }) => (
+const ChannelPreviewComponent = ({ channel }: { channel: ChannelType }) => (
   <View accessibilityLabel='list-item' testID={channel.id}>
-    <Text>{channel.data?.name}</Text>
+    <Text>{(channel.data as { name?: string } | undefined)?.name}</Text>
     <Text>{channel.state.messages[0]?.text}</Text>
   </View>
 );
@@ -73,9 +75,11 @@ const RefreshingProbe = () => {
   return <Text testID='refreshing'>{`${refreshing}`}</Text>;
 };
 
-const ChannelPreviewContent = ({ unread }) => <Text testID='preview-unread'>{`${unread}`}</Text>;
+const ChannelPreviewContent = ({ unread }: { unread?: number }) => (
+  <Text testID='preview-unread'>{`${unread}`}</Text>
+);
 
-let expectedChannelDetailsBottomSheetOverride;
+let expectedChannelDetailsBottomSheetOverride: unknown;
 const ChannelDetailsBottomSheetProbe = () => {
   const { ChannelDetailsBottomSheet } = useComponentsContext();
   return (
@@ -85,9 +89,13 @@ const ChannelDetailsBottomSheetProbe = () => {
   );
 };
 
-class DeferredPromise {
+class DeferredPromise<T = unknown> {
+  promise: Promise<T>;
+  resolve!: (value: T | PromiseLike<T>) => void;
+  reject!: (reason?: unknown) => void;
+
   constructor() {
-    this.promise = new Promise((resolve, reject) => {
+    this.promise = new Promise<T>((resolve, reject) => {
       this.resolve = resolve;
       this.reject = reject;
     });
@@ -95,11 +103,11 @@ class DeferredPromise {
 }
 
 describe('ChannelList', () => {
-  let chatClient;
-  let testChannel1;
-  let testChannel2;
-  let testChannel3;
-  const props = {
+  let chatClient: StreamChat;
+  let testChannel1: ReturnType<typeof generateChannelResponse>;
+  let testChannel2: ReturnType<typeof generateChannelResponse>;
+  let testChannel3: ReturnType<typeof generateChannelResponse>;
+  const props: Partial<React.ComponentProps<typeof ChannelList>> = {
     filters: {},
   };
 
@@ -163,7 +171,14 @@ describe('ChannelList', () => {
     screen.rerender(
       <Chat client={chatClient}>
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-          <ChannelList {...props} filters={{ dummyFilter: true }} />
+          <ChannelList
+            {...props}
+            filters={
+              { dummyFilter: true } as unknown as React.ComponentProps<
+                typeof ChannelList
+              >['filters']
+            }
+          />
         </WithComponents>
       </Chat>,
     );
@@ -178,12 +193,17 @@ describe('ChannelList', () => {
     const deferredCallForFreshFilter = new DeferredPromise();
     const staleFilter = { 'initial-filter': { a: { $gt: 'c' } } };
     const freshFilter = { 'new-filter': { a: { $gt: 'c' } } };
-    const createMockChannel = (id) => {
+    const createMockChannel = (id: string) => {
       const channel = generateChannel({
         data: { name: id },
         id,
         state: { latestMessages: [], members: {}, messages: [], setIsUpToDate: jest.fn() },
-      });
+      } as unknown as Parameters<typeof generateChannel>[0]) as unknown as {
+        countUnread: () => number;
+        messageComposer: { registerDraftEventSubscriptions: () => () => void };
+        muteStatus: () => { muted: boolean };
+        on: jest.Mock;
+      };
       channel.countUnread = () => 0;
       channel.muteStatus = () => ({ muted: false });
       channel.on = jest.fn(() => ({ unsubscribe: jest.fn() }));
@@ -195,17 +215,22 @@ describe('ChannelList', () => {
     const staleChannel = [createMockChannel('stale-channel')];
     const freshChannel = [createMockChannel('new-channel')];
     const spy = jest.spyOn(chatClient, 'queryChannels');
-    spy.mockImplementation((filters = {}) => {
+    spy.mockImplementation(((filters: Record<string, unknown> = {}) => {
       if (Object.prototype.hasOwnProperty.call(filters, 'new-filter')) {
         return deferredCallForFreshFilter.promise;
       }
       return deferredCallForStaleFilter.promise;
-    });
+    }) as unknown as typeof chatClient.queryChannels);
 
     const { rerender, queryByTestId } = render(
       <Chat client={chatClient}>
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-          <ChannelList {...props} filters={staleFilter} />
+          <ChannelList
+            {...props}
+            filters={
+              staleFilter as unknown as React.ComponentProps<typeof ChannelList>['filters']
+            }
+          />
         </WithComponents>
       </Chat>,
     );
@@ -225,7 +250,12 @@ describe('ChannelList', () => {
     rerender(
       <Chat client={chatClient}>
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-          <ChannelList {...props} filters={freshFilter} />
+          <ChannelList
+            {...props}
+            filters={
+              freshFilter as unknown as React.ComponentProps<typeof ChannelList>['filters']
+            }
+          />
         </WithComponents>
       </Chat>,
     );
@@ -406,13 +436,13 @@ describe('ChannelList', () => {
         const newMessage = sendNewMessageOnChannel3();
 
         await waitFor(() => {
-          expect(screen.getByText(newMessage.text)).toBeTruthy();
+          expect(screen.getByText(newMessage.text as string)).toBeTruthy();
         });
 
         const items = screen.getAllByLabelText('list-item');
 
         await waitFor(() => {
-          expect(within(items[0]).getByText(newMessage.text)).toBeTruthy();
+          expect(within(items[0]).getByText(newMessage.text as string)).toBeTruthy();
         });
       });
 
@@ -436,13 +466,13 @@ describe('ChannelList', () => {
         const newMessage = sendNewMessageOnChannel3();
 
         await waitFor(() => {
-          expect(screen.getByText(newMessage.text)).toBeTruthy();
+          expect(screen.getByText(newMessage.text as string)).toBeTruthy();
         });
 
         const items = screen.getAllByLabelText('list-item');
 
         await waitFor(() => {
-          expect(within(items[0]).getByText(newMessage.text)).toBeTruthy();
+          expect(within(items[0]).getByText(newMessage.text as string)).toBeTruthy();
         });
       });
 
@@ -462,13 +492,13 @@ describe('ChannelList', () => {
         const newMessage = sendNewMessageOnChannel3();
 
         await waitFor(() => {
-          expect(screen.getByText(newMessage.text)).toBeTruthy();
+          expect(screen.getByText(newMessage.text as string)).toBeTruthy();
         });
 
         const items = screen.getAllByLabelText('list-item');
 
         await waitFor(() => {
-          expect(within(items[2]).getByText(newMessage.text)).toBeTruthy();
+          expect(within(items[2]).getByText(newMessage.text as string)).toBeTruthy();
         });
       });
       it('should call the `onNewMessage` function prop, if provided', async () => {
@@ -485,7 +515,12 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
-        act(() => dispatchMessageNewEvent(chatClient, testChannel2.channel));
+        act(() =>
+          dispatchMessageNewEvent(
+            chatClient,
+            testChannel2.channel as unknown as Parameters<typeof dispatchMessageNewEvent>[1],
+          ),
+        );
 
         await waitFor(() => {
           expect(onNewMessage).toHaveBeenCalledTimes(1);
@@ -538,7 +573,12 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
-        act(() => dispatchMessageNewEvent(chatClient, testChannel2.channel));
+        act(() =>
+          dispatchMessageNewEvent(
+            chatClient,
+            testChannel2.channel as unknown as Parameters<typeof dispatchMessageNewEvent>[1],
+          ),
+        );
 
         await waitFor(() => {
           expect(onNewMessage).toHaveBeenCalledTimes(1);
@@ -884,7 +924,9 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('refreshing').children[0]).toBe('false');
         });
 
-        chatClient.queryChannels = jest.fn(() => deferredPromise.promise);
+        chatClient.queryChannels = jest.fn(
+          () => deferredPromise.promise,
+        ) as unknown as typeof chatClient.queryChannels;
 
         act(() => dispatchConnectionChangedEvent(chatClient, false));
         act(() => dispatchConnectionChangedEvent(chatClient, true));
