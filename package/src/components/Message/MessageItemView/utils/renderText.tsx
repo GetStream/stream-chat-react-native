@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-// @ts-expect-error
 import Markdown from 'react-native-markdown-package';
 import Animated, { clamp, scrollTo, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 
