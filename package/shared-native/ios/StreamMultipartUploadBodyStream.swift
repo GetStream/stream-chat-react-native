@@ -69,7 +69,7 @@ final class StreamMultipartUploadBodyStreamFactory {
   private static func multipartTextData(boundary: String, part: StreamMultipartTextPart) -> Data {
     let payload = [
       "--\(boundary)",
-      "Content-Disposition: form-data; name=\"\(part.fieldName)\"",
+      "Content-Disposition: form-data; name=\(multipartQuotedParameter(part.fieldName))",
       "",
       part.value,
       "",
@@ -84,12 +84,21 @@ final class StreamMultipartUploadBodyStreamFactory {
   ) -> Data {
     let payload = [
       "--\(boundary)",
-      "Content-Disposition: form-data; name=\"\(part.fieldName)\"; filename=\"\(part.fileName)\"",
+      "Content-Disposition: form-data; name=\(multipartQuotedParameter(part.fieldName)); filename=\(multipartQuotedParameter(part.fileName))",
       "Content-Type: \(part.mimeType)",
       "",
     ].joined(separator: "\r\n") + "\r\n"
 
     return payload.data(using: .utf8) ?? Data()
+  }
+
+  private static func multipartQuotedParameter(_ value: String) -> String {
+    let escaped = value
+      .replacingOccurrences(of: "\r", with: "%0D")
+      .replacingOccurrences(of: "\n", with: "%0A")
+      .replacingOccurrences(of: "\"", with: "%22")
+
+    return "\"\(escaped)\""
   }
 }
 

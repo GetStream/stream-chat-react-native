@@ -37,11 +37,13 @@ final class StreamMultipartUploadManager: NSObject {
   }()
 
   private let lock = NSLock()
+  private var cancelledUploadIds = Set<String>()
   private var statesByTaskIdentifier = [Int: StreamMultipartUploadTaskState]()
   private var taskIdentifiersByUploadId = [String: Int]()
 
   func cancel(uploadId: String) {
     lock.lock()
+    cancelledUploadIds.insert(uploadId)
     let taskIdentifier = taskIdentifiersByUploadId[uploadId]
     let task: URLSessionUploadTask?
     if let taskIdentifier {
@@ -72,7 +74,9 @@ final class StreamMultipartUploadManager: NSObject {
       progress: progress
     )
 
+    try throwIfCancelled(uploadId: uploadId)
     let bodyFactory = try await StreamMultipartUploadBodyStreamFactory.create(parts: request.parts)
+    try throwIfCancelled(uploadId: uploadId)
     var urlRequest = URLRequest(url: request.url)
     urlRequest.httpMethod = request.method
 
@@ -109,7 +113,12 @@ final class StreamMultipartUploadManager: NSObject {
         continuation.resume(with: result)
       }
 
-      register(state)
+      guard register(state) else {
+        task.cancel()
+        continuation.resume(throwing: StreamMultipartUploadError.cancelled)
+        return
+      }
+
       task.resume()
     }
   }
@@ -197,11 +206,27 @@ final class StreamMultipartUploadManager: NSObject {
     )
   }
 
-  private func register(_ state: StreamMultipartUploadTaskState) {
+  private func throwIfCancelled(uploadId: String) throws {
     lock.lock()
+    let wasCancelled = cancelledUploadIds.remove(uploadId) != nil
+    lock.unlock()
+
+    if wasCancelled {
+      throw StreamMultipartUploadError.cancelled
+    }
+  }
+
+  private func register(_ state: StreamMultipartUploadTaskState) -> Bool {
+    lock.lock()
+    if cancelledUploadIds.remove(state.uploadId) != nil {
+      lock.unlock()
+      return false
+    }
+
     statesByTaskIdentifier[state.task.taskIdentifier] = state
     taskIdentifiersByUploadId[state.uploadId] = state.task.taskIdentifier
     lock.unlock()
+    return true
   }
 
   private func removeState(taskIdentifier: Int) -> StreamMultipartUploadTaskState? {
@@ -209,6 +234,7 @@ final class StreamMultipartUploadManager: NSObject {
     let state = statesByTaskIdentifier.removeValue(forKey: taskIdentifier)
     if let uploadId = state?.uploadId {
       taskIdentifiersByUploadId.removeValue(forKey: uploadId)
+      cancelledUploadIds.remove(uploadId)
     }
     lock.unlock()
     return state

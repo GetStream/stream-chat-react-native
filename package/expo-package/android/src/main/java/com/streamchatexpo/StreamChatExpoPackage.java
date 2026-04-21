@@ -20,11 +20,11 @@ public class StreamChatExpoPackage extends TurboReactPackage {
   @Nullable
   @Override
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
-    if (name.equals(STREAM_MULTIPART_UPLOADER_MODULE) && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+    if (name.equals(STREAM_MULTIPART_UPLOADER_MODULE)) {
       return createNewArchModule("com.streamchatexpo.StreamMultipartUploaderModule", reactContext);
     }
 
-    if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE) && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+    if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE)) {
       return createNewArchModule("com.streamchatexpo.StreamVideoThumbnailModule", reactContext);
     }
 
@@ -35,7 +35,6 @@ public class StreamChatExpoPackage extends TurboReactPackage {
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
     return () -> {
       final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
-      boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
       moduleInfos.put(
               STREAM_MULTIPART_UPLOADER_MODULE,
               new ReactModuleInfo(
@@ -45,7 +44,7 @@ public class StreamChatExpoPackage extends TurboReactPackage {
                       false, // needsEagerInit
                       false, // hasConstants
                       false, // isCxxModule
-                      isTurboModule // isTurboModule
+                      true // isTurboModule
               ));
       moduleInfos.put(
               STREAM_VIDEO_THUMBNAIL_MODULE,
@@ -56,7 +55,7 @@ public class StreamChatExpoPackage extends TurboReactPackage {
                       false, // needsEagerInit
                       false, // hasConstants
                       false, // isCxxModule
-                      isTurboModule // isTurboModule
+                      true // isTurboModule
               ));
       return moduleInfos;
     };

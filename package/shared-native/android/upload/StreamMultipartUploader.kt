@@ -6,13 +6,16 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import java.io.InterruptedIOException
 import java.util.concurrent.ConcurrentHashMap
 
 object StreamMultipartUploader {
   private val client: OkHttpClient = OkHttpClient.Builder().retryOnConnectionFailure(true).build()
+  private val cancelledUploadIds = ConcurrentHashMap.newKeySet<String>()
   private val inFlightCalls = ConcurrentHashMap<String, Call>()
 
   fun cancel(uploadId: String) {
+    cancelledUploadIds.add(uploadId)
     inFlightCalls.remove(uploadId)?.cancel()
   }
 
@@ -21,11 +24,20 @@ object StreamMultipartUploader {
     request: StreamMultipartUploadRequest,
     onProgress: (loaded: Long, total: Long?) -> Unit,
   ): StreamMultipartUploadResponse {
+    if (cancelledUploadIds.contains(request.uploadId)) {
+      cancelledUploadIds.remove(request.uploadId)
+      throw InterruptedIOException("Request aborted")
+    }
+
     val httpRequest = createRequest(context, request, onProgress)
     val call = client.newCall(httpRequest)
     inFlightCalls[request.uploadId] = call
 
     try {
+      if (cancelledUploadIds.remove(request.uploadId)) {
+        call.cancel()
+      }
+
       call.execute().use { response ->
         return StreamMultipartUploadResponse(
           body = response.body?.string().orEmpty(),
@@ -39,6 +51,7 @@ object StreamMultipartUploader {
       }
     } finally {
       inFlightCalls.remove(request.uploadId)
+      cancelledUploadIds.remove(request.uploadId)
     }
   }
 
