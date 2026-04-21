@@ -26,6 +26,8 @@ type NativeMultipartAxiosRequestConfig = InternalAxiosRequestConfig & {
 
 type ResolvableAxiosAdapter = Parameters<typeof axios.getAdapter>[0];
 
+const DEFAULT_COMPLETION_PROGRESS_CAP = 90;
+
 const installedAdapters = new WeakSet<StreamChat>();
 
 const getFormDataEntries = (data: unknown): [string, FormDataPartValue][] | null => {
@@ -64,6 +66,19 @@ const normalizeHeaders = (
 };
 
 const getFileNameFromUri = (uri: string) => uri.split('/').filter(Boolean).pop() || 'file';
+
+const getNativeProgressOptions = (
+  progress?: NativeMultipartUploadProgressConfig,
+): NativeMultipartUploadProgressConfig | undefined => {
+  if (!progress) {
+    return undefined;
+  }
+
+  const nativeProgressOptions = { ...progress };
+  delete nativeProgressOptions.completionProgressCap;
+
+  return Object.keys(nativeProgressOptions).length ? nativeProgressOptions : undefined;
+};
 
 const createNativeMultipartRequest = (
   client: StreamChat,
@@ -109,7 +124,7 @@ const createNativeMultipartRequest = (
     headers: normalizeHeaders(config.headers),
     method: (config.method || 'POST').toUpperCase(),
     parts,
-    progress: config.uploadProgressOptions,
+    progress: getNativeProgressOptions(config.uploadProgressOptions),
     signal: config.signal,
     url: client.axiosInstance.getUri(config),
   };
@@ -126,6 +141,31 @@ const toFiniteNumber = (value: unknown) => {
   }
 
   return undefined;
+};
+
+const getCompletionProgressCap = (config: NativeMultipartAxiosRequestConfig) => {
+  const cap = toFiniteNumber(config.uploadProgressOptions?.completionProgressCap);
+  if (cap === undefined) {
+    return DEFAULT_COMPLETION_PROGRESS_CAP;
+  }
+
+  return Math.min(100, Math.max(0, cap));
+};
+
+const getDisplayLoaded = ({
+  completionProgressCap,
+  loaded,
+  total,
+}: {
+  completionProgressCap: number;
+  loaded: number;
+  total?: number;
+}) => {
+  if (typeof total !== 'number' || total <= 0) {
+    return loaded;
+  }
+
+  return Math.min(loaded, total * (completionProgressCap / 100));
 };
 
 const getUploadProgressCallbacks = (config: NativeMultipartAxiosRequestConfig) => {
@@ -170,6 +210,7 @@ const nativeMultipartAxiosAdapter = async (
   config: NativeMultipartAxiosRequestConfig,
 ) => {
   const uploadProgressCallbacks = getUploadProgressCallbacks(config);
+  const completionProgressCap = getCompletionProgressCap(config);
   let lastLoaded = 0;
 
   const response = await NativeHandlers.multipartUpload({
@@ -177,12 +218,18 @@ const nativeMultipartAxiosAdapter = async (
     onProgress: uploadProgressCallbacks.length
       ? ({ loaded, total }) => {
           const normalizedLoaded = toFiniteNumber(loaded) ?? 0;
-          const event = createUploadProgressEvent({
-            bytes: Math.max(0, normalizedLoaded - lastLoaded),
+          const normalizedTotal = toFiniteNumber(total);
+          const displayLoaded = getDisplayLoaded({
+            completionProgressCap,
             loaded: normalizedLoaded,
-            total,
+            total: normalizedTotal,
           });
-          lastLoaded = normalizedLoaded;
+          const event = createUploadProgressEvent({
+            bytes: Math.max(0, displayLoaded - lastLoaded),
+            loaded: displayLoaded,
+            total: normalizedTotal,
+          });
+          lastLoaded = displayLoaded;
           uploadProgressCallbacks.forEach((callback) => callback(event));
         }
       : undefined,

@@ -181,6 +181,112 @@ describe('installNativeMultipartAdapter', () => {
     );
   });
 
+  it('caps native multipart body progress to 90 percent while waiting for the response', async () => {
+    NativeHandlers.multipartUpload = jest.fn().mockImplementation(({ onProgress }) => {
+      onProgress?.({
+        loaded: 100,
+        total: 100,
+      });
+
+      return {
+        body: JSON.stringify({ file: 'https://example.com/file.jpg' }),
+        headers: { 'content-type': 'application/json' },
+        status: 200,
+        statusText: 'OK',
+      };
+    });
+
+    const client = getTestClient();
+    preserveRequestData(client);
+    installNativeMultipartAdapter(client);
+    const onUploadProgress = jest.fn();
+    const formData = {
+      _parts: [
+        [
+          'file',
+          {
+            name: 'test.jpg',
+            type: 'image/jpeg',
+            uri: 'file:///tmp/test.jpg',
+          },
+        ],
+      ],
+    };
+
+    await client.axiosInstance.post('/uploads/image', formData, { onUploadProgress });
+
+    expect(onUploadProgress).toHaveBeenCalledTimes(1);
+    expect(onUploadProgress).toHaveBeenCalledWith(
+      expect.objectContaining({
+        bytes: 90,
+        lengthComputable: true,
+        loaded: 90,
+        progress: 0.9,
+        total: 100,
+      }),
+    );
+  });
+
+  it('allows overriding the native multipart completion progress cap', async () => {
+    NativeHandlers.multipartUpload = jest.fn().mockImplementation(({ onProgress }) => {
+      onProgress?.({
+        loaded: 100,
+        total: 100,
+      });
+
+      return {
+        body: JSON.stringify({ file: 'https://example.com/file.jpg' }),
+        headers: { 'content-type': 'application/json' },
+        status: 200,
+        statusText: 'OK',
+      };
+    });
+
+    const client = getTestClient();
+    preserveRequestData(client);
+    installNativeMultipartAdapter(client);
+    const onUploadProgress = jest.fn();
+    const formData = {
+      _parts: [
+        [
+          'file',
+          {
+            name: 'test.jpg',
+            type: 'image/jpeg',
+            uri: 'file:///tmp/test.jpg',
+          },
+        ],
+      ],
+    };
+
+    await client.axiosInstance.post('/uploads/image', formData, {
+      onUploadProgress,
+      uploadProgressOptions: {
+        completionProgressCap: 75,
+        count: 10,
+        intervalMs: 25,
+      },
+    });
+
+    expect(onUploadProgress).toHaveBeenCalledTimes(1);
+    expect(onUploadProgress).toHaveBeenCalledWith(
+      expect.objectContaining({
+        bytes: 75,
+        loaded: 75,
+        progress: 0.75,
+        total: 100,
+      }),
+    );
+    expect(NativeHandlers.multipartUpload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        progress: {
+          count: 10,
+          intervalMs: 25,
+        },
+      }),
+    );
+  });
+
   it('uses the final config after user request interceptors run', async () => {
     const client = getTestClient();
     preserveRequestData(client);

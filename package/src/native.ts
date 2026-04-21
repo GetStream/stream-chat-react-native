@@ -62,6 +62,13 @@ export type NativeMultipartUploadPart =
     };
 
 export type NativeMultipartUploadProgressConfig = {
+  /**
+   * Maximum progress percentage reported while the native request body is still being sent.
+   * Completion is represented by the upload request resolving and the upload indicator being removed.
+   *
+   * @default 90
+   */
+  completionProgressCap?: number;
   count?: number;
   intervalMs?: number;
 };
