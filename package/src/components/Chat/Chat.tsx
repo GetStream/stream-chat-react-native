@@ -26,6 +26,7 @@ import { NativeHandlers } from '../../native';
 import { OfflineDB } from '../../store/OfflineDB';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
+import { installNativeMultipartInterceptor } from '../../utils/installNativeMultipartInterceptor';
 import { version } from '../../version.json';
 
 init();
@@ -240,6 +241,8 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       client.reminders.clearTimers();
     };
   }, [client]);
+
+  useEffect(() => installNativeMultipartInterceptor(client), [client]);
 
   const initialisedDatabase = !!offlineDbInitialized && userID === offlineDbUserId;
 

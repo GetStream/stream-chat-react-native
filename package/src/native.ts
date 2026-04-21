@@ -28,6 +28,46 @@ type CompressImage = ({
 
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 
+export type NativeMultipartUploadRequest = {
+  headers: Record<string, string>;
+  method: string;
+  onProgress?: (progress: { loaded: number; total?: number }) => void;
+  parts: NativeMultipartUploadPart[];
+  progress?: NativeMultipartUploadProgressConfig;
+  signal?: AbortSignal;
+  url: string;
+};
+
+export type NativeMultipartUploadPart =
+  | {
+      fieldName: string;
+      kind: 'file';
+      fileName: string;
+      mimeType?: string;
+      uri: string;
+    }
+  | {
+      fieldName: string;
+      kind: 'text';
+      value: string;
+    };
+
+export type NativeMultipartUploadProgressConfig = {
+  count?: number;
+  intervalMs?: number;
+};
+
+export type NativeMultipartUploadResult = {
+  body: string;
+  headers?: Record<string, string>;
+  status: number;
+  statusText?: string;
+};
+
+type MultipartUpload = (
+  request: NativeMultipartUploadRequest,
+) => Promise<NativeMultipartUploadResult | undefined> | never;
+
 type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string | undefined> | never;
 
 type OniOS14LibrarySelectionChange = (callback: () => void) => { unsubscribe: () => void };
@@ -308,6 +348,7 @@ type Handlers = {
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
+  multipartUpload?: MultipartUpload;
   oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   overrideAudioRecordingConfiguration?: (
     audioRecordingConfiguration: AudioRecordingConfiguration,
@@ -338,6 +379,7 @@ export const NativeHandlers: Pick<
       | 'getLocalAssetUri'
       | 'getPhotos'
       | 'iOS14RefreshGallerySelection'
+      | 'multipartUpload'
       | 'oniOS14GalleryLibrarySelectionChange'
       | 'pickDocument'
       | 'pickImage'
@@ -355,6 +397,7 @@ export const NativeHandlers: Pick<
   getLocalAssetUri: fail,
   getPhotos: fail,
   iOS14RefreshGallerySelection: fail,
+  multipartUpload: fail,
   oniOS14GalleryLibrarySelectionChange: fail,
   pickDocument: fail,
   pickImage: fail,
@@ -402,6 +445,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.iOS14RefreshGallerySelection !== undefined) {
     NativeHandlers.iOS14RefreshGallerySelection = handlers.iOS14RefreshGallerySelection;
+  }
+
+  if (handlers.multipartUpload !== undefined) {
+    NativeHandlers.multipartUpload = handlers.multipartUpload;
   }
 
   if (handlers.oniOS14GalleryLibrarySelectionChange !== undefined) {
@@ -469,3 +516,4 @@ export const isImageMediaLibraryAvailable = () =>
   !!NativeHandlers.iOS14RefreshGallerySelection &&
   !!NativeHandlers.oniOS14GalleryLibrarySelectionChange &&
   !!NativeHandlers.getLocalAssetUri;
+export const isNativeMultipartUploadAvailable = () => NativeHandlers.multipartUpload !== fail;

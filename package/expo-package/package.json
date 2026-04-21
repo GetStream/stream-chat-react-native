@@ -97,6 +97,7 @@
     },
     "ios": {
       "modulesProvider": {
+        "StreamMultipartUploader": "StreamMultipartUploader",
         "StreamVideoThumbnail": "StreamVideoThumbnail"
       },
       "componentProvider": {

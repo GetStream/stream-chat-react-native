@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class StreamChatReactNativePackage extends TurboReactPackage {
+  private static final String STREAM_MULTIPART_UPLOADER_MODULE = "StreamMultipartUploader";
   private static final String STREAM_VIDEO_THUMBNAIL_MODULE = "StreamVideoThumbnail";
 
   @Nullable
@@ -21,6 +22,11 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
     if (name.equals(StreamChatReactNativeModule.NAME)) {
         return new StreamChatReactNativeModule(reactContext);
+    } else if (name.equals(STREAM_MULTIPART_UPLOADER_MODULE) && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+        return createNewArchModule(
+                "com.streamchatreactnative.StreamMultipartUploaderModule",
+                reactContext
+        );
     } else if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE) && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
         return createNewArchModule(
                 "com.streamchatreactnative.StreamVideoThumbnailModule",
@@ -44,6 +50,17 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
                       false, // canOverrideExistingModule
                       false, // needsEagerInit
                       true, // hasConstants
+                      false, // isCxxModule
+                      isTurboModule // isTurboModule
+      ));
+      moduleInfos.put(
+              STREAM_MULTIPART_UPLOADER_MODULE,
+              new ReactModuleInfo(
+                      STREAM_MULTIPART_UPLOADER_MODULE,
+                      STREAM_MULTIPART_UPLOADER_MODULE,
+                      false, // canOverrideExistingModule
+                      false, // needsEagerInit
+                      false, // hasConstants
                       false, // isCxxModule
                       isTurboModule // isTurboModule
       ));
