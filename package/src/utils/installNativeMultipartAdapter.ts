@@ -1,3 +1,5 @@
+import axios from 'axios';
+import type { AxiosAdapter, AxiosProgressEvent, InternalAxiosRequestConfig } from 'axios';
 import type { StreamChat } from 'stream-chat';
 
 import {
@@ -16,39 +18,15 @@ type FormDataPartValue =
       uri: string;
     };
 
-type UploadProgressEvent = {
-  lengthComputable: boolean;
-  loaded: number;
-  progress?: number;
-  total?: number;
-};
-
-type AxiosHeadersLike = {
-  toJSON?: () => Record<string, unknown>;
-};
-
-type AxiosLikeRequestConfig = {
-  adapter?: unknown;
-  data?: unknown;
-  headers?: AxiosHeadersLike | Record<string, unknown>;
-  method?: string;
-  onUploadProgress?: (event: UploadProgressEvent) => void;
+type NativeMultipartAxiosRequestConfig = InternalAxiosRequestConfig & {
+  onUploadProgress?: (event: AxiosProgressEvent) => void;
   uploadProgressOptions?: NativeMultipartUploadProgressConfig;
-  uploadProgress?: (event: UploadProgressEvent) => void;
-  params?: unknown;
-  signal?: AbortSignal;
-  url?: string;
+  uploadProgress?: (event: AxiosProgressEvent) => void;
 };
 
-const STREAM_NATIVE_MULTIPART_REQUEST = Symbol('stream-native-multipart-request');
+type ResolvableAxiosAdapter = Parameters<typeof axios.getAdapter>[0];
 
-const installedInterceptors = new WeakMap<
-  StreamChat,
-  {
-    count: number;
-    interceptorId: number;
-  }
->();
+const installedAdapters = new WeakSet<StreamChat>();
 
 const getFormDataEntries = (data: unknown): [string, FormDataPartValue][] | null => {
   if (!data || typeof data !== 'object') {
@@ -68,12 +46,10 @@ const getFormDataEntries = (data: unknown): [string, FormDataPartValue][] | null
   return null;
 };
 
-const normalizeHeaders = (headers: AxiosLikeRequestConfig['headers']) => {
-  const rawHeaders =
-    headers && typeof headers === 'object' && 'toJSON' in headers && headers.toJSON
-      ? headers.toJSON()
-      : headers;
-
+const normalizeHeaders = (
+  headers: NativeMultipartAxiosRequestConfig['headers'],
+): Record<string, string> => {
+  const rawHeaders = headers?.toJSON() ?? {};
   const normalizedHeaders: Record<string, string> = {};
 
   Object.entries(rawHeaders ?? {}).forEach(([key, value]) => {
@@ -91,7 +67,7 @@ const getFileNameFromUri = (uri: string) => uri.split('/').filter(Boolean).pop()
 
 const createNativeMultipartRequest = (
   client: StreamChat,
-  config: AxiosLikeRequestConfig,
+  config: NativeMultipartAxiosRequestConfig,
 ): NativeMultipartUploadRequest | null => {
   const entries = getFormDataEntries(config.data);
 
@@ -152,7 +128,7 @@ const toFiniteNumber = (value: unknown) => {
   return undefined;
 };
 
-const getUploadProgressCallbacks = (config: AxiosLikeRequestConfig) => {
+const getUploadProgressCallbacks = (config: NativeMultipartAxiosRequestConfig) => {
   const callbacks = [config.onUploadProgress, config.uploadProgress].filter(
     (callback): callback is NonNullable<typeof config.onUploadProgress> =>
       typeof callback === 'function',
@@ -161,11 +137,23 @@ const getUploadProgressCallbacks = (config: AxiosLikeRequestConfig) => {
   return Array.from(new Set(callbacks));
 };
 
-const createUploadProgressEvent = ({ loaded, total }: { loaded: unknown; total?: unknown }) => {
+const createUploadProgressEvent = ({
+  bytes,
+  loaded,
+  total,
+}: {
+  bytes: unknown;
+  loaded: unknown;
+  total?: unknown;
+}) => {
+  const normalizedBytes = toFiniteNumber(bytes) ?? 0;
   const normalizedLoaded = toFiniteNumber(loaded) ?? 0;
   const normalizedTotal = toFiniteNumber(total);
 
   return {
+    bytes: normalizedBytes,
+    download: false,
+    event: undefined,
     lengthComputable: typeof normalizedTotal === 'number' && normalizedTotal > 0,
     loaded: normalizedLoaded,
     progress:
@@ -173,27 +161,28 @@ const createUploadProgressEvent = ({ loaded, total }: { loaded: unknown; total?:
         ? normalizedLoaded / normalizedTotal
         : undefined,
     total: normalizedTotal,
+    upload: true,
   };
 };
 
-const nativeMultipartAxiosAdapter = async (config: AxiosLikeRequestConfig) => {
-  const request = (
-    config as AxiosLikeRequestConfig & {
-      [STREAM_NATIVE_MULTIPART_REQUEST]?: NativeMultipartUploadRequest;
-    }
-  )[STREAM_NATIVE_MULTIPART_REQUEST];
-
-  if (!request) {
-    throw new Error('Missing native multipart upload request');
-  }
-
+const nativeMultipartAxiosAdapter = async (
+  request: NativeMultipartUploadRequest,
+  config: NativeMultipartAxiosRequestConfig,
+) => {
   const uploadProgressCallbacks = getUploadProgressCallbacks(config);
+  let lastLoaded = 0;
 
   const response = await NativeHandlers.multipartUpload({
     ...request,
     onProgress: uploadProgressCallbacks.length
       ? ({ loaded, total }) => {
-          const event = createUploadProgressEvent({ loaded, total });
+          const normalizedLoaded = toFiniteNumber(loaded) ?? 0;
+          const event = createUploadProgressEvent({
+            bytes: Math.max(0, normalizedLoaded - lastLoaded),
+            loaded: normalizedLoaded,
+            total,
+          });
+          lastLoaded = normalizedLoaded;
           uploadProgressCallbacks.forEach((callback) => callback(event));
         }
       : undefined,
@@ -213,57 +202,53 @@ const nativeMultipartAxiosAdapter = async (config: AxiosLikeRequestConfig) => {
   };
 };
 
-export const installNativeMultipartInterceptor = (client: StreamChat) => {
-  if (!isNativeMultipartUploadAvailable()) {
-    return () => undefined;
-  }
+const resolveAxiosAdapter = (adapter: ResolvableAxiosAdapter): AxiosAdapter =>
+  axios.getAdapter(adapter);
 
-  const existing = installedInterceptors.get(client);
+const createNativeMultipartAwareAdapter = (
+  client: StreamChat,
+  fallbackAdapter: ResolvableAxiosAdapter,
+): AxiosAdapter => {
+  const resolvedFallbackAdapter = resolveAxiosAdapter(fallbackAdapter);
 
-  if (existing) {
-    existing.count += 1;
-
-    return () => {
-      existing.count -= 1;
-
-      if (existing.count === 0) {
-        client.axiosInstance.interceptors.request.eject(existing.interceptorId);
-        installedInterceptors.delete(client);
-      }
-    };
-  }
-
-  const interceptorId = client.axiosInstance.interceptors.request.use((config) => {
+  return (config) => {
     const nativeMultipartRequest = createNativeMultipartRequest(
       client,
-      config as AxiosLikeRequestConfig,
+      config as NativeMultipartAxiosRequestConfig,
     );
 
     if (!nativeMultipartRequest) {
-      return config;
+      return resolvedFallbackAdapter(config);
     }
 
-    return {
-      ...config,
-      adapter: nativeMultipartAxiosAdapter,
-      [STREAM_NATIVE_MULTIPART_REQUEST]: nativeMultipartRequest,
-    };
-  });
-
-  installedInterceptors.set(client, { count: 1, interceptorId });
-
-  return () => {
-    const current = installedInterceptors.get(client);
-
-    if (!current) {
-      return;
-    }
-
-    current.count -= 1;
-
-    if (current.count === 0) {
-      client.axiosInstance.interceptors.request.eject(current.interceptorId);
-      installedInterceptors.delete(client);
-    }
+    return nativeMultipartAxiosAdapter(nativeMultipartRequest, config);
   };
+};
+
+export const wrapAxiosAdapterWithNativeMultipart = (
+  client: StreamChat,
+  fallbackAdapter: ResolvableAxiosAdapter,
+): AxiosAdapter => {
+  if (!isNativeMultipartUploadAvailable()) {
+    return resolveAxiosAdapter(fallbackAdapter);
+  }
+
+  return createNativeMultipartAwareAdapter(client, fallbackAdapter);
+};
+
+export const installNativeMultipartAdapter = (client: StreamChat) => {
+  if (!isNativeMultipartUploadAvailable()) {
+    return;
+  }
+
+  if (installedAdapters.has(client)) {
+    return;
+  }
+
+  const previousAdapter = client.axiosInstance.defaults.adapter;
+  client.axiosInstance.defaults.adapter = wrapAxiosAdapterWithNativeMultipart(
+    client,
+    previousAdapter,
+  );
+  installedAdapters.add(client);
 };

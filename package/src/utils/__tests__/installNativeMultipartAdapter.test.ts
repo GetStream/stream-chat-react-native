@@ -1,8 +1,11 @@
 import { getTestClient } from '../../mock-builders/mock';
 import { NativeHandlers } from '../../native';
-import { installNativeMultipartInterceptor } from '../installNativeMultipartInterceptor';
+import {
+  installNativeMultipartAdapter,
+  wrapAxiosAdapterWithNativeMultipart,
+} from '../installNativeMultipartAdapter';
 
-describe('installNativeMultipartInterceptor', () => {
+describe('installNativeMultipartAdapter', () => {
   const originalMultipartUpload = NativeHandlers.multipartUpload;
 
   beforeEach(() => {
@@ -14,6 +17,10 @@ describe('installNativeMultipartInterceptor', () => {
     });
   });
 
+  const preserveRequestData = (client: ReturnType<typeof getTestClient>) => {
+    client.axiosInstance.defaults.transformRequest = [(data) => data];
+  };
+
   afterEach(() => {
     NativeHandlers.multipartUpload = originalMultipartUpload;
     jest.clearAllMocks();
@@ -21,6 +28,7 @@ describe('installNativeMultipartInterceptor', () => {
 
   it('routes multipart requests through the native handler', async () => {
     const client = getTestClient();
+    preserveRequestData(client);
     const defaultAdapter = jest.fn().mockResolvedValue({
       config: {},
       data: 'default',
@@ -31,7 +39,7 @@ describe('installNativeMultipartInterceptor', () => {
 
     client.axiosInstance.defaults.adapter = defaultAdapter;
 
-    const dispose = installNativeMultipartInterceptor(client);
+    installNativeMultipartAdapter(client);
     const formData = {
       _parts: [
         [
@@ -82,12 +90,11 @@ describe('installNativeMultipartInterceptor', () => {
       }),
     );
     expect(response.status).toBe(200);
-
-    dispose();
   });
 
-  it('leaves non-multipart requests on the default adapter', async () => {
+  it('leaves non-multipart requests on the fallback adapter', async () => {
     const client = getTestClient();
+    preserveRequestData(client);
     const defaultAdapter = jest.fn().mockResolvedValue({
       config: {},
       data: 'default',
@@ -98,14 +105,12 @@ describe('installNativeMultipartInterceptor', () => {
 
     client.axiosInstance.defaults.adapter = defaultAdapter;
 
-    const dispose = installNativeMultipartInterceptor(client);
+    installNativeMultipartAdapter(client);
 
     await client.axiosInstance.post('/messages', { text: 'hello' });
 
     expect(defaultAdapter).toHaveBeenCalled();
     expect(NativeHandlers.multipartUpload).not.toHaveBeenCalled();
-
-    dispose();
   });
 
   it('forwards native upload progress to axios upload progress callbacks', async () => {
@@ -124,7 +129,8 @@ describe('installNativeMultipartInterceptor', () => {
     });
 
     const client = getTestClient();
-    const dispose = installNativeMultipartInterceptor(client);
+    preserveRequestData(client);
+    installNativeMultipartAdapter(client);
     const onUploadProgress = jest.fn();
     const uploadProgress = jest.fn();
     const formData = {
@@ -173,12 +179,11 @@ describe('installNativeMultipartInterceptor', () => {
         },
       }),
     );
-
-    dispose();
   });
 
-  it('removes the interceptor on dispose', async () => {
+  it('uses the final config after user request interceptors run', async () => {
     const client = getTestClient();
+    preserveRequestData(client);
     const defaultAdapter = jest.fn().mockResolvedValue({
       config: {},
       data: 'default',
@@ -189,9 +194,65 @@ describe('installNativeMultipartInterceptor', () => {
 
     client.axiosInstance.defaults.adapter = defaultAdapter;
 
-    const dispose = installNativeMultipartInterceptor(client);
+    const interceptorId = client.axiosInstance.interceptors.request.use((config) => ({
+      ...config,
+      headers: {
+        ...config.headers,
+        'X-CDN-Route': 'custom-cdn',
+      },
+      url: '/uploads/file',
+    }));
 
-    dispose();
+    installNativeMultipartAdapter(client);
+    const formData = {
+      _parts: [
+        [
+          'file',
+          {
+            name: 'test.jpg',
+            type: 'image/jpeg',
+            uri: 'file:///tmp/test.jpg',
+          },
+        ],
+      ],
+    };
+
+    await client.axiosInstance.post('/uploads/image', formData, {
+      headers: {
+        Authorization: 'token',
+      },
+    });
+
+    expect(NativeHandlers.multipartUpload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'token',
+          'X-CDN-Route': 'custom-cdn',
+        }),
+        url: expect.stringContaining('/uploads/file'),
+      }),
+    );
+    expect(defaultAdapter).not.toHaveBeenCalled();
+
+    client.axiosInstance.interceptors.request.eject(interceptorId);
+  });
+
+  it('installs only once per client', async () => {
+    const client = getTestClient();
+    preserveRequestData(client);
+    const defaultAdapter = jest.fn().mockResolvedValue({
+      config: {},
+      data: 'default',
+      headers: {},
+      status: 200,
+      statusText: 'OK',
+    });
+
+    client.axiosInstance.defaults.adapter = defaultAdapter;
+
+    installNativeMultipartAdapter(client);
+    const installedAdapter = client.axiosInstance.defaults.adapter;
+    installNativeMultipartAdapter(client);
 
     const formData = {
       _parts: [
@@ -208,7 +269,47 @@ describe('installNativeMultipartInterceptor', () => {
 
     await client.axiosInstance.post('/uploads/image', formData);
 
-    expect(defaultAdapter).toHaveBeenCalled();
-    expect(NativeHandlers.multipartUpload).not.toHaveBeenCalled();
+    expect(client.axiosInstance.defaults.adapter).toBe(installedAdapter);
+    expect(defaultAdapter).not.toHaveBeenCalled();
+    expect(NativeHandlers.multipartUpload).toHaveBeenCalled();
+  });
+
+  it('composes explicitly with a custom adapter', async () => {
+    const client = getTestClient();
+    preserveRequestData(client);
+    const customAdapter = jest.fn().mockResolvedValue({
+      config: {},
+      data: 'custom',
+      headers: {},
+      status: 200,
+      statusText: 'OK',
+    });
+
+    client.axiosInstance.defaults.adapter = wrapAxiosAdapterWithNativeMultipart(
+      client,
+      customAdapter,
+    );
+
+    const multipartFormData = {
+      _parts: [
+        [
+          'file',
+          {
+            name: 'test.jpg',
+            type: 'image/jpeg',
+            uri: 'file:///tmp/test.jpg',
+          },
+        ],
+      ],
+    };
+
+    await client.axiosInstance.post('/uploads/image', multipartFormData);
+
+    expect(NativeHandlers.multipartUpload).toHaveBeenCalled();
+    expect(customAdapter).not.toHaveBeenCalled();
+
+    await client.axiosInstance.post('/messages', { text: 'hello' });
+
+    expect(customAdapter).toHaveBeenCalled();
   });
 });

@@ -28,13 +28,22 @@ type CompressImage = ({
 
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 
+// Axios uses a looser GenericAbortSignal type than the DOM AbortSignal and
+// the native multipart path only needs this shared subset for cancellation
+export type NativeMultipartAbortSignal = {
+  aborted: boolean;
+  addEventListener?: (...args: unknown[]) => unknown;
+  onabort?: ((...args: unknown[]) => unknown) | null;
+  removeEventListener?: (...args: unknown[]) => unknown;
+};
+
 export type NativeMultipartUploadRequest = {
   headers: Record<string, string>;
   method: string;
   onProgress?: (progress: { loaded: number; total?: number }) => void;
   parts: NativeMultipartUploadPart[];
   progress?: NativeMultipartUploadProgressConfig;
-  signal?: AbortSignal;
+  signal?: NativeMultipartAbortSignal;
   url: string;
 };
 

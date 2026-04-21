@@ -8,6 +8,8 @@ import NativeStreamMultipartUploader, {
   type UploadResponse as NativeUploadResponse,
 } from './NativeStreamMultipartUploader';
 
+import type { NativeMultipartAbortSignal } from '../../../src/native';
+
 const STREAM_MULTIPART_UPLOAD_PROGRESS_EVENT = 'streamMultipartUploadProgress';
 
 const multipartUploadEventEmitter = new NativeEventEmitter(NativeStreamMultipartUploader);
@@ -40,7 +42,7 @@ type MultipartUploadRequest = {
   onProgress?: (event: { loaded: number; total?: number }) => void;
   parts: UploadPart[];
   progress?: UploadProgressConfig;
-  signal?: AbortSignal;
+  signal?: NativeMultipartAbortSignal;
   uploadId: string;
   url: string;
 };

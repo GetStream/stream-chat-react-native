@@ -26,7 +26,7 @@ import { NativeHandlers } from '../../native';
 import { OfflineDB } from '../../store/OfflineDB';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
-import { installNativeMultipartInterceptor } from '../../utils/installNativeMultipartInterceptor';
+import { installNativeMultipartAdapter } from '../../utils/installNativeMultipartAdapter';
 import { version } from '../../version.json';
 
 init();
@@ -242,7 +242,9 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     };
   }, [client]);
 
-  useEffect(() => installNativeMultipartInterceptor(client), [client]);
+  useEffect(() => {
+    installNativeMultipartAdapter(client);
+  }, [client]);
 
   const initialisedDatabase = !!offlineDbInitialized && userID === offlineDbUserId;
 
