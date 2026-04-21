@@ -31,7 +31,7 @@ export function usePendingAttachmentUpload(localId: string | undefined): Pending
       if (!localId) {
         return idle;
       }
-      const record = state.uploads.find((u) => u.id === localId);
+      const record = state.uploads[localId];
       if (!record) {
         return idle;
       }
