@@ -1,7 +1,19 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import type { ColorValue } from 'react-native';
-import { Animated, Easing, StyleProp, ViewStyle } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+const SPIN_DURATION_MS = 900;
+const PROGRESS_ANIMATION_DURATION_MS = 1200;
 
 export type CircularProgressIndicatorProps = {
   /** Upload percent **0–100**. */
@@ -24,32 +36,8 @@ export const CircularProgressIndicator = ({
   style,
   testID,
 }: CircularProgressIndicatorProps) => {
-  const spin = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.timing(spin, {
-        toValue: 1,
-        duration: 900,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    );
-    loop.start();
-    return () => {
-      loop.stop();
-      spin.setValue(0);
-    };
-  }, [progress, spin]);
-
-  const rotate = useMemo(
-    () =>
-      spin.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0deg', '360deg'],
-      }),
-    [spin],
-  );
+  const animatedProgress = useSharedValue(0);
+  const rotation = useSharedValue(0);
 
   const { cx, cy, r, circumference } = useMemo(() => {
     const pad = strokeWidth / 2;
@@ -67,18 +55,58 @@ export const CircularProgressIndicator = ({
       ? undefined
       : Math.min(100, Math.max(0, progress)) / 100;
 
+  useEffect(() => {
+    if (fraction === undefined) {
+      animatedProgress.value = 0;
+      return;
+    }
+
+    animatedProgress.value = withTiming(fraction, {
+      duration: PROGRESS_ANIMATION_DURATION_MS,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [animatedProgress, fraction]);
+
+  useEffect(() => {
+    if (fraction !== undefined) {
+      cancelAnimation(rotation);
+      rotation.value = 0;
+      return;
+    }
+
+    rotation.value = withRepeat(
+      withTiming(360, {
+        duration: SPIN_DURATION_MS,
+        easing: Easing.linear,
+      }),
+      -1,
+      false,
+    );
+
+    return () => {
+      cancelAnimation(rotation);
+    };
+  }, [fraction, rotation]);
+
+  const animatedCircleProps = useAnimatedProps(() => ({
+    strokeDashoffset: circumference * (1 - animatedProgress.value),
+  }));
+
+  const animatedSpinStyle = useAnimatedStyle<ViewStyle>(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
+
   if (fraction !== undefined) {
-    const offset = circumference * (1 - fraction);
     return (
       <Svg height={size} style={style} testID={testID} viewBox={`0 0 ${size} ${size}`} width={size}>
-        <Circle
+        <AnimatedCircle
+          animatedProps={animatedCircleProps}
           cx={cx}
           cy={cy}
           fill='none'
           r={r}
           stroke={color as string}
           strokeDasharray={`${circumference}`}
-          strokeDashoffset={offset}
           strokeLinecap='round'
           strokeWidth={strokeWidth}
           transform={`rotate(-90 ${cx} ${cy})`}
@@ -92,7 +120,7 @@ export const CircularProgressIndicator = ({
 
   return (
     <Animated.View
-      style={[{ height: size, width: size }, style, { transform: [{ rotate }] }]}
+      style={[{ height: size, width: size }, style, animatedSpinStyle]}
       testID={testID}
     >
       <Svg height={size} viewBox={`0 0 ${size} ${size}`} width={size}>

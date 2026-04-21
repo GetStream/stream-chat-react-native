@@ -13,6 +13,7 @@ import {
 } from 'stream-chat';
 
 import type { AudioAttachmentProps } from './Audio/AudioAttachment';
+
 import { AttachmentFileUploadProgressIndicator } from '../../components/Attachment/AttachmentFileUploadProgressIndicator';
 
 import { useTheme } from '../../contexts';

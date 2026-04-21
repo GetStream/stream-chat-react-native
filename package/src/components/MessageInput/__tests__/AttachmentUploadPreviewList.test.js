@@ -24,6 +24,7 @@ jest.mock('../../../native.ts', () => {
     isDocumentPickerAvailable: jest.fn(() => true),
     isImageMediaLibraryAvailable: jest.fn(() => true),
     isImagePickerAvailable: jest.fn(() => true),
+    isNativeMultipartUploadAvailable: jest.fn(() => false),
     isSoundPackageAvailable: jest.fn(() => false),
     NativeHandlers: {
       Sound: {
