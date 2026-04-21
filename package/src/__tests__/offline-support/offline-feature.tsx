@@ -254,7 +254,7 @@ export const Generic = () => {
     const filters = {
       foo: 'bar',
       type: 'messaging',
-    } as unknown as ChannelFilters;
+    } as ChannelFilters;
     const sort: ChannelSort = { last_updated: 1 };
 
     const renderComponent = () =>

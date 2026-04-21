@@ -43,8 +43,8 @@ const mockChannelSwipableWrapper = jest.fn(({ children }: { children: React.Reac
 ));
 
 jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
-  ChannelSwipableWrapper: (...args: unknown[]) =>
-    (mockChannelSwipableWrapper as unknown as (...a: unknown[]) => React.ReactElement)(...args),
+  ChannelSwipableWrapper: (...args: Parameters<typeof mockChannelSwipableWrapper>) =>
+    mockChannelSwipableWrapper(...args),
 }));
 
 /**
@@ -173,11 +173,7 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={
-              { dummyFilter: true } as unknown as React.ComponentProps<
-                typeof ChannelList
-              >['filters']
-            }
+            filters={{ dummyFilter: true } as React.ComponentProps<typeof ChannelList>['filters']}
           />
         </WithComponents>
       </Chat>,
@@ -220,14 +216,14 @@ describe('ChannelList', () => {
         return deferredCallForFreshFilter.promise;
       }
       return deferredCallForStaleFilter.promise;
-    }) as unknown as typeof chatClient.queryChannels);
+    }) as typeof chatClient.queryChannels);
 
     const { rerender, queryByTestId } = render(
       <Chat client={chatClient}>
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={staleFilter as unknown as React.ComponentProps<typeof ChannelList>['filters']}
+            filters={staleFilter as React.ComponentProps<typeof ChannelList>['filters']}
           />
         </WithComponents>
       </Chat>,
@@ -250,7 +246,7 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={freshFilter as unknown as React.ComponentProps<typeof ChannelList>['filters']}
+            filters={freshFilter as React.ComponentProps<typeof ChannelList>['filters']}
           />
         </WithComponents>
       </Chat>,
@@ -922,7 +918,7 @@ describe('ChannelList', () => {
 
         chatClient.queryChannels = jest.fn(
           () => deferredPromise.promise,
-        ) as unknown as typeof chatClient.queryChannels;
+        ) as typeof chatClient.queryChannels;
 
         act(() => dispatchConnectionChangedEvent(chatClient, false));
         act(() => dispatchConnectionChangedEvent(chatClient, true));

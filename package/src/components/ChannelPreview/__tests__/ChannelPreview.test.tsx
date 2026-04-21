@@ -68,7 +68,7 @@ const initChannelFromData = async (
   channel.initialized = true;
   channel.lastMessage = jest.fn().mockReturnValue(generateMessage());
   channel.muteStatus = jest.fn().mockReturnValue({ muted: false });
-  channel.state.messages = [generateMessage()] as unknown as typeof channel.state.messages;
+  channel.state.messages = [generateMessage()];
 
   return channel;
 };

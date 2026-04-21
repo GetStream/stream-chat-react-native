@@ -51,7 +51,7 @@ const renderComponent = (props = {}) =>
             ),
           }}
         >
-          <MessagesProvider value={{} as unknown as MessagesContextValue}>
+          <MessagesProvider value={{} as MessagesContextValue}>
             <MessageUserReactions {...defaultProps} {...props} />
           </MessagesProvider>
         </WithComponents>

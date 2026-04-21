@@ -81,7 +81,7 @@ type RenderComponentProps = Partial<Omit<ComponentProps<typeof Channel>, 'channe
 const renderComponent = (
   props: RenderComponentProps = {},
   callback: (ctx: unknown) => void = () => {},
-  context: React.Context<unknown> = ChannelContext as unknown as React.Context<unknown>,
+  context: React.Context<unknown> = ChannelContext as React.Context<unknown>,
 ) =>
   render(
     <ChannelsStateProvider>
@@ -194,7 +194,7 @@ describe('Channel', () => {
           hasThread(thread.id);
         }
       },
-      ThreadContext as unknown as React.Context<unknown>,
+      ThreadContext as React.Context<unknown>,
     );
 
     rerender(
@@ -213,7 +213,7 @@ describe('Channel', () => {
                   hasThread(thread.id);
                 }
               }}
-              context={ThreadContext as unknown as React.Context<unknown>}
+              context={ThreadContext as React.Context<unknown>}
             />
           </Channel>
         </Chat>
@@ -230,7 +230,7 @@ describe('Channel', () => {
           config: channel.getConfig(),
           id: channel.id,
           type: channel.type,
-        } as unknown as NonNullable<Parameters<typeof generateChannelResponse>[0]>['channel'],
+        },
         messages: newMessages,
       }),
     );
@@ -245,7 +245,7 @@ describe('Channel', () => {
       () => {
         useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
       },
-      MessagesContext as unknown as React.Context<unknown>,
+      MessagesContext as React.Context<unknown>,
     );
 
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
@@ -254,7 +254,7 @@ describe('Channel', () => {
   describe('ChannelContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <ChannelProvider value={{} as unknown as ChannelContextValue}>
+        <ChannelProvider value={{} as ChannelContextValue}>
           <View testID='children' />
         </ChannelProvider>,
       );
@@ -275,7 +275,7 @@ describe('Channel', () => {
       render(
         <ChannelProvider value={mockContext as unknown as ChannelContextValue}>
           <ContextConsumer
-            context={ChannelContext as unknown as React.Context<unknown>}
+            context={ChannelContext as React.Context<unknown>}
             fn={(ctx) => {
               context = ctx as ChannelContextValue;
             }}
@@ -297,7 +297,7 @@ describe('Channel', () => {
   describe('MessagesContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <MessagesProvider value={{} as unknown as MessagesContextValue}>
+        <MessagesProvider value={{} as MessagesContextValue}>
           <View testID='children' />
         </MessagesProvider>,
       );
@@ -318,7 +318,7 @@ describe('Channel', () => {
       render(
         <MessagesProvider value={mockContext as unknown as MessagesContextValue}>
           <ContextConsumer
-            context={MessagesContext as unknown as React.Context<unknown>}
+            context={MessagesContext as React.Context<unknown>}
             fn={(ctx) => {
               context = ctx as MessagesContextValue;
             }}
@@ -340,7 +340,7 @@ describe('Channel', () => {
   describe('ThreadContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <ThreadProvider value={{} as unknown as ThreadContextValue}>
+        <ThreadProvider value={{} as ThreadContextValue}>
           <View testID='children' />
         </ThreadProvider>,
       );
@@ -361,7 +361,7 @@ describe('Channel', () => {
       render(
         <ThreadProvider value={mockContext as unknown as ThreadContextValue}>
           <ContextConsumer
-            context={ThreadContext as unknown as React.Context<unknown>}
+            context={ThreadContext as React.Context<unknown>}
             fn={(ctx) => {
               context = ctx as ThreadContextValue;
             }}
@@ -436,12 +436,7 @@ describe('Channel initial load useEffect', () => {
     channel.state = {
       ...channelInitialState,
       members: Object.fromEntries(
-        Array.from({ length: 10 }, (_, i) => [
-          i,
-          generateMember({ user_id: String(i) } as unknown as Partial<
-            Parameters<typeof generateMember>[0]
-          >),
-        ]),
+        Array.from({ length: 10 }, (_, i) => [i, generateMember({ user_id: String(i) })]),
       ),
       messagePagination: {
         hasPrev: true,
@@ -488,12 +483,8 @@ describe('Channel initial load useEffect', () => {
     await channel.watch();
 
     const loadMessageIntoState = jest.fn(() => {
-      const newMessages = getElementsAround(
-        messages as unknown as typeof channel.state.messages,
-        'id',
-        messageToSearch.id,
-      );
-      channel.state.messages = newMessages as unknown as typeof channel.state.messages;
+      const newMessages = getElementsAround(messages, 'id', messageToSearch.id);
+      channel.state.messages = newMessages;
     });
 
     channel.state = {

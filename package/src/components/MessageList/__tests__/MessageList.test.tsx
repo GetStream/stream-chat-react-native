@@ -590,12 +590,7 @@ describe('MessageList pagination', () => {
       ...channelInitialState,
       latestMessages: [],
       members: Object.fromEntries(
-        Array.from({ length: 10 }, (_, i) => [
-          i,
-          generateMember({ user_id: String(i) } as unknown as Partial<
-            Parameters<typeof generateMember>[0]
-          >),
-        ]),
+        Array.from({ length: 10 }, (_, i) => [i, generateMember({ user_id: String(i) })]),
       ),
       messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
       messageSets: [{ isCurrent: true, isLatest: true }],

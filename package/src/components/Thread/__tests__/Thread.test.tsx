@@ -38,7 +38,7 @@ const renderComponent = ({
   return render(
     <OverlayProvider>
       <Chat client={chatClient}>
-        <Channel channel={channel} client={chatClient} thread={thread} threadList>
+        <Channel channel={channel} thread={thread} threadList>
           <Thread {...props} />
         </Channel>
       </Chat>
@@ -156,7 +156,7 @@ describe('Thread', () => {
             }
           >
             <ImageGalleryProvider
-              value={{} as unknown as React.ComponentProps<typeof ImageGalleryProvider>['value']}
+              value={{} as React.ComponentProps<typeof ImageGalleryProvider>['value']}
             >
               <Channel channel={channel} thread={thread} threadList>
                 <ChannelContext.Consumer>
