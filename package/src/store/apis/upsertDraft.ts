@@ -1,4 +1,4 @@
-import { DraftResponse } from 'stream-chat';
+import type { DraftResponse, MessageResponseBase } from 'stream-chat';
 
 import { upsertMessages } from './upsertMessages';
 
@@ -40,7 +40,7 @@ export const upsertDraft = async ({
     draftMessage: storableDraftMessage,
   });
 
-  const messagesToUpsert = [];
+  const messagesToUpsert: MessageResponseBase[] = [];
 
   if (draft.quoted_message) {
     messagesToUpsert.push(draft.quoted_message);

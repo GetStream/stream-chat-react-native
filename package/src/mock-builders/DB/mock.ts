@@ -36,7 +36,7 @@ export const sqliteMock = {
           if (pragmaQueryTokens[2] === '=') {
             db.pragma(`${pragmaQueryTokens[1]} = ${pragmaQueryTokens[3]}`);
           } else {
-            result = db.pragma(`${pragmaQueryTokens[1]}`);
+            result = db.pragma(`${pragmaQueryTokens[1]}`) as unknown[];
           }
 
           return {

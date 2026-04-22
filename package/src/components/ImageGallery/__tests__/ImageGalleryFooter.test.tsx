@@ -4,7 +4,7 @@ import type { SharedValue } from 'react-native-reanimated';
 
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import { Attachment, LocalMessage } from 'stream-chat';
+import { Attachment } from 'stream-chat';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
@@ -53,7 +53,7 @@ const ImageGalleryComponentVideo = (props: ImageGalleryProps) => {
     messages: [
       generateMessage({
         attachments: [attachment],
-      }) as unknown as LocalMessage,
+      }),
     ],
     selectedAttachmentUrl: attachment.asset_url,
   });
@@ -95,7 +95,7 @@ const ImageGalleryComponentImage = (
     messages: [
       generateMessage({
         attachments: [props.attachment],
-      }) as unknown as LocalMessage,
+      }),
     ],
     selectedAttachmentUrl: props.attachment.image_url as string,
   });

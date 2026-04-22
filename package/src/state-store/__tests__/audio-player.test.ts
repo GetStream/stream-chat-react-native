@@ -190,7 +190,9 @@ describe('AudioPlayer', () => {
 
   it('updates playback state from the native playback callback', async () => {
     const playerRef = createMockNativePlayerRef();
-    let onPlaybackStatusUpdate;
+    let onPlaybackStatusUpdate: (
+      status: ReturnType<typeof getLoadedPlaybackStatus>,
+    ) => unknown = () => undefined;
     (NativeHandlers as { Sound: unknown }).Sound = {
       Player: null,
       initializeSound: jest.fn().mockImplementation((_source, _initialStatus, callback) => {

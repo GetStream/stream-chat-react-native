@@ -12,7 +12,7 @@ const mockReanimatedSwipeable = jest.fn(({ children }: React.PropsWithChildren) 
 
 jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => ({
   __esModule: true,
-  default: (...args: unknown[]) => mockReanimatedSwipeable(...args),
+  default: (...args: [React.PropsWithChildren]) => mockReanimatedSwipeable(...args),
   SwipeDirection: {
     LEFT: 'left',
     RIGHT: 'right',

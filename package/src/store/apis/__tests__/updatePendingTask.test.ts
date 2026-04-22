@@ -1,3 +1,4 @@
+import type { PendingTask } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 import { addPendingTask, getPendingTasks, updatePendingTask } from '..';
@@ -31,9 +32,14 @@ describe('updatePendingTask', () => {
       messageId: originalMessage.id,
       payload: [originalMessage, {}],
       type: 'send-message',
-    });
+    } as unknown as PendingTask);
 
-    const [originalRow] = await BetterSqlite.selectFromTable('pendingTasks');
+    const [originalRow] = await BetterSqlite.selectFromTable<{
+      id: number;
+      createdAt: string;
+      type: string;
+      payload: string;
+    }>('pendingTasks');
     const [originalTask] = await getPendingTasks({ messageId: originalMessage.id });
 
     const editedMessage = {
@@ -42,17 +48,22 @@ describe('updatePendingTask', () => {
     };
 
     await updatePendingTask({
-      id: originalTask.id,
+      id: originalTask.id as number,
       task: {
         channelId,
         channelType: 'messaging',
         messageId: originalMessage.id,
         payload: [editedMessage, {}],
         type: 'send-message',
-      },
+      } as unknown as PendingTask,
     });
 
-    const [updatedRow] = await BetterSqlite.selectFromTable('pendingTasks');
+    const [updatedRow] = await BetterSqlite.selectFromTable<{
+      id: number;
+      createdAt: string;
+      type: string;
+      payload: string;
+    }>('pendingTasks');
     const [updatedTask] = await getPendingTasks({ messageId: originalMessage.id });
 
     expect(updatedRow.id).toBe(originalRow.id);
@@ -61,6 +72,6 @@ describe('updatePendingTask', () => {
     expect(JSON.parse(updatedRow.payload)[0].text).toBe('edited text');
     expect(updatedTask.id).toBe(originalTask.id);
     expect(updatedTask.type).toBe('send-message');
-    expect(updatedTask.payload[0].text).toBe('edited text');
+    expect((updatedTask.payload as [{ text: string }, object])[0].text).toBe('edited text');
   });
 });

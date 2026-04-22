@@ -29,7 +29,7 @@ export const useMessageList = (params: UseMessageListParams) => {
   const messageList = threadList ? threadMessages : messages;
 
   const processedMessageList = useMemo<LocalMessage[]>(() => {
-    const newMessageList = [];
+    const newMessageList: LocalMessage[] = [];
     for (const message of messageList) {
       if (isFlashList) {
         newMessageList.push(message);

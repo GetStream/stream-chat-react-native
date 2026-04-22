@@ -88,15 +88,13 @@ describe('ImageGallery', () => {
   it('render image gallery component', async () => {
     render(
       <ImageGalleryComponent
-        message={
-          generateMessage({
-            attachments: [
-              generateImageAttachment(),
-              generateGiphyAttachment(),
-              generateVideoAttachment({ type: 'video' }),
-            ],
-          }) as unknown as LocalMessage
-        }
+        message={generateMessage({
+          attachments: [
+            generateImageAttachment(),
+            generateGiphyAttachment(),
+            generateVideoAttachment({ type: 'video' }),
+          ],
+        })}
       />,
     );
 
@@ -111,11 +109,9 @@ describe('ImageGallery', () => {
 
     render(
       <ImageGalleryComponent
-        message={
-          generateMessage({
-            attachments: [generateImageAttachment()],
-          }) as unknown as LocalMessage
-        }
+        message={generateMessage({
+          attachments: [generateImageAttachment()],
+        })}
       />,
     );
 

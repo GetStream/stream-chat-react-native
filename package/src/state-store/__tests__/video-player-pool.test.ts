@@ -20,7 +20,7 @@ const createMockPlayer = (id: string, overrides: Partial<VideoPlayer> = {}): Vid
     pause: jest.fn(),
     play: jest.fn(),
     ...overrides,
-  }) as unknown as VideoPlayer;
+  }) as VideoPlayer;
 
 describe('VideoPlayerPool', () => {
   beforeEach(() => {
@@ -175,7 +175,7 @@ describe('VideoPlayerPool', () => {
       const pool = new VideoPlayerPool();
       const player = pool.getOrAddPlayer({ id: 'active-player' });
 
-      pool.setActivePlayer(player as unknown as VideoPlayer);
+      pool.setActivePlayer(player);
       expect(pool.getActivePlayer()).toBe(player);
 
       pool.removePlayer('active-player');
@@ -188,7 +188,7 @@ describe('VideoPlayerPool', () => {
       const activePlayer = pool.getOrAddPlayer({ id: 'active-player' });
       pool.getOrAddPlayer({ id: 'other-player' });
 
-      pool.setActivePlayer(activePlayer as unknown as VideoPlayer);
+      pool.setActivePlayer(activePlayer);
       pool.removePlayer('other-player');
 
       expect(pool.getActivePlayer()).toBe(activePlayer);
@@ -255,7 +255,7 @@ describe('VideoPlayerPool', () => {
       const pool = new VideoPlayerPool();
       const player = pool.getOrAddPlayer({ id: 'active-player' });
 
-      pool.setActivePlayer(player as unknown as VideoPlayer);
+      pool.setActivePlayer(player);
       expect(pool.getActivePlayer()).toBe(player);
 
       pool.clear();
@@ -277,7 +277,7 @@ describe('VideoPlayerPool', () => {
     it('should not change active player when player does not exist', () => {
       const pool = new VideoPlayerPool();
       const existingPlayer = pool.getOrAddPlayer({ id: 'existing-player' });
-      pool.setActivePlayer(existingPlayer as unknown as VideoPlayer);
+      pool.setActivePlayer(existingPlayer);
 
       pool.requestPlay('non-existent-player');
 
@@ -336,7 +336,7 @@ describe('VideoPlayerPool', () => {
       const pool = new VideoPlayerPool();
       const player = pool.getOrAddPlayer({ id: 'active-player' });
 
-      pool.setActivePlayer(player as unknown as VideoPlayer);
+      pool.setActivePlayer(player);
       expect(pool.getActivePlayer()).toBe(player);
 
       pool.notifyPaused();
@@ -369,7 +369,7 @@ describe('VideoPlayerPool', () => {
         ({ activeVideoPlayer }) => callback(activeVideoPlayer),
       );
 
-      pool.setActivePlayer(player as unknown as VideoPlayer);
+      pool.setActivePlayer(player);
 
       expect(callback).toHaveBeenCalledWith(player);
     });
@@ -377,7 +377,7 @@ describe('VideoPlayerPool', () => {
     it('should notify subscribers when active player is cleared', () => {
       const pool = new VideoPlayerPool();
       const player = pool.getOrAddPlayer({ id: 'player-1' });
-      pool.setActivePlayer(player as unknown as VideoPlayer);
+      pool.setActivePlayer(player);
 
       const callback = jest.fn();
       pool.state.subscribeWithSelector(
@@ -420,7 +420,7 @@ describe('VideoPlayerPool', () => {
       const player1 = pool.getOrAddPlayer({ id: 'player-1' });
       pool.getOrAddPlayer({ id: 'player-2' });
 
-      pool.setActivePlayer(player1 as unknown as VideoPlayer);
+      pool.setActivePlayer(player1);
 
       pool.removePlayer('player-1');
       expect(pool.getActivePlayer()).toBeNull();

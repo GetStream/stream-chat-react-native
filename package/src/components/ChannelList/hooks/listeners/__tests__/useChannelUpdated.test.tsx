@@ -4,6 +4,7 @@ import { Image, Text } from 'react-native';
 import { act, render, waitFor } from '@testing-library/react-native';
 import type { Channel, ChannelResponse, Event, StreamChat } from 'stream-chat';
 
+import type { ChatContextValue } from '../../../../../contexts/chatContext/ChatContext';
 import { ChatContext, useChannelUpdated } from '../../../../../index';
 
 describe('useChannelUpdated', () => {
@@ -33,16 +34,16 @@ describe('useChannelUpdated', () => {
     } as unknown as StreamChat;
 
     const TestComponent = () => {
-      const [channels, setChannels] = useState<Channel[] | null>([mockChannel]);
+      const [channels, setChannels] = useState<Channel[]>([mockChannel]);
 
       useChannelUpdated({ setChannels });
 
       if (
         channels &&
         channels[0].data?.own_capabilities &&
-        Object.keys(channels[0].data?.own_capabilities as { [key: string]: boolean }).includes(
-          'send_messages',
-        )
+        Object.keys(
+          channels[0].data?.own_capabilities as unknown as { [key: string]: boolean },
+        ).includes('send_messages')
       ) {
         return <Text>Send messages enabled</Text>;
       }
@@ -53,16 +54,18 @@ describe('useChannelUpdated', () => {
     const { getByText } = await waitFor(() =>
       render(
         <ChatContext.Provider
-          value={{
-            appSettings: null,
-            client: mockClient,
-            connectionRecovering: false,
-            enableOfflineSupport: false,
-            ImageComponent: Image,
-            isOnline: true,
-            mutedUsers: [],
-            setActiveChannel: () => null,
-          }}
+          value={
+            {
+              appSettings: null,
+              client: mockClient,
+              connectionRecovering: false,
+              enableOfflineSupport: false,
+              ImageComponent: Image,
+              isOnline: true,
+              mutedUsers: [],
+              setActiveChannel: () => null,
+            } as unknown as ChatContextValue
+          }
         >
           <TestComponent />
         </ChatContext.Provider>,
