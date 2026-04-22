@@ -100,6 +100,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   } = useTheme();
   const styles = useStyles();
   const { vw } = useViewport();
+  const { t } = useTranslationContext();
   const { uploadNewFile } = useMessageInputContext();
   const messageComposer = useMessageComposer();
   const { attachmentManager } = messageComposer;
@@ -120,7 +121,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
       }
     } else {
       if (!availableUploadSlots) {
-        Alert.alert('Maximum number of files reached');
+        Alert.alert(t('Maximum number of files reached'));
         return;
       }
       await uploadNewFile(asset);
@@ -150,6 +151,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
 const AttachmentIosLimited = () => {
   const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
   const { vw } = useViewport();
+  const { t } = useTranslationContext();
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const styles = useStyles();
   return (
@@ -164,7 +166,7 @@ const AttachmentIosLimited = () => {
       onPress={NativeHandlers.iOS14RefreshGallerySelection}
     >
       <Plus width={20} height={20} stroke={styles.iosLimitedIcon.color} strokeWidth={1.5} />
-      <Text style={styles.iosLimitedText}>Add more</Text>
+      <Text style={styles.iosLimitedText}>{t('Add more')}</Text>
     </BottomSheetTouchableOpacity>
   );
 };
