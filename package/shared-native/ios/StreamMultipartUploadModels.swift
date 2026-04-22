@@ -5,6 +5,7 @@ struct StreamMultipartUploadRequest {
   let method: String
   let parts: [StreamMultipartUploadPart]
   let progress: StreamMultipartUploadProgressOptions?
+  let timeoutMs: TimeInterval?
   let uploadId: String
   let url: URL
 }
@@ -43,6 +44,8 @@ enum StreamMultipartUploadError: LocalizedError {
   case invalidRequest(String)
   case invalidURL(String)
   case missingHTTPResponse
+  case responseBodyTooLarge(Int)
+  case unreadableFile(String)
   case unsupportedSource(String)
 
   var errorDescription: String? {
@@ -55,6 +58,10 @@ enum StreamMultipartUploadError: LocalizedError {
       return "Invalid upload URL: \(value)"
     case .missingHTTPResponse:
       return "Upload completed without an HTTP response"
+    case .responseBodyTooLarge(let maxBytes):
+      return "Upload response body exceeded \(maxBytes) bytes"
+    case .unreadableFile(let path):
+      return "Unable to read upload file: \(path)"
     case .unsupportedSource(let uri):
       return "Unsupported upload URI: \(uri)"
     }

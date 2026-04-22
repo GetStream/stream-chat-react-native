@@ -13,8 +13,8 @@ class StreamMultipartUploadProgressThrottler(
   options: StreamMultipartUploadProgressOptions?,
   private val onProgress: (loaded: Long, total: Long?) -> Unit,
 ) {
-  private val intervalMs = options?.intervalMs ?: 16L
-  private val count = options?.count ?: 20
+  private val intervalMs = (options?.intervalMs ?: 16L).coerceIn(16L, 1_000L)
+  private val count = (options?.count ?: 20).coerceIn(1, 100)
   private var emittedBuckets = -1
   private var lastEventAtMs = 0L
 
@@ -54,6 +54,8 @@ class StreamMultipartUploadProgressRequestBody(
   private val requestBody: RequestBody,
   private val throttler: StreamMultipartUploadProgressThrottler,
 ) : RequestBody() {
+  private val resolvedContentLength by lazy { requestBody.contentLength().takeIf { it >= 0L } }
+
   override fun contentLength(): Long = requestBody.contentLength()
 
   override fun contentType() = requestBody.contentType()
@@ -67,8 +69,7 @@ class StreamMultipartUploadProgressRequestBody(
           super.write(source, byteCount)
 
           bytesWritten += byteCount
-          val total = requestBody.contentLength().takeIf { it >= 0L }
-          throttler.dispatch(bytesWritten, total)
+          throttler.dispatch(bytesWritten, resolvedContentLength)
         }
       }
 

@@ -126,6 +126,7 @@ const createNativeMultipartRequest = (
     parts,
     progress: getNativeProgressOptions(config.uploadProgressOptions),
     signal: config.signal,
+    timeoutMs: config.timeout,
     url: client.axiosInstance.getUri(config),
   };
 };

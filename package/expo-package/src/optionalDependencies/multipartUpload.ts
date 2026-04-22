@@ -41,6 +41,7 @@ export const multipartUpload = async ({
   parts,
   progress,
   signal,
+  timeoutMs,
   url,
 }: NativeMultipartUploadRequest) => {
   const resolvedParts = await Promise.all(parts.map(resolvePartUri));
@@ -52,6 +53,7 @@ export const multipartUpload = async ({
     parts: resolvedParts,
     progress,
     signal,
+    timeoutMs,
     uploadId: `stream-upload-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     url,
   });

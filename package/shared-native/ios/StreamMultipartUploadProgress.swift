@@ -11,8 +11,8 @@ final class StreamMultipartUploadProgressThrottler {
     options: StreamMultipartUploadProgressOptions?,
     onProgress: @escaping (Int64, Int64?) -> Void
   ) {
-    self.count = options?.count ?? 20
-    self.intervalMs = options?.intervalMs ?? 16
+    self.count = min(max(options?.count ?? 20, 1), 100)
+    self.intervalMs = min(max(options?.intervalMs ?? 16, 16), 1_000)
     self.onProgress = onProgress
   }
 

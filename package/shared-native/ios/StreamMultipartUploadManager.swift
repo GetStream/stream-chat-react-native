@@ -9,6 +9,7 @@ private final class StreamMultipartUploadTaskState {
     ((Result<StreamMultipartUploadResponse, Error>) -> Void)?
   var response: HTTPURLResponse?
   var responseData = Data()
+  var responseDataError: Error?
 
   init(
     bodyFactory: StreamMultipartUploadBodyStreamFactory,
@@ -27,9 +28,11 @@ private final class StreamMultipartUploadTaskState {
 
 final class StreamMultipartUploadManager: NSObject {
   static let shared = StreamMultipartUploadManager()
+  private let maxResponseBodyBytes = 1_048_576
 
   private lazy var session: URLSession = {
     let delegateQueue = OperationQueue()
+    delegateQueue.maxConcurrentOperationCount = 1
     delegateQueue.qualityOfService = .userInitiated
     let configuration = URLSessionConfiguration.ephemeral
     configuration.waitsForConnectivity = false
@@ -63,6 +66,7 @@ final class StreamMultipartUploadManager: NSObject {
     headers: [String: String],
     parts: [[String: Any]],
     progress: [String: Any]?,
+    timeoutMs: TimeInterval?,
     onProgress: @escaping (Int64, Int64?) -> Void
   ) async throws -> StreamMultipartUploadResponse {
     let request = try parseRequest(
@@ -71,7 +75,8 @@ final class StreamMultipartUploadManager: NSObject {
       method: method,
       headers: headers,
       parts: parts,
-      progress: progress
+      progress: progress,
+      timeoutMs: timeoutMs
     )
 
     try throwIfCancelled(uploadId: uploadId)
@@ -79,6 +84,9 @@ final class StreamMultipartUploadManager: NSObject {
     try throwIfCancelled(uploadId: uploadId)
     var urlRequest = URLRequest(url: request.url)
     urlRequest.httpMethod = request.method
+    if let timeoutMs = request.timeoutMs, timeoutMs > 0 {
+      urlRequest.timeoutInterval = timeoutMs / 1_000
+    }
 
     request.headers.forEach { key, value in
       if
@@ -129,7 +137,8 @@ final class StreamMultipartUploadManager: NSObject {
     method: String,
     headers: [String: String],
     parts: [[String: Any]],
-    progress: [String: Any]?
+    progress: [String: Any]?,
+    timeoutMs: TimeInterval?
   ) throws -> StreamMultipartUploadRequest {
     guard let parsedURL = URL(string: url) else {
       throw StreamMultipartUploadError.invalidURL(url)
@@ -196,11 +205,14 @@ final class StreamMultipartUploadManager: NSObject {
       intervalMs: progress?["intervalMs"] as? Double ?? (progress?["intervalMs"] as? NSNumber)?.doubleValue
     )
 
+    let parsedTimeoutMs = timeoutMs.flatMap { $0 > 0 ? $0 : nil }
+
     return StreamMultipartUploadRequest(
       headers: headers,
       method: method,
       parts: uploadParts,
       progress: progress == nil ? nil : progressOptions,
+      timeoutMs: parsedTimeoutMs,
       uploadId: uploadId,
       url: parsedURL
     )
@@ -258,6 +270,12 @@ extension StreamMultipartUploadManager: URLSessionDataDelegate, URLSessionTaskDe
       return
     }
 
+    if state.responseData.count + data.count > maxResponseBodyBytes {
+      state.responseDataError = StreamMultipartUploadError.responseBodyTooLarge(maxResponseBodyBytes)
+      dataTask.cancel()
+      return
+    }
+
     state.responseData.append(data)
   }
 
@@ -281,6 +299,12 @@ extension StreamMultipartUploadManager: URLSessionDataDelegate, URLSessionTaskDe
     }
 
     if let error {
+      if let responseDataError = state.responseDataError {
+        state.completion?(.failure(responseDataError))
+        state.completion = nil
+        return
+      }
+
       let nsError = error as NSError
 
       if nsError.domain == NSURLErrorDomain, nsError.code == NSURLErrorCancelled {

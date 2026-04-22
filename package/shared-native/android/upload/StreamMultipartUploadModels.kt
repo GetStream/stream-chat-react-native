@@ -5,6 +5,7 @@ data class StreamMultipartUploadRequest(
   val method: String,
   val parts: List<StreamMultipartUploadPart>,
   val progress: StreamMultipartUploadProgressOptions?,
+  val timeoutMs: Long?,
   val uploadId: String,
   val url: String,
 )

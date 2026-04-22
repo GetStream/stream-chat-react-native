@@ -49,9 +49,10 @@ RCT_EXPORT_MODULE(StreamMultipartUploader)
 - (void)uploadMultipart:(NSString *)uploadId
                     url:(NSString *)url
                  method:(NSString *)method
-                headers:(NSArray<NSDictionary<NSString *, NSString *> *> *)headers
-                  parts:(NSArray<NSDictionary<NSString *, id> *> *)parts
+               headers:(NSArray<NSDictionary<NSString *, NSString *> *> *)headers
+                 parts:(NSArray<NSDictionary<NSString *, id> *> *)parts
                progress:(JS::NativeStreamMultipartUploader::UploadProgressConfig &)progress
+             timeoutMs:(NSNumber * _Nullable)timeoutMs
                 resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject
 {
@@ -64,6 +65,7 @@ RCT_EXPORT_MODULE(StreamMultipartUploader)
                                                      headers:headers
                                                        parts:parts
                                                     progress:progressOptions
+                                                   timeoutMs:timeoutMs
                                                   onProgress:^(NSNumber *loaded, NSNumber * _Nullable total) {
     __strong __typeof__(weakSelf) strongSelf = weakSelf;
     if (strongSelf == nil) {

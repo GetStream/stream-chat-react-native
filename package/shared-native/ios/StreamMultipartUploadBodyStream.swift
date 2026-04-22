@@ -183,6 +183,10 @@ private final class StreamMultipartSequentialInputStream: InputStream {
 
     while true {
       guard let currentStream else {
+        if internalStatus == .error {
+          return -1
+        }
+
         internalStatus = .atEnd
         return 0
       }
@@ -226,6 +230,11 @@ private final class StreamMultipartSequentialInputStream: InputStream {
         nextStream = InputStream(data: data)
       case .file(let url):
         nextStream = InputStream(url: url)
+        if nextStream == nil {
+          internalError = StreamMultipartUploadError.unreadableFile(url.path)
+          internalStatus = .error
+          return
+        }
       }
 
       if let nextStream {

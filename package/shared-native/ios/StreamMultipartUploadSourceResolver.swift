@@ -4,6 +4,54 @@ import MobileCoreServices
 import Photos
 import UniformTypeIdentifiers
 
+private final class StreamPhotoRequestBox {
+  private let lock = NSLock()
+  private var requestId: PHImageRequestID = PHInvalidImageRequestID
+
+  func set(_ requestId: PHImageRequestID) {
+    lock.lock()
+    self.requestId = requestId
+    lock.unlock()
+  }
+
+  func cancel() {
+    lock.lock()
+    let requestId = self.requestId
+    lock.unlock()
+
+    if requestId != PHInvalidImageRequestID {
+      PHImageManager.default().cancelImageRequest(requestId)
+    }
+  }
+}
+
+private final class StreamContentEditingInputRequestBox {
+  private let lock = NSLock()
+  private weak var asset: PHAsset?
+  private var requestId: PHContentEditingInputRequestID = 0
+
+  init(asset: PHAsset) {
+    self.asset = asset
+  }
+
+  func set(_ requestId: PHContentEditingInputRequestID) {
+    lock.lock()
+    self.requestId = requestId
+    lock.unlock()
+  }
+
+  func cancel() {
+    lock.lock()
+    let requestId = self.requestId
+    let asset = self.asset
+    lock.unlock()
+
+    if requestId != 0 {
+      asset?.cancelContentEditingInputRequest(requestId)
+    }
+  }
+}
+
 struct StreamMultipartResolvedFilePart {
   let fieldName: String
   let fileName: String
@@ -14,7 +62,9 @@ struct StreamMultipartResolvedFilePart {
 
 enum StreamMultipartUploadSourceResolver {
   static func resolve(_ part: StreamMultipartFilePart) async throws -> StreamMultipartResolvedFilePart {
+    try Task.checkCancellation()
     let fileURL = sanitizeFileURL(try await resolveFileURL(from: part.uri))
+    try Task.checkCancellation()
     let mimeType = part.mimeType ?? guessMimeType(fileURL: fileURL, fallbackFileName: part.fileName)
     let size = fileSize(url: fileURL)
 
@@ -108,18 +158,29 @@ enum StreamMultipartUploadSourceResolver {
   private static func requestImageAssetURL(_ asset: PHAsset) async throws -> URL {
     let options = PHContentEditingInputRequestOptions()
     options.isNetworkAccessAllowed = true
+    let requestBox = StreamContentEditingInputRequestBox(asset: asset)
 
-    return try await withCheckedThrowingContinuation { continuation in
-      asset.requestContentEditingInput(with: options) { input, _ in
-        if let url = input?.fullSizeImageURL {
-          continuation.resume(returning: url)
-          return
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        let requestId = asset.requestContentEditingInput(with: options) { input, _ in
+          if Task.isCancelled {
+            continuation.resume(throwing: StreamMultipartUploadError.cancelled)
+            return
+          }
+
+          if let url = input?.fullSizeImageURL {
+            continuation.resume(returning: url)
+            return
+          }
+
+          continuation.resume(
+            throwing: StreamMultipartUploadError.unsupportedSource(asset.localIdentifier)
+          )
         }
-
-        continuation.resume(
-          throwing: StreamMultipartUploadError.unsupportedSource(asset.localIdentifier)
-        )
+        requestBox.set(requestId)
       }
+    } onCancel: {
+      requestBox.cancel()
     }
   }
 
@@ -128,28 +189,39 @@ enum StreamMultipartUploadSourceResolver {
     options.deliveryMode = .highQualityFormat
     options.isNetworkAccessAllowed = true
     options.version = .current
+    let requestBox = StreamPhotoRequestBox()
 
-    return try await withCheckedThrowingContinuation { continuation in
-      PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { avAsset, _, info in
-        if let isCancelled = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue, isCancelled {
-          continuation.resume(throwing: StreamMultipartUploadError.cancelled)
-          return
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        let requestId = PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { avAsset, _, info in
+          if Task.isCancelled {
+            continuation.resume(throwing: StreamMultipartUploadError.cancelled)
+            return
+          }
+
+          if let isCancelled = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue, isCancelled {
+            continuation.resume(throwing: StreamMultipartUploadError.cancelled)
+            return
+          }
+
+          if let error = info?[PHImageErrorKey] as? Error {
+            continuation.resume(throwing: error)
+            return
+          }
+
+          if let url = (avAsset as? AVURLAsset)?.url {
+            continuation.resume(returning: url)
+            return
+          }
+
+          continuation.resume(
+            throwing: StreamMultipartUploadError.unsupportedSource(asset.localIdentifier)
+          )
         }
-
-        if let error = info?[PHImageErrorKey] as? Error {
-          continuation.resume(throwing: error)
-          return
-        }
-
-        if let url = (avAsset as? AVURLAsset)?.url {
-          continuation.resume(returning: url)
-          return
-        }
-
-        continuation.resume(
-          throwing: StreamMultipartUploadError.unsupportedSource(asset.localIdentifier)
-        )
+        requestBox.set(requestId)
       }
+    } onCancel: {
+      requestBox.cancel()
     }
   }
 

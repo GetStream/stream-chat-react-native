@@ -44,6 +44,7 @@ export type NativeMultipartUploadRequest = {
   parts: NativeMultipartUploadPart[];
   progress?: NativeMultipartUploadProgressConfig;
   signal?: NativeMultipartAbortSignal;
+  timeoutMs?: number;
   url: string;
 };
 

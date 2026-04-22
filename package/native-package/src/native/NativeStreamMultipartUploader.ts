@@ -45,6 +45,7 @@ export interface Spec extends TurboModule {
     headers: ReadonlyArray<UploadHeader>,
     parts: ReadonlyArray<UploadPart>,
     progress?: UploadProgressConfig | null,
+    timeoutMs?: number | null,
   ): Promise<UploadResponse>;
 }
 

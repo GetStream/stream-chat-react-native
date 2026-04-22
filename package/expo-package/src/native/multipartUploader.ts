@@ -43,6 +43,7 @@ type MultipartUploadRequest = {
   parts: UploadPart[];
   progress?: UploadProgressConfig;
   signal?: NativeMultipartAbortSignal;
+  timeoutMs?: number;
   uploadId: string;
   url: string;
 };
@@ -58,6 +59,7 @@ export const uploadMultipart = async ({
   parts,
   progress,
   signal,
+  timeoutMs,
   uploadId,
   url,
 }: MultipartUploadRequest): Promise<MultipartUploadResponse> => {
@@ -118,6 +120,7 @@ export const uploadMultipart = async ({
       toUploadHeaders(headers),
       parts,
       progress ?? {},
+      timeoutMs,
     );
 
     if (signal?.aborted) {

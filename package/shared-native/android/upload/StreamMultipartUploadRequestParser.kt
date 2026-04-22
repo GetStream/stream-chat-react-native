@@ -12,12 +12,14 @@ object StreamMultipartUploadRequestParser {
     headers: ReadableArray,
     parts: ReadableArray,
     progress: ReadableMap?,
+    timeoutMs: Double?,
   ): StreamMultipartUploadRequest {
     return StreamMultipartUploadRequest(
       headers = headers.toStringMap(),
       method = method,
       parts = parts.toUploadParts(),
       progress = progress?.toProgressOptions(),
+      timeoutMs = timeoutMs?.toLong()?.takeIf { it > 0L },
       uploadId = uploadId,
       url = url,
     )
@@ -89,13 +91,13 @@ object StreamMultipartUploadRequestParser {
   private fun ReadableMap.toProgressOptions(): StreamMultipartUploadProgressOptions {
     val count =
       if (hasKey("count") && !isNull("count")) {
-        getDouble("count").toInt()
+        getDouble("count").toInt().coerceIn(1, 100)
       } else {
         null
       }
     val intervalMs =
       if (hasKey("intervalMs") && !isNull("intervalMs")) {
-        getDouble("intervalMs").toLong()
+        getDouble("intervalMs").toLong().coerceIn(16L, 1_000L)
       } else {
         null
       }

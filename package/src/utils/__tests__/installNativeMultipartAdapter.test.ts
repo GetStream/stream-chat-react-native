@@ -63,6 +63,7 @@ describe('installNativeMultipartAdapter', () => {
       params: {
         api_key: 'test-key',
       },
+      timeout: 1234,
     });
 
     expect(defaultAdapter).not.toHaveBeenCalled();
@@ -73,6 +74,7 @@ describe('installNativeMultipartAdapter', () => {
           'Content-Type': 'multipart/form-data',
           'X-Stream-Client': 'stream-test',
         }),
+        timeoutMs: 1234,
         parts: [
           {
             fieldName: 'file',
