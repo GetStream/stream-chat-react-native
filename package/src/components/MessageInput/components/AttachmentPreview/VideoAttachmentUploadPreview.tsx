@@ -22,6 +22,7 @@ export const VideoAttachmentUploadPreview = ({
   removeAttachments,
 }: VideoAttachmentUploadPreviewProps) => {
   const previewUri = attachment.thumb_url ?? attachment.localMetadata.previewUri;
+  const shouldShowMetadataPill = attachment.localMetadata.uploadState !== 'uploading';
 
   return previewUri ? (
     <>
@@ -38,7 +39,9 @@ export const VideoAttachmentUploadPreview = ({
         handleRetry={handleRetry}
         removeAttachments={removeAttachments}
       />
-      <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
+      {shouldShowMetadataPill ? (
+        <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
+      ) : null}
     </>
   ) : (
     <FileAttachmentUploadPreview

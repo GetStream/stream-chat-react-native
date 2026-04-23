@@ -2,7 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-import { LocalAudioAttachment, LocalFileAttachment, LocalVideoAttachment } from 'stream-chat';
+import {
+  FileReference,
+  LocalAudioAttachment,
+  LocalFileAttachment,
+  LocalVideoAttachment,
+} from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
@@ -27,6 +32,8 @@ export const FileAttachmentUploadPreview = ({
   removeAttachments,
 }: FileAttachmentUploadPreviewProps) => {
   const styles = useStyles();
+  const sourceUrl =
+    attachment.asset_url ?? (attachment.localMetadata.file as FileReference | undefined)?.uri;
   const {
     FileUploadInProgressIndicator,
     FileUploadRetryIndicator,
@@ -56,7 +63,12 @@ export const FileAttachmentUploadPreview = ({
 
   const renderIndicator = useMemo(() => {
     if (indicatorType === ProgressIndicatorTypes.IN_PROGRESS) {
-      return <FileUploadInProgressIndicator />;
+      return (
+        <FileUploadInProgressIndicator
+          localId={attachment.localMetadata.id}
+          sourceUrl={sourceUrl}
+        />
+      );
     }
     if (indicatorType === ProgressIndicatorTypes.RETRY) {
       return <FileUploadRetryIndicator onPress={onRetryHandler} />;
@@ -72,6 +84,7 @@ export const FileAttachmentUploadPreview = ({
     attachment.localMetadata,
     indicatorType,
     onRetryHandler,
+    sourceUrl,
   ]);
 
   return (
