@@ -107,8 +107,18 @@ final class StreamMultipartUploadManager: NSObject {
   private var taskIdentifiersByUploadId = [String: Int]()
 
   func cancel(uploadId: String) {
+    cancel(uploadId: uploadId, recordCancellation: true)
+  }
+
+  func cancelInFlight(uploadId: String) {
+    cancel(uploadId: uploadId, recordCancellation: false)
+  }
+
+  private func cancel(uploadId: String, recordCancellation: Bool) {
     lock.lock()
-    cancelledUploadIds.insert(uploadId)
+    if recordCancellation {
+      cancelledUploadIds.insert(uploadId)
+    }
     let taskIdentifier = taskIdentifiersByUploadId[uploadId]
     let task: URLSessionUploadTask?
     if let taskIdentifier {

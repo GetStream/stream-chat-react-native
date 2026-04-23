@@ -53,7 +53,7 @@ public final class StreamMultipartUploaderBridge: NSObject {
     taskLock.unlock()
     if replacedTaskBox != nil {
       replacedTaskBox?.cancel()
-      StreamMultipartUploadManager.shared.cancel(uploadId: uploadId)
+      StreamMultipartUploadManager.shared.cancelInFlight(uploadId: uploadId)
     }
 
     let task = Task(priority: .userInitiated) {

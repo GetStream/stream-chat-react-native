@@ -7,7 +7,27 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import type { NativeMultipartUpload } from './nativeMultipartUpload';
 import type { File } from './types/types';
+
+export type {
+  NativeMultipartAbortSignal,
+  NativeMultipartCanceledError,
+  NativeMultipartUpload,
+  NativeMultipartUploadEventEmitter,
+  NativeMultipartUploadHeader,
+  NativeMultipartUploadNativeResponse,
+  NativeMultipartUploadPart,
+  NativeMultipartUploadProgressConfig,
+  NativeMultipartUploadProgressEvent,
+  NativeMultipartUploadRequest,
+  NativeMultipartUploadResult,
+  NativeMultipartUploader,
+  NativeMultipartUploaderModule,
+  NativeMultipartUploaderProgressConfig,
+  NativeMultipartUploaderRequest,
+} from './nativeMultipartUpload';
+
 const fail = () => {
   throw Error(
     'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
@@ -27,63 +47,6 @@ type CompressImage = ({
 }) => Promise<string> | never;
 
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
-
-// Axios uses a looser GenericAbortSignal type than the DOM AbortSignal and
-// the native multipart path only needs this shared subset for cancellation
-export type NativeMultipartAbortSignal = {
-  aborted: boolean;
-  addEventListener?: (...args: unknown[]) => unknown;
-  onabort?: ((...args: unknown[]) => unknown) | null;
-  removeEventListener?: (...args: unknown[]) => unknown;
-};
-
-export type NativeMultipartUploadRequest = {
-  headers: Record<string, string>;
-  method: string;
-  onProgress?: (progress: { loaded: number; total?: number }) => void;
-  parts: NativeMultipartUploadPart[];
-  progress?: NativeMultipartUploadProgressConfig;
-  signal?: NativeMultipartAbortSignal;
-  timeoutMs?: number;
-  url: string;
-};
-
-export type NativeMultipartUploadPart =
-  | {
-      fieldName: string;
-      kind: 'file';
-      fileName: string;
-      mimeType?: string;
-      uri: string;
-    }
-  | {
-      fieldName: string;
-      kind: 'text';
-      value: string;
-    };
-
-export type NativeMultipartUploadProgressConfig = {
-  /**
-   * Maximum progress percentage reported while the native request body is still being sent.
-   * Completion is represented by the upload request resolving and the upload indicator being removed.
-   *
-   * @default 90
-   */
-  completionProgressCap?: number;
-  count?: number;
-  intervalMs?: number;
-};
-
-export type NativeMultipartUploadResult = {
-  body: string;
-  headers?: Record<string, string>;
-  status: number;
-  statusText?: string;
-};
-
-type MultipartUpload = (
-  request: NativeMultipartUploadRequest,
-) => Promise<NativeMultipartUploadResult | undefined> | never;
 
 type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string | undefined> | never;
 
@@ -365,7 +328,7 @@ type Handlers = {
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
-  multipartUpload?: MultipartUpload;
+  multipartUpload?: NativeMultipartUpload;
   oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   overrideAudioRecordingConfiguration?: (
     audioRecordingConfiguration: AudioRecordingConfiguration,

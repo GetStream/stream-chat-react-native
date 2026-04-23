@@ -153,6 +153,9 @@ private final class StreamMultipartSequentialInputStream: InputStream {
 
     internalStatus = .opening
     advanceStreamIfNeeded()
+    if internalStatus == .error {
+      return
+    }
     internalStatus = currentStream == nil ? .atEnd : .open
   }
 

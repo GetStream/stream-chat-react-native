@@ -49,4 +49,4 @@ export interface Spec extends TurboModule {
   ): Promise<UploadResponse>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('StreamMultipartUploader');
+export default TurboModuleRegistry.get<Spec>('StreamMultipartUploader');
