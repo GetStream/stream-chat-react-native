@@ -26,11 +26,13 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 
 import { primitives } from '../../theme';
 import type { DefaultAttachmentData } from '../../types/types';
 import { FileTypes } from '../../types/types';
+import { isLocalUrl } from '../../utils/utils';
 
 export type ActionHandler = (name: string, value: string) => void;
 
@@ -188,13 +190,16 @@ const MessageAudioAttachment = ({
   message,
 }: MessageAudioAttachmentProps) => {
   const localId = (attachment as DefaultAttachmentData).localId;
-  const indicator = (
+  const sourceUrl = attachment.asset_url ?? attachment.originalFile?.uri;
+  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+  const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
+  const indicator = pendingUpload.isUploading ? (
     <AttachmentFileUploadProgressIndicator
       localId={localId}
-      sourceUrl={attachment.asset_url ?? attachment.originalFile?.uri}
+      sourceUrl={sourceUrl}
       totalBytes={attachment.file_size}
     />
-  );
+  ) : undefined;
 
   const audioItemType = isVoiceRecordingAttachment(attachment) ? 'voiceRecording' : 'audio';
 
