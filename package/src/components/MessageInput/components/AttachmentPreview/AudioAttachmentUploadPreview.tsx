@@ -64,7 +64,11 @@ export const AudioAttachmentUploadPreview = ({
   const renderIndicator = useMemo(() => {
     if (indicatorType === ProgressIndicatorTypes.IN_PROGRESS) {
       return (
-        <FileUploadInProgressIndicator localId={attachment.localMetadata.id} sourceUrl={assetUrl} />
+        <FileUploadInProgressIndicator
+          localId={attachment.localMetadata.id}
+          sourceUrl={assetUrl}
+          totalBytes={attachment.file_size}
+        />
       );
     }
     if (indicatorType === ProgressIndicatorTypes.RETRY) {
@@ -74,7 +78,7 @@ export const AudioAttachmentUploadPreview = ({
       return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
     }
     return null;
-  }, [assetUrl, attachment.localMetadata, indicatorType, onRetryHandler]);
+  }, [assetUrl, attachment.file_size, attachment.localMetadata, indicatorType, onRetryHandler]);
 
   return (
     <View style={styles.wrapper} testID={'audio-attachment-upload-preview'}>

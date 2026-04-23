@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LocalAttachmentUploadMetadata } from 'stream-chat';
 
+import { AttachmentFileUploadProgressIndicator } from '../../../../components/Attachment/AttachmentFileUploadProgressIndicator';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { ExclamationCircle } from '../../../../icons/exclamation-circle-fill';
@@ -13,26 +14,26 @@ import { RetryBadge } from '../../../ui/Badge/RetryBadge';
 export type UploadInProgressIndicatorProps = {
   localId?: string;
   sourceUrl?: string;
+  totalBytes?: number | string | null;
 };
 
 export const FileUploadInProgressIndicator = ({
   localId,
   sourceUrl,
+  totalBytes,
 }: UploadInProgressIndicatorProps = {}) => {
   const {
     theme: {
       messageComposer: { fileUploadInProgressIndicator },
     },
   } = useTheme();
-  const { AttachmentUploadIndicator } = useComponentsContext();
 
   return (
-    <AttachmentUploadIndicator
+    <AttachmentFileUploadProgressIndicator
       containerStyle={[styles.activityIndicatorContainer, fileUploadInProgressIndicator.container]}
       localId={localId}
       sourceUrl={sourceUrl}
-      style={[styles.activityIndicator, fileUploadInProgressIndicator.indicator]}
-      testID='upload-progress-indicator'
+      totalBytes={totalBytes}
     />
   );
 };
@@ -116,14 +117,7 @@ export const ImageUploadInProgressIndicator = ({
 }: UploadInProgressIndicatorProps = {}) => {
   const { AttachmentUploadIndicator } = useComponentsContext();
 
-  return (
-    <AttachmentUploadIndicator
-      localId={localId}
-      sourceUrl={sourceUrl}
-      testID='upload-progress-indicator'
-      variant='overlay'
-    />
-  );
+  return <AttachmentUploadIndicator localId={localId} sourceUrl={sourceUrl} variant='overlay' />;
 };
 
 export type ImageUploadRetryIndicatorProps = {
@@ -226,9 +220,5 @@ const styles = StyleSheet.create({
   activityIndicatorContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  activityIndicator: {
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
   },
 });

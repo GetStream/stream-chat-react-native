@@ -341,6 +341,7 @@ const DrawerNavigatorWrapper: React.FC<{
       enableOfflineSupport
       isMessageAIGenerated={isMessageAIGenerated}
       i18nInstance={i18nInstance}
+      useNativeMultipartUpload
     >
       <StreamChatProvider>
         <AppOverlayProvider>
