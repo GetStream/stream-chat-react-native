@@ -1,5 +1,62 @@
 import Foundation
 
+private actor StreamMultipartUploadConcurrencyLimiter {
+  private var activeUploads = 0
+  private let maxConcurrentUploads: Int
+  private var waiterOrder = [UUID]()
+  private var waiters = [UUID: CheckedContinuation<Void, Error>]()
+
+  init(maxConcurrentUploads: Int) {
+    self.maxConcurrentUploads = max(1, maxConcurrentUploads)
+  }
+
+  func acquire() async throws {
+    if activeUploads < maxConcurrentUploads {
+      activeUploads += 1
+      return
+    }
+
+    let waiterId = UUID()
+
+    try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        if activeUploads < maxConcurrentUploads {
+          activeUploads += 1
+          continuation.resume()
+          return
+        }
+
+        waiterOrder.append(waiterId)
+        waiters[waiterId] = continuation
+      }
+    } onCancel: {
+      Task {
+        await self.cancelWaiter(id: waiterId)
+      }
+    }
+  }
+
+  func release() {
+    while !waiterOrder.isEmpty {
+      let waiterId = waiterOrder.removeFirst()
+
+      guard let continuation = waiters.removeValue(forKey: waiterId) else {
+        continue
+      }
+
+      continuation.resume()
+      return
+    }
+
+    activeUploads = max(0, activeUploads - 1)
+  }
+
+  private func cancelWaiter(id: UUID) {
+    waiterOrder.removeAll { $0 == id }
+    waiters.removeValue(forKey: id)?.resume(throwing: StreamMultipartUploadError.cancelled)
+  }
+}
+
 private final class StreamMultipartUploadTaskState {
   let bodyFactory: StreamMultipartUploadBodyStreamFactory
   let progressThrottler: StreamMultipartUploadProgressThrottler
@@ -29,15 +86,20 @@ private final class StreamMultipartUploadTaskState {
 final class StreamMultipartUploadManager: NSObject {
   static let shared = StreamMultipartUploadManager()
   private let maxResponseBodyBytes = 1_048_576
+  private let maxConcurrentUploads = min(max(ProcessInfo.processInfo.activeProcessorCount, 2), 4)
 
   private lazy var session: URLSession = {
     let delegateQueue = OperationQueue()
     delegateQueue.maxConcurrentOperationCount = 1
     delegateQueue.qualityOfService = .userInitiated
     let configuration = URLSessionConfiguration.ephemeral
+    configuration.httpMaximumConnectionsPerHost = maxConcurrentUploads
     configuration.waitsForConnectivity = false
     return URLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
   }()
+  private lazy var uploadLimiter = StreamMultipartUploadConcurrencyLimiter(
+    maxConcurrentUploads: maxConcurrentUploads
+  )
 
   private let lock = NSLock()
   private var cancelledUploadIds = Set<String>()
@@ -109,6 +171,7 @@ final class StreamMultipartUploadManager: NSObject {
 
     let progressThrottler =
       StreamMultipartUploadProgressThrottler(options: request.progress, onProgress: onProgress)
+    try await uploadLimiter.acquire()
 
     return try await withCheckedThrowingContinuation { continuation in
       let task = session.uploadTask(withStreamedRequest: urlRequest)
@@ -118,11 +181,17 @@ final class StreamMultipartUploadManager: NSObject {
         task: task,
         uploadId: uploadId
       ) { result in
+        Task {
+          await self.uploadLimiter.release()
+        }
         continuation.resume(with: result)
       }
 
       guard register(state) else {
         task.cancel()
+        Task {
+          await self.uploadLimiter.release()
+        }
         continuation.resume(throwing: StreamMultipartUploadError.cancelled)
         return
       }
@@ -245,7 +314,9 @@ final class StreamMultipartUploadManager: NSObject {
     lock.lock()
     let state = statesByTaskIdentifier.removeValue(forKey: taskIdentifier)
     if let uploadId = state?.uploadId {
-      taskIdentifiersByUploadId.removeValue(forKey: uploadId)
+      if taskIdentifiersByUploadId[uploadId] == taskIdentifier {
+        taskIdentifiersByUploadId.removeValue(forKey: uploadId)
+      }
       cancelledUploadIds.remove(uploadId)
     }
     lock.unlock()

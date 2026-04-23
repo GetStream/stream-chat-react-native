@@ -45,11 +45,16 @@ public final class StreamMultipartUploaderBridge: NSObject {
     completion: @escaping (NSDictionary?, NSError?) -> Void
   ) {
     let taskBox = StreamMultipartUploadBridgeTaskBox()
+    var replacedTaskBox: StreamMultipartUploadBridgeTaskBox?
 
     taskLock.lock()
-    tasksByUploadId[uploadId]?.cancel()
+    replacedTaskBox = tasksByUploadId[uploadId]
     tasksByUploadId[uploadId] = taskBox
     taskLock.unlock()
+    if replacedTaskBox != nil {
+      replacedTaskBox?.cancel()
+      StreamMultipartUploadManager.shared.cancel(uploadId: uploadId)
+    }
 
     let task = Task(priority: .userInitiated) {
       defer {

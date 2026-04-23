@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE(StreamMultipartUploader)
                headers:(NSArray<NSDictionary<NSString *, NSString *> *> *)headers
                  parts:(NSArray<NSDictionary<NSString *, id> *> *)parts
                progress:(JS::NativeStreamMultipartUploader::UploadProgressConfig &)progress
-             timeoutMs:(NSNumber * _Nullable)timeoutMs
+             timeoutMs:(NSNumber *)timeoutMs
                 resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject
 {

@@ -9,29 +9,29 @@ export type UploadHeader = {
 
 export type UploadPart = {
   fieldName: string;
-  fileName?: string | null;
+  fileName?: string;
   kind: string;
-  mimeType?: string | null;
-  uri?: string | null;
-  value?: string | null;
+  mimeType?: string;
+  uri?: string;
+  value?: string;
 };
 
 export type UploadProgressConfig = {
-  count?: number | null;
-  intervalMs?: number | null;
+  count?: number;
+  intervalMs?: number;
 };
 
 export type UploadProgressEvent = {
   loaded: number;
-  total?: number | null;
+  total?: number;
   uploadId: string;
 };
 
 export type UploadResponse = {
   body: string;
-  headers?: ReadonlyArray<UploadHeader> | null;
+  headers?: ReadonlyArray<UploadHeader>;
   status: number;
-  statusText?: string | null;
+  statusText?: string;
 };
 
 export interface Spec extends TurboModule {
@@ -44,7 +44,7 @@ export interface Spec extends TurboModule {
     method: string,
     headers: ReadonlyArray<UploadHeader>,
     parts: ReadonlyArray<UploadPart>,
-    progress?: UploadProgressConfig | null,
+    progress?: UploadProgressConfig,
     timeoutMs?: number | null,
   ): Promise<UploadResponse>;
 }

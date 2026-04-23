@@ -73,7 +73,7 @@ PODS:
     - GoogleUtilities/Reachability (~> 8.1)
     - GoogleUtilities/UserDefaults (~> 8.1)
     - nanopb (~> 3.30910.0)
-  - FirebaseRemoteConfigInterop (11.14.0)
+  - FirebaseRemoteConfigInterop (11.15.0)
   - FirebaseSessions (11.13.0):
     - FirebaseCore (~> 11.13.0)
     - FirebaseCoreExtension (~> 11.13.0)
@@ -83,7 +83,7 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 8.1)
     - nanopb (~> 3.30910.0)
     - PromisesSwift (~> 2.1)
-  - fmt (11.0.2)
+  - fmt (12.1.0)
   - glog (0.3.5)
   - GoogleAppMeasurement (11.13.0):
     - GoogleAppMeasurement/AdIdSupport (= 11.13.0)
@@ -251,20 +251,20 @@ PODS:
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
     - RCT-Folly/Default (= 2024.11.18.00)
   - RCT-Folly/Default (2024.11.18.00):
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
   - RCT-Folly/Fabric (2024.11.18.00):
     - boost
     - DoubleConversion
     - fast_float (= 8.0.0)
-    - fmt (= 11.0.2)
+    - fmt (= 12.1.0)
     - glog
   - RCTDeprecation (0.81.6)
   - RCTRequired (0.81.6)
@@ -3731,9 +3731,9 @@ SPEC CHECKSUMS:
   FirebaseCrashlytics: 8281e577b6f85a08ea7aeb8b66f95e1ae430c943
   FirebaseInstallations: 0ee9074f2c1e86561ace168ee1470dc67aabaf02
   FirebaseMessaging: 195bbdb73e6ca1dbc76cd46e73f3552c084ef6e4
-  FirebaseRemoteConfigInterop: 7b74ceaa54e28863ed17fa39da8951692725eced
+  FirebaseRemoteConfigInterop: 1c6135e8a094cc6368949f5faeeca7ee8948b8aa
   FirebaseSessions: eaa8ec037e7793769defe4201c20bd4d976f9677
-  fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
+  fmt: 12a698626610c2fef5e7d8de472b100baf225f93
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   GoogleAppMeasurement: 0dfca1a4b534d123de3945e28f77869d10d0d600
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
@@ -3746,7 +3746,7 @@ SPEC CHECKSUMS:
   op-sqlite: 2e58f87227360fa6251d1fe103d189f11ae8c95f
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
+  RCT-Folly: 5a8bea092f38495b327c6eff2dc52ee25c10f637
   RCTDeprecation: d4ef510f229cea15314176aee5e3ba10064a8496
   RCTRequired: 1e41b794629558f6626e2bc39c166ac0ec1c5878
   RCTTypeSafety: 62c8105cf08af634c93d38ea1e8ec8a57b7abc2c
@@ -3839,6 +3839,6 @@ SPEC CHECKSUMS:
   Teleport: ed828b19e62ca8b9ec101d991bf0594b1c1c8812
   Yoga: ff16d80456ce825ffc9400eeccc645a0dfcccdf5
 
-PODFILE CHECKSUM: 4f662370295f8f9cee909f1a4c59a614999a209d
+PODFILE CHECKSUM: 84efea5f3e8c9c79671ee6e525f700f244c17388
 
 COCOAPODS: 1.15.2

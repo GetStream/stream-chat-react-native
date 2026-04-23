@@ -35,7 +35,10 @@ object StreamMultipartUploader {
 
     val httpRequest = createRequest(context, request, onProgress)
     val call = clientFor(request).newCall(httpRequest)
-    inFlightCalls[request.uploadId] = call
+    val existingCall = inFlightCalls.putIfAbsent(request.uploadId, call)
+    if (existingCall != null) {
+      throw IllegalStateException("Upload already in flight for id: ${request.uploadId}")
+    }
 
     try {
       if (cancelledUploadIds.remove(request.uploadId)) {
@@ -54,7 +57,7 @@ object StreamMultipartUploader {
         )
       }
     } finally {
-      inFlightCalls.remove(request.uploadId)
+      inFlightCalls.remove(request.uploadId, call)
       cancelledUploadIds.remove(request.uploadId)
     }
   }
