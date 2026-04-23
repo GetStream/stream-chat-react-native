@@ -7,10 +7,13 @@ import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { usePendingAttachmentUpload } from '../usePendingAttachmentUpload';
 
 type UploadManagerState = {
-  uploads: Array<{
-    id: string;
-    uploadProgress?: number;
-  }>;
+  uploads: Record<
+    string,
+    {
+      id: string;
+      uploadProgress?: number;
+    }
+  >;
 };
 
 const createWrapper = (state: StateStore<UploadManagerState>) => {
@@ -35,7 +38,7 @@ describe('usePendingAttachmentUpload', () => {
   });
 
   it('briefly holds completed upload progress after a ready upload record disappears', () => {
-    const state = new StateStore<UploadManagerState>({ uploads: [] });
+    const state = new StateStore<UploadManagerState>({ uploads: {} });
     const { result } = renderHook(() => usePendingAttachmentUpload('upload-id'), {
       wrapper: createWrapper(state),
     });
@@ -47,7 +50,9 @@ describe('usePendingAttachmentUpload', () => {
 
     act(() => {
       state.partialNext({
-        uploads: [{ id: 'upload-id', uploadProgress: 90 }],
+        uploads: {
+          'upload-id': { id: 'upload-id', uploadProgress: 90 },
+        },
       });
     });
 
@@ -57,7 +62,7 @@ describe('usePendingAttachmentUpload', () => {
     });
 
     act(() => {
-      state.partialNext({ uploads: [] });
+      state.partialNext({ uploads: {} });
     });
 
     expect(result.current).toEqual({
@@ -76,19 +81,21 @@ describe('usePendingAttachmentUpload', () => {
   });
 
   it('does not hold completed progress when an upload record disappears before reaching the ready threshold', () => {
-    const state = new StateStore<UploadManagerState>({ uploads: [] });
+    const state = new StateStore<UploadManagerState>({ uploads: {} });
     const { result } = renderHook(() => usePendingAttachmentUpload('upload-id'), {
       wrapper: createWrapper(state),
     });
 
     act(() => {
       state.partialNext({
-        uploads: [{ id: 'upload-id', uploadProgress: 50 }],
+        uploads: {
+          'upload-id': { id: 'upload-id', uploadProgress: 50 },
+        },
       });
     });
 
     act(() => {
-      state.partialNext({ uploads: [] });
+      state.partialNext({ uploads: {} });
     });
 
     expect(result.current).toEqual({

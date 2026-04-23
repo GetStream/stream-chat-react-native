@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { ActivityIndicator } from 'react-native';
+
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
@@ -41,6 +43,19 @@ const renderComponent = ({ client, channel, props }) => {
   );
 };
 
+const setPendingUploads = (client, uploads) => {
+  act(() => {
+    client.uploadManager.state.partialNext({
+      uploads: Object.fromEntries(
+        uploads.map(({ id, uploadProgress }) => [id, { id, uploadProgress }]),
+      ),
+    });
+  });
+};
+
+const countActivityIndicators = (nodes) =>
+  nodes.reduce((count, node) => count + node.findAllByType(ActivityIndicator).length, 0);
+
 describe('AudioAttachmentUploadPreview render', () => {
   let client;
   let channel;
@@ -55,6 +70,7 @@ describe('AudioAttachmentUploadPreview render', () => {
     jest.clearAllMocks();
     cleanup();
     act(() => {
+      client?.uploadManager?.reset();
       channel.messageComposer.attachmentManager.initState();
     });
   });
@@ -62,6 +78,7 @@ describe('AudioAttachmentUploadPreview render', () => {
   it('should render AudioAttachmentUploadPreview with all uploading files', async () => {
     const attachments = [
       generateAudioAttachment({
+        asset_url: undefined,
         localMetadata: {
           file: {
             uri: 'file://audio-attachment.mp3',
@@ -76,6 +93,7 @@ describe('AudioAttachmentUploadPreview render', () => {
     act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments);
     });
+    setPendingUploads(client, [{ id: 'audio-attachment' }]);
 
     renderComponent({ channel, client, props });
 
@@ -83,7 +101,7 @@ describe('AudioAttachmentUploadPreview render', () => {
 
     await waitFor(() => {
       expect(queryAllByTestId('audio-attachment-upload-preview')).toHaveLength(1);
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+      expect(countActivityIndicators(getAllByTestId('audio-attachment-upload-preview'))).toBe(1);
     });
 
     act(() => {

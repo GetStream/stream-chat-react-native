@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { ActivityIndicator } from 'react-native';
+
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts';
@@ -46,6 +48,19 @@ const renderComponent = ({ client, channel, props }) => {
   );
 };
 
+const setPendingUploads = (client, uploads) => {
+  act(() => {
+    client.uploadManager.state.partialNext({
+      uploads: Object.fromEntries(
+        uploads.map(({ id, uploadProgress }) => [id, { id, uploadProgress }]),
+      ),
+    });
+  });
+};
+
+const countActivityIndicators = (nodes) =>
+  nodes.reduce((count, node) => count + node.findAllByType(ActivityIndicator).length, 0);
+
 describe('AttachmentUploadPreviewList', () => {
   let client;
   let channel;
@@ -60,6 +75,7 @@ describe('AttachmentUploadPreviewList', () => {
     jest.clearAllMocks();
     cleanup();
     act(() => {
+      client?.uploadManager?.reset();
       channel.messageComposer.attachmentManager.initState();
     });
   });
@@ -103,7 +119,11 @@ describe('AttachmentUploadPreviewList', () => {
   it('should render FileAttachmentUploadPreview when the sound package is unavailable', async () => {
     const attachments = [
       generateAudioAttachment({
+        asset_url: undefined,
         localMetadata: {
+          file: {
+            uri: 'file://audio-attachment.mp3',
+          },
           id: 'audio-attachment',
           uploadState: FileState.UPLOADING,
         },
@@ -115,14 +135,15 @@ describe('AttachmentUploadPreviewList', () => {
     act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments);
     });
+    setPendingUploads(client, [{ id: 'audio-attachment' }]);
 
     renderComponent({ channel, client, props });
 
-    const { queryAllByTestId } = screen;
+    const { getAllByTestId, queryAllByTestId } = screen;
 
     await waitFor(() => {
       expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(1);
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+      expect(countActivityIndicators(getAllByTestId('file-attachment-upload-preview'))).toBe(1);
     });
   });
 
@@ -130,13 +151,20 @@ describe('AttachmentUploadPreviewList', () => {
     it('should render FileAttachmentUploadPreview with all uploading files', async () => {
       const attachments = [
         generateFileAttachment({
+          asset_url: undefined,
           localMetadata: {
+            file: {
+              uri: 'file://file-attachment.xls',
+            },
             id: 'file-attachment',
             uploadState: FileState.UPLOADING,
           },
         }),
         generateVideoAttachment({
           localMetadata: {
+            file: {
+              uri: 'file://video-attachment.mp4',
+            },
             id: 'video-attachment',
             uploadState: FileState.UPLOADING,
           },
@@ -147,6 +175,7 @@ describe('AttachmentUploadPreviewList', () => {
       act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments);
       });
+      setPendingUploads(client, [{ id: 'file-attachment' }, { id: 'video-attachment' }]);
 
       renderComponent({ channel, client, props });
 
@@ -154,7 +183,7 @@ describe('AttachmentUploadPreviewList', () => {
 
       await waitFor(() => {
         expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
-        expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(2);
+        expect(countActivityIndicators(getAllByTestId('file-attachment-upload-preview'))).toBe(2);
       });
 
       act(() => {
@@ -285,6 +314,7 @@ describe('AttachmentUploadPreviewList', () => {
         generateImageAttachment({
           localMetadata: {
             id: 'image-attachment',
+            previewUri: 'file://image-attachment.png',
             uploadState: FileState.UPLOADING,
           },
         }),
@@ -294,6 +324,7 @@ describe('AttachmentUploadPreviewList', () => {
       await act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
       });
+      setPendingUploads(client, [{ id: 'image-attachment' }]);
 
       renderComponent({ channel, client, props });
 
@@ -301,7 +332,7 @@ describe('AttachmentUploadPreviewList', () => {
 
       await waitFor(() => {
         expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
-        expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+        expect(countActivityIndicators(getAllByTestId('image-attachment-upload-preview'))).toBe(1);
       });
 
       await act(() => {
@@ -437,6 +468,7 @@ describe('AttachmentUploadPreviewList', () => {
         generateImageAttachment({
           localMetadata: {
             id: 'image-attachment-1',
+            previewUri: 'file://image-attachment-1.png',
             uploadState: FileState.UPLOADING,
           },
         }),
@@ -464,10 +496,11 @@ describe('AttachmentUploadPreviewList', () => {
       await act(() => {
         channel.messageComposer.attachmentManager.upsertAttachments(attachments ?? []);
       });
+      setPendingUploads(client, [{ id: 'image-attachment-1' }]);
 
       renderComponent({ channel, client, props });
 
-      const { queryAllByTestId } = screen;
+      const { getAllByTestId, queryAllByTestId } = screen;
 
       await waitFor(() => {
         const imageAttachments = queryAllByTestId('image-attachment-upload-preview-image');
@@ -478,7 +511,7 @@ describe('AttachmentUploadPreviewList', () => {
 
       await waitFor(() => {
         expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(4);
-        expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+        expect(countActivityIndicators(getAllByTestId('image-attachment-upload-preview'))).toBe(1);
         expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
         expect(queryAllByTestId('inline-not-supported-indicator')).toHaveLength(1);
       });
