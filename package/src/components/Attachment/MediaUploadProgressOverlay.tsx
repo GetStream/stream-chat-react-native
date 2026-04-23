@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { CircularProgressIndicator } from './CircularProgressIndicator';
-
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 export type MediaUploadProgressOverlayProps = {
@@ -22,6 +21,7 @@ export const MediaUploadProgressOverlay = ({
   testID,
 }: MediaUploadProgressOverlayProps) => {
   const styles = useStyles();
+  const { CircularProgressIndicator } = useComponentsContext();
   const {
     theme: {
       messageItemView: { attachmentUploadIndicator },

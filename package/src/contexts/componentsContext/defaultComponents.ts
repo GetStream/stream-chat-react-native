@@ -4,7 +4,9 @@ import { Image, ImageProps, TextInputProps } from 'react-native';
 import type { LocalMessage, UserResponse } from 'stream-chat';
 
 import { Attachment } from '../../components/Attachment/Attachment';
+import { AttachmentUploadIndicator } from '../../components/Attachment/AttachmentUploadIndicator';
 import { AudioAttachment } from '../../components/Attachment/Audio';
+import { CircularProgressIndicator } from '../../components/Attachment/CircularProgressIndicator';
 import { FileAttachment } from '../../components/Attachment/FileAttachment';
 import { FileAttachmentGroup } from '../../components/Attachment/FileAttachmentGroup';
 import { FileIcon } from '../../components/Attachment/FileIcon';
@@ -13,6 +15,7 @@ import { Gallery } from '../../components/Attachment/Gallery';
 import { Giphy } from '../../components/Attachment/Giphy';
 import { ImageLoadingFailedIndicator } from '../../components/Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../components/Attachment/ImageLoadingIndicator';
+import { MediaUploadProgressOverlay } from '../../components/Attachment/MediaUploadProgressOverlay';
 import { UnsupportedAttachment } from '../../components/Attachment/UnsupportedAttachment';
 import { URLPreview } from '../../components/Attachment/UrlPreview';
 import { URLPreviewCompact } from '../../components/Attachment/UrlPreview/URLPreviewCompact';
@@ -160,6 +163,7 @@ type NormalizeComponents<T> = {
 
 const components = {
   Attachment,
+  AttachmentUploadIndicator,
   AttachButton,
   AttachmentPickerContent,
   AttachmentPickerSelectionBar,
@@ -176,6 +180,7 @@ const components = {
   AutoCompleteSuggestionList,
   ChannelDetailsBottomSheet,
   CooldownTimer,
+  CircularProgressIndicator,
   DateHeader,
   EmptyStateIndicator,
   FileAttachment,
@@ -206,6 +211,7 @@ const components = {
   LoadingErrorIndicator,
   ChannelListLoadingIndicator,
   MessageListLoadingIndicator: LoadingIndicator,
+  MediaUploadProgressOverlay,
   Message,
   MessageActionList,
   MessageActionListItem,

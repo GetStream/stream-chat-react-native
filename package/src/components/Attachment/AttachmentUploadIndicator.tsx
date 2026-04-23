@@ -2,9 +2,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { CircularProgressIndicator } from './CircularProgressIndicator';
-import { MediaUploadProgressOverlay } from './MediaUploadProgressOverlay';
-
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import { isLocalUrl } from '../../utils/utils';
@@ -35,6 +33,7 @@ export const AttachmentUploadIndicatorUI = ({
   const {
     theme: { semantics },
   } = useTheme();
+  const { CircularProgressIndicator, MediaUploadProgressOverlay } = useComponentsContext();
   const pendingUpload = usePendingAttachmentUpload(localId);
   const uploadProgress = pendingUpload.uploadProgress;
   const shouldRender = pendingUpload.isUploading;

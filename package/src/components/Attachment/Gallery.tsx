@@ -3,7 +3,6 @@ import { ImageErrorEvent, Pressable, StyleSheet, Text, View } from 'react-native
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
-import { AttachmentUploadIndicator } from './AttachmentUploadIndicator';
 import { GalleryImage } from './GalleryImage';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
@@ -332,7 +331,8 @@ const GalleryImageThumbnail = ({
   borderRadius,
   thumbnail,
 }: Pick<GalleryThumbnailProps, 'thumbnail' | 'borderRadius'>) => {
-  const { ImageLoadingFailedIndicator, ImageLoadingIndicator } = useComponentsContext();
+  const { AttachmentUploadIndicator, ImageLoadingFailedIndicator, ImageLoadingIndicator } =
+    useComponentsContext();
   const {
     isLoadingImage,
     isLoadingImageError,

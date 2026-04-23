@@ -8,6 +8,7 @@ export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
 export * from './Attachment/CircularProgressIndicator';
 export * from './Attachment/AttachmentUploadIndicator';
+export * from './Attachment/MediaUploadProgressOverlay';
 export * from './Attachment/VideoThumbnail';
 export * from './Attachment/UrlPreview';
 export * from './Attachment/utils/buildGallery/buildGallery';

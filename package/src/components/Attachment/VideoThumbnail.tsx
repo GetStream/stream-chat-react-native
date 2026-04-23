@@ -1,8 +1,6 @@
 import React from 'react';
 import { ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { AttachmentUploadIndicator } from './AttachmentUploadIndicator';
-
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
@@ -34,7 +32,7 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       },
     },
   } = useTheme();
-  const { ImageComponent } = useComponentsContext();
+  const { AttachmentUploadIndicator, ImageComponent } = useComponentsContext();
   const { imageStyle, localId, style, thumb_url } = props;
 
   return (

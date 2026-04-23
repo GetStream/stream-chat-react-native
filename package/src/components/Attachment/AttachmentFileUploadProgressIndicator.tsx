@@ -2,8 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { AttachmentUploadIndicator } from './AttachmentUploadIndicator';
-
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import { primitives } from '../../theme';
@@ -49,6 +48,7 @@ export const AttachmentFileUploadProgressIndicatorUI = ({
   const {
     theme: { semantics },
   } = useTheme();
+  const { AttachmentUploadIndicator } = useComponentsContext();
   const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
   const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
   const uploadProgress = pendingUpload.uploadProgress;
