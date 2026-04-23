@@ -5,17 +5,9 @@ import { AttachmentUploadIndicator } from './AttachmentUploadIndicator';
 
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { primitives } from '../../theme';
 import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
 const styles = StyleSheet.create({
-  uploadProgressContainer: {
-    alignItems: 'flex-start',
-    bottom: primitives.spacingXxs,
-    justifyContent: 'flex-start',
-    left: primitives.spacingXxs,
-    position: 'absolute',
-  },
   container: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -53,11 +45,7 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
         style={[StyleSheet.absoluteFill, imageStyle]}
       />
       <VideoPlayIndicator size='md' />
-      <AttachmentUploadIndicator
-        containerStyle={styles.uploadProgressContainer}
-        localId={localId}
-        sourceUrl={thumb_url}
-      />
+      <AttachmentUploadIndicator localId={localId} sourceUrl={thumb_url} variant='overlay' />
     </View>
   );
 };

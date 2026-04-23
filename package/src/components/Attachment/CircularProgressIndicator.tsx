@@ -17,8 +17,10 @@ const PROGRESS_ANIMATION_DURATION_MS = 1200;
 
 export type CircularProgressIndicatorProps = {
   /** Upload percent **0–100**. */
+  backgroundColor: ColorValue;
+  filledColor: ColorValue;
   progress: number;
-  color: ColorValue;
+  unfilledColor: ColorValue;
   size?: number;
   strokeWidth?: number;
   style?: StyleProp<ViewStyle>;
@@ -29,12 +31,14 @@ export type CircularProgressIndicatorProps = {
  * Circular upload progress ring (determinate) or rotating arc (indeterminate).
  */
 export const CircularProgressIndicator = ({
-  color,
+  backgroundColor,
+  filledColor,
   progress,
   size = 16,
   strokeWidth = 2,
   style,
   testID,
+  unfilledColor,
 }: CircularProgressIndicatorProps) => {
   const animatedProgress = useSharedValue(0);
   const rotation = useSharedValue(0);
@@ -99,13 +103,21 @@ export const CircularProgressIndicator = ({
   if (fraction !== undefined) {
     return (
       <Svg height={size} style={style} testID={testID} viewBox={`0 0 ${size} ${size}`} width={size}>
+        <Circle
+          cx={cx}
+          cy={cy}
+          fill={backgroundColor}
+          r={r}
+          stroke={unfilledColor}
+          strokeWidth={strokeWidth}
+        />
         <AnimatedCircle
           animatedProps={animatedCircleProps}
           cx={cx}
           cy={cy}
           fill='none'
           r={r}
-          stroke={color as string}
+          stroke={filledColor}
           strokeDasharray={`${circumference}`}
           strokeLinecap='round'
           strokeWidth={strokeWidth}
@@ -127,9 +139,17 @@ export const CircularProgressIndicator = ({
         <Circle
           cx={cx}
           cy={cy}
+          fill={backgroundColor}
+          r={r}
+          stroke={unfilledColor}
+          strokeWidth={strokeWidth}
+        />
+        <Circle
+          cx={cx}
+          cy={cy}
           fill='none'
           r={r}
-          stroke={color as string}
+          stroke={filledColor}
           strokeDasharray={`${arc} ${gap}`}
           strokeLinecap='round'
           strokeWidth={strokeWidth}

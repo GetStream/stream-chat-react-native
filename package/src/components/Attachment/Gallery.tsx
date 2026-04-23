@@ -378,9 +378,9 @@ const GalleryImageThumbnail = ({
           />
           {isLoadingImage ? <ImageLoadingIndicator /> : null}
           <AttachmentUploadIndicator
-            containerStyle={styles.uploadProgressOnImage}
             localId={thumbnail.localId}
             sourceUrl={thumbnail.url}
+            variant='overlay'
           />
         </>
       )}
@@ -603,11 +603,6 @@ const useStyles = () => {
         right: 0,
         top: 0,
         overflow: 'hidden',
-      },
-      uploadProgressOnImage: {
-        bottom: primitives.spacingXxs,
-        left: primitives.spacingXxs,
-        position: 'absolute',
       },
     });
   }, [semantics, isMyMessage]);

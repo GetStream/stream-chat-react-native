@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { CircularProgressIndicator } from './CircularProgressIndicator';
+import { MediaUploadProgressOverlay } from './MediaUploadProgressOverlay';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
@@ -16,6 +17,7 @@ export type AttachmentUploadIndicatorProps = {
   strokeWidth?: number;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  variant?: 'compact' | 'overlay';
 };
 
 /**
@@ -28,6 +30,7 @@ export const AttachmentUploadIndicatorUI = ({
   strokeWidth = 2,
   style,
   testID,
+  variant = 'compact',
 }: AttachmentUploadIndicatorProps) => {
   const {
     theme: { semantics },
@@ -35,9 +38,22 @@ export const AttachmentUploadIndicatorUI = ({
   const pendingUpload = usePendingAttachmentUpload(localId);
   const uploadProgress = pendingUpload.uploadProgress;
   const shouldRender = pendingUpload.isUploading;
+  const resolvedSize = variant === 'overlay' && size === 16 ? 28 : size;
+  const resolvedStrokeWidth = variant === 'overlay' && strokeWidth === 2 ? 3 : strokeWidth;
 
   if (!shouldRender) {
     return null;
+  }
+
+  if (variant === 'overlay') {
+    return (
+      <MediaUploadProgressOverlay
+        progress={uploadProgress}
+        size={resolvedSize}
+        strokeWidth={resolvedStrokeWidth}
+        testID={testID}
+      />
+    );
   }
 
   return (
@@ -52,12 +68,14 @@ export const AttachmentUploadIndicatorUI = ({
         </View>
       ) : (
         <CircularProgressIndicator
-          color={semantics.accentPrimary}
+          backgroundColor={semantics.backgroundCoreElevation0}
+          filledColor={semantics.accentPrimary}
           progress={uploadProgress}
-          size={size}
-          strokeWidth={strokeWidth}
+          size={resolvedSize}
+          strokeWidth={resolvedStrokeWidth}
           style={style}
           testID={testID}
+          unfilledColor={semantics.borderCoreDefault}
         />
       )}
     </View>
@@ -68,6 +86,7 @@ export const AttachmentUploadIndicator = ({
   containerStyle,
   localId,
   sourceUrl,
+  variant,
   ...props
 }: AttachmentUploadIndicatorProps) => {
   const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
@@ -81,6 +100,7 @@ export const AttachmentUploadIndicator = ({
       {...props}
       containerStyle={containerStyle}
       localId={localId}
+      variant={variant}
     />
   );
 };
