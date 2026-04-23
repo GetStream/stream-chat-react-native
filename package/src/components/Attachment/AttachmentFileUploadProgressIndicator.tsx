@@ -1,14 +1,19 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 import { AttachmentUploadIndicator } from './AttachmentUploadIndicator';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import { primitives } from '../../theme';
+import { isLocalUrl } from '../../utils/utils';
 
 export type AttachmentFileUploadProgressIndicatorProps = {
+  containerStyle?: StyleProp<ViewStyle>;
+  localId?: string;
+  sourceUrl?: string;
   totalBytes?: number | string | null;
-  uploadProgress: number | undefined;
 };
 
 const parseTotalBytes = (value: number | string | null | undefined): number | null => {
@@ -35,13 +40,19 @@ const formatMegabytesOneDecimal = (bytes: number) => {
 /**
  * Circular progress plus `uploaded / total` for file and audio attachments during upload.
  */
-export const AttachmentFileUploadProgressIndicator = ({
+export const AttachmentFileUploadProgressIndicatorUI = ({
+  containerStyle,
+  localId,
+  sourceUrl,
   totalBytes,
-  uploadProgress,
 }: AttachmentFileUploadProgressIndicatorProps) => {
   const {
     theme: { semantics },
   } = useTheme();
+  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+  const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
+  const uploadProgress = pendingUpload.uploadProgress;
+  const shouldRender = pendingUpload.isUploading;
 
   const progressLabel = useMemo(() => {
     const bytes = parseTotalBytes(totalBytes);
@@ -52,9 +63,13 @@ export const AttachmentFileUploadProgressIndicator = ({
     return `${formatMegabytesOneDecimal(uploaded)} / ${formatMegabytesOneDecimal(bytes)}`;
   }, [totalBytes, uploadProgress]);
 
+  if (!shouldRender) {
+    return null;
+  }
+
   return (
-    <View style={styles.row}>
-      <AttachmentUploadIndicator uploadProgress={uploadProgress} />
+    <View style={[styles.row, containerStyle]}>
+      <AttachmentUploadIndicator localId={localId} sourceUrl={sourceUrl} />
       {progressLabel ? (
         <Text numberOfLines={1} style={[styles.label, { color: semantics.textSecondary }]}>
           {progressLabel}
@@ -62,6 +77,19 @@ export const AttachmentFileUploadProgressIndicator = ({
       ) : null}
     </View>
   );
+};
+
+export const AttachmentFileUploadProgressIndicator = (
+  props: AttachmentFileUploadProgressIndicatorProps,
+) => {
+  const { localId, sourceUrl } = props;
+  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+
+  if (!shouldTrackPendingUpload) {
+    return null;
+  }
+
+  return <AttachmentFileUploadProgressIndicatorUI {...props} />;
 };
 
 const styles = StyleSheet.create({

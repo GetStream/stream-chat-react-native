@@ -26,7 +26,6 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 
 import { primitives } from '../../theme';
@@ -189,14 +188,13 @@ const MessageAudioAttachment = ({
   message,
 }: MessageAudioAttachmentProps) => {
   const localId = (attachment as DefaultAttachmentData).localId;
-  const { isUploading, uploadProgress } = usePendingAttachmentUpload(localId);
-
-  const indicator = isUploading ? (
+  const indicator = (
     <AttachmentFileUploadProgressIndicator
+      localId={localId}
+      sourceUrl={attachment.asset_url ?? attachment.originalFile?.uri}
       totalBytes={attachment.file_size}
-      uploadProgress={uploadProgress}
     />
-  ) : undefined;
+  );
 
   const audioItemType = isVoiceRecordingAttachment(attachment) ? 'voiceRecording' : 'audio';
 

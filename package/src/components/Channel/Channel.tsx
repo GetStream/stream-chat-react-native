@@ -1082,7 +1082,21 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
       }
 
-      const response = await client.uploadManager.upload({
+      const response = await (
+        client as typeof client & {
+          uploadManager: {
+            upload(args: {
+              channelCid: string;
+              file: {
+                name?: string;
+                type?: string;
+                uri: string;
+              };
+              id: string;
+            }): Promise<{ file: string; thumb_url?: string }>;
+          };
+        }
+      ).uploadManager.upload({
         channelCid: channel.cid,
         file: fileForUpload,
         id: localId,
