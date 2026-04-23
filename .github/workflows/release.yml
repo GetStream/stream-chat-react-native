@@ -3,7 +3,6 @@ name: Release
 on:
   push:
     branches:
-      - main
       - develop
       - V8-release
 
