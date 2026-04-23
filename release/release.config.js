@@ -82,7 +82,7 @@ module.exports = Promise.resolve().then(() => {
   const lernaPackage = require('../lerna.json');
 
   return {
-    dryRun: false,
+    dryRun: true,
     extends: [`${__dirname}/monorepo-setup.js`],
     workspaces: lernaPackage.packages,
     filterPath: process.env.FILTER_PATH,

@@ -7,7 +7,10 @@ configPromise.then((config) => {
   return semanticRelease({
     ...config,
     branches: [
-      'V8-release',
+      {
+        name: 'V8-release',
+        range: '8.x',
+      },
       {
         name: 'develop',
         channel: 'beta',
