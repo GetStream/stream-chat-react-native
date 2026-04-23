@@ -19,7 +19,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: actions/checkout@v2
         with:
-          ref: develop
+          ref: V8-release
           # pulls all commits (needed for semantic release to correctly version)
           fetch-depth: '0'
       # pulls all tags (needed for semantic release to correctly version)
@@ -42,7 +42,7 @@ jobs:
       - name: Generate Changelog
         id: generate_changelog
         run: |
-          GITHUB_REF='refs/heads/develop' yarn extract-changelog
+          GITHUB_REF='refs/heads/V8-release' yarn extract-changelog
           echo "Changelog script finished! Checking if there are changes..."
           CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md || true)
 
