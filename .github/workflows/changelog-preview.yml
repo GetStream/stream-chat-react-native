@@ -3,7 +3,7 @@ name: Changelog preview
 on:
   pull_request:
     branches:
-      - main
+      - V8-release
     types: [opened, synchronize]
 
 jobs:
