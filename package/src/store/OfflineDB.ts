@@ -1,4 +1,4 @@
-import { AbstractOfflineDB, StreamChat } from 'stream-chat';
+import { AbstractOfflineDB, ExecuteBatchDBQueriesType, StreamChat } from 'stream-chat';
 import type {
   DBGetAppSettingsType,
   DBGetChannelsForQueryType,
@@ -66,6 +66,13 @@ export class OfflineDB extends AbstractOfflineDB {
   getReactions = api.getReactionsForFilterSort;
 
   addPendingTask = api.addPendingTask;
+
+  // This is needed as compatibility for a V9 only feature.
+  updatePendingTask = (): Promise<ExecuteBatchDBQueriesType> => {
+    return new Promise((resolve) => {
+      resolve([]);
+    });
+  };
 
   deletePendingTask = api.deletePendingTask;
 
