@@ -6,8 +6,8 @@ import { LocalImageAttachment } from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
@@ -24,7 +24,7 @@ export const ImageAttachmentUploadPreview = ({
   removeAttachments,
 }: ImageAttachmentUploadPreviewProps) => {
   const [loading, setLoading] = useState(true);
-  const { enableOfflineSupport } = useChatContext();
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const {
     ImageLoadingIndicator,
     ImageUploadInProgressIndicator,
@@ -33,7 +33,7 @@ export const ImageAttachmentUploadPreview = ({
   } = useComponentsContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
-    enableOfflineSupport,
+    !!allowSendBeforeAttachmentsUpload,
   );
   const previewUri = attachment.localMetadata.previewUri ?? attachment.image_url;
   const shouldShowImageLoadingIndicator =

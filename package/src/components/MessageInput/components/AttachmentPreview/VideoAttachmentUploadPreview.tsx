@@ -12,6 +12,7 @@ import { Recorder } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { formatMsToMinSec, getDurationLabelFromDuration } from '../../../../utils/utils';
+import { useMessageInputContext } from '../../../../contexts';
 
 export type VideoAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<LocalVideoAttachment<CustomLocalMetadata>>;
@@ -22,7 +23,9 @@ export const VideoAttachmentUploadPreview = ({
   removeAttachments,
 }: VideoAttachmentUploadPreviewProps) => {
   const previewUri = attachment.thumb_url ?? attachment.localMetadata.previewUri;
-  const shouldShowMetadataPill = attachment.localMetadata.uploadState !== 'uploading';
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
+  const shouldShowMetadataPill =
+    allowSendBeforeAttachmentsUpload || attachment.localMetadata.uploadState !== 'uploading';
 
   return previewUri ? (
     <>

@@ -12,8 +12,8 @@ import {
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
 import { FilePreview } from '../../../../components/Attachment/FilePreview';
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
@@ -39,10 +39,10 @@ export const FileAttachmentUploadPreview = ({
     FileUploadRetryIndicator,
     FileUploadNotSupportedIndicator,
   } = useComponentsContext();
-  const { enableOfflineSupport } = useChatContext();
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
-    enableOfflineSupport,
+    !!allowSendBeforeAttachmentsUpload,
   );
 
   const {

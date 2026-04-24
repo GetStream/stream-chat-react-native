@@ -13,8 +13,8 @@ import {
 
 import { AudioAttachment } from '../../../../components/Attachment/Audio';
 import { useTheme } from '../../../../contexts';
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
@@ -30,10 +30,10 @@ export const AudioAttachmentUploadPreview = ({
   removeAttachments,
 }: AudioAttachmentUploadPreviewProps) => {
   const styles = useStyles();
-  const { enableOfflineSupport } = useChatContext();
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
-    enableOfflineSupport,
+    !!allowSendBeforeAttachmentsUpload,
   );
   const messageComposer = useMessageComposer();
   const isDraft = messageComposer.draftId;
