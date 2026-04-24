@@ -27,7 +27,7 @@ describe('useTranslatedMessage', () => {
         nl_text: 'Hallo wereld!',
       },
       text: 'Hello world!',
-    } as MessageResponse;
+    } as unknown as MessageResponse;
 
     render(
       <TranslationProvider value={{ userLanguage: 'es' } as TranslationContextValue}>
@@ -46,7 +46,7 @@ describe('useTranslatedMessage', () => {
         no_text: 'Hallo verden!',
       },
       text: 'Hello world!',
-    } as MessageResponse;
+    } as unknown as MessageResponse;
 
     render(
       <TranslationProvider value={{ userLanguage: 'no' } as TranslationContextValue}>
@@ -62,7 +62,7 @@ describe('useTranslatedMessage', () => {
   it("returns the original text if the message doesn't contain any translations", async () => {
     const message = {
       text: 'Hello world!',
-    } as MessageResponse;
+    } as unknown as MessageResponse;
 
     render(<TestComponent message={message} />);
 
@@ -78,7 +78,7 @@ describe('useTranslatedMessage', () => {
         no_text: 'Hallo verden!',
       },
       text: 'Hello world!',
-    } as MessageResponse;
+    } as unknown as MessageResponse;
 
     /**
      * The reason for the as unknown as MessageOverlayContextValue is that the provider

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ComponentProps } from 'react';
 import { Text } from 'react-native';
 
 import { render } from '@testing-library/react-native';
@@ -7,13 +7,19 @@ import type { Channel } from 'stream-chat';
 import { ThemeProvider, defaultTheme } from '../../../contexts';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
+import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 import type { ChannelDetailsHeaderProps } from '../ChannelDetailsBottomSheet';
 import { ChannelDetailsBottomSheet } from '../ChannelDetailsBottomSheet';
 
-const mockStreamBottomSheetModalFlatList = jest.fn(() => null);
+type StreamBottomSheetModalFlatListProps = ComponentProps<typeof StreamBottomSheetModalFlatList>;
+
+const mockStreamBottomSheetModalFlatList = jest.fn(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_props: StreamBottomSheetModalFlatListProps) => null,
+);
 
 jest.mock('../../UIComponents/StreamBottomSheetModalFlatList', () => ({
-  StreamBottomSheetModalFlatList: (...args: unknown[]) =>
+  StreamBottomSheetModalFlatList: (...args: [StreamBottomSheetModalFlatListProps]) =>
     mockStreamBottomSheetModalFlatList(...args),
 }));
 
@@ -73,7 +79,11 @@ describe('ChannelDetailsBottomSheet', () => {
     );
 
     expect(mockStreamBottomSheetModalFlatList).toHaveBeenCalled();
-    const flatListProps = mockStreamBottomSheetModalFlatList.mock.calls[0]?.[0];
+    const flatListProps = (
+      mockStreamBottomSheetModalFlatList.mock.calls[0] as unknown as [
+        StreamBottomSheetModalFlatListProps,
+      ]
+    )?.[0];
     expect(flatListProps).toEqual(
       expect.objectContaining({
         onEndReached,

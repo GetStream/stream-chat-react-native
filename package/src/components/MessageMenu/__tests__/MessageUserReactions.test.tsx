@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { LocalMessage, ReactionResponse } from 'stream-chat';
+import { ReactionResponse } from 'stream-chat';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
@@ -35,7 +35,7 @@ const defaultProps = {
   message: {
     ...generateMessage(),
     reaction_groups: { like: { count: 1, sum_scores: 1 }, love: { count: 1, sum_scores: 1 } },
-  } as unknown as LocalMessage,
+  },
   supportedReactions: mockSupportedReactions,
 };
 
@@ -51,7 +51,7 @@ const renderComponent = (props = {}) =>
             ),
           }}
         >
-          <MessagesProvider value={{} as unknown as MessagesContextValue}>
+          <MessagesProvider value={{} as MessagesContextValue}>
             <MessageUserReactions {...defaultProps} {...props} />
           </MessagesProvider>
         </WithComponents>

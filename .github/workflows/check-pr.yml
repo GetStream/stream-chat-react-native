@@ -29,5 +29,7 @@ jobs:
         uses: ./.github/actions/install-and-build-sdk
       - name: Lint
         run: yarn lerna-workspaces run lint
+      - name: Typecheck tests
+        run: cd package && yarn test:typecheck
       - name: Test
         run: yarn test:coverage
