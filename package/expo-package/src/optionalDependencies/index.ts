@@ -4,7 +4,6 @@ export * from './generateThumbnail';
 export * from './getLocalAssetUri';
 export * from './getPhotos';
 export * from './iOS14RefreshGallerySelection';
-export * from './multipartUpload';
 export * from './NativeShimmerView';
 export * from './oniOS14GalleryLibrarySelectionChange';
 export * from './pickDocument';

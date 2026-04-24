@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
-import { compressImage } from './handlers';
+import { compressImage, multipartUpload } from './handlers';
 
 import {
   Audio,
@@ -11,7 +11,6 @@ import {
   getLocalAssetUri,
   getPhotos,
   iOS14RefreshGallerySelection,
-  multipartUpload,
   NativeShimmerView,
   oniOS14GalleryLibrarySelectionChange,
   overrideAudioRecordingConfiguration,
