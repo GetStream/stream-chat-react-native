@@ -40,7 +40,6 @@
     "react-native-audio-recorder-player": ">=3.6.13",
     "react-native-nitro-sound": ">=0.2.9",
     "react-native-blob-util": ">=0.22.0",
-    "react-native-haptic-feedback": ">=2.3.0",
     "react-native-image-picker": ">=7.1.2",
     "react-native-share": ">=11.0.0",
     "react-native-video": ">=6.18.0"
@@ -57,9 +56,6 @@
       "optional": true
     },
     "@react-native-documents/picker": {
-      "optional": true
-    },
-    "react-native-haptic-feedback": {
       "optional": true
     },
     "react-native-image-picker": {

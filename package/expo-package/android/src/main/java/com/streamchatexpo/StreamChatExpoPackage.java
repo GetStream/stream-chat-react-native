@@ -15,11 +15,14 @@ import java.util.Map;
 
 public class StreamChatExpoPackage extends TurboReactPackage {
   private static final String STREAM_VIDEO_THUMBNAIL_MODULE = "StreamVideoThumbnail";
+  private static final String STREAM_HAPTIC_FEEDBACK_MODULE = "StreamHapticFeedback";
 
   @Nullable
   @Override
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
-    if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE) && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+    if (name.equals(STREAM_HAPTIC_FEEDBACK_MODULE)) {
+      return new StreamHapticFeedbackModule(reactContext);
+    } else if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE) && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       return createNewArchModule("com.streamchatexpo.StreamVideoThumbnailModule", reactContext);
     }
 
@@ -31,6 +34,17 @@ public class StreamChatExpoPackage extends TurboReactPackage {
     return () -> {
       final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
       boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+      moduleInfos.put(
+              STREAM_HAPTIC_FEEDBACK_MODULE,
+              new ReactModuleInfo(
+                      STREAM_HAPTIC_FEEDBACK_MODULE,
+                      STREAM_HAPTIC_FEEDBACK_MODULE,
+                      false, // canOverrideExistingModule
+                      false, // needsEagerInit
+                      false, // hasConstants
+                      false, // isCxxModule
+                      false // isTurboModule
+              ));
       moduleInfos.put(
               STREAM_VIDEO_THUMBNAIL_MODULE,
               new ReactModuleInfo(

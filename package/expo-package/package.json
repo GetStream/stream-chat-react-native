@@ -36,7 +36,6 @@
     "expo-clipboard": "*",
     "expo-document-picker": "*",
     "expo-file-system": "*",
-    "expo-haptics": "*",
     "expo-image-manipulator": "*",
     "expo-image-picker": "*",
     "expo-media-library": "*",
@@ -73,9 +72,6 @@
       "optional": true
     },
     "expo-sharing": {
-      "optional": true
-    },
-    "expo-haptics": {
       "optional": true
     }
   },
