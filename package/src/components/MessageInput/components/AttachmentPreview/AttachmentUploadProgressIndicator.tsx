@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LocalAttachmentUploadMetadata } from 'stream-chat';
 
+import { AttachmentFileUploadProgressIndicator } from '../../../../components/Attachment/AttachmentFileUploadProgressIndicator';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { ExclamationCircle } from '../../../../icons/exclamation-circle-fill';
@@ -10,24 +12,30 @@ import { Warning } from '../../../../icons/exclamation-triangle-fill';
 import { primitives } from '../../../../theme';
 import { RetryBadge } from '../../../ui/Badge/RetryBadge';
 
-export const FileUploadInProgressIndicator = () => {
+export type UploadInProgressIndicatorProps = {
+  localId?: string;
+  sourceUrl?: string;
+  totalBytes?: number | string | null;
+};
+
+export const FileUploadInProgressIndicator = ({
+  localId,
+  sourceUrl,
+  totalBytes,
+}: UploadInProgressIndicatorProps = {}) => {
   const {
     theme: {
-      semantics,
       messageComposer: { fileUploadInProgressIndicator },
     },
   } = useTheme();
 
   return (
-    <View
-      style={[styles.activityIndicatorContainer, fileUploadInProgressIndicator.container]}
-      testID='upload-progress-indicator'
-    >
-      <ActivityIndicator
-        color={semantics.accentPrimary}
-        style={[styles.activityIndicator, fileUploadInProgressIndicator.indicator]}
-      />
-    </View>
+    <AttachmentFileUploadProgressIndicator
+      containerStyle={[styles.activityIndicatorContainer, fileUploadInProgressIndicator.container]}
+      localId={localId}
+      sourceUrl={sourceUrl}
+      totalBytes={totalBytes}
+    />
   );
 };
 
@@ -108,24 +116,13 @@ export const FileUploadNotSupportedIndicator = ({
   );
 };
 
-export const ImageUploadInProgressIndicator = () => {
-  const {
-    theme: {
-      semantics,
-      messageComposer: { imageUploadInProgressIndicator },
-    },
-  } = useTheme();
-  const styles = useImageUploadInProgressIndicatorStyles();
-  return (
-    <View style={[styles.container, imageUploadInProgressIndicator.container]}>
-      <ActivityIndicator
-        size='small'
-        color={semantics.accentPrimary}
-        style={imageUploadInProgressIndicator.indicator}
-        testID='upload-progress-indicator'
-      />
-    </View>
-  );
+export const ImageUploadInProgressIndicator = ({
+  localId,
+  sourceUrl,
+}: UploadInProgressIndicatorProps = {}) => {
+  const { AttachmentUploadIndicator } = useComponentsContext();
+
+  return <AttachmentUploadIndicator localId={localId} sourceUrl={sourceUrl} variant='overlay' />;
 };
 
 export type ImageUploadRetryIndicatorProps = {
@@ -156,16 +153,6 @@ export const ImageUploadNotSupportedIndicator = () => {
       <ExclamationCircle height={20} width={20} fill={semantics.accentError} />
     </View>
   );
-};
-
-const useImageUploadInProgressIndicatorStyles = () => {
-  return StyleSheet.create({
-    container: {
-      position: 'absolute',
-      left: primitives.spacingXxs,
-      bottom: primitives.spacingXxs,
-    },
-  });
 };
 
 const useImageUploadNotSupportedIndicatorStyles = () => {
@@ -235,9 +222,8 @@ const useFileUploadNotSupportedStyles = () => {
 };
 
 const styles = StyleSheet.create({
-  activityIndicatorContainer: {},
-  activityIndicator: {
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
+  activityIndicatorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

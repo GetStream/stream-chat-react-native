@@ -1,5 +1,9 @@
 import React, { ComponentProps } from 'react';
 
+import { ActivityIndicator } from 'react-native';
+
+import type { ReactTestInstance } from 'react-test-renderer';
+
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import type { Attachment, Channel as ChannelType, LocalAttachment, StreamChat } from 'stream-chat';
@@ -24,6 +28,7 @@ jest.mock('../../../native.ts', () => {
     isDocumentPickerAvailable: jest.fn(() => true),
     isImageMediaLibraryAvailable: jest.fn(() => true),
     isImagePickerAvailable: jest.fn(() => true),
+    isNativeMultipartUploadAvailable: jest.fn(() => false),
     isSoundPackageAvailable: jest.fn(() => true),
     NativeHandlers: {
       Sound: {
@@ -53,6 +58,28 @@ const renderComponent = ({
   );
 };
 
+type PendingUploadRecord = {
+  id: string;
+  uploadProgress?: number;
+};
+
+const setPendingUploads = (client: StreamChat, uploads: PendingUploadRecord[]) => {
+  act(() => {
+    client.uploadManager.state.partialNext({
+      uploads: Object.fromEntries(
+        uploads.map(({ id, uploadProgress }) => [id, { id, uploadProgress }]),
+      ),
+    });
+  });
+};
+
+const countActivityIndicators = (nodes: ReactTestInstance[]) =>
+  nodes.reduce(
+    (count: number, node: ReactTestInstance) =>
+      count + node.findAllByType(ActivityIndicator).length,
+    0,
+  );
+
 describe('AudioAttachmentUploadPreview render', () => {
   let client: StreamChat;
   let channel: ChannelType;
@@ -67,6 +94,7 @@ describe('AudioAttachmentUploadPreview render', () => {
     jest.clearAllMocks();
     cleanup();
     act(() => {
+      client?.uploadManager?.reset();
       channel.messageComposer.attachmentManager.initState();
     });
   });
@@ -74,6 +102,7 @@ describe('AudioAttachmentUploadPreview render', () => {
   it('should render AudioAttachmentUploadPreview with all uploading files', async () => {
     const attachments = [
       generateAudioAttachment({
+        asset_url: undefined,
         localMetadata: {
           file: {
             uri: 'file://audio-attachment.mp3',
@@ -88,6 +117,7 @@ describe('AudioAttachmentUploadPreview render', () => {
     act(() => {
       channel.messageComposer.attachmentManager.upsertAttachments(attachments);
     });
+    setPendingUploads(client, [{ id: 'audio-attachment' }]);
 
     renderComponent({ channel, client, props });
 
@@ -95,7 +125,7 @@ describe('AudioAttachmentUploadPreview render', () => {
 
     await waitFor(() => {
       expect(queryAllByTestId('audio-attachment-upload-preview')).toHaveLength(1);
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
+      expect(countActivityIndicators(getAllByTestId('audio-attachment-upload-preview'))).toBe(1);
     });
 
     act(() => {

@@ -13,8 +13,8 @@ import {
 
 import { AudioAttachment } from '../../../../components/Attachment/Audio';
 import { useTheme } from '../../../../contexts';
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
@@ -30,10 +30,10 @@ export const AudioAttachmentUploadPreview = ({
   removeAttachments,
 }: AudioAttachmentUploadPreviewProps) => {
   const styles = useStyles();
-  const { enableOfflineSupport } = useChatContext();
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
-    enableOfflineSupport,
+    !!allowSendBeforeAttachmentsUpload,
   );
   const messageComposer = useMessageComposer();
   const isDraft = messageComposer.draftId;
@@ -63,7 +63,13 @@ export const AudioAttachmentUploadPreview = ({
 
   const renderIndicator = useMemo(() => {
     if (indicatorType === ProgressIndicatorTypes.IN_PROGRESS) {
-      return <FileUploadInProgressIndicator />;
+      return (
+        <FileUploadInProgressIndicator
+          localId={attachment.localMetadata.id}
+          sourceUrl={assetUrl}
+          totalBytes={attachment.file_size}
+        />
+      );
     }
     if (indicatorType === ProgressIndicatorTypes.RETRY) {
       return <FileUploadRetryIndicator onPress={onRetryHandler} />;
@@ -72,7 +78,7 @@ export const AudioAttachmentUploadPreview = ({
       return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
     }
     return null;
-  }, [attachment.localMetadata, indicatorType, onRetryHandler]);
+  }, [assetUrl, attachment.file_size, attachment.localMetadata, indicatorType, onRetryHandler]);
 
   return (
     <View style={styles.wrapper} testID={'audio-attachment-upload-preview'}>

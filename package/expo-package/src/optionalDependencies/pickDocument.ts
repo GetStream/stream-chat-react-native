@@ -1,5 +1,7 @@
 import mime from 'mime';
 
+import { generateThumbnails } from './generateThumbnail';
+
 let DocumentPicker;
 
 try {
@@ -17,6 +19,20 @@ if (!DocumentPicker) {
 export const pickDocument = DocumentPicker
   ? async () => {
       try {
+        const addVideoThumbnails = async <T extends { type?: string; uri?: string }>(
+          assets: T[],
+        ) => {
+          const videoUris = assets
+            .filter(({ type, uri }) => type?.startsWith('video/') && !!uri)
+            .map(({ uri }) => uri as string);
+          const thumbnailResults = await generateThumbnails(videoUris);
+
+          return assets.map((asset) => ({
+            ...asset,
+            thumb_url: asset.uri ? thumbnailResults[asset.uri]?.uri || undefined : undefined,
+          }));
+        };
+
         const result = await DocumentPicker.getDocumentAsync();
 
         // New data from latest version of expo-document-picker
@@ -40,27 +56,27 @@ export const pickDocument = DocumentPicker
         // Applicable to latest version of expo-document-picker
         if (assets) {
           return {
-            assets: assets.map((asset) => ({
-              ...asset,
-              type:
-                asset.mimeType ||
-                mime.getType(asset.name || asset.uri) ||
-                'application/octet-stream',
-            })),
+            assets: await addVideoThumbnails(
+              assets.map((asset) => ({
+                ...asset,
+                type:
+                  asset.mimeType ||
+                  mime.getType(asset.name || asset.uri) ||
+                  'application/octet-stream',
+              })),
+            ),
             cancelled: false,
           };
         }
         // Applicable to older version of expo-document-picker
         return {
-          assets: [
+          assets: await addVideoThumbnails([
             {
               ...rest,
               type:
-                rest.mimeType ||
-                mime.getType(rest.name || rest.uri) ||
-                'application/octet-stream',
+                rest.mimeType || mime.getType(rest.name || rest.uri) || 'application/octet-stream',
             },
-          ],
+          ]),
           cancelled: false,
         };
       } catch (err) {

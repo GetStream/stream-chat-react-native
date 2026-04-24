@@ -1,8 +1,12 @@
 import React, { ComponentProps } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import type { ReactTestInstance } from 'react-test-renderer';
 
 import { render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
+import { AudioPlayerProvider } from '../../../contexts/audioPlayerContext/AudioPlayerContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
@@ -21,10 +25,21 @@ import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Attachment } from '../Attachment';
 import { FilePreview as FilePreviewDefault } from '../FilePreview';
 
-jest.mock('../../../native.ts', () => ({
-  isVideoPlayerAvailable: jest.fn(() => false),
-  isSoundPackageAvailable: jest.fn(() => false),
-}));
+jest.mock('../../../native.ts', () => {
+  const { View } = require('react-native');
+
+  return {
+    NativeHandlers: {
+      SDK: 'stream-chat-react-native',
+      Sound: {
+        initializeSound: jest.fn(() => null),
+        Player: View,
+      },
+    },
+    isVideoPlayerAvailable: jest.fn(() => false),
+    isSoundPackageAvailable: jest.fn(() => false),
+  };
+});
 
 jest.mock('../../../hooks/usePendingAttachmentUpload', () => ({
   usePendingAttachmentUpload: jest.fn(() => ({
@@ -37,20 +52,31 @@ const getAttachmentComponent = (props: ComponentProps<typeof Attachment>) => {
   const message = generateMessage();
   return (
     <ThemeProvider>
-      <MessagesProvider
-        value={{
-          FilePreview: FilePreviewDefault,
-          ImageLoadingFailedIndicator,
-          ImageLoadingIndicator,
-        } as unknown as MessagesContextValue}
-      >
-        <MessageProvider value={{ message } as unknown as MessageContextValue}>
-          <Attachment {...props} />
-        </MessageProvider>
-      </MessagesProvider>
+      <AudioPlayerProvider value={{ allowConcurrentAudioPlayback: false }}>
+        <MessagesProvider
+          value={
+            {
+              FilePreview: FilePreviewDefault,
+              ImageLoadingFailedIndicator,
+              ImageLoadingIndicator,
+              message,
+            } as unknown as MessagesContextValue
+          }
+        >
+          <MessageProvider value={{ message } as unknown as MessageContextValue}>
+            <Attachment {...props} />
+          </MessageProvider>
+        </MessagesProvider>
+      </AudioPlayerProvider>
     </ThemeProvider>
   );
 };
+
+const getWaveformBarCount = (root: ReactTestInstance) =>
+  root.findAllByType(View).filter((node: ReactTestInstance) => {
+    const flattenedStyle = StyleSheet.flatten(node.props.style);
+    return flattenedStyle?.width === 2 && typeof flattenedStyle?.height === 'number';
+  }).length;
 
 describe('Attachment', () => {
   it('should render File component for "audio" type attachment', async () => {
@@ -78,6 +104,22 @@ describe('Attachment', () => {
     await waitFor(() => {
       expect(getByTestId('file-attachment')).toBeTruthy();
     });
+  });
+
+  it('should render waveform for playable audio attachments without an active upload', async () => {
+    const { isSoundPackageAvailable } = require('../../../native');
+    isSoundPackageAvailable.mockReturnValue(true);
+    const attachment = generateAudioAttachment({
+      duration: 10,
+      waveform_data: [0.2, 0.6, 0.4],
+    });
+    const { getByLabelText, root } = render(getAttachmentComponent({ attachment }));
+
+    await waitFor(() => {
+      expect(getByLabelText('audio-attachment-preview')).toBeTruthy();
+      expect(getWaveformBarCount(root)).toBeGreaterThan(0);
+    });
+    isSoundPackageAvailable.mockReturnValue(false);
   });
 
   it('should render UrlPreview component if attachment has title_link or og_scrape_url', async () => {

@@ -13,6 +13,7 @@ import {
 } from 'stream-chat';
 
 import type { AudioAttachmentProps } from './Audio/AudioAttachment';
+
 import { AttachmentFileUploadProgressIndicator } from '../../components/Attachment/AttachmentFileUploadProgressIndicator';
 
 import { useTheme } from '../../contexts';
@@ -31,6 +32,7 @@ import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 import { primitives } from '../../theme';
 import type { DefaultAttachmentData } from '../../types/types';
 import { FileTypes } from '../../types/types';
+import { isLocalUrl } from '../../utils/utils';
 
 export type ActionHandler = (name: string, value: string) => void;
 
@@ -188,12 +190,14 @@ const MessageAudioAttachment = ({
   message,
 }: MessageAudioAttachmentProps) => {
   const localId = (attachment as DefaultAttachmentData).localId;
-  const { isUploading, uploadProgress } = usePendingAttachmentUpload(localId);
-
-  const indicator = isUploading ? (
+  const sourceUrl = attachment.asset_url ?? attachment.originalFile?.uri;
+  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+  const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
+  const indicator = pendingUpload.isUploading ? (
     <AttachmentFileUploadProgressIndicator
+      localId={localId}
+      sourceUrl={sourceUrl}
       totalBytes={attachment.file_size}
-      uploadProgress={uploadProgress}
     />
   ) : undefined;
 

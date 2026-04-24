@@ -6,8 +6,8 @@ import { LocalImageAttachment } from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
@@ -24,15 +24,20 @@ export const ImageAttachmentUploadPreview = ({
   removeAttachments,
 }: ImageAttachmentUploadPreviewProps) => {
   const [loading, setLoading] = useState(true);
-  const { enableOfflineSupport } = useChatContext();
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const {
+    ImageLoadingIndicator,
     ImageUploadInProgressIndicator,
     ImageUploadRetryIndicator,
     ImageUploadNotSupportedIndicator,
   } = useComponentsContext();
-  const indicatorType = loading
-    ? ProgressIndicatorTypes.IN_PROGRESS
-    : getIndicatorTypeForFileState(attachment.localMetadata.uploadState, enableOfflineSupport);
+  const indicatorType = getIndicatorTypeForFileState(
+    attachment.localMetadata.uploadState,
+    !!allowSendBeforeAttachmentsUpload,
+  );
+  const previewUri = attachment.localMetadata.previewUri ?? attachment.image_url;
+  const shouldShowImageLoadingIndicator =
+    loading && indicatorType !== ProgressIndicatorTypes.IN_PROGRESS;
 
   const {
     theme: {
@@ -65,15 +70,21 @@ export const ImageAttachmentUploadPreview = ({
         <Image
           onError={onErrorHandler}
           onLoadEnd={onLoadEndHandler}
-          source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
+          source={{ uri: previewUri }}
           style={StyleSheet.absoluteFill}
           testID={'image-attachment-upload-preview-image'}
         />
-        {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && <ImageUploadInProgressIndicator />}
-        {indicatorType === ProgressIndicatorTypes.RETRY && (
+        {shouldShowImageLoadingIndicator ? <ImageLoadingIndicator /> : null}
+        {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && (
+          <ImageUploadInProgressIndicator
+            localId={attachment.localMetadata.id}
+            sourceUrl={previewUri}
+          />
+        )}
+        {!loading && indicatorType === ProgressIndicatorTypes.RETRY && (
           <ImageUploadRetryIndicator onRetryHandler={onRetryHandler} />
         )}
-        {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED && (
+        {!loading && indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED && (
           <ImageUploadNotSupportedIndicator />
         )}
       </View>

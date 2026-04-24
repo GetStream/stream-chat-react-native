@@ -18,7 +18,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import type { DefaultAttachmentData } from '../../types/types';
 
 export type FileAttachmentPropsWithContext = Pick<
@@ -54,7 +53,6 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
   const { FilePreview } = useComponentsContext();
 
   const localId = (attachment as DefaultAttachmentData).localId;
-  const { isUploading, uploadProgress } = usePendingAttachmentUpload(localId);
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
@@ -98,12 +96,11 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
           attachment={attachment}
           attachmentIconSize={attachmentIconSize}
           indicator={
-            isUploading ? (
-              <AttachmentFileUploadProgressIndicator
-                totalBytes={attachment.file_size}
-                uploadProgress={uploadProgress}
-              />
-            ) : undefined
+            <AttachmentFileUploadProgressIndicator
+              localId={localId}
+              sourceUrl={attachment.asset_url ?? attachment.originalFile?.uri}
+              totalBytes={attachment.file_size}
+            />
           }
           styles={stylesProp}
         />

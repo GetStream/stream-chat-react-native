@@ -677,6 +677,11 @@ export type Theme = {
       attachmentContainer: ViewStyle;
       container: ViewStyle;
     };
+    attachmentUploadIndicator: {
+      indicator: ViewStyle;
+      overlay: ViewStyle;
+      overlayContent: ViewStyle;
+    };
     gallery: {
       galleryContainer: ViewStyle;
       galleryItemColumn: ViewStyle;
@@ -1601,6 +1606,11 @@ export const defaultTheme: Theme = {
     fileAttachmentGroup: {
       attachmentContainer: {},
       container: {},
+    },
+    attachmentUploadIndicator: {
+      indicator: {},
+      overlay: {},
+      overlayContent: {},
     },
     gallery: {
       galleryContainer: {},

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Platform, StyleSheet, useColorScheme, View } from 'react-native';
 import type { ComponentOverrides } from 'stream-chat-react-native';
 import { BlurView } from '@react-native-community/blur';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import {
   useTheme,
 } from 'stream-chat-react-native';

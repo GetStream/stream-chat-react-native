@@ -1,21 +1,11 @@
 import React from 'react';
-import { ImageBackground, ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { AttachmentUploadIndicator } from './AttachmentUploadIndicator';
-
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
-import { primitives } from '../../theme';
 import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
 const styles = StyleSheet.create({
-  uploadProgressContainer: {
-    alignItems: 'flex-start',
-    bottom: primitives.spacingXxs,
-    justifyContent: 'flex-start',
-    left: primitives.spacingXxs,
-    position: 'absolute',
-  },
   container: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -42,22 +32,18 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       },
     },
   } = useTheme();
+  const { AttachmentUploadIndicator, ImageComponent } = useComponentsContext();
   const { imageStyle, localId, style, thumb_url } = props;
-  const { isUploading, uploadProgress } = usePendingAttachmentUpload(localId);
 
   return (
-    <ImageBackground
-      accessibilityLabel='Video Thumbnail'
-      imageStyle={imageStyle}
-      source={{ uri: thumb_url }}
-      style={[styles.container, container, style]}
-    >
+    <View style={[styles.container, container, style]}>
+      <ImageComponent
+        accessibilityLabel='Video Thumbnail'
+        source={{ uri: thumb_url }}
+        style={[StyleSheet.absoluteFill, imageStyle]}
+      />
       <VideoPlayIndicator size='md' />
-      {isUploading ? (
-        <View pointerEvents='none' style={styles.uploadProgressContainer}>
-          <AttachmentUploadIndicator uploadProgress={uploadProgress} />
-        </View>
-      ) : null}
-    </ImageBackground>
+      <AttachmentUploadIndicator localId={localId} sourceUrl={thumb_url} variant='overlay' />
+    </View>
   );
 };

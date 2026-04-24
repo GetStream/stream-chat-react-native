@@ -7,6 +7,7 @@ import { LocalImageAttachment, LocalVideoAttachment } from 'stream-chat';
 import { FileAttachmentUploadPreview } from './FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview } from './ImageAttachmentUploadPreview';
 
+import { useMessageInputContext } from '../../../../contexts';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../../../icons';
 import { primitives } from '../../../../theme';
@@ -22,6 +23,9 @@ export const VideoAttachmentUploadPreview = ({
   removeAttachments,
 }: VideoAttachmentUploadPreviewProps) => {
   const previewUri = attachment.thumb_url ?? attachment.localMetadata.previewUri;
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
+  const shouldShowMetadataPill =
+    allowSendBeforeAttachmentsUpload || attachment.localMetadata.uploadState !== 'uploading';
 
   return previewUri ? (
     <>
@@ -38,7 +42,9 @@ export const VideoAttachmentUploadPreview = ({
         handleRetry={handleRetry}
         removeAttachments={removeAttachments}
       />
-      <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
+      {shouldShowMetadataPill ? (
+        <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
+      ) : null}
     </>
   ) : (
     <FileAttachmentUploadPreview

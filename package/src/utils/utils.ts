@@ -57,14 +57,14 @@ type IndicatorStatesMap = Record<AttachmentLoadingState, Progress | undefined>;
 
 export const getIndicatorTypeForFileState = (
   fileState: AttachmentLoadingState,
-  enableOfflineSupport: boolean,
+  allowSendBeforeAttachmentsUpload: boolean,
 ): Progress | undefined => {
   const indicatorMap: IndicatorStatesMap = {
-    [FileState.UPLOADING]: enableOfflineSupport
+    [FileState.UPLOADING]: allowSendBeforeAttachmentsUpload
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.IN_PROGRESS,
     [FileState.BLOCKED]: ProgressIndicatorTypes.NOT_SUPPORTED,
-    [FileState.FAILED]: enableOfflineSupport
+    [FileState.FAILED]: allowSendBeforeAttachmentsUpload
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.RETRY,
     [FileState.PENDING]: ProgressIndicatorTypes.PENDING,
