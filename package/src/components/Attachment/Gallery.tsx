@@ -3,6 +3,7 @@ import { ImageErrorEvent, Pressable, StyleSheet, Text, View } from 'react-native
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
+import { AttachmentUploadIndicator } from './AttachmentUploadIndicator';
 import { GalleryImage } from './GalleryImage';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
@@ -36,6 +37,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { useLoadingImage } from '../../hooks/useLoadingImage';
+import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { isVideoPlayerAvailable } from '../../native';
 import { primitives } from '../../theme';
@@ -299,6 +301,7 @@ const GalleryThumbnail = ({
     >
       {thumbnail.type === FileTypes.Video ? (
         <VideoThumbnail
+          localId={thumbnail.localId}
           style={[styles.image, imageBorderRadius ?? borderRadius, image]}
           thumb_url={thumbnail.thumb_url}
         />
@@ -344,6 +347,8 @@ const GalleryImageThumbnail = ({
     },
   } = useTheme();
   const styles = useStyles();
+  const { isUploading, uploadProgress } = usePendingAttachmentUpload(thumbnail.localId);
+
   const onLoadStart = useStableCallback(() => {
     setLoadingImageError(false);
     setLoadingImage(true);
@@ -374,6 +379,11 @@ const GalleryImageThumbnail = ({
             uri={thumbnail.url}
           />
           {isLoadingImage ? <ImageLoadingIndicator /> : null}
+          {isUploading ? (
+            <View pointerEvents='none' style={styles.uploadProgressOnImage}>
+              <AttachmentUploadIndicator uploadProgress={uploadProgress} />
+            </View>
+          ) : null}
         </>
       )}
     </View>
@@ -595,6 +605,11 @@ const useStyles = () => {
         right: 0,
         top: 0,
         overflow: 'hidden',
+      },
+      uploadProgressOnImage: {
+        bottom: primitives.spacingXxs,
+        left: primitives.spacingXxs,
+        position: 'absolute',
       },
     });
   }, [semantics, isMyMessage]);

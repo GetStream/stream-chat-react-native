@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
+import { AttachmentFileUploadProgressIndicator } from './AttachmentFileUploadProgressIndicator';
 import { openUrlSafely } from './utils/openUrlSafely';
 
 import { FileIconProps } from '../../components/Attachment/FileIcon';
@@ -17,6 +18,8 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
+import type { DefaultAttachmentData } from '../../types/types';
 
 export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
@@ -49,6 +52,9 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
     styles: stylesProp = styles,
   } = props;
   const { FilePreview } = useComponentsContext();
+
+  const localId = (attachment as DefaultAttachmentData).localId;
+  const { isUploading, uploadProgress } = usePendingAttachmentUpload(localId);
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
@@ -87,11 +93,21 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
       testID='file-attachment'
       {...additionalPressableProps}
     >
-      <FilePreview
-        attachment={attachment}
-        attachmentIconSize={attachmentIconSize}
-        styles={stylesProp}
-      />
+      <View style={styles.previewWrap}>
+        <FilePreview
+          attachment={attachment}
+          attachmentIconSize={attachmentIconSize}
+          indicator={
+            isUploading ? (
+              <AttachmentFileUploadProgressIndicator
+                totalBytes={attachment.file_size}
+                uploadProgress={uploadProgress}
+              />
+            ) : undefined
+          }
+          styles={stylesProp}
+        />
+      </View>
     </Pressable>
   );
 };
@@ -134,6 +150,9 @@ const useStyles = () => {
           : isMyMessage
             ? semantics.chatBgAttachmentOutgoing
             : semantics.chatBgAttachmentIncoming,
+      },
+      previewWrap: {
+        position: 'relative',
       },
     });
   }, [showBackgroundTransparent, isMyMessage, semantics]);
