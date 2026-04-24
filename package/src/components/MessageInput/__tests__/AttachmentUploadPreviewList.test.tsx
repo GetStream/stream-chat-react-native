@@ -1,6 +1,6 @@
 import React, { ComponentProps } from 'react';
 
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, FlatList } from 'react-native';
 
 import type { ReactTestInstance } from 'react-test-renderer';
 
@@ -178,6 +178,58 @@ describe('AttachmentUploadPreviewList', () => {
   });
 
   describe('FileAttachmentUploadPreview', () => {
+    it('anchors the preview list to the end when content shrinks near the end', () => {
+      const requestAnimationFrameSpy = jest
+        .spyOn(global, 'requestAnimationFrame')
+        .mockImplementation((callback) => {
+          callback(0);
+          return 0;
+        });
+      const scrollToOffsetSpy = jest
+        .spyOn(FlatList.prototype, 'scrollToOffset')
+        .mockImplementation(() => undefined);
+      try {
+        const attachments = [
+          generateFileAttachment({
+            localMetadata: {
+              id: 'file-attachment-1',
+              uploadState: FileState.FINISHED,
+            },
+          }),
+          generateFileAttachment({
+            localMetadata: {
+              id: 'file-attachment-2',
+              uploadState: FileState.FINISHED,
+            },
+          }),
+        ];
+        const props = {};
+
+        act(() => {
+          channel.messageComposer.attachmentManager.upsertAttachments(attachments);
+        });
+
+        renderComponent({ channel, client, props });
+
+        const list = screen.UNSAFE_getByType(FlatList);
+
+        act(() => {
+          fireEvent(list, 'layout', { nativeEvent: { layout: { width: 100 } } });
+          list.props.onContentSizeChange(300, 0);
+          list.props.onScroll({ nativeEvent: { contentOffset: { x: 190 } } });
+          list.props.onContentSizeChange(295, 0);
+        });
+
+        expect(scrollToOffsetSpy).toHaveBeenCalledWith({
+          animated: true,
+          offset: 195,
+        });
+      } finally {
+        requestAnimationFrameSpy.mockRestore();
+        scrollToOffsetSpy.mockRestore();
+      }
+    });
+
     it('should render FileAttachmentUploadPreview with all uploading files', async () => {
       const attachments = [
         generateFileAttachment({

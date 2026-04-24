@@ -1,23 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
-  FlatList,
   I18nManager,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  ScrollView,
+  StyleProp,
   StyleSheet,
   View,
+  ViewStyle,
 } from 'react-native';
 
-import Animated, {
-  cancelAnimation,
-  ZoomIn,
-  ZoomOut,
-  LinearTransition,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import {
   isLocalAudioAttachment,
@@ -39,22 +33,40 @@ import { isSoundPackageAvailable } from '../../../../native';
 import { primitives } from '../../../../theme';
 
 const END_ANCHOR_THRESHOLD = 16;
-const END_SHRINK_COMPENSATION_DURATION = 200;
+const ATTACHMENT_PREVIEW_ANIMATION_DURATION = 200;
+const TRAILING_SPACER_RELEASE_DELAY = ATTACHMENT_PREVIEW_ANIMATION_DURATION + 80;
 const MAX_AUDIO_ATTACHMENTS_CONTAINER_WIDTH = 560;
+const attachmentPreviewEntering = ZoomIn.duration(ATTACHMENT_PREVIEW_ANIMATION_DURATION);
+const attachmentPreviewExiting = ZoomOut.duration(ATTACHMENT_PREVIEW_ANIMATION_DURATION);
+const attachmentPreviewLayout = LinearTransition.duration(ATTACHMENT_PREVIEW_ANIMATION_DURATION);
 
 export type AttachmentUploadListPreviewPropsWithContext = Record<string, never>;
 
-const AttachmentPreviewCell = ({ children }: { children: React.ReactNode }) => (
+const AttachmentPreviewCell = ({
+  children,
+  onLayout,
+  style,
+}: {
+  children: React.ReactNode;
+  onLayout?: (event: LayoutChangeEvent) => void;
+  style?: StyleProp<ViewStyle>;
+}) => (
   <Animated.View
-    entering={ZoomIn.duration(200)}
-    exiting={ZoomOut.duration(200)}
-    layout={LinearTransition.duration(200)}
+    entering={attachmentPreviewEntering}
+    exiting={attachmentPreviewExiting}
+    layout={attachmentPreviewLayout}
+    onLayout={onLayout}
+    style={style}
   >
     {children}
   </Animated.View>
 );
 
-const ItemSeparatorComponent = () => {
+const ItemSeparatorComponent = ({
+  onLayout,
+}: {
+  onLayout?: (event: LayoutChangeEvent) => void;
+}) => {
   const {
     theme: {
       messageComposer: {
@@ -62,7 +74,7 @@ const ItemSeparatorComponent = () => {
       },
     },
   } = useTheme();
-  return <View style={[styles.itemSeparator, itemSeparator]} />;
+  return <View onLayout={onLayout} style={[styles.itemSeparator, itemSeparator]} />;
 };
 
 const getIsAudioAttachmentPreview =
@@ -88,17 +100,23 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
   const isRTL = I18nManager.isRTL;
-  const attachmentListRef = useRef<FlatList<LocalAttachment>>(null);
+  const attachmentListRef = useRef<ScrollView>(null);
   const soundPackageAvailable = isSoundPackageAvailable();
   const isAudioAttachmentPreview = getIsAudioAttachmentPreview(soundPackageAvailable);
+  const previousDataRef = useRef<LocalAttachment[]>([]);
   const previousNonAudioAttachmentsLengthRef = useRef(0);
   const contentWidthRef = useRef(0);
   const itemsContentWidthRef = useRef(0);
   const viewportWidthRef = useRef(0);
   const scrollOffsetXRef = useRef(0);
-  const rtlLeadingSpacerWidthRef = useRef(0);
-  const endShrinkCompensationX = useSharedValue(0);
-  const [rtlLeadingSpacerWidth, setRtlLeadingSpacerWidth] = useState(0);
+  const attachmentCellWidthsRef = useRef<Record<string, number>>({});
+  const itemSeparatorWidthRef = useRef(primitives.spacingXs);
+  const preparedRemovalIdsRef = useRef<Set<string>>(new Set());
+  const spacerReleaseFramesRef = useRef<Set<number>>(new Set());
+  const spacerReleaseTimeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  const shouldScrollToEndOnContentSizeChangeRef = useRef(false);
+  const trailingSpacerWidthRef = useRef(0);
+  const [trailingSpacerWidth, setTrailingSpacerWidth] = useState(0);
   const previewAttachments = attachments.filter(
     (attachment) => !(audioRecordingSendOnComplete && isLocalVoiceRecordingAttachment(attachment)),
   );
@@ -116,90 +134,254 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
     },
   } = useTheme();
 
-  const updateRtlLeadingSpacerWidth = useCallback(
-    (itemsWidth: number, viewportWidth: number) => {
-      if (!isRTL || !viewportWidth) {
-        if (rtlLeadingSpacerWidthRef.current !== 0) {
-          rtlLeadingSpacerWidthRef.current = 0;
-          setRtlLeadingSpacerWidth(0);
-        }
+  const scrollToOffset = useCallback((offset: number, animated = false) => {
+    const nextOffset = Math.max(0, offset);
+
+    attachmentListRef.current?.scrollTo({
+      animated,
+      x: nextOffset,
+    });
+    scrollOffsetXRef.current = nextOffset;
+  }, []);
+
+  const setTrailingSpacerLayoutWidth = useCallback((width: number) => {
+    const nextWidth = Math.max(0, width);
+    trailingSpacerWidthRef.current = nextWidth;
+    setTrailingSpacerWidth(nextWidth);
+  }, []);
+
+  const prepareTrailingSpacer = useCallback(
+    (width: number) => {
+      if (width <= 0) {
         return;
       }
 
-      const nextSpacerWidth = Math.max(0, viewportWidth - itemsWidth);
-      if (rtlLeadingSpacerWidthRef.current === nextSpacerWidth) {
-        return;
-      }
-
-      rtlLeadingSpacerWidthRef.current = nextSpacerWidth;
-      setRtlLeadingSpacerWidth(nextSpacerWidth);
+      const nextWidth = trailingSpacerWidthRef.current + width;
+      setTrailingSpacerLayoutWidth(nextWidth);
     },
-    [isRTL],
+    [setTrailingSpacerLayoutWidth],
   );
 
-  const renderItem = useCallback(
-    ({ item }: { item: LocalAttachment }) => {
-      if (isLocalImageAttachment(item)) {
+  const scheduleTrailingSpacerRelease = useCallback(
+    (width: number) => {
+      if (width <= 0) {
+        return;
+      }
+
+      const timeout = setTimeout(() => {
+        spacerReleaseTimeoutsRef.current.delete(timeout);
+
+        const firstFrame = requestAnimationFrame(() => {
+          spacerReleaseFramesRef.current.delete(firstFrame);
+
+          const secondFrame = requestAnimationFrame(() => {
+            spacerReleaseFramesRef.current.delete(secondFrame);
+            setTrailingSpacerLayoutWidth(trailingSpacerWidthRef.current - width);
+          });
+
+          spacerReleaseFramesRef.current.add(secondFrame);
+        });
+
+        spacerReleaseFramesRef.current.add(firstFrame);
+      }, TRAILING_SPACER_RELEASE_DELAY);
+
+      spacerReleaseTimeoutsRef.current.add(timeout);
+    },
+    [setTrailingSpacerLayoutWidth],
+  );
+
+  const getRemovalMetrics = useCallback((ids: string[], baseData: LocalAttachment[]) => {
+    const removedIds = new Set(ids);
+    const remainingItems = baseData.filter(
+      (attachment) => !removedIds.has(attachment.localMetadata.id),
+    );
+    const fallbackCellWidth = baseData.length ? itemsContentWidthRef.current / baseData.length : 0;
+    const offsetBefore = scrollOffsetXRef.current;
+    const oldMaxOffset = Math.max(0, itemsContentWidthRef.current - viewportWidthRef.current);
+    const wasNearEnd = oldMaxOffset - offsetBefore <= END_ANCHOR_THRESHOLD;
+    let firstCellWidth = 0;
+    let contentOffset = 0;
+    let removedContentWidth = 0;
+    let anchorCorrectionWidth = 0;
+
+    baseData.forEach((attachment, index) => {
+      const attachmentId = attachment.localMetadata.id;
+      const cellWidth = attachmentCellWidthsRef.current[attachmentId] ?? fallbackCellWidth;
+
+      if (index === 0) {
+        firstCellWidth = cellWidth;
+      }
+
+      if (removedIds.has(attachmentId)) {
+        removedContentWidth += cellWidth;
+        if (contentOffset <= offsetBefore) {
+          anchorCorrectionWidth += cellWidth;
+        }
+      }
+
+      contentOffset += cellWidth;
+    });
+
+    const firstAttachmentId = baseData[0]?.localMetadata.id;
+    const didRemoveFirstItem = !!firstAttachmentId && removedIds.has(firstAttachmentId);
+    const hasRemainingAfterFirst = baseData
+      .slice(1)
+      .some((attachment) => !removedIds.has(attachment.localMetadata.id));
+
+    if (didRemoveFirstItem && hasRemainingAfterFirst) {
+      removedContentWidth += itemSeparatorWidthRef.current;
+      if (firstCellWidth <= offsetBefore) {
+        anchorCorrectionWidth += itemSeparatorWidthRef.current;
+      }
+    }
+
+    if (!removedContentWidth || remainingItems.length === baseData.length) {
+      return {
+        removedContentWidth: 0,
+        scrollCorrectionWidth: 0,
+      };
+    }
+
+    return {
+      removedContentWidth,
+      scrollCorrectionWidth: wasNearEnd
+        ? removedContentWidth
+        : Math.min(anchorCorrectionWidth, removedContentWidth),
+    };
+  }, []);
+
+  const applyRemovalScrollCorrection = useCallback(
+    (removedContentWidth: number, scrollCorrectionWidth: number) => {
+      if (removedContentWidth <= 0 || isRTL) {
+        return;
+      }
+
+      const offsetBefore = scrollOffsetXRef.current;
+      const nextContentWidth = Math.max(0, itemsContentWidthRef.current - removedContentWidth);
+      const nextMaxOffset = Math.max(0, nextContentWidth - viewportWidthRef.current);
+      const nextOffset = Math.min(nextMaxOffset, Math.max(0, offsetBefore - scrollCorrectionWidth));
+
+      if (nextOffset !== offsetBefore) {
+        scrollToOffset(nextOffset, true);
+      }
+    },
+    [isRTL, scrollToOffset],
+  );
+
+  const prepareForRemoval = useCallback(
+    (ids: string[], baseData: LocalAttachment[]) => {
+      const { removedContentWidth, scrollCorrectionWidth } = getRemovalMetrics(ids, baseData);
+
+      if (!removedContentWidth) {
+        return;
+      }
+
+      if (!isRTL) {
+        prepareTrailingSpacer(removedContentWidth);
+      }
+      applyRemovalScrollCorrection(removedContentWidth, scrollCorrectionWidth);
+      ids.forEach((id) => preparedRemovalIdsRef.current.add(id));
+    },
+    [applyRemovalScrollCorrection, getRemovalMetrics, isRTL, prepareTrailingSpacer],
+  );
+
+  const removeAttachments = useCallback(
+    (ids: string[]) => {
+      prepareForRemoval(ids, data);
+      attachmentManager.removeAttachments(ids);
+    },
+    [attachmentManager, data, prepareForRemoval],
+  );
+
+  useLayoutEffect(() => {
+    const previousData = previousDataRef.current;
+    const nextIds = new Set(data.map((attachment) => attachment.localMetadata.id));
+    const removedIds = previousData
+      .map((attachment) => attachment.localMetadata.id)
+      .filter((id) => !nextIds.has(id));
+
+    if (removedIds.length) {
+      const { removedContentWidth } = getRemovalMetrics(removedIds, previousData);
+      const unpreparedRemovedIds = removedIds.filter(
+        (id) => !preparedRemovalIdsRef.current.has(id),
+      );
+
+      const didPrepareAfterRemovalCommit = unpreparedRemovedIds.length > 0;
+
+      if (didPrepareAfterRemovalCommit) {
+        prepareForRemoval(unpreparedRemovedIds, previousData);
+      }
+
+      removedIds.forEach((id) => preparedRemovalIdsRef.current.delete(id));
+      if (!isRTL) {
+        scheduleTrailingSpacerRelease(removedContentWidth);
+      }
+    }
+
+    previousDataRef.current = data;
+  }, [data, getRemovalMetrics, isRTL, prepareForRemoval, scheduleTrailingSpacerRelease]);
+
+  useEffect(
+    () => () => {
+      spacerReleaseFramesRef.current.forEach(cancelAnimationFrame);
+      spacerReleaseFramesRef.current.clear();
+      spacerReleaseTimeoutsRef.current.forEach(clearTimeout);
+      spacerReleaseTimeoutsRef.current.clear();
+    },
+    [],
+  );
+
+  const renderAttachmentPreview = useCallback(
+    (attachment: LocalAttachment) => {
+      if (isLocalImageAttachment(attachment)) {
         return (
-          <AttachmentPreviewCell>
-            <ImageAttachmentUploadPreview
-              attachment={item}
-              handleRetry={attachmentManager.uploadAttachment}
-              removeAttachments={attachmentManager.removeAttachments}
-            />
-          </AttachmentPreviewCell>
+          <ImageAttachmentUploadPreview
+            attachment={attachment}
+            handleRetry={attachmentManager.uploadAttachment}
+            removeAttachments={removeAttachments}
+          />
         );
-      } else if (isLocalVoiceRecordingAttachment(item)) {
+      } else if (isLocalVoiceRecordingAttachment(attachment)) {
         return (
-          <AttachmentPreviewCell>
-            <AudioAttachmentUploadPreview
-              attachment={item}
-              handleRetry={attachmentManager.uploadAttachment}
-              removeAttachments={attachmentManager.removeAttachments}
-            />
-          </AttachmentPreviewCell>
+          <AudioAttachmentUploadPreview
+            attachment={attachment}
+            handleRetry={attachmentManager.uploadAttachment}
+            removeAttachments={removeAttachments}
+          />
         );
-      } else if (isLocalAudioAttachment(item)) {
+      } else if (isLocalAudioAttachment(attachment)) {
         if (isSoundPackageAvailable()) {
           return (
-            <AttachmentPreviewCell>
-              <AudioAttachmentUploadPreview
-                attachment={item}
-                handleRetry={attachmentManager.uploadAttachment}
-                removeAttachments={attachmentManager.removeAttachments}
-              />
-            </AttachmentPreviewCell>
+            <AudioAttachmentUploadPreview
+              attachment={attachment}
+              handleRetry={attachmentManager.uploadAttachment}
+              removeAttachments={removeAttachments}
+            />
           );
         } else {
           return (
-            <AttachmentPreviewCell>
-              <FileAttachmentUploadPreview
-                attachment={item}
-                handleRetry={attachmentManager.uploadAttachment}
-                removeAttachments={attachmentManager.removeAttachments}
-              />
-            </AttachmentPreviewCell>
+            <FileAttachmentUploadPreview
+              attachment={attachment}
+              handleRetry={attachmentManager.uploadAttachment}
+              removeAttachments={removeAttachments}
+            />
           );
         }
-      } else if (isVideoAttachment(item)) {
+      } else if (isVideoAttachment(attachment)) {
         return (
-          <AttachmentPreviewCell>
-            <VideoAttachmentUploadPreview
-              attachment={item}
-              handleRetry={attachmentManager.uploadAttachment}
-              removeAttachments={attachmentManager.removeAttachments}
-            />
-          </AttachmentPreviewCell>
+          <VideoAttachmentUploadPreview
+            attachment={attachment}
+            handleRetry={attachmentManager.uploadAttachment}
+            removeAttachments={removeAttachments}
+          />
         );
-      } else if (isLocalFileAttachment(item)) {
+      } else if (isLocalFileAttachment(attachment)) {
         return (
-          <AttachmentPreviewCell>
-            <FileAttachmentUploadPreview
-              attachment={item}
-              handleRetry={attachmentManager.uploadAttachment}
-              removeAttachments={attachmentManager.removeAttachments}
-            />
-          </AttachmentPreviewCell>
+          <FileAttachmentUploadPreview
+            attachment={attachment}
+            handleRetry={attachmentManager.uploadAttachment}
+            removeAttachments={removeAttachments}
+          />
         );
       } else return null;
     },
@@ -208,8 +390,8 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       FileAttachmentUploadPreview,
       ImageAttachmentUploadPreview,
       VideoAttachmentUploadPreview,
-      attachmentManager.removeAttachments,
       attachmentManager.uploadAttachment,
+      removeAttachments,
     ],
   );
 
@@ -217,62 +399,62 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
     scrollOffsetXRef.current = event.nativeEvent.contentOffset.x;
   }, []);
 
-  const onLayoutHandler = useCallback(
-    (event: LayoutChangeEvent) => {
-      const viewportWidth = event.nativeEvent.layout.width;
-      viewportWidthRef.current = viewportWidth;
-      updateRtlLeadingSpacerWidth(itemsContentWidthRef.current, viewportWidth);
+  const scrollToEndOffset = useCallback(
+    (contentWidth: number, animated = true) => {
+      if (isRTL) {
+        return;
+      }
+
+      scrollToOffset(Math.max(0, contentWidth - viewportWidthRef.current), animated);
     },
-    [updateRtlLeadingSpacerWidth],
+    [isRTL, scrollToOffset],
   );
+
+  const onLayoutHandler = useCallback((event: LayoutChangeEvent) => {
+    viewportWidthRef.current = event.nativeEvent.layout.width;
+  }, []);
+
+  const onAttachmentCellLayout = useCallback((id: string, event: LayoutChangeEvent) => {
+    attachmentCellWidthsRef.current[id] = event.nativeEvent.layout.width;
+  }, []);
+
+  const onItemSeparatorLayout = useCallback((event: LayoutChangeEvent) => {
+    itemSeparatorWidthRef.current = event.nativeEvent.layout.width;
+  }, []);
 
   const onContentSizeChangeHandler = useCallback(
     (width: number) => {
-      const itemsContentWidth = isRTL
-        ? Math.max(0, width - rtlLeadingSpacerWidthRef.current)
-        : width;
+      const scrollableContentWidth = width;
+      const itemsContentWidth = Math.max(
+        0,
+        scrollableContentWidth - trailingSpacerWidthRef.current,
+      );
       const previousContentWidth = contentWidthRef.current;
       contentWidthRef.current = itemsContentWidth;
       itemsContentWidthRef.current = itemsContentWidth;
-      updateRtlLeadingSpacerWidth(itemsContentWidth, viewportWidthRef.current);
+
+      if (
+        shouldScrollToEndOnContentSizeChangeRef.current &&
+        itemsContentWidth > previousContentWidth
+      ) {
+        shouldScrollToEndOnContentSizeChangeRef.current = false;
+        scrollToEndOffset(scrollableContentWidth);
+        return;
+      }
 
       if (!previousContentWidth || itemsContentWidth >= previousContentWidth) {
         return;
       }
 
-      const oldMaxOffset = Math.max(0, previousContentWidth - viewportWidthRef.current);
-      const newMaxOffset = Math.max(0, itemsContentWidth - viewportWidthRef.current);
+      const actualMaxOffset = Math.max(0, scrollableContentWidth - viewportWidthRef.current);
       const offsetBefore = scrollOffsetXRef.current;
-      const wasNearEnd = oldMaxOffset - offsetBefore <= END_ANCHOR_THRESHOLD;
-      const overshoot = Math.max(0, offsetBefore - newMaxOffset);
-      const shouldAnchorEnd = wasNearEnd || overshoot > 0;
+      const overshoot = Math.max(0, offsetBefore - actualMaxOffset);
 
-      if (!shouldAnchorEnd) {
-        return;
-      }
-
-      if (overshoot > 0) {
-        attachmentListRef.current?.scrollToOffset({
-          animated: false,
-          offset: newMaxOffset,
-        });
-        scrollOffsetXRef.current = newMaxOffset;
-      }
-
-      if (isRTL) {
-        return;
-      }
-
-      const compensation = newMaxOffset - oldMaxOffset;
-      if (compensation !== 0) {
-        cancelAnimation(endShrinkCompensationX);
-        endShrinkCompensationX.value = compensation;
-        endShrinkCompensationX.value = withSpring(0, {
-          duration: END_SHRINK_COMPENSATION_DURATION,
-        });
+      if (overshoot > END_ANCHOR_THRESHOLD) {
+        scrollToOffset(actualMaxOffset);
       }
     },
-    [endShrinkCompensationX, isRTL, updateRtlLeadingSpacerWidth],
+    [scrollToEndOffset, scrollToOffset],
   );
 
   useEffect(() => {
@@ -285,20 +467,8 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       return;
     }
 
-    cancelAnimation(endShrinkCompensationX);
-    endShrinkCompensationX.value = 0;
-    requestAnimationFrame(() => {
-      if (isRTL) {
-        return;
-      }
-
-      attachmentListRef.current?.scrollToEnd({ animated: true });
-    });
-  }, [endShrinkCompensationX, isRTL, nonAudioAttachments.length]);
-
-  const animatedListWrapperStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: endShrinkCompensationX.value }],
-  }));
+    shouldScrollToEndOnContentSizeChangeRef.current = true;
+  }, [nonAudioAttachments.length]);
 
   if (!previewAttachments.length) {
     return null;
@@ -308,9 +478,9 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
     <>
       {audioAttachments.length ? (
         <Animated.View
-          entering={ZoomIn.duration(200)}
-          exiting={ZoomOut.duration(200)}
-          layout={LinearTransition.duration(200)}
+          entering={attachmentPreviewEntering}
+          exiting={attachmentPreviewExiting}
+          layout={attachmentPreviewLayout}
           style={[styles.audioAttachmentsContainer, audioAttachmentsContainer]}
         >
           {audioAttachments.map((attachment) => (
@@ -318,7 +488,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
               <AudioAttachmentUploadPreview
                 attachment={attachment}
                 handleRetry={attachmentManager.uploadAttachment}
-                removeAttachments={attachmentManager.removeAttachments}
+                removeAttachments={removeAttachments}
               />
             </AttachmentPreviewCell>
           ))}
@@ -327,33 +497,46 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
 
       {data.length ? (
         <Animated.View
-          entering={ZoomIn.duration(200)}
-          exiting={ZoomOut.duration(200)}
-          layout={LinearTransition.duration(200)}
+          entering={attachmentPreviewEntering}
+          exiting={attachmentPreviewExiting}
+          layout={attachmentPreviewLayout}
+          style={styles.flatListContainer}
         >
-          <Animated.View style={animatedListWrapperStyle}>
-            <FlatList
-              data={data}
-              horizontal
-              ItemSeparatorComponent={ItemSeparatorComponent}
-              keyExtractor={(item) => item.localMetadata.id}
-              ListHeaderComponent={
-                isRTL && rtlLeadingSpacerWidth > 0 ? (
-                  <View style={{ width: rtlLeadingSpacerWidth }} />
-                ) : null
-              }
-              onContentSizeChange={onContentSizeChangeHandler}
-              onLayout={onLayoutHandler}
-              onScroll={onScrollHandler}
-              removeClippedSubviews={false}
-              ref={attachmentListRef}
-              renderItem={renderItem}
-              scrollEventThrottle={16}
-              showsHorizontalScrollIndicator={false}
-              style={[styles.flatList, flatList]}
-              testID={'attachment-upload-preview-list'}
-            />
-          </Animated.View>
+          <ScrollView
+            contentContainerStyle={styles.flatListContentContainer}
+            horizontal
+            onContentSizeChange={onContentSizeChangeHandler}
+            onLayout={onLayoutHandler}
+            onScroll={onScrollHandler}
+            ref={attachmentListRef}
+            scrollEventThrottle={16}
+            showsHorizontalScrollIndicator={false}
+            style={[styles.flatList, flatList]}
+            testID={'attachment-upload-preview-list'}
+          >
+            {data.map((attachment, index) => {
+              const attachmentId = attachment.localMetadata.id;
+
+              return (
+                <AttachmentPreviewCell
+                  key={attachmentId}
+                  onLayout={(event) => onAttachmentCellLayout(attachmentId, event)}
+                  style={styles.attachmentPreviewCell}
+                >
+                  {index > 0 ? <ItemSeparatorComponent onLayout={onItemSeparatorLayout} /> : null}
+                  <View collapsable={false} style={styles.attachmentPreviewContent}>
+                    {renderAttachmentPreview(attachment)}
+                  </View>
+                </AttachmentPreviewCell>
+              );
+            })}
+            {!isRTL ? (
+              <View
+                pointerEvents={'none'}
+                style={[styles.trailingSpacer, { width: trailingSpacerWidth }]}
+              />
+            ) : null}
+          </ScrollView>
         </Animated.View>
       ) : null}
     </>
@@ -373,16 +556,36 @@ const MemoizedAttachmentUploadPreviewListWithContext = React.memo(
 export const AttachmentUploadPreviewList = () => <MemoizedAttachmentUploadPreviewListWithContext />;
 
 const styles = StyleSheet.create({
+  attachmentPreviewCell: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexShrink: 0,
+  },
+  attachmentPreviewContent: {
+    flexShrink: 0,
+  },
   audioAttachmentsContainer: {
     maxWidth: MAX_AUDIO_ATTACHMENTS_CONTAINER_WIDTH,
     width: '100%',
   },
   flatList: {
-    overflow: 'visible',
     direction: 'ltr',
+    flexGrow: 0,
+    overflow: 'visible',
+  },
+  flatListContentContainer: {
+    alignItems: 'flex-start',
+  },
+  flatListContainer: {
+    alignSelf: 'flex-start',
+    flexShrink: 1,
+    maxWidth: '100%',
   },
   itemSeparator: {
     width: primitives.spacingXs,
+  },
+  trailingSpacer: {
+    flexShrink: 0,
   },
 });
 
