@@ -1,6 +1,6 @@
 import React, { ComponentProps } from 'react';
 
-import { ActivityIndicator, FlatList } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 
 import type { ReactTestInstance } from 'react-test-renderer';
 
@@ -179,14 +179,8 @@ describe('AttachmentUploadPreviewList', () => {
 
   describe('FileAttachmentUploadPreview', () => {
     it('anchors the preview list to the end when content shrinks near the end', () => {
-      const requestAnimationFrameSpy = jest
-        .spyOn(global, 'requestAnimationFrame')
-        .mockImplementation((callback) => {
-          callback(0);
-          return 0;
-        });
-      const scrollToOffsetSpy = jest
-        .spyOn(FlatList.prototype, 'scrollToOffset')
+      const scrollToSpy = jest
+        .spyOn(ScrollView.prototype, 'scrollTo')
         .mockImplementation(() => undefined);
       try {
         const attachments = [
@@ -211,22 +205,21 @@ describe('AttachmentUploadPreviewList', () => {
 
         renderComponent({ channel, client, props });
 
-        const list = screen.UNSAFE_getByType(FlatList);
+        const list = screen.UNSAFE_getByType(ScrollView);
 
         act(() => {
           fireEvent(list, 'layout', { nativeEvent: { layout: { width: 100 } } });
           list.props.onContentSizeChange(300, 0);
           list.props.onScroll({ nativeEvent: { contentOffset: { x: 190 } } });
-          list.props.onContentSizeChange(295, 0);
+          list.props.onContentSizeChange(250, 0);
         });
 
-        expect(scrollToOffsetSpy).toHaveBeenCalledWith({
-          animated: true,
-          offset: 195,
+        expect(scrollToSpy).toHaveBeenCalledWith({
+          animated: false,
+          x: 150,
         });
       } finally {
-        requestAnimationFrameSpy.mockRestore();
-        scrollToOffsetSpy.mockRestore();
+        scrollToSpy.mockRestore();
       }
     });
 

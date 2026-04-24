@@ -73,6 +73,16 @@ const ItemSeparatorComponent = () => {
   return <View style={[styles.itemSeparator, itemSeparator]} />;
 };
 
+const useLazyRef = <T,>(getInitialValue: () => T) => {
+  const ref = useRef<T | null>(null);
+
+  if (ref.current === null) {
+    ref.current = getInitialValue();
+  }
+
+  return ref as React.RefObject<T>;
+};
+
 const getIsAudioAttachmentPreview =
   (soundPackageAvailable: boolean) =>
   (
@@ -102,17 +112,17 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
     () => getIsAudioAttachmentPreview(soundPackageAvailable),
     [soundPackageAvailable],
   );
-  const dataRef = useRef<LocalAttachment[]>([]);
-  const previousDataRef = useRef<LocalAttachment[]>([]);
+  const dataRef = useLazyRef<LocalAttachment[]>(() => []);
+  const previousDataRef = useLazyRef<LocalAttachment[]>(() => []);
   const previousNonAudioAttachmentsLengthRef = useRef(0);
   const contentWidthRef = useRef(0);
   const itemsContentWidthRef = useRef(0);
   const viewportWidthRef = useRef(0);
   const scrollOffsetXRef = useRef(0);
-  const attachmentCellWidthsRef = useRef<Record<string, number>>({});
-  const preparedRemovalIdsRef = useRef<Set<string>>(new Set());
-  const spacerReleaseFramesRef = useRef<Set<number>>(new Set());
-  const spacerReleaseTimeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  const attachmentCellWidthsRef = useLazyRef<Record<string, number>>(() => ({}));
+  const preparedRemovalIdsRef = useLazyRef<Set<string>>(() => new Set());
+  const spacerReleaseFramesRef = useLazyRef<Set<number>>(() => new Set());
+  const spacerReleaseTimeoutsRef = useLazyRef<Set<ReturnType<typeof setTimeout>>>(() => new Set());
   const shouldScrollToEndOnContentSizeChangeRef = useRef(false);
   const trailingSpacerWidthRef = useRef(0);
   const [trailingSpacerWidth, setTrailingSpacerWidth] = useState(0);
@@ -198,47 +208,52 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
 
       spacerReleaseTimeoutsRef.current.add(timeout);
     },
-    [setTrailingSpacerLayoutWidth],
+    [setTrailingSpacerLayoutWidth, spacerReleaseFramesRef, spacerReleaseTimeoutsRef],
   );
 
-  const getRemovalMetrics = useCallback((ids: string[], baseData: LocalAttachment[]) => {
-    const removedIds = new Set(ids);
-    const fallbackCellWidth = baseData.length ? itemsContentWidthRef.current / baseData.length : 0;
-    const offsetBefore = scrollOffsetXRef.current;
-    const oldMaxOffset = Math.max(0, itemsContentWidthRef.current - viewportWidthRef.current);
-    const wasNearEnd = oldMaxOffset - offsetBefore <= END_ANCHOR_THRESHOLD;
-    let contentOffset = 0;
-    let removedContentWidth = 0;
-    let anchorCorrectionWidth = 0;
+  const getRemovalMetrics = useCallback(
+    (ids: string[], baseData: LocalAttachment[]) => {
+      const removedIds = new Set(ids);
+      const fallbackCellWidth = baseData.length
+        ? itemsContentWidthRef.current / baseData.length
+        : 0;
+      const offsetBefore = scrollOffsetXRef.current;
+      const oldMaxOffset = Math.max(0, itemsContentWidthRef.current - viewportWidthRef.current);
+      const wasNearEnd = oldMaxOffset - offsetBefore <= END_ANCHOR_THRESHOLD;
+      let contentOffset = 0;
+      let removedContentWidth = 0;
+      let anchorCorrectionWidth = 0;
 
-    baseData.forEach((attachment) => {
-      const attachmentId = attachment.localMetadata.id;
-      const cellWidth = attachmentCellWidthsRef.current[attachmentId] ?? fallbackCellWidth;
+      baseData.forEach((attachment) => {
+        const attachmentId = attachment.localMetadata.id;
+        const cellWidth = attachmentCellWidthsRef.current[attachmentId] ?? fallbackCellWidth;
 
-      if (removedIds.has(attachmentId)) {
-        removedContentWidth += cellWidth;
-        if (contentOffset <= offsetBefore) {
-          anchorCorrectionWidth += cellWidth;
+        if (removedIds.has(attachmentId)) {
+          removedContentWidth += cellWidth;
+          if (contentOffset <= offsetBefore) {
+            anchorCorrectionWidth += cellWidth;
+          }
         }
+
+        contentOffset += cellWidth;
+      });
+
+      if (!removedContentWidth) {
+        return {
+          removedContentWidth: 0,
+          scrollCorrectionWidth: 0,
+        };
       }
 
-      contentOffset += cellWidth;
-    });
-
-    if (!removedContentWidth) {
       return {
-        removedContentWidth: 0,
-        scrollCorrectionWidth: 0,
+        removedContentWidth,
+        scrollCorrectionWidth: wasNearEnd
+          ? removedContentWidth
+          : Math.min(anchorCorrectionWidth, removedContentWidth),
       };
-    }
-
-    return {
-      removedContentWidth,
-      scrollCorrectionWidth: wasNearEnd
-        ? removedContentWidth
-        : Math.min(anchorCorrectionWidth, removedContentWidth),
-    };
-  }, []);
+    },
+    [attachmentCellWidthsRef],
+  );
 
   const applyRemovalScrollCorrection = useCallback(
     (removedContentWidth: number, scrollCorrectionWidth: number) => {
@@ -272,7 +287,13 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       applyRemovalScrollCorrection(removedContentWidth, scrollCorrectionWidth);
       ids.forEach((id) => preparedRemovalIdsRef.current.add(id));
     },
-    [applyRemovalScrollCorrection, getRemovalMetrics, isRTL, prepareTrailingSpacer],
+    [
+      applyRemovalScrollCorrection,
+      getRemovalMetrics,
+      isRTL,
+      preparedRemovalIdsRef,
+      prepareTrailingSpacer,
+    ],
   );
 
   const removeAttachments = useCallback(
@@ -280,7 +301,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       prepareForRemoval(ids, dataRef.current);
       attachmentManager.removeAttachments(ids);
     },
-    [attachmentManager, prepareForRemoval],
+    [attachmentManager, dataRef, prepareForRemoval],
   );
 
   useLayoutEffect(() => {
@@ -310,7 +331,16 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
 
     previousDataRef.current = data;
     dataRef.current = data;
-  }, [data, getRemovalMetrics, isRTL, prepareForRemoval, scheduleTrailingSpacerRelease]);
+  }, [
+    data,
+    dataRef,
+    getRemovalMetrics,
+    isRTL,
+    preparedRemovalIdsRef,
+    prepareForRemoval,
+    previousDataRef,
+    scheduleTrailingSpacerRelease,
+  ]);
 
   useEffect(
     () => () => {
@@ -319,7 +349,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       spacerReleaseTimeoutsRef.current.forEach(clearTimeout);
       spacerReleaseTimeoutsRef.current.clear();
     },
-    [],
+    [spacerReleaseFramesRef, spacerReleaseTimeoutsRef],
   );
 
   const renderAttachmentPreview = useCallback(
@@ -406,9 +436,12 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
     viewportWidthRef.current = event.nativeEvent.layout.width;
   }, []);
 
-  const onAttachmentCellLayout = useCallback((id: string, event: LayoutChangeEvent) => {
-    attachmentCellWidthsRef.current[id] = event.nativeEvent.layout.width;
-  }, []);
+  const onAttachmentCellLayout = useCallback(
+    (id: string, event: LayoutChangeEvent) => {
+      attachmentCellWidthsRef.current[id] = event.nativeEvent.layout.width;
+    },
+    [attachmentCellWidthsRef],
+  );
 
   const onContentSizeChangeHandler = useCallback(
     (width: number) => {
