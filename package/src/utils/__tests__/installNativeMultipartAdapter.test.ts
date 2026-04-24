@@ -1,9 +1,18 @@
+import type { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
+
 import { getTestClient } from '../../mock-builders/mock';
-import { NativeHandlers } from '../../native';
+import { NativeHandlers, NativeMultipartUploadProgressConfig } from '../../native';
 import {
   installNativeMultipartAdapter,
   wrapAxiosAdapterWithNativeMultipart,
 } from '../installNativeMultipartAdapter';
+
+type NativeMultipartTestAxiosConfig = AxiosRequestConfig & {
+  uploadProgress?: (event: AxiosProgressEvent) => void;
+  uploadProgressOptions?: NativeMultipartUploadProgressConfig;
+};
+
+const nativeMultipartConfig = (config: NativeMultipartTestAxiosConfig) => config;
 
 describe('installNativeMultipartAdapter', () => {
   const originalMultipartUpload = NativeHandlers.multipartUpload;
@@ -148,14 +157,18 @@ describe('installNativeMultipartAdapter', () => {
       ],
     };
 
-    await client.axiosInstance.post('/uploads/image', formData, {
-      onUploadProgress,
-      uploadProgressOptions: {
-        count: 10,
-        intervalMs: 25,
-      },
-      uploadProgress,
-    });
+    await client.axiosInstance.post(
+      '/uploads/image',
+      formData,
+      nativeMultipartConfig({
+        onUploadProgress,
+        uploadProgressOptions: {
+          count: 10,
+          intervalMs: 25,
+        },
+        uploadProgress,
+      }),
+    );
 
     expect(onUploadProgress).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -261,14 +274,18 @@ describe('installNativeMultipartAdapter', () => {
       ],
     };
 
-    await client.axiosInstance.post('/uploads/image', formData, {
-      onUploadProgress,
-      uploadProgressOptions: {
-        completionProgressCap: 75,
-        count: 10,
-        intervalMs: 25,
-      },
-    });
+    await client.axiosInstance.post(
+      '/uploads/image',
+      formData,
+      nativeMultipartConfig({
+        onUploadProgress,
+        uploadProgressOptions: {
+          completionProgressCap: 75,
+          count: 10,
+          intervalMs: 25,
+        },
+      }),
+    );
 
     expect(onUploadProgress).toHaveBeenCalledTimes(1);
     expect(onUploadProgress).toHaveBeenCalledWith(
@@ -302,14 +319,11 @@ describe('installNativeMultipartAdapter', () => {
 
     client.axiosInstance.defaults.adapter = defaultAdapter;
 
-    const interceptorId = client.axiosInstance.interceptors.request.use((config) => ({
-      ...config,
-      headers: {
-        ...config.headers,
-        'X-CDN-Route': 'custom-cdn',
-      },
-      url: '/uploads/file',
-    }));
+    const interceptorId = client.axiosInstance.interceptors.request.use((config) => {
+      config.headers.set('X-CDN-Route', 'custom-cdn');
+      config.url = '/uploads/file';
+      return config;
+    });
 
     installNativeMultipartAdapter(client);
     const formData = {

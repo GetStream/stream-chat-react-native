@@ -58,7 +58,7 @@ describe('Giphy', () => {
           }
         >
           <MessageProvider
-            value={{ message, ...messageContextValue } as unknown as MessagesContextValue}
+            value={{ message, ...messageContextValue } as unknown as MessageContextValue}
           >
             <Giphy {...props} />
           </MessageProvider>

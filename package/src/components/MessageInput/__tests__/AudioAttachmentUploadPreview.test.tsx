@@ -2,6 +2,8 @@ import React, { ComponentProps } from 'react';
 
 import { ActivityIndicator } from 'react-native';
 
+import type { ReactTestInstance } from 'react-test-renderer';
+
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import type { Attachment, Channel as ChannelType, LocalAttachment, StreamChat } from 'stream-chat';
@@ -56,7 +58,12 @@ const renderComponent = ({
   );
 };
 
-const setPendingUploads = (client, uploads) => {
+type PendingUploadRecord = {
+  id: string;
+  uploadProgress?: number;
+};
+
+const setPendingUploads = (client: StreamChat, uploads: PendingUploadRecord[]) => {
   act(() => {
     client.uploadManager.state.partialNext({
       uploads: Object.fromEntries(
@@ -66,8 +73,12 @@ const setPendingUploads = (client, uploads) => {
   });
 };
 
-const countActivityIndicators = (nodes) =>
-  nodes.reduce((count, node) => count + node.findAllByType(ActivityIndicator).length, 0);
+const countActivityIndicators = (nodes: ReactTestInstance[]) =>
+  nodes.reduce(
+    (count: number, node: ReactTestInstance) =>
+      count + node.findAllByType(ActivityIndicator).length,
+    0,
+  );
 
 describe('AudioAttachmentUploadPreview render', () => {
   let client: StreamChat;

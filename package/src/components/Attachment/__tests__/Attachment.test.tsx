@@ -1,6 +1,8 @@
 import React, { ComponentProps } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { ReactTestInstance } from 'react-test-renderer';
+
 import { render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -70,8 +72,8 @@ const getAttachmentComponent = (props: ComponentProps<typeof Attachment>) => {
   );
 };
 
-const getWaveformBarCount = (root) =>
-  root.findAllByType(View).filter((node) => {
+const getWaveformBarCount = (root: ReactTestInstance) =>
+  root.findAllByType(View).filter((node: ReactTestInstance) => {
     const flattenedStyle = StyleSheet.flatten(node.props.style);
     return flattenedStyle?.width === 2 && typeof flattenedStyle?.height === 'number';
   }).length;

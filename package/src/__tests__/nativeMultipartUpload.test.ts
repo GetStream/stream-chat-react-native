@@ -3,7 +3,9 @@ import {
   createNativeMultipartUploader,
   NativeMultipartAbortSignal,
   NativeMultipartUploadEventEmitter,
+  NativeMultipartUploadNativeResponse,
   NativeMultipartUploadProgressEvent,
+  NativeMultipartUploaderModule,
 } from '../nativeMultipartUpload';
 
 const progressEventName = 'streamMultipartUploadProgress';
@@ -20,7 +22,10 @@ const createNativeModule = () => ({
   addListener: jest.fn(),
   cancelUpload: jest.fn(() => Promise.resolve()),
   removeListeners: jest.fn(),
-  uploadMultipart: jest.fn(() =>
+  uploadMultipart: jest.fn<
+    ReturnType<NativeMultipartUploaderModule['uploadMultipart']>,
+    Parameters<NativeMultipartUploaderModule['uploadMultipart']>
+  >(() =>
     Promise.resolve({
       body: 'ok',
       headers: [{ name: 'x-test', value: 'yes' }],
@@ -68,11 +73,11 @@ describe('nativeMultipartUpload', () => {
   it('passes requests to the native module and forwards matching progress events', async () => {
     const nativeModule = createNativeModule();
     const eventEmitter = createEventEmitter();
-    let resolveUpload: (response: Awaited<ReturnType<typeof nativeModule.uploadMultipart>>) => void;
+    let resolveUpload: (response: NativeMultipartUploadNativeResponse) => void;
     nativeModule.uploadMultipart.mockImplementation(
       () =>
-        new Promise((resolve) => {
-          resolveUpload = resolve;
+        new Promise<NativeMultipartUploadNativeResponse>((resolve) => {
+          resolveUpload = (response) => resolve(response);
         }),
     );
     const uploadMultipart = createNativeMultipartUploader(nativeModule, { eventEmitter });
