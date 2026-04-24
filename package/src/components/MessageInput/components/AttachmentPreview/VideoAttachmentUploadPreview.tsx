@@ -7,12 +7,12 @@ import { LocalImageAttachment, LocalVideoAttachment } from 'stream-chat';
 import { FileAttachmentUploadPreview } from './FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview } from './ImageAttachmentUploadPreview';
 
+import { useMessageInputContext } from '../../../../contexts';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { formatMsToMinSec, getDurationLabelFromDuration } from '../../../../utils/utils';
-import { useMessageInputContext } from '../../../../contexts';
 
 export type VideoAttachmentUploadPreviewProps<CustomLocalMetadata = Record<string, unknown>> =
   UploadAttachmentPreviewProps<LocalVideoAttachment<CustomLocalMetadata>>;

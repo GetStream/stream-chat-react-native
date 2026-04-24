@@ -4,8 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { AudioPlayerProvider } from '../../../contexts/audioPlayerContext/AudioPlayerContext';
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
@@ -52,13 +52,16 @@ const getAttachmentComponent = (props: ComponentProps<typeof Attachment>) => {
     <ThemeProvider>
       <AudioPlayerProvider value={{ allowConcurrentAudioPlayback: false }}>
         <MessagesProvider
-          value={{
-            FilePreview: FilePreviewDefault,
-            ImageLoadingFailedIndicator,
-            ImageLoadingIndicator,
-          } as unknown as MessagesContextValue}
+          value={
+            {
+              FilePreview: FilePreviewDefault,
+              ImageLoadingFailedIndicator,
+              ImageLoadingIndicator,
+              message,
+            } as unknown as MessagesContextValue
+          }
         >
-          <MessageProvider value={{ message } as unknown as MessagesContextValue}>
+          <MessageProvider value={{ message } as unknown as MessageContextValue}>
             <Attachment {...props} />
           </MessageProvider>
         </MessagesProvider>

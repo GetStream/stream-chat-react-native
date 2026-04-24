@@ -50,12 +50,16 @@ describe('Giphy', () => {
     return (
       <ThemeProvider>
         <MessagesProvider
-          value={{
-            ImageLoadingFailedIndicator,
-            ImageLoadingIndicator,
-          } as unknown as MessagesContextValue}
+          value={
+            {
+              ImageLoadingFailedIndicator,
+              ImageLoadingIndicator,
+            } as unknown as MessagesContextValue
+          }
         >
-          <MessageProvider value={{ message, ...messageContextValue } as unknown as MessagesContextValue}>
+          <MessageProvider
+            value={{ message, ...messageContextValue } as unknown as MessagesContextValue}
+          >
             <Giphy {...props} />
           </MessageProvider>
         </MessagesProvider>
