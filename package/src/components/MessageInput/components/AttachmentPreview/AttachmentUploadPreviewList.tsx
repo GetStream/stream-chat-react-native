@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   I18nManager,
   LayoutChangeEvent,
@@ -62,11 +62,7 @@ const AttachmentPreviewCell = ({
   </Animated.View>
 );
 
-const ItemSeparatorComponent = ({
-  onLayout,
-}: {
-  onLayout?: (event: LayoutChangeEvent) => void;
-}) => {
+const ItemSeparatorComponent = () => {
   const {
     theme: {
       messageComposer: {
@@ -74,7 +70,7 @@ const ItemSeparatorComponent = ({
       },
     },
   } = useTheme();
-  return <View onLayout={onLayout} style={[styles.itemSeparator, itemSeparator]} />;
+  return <View style={[styles.itemSeparator, itemSeparator]} />;
 };
 
 const getIsAudioAttachmentPreview =
@@ -101,8 +97,12 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
   const { attachments } = useAttachmentManagerState();
   const isRTL = I18nManager.isRTL;
   const attachmentListRef = useRef<ScrollView>(null);
-  const soundPackageAvailable = isSoundPackageAvailable();
-  const isAudioAttachmentPreview = getIsAudioAttachmentPreview(soundPackageAvailable);
+  const soundPackageAvailable = useMemo(() => isSoundPackageAvailable(), []);
+  const isAudioAttachmentPreview = useMemo(
+    () => getIsAudioAttachmentPreview(soundPackageAvailable),
+    [soundPackageAvailable],
+  );
+  const dataRef = useRef<LocalAttachment[]>([]);
   const previousDataRef = useRef<LocalAttachment[]>([]);
   const previousNonAudioAttachmentsLengthRef = useRef(0);
   const contentWidthRef = useRef(0);
@@ -110,21 +110,32 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
   const viewportWidthRef = useRef(0);
   const scrollOffsetXRef = useRef(0);
   const attachmentCellWidthsRef = useRef<Record<string, number>>({});
-  const itemSeparatorWidthRef = useRef(primitives.spacingXs);
   const preparedRemovalIdsRef = useRef<Set<string>>(new Set());
   const spacerReleaseFramesRef = useRef<Set<number>>(new Set());
   const spacerReleaseTimeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
   const shouldScrollToEndOnContentSizeChangeRef = useRef(false);
   const trailingSpacerWidthRef = useRef(0);
   const [trailingSpacerWidth, setTrailingSpacerWidth] = useState(0);
-  const previewAttachments = attachments.filter(
-    (attachment) => !(audioRecordingSendOnComplete && isLocalVoiceRecordingAttachment(attachment)),
+  const previewAttachments = useMemo(
+    () =>
+      attachments.filter(
+        (attachment) =>
+          !(audioRecordingSendOnComplete && isLocalVoiceRecordingAttachment(attachment)),
+      ),
+    [attachments, audioRecordingSendOnComplete],
   );
-  const audioAttachments = previewAttachments.filter(isAudioAttachmentPreview);
-  const nonAudioAttachments = previewAttachments.filter(
-    (attachment) => !isAudioAttachmentPreview(attachment),
+  const audioAttachments = useMemo(
+    () => previewAttachments.filter(isAudioAttachmentPreview),
+    [isAudioAttachmentPreview, previewAttachments],
   );
-  const data = isRTL ? nonAudioAttachments.toReversed() : nonAudioAttachments;
+  const nonAudioAttachments = useMemo(
+    () => previewAttachments.filter((attachment) => !isAudioAttachmentPreview(attachment)),
+    [isAudioAttachmentPreview, previewAttachments],
+  );
+  const data = useMemo(
+    () => (isRTL ? nonAudioAttachments.toReversed() : nonAudioAttachments),
+    [isRTL, nonAudioAttachments],
+  );
 
   const {
     theme: {
@@ -192,25 +203,17 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
 
   const getRemovalMetrics = useCallback((ids: string[], baseData: LocalAttachment[]) => {
     const removedIds = new Set(ids);
-    const remainingItems = baseData.filter(
-      (attachment) => !removedIds.has(attachment.localMetadata.id),
-    );
     const fallbackCellWidth = baseData.length ? itemsContentWidthRef.current / baseData.length : 0;
     const offsetBefore = scrollOffsetXRef.current;
     const oldMaxOffset = Math.max(0, itemsContentWidthRef.current - viewportWidthRef.current);
     const wasNearEnd = oldMaxOffset - offsetBefore <= END_ANCHOR_THRESHOLD;
-    let firstCellWidth = 0;
     let contentOffset = 0;
     let removedContentWidth = 0;
     let anchorCorrectionWidth = 0;
 
-    baseData.forEach((attachment, index) => {
+    baseData.forEach((attachment) => {
       const attachmentId = attachment.localMetadata.id;
       const cellWidth = attachmentCellWidthsRef.current[attachmentId] ?? fallbackCellWidth;
-
-      if (index === 0) {
-        firstCellWidth = cellWidth;
-      }
 
       if (removedIds.has(attachmentId)) {
         removedContentWidth += cellWidth;
@@ -222,20 +225,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       contentOffset += cellWidth;
     });
 
-    const firstAttachmentId = baseData[0]?.localMetadata.id;
-    const didRemoveFirstItem = !!firstAttachmentId && removedIds.has(firstAttachmentId);
-    const hasRemainingAfterFirst = baseData
-      .slice(1)
-      .some((attachment) => !removedIds.has(attachment.localMetadata.id));
-
-    if (didRemoveFirstItem && hasRemainingAfterFirst) {
-      removedContentWidth += itemSeparatorWidthRef.current;
-      if (firstCellWidth <= offsetBefore) {
-        anchorCorrectionWidth += itemSeparatorWidthRef.current;
-      }
-    }
-
-    if (!removedContentWidth || remainingItems.length === baseData.length) {
+    if (!removedContentWidth) {
       return {
         removedContentWidth: 0,
         scrollCorrectionWidth: 0,
@@ -287,10 +277,10 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
 
   const removeAttachments = useCallback(
     (ids: string[]) => {
-      prepareForRemoval(ids, data);
+      prepareForRemoval(ids, dataRef.current);
       attachmentManager.removeAttachments(ids);
     },
-    [attachmentManager, data, prepareForRemoval],
+    [attachmentManager, prepareForRemoval],
   );
 
   useLayoutEffect(() => {
@@ -319,6 +309,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
     }
 
     previousDataRef.current = data;
+    dataRef.current = data;
   }, [data, getRemovalMetrics, isRTL, prepareForRemoval, scheduleTrailingSpacerRelease]);
 
   useEffect(
@@ -350,7 +341,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
           />
         );
       } else if (isLocalAudioAttachment(attachment)) {
-        if (isSoundPackageAvailable()) {
+        if (soundPackageAvailable) {
           return (
             <AudioAttachmentUploadPreview
               attachment={attachment}
@@ -392,6 +383,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       VideoAttachmentUploadPreview,
       attachmentManager.uploadAttachment,
       removeAttachments,
+      soundPackageAvailable,
     ],
   );
 
@@ -416,10 +408,6 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
 
   const onAttachmentCellLayout = useCallback((id: string, event: LayoutChangeEvent) => {
     attachmentCellWidthsRef.current[id] = event.nativeEvent.layout.width;
-  }, []);
-
-  const onItemSeparatorLayout = useCallback((event: LayoutChangeEvent) => {
-    itemSeparatorWidthRef.current = event.nativeEvent.layout.width;
   }, []);
 
   const onContentSizeChangeHandler = useCallback(
@@ -523,7 +511,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
                   onLayout={(event) => onAttachmentCellLayout(attachmentId, event)}
                   style={styles.attachmentPreviewCell}
                 >
-                  {index > 0 ? <ItemSeparatorComponent onLayout={onItemSeparatorLayout} /> : null}
+                  {index > 0 ? <ItemSeparatorComponent /> : null}
                   <View collapsable={false} style={styles.attachmentPreviewContent}>
                     {renderAttachmentPreview(attachment)}
                   </View>
