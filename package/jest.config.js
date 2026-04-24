@@ -9,7 +9,7 @@ module.exports = {
   setupFiles: ['./node_modules/react-native-gesture-handler/jestSetup.js'],
   setupFilesAfterEnv: [
     '@testing-library/jest-native/extend-expect',
-    require.resolve('./jest-setup.js'),
+    require.resolve('./jest-setup.tsx'),
   ],
   testEnvironment: 'node',
   testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__', '/lib/'],

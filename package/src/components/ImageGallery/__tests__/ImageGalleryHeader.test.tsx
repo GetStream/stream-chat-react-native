@@ -4,8 +4,6 @@ import type { SharedValue } from 'react-native-reanimated';
 
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import { LocalMessage } from 'stream-chat';
-
 import { ImageGalleryHeader as ImageGalleryHeaderDefault } from '../../../components/ImageGallery/components/ImageGalleryHeader';
 import {
   ImageGalleryContext,
@@ -36,7 +34,7 @@ const ImageGalleryComponent = (props: ImageGalleryProps) => {
   const [imageGalleryStateStore] = useState(() => new ImageGalleryStateStore());
   const attachment = generateImageAttachment();
   imageGalleryStateStore.openImageGallery({
-    messages: [generateMessage({ attachments: [attachment] }) as unknown as LocalMessage],
+    messages: [generateMessage({ attachments: [attachment] })],
     selectedAttachmentUrl: attachment.image_url,
   });
 
@@ -77,9 +75,12 @@ describe('ImageGalleryHeader', () => {
     const setOverlayMock = jest.fn();
     const user = userEvent.setup();
 
-    jest.spyOn(overlayContext, 'useOverlayContext').mockImplementation(() => ({
-      setOverlay: setOverlayMock,
-    }));
+    jest.spyOn(overlayContext, 'useOverlayContext').mockImplementation(
+      () =>
+        ({
+          setOverlay: setOverlayMock,
+        }) as unknown as ReturnType<typeof overlayContext.useOverlayContext>,
+    );
 
     render(<ImageGalleryComponent />);
 

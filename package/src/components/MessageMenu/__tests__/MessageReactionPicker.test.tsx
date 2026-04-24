@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { fireEvent, render, cleanup, waitFor } from '@testing-library/react-native';
+import type { StreamChat } from 'stream-chat';
 
 import {
   MessageContextValue,
@@ -39,8 +40,11 @@ const defaultProps = {
 };
 
 describe('MessageReactionPicker', () => {
-  let client;
-  let renderComponent;
+  let client: StreamChat;
+  let renderComponent: (
+    props?: Partial<React.ComponentProps<typeof MessageReactionPicker>>,
+    ownCapabilities?: Partial<OwnCapabilitiesContextValue>,
+  ) => ReturnType<typeof render>;
 
   beforeEach(async () => {
     client = await getTestClientWithUser({ id: 'reaction-test-user' });

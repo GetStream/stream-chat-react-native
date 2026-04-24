@@ -4,6 +4,8 @@ export type Thumbnail = {
   resizeMode: ImageResizeMode;
   url: string;
   id?: string;
+  /** Same as attachment `localId` for correlating with `client.uploadManager` */
+  localId?: string;
   thumb_url?: string;
   type?: string;
   flex?: number;

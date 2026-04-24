@@ -299,6 +299,7 @@ const GalleryThumbnail = ({
     >
       {thumbnail.type === FileTypes.Video ? (
         <VideoThumbnail
+          localId={thumbnail.localId}
           style={[styles.image, imageBorderRadius ?? borderRadius, image]}
           thumb_url={thumbnail.thumb_url}
         />
@@ -330,7 +331,8 @@ const GalleryImageThumbnail = ({
   borderRadius,
   thumbnail,
 }: Pick<GalleryThumbnailProps, 'thumbnail' | 'borderRadius'>) => {
-  const { ImageLoadingFailedIndicator, ImageLoadingIndicator } = useComponentsContext();
+  const { AttachmentUploadIndicator, ImageLoadingFailedIndicator, ImageLoadingIndicator } =
+    useComponentsContext();
   const {
     isLoadingImage,
     isLoadingImageError,
@@ -344,6 +346,7 @@ const GalleryImageThumbnail = ({
     },
   } = useTheme();
   const styles = useStyles();
+
   const onLoadStart = useStableCallback(() => {
     setLoadingImageError(false);
     setLoadingImage(true);
@@ -374,6 +377,11 @@ const GalleryImageThumbnail = ({
             uri={thumbnail.url}
           />
           {isLoadingImage ? <ImageLoadingIndicator /> : null}
+          <AttachmentUploadIndicator
+            localId={thumbnail.localId}
+            sourceUrl={thumbnail.url}
+            variant='overlay'
+          />
         </>
       )}
     </View>

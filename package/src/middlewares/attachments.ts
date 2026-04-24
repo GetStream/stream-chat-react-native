@@ -26,6 +26,7 @@ export const localAttachmentToAttachment = (localAttachment: LocalAttachment) =>
     return {
       ...attachment,
       image_url: localMetadata?.previewUri,
+      localId: localMetadata?.id,
       originalFile: localMetadata.file,
     } as Attachment;
   } else {
@@ -35,6 +36,7 @@ export const localAttachmentToAttachment = (localAttachment: LocalAttachment) =>
     return {
       ...attachment,
       asset_url: (localMetadata.file as FileReference).uri,
+      localId: localMetadata?.id,
       originalFile: localMetadata.file,
     } as Attachment;
   }

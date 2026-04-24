@@ -7,7 +7,27 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import type { NativeMultipartUpload } from './nativeMultipartUpload';
 import type { File } from './types/types';
+
+export type {
+  NativeMultipartAbortSignal,
+  NativeMultipartCanceledError,
+  NativeMultipartUpload,
+  NativeMultipartUploadEventEmitter,
+  NativeMultipartUploadHeader,
+  NativeMultipartUploadNativeResponse,
+  NativeMultipartUploadPart,
+  NativeMultipartUploadProgressConfig,
+  NativeMultipartUploadProgressEvent,
+  NativeMultipartUploadRequest,
+  NativeMultipartUploadResult,
+  NativeMultipartUploader,
+  NativeMultipartUploaderModule,
+  NativeMultipartUploaderProgressConfig,
+  NativeMultipartUploaderRequest,
+} from './nativeMultipartUpload';
+
 const fail = () => {
   throw Error(
     'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
@@ -308,6 +328,7 @@ type Handlers = {
   getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   iOS14RefreshGallerySelection?: iOS14RefreshGallerySelection;
+  multipartUpload?: NativeMultipartUpload;
   oniOS14GalleryLibrarySelectionChange?: OniOS14LibrarySelectionChange;
   overrideAudioRecordingConfiguration?: (
     audioRecordingConfiguration: AudioRecordingConfiguration,
@@ -338,6 +359,7 @@ export const NativeHandlers: Pick<
       | 'getLocalAssetUri'
       | 'getPhotos'
       | 'iOS14RefreshGallerySelection'
+      | 'multipartUpload'
       | 'oniOS14GalleryLibrarySelectionChange'
       | 'pickDocument'
       | 'pickImage'
@@ -355,6 +377,7 @@ export const NativeHandlers: Pick<
   getLocalAssetUri: fail,
   getPhotos: fail,
   iOS14RefreshGallerySelection: fail,
+  multipartUpload: fail,
   oniOS14GalleryLibrarySelectionChange: fail,
   pickDocument: fail,
   pickImage: fail,
@@ -402,6 +425,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.iOS14RefreshGallerySelection !== undefined) {
     NativeHandlers.iOS14RefreshGallerySelection = handlers.iOS14RefreshGallerySelection;
+  }
+
+  if (handlers.multipartUpload !== undefined) {
+    NativeHandlers.multipartUpload = handlers.multipartUpload;
   }
 
   if (handlers.oniOS14GalleryLibrarySelectionChange !== undefined) {
@@ -469,3 +496,4 @@ export const isImageMediaLibraryAvailable = () =>
   !!NativeHandlers.iOS14RefreshGallerySelection &&
   !!NativeHandlers.oniOS14GalleryLibrarySelectionChange &&
   !!NativeHandlers.getLocalAssetUri;
+export const isNativeMultipartUploadAvailable = () => NativeHandlers.multipartUpload !== fail;

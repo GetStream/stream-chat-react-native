@@ -314,13 +314,24 @@ public final class StreamVideoThumbnailGenerator: NSObject {
   private static func normalizeLocalURL(_ url: String) -> URL? {
     if let parsedURL = URL(string: url), let scheme = parsedURL.scheme?.lowercased() {
       if scheme == "file" {
-        return parsedURL
+        return sanitizedFileURL(parsedURL)
       }
 
       return nil
     }
 
-    return URL(fileURLWithPath: url)
+    return sanitizedFileURL(URL(fileURLWithPath: url))
+  }
+
+  private static func sanitizedFileURL(_ url: URL) -> URL {
+    guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+      return url
+    }
+
+    components.fragment = nil
+    components.query = nil
+
+    return components.url ?? url
   }
 
   private static func thumbnailError(

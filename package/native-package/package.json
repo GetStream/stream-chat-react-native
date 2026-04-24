@@ -95,6 +95,7 @@
     "ios": {
       "modulesProvider": {
         "StreamChatReactNative": "StreamChatReactNative",
+        "StreamMultipartUploader": "StreamMultipartUploader",
         "StreamVideoThumbnail": "StreamVideoThumbnail"
       },
       "componentProvider": {

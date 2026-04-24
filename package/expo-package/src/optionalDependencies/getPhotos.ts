@@ -59,23 +59,26 @@ export const getPhotos = MediaLibrary
             const mimeType =
               mime.getType(asset.filename || asset.uri) ||
               (asset.mediaType === MediaLibrary.MediaType.video ? 'video/*' : 'image/*');
-            const uri = localUri || asset.uri;
+            const originalUri = asset.uri;
+            const uri = localUri || originalUri;
 
             return {
               asset,
               isVideo: asset.mediaType === MediaLibrary.MediaType.video,
               mimeType,
+              originalUri,
               uri,
             };
           }),
         );
         const videoUris = assetEntries
-          .filter(({ isVideo, uri }) => isVideo && !!uri)
-          .map(({ uri }) => uri);
+          .filter(({ isVideo, originalUri }) => isVideo && !!originalUri)
+          .map(({ originalUri }) => originalUri);
         const videoThumbnailResults = await generateThumbnails(videoUris);
 
-        const assets = assetEntries.map(({ asset, isVideo, mimeType, uri }) => {
-          const thumbnailResult = isVideo && uri ? videoThumbnailResults[uri] : undefined;
+        const assets = assetEntries.map(({ asset, isVideo, mimeType, originalUri, uri }) => {
+          const thumbnailResult =
+            isVideo && originalUri ? videoThumbnailResults[originalUri] : undefined;
 
           return {
             duration: asset.duration * 1000,

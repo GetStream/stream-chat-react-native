@@ -3,6 +3,8 @@
  *
  * For its full API, see https://github.com/react-native-documents/document-picker/blob/main/packages/document-picker/src/index.ts
  * */
+import { generateThumbnails } from './generateThumbnail';
+
 type ResponseValue = {
   name: string;
   size: number;
@@ -31,6 +33,20 @@ try {
 export const pickDocument = DocumentPicker
   ? async ({ maxNumberOfFiles }: { maxNumberOfFiles: number }) => {
       try {
+        const addVideoThumbnails = async <T extends { type?: string; uri?: string }>(
+          assets: T[],
+        ) => {
+          const videoUris = assets
+            .filter(({ type, uri }) => type?.startsWith('video/') && !!uri)
+            .map(({ uri }) => uri as string);
+          const thumbnailResults = await generateThumbnails(videoUris);
+
+          return assets.map((asset) => ({
+            ...asset,
+            thumb_url: asset.uri ? thumbnailResults[asset.uri]?.uri || undefined : undefined,
+          }));
+        };
+
         if (!DocumentPicker) return { cancelled: true };
         let res: ResponseValue[] = await DocumentPicker.pick({
           allowMultiSelection: true,
@@ -42,12 +58,14 @@ export const pickDocument = DocumentPicker
         }
 
         return {
-          assets: res.map(({ name, size, type, uri }) => ({
-            name,
-            size,
-            type,
-            uri,
-          })),
+          assets: await addVideoThumbnails(
+            res.map(({ name, size, type, uri }) => ({
+              name,
+              size,
+              type,
+              uri,
+            })),
+          ),
           cancelled: false,
         };
       } catch (err) {

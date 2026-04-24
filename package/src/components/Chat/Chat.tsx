@@ -26,6 +26,7 @@ import { NativeHandlers } from '../../native';
 import { OfflineDB } from '../../store/OfflineDB';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
+import { installNativeMultipartAdapter } from '../../utils/installNativeMultipartAdapter';
 import { version } from '../../version.json';
 
 init();
@@ -43,6 +44,16 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * Enables offline storage and loading for chat data.
      */
     enableOfflineSupport?: boolean;
+    /**
+     * When true, multipart uploads use the SDK's native upload adapter when available.
+     * When false, uploads stay on the default axios adapter.
+     *
+     * This only controls whether the native adapter gets installed by this Chat instance.
+     * It does not uninstall an adapter that was already installed on the client.
+     *
+     * @default true
+     */
+    useNativeMultipartUpload?: boolean;
     /**
      * Instance of Streami18n class should be provided to Chat component to enable internationalization.
      *
@@ -141,6 +152,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     i18nInstance,
     isMessageAIGenerated,
     style,
+    useNativeMultipartUpload = false,
   } = props;
   const { ChatLoadingIndicator } = useComponentsContext();
 
@@ -240,6 +252,14 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       client.reminders.clearTimers();
     };
   }, [client]);
+
+  useEffect(() => {
+    if (!useNativeMultipartUpload) {
+      return;
+    }
+
+    installNativeMultipartAdapter(client);
+  }, [client, useNativeMultipartUpload]);
 
   const initialisedDatabase = !!offlineDbInitialized && userID === offlineDbUserId;
 

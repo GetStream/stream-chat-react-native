@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 
-import { lookup } from 'mime-types';
 import {
   Channel as ChannelClass,
   ChannelState,
@@ -101,7 +100,7 @@ import {
 } from '../../state-store/channel-unread-state';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { FileTypes } from '../../types/types';
+import { DefaultAttachmentData, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
@@ -1053,73 +1052,78 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     const updatedMessage = { ...message };
-    if (updatedMessage.attachments?.length) {
-      for (let i = 0; i < updatedMessage.attachments?.length; i++) {
-        const attachment = updatedMessage.attachments[i];
+    if (!updatedMessage.attachments?.length || !channel?.cid) {
+      return updatedMessage;
+    }
 
-        // If the attachment is already uploaded, skip it.
-        if (
-          (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
-          (attachment.asset_url && !isLocalUrl(attachment.asset_url))
-        ) {
-          continue;
+    const uploadOne = async (attachment: NonNullable<LocalMessage['attachments']>[number]) => {
+      if (
+        (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
+        (attachment.asset_url && !isLocalUrl(attachment.asset_url))
+      ) {
+        return;
+      }
+
+      const originalFile = attachment.originalFile;
+      if (!originalFile?.uri) {
+        return;
+      }
+
+      const localId = (attachment as DefaultAttachmentData).localId;
+      if (!localId) {
+        console.warn('uploadPendingAttachments: local attachment missing localId, skipping upload');
+        return;
+      }
+
+      let fileForUpload = originalFile;
+      if (attachment.type === FileTypes.Image && !doFileUploadRequest) {
+        const filename = originalFile.name ?? getFileNameFromPath(originalFile.uri);
+        const compressedUri = await compressedImageURI(originalFile, compressImageQuality);
+        fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
+      }
+
+      const response = await (
+        client as typeof client & {
+          uploadManager: {
+            upload(args: {
+              channelCid: string;
+              file: {
+                name?: string;
+                type?: string;
+                uri: string;
+              };
+              id: string;
+            }): Promise<{ file: string; thumb_url?: string }>;
+          };
         }
+      ).uploadManager.upload({
+        channelCid: channel.cid,
+        file: fileForUpload,
+        id: localId,
+      });
 
-        const image = attachment.originalFile;
-        const file = attachment.originalFile;
-        if (attachment.type === FileTypes.Image && image?.uri) {
-          const filename = image.name ?? getFileNameFromPath(image.uri);
-          // if any upload is in progress, cancel it
-          const controller = uploadAbortControllerRef.current.get(filename);
-          if (controller) {
-            controller.abort();
-            uploadAbortControllerRef.current.delete(filename);
-          }
-          const compressedUri = await compressedImageURI(image, compressImageQuality);
-          const contentType = lookup(filename) || 'multipart/form-data';
-
-          const uploadResponse = doFileUploadRequest
-            ? await doFileUploadRequest(image)
-            : await channel.sendImage(compressedUri, filename, contentType);
-
-          attachment.image_url = uploadResponse.file;
-          delete attachment.originalFile;
-
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: { ...updatedMessage, cid: channel.cid },
-              }),
-            { method: 'updateMessage' },
-          );
-        }
-
-        if (attachment.type !== FileTypes.Image && file?.uri) {
-          // if any upload is in progress, cancel it
-          const controller = uploadAbortControllerRef.current.get(file.name);
-          if (controller) {
-            controller.abort();
-            uploadAbortControllerRef.current.delete(file.name);
-          }
-          const response = doFileUploadRequest
-            ? await doFileUploadRequest(file)
-            : await channel.sendFile(file.uri, file.name, file.type);
-          attachment.asset_url = response.file;
-          if (response.thumb_url) {
-            attachment.thumb_url = response.thumb_url;
-          }
-
-          delete attachment.originalFile;
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: { ...updatedMessage, cid: channel.cid },
-              }),
-            { method: 'updateMessage' },
-          );
+      if (attachment.type === FileTypes.Image) {
+        attachment.image_url = response.file;
+      } else {
+        attachment.asset_url = response.file;
+        if (response.thumb_url) {
+          attachment.thumb_url = response.thumb_url;
         }
       }
-    }
+
+      delete attachment.originalFile;
+      delete (attachment as DefaultAttachmentData).localId;
+
+      client.offlineDb?.executeQuerySafely(
+        (db) =>
+          db.updateMessage({
+            message: { ...updatedMessage, cid: channel.cid },
+          }),
+        { method: 'updateMessage' },
+      );
+    };
+
+    await Promise.all(updatedMessage.attachments.map((att) => uploadOne(att)));
 
     return updatedMessage;
   });

@@ -9,7 +9,12 @@ import {
   isVideoAttachment,
   isVoiceRecordingAttachment,
   type Attachment as AttachmentType,
+  type LocalMessage,
 } from 'stream-chat';
+
+import type { AudioAttachmentProps } from './Audio/AudioAttachment';
+
+import { AttachmentFileUploadProgressIndicator } from '../../components/Attachment/AttachmentFileUploadProgressIndicator';
 
 import { useTheme } from '../../contexts';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -21,10 +26,13 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 
 import { primitives } from '../../theme';
+import type { DefaultAttachmentData } from '../../types/types';
 import { FileTypes } from '../../types/types';
+import { isLocalUrl } from '../../utils/utils';
 
 export type ActionHandler = (name: string, value: string) => void;
 
@@ -83,12 +91,12 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
   if (isAudioAttachment(attachment) || isVoiceRecordingAttachment(attachment)) {
     if (isSoundPackageAvailable()) {
       return (
-        <AudioAttachment
-          item={{ ...attachment, id: index?.toString() ?? '', type: attachment.type }}
+        <MessageAudioAttachment
+          AudioAttachment={AudioAttachment}
+          attachment={attachment}
+          audioAttachmentStyles={audioAttachmentStyles}
+          index={index}
           message={message}
-          showSpeedSettings={true}
-          showTitle={false}
-          styles={audioAttachmentStyles}
         />
       );
     }
@@ -162,6 +170,47 @@ export const Attachment = (props: AttachmentProps) => {
         myMessageTheme,
         urlPreviewType,
       }}
+    />
+  );
+};
+
+type MessageAudioAttachmentProps = {
+  AudioAttachment: React.ComponentType<AudioAttachmentProps>;
+  attachment: AttachmentType;
+  audioAttachmentStyles: AudioAttachmentProps['styles'];
+  index?: number;
+  message: LocalMessage | undefined;
+};
+
+const MessageAudioAttachment = ({
+  AudioAttachment: AudioAttachmentComponent,
+  attachment,
+  audioAttachmentStyles,
+  index,
+  message,
+}: MessageAudioAttachmentProps) => {
+  const localId = (attachment as DefaultAttachmentData).localId;
+  const sourceUrl = attachment.asset_url ?? attachment.originalFile?.uri;
+  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+  const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
+  const indicator = pendingUpload.isUploading ? (
+    <AttachmentFileUploadProgressIndicator
+      localId={localId}
+      sourceUrl={sourceUrl}
+      totalBytes={attachment.file_size}
+    />
+  ) : undefined;
+
+  const audioItemType = isVoiceRecordingAttachment(attachment) ? 'voiceRecording' : 'audio';
+
+  return (
+    <AudioAttachmentComponent
+      indicator={indicator}
+      item={{ ...attachment, id: index?.toString() ?? '', type: audioItemType }}
+      message={message}
+      showSpeedSettings={true}
+      showTitle={false}
+      styles={audioAttachmentStyles}
     />
   );
 };

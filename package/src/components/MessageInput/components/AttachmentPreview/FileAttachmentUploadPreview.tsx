@@ -2,13 +2,18 @@ import React, { useCallback, useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-import { LocalAudioAttachment, LocalFileAttachment, LocalVideoAttachment } from 'stream-chat';
+import {
+  FileReference,
+  LocalAudioAttachment,
+  LocalFileAttachment,
+  LocalVideoAttachment,
+} from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
 import { FilePreview } from '../../../../components/Attachment/FilePreview';
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
@@ -27,15 +32,17 @@ export const FileAttachmentUploadPreview = ({
   removeAttachments,
 }: FileAttachmentUploadPreviewProps) => {
   const styles = useStyles();
+  const sourceUrl =
+    attachment.asset_url ?? (attachment.localMetadata.file as FileReference | undefined)?.uri;
   const {
     FileUploadInProgressIndicator,
     FileUploadRetryIndicator,
     FileUploadNotSupportedIndicator,
   } = useComponentsContext();
-  const { enableOfflineSupport } = useChatContext();
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
-    enableOfflineSupport,
+    !!allowSendBeforeAttachmentsUpload,
   );
 
   const {
@@ -56,7 +63,13 @@ export const FileAttachmentUploadPreview = ({
 
   const renderIndicator = useMemo(() => {
     if (indicatorType === ProgressIndicatorTypes.IN_PROGRESS) {
-      return <FileUploadInProgressIndicator />;
+      return (
+        <FileUploadInProgressIndicator
+          localId={attachment.localMetadata.id}
+          sourceUrl={sourceUrl}
+          totalBytes={attachment.file_size}
+        />
+      );
     }
     if (indicatorType === ProgressIndicatorTypes.RETRY) {
       return <FileUploadRetryIndicator onPress={onRetryHandler} />;
@@ -70,8 +83,10 @@ export const FileAttachmentUploadPreview = ({
     FileUploadNotSupportedIndicator,
     FileUploadRetryIndicator,
     attachment.localMetadata,
+    attachment.file_size,
     indicatorType,
     onRetryHandler,
+    sourceUrl,
   ]);
 
   return (

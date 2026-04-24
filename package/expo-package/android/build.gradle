@@ -29,8 +29,9 @@ if (isNewArchitectureEnabled()) {
 def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["StreamChatExpo_" + name]).toInteger()
 }
+def canonicalProjectDir = projectDir.getCanonicalFile()
 def localSharedNativeRootDir = new File(projectDir, "src/main/java/com/streamchatreactnative/shared")
-def sharedNativeRootDir = new File(projectDir, "../../shared-native/android")
+def sharedNativeRootDir = new File(canonicalProjectDir, "../../shared-native/android")
 def hasNativeSources = { File dir ->
   dir.exists() && !fileTree(dir).matching { include "**/*.kt"; include "**/*.java" }.files.isEmpty()
 }
@@ -88,10 +89,10 @@ tasks.register("syncSharedShimmerSources") {
   outputs.upToDateWhen { false }
   doLast {
     def sourceRootDir = null
-    if (hasNativeSources(localSharedNativeRootDir)) {
-      sourceRootDir = localSharedNativeRootDir
-    } else if (hasNativeSources(sharedNativeRootDir)) {
+    if (hasNativeSources(sharedNativeRootDir)) {
       sourceRootDir = sharedNativeRootDir
+    } else if (hasNativeSources(localSharedNativeRootDir)) {
+      sourceRootDir = localSharedNativeRootDir
     }
 
     if (sourceRootDir == null) {
