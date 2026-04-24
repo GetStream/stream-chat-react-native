@@ -6,6 +6,7 @@ import { LocalAttachmentUploadMetadata } from 'stream-chat';
 import { AttachmentFileUploadProgressIndicator } from '../../../../components/Attachment/AttachmentFileUploadProgressIndicator';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { ExclamationCircle } from '../../../../icons/exclamation-circle-fill';
 import { Warning } from '../../../../icons/exclamation-triangle-fill';
 import { primitives } from '../../../../theme';
@@ -49,6 +50,7 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
       messageComposer: { fileUploadRetryIndicator },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
   const styles = useFileUploadRetryStyles();
 
   return (
@@ -64,7 +66,7 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
           width={16}
         />
         <Text style={[styles.networkErrorText, fileUploadRetryIndicator.networkErrorText]}>
-          Network error
+          {t('Network error')}
         </Text>
       </View>
       <Pressable
@@ -74,7 +76,9 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
           fileUploadRetryIndicator.retryButton,
         ]}
       >
-        <Text style={[styles.retryText, fileUploadRetryIndicator.retryText]}>Retry Upload</Text>
+        <Text style={[styles.retryText, fileUploadRetryIndicator.retryText]}>
+          {t('Retry Upload')}
+        </Text>
       </Pressable>
     </View>
   );
@@ -94,9 +98,10 @@ export const FileUploadNotSupportedIndicator = ({
       messageComposer: { fileUploadNotSupportedIndicator },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   const reason = localMetadata.uploadPermissionCheck?.reason === 'size_limit';
-  const message = reason ? 'File too large' : 'Not supported';
+  const message = reason ? t('File too large') : t('Not supported');
 
   return (
     <View

@@ -32,7 +32,7 @@ const animationOptions = {
 export type SwipableActionItem = {
   action: () => void | Promise<void>;
   contentContainerStyle?: StyleProp<ViewStyle>;
-  Content: React.ComponentType<Record<string, unknown>>;
+  Content: React.ComponentType;
   id: string;
 };
 

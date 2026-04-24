@@ -4,6 +4,7 @@ import { mapTaskToStorable } from '../mappers/mapTaskToStorable';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
+import type { PreparedQueries } from '../types';
 
 /*
  * addPendingTask - Adds a pending task to the database
@@ -15,7 +16,7 @@ import { SqliteClient } from '../SqliteClient';
 export const addPendingTask = async (task: PendingTask) => {
   const storable = mapTaskToStorable(task);
   const { channelId, channelType, threadId, payload, type } = storable;
-  const queries = [];
+  const queries: PreparedQueries[] = [];
   if (type === 'create-draft' || type === 'delete-draft') {
     // Only one draft pending task is allowed per entity (i.e thread, channel etc).
     // If multiple arrive, we'll simply take the last one (since deleteDraft does not

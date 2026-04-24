@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ComponentProps } from 'react';
 import { Text } from 'react-native';
 
 import { act, render } from '@testing-library/react-native';
@@ -8,6 +8,7 @@ import { WithComponents } from '../../../contexts/componentsContext/ComponentsCo
 import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
 import * as ChannelActionItemsModule from '../../ChannelList/hooks/useChannelActionItems';
 import * as ChannelActionsModule from '../../ChannelList/hooks/useChannelActions';
+import { SwipableWrapper } from '../../UIComponents/SwipableWrapper';
 import { ChannelSwipableWrapper } from '../ChannelSwipableWrapper';
 import * as UseIsChannelMutedModule from '../hooks/useIsChannelMuted';
 
@@ -60,7 +61,8 @@ jest.mock('../../UIComponents/SwipableWrapper', () => ({
     rightActionsProbe.items = items;
     return null;
   },
-  SwipableWrapper: (...args: unknown[]) => mockSwipableWrapper(...args),
+  SwipableWrapper: (...args: [ComponentProps<typeof SwipableWrapper>]) =>
+    mockSwipableWrapper(...args),
 }));
 
 describe('ChannelSwipableWrapper', () => {

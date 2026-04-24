@@ -166,7 +166,9 @@ export const CreatePollContent = () => {
             <View style={[styles.optionCard, anonymousPoll.wrapper]}>
               <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
                 <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous voting')}</Text>
-                <Text style={[styles.description, anonymousPoll.description]}>Hide who voted</Text>
+                <Text style={[styles.description, anonymousPoll.description]}>
+                  {t('Hide who voted')}
+                </Text>
               </View>
 
               <Switch
@@ -179,7 +181,7 @@ export const CreatePollContent = () => {
               <View style={[styles.optionCardContent, suggestOption.optionCardContent]}>
                 <Text style={[styles.title, suggestOption.title]}>{t('Suggest an option')}</Text>
                 <Text style={[styles.description, suggestOption.description]}>
-                  Let others add options
+                  {t('Let others add options')}
                 </Text>
               </View>
 
@@ -193,7 +195,7 @@ export const CreatePollContent = () => {
               <View style={[styles.optionCardContent, addComment.optionCardContent]}>
                 <Text style={[styles.title, addComment.title]}>{t('Add a comment')}</Text>
                 <Text style={[styles.description, addComment.description]}>
-                  Add a comment to the poll
+                  {t('Add a comment to the poll')}
                 </Text>
               </View>
 

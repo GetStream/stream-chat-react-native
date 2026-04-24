@@ -20,11 +20,13 @@ export const createCreateTableQuery = (tableName: Table): PreparedQueries[] => {
     ) || [];
 
   const indexQueries: PreparedQueries[] =
-    tables[tableName].indexes?.map((index) => [
-      `CREATE ${index.unique ? 'UNIQUE' : ''} INDEX IF NOT EXISTS ${
-        index.name
-      } ON ${tableName}(${index.columns.join(',')})`,
-    ]) || [];
+    tables[tableName].indexes?.map(
+      (index): PreparedQueries => [
+        `CREATE ${index.unique ? 'UNIQUE' : ''} INDEX IF NOT EXISTS ${
+          index.name
+        } ON ${tableName}(${index.columns.join(',')})`,
+      ],
+    ) || [];
 
   return [
     [

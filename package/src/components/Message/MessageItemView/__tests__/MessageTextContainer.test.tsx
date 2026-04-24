@@ -3,8 +3,6 @@ import { Text } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { LocalMessage } from 'stream-chat';
-
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
@@ -33,13 +31,13 @@ describe('MessageTextContainer', () => {
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
       <ThemeProvider theme={defaultTheme}>
-        <MessageTextContainer message={message as unknown as LocalMessage} />
+        <MessageTextContainer message={message} />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
       expect(getByTestId('message-text-container')).toBeTruthy();
-      expect(getByText(message.text)).toBeTruthy();
+      expect(getByText(message.text as string)).toBeTruthy();
     });
 
     rerender(
@@ -49,7 +47,7 @@ describe('MessageTextContainer', () => {
             MessageText: ({ message }) => <Text testID='message-text'>{message?.text}</Text>,
           }}
         >
-          <MessageTextContainer message={message as unknown as LocalMessage} />
+          <MessageTextContainer message={message} />
         </WithComponents>
       </ThemeProvider>,
     );
@@ -57,7 +55,7 @@ describe('MessageTextContainer', () => {
     await waitFor(() => {
       expect(getByTestId('message-text-container')).toBeTruthy();
       expect(getByTestId('message-text')).toBeTruthy();
-      expect(getByText(message.text)).toBeTruthy();
+      expect(getByText(message.text as string)).toBeTruthy();
     });
 
     const staticMessage = generateStaticMessage('Hello World', {
@@ -66,7 +64,7 @@ describe('MessageTextContainer', () => {
 
     rerender(
       <ThemeProvider theme={defaultTheme}>
-        <MessageTextContainer message={staticMessage as unknown as LocalMessage} />
+        <MessageTextContainer message={staticMessage} />
       </ThemeProvider>,
     );
 
@@ -87,7 +85,9 @@ describe('MessageTextContainer', () => {
 
     const mockedChannel = generateChannelResponse({
       id: 'chans',
-      messages: [message],
+      messages: [message] as unknown as NonNullable<
+        Parameters<typeof generateChannelResponse>[0]
+      >['messages'],
     });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);

@@ -106,7 +106,7 @@ describe('useShouldUseOverlayStyles', () => {
     const first = renderHook(() => useShouldUseOverlayStyles(), {
       wrapper: createWrapper(
         createMessageContextValue({
-          message: sharedMessage,
+          message: sharedMessage as unknown as MessageContextValue['message'],
           messageOverlayId: 'message-overlay-first',
         }),
       ),
@@ -115,7 +115,7 @@ describe('useShouldUseOverlayStyles', () => {
     const second = renderHook(() => useShouldUseOverlayStyles(), {
       wrapper: createWrapper(
         createMessageContextValue({
-          message: sharedMessage,
+          message: sharedMessage as unknown as MessageContextValue['message'],
           messageOverlayId: 'message-overlay-second',
         }),
       ),
