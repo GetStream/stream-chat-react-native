@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
+import type { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
 
 import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
 
+import { useIsCommandDisabled } from '../../contexts/messageInputContext/hooks/useIsCommandDisabled';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
@@ -81,11 +82,17 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
   } = useTheme();
   const styles = useStyles();
 
+  const isDisabled = useIsCommandDisabled(item);
+
   return (
     <View style={[styles.commandContainer, commandContainer]}>
       {name ? <AutoCompleteSuggestionCommandIcon name={name} /> : null}
       <Text
-        style={[styles.title, { color: semantics.textPrimary }, title]}
+        style={[
+          styles.title,
+          { color: isDisabled ? semantics.textTertiary : semantics.textPrimary },
+          title,
+        ]}
         testID='commands-item-title'
       >
         {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
