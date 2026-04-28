@@ -5,9 +5,6 @@ module.exports = {
         packageImportPath: 'import com.streamchatexpo.StreamChatExpoPackage;',
         packageInstance: 'new StreamChatExpoPackage()',
       },
-      ios: {
-        podspecPath: 'stream-chat-expo.podspec',
-      },
     },
   },
 };
