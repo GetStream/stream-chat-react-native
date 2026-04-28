@@ -572,14 +572,20 @@ const MessageInputWithContext = (props: MessageInputPropsWithContext) => {
       ) : null}
 
       {showPollCreationDialog ? (
-        <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+        <View
+          style={{
+            alignItems: 'center',
+            flex: 1,
+            justifyContent: 'center',
+          }}
+        >
           <Modal
             animationType='slide'
             onRequestClose={closePollCreationDialog}
             visible={showPollCreationDialog}
           >
             <GestureHandlerRootView style={{ flex: 1 }}>
-              <SafeAreaViewWrapper style={{ flex: 1 }}>
+              <SafeAreaViewWrapper style={{ backgroundColor: white, flex: 1 }}>
                 <CreatePoll
                   closePollCreationDialog={closePollCreationDialog}
                   CreatePollContent={CreatePollContent}
