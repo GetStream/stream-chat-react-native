@@ -20,6 +20,7 @@ import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDel
 import dispatchChannelHiddenEvent from '../../../mock-builders/event/channelHidden';
 import dispatchChannelTruncatedEvent from '../../../mock-builders/event/channelTruncated';
 import dispatchChannelUpdatedEvent from '../../../mock-builders/event/channelUpdated';
+import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchNotificationAddedToChannelEvent from '../../../mock-builders/event/notificationAddedToChannel';
@@ -59,6 +60,11 @@ const ChannelListComponent = (props) => {
       ))}
     </View>
   );
+};
+
+const RefreshingProbe = () => {
+  const { refreshing } = useChannelsContext();
+  return <Text testID='refreshing'>{`${refreshing}`}</Text>;
 };
 
 class DeferredPromise {
@@ -667,6 +673,55 @@ describe('ChannelList', () => {
         await waitFor(() => {
           expect(recoverSpy).toHaveBeenCalledWith('connection.recovered', expect.any(Function));
         });
+      });
+    });
+
+    describe('connection.changed', () => {
+      it('should keep background reconnection refreshes debounced and out of pull-to-refresh UI', async () => {
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+        const deferredPromise = new DeferredPromise();
+        const dateNowSpy = jest.spyOn(Date, 'now');
+        dateNowSpy.mockReturnValueOnce(0);
+        dateNowSpy.mockReturnValue(6000);
+
+        render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} List={RefreshingProbe} />
+          </Chat>,
+        );
+
+        await waitFor(() => {
+          expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+        });
+
+        const queryChannelsSpy = jest
+          .spyOn(chatClient, 'queryChannels')
+          .mockImplementation(() => deferredPromise.promise);
+
+        await act(async () => {
+          dispatchConnectionChangedEvent(chatClient, false);
+          dispatchConnectionChangedEvent(chatClient, true);
+          await Promise.resolve();
+        });
+
+        await waitFor(() => {
+          expect(queryChannelsSpy).toHaveBeenCalledTimes(1);
+        });
+
+        await act(async () => {
+          dispatchConnectionChangedEvent(chatClient, true);
+          await Promise.resolve();
+        });
+
+        expect(queryChannelsSpy).toHaveBeenCalledTimes(1);
+        expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+
+        await act(async () => {
+          deferredPromise.resolve([generateChannel({ id: testChannel1.channel.id })]);
+          await deferredPromise.promise;
+        });
+
+        dateNowSpy.mockRestore();
       });
     });
 
