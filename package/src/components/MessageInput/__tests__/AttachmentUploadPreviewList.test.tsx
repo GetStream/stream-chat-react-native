@@ -1,6 +1,6 @@
 import React, { ComponentProps } from 'react';
 
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 
 import type { ReactTestInstance } from 'react-test-renderer';
 
@@ -178,6 +178,51 @@ describe('AttachmentUploadPreviewList', () => {
   });
 
   describe('FileAttachmentUploadPreview', () => {
+    it('anchors the preview list to the end when content shrinks near the end', () => {
+      const scrollToSpy = jest
+        .spyOn(ScrollView.prototype, 'scrollTo')
+        .mockImplementation(() => undefined);
+      try {
+        const attachments = [
+          generateFileAttachment({
+            localMetadata: {
+              id: 'file-attachment-1',
+              uploadState: FileState.FINISHED,
+            },
+          }),
+          generateFileAttachment({
+            localMetadata: {
+              id: 'file-attachment-2',
+              uploadState: FileState.FINISHED,
+            },
+          }),
+        ];
+        const props = {};
+
+        act(() => {
+          channel.messageComposer.attachmentManager.upsertAttachments(attachments);
+        });
+
+        renderComponent({ channel, client, props });
+
+        const list = screen.UNSAFE_getByType(ScrollView);
+
+        act(() => {
+          fireEvent(list, 'layout', { nativeEvent: { layout: { width: 100 } } });
+          list.props.onContentSizeChange(300, 0);
+          list.props.onScroll({ nativeEvent: { contentOffset: { x: 190 } } });
+          list.props.onContentSizeChange(250, 0);
+        });
+
+        expect(scrollToSpy).toHaveBeenCalledWith({
+          animated: false,
+          x: 150,
+        });
+      } finally {
+        scrollToSpy.mockRestore();
+      }
+    });
+
     it('should render FileAttachmentUploadPreview with all uploading files', async () => {
       const attachments = [
         generateFileAttachment({
