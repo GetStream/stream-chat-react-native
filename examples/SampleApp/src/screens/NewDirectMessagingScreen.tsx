@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -192,9 +192,20 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     initChannel();
   }, [chatClient, selectedUserIds, selectedUsersLength]);
 
+  const onBackPress = useCallback(() => {
+    reset();
+
+    if (!navigation.canGoBack()) {
+      navigation.reset({ index: 0, routes: [{ name: 'MessagingScreen' }] });
+      return;
+    }
+
+    navigation.goBack();
+  }, [navigation, reset]);
+
   const renderUserSearch = ({ inSafeArea }: { inSafeArea: boolean }) => (
     <View style={[{ backgroundColor: white }, focusOnSearchInput ? styles.container : undefined]}>
-      <ScreenHeader inSafeArea={inSafeArea} onBack={reset} titleText='New Chat' />
+      <ScreenHeader inSafeArea={inSafeArea} onBack={onBackPress} titleText='New Chat' />
       <TouchableOpacity
         activeOpacity={1}
         onPress={() => {

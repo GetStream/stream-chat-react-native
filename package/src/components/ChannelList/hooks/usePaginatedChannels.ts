@@ -24,7 +24,7 @@ type Parameters = {
 
 const RETRY_INTERVAL_IN_MS = 5000;
 
-type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
+type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels' | 'backgroundRefresh';
 
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
@@ -68,6 +68,7 @@ export const usePaginatedChannels = ({
     const hasUpdatedData =
       queryType === 'loadChannels' ||
       queryType === 'refresh' ||
+      queryType === 'backgroundRefresh' ||
       [
         JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
         JSON.stringify(sortRef.current) !== JSON.stringify(sort),
@@ -129,7 +130,7 @@ export const usePaginatedChannels = ({
     setActiveQueryType(null);
   };
 
-  const refreshList = async () => {
+  const refreshList = async ({ isBackground = false }: { isBackground?: boolean } = {}) => {
     const now = Date.now();
     // Only allow pull-to-refresh 5 seconds after last successful refresh.
     if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
@@ -137,7 +138,7 @@ export const usePaginatedChannels = ({
     }
 
     lastRefresh.current = Date.now();
-    await queryChannels('refresh');
+    await queryChannels(isBackground ? 'backgroundRefresh' : 'refresh');
   };
 
   const reloadList = async () => {
@@ -167,7 +168,9 @@ export const usePaginatedChannels = ({
       'connection.changed',
       async (event) => {
         if (event.online) {
-          await refreshList();
+          // Reconnection refreshes should stay silent, but still share the same debounce
+          // path as pull-to-refresh.
+          await refreshList({ isBackground: true });
         }
       },
     );
@@ -195,7 +198,7 @@ export const usePaginatedChannels = ({
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager.loadNext,
     refreshing: activeQueryType === 'refresh',
-    refreshList,
+    refreshList: () => refreshList(),
     reloadList,
     staticChannelsActive,
   };
