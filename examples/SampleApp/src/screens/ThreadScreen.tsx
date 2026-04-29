@@ -150,7 +150,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
-        enforceUniqueReaction
         keyboardVerticalOffset={0}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
