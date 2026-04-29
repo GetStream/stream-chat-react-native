@@ -58,9 +58,13 @@ export const AttachmentCommandNativePickerItem = ({ item }: { item: CommandSugge
   const { close } = useBottomSheetContext();
 
   const handlePress = useCallback(() => {
+    if (messageComposer.isCommandDisabled(item)) {
+      return;
+    }
+
     textComposer.setCommand(item);
     close(() => inputBoxRef.current?.focus());
-  }, [textComposer, item, close, inputBoxRef]);
+  }, [messageComposer, item, textComposer, close, inputBoxRef]);
 
   return <AttachmentCommandPickerItemUI item={item} onPress={handlePress} />;
 };
@@ -73,9 +77,13 @@ export const AttachmentCommandPickerItem = ({ item }: { item: CommandSuggestion 
   const { inputBoxRef } = useMessageInputContext();
 
   const handlePress = useCallback(() => {
+    if (messageComposer.isCommandDisabled(item)) {
+      return;
+    }
+
     textComposer.setCommand(item);
     inputBoxRef.current?.focus();
-  }, [textComposer, item, inputBoxRef]);
+  }, [messageComposer, item, textComposer, inputBoxRef]);
 
   if (disableAttachmentPicker) {
     return <AttachmentCommandNativePickerItem item={item} />;
