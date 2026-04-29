@@ -141,7 +141,17 @@ const areEqual = (
     return false;
   }
 
-  const reactionsEqual = prevReactions?.length === nextReactions?.length;
+  const reactionsEqual =
+    prevReactions?.length === nextReactions?.length &&
+    (prevReactions || []).every((reaction, index) => {
+      const nextReaction = nextReactions?.[index];
+
+      return (
+        reaction.type === nextReaction?.type &&
+        reaction.count === nextReaction?.count &&
+        reaction.own === nextReaction?.own
+      );
+    });
   if (!reactionsEqual) {
     return false;
   }
