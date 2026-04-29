@@ -22,6 +22,7 @@ import {
   MessageInputProvider,
   useMessageInputContext,
 } from '../MessageInputContext';
+import type { InputBoxRef } from '../MessageInputContext';
 
 const Wrapper = ({
   messageComposerContextValue,
@@ -96,6 +97,53 @@ describe("MessageInputContext's sendMessage", () => {
       expect(sendMessageMock).not.toHaveBeenCalled();
       expect(consoleErrorMock).toHaveBeenCalled();
     });
+  });
+
+  it('should restore input state if composition is discarded', async () => {
+    const sendMessageMock = jest.fn();
+    const clearState = jest.fn();
+    const restoreState = jest.fn();
+    const initialProps = {
+      sendMessage: sendMessageMock,
+    };
+
+    const { result } = renderHook(() => useMessageInputContext(), {
+      initialProps,
+      wrapper: (props) => (
+        <Wrapper
+          client={chatClient}
+          messageComposerContextValue={{ channel }}
+          props={{ ...props, ...initialProps }}
+        />
+      ),
+    });
+
+    const text = 'Hello there';
+    const inputRef = {
+      clearState,
+      restoreState,
+    } as unknown as InputBoxRef;
+    (result.current.setInputBoxRef as (ref: InputBoxRef | null) => void)(inputRef);
+
+    await act(async () => {
+      await channel.messageComposer.textComposer.handleChange({
+        selection: {
+          end: text.length,
+          start: text.length,
+        },
+        text,
+      });
+    });
+
+    jest.spyOn(channel.messageComposer, 'compose').mockResolvedValue(undefined);
+
+    await act(async () => {
+      await result.current.sendMessage();
+    });
+
+    expect(clearState).toHaveBeenCalledTimes(1);
+    expect(restoreState).toHaveBeenCalledWith(text);
+    expect(sendMessageMock).not.toHaveBeenCalled();
   });
 
   it('should get into the catch block if the sendMessage throws an error', async () => {

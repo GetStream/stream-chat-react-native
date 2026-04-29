@@ -51,7 +51,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type LocalMessageInputContext = {
   closeAttachmentPicker: () => void;
-  inputBoxRef: React.RefObject<TextInput | null>;
+  inputBoxRef: React.RefObject<InputBoxRef | null>;
   openAttachmentPicker: () => void;
   /**
    * Function for picking a photo from native image picker and uploading it.
@@ -62,7 +62,7 @@ export type LocalMessageInputContext = {
   /**
    * Ref callback to set reference on input box
    */
-  setInputBoxRef: Ref<TextInput> | undefined;
+  setInputBoxRef: Ref<InputBoxRef> | undefined;
   /**
    * Function for taking a photo and uploading it
    */
@@ -75,6 +75,11 @@ export type LocalMessageInputContext = {
   deleteVoiceRecording: () => Promise<void>;
   uploadVoiceRecording: (sendOnComplete: boolean) => Promise<void>;
   stopVoiceRecording: () => Promise<void>;
+};
+
+export type InputBoxRef = TextInput & {
+  clearState: () => void;
+  restoreState: (text: string) => void;
 };
 
 export type InputMessageInputContextValue = {
@@ -215,7 +220,7 @@ export const MessageInputProvider = ({
   const { clearEditingState } = useMessageComposerAPIContext();
   const { thread } = useThreadContext();
   const { t } = useTranslationContext();
-  const inputBoxRef = useRef<TextInput | null>(null);
+  const inputBoxRef = useRef<InputBoxRef | null>(null);
 
   const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
 
@@ -368,14 +373,18 @@ export const MessageInputProvider = ({
   }, [closePicker, attachmentPickerStore]);
 
   const sendMessage = useStableCallback(async () => {
-    if (inputBoxRef.current) {
-      inputBoxRef.current.clear();
-    }
+    const textToRestore = messageComposer.textComposer.text;
+    let compositionAccepted = false;
+
+    inputBoxRef.current?.clearState();
 
     try {
       const composition = await messageComposer.compose();
 
-      if (!composition || !composition.message) return;
+      if (!composition || !composition.message) {
+        inputBoxRef.current?.restoreState(textToRestore);
+        return;
+      }
 
       const { localMessage, message, sendOptions } = composition;
       const linkInfos = parseLinksFromText(localMessage.text);
@@ -386,8 +395,11 @@ export const MessageInputProvider = ({
           t('Sending links is not allowed in this conversation'),
         );
 
+        inputBoxRef.current?.restoreState(textToRestore);
         return;
       }
+
+      compositionAccepted = true;
 
       // MODERATION: This is for the case where the message is of type 'error' and if you try to edit it, it will throw an error.
       if (editedMessage && editedMessage.type !== 'error') {
@@ -425,11 +437,14 @@ export const MessageInputProvider = ({
         }
       }
     } catch (error) {
+      if (!compositionAccepted) {
+        inputBoxRef.current?.restoreState(textToRestore);
+      }
       console.error('Error while sending message:', error);
     }
   });
 
-  const setInputBoxRef = useStableCallback((ref: TextInput | null) => {
+  const setInputBoxRef = useStableCallback((ref: InputBoxRef | null) => {
     inputBoxRef.current = ref;
     if (value.setInputRef) {
       value.setInputRef(ref);

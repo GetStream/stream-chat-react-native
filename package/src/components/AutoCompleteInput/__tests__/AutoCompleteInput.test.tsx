@@ -1,9 +1,12 @@
 import React from 'react';
 
+import type { TextInput } from 'react-native';
+
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts';
+import type { InputBoxRef } from '../../../contexts/messageInputContext/MessageInputContext';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import type { ChannelProps } from '../../Channel/Channel';
 import { Channel } from '../../Channel/Channel';
@@ -120,6 +123,50 @@ describe('AutoCompleteInput', () => {
         text: 'hello',
       });
       expect(input.props.value).toBe('hello');
+    });
+  });
+
+  it('should expose imperative state handlers on the input ref', async () => {
+    let inputRef: InputBoxRef | null = null;
+    const text = 'hello';
+    const channelProps = {
+      channel,
+      setInputRef: (ref: TextInput | null) => {
+        inputRef = ref as InputBoxRef | null;
+      },
+    };
+    const props = {};
+
+    renderComponent({ channelProps, client, props });
+
+    await waitFor(() => {
+      expect(inputRef?.clearState).toBeTruthy();
+      expect(inputRef?.restoreState).toBeTruthy();
+    });
+
+    act(() => {
+      fireEvent.changeText(screen.getByTestId('auto-complete-text-input'), text);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('auto-complete-text-input').props.value).toBe(text);
+    });
+
+    act(() => {
+      inputRef?.clearState();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('auto-complete-text-input').props.value).toBe('');
+      expect(channel.messageComposer.textComposer.text).toBe(text);
+    });
+
+    act(() => {
+      inputRef?.restoreState(text);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('auto-complete-text-input').props.value).toBe(text);
     });
   });
 
