@@ -9,7 +9,6 @@ import { AttachmentCommandPicker } from './AttachmentPickerContent';
 import {
   useAttachmentPickerContext,
   useChannelContext,
-  useMessageComposer,
   useMessageInputContext,
   useMessagesContext,
   useOwnCapabilitiesContext,
@@ -182,7 +181,6 @@ export const PollPickerButton = () => {
 
 export const CommandsPickerButton = () => {
   const [showCommandsSheet, setShowCommandsSheet] = useState(false);
-  const messageComposer = useMessageComposer();
   const { hasCommands } = useMessageInputContext();
   const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
@@ -197,7 +195,7 @@ export const CommandsPickerButton = () => {
 
   const onClose = useStableCallback(() => setShowCommandsSheet(false));
 
-  return hasCommands && !messageComposer.editedMessage ? (
+  return hasCommands ? (
     <>
       <AttachmentTypePickerButton
         testID='commands-touchable'

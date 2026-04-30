@@ -17,16 +17,15 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
-import {
-  MessageInputContextValue,
-  useMessageInputContext,
-} from '../../contexts/messageInputContext/MessageInputContext';
+import type { MessageInputContextValue } from '../../contexts/messageInputContext/MessageInputContext';
+import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 import { useCooldownRemaining } from '../MessageInput/hooks/useCooldownRemaining';
 
@@ -44,6 +43,19 @@ const TextInputRenderer = React.forwardRef<RNTextInput, AnimatedTextInputRendere
 );
 
 const AnimatedTextInputRenderer = Animated.createAnimatedComponent(TextInputRenderer);
+
+const setRef = <T,>(ref: React.Ref<T> | undefined, value: T | null) => {
+  if (!ref) {
+    return;
+  }
+
+  if (typeof ref === 'function') {
+    ref(value);
+    return;
+  }
+
+  (ref as React.RefObject<T | null>).current = value;
+};
 
 type AutoCompleteInputPropsWithContext = TextInputProps &
   Pick<ChannelContextValue, 'channel'> &
@@ -109,6 +121,30 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     setLocalText(text);
   }, [text]);
 
+  const clearState = useCallback(() => {
+    setLocalText('');
+  }, []);
+
+  const restoreState = useStableCallback((restoredText: string) => {
+    setLocalText(restoredText);
+  });
+
+  const setExtendedInputRef = useCallback(
+    (ref: RNTextInput | null) => {
+      if (!ref) {
+        setRef(setInputBoxRef, null);
+        return;
+      }
+
+      const inputBoxRef = Object.assign(ref, {
+        clearState,
+        restoreState,
+      });
+      setRef(setInputBoxRef, inputBoxRef);
+    },
+    [clearState, restoreState, setInputBoxRef],
+  );
+
   const handleSelectionChange = useCallback(
     (e: TextInputSelectionChangeEvent) => {
       const { selection } = e.nativeEvent;
@@ -161,7 +197,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       onSelectionChange={handleSelectionChange}
       placeholder={placeholderText}
       placeholderTextColor={semantics.inputTextPlaceholder}
-      ref={setInputBoxRef}
+      ref={setExtendedInputRef}
       style={[
         styles.inputBox,
         {
