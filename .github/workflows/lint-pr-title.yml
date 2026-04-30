@@ -10,7 +10,22 @@ on:
 jobs:
   lint_pr_title:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     steps:
-      - uses: deepakputhraya/action-pr-title@v1.0.2
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          regex: '^(\w*)(?:\((.*)\))?: (.*)$'
+          types: |
+            feat
+            fix
+            docs
+            refactor
+            chore
+            test
+            perf
+            ci
+            build
+            style
+            revert
