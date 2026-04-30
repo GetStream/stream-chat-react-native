@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Image, Platform } from 'react-native';
 
-import { Channel, OfflineDBState } from 'stream-chat';
+import { Channel, OfflineDBState, SdkIdentifier } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
@@ -181,9 +181,10 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   useEffect(() => {
     if (client) {
-      const sdkName = (
-        NativeHandlers.SDK ? NativeHandlers.SDK.replace('stream-chat-', '') : 'react-native'
-      ) as 'react-native' | 'expo';
+      const sdkName = (((NativeHandlers.SDK
+        ? NativeHandlers.SDK.replace('stream-chat-', '')
+        : 'react-native') as 'react-native' | 'expo') +
+        `-${Platform.OS as 'ios' | 'android'}`) as SdkIdentifier['name'];
       client.sdkIdentifier = {
         name: sdkName,
         version,
