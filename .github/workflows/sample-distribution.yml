@@ -20,14 +20,14 @@ jobs:
         node-version: [24.x]
     steps:
       - name: Connect Bot
-        uses: webfactory/ssh-agent@v0.7.0
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '26.2' # Update as needed
@@ -35,7 +35,7 @@ jobs:
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Cache iOS pods
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: examples/SampleApp/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('examples/SampleApp/ios/Podfile.lock') }}
@@ -65,13 +65,13 @@ jobs:
         node-version: [24.x]
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Install Linux build tools
         run: sudo apt-get update && sudo apt-get install -y build-essential
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '17'
