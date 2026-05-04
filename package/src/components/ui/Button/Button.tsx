@@ -97,6 +97,8 @@ export const Button = ({
       onLayout={onLayout}
     >
       <Pressable
+        accessibilityRole='button'
+        accessibilityState={{ disabled: !!disabled, selected }}
         style={({ pressed }) => [
           {
             backgroundColor: pressed

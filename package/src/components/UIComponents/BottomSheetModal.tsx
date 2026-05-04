@@ -38,6 +38,7 @@ import {
   getBottomSheetTopSnapIndex,
 } from './BottomSheetModal.utils';
 
+import { useResolvedModalAccessibilityProps } from '../../a11y/hooks/useResolvedModalAccessibilityProps';
 import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
@@ -501,6 +502,8 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
 
   const onBackdropPress = useStableCallback(() => close());
 
+  const modalA11yProps = useResolvedModalAccessibilityProps();
+
   const bottomSheetModalContextValue = useMemo(
     () => ({
       close,
@@ -523,6 +526,7 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
           <Animated.View
             pointerEvents='box-none'
             style={[{ height: maxHeight }, sheetViewportAnimatedStyle]}
+            {...modalA11yProps}
           >
             <GestureDetector gesture={panGesture}>
               <Animated.View style={[styles.container, { height: maxHeight }, container]}>

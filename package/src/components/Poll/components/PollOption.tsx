@@ -193,6 +193,9 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
 
   return ownCapabilities.castPollVote && !isClosed ? (
     <Pressable
+      accessibilityLabel={option.text}
+      accessibilityRole={poll.data?.enforce_unique_vote ? 'radio' : 'checkbox'}
+      accessibilityState={{ checked: hasVote, selected: hasVote }}
       onPress={onPressHandler}
       style={({ pressed }) => [
         { opacity: pressed ? 0.5 : 1 },

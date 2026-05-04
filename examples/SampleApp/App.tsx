@@ -337,6 +337,7 @@ const DrawerNavigatorWrapper: React.FC<{
 }> = ({ chatClient, i18nInstance }) => {
   return (
     <Chat
+      accessibility={{ enabled: true }}
       client={chatClient}
       enableOfflineSupport
       isMessageAIGenerated={isMessageAIGenerated}

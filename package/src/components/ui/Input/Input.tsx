@@ -104,6 +104,9 @@ export const Input = ({
           />
         ) : null}
         <TextInput
+          accessibilityHint={description}
+          accessibilityLabel={props.accessibilityLabel ?? title}
+          accessibilityState={{ disabled: !editable, selected: isFocused }}
           editable={editable}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -111,6 +114,15 @@ export const Input = ({
           placeholderTextColor={semantics.inputTextPlaceholder}
           {...props}
         />
+        {state === 'error' && errorMessage ? (
+          <View
+            accessibilityLiveRegion='assertive'
+            accessibilityRole='alert'
+            style={{ width: 0, height: 0 }}
+          >
+            <Text>{errorMessage}</Text>
+          </View>
+        ) : null}
         {RightIcon ? (
           <RightIcon
             height={20}

@@ -45,11 +45,14 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
     [usersForGroup, client.user?.id],
   );
 
+  const channelName = (channel.data?.name as string | undefined) ?? channel.cid;
+
   if (channelImage) {
     return (
       <Avatar
         backgroundColor={avatarBackgroundColor}
         imageUrl={channelImage}
+        name={channelName}
         showBorder={showBorder}
         size={size}
       />

@@ -34,6 +34,8 @@ exports[`MessageAuthor should render message author 1`] = `
       testID="avatar-image"
     >
       <Image
+        accessibilityElementsHidden={true}
+        importantForAccessibility="no"
         onError={[Function]}
         source={
           {

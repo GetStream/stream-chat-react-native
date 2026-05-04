@@ -6,6 +6,7 @@ import { Channel } from 'stream-chat';
 
 import { AIStates, useAIState } from './hooks/useAIState';
 
+import { useAnnounceOnStateChange } from '../../a11y/hooks/useAnnounceOnStateChange';
 import { useChannelContext, useTheme, useTranslationContext } from '../../contexts';
 import { primitives } from '../../theme';
 
@@ -26,9 +27,11 @@ export const AITypingIndicatorView = ({
   };
 
   const styles = useStyles();
+  const announceableState = aiState in allowedStates ? allowedStates[aiState] : null;
+  useAnnounceOnStateChange(announceableState);
 
   return aiState in allowedStates ? (
-    <View style={styles.container}>
+    <View accessibilityLiveRegion='polite' accessibilityRole='text' style={styles.container}>
       <Text style={styles.text}>{allowedStates[aiState]}</Text>
     </View>
   ) : null;

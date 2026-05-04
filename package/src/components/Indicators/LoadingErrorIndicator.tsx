@@ -16,7 +16,13 @@ const LoadingErrorWrapper = (props: React.PropsWithChildren<LoadingErrorWrapperP
   const styles = useStyles();
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity
+      accessibilityHint={onPress ? 'Tap to retry' : undefined}
+      accessibilityLiveRegion='assertive'
+      accessibilityRole={onPress ? 'button' : 'alert'}
+      onPress={onPress}
+      style={styles.container}
+    >
       <Text style={styles.errorText} testID='loading-error'>
         {text}
       </Text>

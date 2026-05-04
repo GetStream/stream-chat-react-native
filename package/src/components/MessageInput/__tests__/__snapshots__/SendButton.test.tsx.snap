@@ -36,13 +36,14 @@ exports[`SendButton should render a SendButton 1`] = `
         }
       >
         <View
+          accessibilityRole="button"
           accessibilityState={
             {
               "busy": undefined,
               "checked": undefined,
               "disabled": false,
               "expanded": undefined,
-              "selected": undefined,
+              "selected": false,
             }
           }
           accessibilityValue={
@@ -194,13 +195,14 @@ exports[`SendButton should render a SendButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -333,13 +335,14 @@ exports[`SendButton should render a SendButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -501,13 +504,14 @@ exports[`SendButton should render a SendButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -636,13 +640,14 @@ exports[`SendButton should render a SendButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -903,13 +908,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
         }
       >
         <View
+          accessibilityRole="button"
           accessibilityState={
             {
               "busy": undefined,
               "checked": undefined,
               "disabled": true,
               "expanded": undefined,
-              "selected": undefined,
+              "selected": false,
             }
           }
           accessibilityValue={
@@ -1061,13 +1067,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -1200,13 +1207,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -1368,13 +1376,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -1503,13 +1512,14 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={

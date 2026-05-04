@@ -37,6 +37,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
@@ -70,6 +71,7 @@ import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/transitions';
+import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -364,6 +366,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
+
+  useIncomingMessageAnnouncements({
+    activeThreadId: thread?.id,
+    channel,
+    ownUserId: client.user?.id,
+    threadList,
+  });
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 

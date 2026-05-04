@@ -151,7 +151,11 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   }
 
   return (
-    <View style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}>
+    <View
+      accessibilityLabel={title}
+      accessibilityRole='text'
+      style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}
+    >
       <View style={[styles.container, container, stylesProp?.container]}>
         <View style={[styles.leftContainer, leftContainer, stylesProp?.leftContainer]}>
           <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp?.title]}>
