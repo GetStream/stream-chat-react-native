@@ -10,7 +10,7 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 ## Non-negotiable rules
 
 1. **Native semantics first.** Use `Pressable`, `TextInput`, `Switch`, `Image` directly. Use `accessibilityRole` only when native semantics cannot represent the widget (`menu`, `menuitem`, `progressbar`, `radio`, `checkbox`, `article`, `alert`, `tablist`, `tab`).
-2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. Use `useA11yLabel('aria/...', params)` (or `t('aria/...')` directly when you don't need the disabled-state short-circuit). Add the key to all 12 locale files in `package/src/i18n/`.
+2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. Use `useA11yLabel('a11y/...', params)` (or `t('a11y/...')` directly when you don't need the disabled-state short-circuit). Add the key to all 12 locale files in `package/src/i18n/`.
 3. **Gate behavior on `useAccessibilityContext().enabled`.** A11y is opt-in. New listeners, subscriptions, and announcer mounts must be no-ops when `enabled` is false. New `accessibilityRole`/`accessibilityState` props are fine to render unconditionally — they cost ~zero.
 4. **One focusable target per action.** Don't nest `Pressable` inside `Pressable`. Mark inner decorative views with `accessibilityElementsHidden` (iOS) + `importantForAccessibility='no-hide-descendants'` (Android) so the parent carries the label.
 5. **Decorative visuals stay hidden from AT.** Icon-only buttons must carry an `accessibilityLabel` on the wrapper, and the SVG icon should be hidden.
@@ -21,7 +21,7 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 - **Foundation primitives** → `package/src/a11y/` (utilities + low-level hooks).
 - **Runtime announcer infra** → `package/src/components/Accessibility/` (`AccessibilityAnnouncer`, `NotificationAnnouncer`, `useIncomingMessageAnnouncements`).
 - **Config + provider** → `package/src/contexts/accessibilityContext/`.
-- **i18n** → `aria/*` keys in all 12 locale JSONs (`en, es, fr, he, hi, it, ja, ko, nl, pt-br, ru, tr`).
+- **i18n** → `a11y/*` keys in all 12 locale JSONs (`en, es, fr, he, hi, it, ja, ko, nl, pt-br, ru, tr`).
 - **Component-level a11y attributes** → in the component itself.
 - **Platform divergence (iOS vs Android)** → use `Platform.OS` or `useResolvedModalAccessibilityProps`. Don't duplicate the file — RN doesn't need `.ios.tsx`/`.android.tsx` splits for a11y.
 - **Tests** → nearest `__tests__/` folder; use `@testing-library/react-native` semantic queries (`getByRole`, `getByLabelText`).
@@ -33,7 +33,7 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 ```tsx
 import { useA11yLabel } from 'stream-chat-react-native';
 
-const label = useA11yLabel('aria/Reaction {{emoji}} by {{count}} users', { emoji, count });
+const label = useA11yLabel('a11y/Reaction {{emoji}} by {{count}} users', { emoji, count });
 <Pressable accessibilityLabel={label} accessibilityRole='button' accessibilityState={{ selected }} />
 ```
 
@@ -95,7 +95,7 @@ Disable spring animations and limit fade durations when this is true.
 
 ## Anti-patterns to avoid
 
-- **Hardcoded English `accessibilityLabel`** strings inside component code. Always use `useA11yLabel('aria/...')` or `t('aria/...')`.
+- **Hardcoded English `accessibilityLabel`** strings inside component code. Always use `useA11yLabel('a11y/...')` or `t('a11y/...')`.
 - **Nested focusables**: `<Pressable><Pressable>` causes VO to stop on each. Mark the outer `accessible={false}` or the inner `accessibilityElementsHidden`.
 - **Subscribing to `AccessibilityInfo` events when `enabled` is false** — wastes a listener slot. The provided hooks already gate on this; mirror that pattern.
 - **`useScreenReaderEnabled()` inside list items** — toggling SR re-renders every item. Only subscribe in components that actually swap UI on SR (`AudioRecorder`, `ImageGallery`, `Message`'s alternative-actions button).
@@ -116,14 +116,14 @@ Recommended for non-trivial changes:
 
 - [ ] Identified the interaction type (button / menuitem / dialog / progressbar / radio / checkbox / live region / image)
 - [ ] Picked a native element first; ARIA-style `accessibilityRole` only when necessary
-- [ ] Composed `accessibilityLabel` via `useA11yLabel('aria/...')` (not hardcoded)
-- [ ] Added the new `aria/*` key to all 12 locale JSONs and ran `yarn build-translations`
+- [ ] Composed `accessibilityLabel` via `useA11yLabel('a11y/...')` (not hardcoded)
+- [ ] Added the new `a11y/*` key to all 12 locale JSONs and ran `yarn build-translations`
 - [ ] Set `accessibilityState` for stateful widgets (`disabled`, `selected`, `checked`, `busy`, `expanded`)
 - [ ] Decorative visuals hidden from AT (`accessibilityElementsHidden` / `importantForAccessibility='no-hide-descendants'`)
 - [ ] Modal surfaces use `useResolvedModalAccessibilityProps`
 - [ ] New behavior (announcers, listeners) gated on `useAccessibilityContext().enabled`
 - [ ] Tested with `accessibility={{ enabled: true, forceScreenReaderMode: true }}` and `enabled: false`
-- [ ] Verified `yarn lint` passes (`validate-translations` enforces non-empty `aria/*` keys)
+- [ ] Verified `yarn lint` passes (`validate-translations` enforces non-empty `a11y/*` keys)
 - [ ] Verified `yarn tsc --noEmit` passes (RN's a11y prop types are strict about `boolean | null | undefined`)
 
 ## Reference files (in this repo)
@@ -142,7 +142,7 @@ Recommended for non-trivial changes:
 API shapes mirror [`stream-chat-react#3146`](https://github.com/GetStream/stream-chat-react/pull/3146):
 - `useAccessibilityAnnouncer` ≈ React's `useAriaLiveAnnouncer`
 - `useIncomingMessageAnnouncements` — same params, same throttle/batch logic
-- `aria/*` i18n namespace shared
+- `a11y/*` i18n namespace shared
 - `<NotificationAnnouncer />` — same component name, `connection-state`-only on RN since RN has no shared notifications queue
 
 When changing one SDK's a11y API, mirror it in the other where the platforms agree.

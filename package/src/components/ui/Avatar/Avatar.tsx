@@ -12,7 +12,7 @@ export type AvatarProps = {
   size: '2xl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
   /**
    * Override for the auto-generated accessibility label. When omitted and a
-   * `name` is provided, the SDK uses `aria/Avatar of {{name}}`.
+   * `name` is provided, the SDK uses `a11y/Avatar of {{name}}`.
    */
   accessibilityLabel?: string;
   backgroundColor?: ColorValue;
@@ -46,7 +46,7 @@ export const Avatar = (props: AvatarProps) => {
     style,
   } = props;
   const styles = useStyles();
-  const composedLabel = useA11yLabel('aria/Avatar of {{name}}', { name: name ?? '' });
+  const composedLabel = useA11yLabel('a11y/Avatar of {{name}}', { name: name ?? '' });
   const accessibilityLabel = accessibilityLabelOverride ?? (name ? composedLabel : undefined);
 
   const onHandleError = useCallback(() => {

@@ -67,12 +67,12 @@ export const useIncomingMessageAnnouncements = ({
 
     if (pending.count === 1) {
       announce(
-        t('aria/New message from {{user}}', {
+        t('a11y/New message from {{user}}', {
           user: pending.firstSender || t('Anonymous'),
         }),
       );
     } else {
-      announce(t('aria/{{count}} new messages', { count: pending.count }));
+      announce(t('a11y/{{count}} new messages', { count: pending.count }));
     }
 
     pending.count = 0;

@@ -24,7 +24,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
     theme: { semantics },
   } = useTheme();
   const a11yLabel = useA11yLabel(
-    unreadCount ? 'aria/Scroll to latest, {{count}} unread' : 'aria/Scroll to latest',
+    unreadCount ? 'a11y/Scroll to latest, {{count}} unread' : 'a11y/Scroll to latest',
     { count: unreadCount ?? 0 },
   );
 

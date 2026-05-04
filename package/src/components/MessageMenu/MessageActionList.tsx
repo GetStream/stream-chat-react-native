@@ -25,7 +25,7 @@ export type MessageActionListProps = {
 export const MessageActionList = (props: MessageActionListProps) => {
   const { messageActions } = props;
   const { MessageActionListItem } = useComponentsContext();
-  const a11yLabel = useA11yLabel('aria/Message actions');
+  const a11yLabel = useA11yLabel('a11y/Message actions');
   const {
     theme: {
       messageMenu: {

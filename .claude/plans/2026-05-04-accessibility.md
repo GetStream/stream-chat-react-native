@@ -27,8 +27,8 @@ Goal: bring RN to parity with the React SDK's a11y baseline using the same primi
 
 ## Confirmed decisions
 
-1. **Translate `aria/*` keys into all 12 RN locales** — `de`, `en`, `es`, `fr`, `he`, `hi`, `it`, `ja`, `ko`, `nl`, `pt-br`, `ru`, `tr`. (`he.json` exists in RN but not React — translate that too.) Mirrors the React PR's policy. `validate-translations` enforces no empty values.
-2. **Drop the `customAccessibilityLabels` override map.** Integrators override `aria/*` keys through the existing Streami18n mechanism — no new API surface.
+1. **Translate `a11y/*` keys into all 12 RN locales** — `de`, `en`, `es`, `fr`, `he`, `hi`, `it`, `ja`, `ko`, `nl`, `pt-br`, `ru`, `tr`. (`he.json` exists in RN but not React — translate that too.) Mirrors the React PR's policy. `validate-translations` enforces no empty values.
+2. **Drop the `customAccessibilityLabels` override map.** Integrators override `a11y/*` keys through the existing Streami18n mechanism — no new API surface.
 3. **Keep the minimal `<Chat accessibility={...}>` config** — RN-specific because mobile has gesture-only flows (audio hold-to-record, gallery pinch/pan) that web doesn't. Flat config with positive `'auto' | 'always' | 'never'` enums for the gesture-alternative toggles (no nested `componentOverrides`, no negative `disable*` booleans — see "Architecture" below). Documented as an intentional deviation from React.
 4. **A11y is OFF by default — integrators opt in via `<Chat accessibility={{ enabled: true }}>`.** Keeps zero-config behavior identical to today's SDK so existing integrators see no change. Once enabled, sensible defaults take over (auto-adapt to SR, announce new messages, etc.). The Phase 5 Reassure benchmark will measure the cost of `enabled: true` so we can confidently flip the default to `true` in a future release.
 
@@ -145,22 +145,22 @@ When `enabled: false`, the implementation must short-circuit cleanly:
 - No `<NotificationAnnouncer />` mount.
 - No `useIncomingMessageAnnouncements` subscription on `channel.on('message.new')`.
 - No `AccessibilityInfo` event listeners.
-- Component-level a11y props (`accessibilityRole`, `accessibilityState`, etc.) still render — these are passed to native views and consulted only by VO/TalkBack when active, so they cost essentially nothing for sighted users. **Exception: `accessibilityLabel` strings composed via `t('aria/...')`.** Skip the `t()` call when `enabled: false` to avoid 1000 i18next lookups in a busy `MessageList`. A small helper hook `useA11yLabel(key, params)` returns `undefined` when disabled and the translated string when enabled — components pass its return value straight to `accessibilityLabel`.
+- Component-level a11y props (`accessibilityRole`, `accessibilityState`, etc.) still render — these are passed to native views and consulted only by VO/TalkBack when active, so they cost essentially nothing for sighted users. **Exception: `accessibilityLabel` strings composed via `t('a11y/...')`.** Skip the `t()` call when `enabled: false` to avoid 1000 i18next lookups in a busy `MessageList`. A small helper hook `useA11yLabel(key, params)` returns `undefined` when disabled and the translated string when enabled — components pass its return value straight to `accessibilityLabel`.
 
-### i18n — `aria/*` namespace (matches React)
+### i18n — `a11y/*` namespace (matches React)
 
-React used `t('aria/...')` keys for parity across SDKs. RN adopts the same prefix even though "ARIA" is web-specific — the value is cross-SDK consistency for translators and integrator docs. Add keys to all 12 RN locales: `de.json`, `en.json`, `es.json`, `fr.json`, `hi.json`, `it.json`, `ja.json`, `ko.json`, `nl.json`, `pt-br.json`, `ru.json`, `tr.json`. (`he.json` exists in RN but not React — translate too.) Run `yarn build-translations` to keep the i18next-cli sync intact, then `yarn lint` to pass `validate-translations` (no empty values).
+React used `t('a11y/...')` keys for parity across SDKs. RN adopts the same prefix even though "ARIA" is web-specific — the value is cross-SDK consistency for translators and integrator docs. Add keys to all 12 RN locales: `de.json`, `en.json`, `es.json`, `fr.json`, `hi.json`, `it.json`, `ja.json`, `ko.json`, `nl.json`, `pt-br.json`, `ru.json`, `tr.json`. (`he.json` exists in RN but not React — translate too.) Run `yarn build-translations` to keep the i18next-cli sync intact, then `yarn lint` to pass `validate-translations` (no empty values).
 
 Example shared keys (from React PR — adopt verbatim where the string is platform-neutral):
 ```
-aria/Avatar of {{name}}
-aria/{{count}} new messages
-aria/New message from {{user}}
-aria/Open message actions
-aria/Send message
-aria/Voice message recording. Hold to record.
-aria/Reaction {{emoji}} by {{count}} users
-aria/Reply to {{user}}
+a11y/Avatar of {{name}}
+a11y/{{count}} new messages
+a11y/New message from {{user}}
+a11y/Open message actions
+a11y/Send message
+a11y/Voice message recording. Hold to record.
+a11y/Reaction {{emoji}} by {{count}} users
+a11y/Reply to {{user}}
 Anonymous   ← shared with React
 ```
 
@@ -179,7 +179,7 @@ Mirrors React PR's "Screen reader foundations" section.
 5. Mount `<NotificationAnnouncer />` once inside `Channel` so it can subscribe to per-channel errors.
 6. Extend [package/src/native.ts](package/src/native.ts) with `AccessibilityInfo` handlers + `isAccessibilityInfoAvailable()` check (mirror `isAudioRecorderAvailable()` style).
 7. Register handlers in `package/native-package/src/handlers/AccessibilityInfoHandler.ts` and `package/expo-package/src/handlers/AccessibilityInfoHandler.ts` — both wrap RN's `AccessibilityInfo`.
-8. Add `aria/*` keys to all 12 locales; run `yarn build-translations`.
+8. Add `a11y/*` keys to all 12 locales; run `yarn build-translations`.
 9. Update [package/src/contexts/index.ts](package/src/contexts/index.ts) and `package/src/index.ts` to export `AccessibilityContext`, `AccessibilityConfig`, `useAccessibilityAnnouncer`, hooks. (Same exports React added in `src/components/Accessibility/index.ts` and `src/components/index.ts`.)
 10. Add unit tests with parity to React's: `AriaLiveRegion.test.tsx` → `AccessibilityAnnouncer.test.tsx`, `useIncomingMessageAnnouncements.test.tsx` → port verbatim.
 
@@ -191,13 +191,13 @@ Mirrors React PR's `Avatar`, `BaseImage`, `Button/PlayButton`, `Form/{TextInput,
 
 > **Note on folder split:** primitives live in BOTH `package/src/components/ui/` (low-level: Avatar, Badge, Button, Input, GiphyChip, SpeedSettingsButton, VideoPlayIndicator) AND `package/src/components/UIComponents/` (composite: BottomSheetModal, ImageBackground, PortalWhileClosingView, SwipableWrapper, Spinner, SafeAreaViewWrapper). Touch both during this phase.
 
-1. **Avatar** — `package/src/components/Avatar/Avatar.tsx`, `UserAvatar.tsx`, `ChannelAvatar.tsx`, `AvatarStack.tsx`, plus the lower-level `package/src/components/ui/Avatar/`. Add `accessibilityRole="image"`, `accessibilityLabel={t('aria/Avatar of {{name}}', {name})}`. Allow integrators to override the label via prop. (React's `Avatar.tsx` made the same change; mirror.)
+1. **Avatar** — `package/src/components/Avatar/Avatar.tsx`, `UserAvatar.tsx`, `ChannelAvatar.tsx`, `AvatarStack.tsx`, plus the lower-level `package/src/components/ui/Avatar/`. Add `accessibilityRole="image"`, `accessibilityLabel={t('a11y/Avatar of {{name}}', {name})}`. Allow integrators to override the label via prop. (React's `Avatar.tsx` made the same change; mirror.)
 2. **Button / IconButton** (`package/src/components/ui/Button.tsx`, plus icon-button equivalents): `accessibilityRole="button"`, propagate `accessibilityLabel`/`accessibilityHint`/`accessibilityState={{disabled, busy}}` to `Pressable`. Hit-slop expanded to 44×44 (Apple HIG) when smaller. Mirror React's `BaseIcon.tsx` change to mark decorative SVGs with `accessibilityElementsHidden`.
 3. **Input** (`package/src/components/ui/Input.tsx`): wire `accessibilityLabel`, `accessibilityHint`, `accessibilityState={{ disabled, selected }}`. Validation/error state uses the announcer (RN's substitute for `aria-describedby`). Same shape as React's `TextInput.tsx` and `NumericInput.tsx`.
 4. **Switch** (already a native control on RN — verify it surfaces label/state): mirror React's `SwitchField.tsx` semantics (`accessibilityRole="switch"`, `accessibilityState={{ checked }}`).
 5. **Dropdown / autocomplete picker** equivalents — `package/src/components/AutoCompleteInput/`: `accessibilityRole="list"` on container, items get role + `accessibilityState={{ selected }}`. Same intent as React's `Dropdown.tsx` + roving focus, minus the keyboard nav.
 6. **Modal / overlay primitives** — `package/src/components/UIComponents/BottomSheetModal.tsx`, `BottomSheetCompatibility/{BottomSheet,BottomSheetFlatList,BottomSheetTouchableOpacity}.tsx`, `StreamBottomSheetModalFlatList.tsx`. Use `useResolvedModalAccessibilityProps` to apply `accessibilityViewIsModal` + `importantForAccessibility`. Set initial focus to the modal title via `setAccessibilityFocus`. Restore focus to invoking trigger on close. Account for the dynamic snap-points behavior added in `7a7f927ae` — re-issue `setAccessibilityFocus` after resize so VO/TalkBack keeps focus inside the sheet. Equivalent of React's `Alert`/`Prompt`/`Viewer`/`DialogPortal` work.
-7. **Indicators** — `package/src/components/Indicators/{LoadingDots,LoadingDot,LoadingIndicator,LoadingErrorIndicator,EmptyStateIndicator}.tsx`. `LoadingDots`/`LoadingIndicator`: wrap in a hidden View with `accessibilityLiveRegion="polite"` (Android) and announce `t('aria/Loading…')` once via `useAccessibilityAnnouncer` on mount; suppress repeats. `EmptyStateIndicator`/`LoadingErrorIndicator`: static `accessibilityLabel` + `accessibilityRole="text"` (or `"alert"` for error variant). Hide the visual dots/spinner from AT (`accessibilityElementsHidden={true}`) so the announcement isn't duplicated.
+7. **Indicators** — `package/src/components/Indicators/{LoadingDots,LoadingDot,LoadingIndicator,LoadingErrorIndicator,EmptyStateIndicator}.tsx`. `LoadingDots`/`LoadingIndicator`: wrap in a hidden View with `accessibilityLiveRegion="polite"` (Android) and announce `t('a11y/Loading…')` once via `useAccessibilityAnnouncer` on mount; suppress repeats. `EmptyStateIndicator`/`LoadingErrorIndicator`: static `accessibilityLabel` + `accessibilityRole="text"` (or `"alert"` for error variant). Hide the visual dots/spinner from AT (`accessibilityElementsHidden={true}`) so the announcement isn't duplicated.
 8. **ProgressControl** — `package/src/components/ProgressControl/{ProgressBar,ProgressControl,ProgressThumb,WaveProgressBar,StableDurationLabel}.tsx`. Add `accessibilityRole="progressbar"` + `accessibilityValue={{ min, max, now, text }}`. When the consumer is interactive (audio scrub, gallery video, poll-result reveal), expose `accessibilityActions: [{name:'increment'}, {name:'decrement'}]` so rotor users can seek. `ProgressThumb` becomes `accessibilityRole="adjustable"` when draggable. Single shared component covers AudioAttachment, AudioRecordingPreview, ImageGalleryVideoControl, and PollOption — fix once, propagate everywhere.
 
 **Done when:** every Avatar, Button, Input, IconButton, modal, dropdown, indicator, and progress control in the SDK has correct semantics and modal focus-trapping works on both platforms.
@@ -208,13 +208,13 @@ Mirrors React PR's `Avatar`, `BaseImage`, `Button/PlayButton`, `Form/{TextInput,
 
 Mirrors React PR's `Message/MessageUI.tsx`, `Message/MessageText.tsx`, `MessageActions/*`, `Reactions/{MessageReactions,ReactionSelector,MessageReactionsDetail}`.
 
-- **`package/src/components/Message/Message.tsx`** — container `accessibilityRole="article"`. Composed `accessibilityLabel` mirroring React's pattern (sender + timestamp + text + reactions summary, capped at top-3 reactions). Long-press → `accessibilityActions` exposed to the rotor (iOS) and Android local context menu: `[{ name:'activate', label:t('aria/Open message actions') }, { name:'react' }, { name:'reply' }, { name:'copy' }]`. Visibility of the alternative "More actions" button is driven by `accessibility.messageActionsTrigger`: `'long-press'` → hidden; `'auto'` (default) → shown when SR is on; `'always-button'` → shown for everyone.
+- **`package/src/components/Message/Message.tsx`** — container `accessibilityRole="article"`. Composed `accessibilityLabel` mirroring React's pattern (sender + timestamp + text + reactions summary, capped at top-3 reactions). Long-press → `accessibilityActions` exposed to the rotor (iOS) and Android local context menu: `[{ name:'activate', label:t('a11y/Open message actions') }, { name:'react' }, { name:'reply' }, { name:'copy' }]`. Visibility of the alternative "More actions" button is driven by `accessibility.messageActionsTrigger`: `'long-press'` → hidden; `'auto'` (default) → shown when SR is on; `'always-button'` → shown for everyone.
 - **`package/src/components/MessageMenu/MessageActionList.tsx`** — wrapper `accessibilityRole="menu"`, items `accessibilityRole="menuitem"`. Same as React's `MessageActions.defaults.tsx`.
 - **`package/src/components/MessageMenu/MessageReactionPicker.tsx`** — `accessibilityRole="grid"` on emoji list, each emoji `accessibilityLabel` + `accessibilityState={{ selected }}`. Same shape as React's `ReactionSelector.tsx`.
-- **`package/src/components/Reaction/ReactionList*.tsx`** — pills get `accessibilityRole="button"`, `accessibilityLabel={t('aria/Reaction {{emoji}} by {{count}} users', ...)}`, `accessibilityState={{ selected: isOwnReaction }}`. Same as React's `MessageReactions.tsx`.
+- **`package/src/components/Reaction/ReactionList*.tsx`** — pills get `accessibilityRole="button"`, `accessibilityLabel={t('a11y/Reaction {{emoji}} by {{count}} users', ...)}`, `accessibilityState={{ selected: isOwnReaction }}`. Same as React's `MessageReactions.tsx`.
 - **`package/src/components/Message/MessageOverlayWrapper.tsx`** — `useResolvedModalAccessibilityProps`, focus management on open.
-- **`package/src/components/Reply/{Reply,ReplyMessageView}.tsx`** — quoted-message preview. `accessibilityRole="button"` when tappable (jump-to-original), composed `accessibilityLabel` of form `t('aria/Reply to {{user}}: {{preview}}')`. The preview's inner avatar/text re-uses the labels from Phase 2.
-- **`package/src/components/Message/MessageItemView/MessageStatus.tsx`** — already has labels for `Read`/`Delivered`/`Sending`/`Sent`. Migrate the strings to `aria/*` keys for parity.
+- **`package/src/components/Reply/{Reply,ReplyMessageView}.tsx`** — quoted-message preview. `accessibilityRole="button"` when tappable (jump-to-original), composed `accessibilityLabel` of form `t('a11y/Reply to {{user}}: {{preview}}')`. The preview's inner avatar/text re-uses the labels from Phase 2.
+- **`package/src/components/Message/MessageItemView/MessageStatus.tsx`** — already has labels for `Read`/`Delivered`/`Sending`/`Sent`. Migrate the strings to `a11y/*` keys for parity.
 
 #### 3b. MessageList + MessageInput + AudioRecorder
 
@@ -234,9 +234,9 @@ Mirrors React PR's `ChannelListItem/{ChannelListItemUI,ChannelListItemActionButt
 
 - **`package/src/components/ChannelList/ChannelList.tsx`** + `ChannelPreview/ChannelPreviewView.tsx` — items `accessibilityRole="button"`, composed label. Swipe actions get `accessibilityActions`.
 - **`package/src/components/ChannelPreview/ChannelMessagePreviewDeliveryStatus.tsx`** + `package/src/components/ThreadList/ThreadMessagePreviewDeliveryStatus.tsx` — port the labeled-icon pattern from `MessageItemView/MessageStatus.tsx` so preview rows announce delivery state to SR users.
-- **`package/src/components/Thread/Thread.tsx`** + `ThreadList/ThreadList.tsx` — reply count → `t('aria/{{count}} reply', { count })`. Unread banner uses the announcer.
+- **`package/src/components/Thread/Thread.tsx`** + `ThreadList/ThreadList.tsx` — reply count → `t('a11y/{{count}} reply', { count })`. Unread banner uses the announcer.
 - **`package/src/components/Channel/Channel.tsx`** — connection state changes (offline → online) routed through `<NotificationAnnouncer>`. `useIncomingMessageAnnouncements` lifts here.
-- **`package/src/components/AITypingIndicatorView/AITypingIndicatorView.tsx`** — wrap in `accessibilityLiveRegion="polite"`. On state transitions (`Thinking…` → `Generating…` → idle), call `useAccessibilityAnnouncer().announce(t('aria/AI is {{state}}', {state}))` with debounce so transitions don't spam VO/TalkBack. Hide the animated dots from AT (`accessibilityElementsHidden`) so the announcement is the only signal.
+- **`package/src/components/AITypingIndicatorView/AITypingIndicatorView.tsx`** — wrap in `accessibilityLiveRegion="polite"`. On state transitions (`Thinking…` → `Generating…` → idle), call `useAccessibilityAnnouncer().announce(t('a11y/AI is {{state}}', {state}))` with debounce so transitions don't spam VO/TalkBack. Hide the animated dots from AT (`accessibilityElementsHidden`) so the announcement is the only signal.
 
 #### 4b. Media, attachments, polls, autocomplete
 
@@ -257,8 +257,8 @@ Mirrors React PR's testing additions, AI skill (`.cursor/skills/accessibility/SK
 2. **Lint rules** — extend [package/eslint.config.mjs](package/eslint.config.mjs) with `eslint-plugin-react-native-a11y`: warn level for missing labels on `Pressable`/`TouchableOpacity`, error level for icon-only buttons. Set `--max-warnings 0` so it must pass before merge.
 3. **Integration smoke test** — under `examples/SampleApp/`, boot Chat with `accessibility={{ enabled: true, forceScreenReaderMode: true }}` and verify AudioRecorder, ImageGallery, and Message render their accessible variants.
 4. **Reassure perf benchmark** — add a Reassure (`reassure` npm package) test that renders a 1000-row `MessageList` twice: once with `accessibility={{ enabled: false }}` (today's behavior), once with `accessibility={{ enabled: true }}`. Assert: render time delta <5%, re-render delta <2%. Numbers feed the future "flip default to `true`" decision.
-5. **AI maintenance skill** — `.claude/skills/accessibility/SKILL.md` (RN-equivalent of React's [`.cursor/skills/accessibility/SKILL.md`](https://github.com/GetStream/stream-chat-react/blob/master/.cursor/skills/accessibility/SKILL.md)). Same structure, RN tool names: native semantics first (`Pressable`, `TextInput`, `Switch`, `Image`); use `accessibilityRole` only when native semantics can't represent the widget; never hardcode English (use `t('aria/...')`); decorative visuals get `accessibilityElementsHidden`; modals use `useResolvedModalAccessibilityProps`; live updates use `useAccessibilityAnnouncer`; tests use `@testing-library/react-native` semantic queries. Keep React's "Common mistakes to avoid" section, RN-adapted.
-6. **Documentation** — add `package/ai-docs/accessibility.md` (rename block uses **bullets, not tables** per repo convention). Cover: `accessibility` prop schema (with the **opt-in** call-out front and center), all `aria/*` i18n keys with default English, integrator override path via Streami18n, the `A11yMode` enum (`auto`/`always`/`never`) for gesture toggles, platform-specific notes (TalkBack vs VoiceOver behaviors, Android `accessibilityLiveRegion`, iOS `setAccessibilityFocus` timing), and the Reassure benchmark numbers so integrators can predict the cost of `enabled: true`.
+5. **AI maintenance skill** — `.claude/skills/accessibility/SKILL.md` (RN-equivalent of React's [`.cursor/skills/accessibility/SKILL.md`](https://github.com/GetStream/stream-chat-react/blob/master/.cursor/skills/accessibility/SKILL.md)). Same structure, RN tool names: native semantics first (`Pressable`, `TextInput`, `Switch`, `Image`); use `accessibilityRole` only when native semantics can't represent the widget; never hardcode English (use `t('a11y/...')`); decorative visuals get `accessibilityElementsHidden`; modals use `useResolvedModalAccessibilityProps`; live updates use `useAccessibilityAnnouncer`; tests use `@testing-library/react-native` semantic queries. Keep React's "Common mistakes to avoid" section, RN-adapted.
+6. **Documentation** — add `package/ai-docs/accessibility.md` (rename block uses **bullets, not tables** per repo convention). Cover: `accessibility` prop schema (with the **opt-in** call-out front and center), all `a11y/*` i18n keys with default English, integrator override path via Streami18n, the `A11yMode` enum (`auto`/`always`/`never`) for gesture toggles, platform-specific notes (TalkBack vs VoiceOver behaviors, Android `accessibilityLiveRegion`, iOS `setAccessibilityFocus` timing), and the Reassure benchmark numbers so integrators can predict the cost of `enabled: true`.
 
 ---
 
@@ -281,7 +281,7 @@ Mirrors React PR's testing additions, AI skill (`.cursor/skills/accessibility/SK
 - `package/src/contexts/accessibilityContext/AccessibilityContext.tsx`
 - `package/src/contexts/accessibilityContext/index.ts`
 - `package/src/a11y/hooks/useAnnounceOnStateChange.ts` — small helper used by `AITypingIndicatorView` and `Indicators` to debounce + de-duplicate live-region announcements
-- `package/src/a11y/hooks/useA11yLabel.ts` — returns `t('aria/...')` when the context is `enabled: true`, or `undefined` when disabled. Components pass its return value straight to `accessibilityLabel` so the i18n lookup is skipped on hot list paths in the disabled-default state.
+- `package/src/a11y/hooks/useA11yLabel.ts` — returns `t('a11y/...')` when the context is `enabled: true`, or `undefined` when disabled. Components pass its return value straight to `accessibilityLabel` so the i18n lookup is skipped on hot list paths in the disabled-default state.
 - `package/src/__tests__/perf/AccessibilityCost.reassure.ts` — Reassure benchmark for `MessageList` with a11y on vs. off
 - `package/native-package/src/handlers/AccessibilityInfoHandler.ts`
 - `package/expo-package/src/handlers/AccessibilityInfoHandler.ts`
@@ -295,14 +295,14 @@ Mirrors React PR's testing additions, AI skill (`.cursor/skills/accessibility/SK
 - [package/src/native.ts](package/src/native.ts) — register `AccessibilityInfo` handler type, add `isAccessibilityInfoAvailable()`
 - [package/src/index.ts](package/src/index.ts) — public exports
 - [package/src/contexts/index.ts](package/src/contexts/index.ts) — context export
-- All 12 locale JSONs in [package/src/i18n/](package/src/i18n/) — `aria/*` keys
+- All 12 locale JSONs in [package/src/i18n/](package/src/i18n/) — `a11y/*` keys
 - [package/eslint.config.mjs](package/eslint.config.mjs) — a11y lint rules
 - ~50 component files listed in Phases 2–4 (AITypingIndicatorView, Indicators/*, ProgressControl/*, Reply/*, ChannelPreview/ChannelMessagePreviewDeliveryStatus, ThreadList/ThreadMessagePreviewDeliveryStatus, the `ui/` primitives, and the `BottomSheetCompatibility/*` wrappers added by the post-survey audit)
 
 ### Reused (template) files
 - [package/src/contexts/chatConfigContext/ChatConfigContext.tsx](package/src/contexts/chatConfigContext/ChatConfigContext.tsx) — context boilerplate template
 - [package/src/contexts/translationContext/TranslationContext.tsx](package/src/contexts/translationContext/TranslationContext.tsx) — `t()` access pattern
-- `useTranslationContext()`, `useStreami18n` — for resolving and overriding `aria/*` keys
+- `useTranslationContext()`, `useStreami18n` — for resolving and overriding `a11y/*` keys
 - `registerNativeHandlers` in [package/src/native.ts](package/src/native.ts) — extension pattern for new handler
 
 ### Reference files in stream-chat-react (port verbatim)
@@ -331,7 +331,7 @@ End-to-end checks (run before merge, plus per-commit smoke checks during develop
 1. **Unit tests** — `cd package && yarn test:unit`. New hooks/components covered with parity to React's tests; `mockScreenReaderEnabled` helper validated.
 2. **Lint** — `cd package && yarn lint` passes with `--max-warnings 0` plus new a11y rules.
 3. **Type-check / build** — `cd package && yarn build`. Exported types (`AccessibilityConfig`, `AriaLivePriority`, etc.) compile cleanly.
-4. **Translation validation** — `yarn lint` runs `validate-translations` — no empty `aria/*` keys in any of 12 locales.
+4. **Translation validation** — `yarn lint` runs `validate-translations` — no empty `a11y/*` keys in any of 12 locales.
 5. **Manual SampleApp on real devices** for **both platforms**:
    - **iOS** (Settings → Accessibility → VoiceOver):
      - Send/receive message — announced via `useIncomingMessageAnnouncements`.
@@ -345,7 +345,7 @@ End-to-end checks (run before merge, plus per-commit smoke checks during develop
 6. **Reduced motion** — enable in OS settings; verify TypingIndicator dots, AudioRecorder waveform, ImageGallery transitions reduce or disable animation via `useReducedMotionPreference`.
 7. **No-regression for sighted users** — confirm visual UI is unchanged when SR is off (no new buttons appear, no animation changes outside reduced-motion).
 8. **Cross-SDK API parity check** — verify `useAccessibilityAnnouncer().announce('hi')` and the React `useAriaLiveAnnouncer()('hi')` have identical call shape; same for `useIncomingMessageAnnouncements` params.
-9. **RTL smoke** — switch device language to Hebrew or Arabic (RN's `I18nManager.isRTL` becomes true; `RTLComponents/WritingDirectionAwareText` flips). Verify VO/TalkBack reads composed `aria/*` strings with parameters (`{{name}}`, `{{count}}`, `{{user}}`) in the correct logical order — interpolation values must not appear visually-flipped inside a labeled control.
+9. **RTL smoke** — switch device language to Hebrew or Arabic (RN's `I18nManager.isRTL` becomes true; `RTLComponents/WritingDirectionAwareText` flips). Verify VO/TalkBack reads composed `a11y/*` strings with parameters (`{{name}}`, `{{count}}`, `{{user}}`) in the correct logical order — interpolation values must not appear visually-flipped inside a labeled control.
 10. **KeyboardCompatibleView focus** — open the composer with VO/TalkBack on, send a message, verify focus does NOT escape to a stale element when `KeyboardCompatibleView`/`KeyboardControllerAvoidingView` re-lays out. If it does, defer `setAccessibilityFocus` calls behind `requestAnimationFrame` (Android) / `InteractionManager.runAfterInteractions` (iOS).
 11. **Component overrides inherit a11y props** — confirm that the recently introduced `WithComponents` provider (`15dd5e10d`) threads a11y props correctly when integrators replace `Message`/`MessageList`/etc.; add a regression test that renders the SDK with a custom `Message` override and asserts the rendered tree still carries `accessibilityRole="article"` + `accessibilityLabel`.
 

@@ -68,14 +68,14 @@ export const ChannelMessagePreviewDeliveryStatus = ({
 
   const statusLabel = useA11yLabel(
     message.status === MessageStatusTypes.SENDING
-      ? 'aria/Sending'
+      ? 'a11y/Sending'
       : message.status === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
-        ? 'aria/Read'
+        ? 'a11y/Read'
         : status === MessageDeliveryStatus.DELIVERED
-          ? 'aria/Delivered'
+          ? 'a11y/Delivered'
           : status === MessageDeliveryStatus.SENT
-            ? 'aria/Sent'
-            : 'aria/Sending',
+            ? 'a11y/Sent'
+            : 'a11y/Sending',
   );
 
   if (!isLastMessageByCurrentUser) {

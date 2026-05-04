@@ -51,7 +51,7 @@ export const ReactionButton = (props: ReactionButtonProps) => {
     [Icon, reactionIconSize],
   );
 
-  const a11yLabel = useA11yLabel('aria/Reaction {{emoji}} by {{count}} users', {
+  const a11yLabel = useA11yLabel('a11y/Reaction {{emoji}} by {{count}} users', {
     count: count ?? '0',
     emoji: type,
   });

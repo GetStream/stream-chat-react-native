@@ -21,7 +21,7 @@ When `enabled` is false:
 - `useIncomingMessageAnnouncements` does not subscribe to `channel.on('message.new')`.
 - No `AccessibilityInfo` event listeners attach.
 - Components still render their `accessibilityRole` / `accessibilityState` / etc. attributes (these are passed to native views and only consulted by VO/TalkBack when active — sighted users incur ~zero cost).
-- `useA11yLabel(key, params)` returns `undefined` so `t('aria/...')` is **not** called on hot list paths.
+- `useA11yLabel(key, params)` returns `undefined` so `t('a11y/...')` is **not** called on hot list paths.
 
 ## Configuration shape
 
@@ -48,18 +48,18 @@ For RN-specific gesture-alternative toggles, the enum semantics are:
 
 ## Localization
 
-All a11y strings flow through the existing `Streami18n` translation pipeline under the `aria/*` namespace. Defaults ship in English in every locale; integrators can override per-key via the same mechanism they use for other strings:
+All a11y strings flow through the existing `Streami18n` translation pipeline under the `a11y/*` namespace. Defaults ship in English in every locale; integrators can override per-key via the same mechanism they use for other strings:
 
 ```ts
 const i18n = new Streami18n('nl');
 i18n.registerTranslation('nl', {
-  'aria/Avatar of {{name}}': 'Avatar van {{name}}',
-  'aria/{{count}} new messages': '{{count}} nieuwe berichten',
+  'a11y/Avatar of {{name}}': 'Avatar van {{name}}',
+  'a11y/{{count}} new messages': '{{count}} nieuwe berichten',
 });
 <Chat client={client} i18nInstance={i18n} accessibility={{ enabled: true }}>
 ```
 
-`validate-translations` (run as part of `yarn lint`) enforces non-empty values for every `aria/*` key in every locale.
+`validate-translations` (run as part of `yarn lint`) enforces non-empty values for every `a11y/*` key in every locale.
 
 ## Public hooks and components
 
@@ -78,7 +78,7 @@ Importable from `stream-chat-react-native`:
 
 ## Cross-SDK parity
 
-API shapes mirror [`stream-chat-react#3146`](https://github.com/GetStream/stream-chat-react/pull/3146) wherever the platforms agree (`useAccessibilityAnnouncer` ≈ `useAriaLiveAnnouncer`, `useIncomingMessageAnnouncements` ≈ identical params and throttle semantics, `aria/*` i18n namespace shared). Mobile-only deviations:
+API shapes mirror [`stream-chat-react#3146`](https://github.com/GetStream/stream-chat-react/pull/3146) wherever the platforms agree (`useAccessibilityAnnouncer` ≈ `useAriaLiveAnnouncer`, `useIncomingMessageAnnouncements` ≈ identical params and throttle semantics, `a11y/*` i18n namespace shared). Mobile-only deviations:
 
 - `<Chat accessibility={...}>` config object — RN needs gesture-alternative toggles (audio hold-to-record, gallery pinch/pan) that don't exist on web.
 - No `<VisuallyHidden>`, no `<SkipNavigation>`, no roving-focus utilities — RN announcer is imperative, mobile has no Tab key.
