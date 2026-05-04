@@ -3,10 +3,9 @@ import { AccessibilityInfo } from 'react-native';
 
 import { renderHook, waitFor } from '@testing-library/react-native';
 
+import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import { AccessibilityAnnouncer } from '../AccessibilityAnnouncer';
 import { useAccessibilityAnnouncer } from '../useAccessibilityAnnouncer';
-
-import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 
 jest.mock('react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo', () => ({
   __esModule: true,

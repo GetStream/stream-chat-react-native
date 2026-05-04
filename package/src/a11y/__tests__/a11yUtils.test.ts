@@ -20,7 +20,11 @@ describe('composeAccessibilityLabel', () => {
 
 describe('formatAccessibilityValue', () => {
   it('clamps now between min and max', () => {
-    expect(formatAccessibilityValue({ max: 100, now: 200 })).toEqual({ max: 100, min: 0, now: 100 });
+    expect(formatAccessibilityValue({ max: 100, now: 200 })).toEqual({
+      max: 100,
+      min: 0,
+      now: 100,
+    });
     expect(formatAccessibilityValue({ max: 100, min: 10, now: 5 })).toEqual({
       max: 100,
       min: 10,

@@ -50,6 +50,7 @@ export const UserAvatar = (props: UserAvatarProps) => {
       <Avatar
         backgroundColor={avatarBackgroundColor}
         imageUrl={user?.image}
+        name={user?.name || user?.id}
         placeholder={placeholder}
         showBorder={showBorder}
         size={size}

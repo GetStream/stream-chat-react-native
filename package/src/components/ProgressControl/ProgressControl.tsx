@@ -110,9 +110,13 @@ export const ProgressControl = (props: ProgressControlProps) => {
     [widthInNumbers],
   );
 
+  const progressPercent = Math.round(progress * 100);
+
   return (
     <GestureDetector gesture={pan}>
       <View
+        accessibilityRole={onEndDrag ? 'adjustable' : 'progressbar'}
+        accessibilityValue={{ max: 100, min: 0, now: progressPercent }}
         onLayout={({ nativeEvent }) => {
           setWidthInNumbers(nativeEvent.layout.width);
         }}
