@@ -203,6 +203,8 @@
   "aria/Read": "Read",
   "aria/Reconnecting": "Reconnecting",
   "aria/Reply to {{user}}": "Reply to {{user}}",
+  "aria/Scroll to latest": "Scroll to latest",
+  "aria/Scroll to latest, {{count}} unread": "Scroll to latest, {{count}} unread",
   "aria/Send message": "Send message",
   "aria/Sending": "Sending",
   "aria/Sent": "Sent",

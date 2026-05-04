@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Down } from '../../icons/arrow-up';
 import { primitives } from '../../theme';
@@ -22,6 +23,10 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   const {
     theme: { semantics },
   } = useTheme();
+  const a11yLabel = useA11yLabel(
+    unreadCount ? 'aria/Scroll to latest, {{count}} unread' : 'aria/Scroll to latest',
+    { count: unreadCount ?? 0 },
+  );
 
   if (!showNotification) {
     return null;
@@ -42,6 +47,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
         ]}
       >
         <Button
+          accessibilityLabel={a11yLabel}
           variant='secondary'
           type='outline'
           LeadingIcon={Down}
