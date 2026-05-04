@@ -57,7 +57,7 @@ export const Avatar = (props: AvatarProps) => {
     <View
       accessibilityLabel={accessibilityLabel}
       accessibilityRole={accessibilityLabel ? 'image' : undefined}
-      accessible={!!accessibilityLabel}
+      accessible={accessibilityLabel ? true : undefined}
       style={[
         styles.container,
         avatarSizes[size],
