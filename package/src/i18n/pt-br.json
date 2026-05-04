@@ -195,6 +195,7 @@
   "aria/Delivered": "Delivered",
   "aria/Loading": "Loading",
   "aria/Loading failed": "Loading failed",
+  "aria/Message actions": "Message actions",
   "aria/New message from {{user}}": "New message from {{user}}",
   "aria/Offline": "Offline",
   "aria/Open message actions": "Open message actions",

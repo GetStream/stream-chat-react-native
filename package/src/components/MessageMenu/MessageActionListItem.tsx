@@ -77,6 +77,8 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
 
   return (
     <Pressable
+      accessibilityLabel={title}
+      accessibilityRole='menuitem'
       onPress={onActionPress}
       style={({ pressed }) => [
         styles.buttonContainer,
@@ -84,8 +86,10 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
       ]}
     >
       <View
-        accessibilityLabel={`${actionType} action list item`}
+        accessibilityElementsHidden
+        importantForAccessibility='no-hide-descendants'
         style={[styles.container, container]}
+        testID={`${actionType}-action-list-item`}
       >
         <View style={iconTheme}>{icon}</View>
         <Text style={[styles.titleStyle, titleStyle, titleTheme]}>{title}</Text>

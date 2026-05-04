@@ -5,6 +5,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import { MessageActionType } from './MessageActionListItem';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
@@ -24,6 +25,7 @@ export type MessageActionListProps = {
 export const MessageActionList = (props: MessageActionListProps) => {
   const { messageActions } = props;
   const { MessageActionListItem } = useComponentsContext();
+  const a11yLabel = useA11yLabel('aria/Message actions');
   const {
     theme: {
       messageMenu: {
@@ -43,7 +45,8 @@ export const MessageActionList = (props: MessageActionListProps) => {
 
   return (
     <ScrollView
-      accessibilityLabel='Message action list'
+      accessibilityLabel={a11yLabel ?? 'Message action list'}
+      accessibilityRole='menu'
       contentContainerStyle={[styles.contentContainer, contentContainer]}
       style={[styles.container, container]}
     >

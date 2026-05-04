@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../icons';
 import { Button, ButtonProps } from '../ui';
@@ -50,10 +51,17 @@ export const ReactionButton = (props: ReactionButtonProps) => {
     [Icon, reactionIconSize],
   );
 
+  const a11yLabel = useA11yLabel('aria/Reaction {{emoji}} by {{count}} users', {
+    count: count ?? '0',
+    emoji: type,
+  });
+
   return (
     <View style={styles.reactionButton}>
       <Button
-        accessibilityLabel={`reaction-button-${type}-${selected ? 'selected' : 'unselected'}`}
+        accessibilityLabel={
+          a11yLabel ?? `reaction-button-${type}-${selected ? 'selected' : 'unselected'}`
+        }
         variant={'secondary'}
         type={'outline'}
         iconOnly={!count}
