@@ -62,10 +62,6 @@ export const ChannelMessagePreviewDeliveryStatus = ({
     isReadEventsEnabled: readEvents,
   });
 
-  if (!channel.data?.name && membersWithoutSelf.length === 1 && !isLastMessageByCurrentUser) {
-    return null;
-  }
-
   const statusLabel = useA11yLabel(
     message.status === MessageStatusTypes.SENDING
       ? 'a11y/Sending'
@@ -77,6 +73,10 @@ export const ChannelMessagePreviewDeliveryStatus = ({
             ? 'a11y/Sent'
             : 'a11y/Sending',
   );
+
+  if (!channel.data?.name && membersWithoutSelf.length === 1 && !isLastMessageByCurrentUser) {
+    return null;
+  }
 
   if (!isLastMessageByCurrentUser) {
     return <Text style={styles.username}>{message?.user?.name || message?.user?.id}:</Text>;

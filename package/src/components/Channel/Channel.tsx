@@ -49,7 +49,6 @@ import {
   AudioPlayerContextProps,
   AudioPlayerProvider,
 } from '../../contexts/audioPlayerContext/AudioPlayerContext';
-import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
@@ -113,6 +112,7 @@ import {
   MessageStatusTypes,
   ReactionData,
 } from '../../utils/utils';
+import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
