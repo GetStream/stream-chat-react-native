@@ -325,8 +325,8 @@ export const findInMessagesByDate = (
  * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
  */
 export const checkMessageEquality = (
-  prevMessage?: LocalMessage,
-  nextMessage?: LocalMessage,
+  prevMessage?: LocalMessage | null,
+  nextMessage?: LocalMessage | null,
 ): boolean => {
   const prevMessageExists = !!prevMessage;
   const nextMessageExists = !!nextMessage;
@@ -357,8 +357,8 @@ export const checkMessageEquality = (
  * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
  */
 export const checkQuotedMessageEquality = (
-  prevQuotedMessage?: LocalMessage,
-  nextQuotedMessage?: LocalMessage,
+  prevQuotedMessage?: LocalMessage | null,
+  nextQuotedMessage?: LocalMessage | null,
 ): boolean => {
   const prevQuotedMessageExists = !!prevQuotedMessage;
   const nextQuotedMessageExists = !!nextQuotedMessage;
