@@ -1,7 +1,8 @@
 import React from 'react';
 import { ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import { LoadableGalleryImage } from './GalleryImage';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 
@@ -11,6 +12,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     overflow: 'hidden',
+  },
+  playIndicatorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -32,18 +37,26 @@ export const VideoThumbnail = (props: VideoThumbnailProps) => {
       },
     },
   } = useTheme();
-  const { AttachmentUploadIndicator, ImageComponent } = useComponentsContext();
   const { imageStyle, localId, style, thumb_url } = props;
 
   return (
     <View style={[styles.container, container, style]}>
-      <ImageComponent
-        accessibilityLabel='Video Thumbnail'
-        source={{ uri: thumb_url }}
-        style={[StyleSheet.absoluteFill, imageStyle]}
-      />
-      <VideoPlayIndicator size='md' />
-      <AttachmentUploadIndicator localId={localId} sourceUrl={thumb_url} variant='overlay' />
+      {thumb_url ? (
+        <LoadableGalleryImage
+          accessibilityLabel='Video Thumbnail'
+          containerStyle={StyleSheet.absoluteFill}
+          imageStyle={imageStyle}
+          localId={localId}
+          uri={thumb_url}
+        >
+          <View
+            pointerEvents='none'
+            style={[StyleSheet.absoluteFill, styles.playIndicatorContainer]}
+          >
+            <VideoPlayIndicator size='md' />
+          </View>
+        </LoadableGalleryImage>
+      ) : null}
     </View>
   );
 };
