@@ -40,7 +40,7 @@ export const FastImageAdapter = React.memo((props: ImageProps) => {
     <FastImage
       {...(rest as Omit<FastImageProps, 'source' | 'transition'>)}
       source={resolvedSource}
-      // transition={transition}
+      transition={transition}
     />
   );
 });

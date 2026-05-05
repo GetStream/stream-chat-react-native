@@ -1,6 +1,5 @@
 package com.streamchatreactnative
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -9,8 +8,8 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Shader
 import android.util.AttributeSet
+import android.view.Choreographer
 import android.view.View
-import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import kotlin.math.roundToInt
 
@@ -41,9 +40,8 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
   private var shimmerShader: LinearGradient? = null
   private var shimmerTranslateX: Float = 0f
-  private var animatedDurationMs: Long = 0L
-  private var animatedViewWidth: Float = 0f
-  private var animator: ValueAnimator? = null
+  private var isRegisteredForShimmerFrames: Boolean = false
+  private var shimmerStartTimeNanos: Long = UNSET_FRAME_TIME_NANOS
 
   init {
     setWillNotDraw(false)
@@ -68,6 +66,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
       if (duration > 0) duration.toLong() else DEFAULT_DURATION_MS
     if (durationMs == normalizedDurationMs) return
     durationMs = normalizedDurationMs
+    shimmerStartTimeNanos = UNSET_FRAME_TIME_NANOS
     updateAnimatorState()
   }
 
@@ -79,8 +78,8 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   fun updateAnimatorState() {
-    // Centralized lifecycle gate for animation start/stop. This keeps shimmer off for detached or
-    // hidden views to avoid wasting UI-thread work in long lists.
+    // Centralized lifecycle gate for the shared frame clock. This keeps shimmer off for detached or
+    // hidden views and prevents every mounted shimmer from owning a separate ValueAnimator.
     if (shouldAnimateShimmer()) {
       startShimmer()
     } else {
@@ -96,7 +95,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   override fun onDetachedFromWindow() {
-    // Detached views are not drawable; stop and clear animator so a future attach starts cleanly.
+    // Detached views are not drawable; unregister so a future attach starts cleanly.
     stopShimmer()
     super.onDetachedFromWindow()
   }
@@ -114,9 +113,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
   override fun onVisibilityChanged(changedView: View, visibility: Int) {
     super.onVisibilityChanged(changedView, visibility)
-    if (changedView === this) {
-      updateAnimatorState()
-    }
+    updateAnimatorState()
   }
 
   override fun dispatchDraw(canvas: Canvas) {
@@ -183,34 +180,54 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
   }
 
   private fun startShimmer() {
+    if (isRegisteredForShimmerFrames) return
     val viewWidth = width.toFloat()
-    if (viewWidth <= 0f) return
-    // Keep the existing animator only when size and duration still match the current request.
-    if (animator != null && animatedViewWidth == viewWidth && animatedDurationMs == durationMs) return
-
-    stopShimmer()
-
-    // Animate from fully offscreen left to fully offscreen right so the strip enters/exits cleanly.
-    val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
-    animatedViewWidth = viewWidth
-    animatedDurationMs = durationMs
-    animator = ValueAnimator.ofFloat(-shimmerWidth, viewWidth).apply {
-      duration = durationMs
-      repeatCount = ValueAnimator.INFINITE
-      interpolator = LinearInterpolator()
-      addUpdateListener {
-        shimmerTranslateX = it.animatedValue as Float
-        invalidate()
-      }
-      start()
+    shimmerStartTimeNanos = UNSET_FRAME_TIME_NANOS
+    if (viewWidth > 0f) {
+      shimmerTranslateX = -(viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
     }
+    isRegisteredForShimmerFrames = true
+    StreamShimmerFrameClock.register(this)
   }
 
   private fun stopShimmer() {
-    animator?.cancel()
-    animator = null
-    animatedDurationMs = 0L
-    animatedViewWidth = 0f
+    if (isRegisteredForShimmerFrames) {
+      isRegisteredForShimmerFrames = false
+      StreamShimmerFrameClock.unregister(this)
+    }
+    resetShimmerFrameState()
+  }
+
+  internal fun onSharedShimmerFrame(frameTimeNanos: Long) {
+    val viewWidth = width.toFloat()
+    if (viewWidth <= 0f) return
+
+    if (shimmerStartTimeNanos == UNSET_FRAME_TIME_NANOS) {
+      shimmerStartTimeNanos = frameTimeNanos
+    }
+
+    // Animate from fully offscreen left to fully offscreen right so the strip enters/exits cleanly.
+    val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
+    val durationNanos = (durationMs * NANOS_PER_MILLISECOND).coerceAtLeast(1L)
+    val elapsedNanos = (frameTimeNanos - shimmerStartTimeNanos).coerceAtLeast(0L)
+    val progress = (elapsedNanos % durationNanos).toFloat() / durationNanos.toFloat()
+
+    shimmerTranslateX = -shimmerWidth + ((viewWidth + shimmerWidth) * progress)
+    invalidate()
+  }
+
+  internal fun onRemovedFromSharedFrameClock() {
+    isRegisteredForShimmerFrames = false
+    resetShimmerFrameState()
+  }
+
+  internal fun shouldRunSharedShimmerFrame(): Boolean {
+    return shouldAnimateShimmer()
+  }
+
+  private fun resetShimmerFrameState() {
+    shimmerStartTimeNanos = UNSET_FRAME_TIME_NANOS
+    shimmerTranslateX = 0f
   }
 
   private fun shouldAnimateShimmer(): Boolean {
@@ -236,7 +253,51 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     private const val DEFAULT_BASE_COLOR = 0x00FFFFFF
     private const val DEFAULT_DURATION_MS = 1200L
     private const val DEFAULT_GRADIENT_COLOR = 0x59FFFFFF
+    private const val NANOS_PER_MILLISECOND = 1_000_000L
     private const val SHIMMER_STRIP_WIDTH_RATIO = 1.25f
     private const val SOFT_HIGHLIGHT_ALPHA_FACTOR = 0.24f
+    private const val UNSET_FRAME_TIME_NANOS = -1L
+  }
+}
+
+private object StreamShimmerFrameClock : Choreographer.FrameCallback {
+  private val activeViews = LinkedHashSet<StreamShimmerFrameLayout>()
+  private var frameScheduled = false
+
+  fun register(view: StreamShimmerFrameLayout) {
+    activeViews.add(view)
+    scheduleNextFrame()
+  }
+
+  fun unregister(view: StreamShimmerFrameLayout) {
+    activeViews.remove(view)
+    if (activeViews.isEmpty() && frameScheduled) {
+      Choreographer.getInstance().removeFrameCallback(this)
+      frameScheduled = false
+    }
+  }
+
+  override fun doFrame(frameTimeNanos: Long) {
+    frameScheduled = false
+    if (activeViews.isEmpty()) return
+
+    val iterator = activeViews.iterator()
+    while (iterator.hasNext()) {
+      val view = iterator.next()
+      if (view.shouldRunSharedShimmerFrame()) {
+        view.onSharedShimmerFrame(frameTimeNanos)
+      } else {
+        iterator.remove()
+        view.onRemovedFromSharedFrameClock()
+      }
+    }
+
+    scheduleNextFrame()
+  }
+
+  private fun scheduleNextFrame() {
+    if (frameScheduled || activeViews.isEmpty()) return
+    Choreographer.getInstance().postFrameCallback(this)
+    frameScheduled = true
   }
 }
