@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { ImageErrorEvent, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
-import { GalleryImage } from './GalleryImage';
+import { LoadableGalleryImage } from './GalleryImage';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import type { Thumbnail } from './utils/buildGallery/types';
@@ -35,8 +35,6 @@ import {
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import { useLoadingImage } from '../../hooks/useLoadingImage';
-import { useStableCallback } from '../../hooks/useStableCallback';
 import { isVideoPlayerAvailable } from '../../native';
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
@@ -331,15 +329,6 @@ const GalleryImageThumbnail = ({
   borderRadius,
   thumbnail,
 }: Pick<GalleryThumbnailProps, 'thumbnail' | 'borderRadius'>) => {
-  const { AttachmentUploadIndicator, ImageLoadingFailedIndicator, ImageLoadingIndicator } =
-    useComponentsContext();
-  const {
-    isLoadingImage,
-    isLoadingImageError,
-    onReloadImage,
-    setLoadingImage,
-    setLoadingImageError,
-  } = useLoadingImage();
   const {
     theme: {
       messageItemView: { gallery },
@@ -347,44 +336,14 @@ const GalleryImageThumbnail = ({
   } = useTheme();
   const styles = useStyles();
 
-  const onLoadStart = useStableCallback(() => {
-    setLoadingImageError(false);
-    setLoadingImage(true);
-  });
-  const onLoad = useStableCallback(() => {
-    setTimeout(() => {
-      setLoadingImage(false);
-      setLoadingImageError(false);
-    }, 0);
-  });
-  const onError = useStableCallback(({ nativeEvent: { error } }: ImageErrorEvent) => {
-    console.warn(error);
-    setLoadingImage(false);
-    setLoadingImageError(true);
-  });
   return (
-    <View style={[styles.image, borderRadius]}>
-      {isLoadingImageError ? (
-        <ImageLoadingFailedIndicator onReloadImage={onReloadImage} />
-      ) : (
-        <>
-          <GalleryImage
-            onError={onError}
-            onLoad={onLoad}
-            onLoadStart={onLoadStart}
-            resizeMode={thumbnail.resizeMode}
-            style={gallery.image}
-            uri={thumbnail.url}
-          />
-          {isLoadingImage ? <ImageLoadingIndicator /> : null}
-          <AttachmentUploadIndicator
-            localId={thumbnail.localId}
-            sourceUrl={thumbnail.url}
-            variant='overlay'
-          />
-        </>
-      )}
-    </View>
+    <LoadableGalleryImage
+      containerStyle={[styles.image, borderRadius]}
+      imageStyle={gallery.image}
+      localId={thumbnail.localId}
+      resizeMode={thumbnail.resizeMode}
+      uri={thumbnail.url}
+    />
   );
 };
 const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWithContext) => {

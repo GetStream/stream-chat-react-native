@@ -155,13 +155,10 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
       return
     }
 
-    // Wide multi-stop strip creates a softer "glassy" sweep and avoids the hard thin-line look.
+    // Match iOS CAGradientLayer shimmer stops so both platforms have the same visual falloff.
     val shimmerWidth = (viewWidth * SHIMMER_STRIP_WIDTH_RATIO).coerceAtLeast(1f)
     val transparentHighlight = colorWithAlpha(gradientColor, 0f)
-    val edgeBase = colorWithAlpha(gradientColor, EDGE_HIGHLIGHT_ALPHA_FACTOR)
     val softBase = colorWithAlpha(gradientColor, SOFT_HIGHLIGHT_ALPHA_FACTOR)
-    val mediumBase = colorWithAlpha(gradientColor, MID_HIGHLIGHT_ALPHA_FACTOR)
-    val innerBase = colorWithAlpha(gradientColor, INNER_HIGHLIGHT_ALPHA_FACTOR)
     shimmerShader = LinearGradient(
       0f,
       0f,
@@ -169,28 +166,16 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
       0f,
       intArrayOf(
         transparentHighlight,
-        edgeBase,
         softBase,
-        mediumBase,
-        innerBase,
         gradientColor,
-        innerBase,
-        mediumBase,
         softBase,
-        edgeBase,
         transparentHighlight,
       ),
       floatArrayOf(
         0f,
-        0.08f,
-        0.2f,
-        0.32f,
-        0.4f,
+        0.35f,
         0.5f,
-        0.6f,
-        0.68f,
-        0.8f,
-        0.92f,
+        0.65f,
         1f,
       ),
       Shader.TileMode.CLAMP,
@@ -252,9 +237,6 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     private const val DEFAULT_DURATION_MS = 1200L
     private const val DEFAULT_GRADIENT_COLOR = 0x59FFFFFF
     private const val SHIMMER_STRIP_WIDTH_RATIO = 1.25f
-    private const val EDGE_HIGHLIGHT_ALPHA_FACTOR = 0.1f
     private const val SOFT_HIGHLIGHT_ALPHA_FACTOR = 0.24f
-    private const val MID_HIGHLIGHT_ALPHA_FACTOR = 0.48f
-    private const val INNER_HIGHLIGHT_ALPHA_FACTOR = 0.72f
   }
 }

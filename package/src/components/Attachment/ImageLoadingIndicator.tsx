@@ -4,7 +4,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTheme } from '../../contexts';
 import { NativeShimmerView } from '../UIComponents/NativeShimmerView';
 
-export const ImageLoadingIndicator = () => {
+export const ImageLoadingIndicator = React.memo(() => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -21,7 +21,7 @@ export const ImageLoadingIndicator = () => {
       </View>
     </NativeShimmerView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   centered: {
