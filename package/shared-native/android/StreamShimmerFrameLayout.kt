@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.Choreographer
@@ -37,6 +38,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
     isDither = true
   }
   private val shimmerMatrix = Matrix()
+  private val visibleViewportRect = Rect()
 
   private var shimmerShader: LinearGradient? = null
   private var shimmerTranslateX: Float = 0f
@@ -200,7 +202,7 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
   internal fun onSharedShimmerFrame(frameTimeNanos: Long) {
     val viewWidth = width.toFloat()
-    if (viewWidth <= 0f) return
+    if (viewWidth <= 0f || !hasVisibleViewport()) return
 
     if (shimmerStartTimeNanos == UNSET_FRAME_TIME_NANOS) {
       shimmerStartTimeNanos = frameTimeNanos
@@ -223,6 +225,11 @@ class StreamShimmerFrameLayout @JvmOverloads constructor(
 
   internal fun shouldRunSharedShimmerFrame(): Boolean {
     return shouldAnimateShimmer()
+  }
+
+  private fun hasVisibleViewport(): Boolean {
+    visibleViewportRect.setEmpty()
+    return getGlobalVisibleRect(visibleViewportRect) && !visibleViewportRect.isEmpty
   }
 
   private fun resetShimmerFrameState() {
