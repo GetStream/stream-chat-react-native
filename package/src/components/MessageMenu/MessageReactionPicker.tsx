@@ -163,6 +163,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   return (
     <View
       accessibilityLabel='Reaction Selector on long pressing message'
+      accessibilityRole='menu'
       style={[styles.container, container]}
     >
       <MessageReactionPickerList onSelectReaction={onSelectReaction} />

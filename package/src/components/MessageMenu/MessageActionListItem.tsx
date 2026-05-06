@@ -77,6 +77,7 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
 
   return (
     <Pressable
+      accessibilityRole='menuitem'
       onPress={onActionPress}
       style={({ pressed }) => [
         styles.buttonContainer,

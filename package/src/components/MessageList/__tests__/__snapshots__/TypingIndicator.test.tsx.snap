@@ -87,6 +87,8 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
               testID="avatar-image"
             >
               <Image
+                accessibilityElementsHidden={true}
+                importantForAccessibility="no"
                 onError={[Function]}
                 source={
                   {
@@ -147,6 +149,8 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
               testID="avatar-image"
             >
               <Image
+                accessibilityElementsHidden={true}
+                importantForAccessibility="no"
                 onError={[Function]}
                 source={
                   {
@@ -186,6 +190,8 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
     }
   >
     <View
+      accessibilityElementsHidden={true}
+      importantForAccessibility="no-hide-descendants"
       style={
         [
           {

@@ -1,3 +1,5 @@
+export * from './Accessibility';
+
 export * from './Attachment/Attachment';
 export * from './Attachment/Audio';
 export * from './Attachment/UrlPreview';

@@ -50,13 +50,14 @@ exports[`ScrollToBottomButton should render the message notification and match s
       }
     >
       <View
+        accessibilityRole="button"
         accessibilityState={
           {
             "busy": undefined,
             "checked": undefined,
             "disabled": false,
             "expanded": undefined,
-            "selected": undefined,
+            "selected": false,
           }
         }
         accessibilityValue={

@@ -6,7 +6,13 @@ import { Channel } from 'stream-chat';
 
 import { AIStates, useAIState } from './hooks/useAIState';
 
-import { useChannelContext, useTheme, useTranslationContext } from '../../contexts';
+import { useAnnounceOnStateChange } from '../../a11y/hooks/useAnnounceOnStateChange';
+import {
+  useAccessibilityContext,
+  useChannelContext,
+  useTheme,
+  useTranslationContext,
+} from '../../contexts';
 import { primitives } from '../../theme';
 
 export type AITypingIndicatorViewProps = {
@@ -20,15 +26,24 @@ export const AITypingIndicatorView = ({
   const { channel: channelFromContext } = useChannelContext();
   const channel = channelFromProps || channelFromContext;
   const { aiState } = useAIState(channel);
+  const { announceTypingIndicator, enabled } = useAccessibilityContext();
   const allowedStates = {
     [AIStates.Thinking]: t('Thinking...'),
     [AIStates.Generating]: t('Generating...'),
   };
 
   const styles = useStyles();
+  const announceableState = aiState in allowedStates ? allowedStates[aiState] : null;
+  const shouldAnnounceTypingIndicator = enabled && announceTypingIndicator;
+  const typingAnnouncement = announceTypingIndicator ? announceableState : null;
+  useAnnounceOnStateChange(typingAnnouncement);
 
   return aiState in allowedStates ? (
-    <View style={styles.container}>
+    <View
+      accessibilityLiveRegion={shouldAnnounceTypingIndicator ? 'polite' : undefined}
+      accessibilityRole='text'
+      style={styles.container}
+    >
       <Text style={styles.text}>{allowedStates[aiState]}</Text>
     </View>
   ) : null;
