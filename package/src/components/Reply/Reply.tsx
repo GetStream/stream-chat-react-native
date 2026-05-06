@@ -20,7 +20,6 @@ import {
 
 import { ReplyMessageView } from './ReplyMessageView';
 
-import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
@@ -134,9 +133,6 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
     },
   } = useTheme();
   const styles = useStyles();
-  const dismissAccessibilityLabel = useA11yLabel(
-    mode === 'edit' ? 'a11y/Remove edit' : 'a11y/Remove reply',
-  );
 
   const title = useMemo(
     () =>
@@ -175,7 +171,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       {onDismiss ? (
         <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
           <AttachmentRemoveControl
-            accessibilityLabel={dismissAccessibilityLabel}
+            accessibilityLabelKey={mode === 'edit' ? 'a11y/Remove edit' : 'a11y/Remove reply'}
             onPress={onDismiss}
           />
         </View>

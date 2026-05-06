@@ -2,13 +2,22 @@ import React, { useMemo } from 'react';
 
 import { Pressable, PressableProps, StyleSheet } from 'react-native';
 
+import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { NewClose } from '../../../../icons/xmark';
 import { primitives } from '../../../../theme';
 
-type AttachmentRemoveControlProps = PressableProps;
+type AttachmentRemoveControlProps = PressableProps & {
+  accessibilityLabelKey?: string;
+  accessibilityLabelParams?: Record<string, unknown>;
+};
 
-export const AttachmentRemoveControl = ({ onPress, ...rest }: AttachmentRemoveControlProps) => {
+export const AttachmentRemoveControl = ({
+  accessibilityLabelKey = 'a11y/Remove attachment',
+  accessibilityLabelParams,
+  onPress,
+  ...rest
+}: AttachmentRemoveControlProps) => {
   const {
     theme: {
       semantics,
@@ -18,9 +27,14 @@ export const AttachmentRemoveControl = ({ onPress, ...rest }: AttachmentRemoveCo
     },
   } = useTheme();
   const styles = useStyles();
+  const translatedAccessibilityLabel = useA11yLabel(
+    accessibilityLabelKey,
+    accessibilityLabelParams,
+  );
 
   return (
     <Pressable
+      accessibilityLabel={translatedAccessibilityLabel}
       accessibilityRole='button'
       hitSlop={15}
       onPress={onPress}
