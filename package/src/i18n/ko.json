@@ -252,6 +252,8 @@
   "a11y/Read": "읽음",
   "a11y/Reconnecting": "다시 연결 중",
   "a11y/Reply to {{user}}": "{{user}}님에게 답장",
+  "a11y/Scroll to bottom": "맨 아래로 이동",
+  "a11y/Scroll to bottom, {{count}} new messages": "맨 아래로 이동, 새 메시지 {{count}}개",
   "a11y/Scroll to latest": "최신 메시지로 이동",
   "a11y/Scroll to latest, {{count}} unread": "최신 메시지로 이동, 읽지 않은 메시지 {{count}}개",
   "a11y/Send message": "메시지 보내기",

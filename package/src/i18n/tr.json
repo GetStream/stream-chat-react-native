@@ -252,6 +252,8 @@
   "a11y/Read": "Okundu",
   "a11y/Reconnecting": "Yeniden bağlanıyor",
   "a11y/Reply to {{user}}": "{{user}} kullanıcısına yanıt ver",
+  "a11y/Scroll to bottom": "En alta git",
+  "a11y/Scroll to bottom, {{count}} new messages": "En alta git, {{count}} yeni mesaj",
   "a11y/Scroll to latest": "En son mesaja git",
   "a11y/Scroll to latest, {{count}} unread": "En son mesaja git, {{count}} okunmamış",
   "a11y/Send message": "Mesaj gönder",

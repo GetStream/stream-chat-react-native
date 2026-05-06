@@ -9,6 +9,10 @@ import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
 import { Button } from '../ui/Button';
 
+const SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY = 'a11y/Scroll to bottom';
+const SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY =
+  'a11y/Scroll to bottom, {{count}} new messages';
+
 export type ScrollToBottomButtonProps = {
   /** onPress handler */
   onPress: () => void;
@@ -47,7 +51,9 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
       >
         <Button
           accessibilityLabelKey={
-            unreadCount ? 'a11y/Scroll to latest, {{count}} unread' : 'a11y/Scroll to latest'
+            unreadCount
+              ? SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY
+              : SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY
           }
           accessibilityLabelParams={accessibilityLabelParams}
           variant='secondary'
@@ -60,7 +66,11 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
         />
       </View>
 
-      <View style={styles.unreadCountNotificationContainer}>
+      <View
+        accessibilityElementsHidden
+        importantForAccessibility='no-hide-descendants'
+        style={styles.unreadCountNotificationContainer}
+      >
         {unreadCount ? (
           <BadgeNotification count={unreadCount} size='xs' type='primary' testID='unread-count' />
         ) : null}

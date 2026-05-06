@@ -252,6 +252,8 @@
   "a11y/Read": "既読",
   "a11y/Reconnecting": "再接続中",
   "a11y/Reply to {{user}}": "{{user}}に返信",
+  "a11y/Scroll to bottom": "一番下へ移動",
+  "a11y/Scroll to bottom, {{count}} new messages": "一番下へ移動、新しいメッセージ{{count}}件",
   "a11y/Scroll to latest": "最新のメッセージへ移動",
   "a11y/Scroll to latest, {{count}} unread": "最新のメッセージへ移動、未読{{count}}件",
   "a11y/Send message": "メッセージを送信",

@@ -252,6 +252,8 @@
   "a11y/Read": "Прочитано",
   "a11y/Reconnecting": "Повторное подключение",
   "a11y/Reply to {{user}}": "Ответить {{user}}",
+  "a11y/Scroll to bottom": "Прокрутить вниз",
+  "a11y/Scroll to bottom, {{count}} new messages": "Прокрутить вниз, {{count}} новых сообщений",
   "a11y/Scroll to latest": "Перейти к последнему сообщению",
   "a11y/Scroll to latest, {{count}} unread": "Перейти к последнему сообщению, {{count}} непрочитанных",
   "a11y/Send message": "Отправить сообщение",

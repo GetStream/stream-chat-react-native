@@ -252,6 +252,8 @@
   "a11y/Read": "Leído",
   "a11y/Reconnecting": "Reconectando",
   "a11y/Reply to {{user}}": "Responder a {{user}}",
+  "a11y/Scroll to bottom": "Ir al final",
+  "a11y/Scroll to bottom, {{count}} new messages": "Ir al final, {{count}} mensajes nuevos",
   "a11y/Scroll to latest": "Ir al último mensaje",
   "a11y/Scroll to latest, {{count}} unread": "Ir al último mensaje, {{count}} sin leer",
   "a11y/Send message": "Enviar mensaje",
