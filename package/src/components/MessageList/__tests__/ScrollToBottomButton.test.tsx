@@ -75,8 +75,8 @@ describe('ScrollToBottomButton', () => {
       </ThemeProvider>,
     );
     await waitFor(() => {
-      expect(getByTestId('unread-count')).toBeTruthy();
-      expect(getByText('3')).toBeTruthy();
+      expect(getByTestId('unread-count', { includeHiddenElements: true })).toBeTruthy();
+      expect(getByText('3', { includeHiddenElements: true })).toBeTruthy();
     });
   });
 

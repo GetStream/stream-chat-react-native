@@ -2,10 +2,11 @@ import React from 'react';
 
 import { Text } from 'react-native';
 
+import type { ReactTestInstance } from 'react-test-renderer';
+
 import { fireEvent, render } from '@testing-library/react-native';
 
 import { ReactionResponse } from 'stream-chat';
-import type { ReactTestInstance } from 'react-test-renderer';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
