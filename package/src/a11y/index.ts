@@ -4,3 +4,13 @@ export * from './hooks/useReducedMotionPreference';
 export * from './hooks/useResolvedModalAccessibilityProps';
 export * from './hooks/useAnnounceOnStateChange';
 export * from './hooks/useA11yLabel';
+export {
+  IMPORTANT_ACCESSIBILITY_ELEMENT_IDS,
+  useImportantAccessibilityElementRef,
+  useImportantAccessibilityElements,
+  useRegisterImportantAccessibilityElement,
+} from '../contexts/accessibilityContext';
+export type {
+  ImportantAccessibilityElementId,
+  ImportantAccessibilityElementRef,
+} from '../contexts/accessibilityContext';

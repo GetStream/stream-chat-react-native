@@ -7,6 +7,10 @@ import { PressableProps } from 'react-native-gesture-handler';
 import { AttachmentCommandPicker } from './AttachmentPickerContent';
 
 import {
+  IMPORTANT_ACCESSIBILITY_ELEMENT_IDS,
+  useImportantAccessibilityElementRef,
+} from '../../../a11y';
+import {
   useAttachmentPickerContext,
   useChannelContext,
   useMessageInputContext,
@@ -30,6 +34,7 @@ import { BottomSheetModal } from '../../UIComponents';
 export type AttachmentTypePickerButtonProps = Pick<ButtonProps, 'selected' | 'onPress'> & {
   accessibilityLabelKey?: string;
   Icon: ButtonProps['LeadingIcon'];
+  pressableRef?: ButtonProps['pressableRef'];
 } & Pick<PressableProps, 'testID'>;
 
 const hitSlop = { bottom: 15, top: 15 };
@@ -40,6 +45,7 @@ export const AttachmentTypePickerButton = ({
   selected,
   onPress: onPressProp,
   Icon,
+  pressableRef,
 }: AttachmentTypePickerButtonProps) => {
   const { disableAttachmentPicker } = useAttachmentPickerContext();
   const ButtonIcon = useCallback(
@@ -58,6 +64,7 @@ export const AttachmentTypePickerButton = ({
       testID={testID}
       hitSlop={hitSlop}
       onPress={onPress}
+      pressableRef={pressableRef}
       LeadingIcon={ButtonIcon}
       type={'ghost'}
       size={'lg'}
@@ -72,6 +79,9 @@ export const MediaPickerButton = () => {
   const { hasImagePicker, pickAndUploadImageFromNativePicker } = useMessageInputContext();
   const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
+  const pressableRef = useImportantAccessibilityElementRef(
+    IMPORTANT_ACCESSIBILITY_ELEMENT_IDS.attachmentPickerMediaButton,
+  );
 
   const setImagePicker = useStableCallback(() => {
     if (disableAttachmentPicker) {
@@ -86,6 +96,7 @@ export const MediaPickerButton = () => {
       accessibilityLabelKey='a11y/Open photo picker'
       testID='upload-photo-touchable'
       Icon={Picture}
+      pressableRef={pressableRef}
       selected={selectedPicker === 'images'}
       onPress={setImagePicker}
     />
