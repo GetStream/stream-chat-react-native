@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  DevSettings,
-  I18nManager,
-  LogBox,
-  Platform,
-  useColorScheme,
-} from 'react-native';
+import { DevSettings, I18nManager, LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -331,13 +325,15 @@ const DrawerNavigator: React.FC = () => (
 
 const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 
+const accessibilityConfig = { enabled: true };
+
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;
   i18nInstance: Streami18n;
 }> = ({ chatClient, i18nInstance }) => {
   return (
     <Chat
-      accessibility={{ enabled: true }}
+      accessibility={accessibilityConfig}
       client={chatClient}
       enableOfflineSupport
       isMessageAIGenerated={isMessageAIGenerated}
