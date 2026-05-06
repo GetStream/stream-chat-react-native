@@ -6,6 +6,7 @@ import {
   Platform,
   View,
   LayoutChangeEvent,
+  useWindowDimensions,
 } from 'react-native';
 
 import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
@@ -15,11 +16,6 @@ import type { BottomSheetBackgroundProps } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
-import {
-  IMPORTANT_ACCESSIBILITY_ELEMENT_IDS,
-  useImportantAccessibilityElements,
-  useScreenReaderEnabled,
-} from '../../a11y';
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -44,14 +40,14 @@ export const AttachmentPicker = () => {
     attachmentPickerStore,
     attachmentPickerBottomSheetHeight,
     bottomSheetRef: ref,
+    bottomInset,
     disableAttachmentPicker,
   } = useAttachmentPickerContext();
   const { AttachmentPickerContent, AttachmentPickerSelectionBar } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
-  const isScreenReaderEnabled = useScreenReaderEnabled();
-  const { focusImportantAccessibilityElement } = useImportantAccessibilityElements();
+  const { height: windowHeight } = useWindowDimensions();
   const [currentIndex, setCurrentIndexInternal] = useState(-1);
   const currentIndexRef = useRef<number>(currentIndex);
   const setCurrentIndex = useStableCallback((_: number, toIndex: number) => {
@@ -106,6 +102,10 @@ export const AttachmentPicker = () => {
   const selectionBarRef = useRef<number | null>(null);
 
   const initialSnapPoint = attachmentPickerBottomSheetHeight;
+  const pickerTopInset = Math.max(
+    0,
+    windowHeight - attachmentPickerBottomSheetHeight - bottomInset,
+  );
 
   /**
    * Snap points changing cause a rerender of the position,
@@ -129,7 +129,6 @@ export const AttachmentPicker = () => {
   );
 
   const animatedIndex = useSharedValue(currentIndex);
-  const isPickerClosed = currentIndex < 0;
 
   // This is required to prevent the attachment picker from getting out of sync
   // with the rest of the state. While there are more prudent fixes, this is about
@@ -144,12 +143,6 @@ export const AttachmentPicker = () => {
       // TODO: Extend the store to at least accept a default value.
       //       This in particular is not nice.
       attachmentPickerStore.setSelectedPicker('images');
-
-      if (isScreenReaderEnabled) {
-        focusImportantAccessibilityElement(
-          IMPORTANT_ACCESSIBILITY_ELEMENT_IDS.attachmentPickerMediaButton,
-        );
-      }
     }
   });
 
@@ -165,23 +158,23 @@ export const AttachmentPicker = () => {
   return (
     <BottomSheet
       accessible={false}
-      accessibilityElementsHidden={isPickerClosed}
       accessibilityLabel={null}
       accessibilityRole={null}
       android_keyboardInputMode='adjustResize'
       backgroundComponent={AttachmentPickerBackground}
       backgroundStyle={backgroundStyle}
+      bottomInset={bottomInset}
       enablePanDownToClose={false}
       enableContentPanningGesture={false}
       enableDynamicSizing={false}
       handleComponent={RenderNull}
-      importantForAccessibility={isPickerClosed ? 'no-hide-descendants' : 'auto'}
       index={currentIndex}
       onAnimate={setCurrentIndex}
       animatedIndex={animatedIndex}
       // @ts-ignore
       ref={ref}
       snapPoints={snapPoints}
+      topInset={pickerTopInset}
       animationConfigs={animationConfigs}
     >
       <View onLayout={onAttachmentPickerSelectionBarLayout}>
