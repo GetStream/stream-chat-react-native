@@ -252,6 +252,8 @@
   "a11y/Read": "Letto",
   "a11y/Reconnecting": "Riconnessione",
   "a11y/Reply to {{user}}": "Rispondi a {{user}}",
+  "a11y/Remove edit": "Rimuovi modifica",
+  "a11y/Remove reply": "Rimuovi risposta",
   "a11y/Scroll to bottom": "Vai in fondo",
   "a11y/Scroll to bottom, {{count}} new messages": "Vai in fondo, {{count}} nuovi messaggi",
   "a11y/Scroll to latest": "Vai al messaggio più recente",

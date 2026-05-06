@@ -252,6 +252,8 @@
   "a11y/Read": "पढ़ा गया",
   "a11y/Reconnecting": "फिर से कनेक्ट हो रहा है",
   "a11y/Reply to {{user}}": "{{user}} को जवाब दें",
+  "a11y/Remove edit": "संपादन हटाएं",
+  "a11y/Remove reply": "जवाब हटाएं",
   "a11y/Scroll to bottom": "नीचे स्क्रॉल करें",
   "a11y/Scroll to bottom, {{count}} new messages": "नीचे स्क्रॉल करें, {{count}} नए संदेश",
   "a11y/Scroll to latest": "नवीनतम संदेश पर जाएं",

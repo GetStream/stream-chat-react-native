@@ -252,6 +252,8 @@
   "a11y/Read": "Gelezen",
   "a11y/Reconnecting": "Opnieuw verbinden",
   "a11y/Reply to {{user}}": "Antwoorden op {{user}}",
+  "a11y/Remove edit": "Bewerking verwijderen",
+  "a11y/Remove reply": "Antwoord verwijderen",
   "a11y/Scroll to bottom": "Ga naar beneden",
   "a11y/Scroll to bottom, {{count}} new messages": "Ga naar beneden, {{count}} nieuwe berichten",
   "a11y/Scroll to latest": "Ga naar het nieuwste bericht",

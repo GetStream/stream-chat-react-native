@@ -252,6 +252,8 @@
   "a11y/Read": "נקרא",
   "a11y/Reconnecting": "מתחבר מחדש",
   "a11y/Reply to {{user}}": "השב ל-{{user}}",
+  "a11y/Remove edit": "הסר עריכה",
+  "a11y/Remove reply": "הסר תגובה",
   "a11y/Scroll to bottom": "גלול לתחתית",
   "a11y/Scroll to bottom, {{count}} new messages": "גלול לתחתית, {{count}} הודעות חדשות",
   "a11y/Scroll to latest": "גלול להודעה האחרונה",

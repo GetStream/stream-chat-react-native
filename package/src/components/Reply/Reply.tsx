@@ -170,7 +170,10 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       </View>
       {onDismiss ? (
         <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
-          <AttachmentRemoveControl onPress={onDismiss} />
+          <AttachmentRemoveControl
+            accessibilityLabel={t(mode === 'edit' ? 'a11y/Remove edit' : 'a11y/Remove reply')}
+            onPress={onDismiss}
+          />
         </View>
       ) : null}
     </View>

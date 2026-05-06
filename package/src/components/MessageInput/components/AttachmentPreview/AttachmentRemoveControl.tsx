@@ -8,7 +8,7 @@ import { primitives } from '../../../../theme';
 
 type AttachmentRemoveControlProps = PressableProps;
 
-export const AttachmentRemoveControl = ({ onPress }: AttachmentRemoveControlProps) => {
+export const AttachmentRemoveControl = ({ onPress, ...rest }: AttachmentRemoveControlProps) => {
   const {
     theme: {
       semantics,
@@ -21,6 +21,7 @@ export const AttachmentRemoveControl = ({ onPress }: AttachmentRemoveControlProp
 
   return (
     <Pressable
+      accessibilityRole='button'
       hitSlop={15}
       onPress={onPress}
       style={({ pressed }) => [
@@ -31,6 +32,7 @@ export const AttachmentRemoveControl = ({ onPress }: AttachmentRemoveControlProp
         dismiss,
       ]}
       testID='remove-upload-preview'
+      {...rest}
     >
       <NewClose
         height={16}
