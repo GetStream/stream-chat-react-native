@@ -48,9 +48,38 @@ export const AccessibilityProvider = ({
   children,
   value,
 }: PropsWithChildren<{ value?: AccessibilityConfig }>) => {
+  const {
+    announceConnectionState = accessibilityContextDefaultValue.announceConnectionState,
+    announceNewMessages = accessibilityContextDefaultValue.announceNewMessages,
+    announceTypingIndicator = accessibilityContextDefaultValue.announceTypingIndicator,
+    audioRecorderTapMode = accessibilityContextDefaultValue.audioRecorderTapMode,
+    enabled = accessibilityContextDefaultValue.enabled,
+    forceScreenReaderMode = accessibilityContextDefaultValue.forceScreenReaderMode,
+    imageGalleryScreenReaderMode = accessibilityContextDefaultValue.imageGalleryScreenReaderMode,
+    messageActionsTrigger = accessibilityContextDefaultValue.messageActionsTrigger,
+  } = value ?? {};
+
   const resolved = useMemo<ResolvedAccessibilityConfig>(
-    () => ({ ...accessibilityContextDefaultValue, ...value }),
-    [value],
+    () => ({
+      announceConnectionState,
+      announceNewMessages,
+      announceTypingIndicator,
+      audioRecorderTapMode,
+      enabled,
+      forceScreenReaderMode,
+      imageGalleryScreenReaderMode,
+      messageActionsTrigger,
+    }),
+    [
+      announceConnectionState,
+      announceNewMessages,
+      announceTypingIndicator,
+      audioRecorderTapMode,
+      enabled,
+      forceScreenReaderMode,
+      imageGalleryScreenReaderMode,
+      messageActionsTrigger,
+    ],
   );
 
   return <AccessibilityContext.Provider value={resolved}>{children}</AccessibilityContext.Provider>;

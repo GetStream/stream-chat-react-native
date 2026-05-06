@@ -1,9 +1,11 @@
 import React from 'react';
 
-import { renderHook } from '@testing-library/react-native';
+import { render, renderHook } from '@testing-library/react-native';
 
 import {
+  AccessibilityConfig,
   AccessibilityProvider,
+  ResolvedAccessibilityConfig,
   accessibilityContextDefaultValue,
   useAccessibilityContext,
 } from '../AccessibilityContext';
@@ -36,5 +38,28 @@ describe('AccessibilityContext', () => {
   it('returns defaults when used outside the provider', () => {
     const { result } = renderHook(() => useAccessibilityContext());
     expect(result.current).toEqual(accessibilityContextDefaultValue);
+  });
+
+  it('keeps the resolved value stable when equivalent config objects are recreated', () => {
+    const contextValues: ResolvedAccessibilityConfig[] = [];
+
+    const ContextValueProbe = () => {
+      contextValues.push(useAccessibilityContext());
+      return null;
+    };
+
+    const renderProvider = (value: AccessibilityConfig) => (
+      <AccessibilityProvider value={value}>
+        <ContextValueProbe />
+      </AccessibilityProvider>
+    );
+
+    const { rerender } = render(renderProvider({ audioRecorderTapMode: 'always', enabled: true }));
+    const firstValue = contextValues[contextValues.length - 1];
+
+    rerender(renderProvider({ audioRecorderTapMode: 'always', enabled: true }));
+    const secondValue = contextValues[contextValues.length - 1];
+
+    expect(secondValue).toBe(firstValue);
   });
 });
