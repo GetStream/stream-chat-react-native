@@ -8,11 +8,6 @@ import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 
-import { AccessibilityAnnouncer } from '../../components/Accessibility/AccessibilityAnnouncer';
-import {
-  AccessibilityConfig,
-  AccessibilityProvider,
-} from '../../contexts/accessibilityContext/AccessibilityContext';
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -140,14 +135,6 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * @overrideType object
      */
     style?: DeepPartial<Theme>;
-    /**
-     * Opt-in accessibility configuration. A11y is OFF by default — pass
-     * `accessibility={{ enabled: true }}` to enable screen-reader announcements,
-     * gesture alternatives, and semantic a11y attributes across the SDK.
-     *
-     * See `AccessibilityConfig` for the full set of toggles.
-     */
-    accessibility?: AccessibilityConfig;
   };
 
 const selector = (nextValue: OfflineDBState) =>
@@ -158,7 +145,6 @@ const selector = (nextValue: OfflineDBState) =>
 
 const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const {
-    accessibility,
     children,
     client,
     closeConnectionOnBackground = true,
@@ -300,11 +286,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     <ChatProvider value={chatContext}>
       <TranslationProvider value={translationContextValue}>
         <ThemeProvider style={style}>
-          <AccessibilityProvider value={accessibility}>
-            <AccessibilityAnnouncer>
-              <ChannelsStateProvider>{children}</ChannelsStateProvider>
-            </AccessibilityAnnouncer>
-          </AccessibilityProvider>
+          <ChannelsStateProvider>{children}</ChannelsStateProvider>
         </ThemeProvider>
       </TranslationProvider>
     </ChatProvider>

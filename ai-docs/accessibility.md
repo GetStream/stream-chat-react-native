@@ -7,17 +7,19 @@ This SDK ships an opt-in accessibility layer for VoiceOver (iOS) and TalkBack (A
 A11y is **off by default**. Existing integrators see no behavior change. To enable:
 
 ```tsx
-import { Chat } from 'stream-chat-react-native';
+import { Chat, OverlayProvider } from 'stream-chat-react-native';
 
-<Chat client={client} accessibility={{ enabled: true }}>
-  {/* ... */}
-</Chat>
+<OverlayProvider accessibility={{ enabled: true }}>
+  <Chat client={client}>
+    {/* ... */}
+  </Chat>
+</OverlayProvider>
 ```
 
 When `enabled` is false:
 
-- No `<AccessibilityAnnouncer>` mounts; `useAccessibilityAnnouncer()` returns a noop.
-- No `<NotificationAnnouncer />` mounts.
+- No announcer context mounts; `useAccessibilityAnnouncer()` returns a noop.
+- `<NotificationAnnouncer />` exits without announcements.
 - `useIncomingMessageAnnouncements` does not subscribe to `channel.on('message.new')`.
 - No `AccessibilityInfo` event listeners attach.
 - Components still render their `accessibilityRole` / `accessibilityState` / etc. attributes (these are passed to native views and only consulted by VO/TalkBack when active — sighted users incur ~zero cost).
@@ -56,7 +58,11 @@ i18n.registerTranslation('nl', {
   'a11y/Avatar of {{name}}': 'Avatar van {{name}}',
   'a11y/{{count}} new messages': '{{count}} nieuwe berichten',
 });
-<Chat client={client} i18nInstance={i18n} accessibility={{ enabled: true }}>
+<OverlayProvider accessibility={{ enabled: true }} i18nInstance={i18n}>
+  <Chat client={client} i18nInstance={i18n}>
+    {/* ... */}
+  </Chat>
+</OverlayProvider>
 ```
 
 `validate-translations` (run as part of `yarn lint`) enforces non-empty values for every `a11y/*` key in every locale.
@@ -73,14 +79,13 @@ Importable from `stream-chat-react-native`:
 - `useA11yLabel(key, params)` — translated label or `undefined` when disabled.
 - `useAnnounceOnStateChange(message, options)` — debounced live-region helper.
 - `useIncomingMessageAnnouncements({ channel, ownUserId, activeThreadId, threadList })` — throttled, batched announcement of new messages.
-- `<AccessibilityAnnouncer>` — provider component (mounted by `<Chat>`).
 - `<NotificationAnnouncer />` — connection-state announcer (mounted by `<Channel>`).
 
 ## Cross-SDK parity
 
 API shapes mirror [`stream-chat-react#3146`](https://github.com/GetStream/stream-chat-react/pull/3146) wherever the platforms agree (`useAccessibilityAnnouncer` ≈ `useAriaLiveAnnouncer`, `useIncomingMessageAnnouncements` ≈ identical params and throttle semantics, `a11y/*` i18n namespace shared). Mobile-only deviations:
 
-- `<Chat accessibility={...}>` config object — RN needs gesture-alternative toggles (audio hold-to-record, gallery pinch/pan) that don't exist on web.
+- `<OverlayProvider accessibility={...}>` config object — RN needs gesture-alternative toggles (audio hold-to-record, gallery pinch/pan) that don't exist on web.
 - No `<VisuallyHidden>`, no `<SkipNavigation>`, no roving-focus utilities — RN announcer is imperative, mobile has no Tab key.
 - `useResolvedModalAccessibilityProps` returns `accessibilityViewIsModal` (iOS) + `importantForAccessibility='yes'` (Android) instead of `aria-modal`.
 - Live regions: `AccessibilityInfo.announceForAccessibility` cross-platform; Android `accessibilityLiveRegion='polite'` on hidden Views as a backup where useful.

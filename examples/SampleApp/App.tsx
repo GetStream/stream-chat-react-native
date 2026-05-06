@@ -97,6 +97,7 @@ const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createNativeStackNavigator<UserSelectorParamList>();
 const RTL_STORAGE_KEY = '@stream-rn-sampleapp-rtl-enabled';
+const accessibilityConfig = { enabled: true };
 
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
@@ -264,7 +265,11 @@ const App = () => {
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <WithComponents overrides={componentOverrides}>
-          <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
+          <OverlayProvider
+            accessibility={accessibilityConfig}
+            value={{ style: streamChatTheme }}
+            i18nInstance={streami18n}
+          >
             <ThemeProvider style={streamChatTheme}>
               <NavigationContainer
                 ref={RootNavigationRef}
@@ -325,15 +330,12 @@ const DrawerNavigator: React.FC = () => (
 
 const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 
-const accessibilityConfig = { enabled: true };
-
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;
   i18nInstance: Streami18n;
 }> = ({ chatClient, i18nInstance }) => {
   return (
     <Chat
-      accessibility={accessibilityConfig}
       client={chatClient}
       enableOfflineSupport
       isMessageAIGenerated={isMessageAIGenerated}

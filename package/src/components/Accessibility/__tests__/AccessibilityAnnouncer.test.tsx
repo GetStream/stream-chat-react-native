@@ -4,7 +4,6 @@ import { AccessibilityInfo } from 'react-native';
 import { renderHook, waitFor } from '@testing-library/react-native';
 
 import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
-import { AccessibilityAnnouncer } from '../AccessibilityAnnouncer';
 import { useAccessibilityAnnouncer } from '../useAccessibilityAnnouncer';
 
 jest.mock('react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo', () => ({
@@ -20,12 +19,10 @@ jest.mock('react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo
 const wrapper =
   (enabled: boolean) =>
   ({ children }: { children: React.ReactNode }) => (
-    <AccessibilityProvider value={{ enabled }}>
-      <AccessibilityAnnouncer>{children}</AccessibilityAnnouncer>
-    </AccessibilityProvider>
+    <AccessibilityProvider value={{ enabled }}>{children}</AccessibilityProvider>
   );
 
-describe('AccessibilityAnnouncer', () => {
+describe('AccessibilityProvider announcer', () => {
   beforeEach(() => {
     (AccessibilityInfo.announceForAccessibility as jest.Mock).mockClear();
   });
@@ -60,6 +57,18 @@ describe('AccessibilityAnnouncer', () => {
   it('ignores empty messages', async () => {
     const { result } = renderHook(() => useAccessibilityAnnouncer(), { wrapper: wrapper(true) });
     result.current('');
+    await new Promise((r) => setTimeout(r, 80));
+    expect(AccessibilityInfo.announceForAccessibility).not.toHaveBeenCalled();
+  });
+
+  it('clears pending announcements on unmount', async () => {
+    const { result, unmount } = renderHook(() => useAccessibilityAnnouncer(), {
+      wrapper: wrapper(true),
+    });
+
+    result.current('hello');
+    unmount();
+
     await new Promise((r) => setTimeout(r, 80));
     expect(AccessibilityInfo.announceForAccessibility).not.toHaveBeenCalled();
   });

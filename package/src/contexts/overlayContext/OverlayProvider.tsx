@@ -12,6 +12,7 @@ import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
+import { AccessibilityProvider } from '../accessibilityContext/AccessibilityContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
 
@@ -42,12 +43,13 @@ import {
  */
 export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) => {
   const {
-    children,
-    i18nInstance,
-    value,
+    accessibility,
     autoPlayVideo,
+    children,
     giphyVersion,
+    i18nInstance,
     numberOfImageGalleryGridColumns,
+    value,
   } = props;
 
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
@@ -100,17 +102,19 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
 
   return (
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
-      <OverlayContext.Provider value={overlayContext}>
-        <ImageGalleryProvider value={imageGalleryProviderProps}>
-          <ThemeProvider style={overlayContext.style}>
-            <PortalProvider>
-              {children}
-              {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
-              <MessageOverlayHostLayer />
-            </PortalProvider>
-          </ThemeProvider>
-        </ImageGalleryProvider>
-      </OverlayContext.Provider>
+      <AccessibilityProvider value={accessibility}>
+        <OverlayContext.Provider value={overlayContext}>
+          <ImageGalleryProvider value={imageGalleryProviderProps}>
+            <ThemeProvider style={overlayContext.style}>
+              <PortalProvider>
+                {children}
+                {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
+                <MessageOverlayHostLayer />
+              </PortalProvider>
+            </ThemeProvider>
+          </ImageGalleryProvider>
+        </OverlayContext.Provider>
+      </AccessibilityProvider>
     </TranslationProvider>
   );
 };

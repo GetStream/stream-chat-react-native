@@ -19,8 +19,8 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 ## Where to put what
 
 - **Foundation primitives** → `package/src/a11y/` (utilities + low-level hooks).
-- **Runtime announcer infra** → `package/src/components/Accessibility/` (`AccessibilityAnnouncer`, `NotificationAnnouncer`, `useIncomingMessageAnnouncements`).
-- **Config + provider** → `package/src/contexts/accessibilityContext/`.
+- **Runtime announcer infra** → `package/src/components/Accessibility/` (`NotificationAnnouncer`, `useAccessibilityAnnouncer`, `useIncomingMessageAnnouncements`).
+- **Config + provider** → `package/src/contexts/accessibilityContext/`, mounted by `OverlayProvider`.
 - **i18n** → `a11y/*` keys in all 12 locale JSONs (`en, es, fr, he, hi, it, ja, ko, nl, pt-br, ru, tr`).
 - **Component-level a11y attributes** → in the component itself.
 - **Platform divergence (iOS vs Android)** → use `Platform.OS` or `useResolvedModalAccessibilityProps`. Don't duplicate the file — RN doesn't need `.ios.tsx`/`.android.tsx` splits for a11y.
@@ -109,8 +109,8 @@ Minimum:
 - Use `@testing-library/react-native` semantic queries: `getByRole`, `getByLabelText`, `getByA11yState`, `getByA11yValue`.
 
 Recommended for non-trivial changes:
-- Render with `accessibility={{ enabled: true, forceScreenReaderMode: true }}` and assert the accessible variant renders.
-- Render with `accessibility={{ enabled: false }}` and assert the legacy behavior is unchanged (no extra buttons, no listeners).
+- Render with `<OverlayProvider accessibility={{ enabled: true, forceScreenReaderMode: true }}>` and assert the accessible variant renders.
+- Render with `<OverlayProvider accessibility={{ enabled: false }}>` and assert the legacy behavior is unchanged (no extra buttons, no listeners).
 
 ## Execution checklist (copy this when making an a11y change)
 
@@ -122,14 +122,13 @@ Recommended for non-trivial changes:
 - [ ] Decorative visuals hidden from AT (`accessibilityElementsHidden` / `importantForAccessibility='no-hide-descendants'`)
 - [ ] Modal surfaces use `useResolvedModalAccessibilityProps`
 - [ ] New behavior (announcers, listeners) gated on `useAccessibilityContext().enabled`
-- [ ] Tested with `accessibility={{ enabled: true, forceScreenReaderMode: true }}` and `enabled: false`
+- [ ] Tested with `<OverlayProvider accessibility={{ enabled: true, forceScreenReaderMode: true }}>` and `enabled: false`
 - [ ] Verified `yarn lint` passes (`validate-translations` enforces non-empty `a11y/*` keys)
 - [ ] Verified `yarn tsc --noEmit` passes (RN's a11y prop types are strict about `boolean | null | undefined`)
 
 ## Reference files (in this repo)
 
-- `package/src/contexts/accessibilityContext/AccessibilityContext.tsx` — config schema + provider.
-- `package/src/components/Accessibility/AccessibilityAnnouncer.tsx` — imperative announcer.
+- `package/src/contexts/accessibilityContext/AccessibilityContext.tsx` — config schema + provider + imperative announcer context.
 - `package/src/components/Accessibility/hooks/useIncomingMessageAnnouncements.ts` — port of stream-chat-react's hook.
 - `package/src/a11y/hooks/useA11yLabel.ts` — translated-label-or-undefined.
 - `package/src/a11y/hooks/useResolvedModalAccessibilityProps.ts` — modal a11y props.
