@@ -260,6 +260,7 @@
   "a11y/Voice message recording. Hold to record.": "音声メッセージの録音。長押しして録音します。",
   "a11y/{{count}} new messages": "新しいメッセージ{{count}}件",
   "a11y/Add attachment": "Add attachment",
+  "a11y/Close attachments": "Close attachments",
   "a11y/Close poll": "Close poll",
   "a11y/Close poll creation": "Close poll creation",
   "a11y/Create poll": "Create poll",

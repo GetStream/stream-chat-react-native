@@ -260,6 +260,7 @@
   "a11y/Voice message recording. Hold to record.": "Registrazione del messaggio vocale. Tieni premuto per registrare.",
   "a11y/{{count}} new messages": "{{count}} nuovi messaggi",
   "a11y/Add attachment": "Add attachment",
+  "a11y/Close attachments": "Close attachments",
   "a11y/Close poll": "Close poll",
   "a11y/Close poll creation": "Close poll creation",
   "a11y/Create poll": "Create poll",

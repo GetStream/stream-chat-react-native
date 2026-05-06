@@ -10,6 +10,7 @@ import {
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStableCallback } from '../../../../hooks';
+import { useAttachmentPickerState } from '../../../../hooks/useAttachmentPickerState';
 import { Plus } from '../../../../icons/plus';
 import { Button } from '../../../ui/';
 
@@ -18,6 +19,7 @@ type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttach
     disabled?: boolean;
     /** Function that opens attachment options bottom sheet */
     handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
+    isAttachmentPickerOpen?: boolean;
   } & { toggleAttachmentPicker: () => void };
 
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
@@ -25,6 +27,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
     disabled = false,
     handleAttachButtonPress,
     handleOnPress,
+    isAttachmentPickerOpen = false,
     toggleAttachmentPicker,
   } = props;
 
@@ -45,7 +48,9 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
 
   return (
     <Button
-      accessibilityLabelKey='a11y/Add attachment'
+      accessibilityLabelKey={
+        isAttachmentPickerOpen ? 'a11y/Close attachments' : 'a11y/Add attachment'
+      }
       variant='secondary'
       type='outline'
       size='lg'
@@ -62,15 +67,17 @@ const areEqual = (
   prevProps: AttachButtonPropsWithContext,
   nextProps: AttachButtonPropsWithContext,
 ) => {
-  const { handleOnPress: prevHandleOnPress } = prevProps;
-  const { handleOnPress: nextHandleOnPress } = nextProps;
+  const { handleOnPress: prevHandleOnPress, isAttachmentPickerOpen: prevIsAttachmentPickerOpen } =
+    prevProps;
+  const { handleOnPress: nextHandleOnPress, isAttachmentPickerOpen: nextIsAttachmentPickerOpen } =
+    nextProps;
 
   const handleOnPressEqual = prevHandleOnPress === nextHandleOnPress;
   if (!handleOnPressEqual) {
     return false;
   }
 
-  return true;
+  return prevIsAttachmentPickerOpen === nextIsAttachmentPickerOpen;
 };
 
 const MemoizedAttachButton = React.memo(
@@ -87,6 +94,7 @@ export const AttachButton = (props: AttachButtonProps) => {
   const { disableAttachmentPicker } = useAttachmentPickerContext();
   const { inputBoxRef, handleAttachButtonPress, openAttachmentPicker } = useMessageInputContext();
   const { attachmentPickerStore } = useAttachmentPickerContext();
+  const { selectedPicker } = useAttachmentPickerState();
 
   const toggleAttachmentPicker = useStableCallback(() => {
     if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
@@ -101,6 +109,7 @@ export const AttachButton = (props: AttachButtonProps) => {
       {...{
         disableAttachmentPicker,
         handleAttachButtonPress,
+        isAttachmentPickerOpen: !!selectedPicker,
         toggleAttachmentPicker,
       }}
       {...props}
