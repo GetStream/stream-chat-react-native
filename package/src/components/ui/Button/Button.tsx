@@ -45,10 +45,6 @@ export type ButtonProps = PressableProps & {
    */
   accessibilityLabelParams?: Record<string, unknown>;
   /**
-   * Ref attached to the native pressable element. Used for accessibility focus restoration.
-   */
-  pressableRef?: React.Ref<unknown>;
-  /**
    * The style of the button.
    */
   variant: 'primary' | 'secondary' | 'destructive';
@@ -100,7 +96,6 @@ export const Button = ({
   iconOnly = false,
   label,
   onLayout,
-  pressableRef,
   disabled = false,
   style,
   ...rest
@@ -145,7 +140,6 @@ export const Button = ({
         accessibilityLabel={resolvedAccessibilityLabel}
         accessibilityRole='button'
         accessibilityState={accessibilityState}
-        ref={pressableRef as React.Ref<React.ElementRef<typeof Pressable>>}
         style={({ pressed }) => [
           {
             backgroundColor: pressed
