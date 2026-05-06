@@ -163,6 +163,7 @@ export const MultipleVotesSettings = () => {
           style={[styles.row, multipleAnswers.row]}
         >
           <Button
+            accessibilityLabelKey='a11y/Decrease maximum votes'
             variant='secondary'
             type='outline'
             size='md'
@@ -175,6 +176,7 @@ export const MultipleVotesSettings = () => {
           />
           <MaxVotesTextInput />
           <Button
+            accessibilityLabelKey='a11y/Increase maximum votes'
             variant='secondary'
             type='outline'
             size='md'

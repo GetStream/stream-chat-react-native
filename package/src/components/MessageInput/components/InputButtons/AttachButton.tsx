@@ -45,6 +45,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Add attachment'
       variant='secondary'
       type='outline'
       size='lg'

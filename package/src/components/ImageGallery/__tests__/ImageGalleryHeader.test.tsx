@@ -47,7 +47,10 @@ const ImageGalleryComponent = (props: ImageGalleryProps) => {
   }, [imageGalleryStateStore]);
 
   return (
-    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+    <OverlayProvider
+      accessibility={{ enabled: true }}
+      value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}
+    >
       <ImageGalleryContext.Provider
         value={
           {

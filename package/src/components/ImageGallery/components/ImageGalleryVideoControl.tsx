@@ -74,7 +74,7 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
     <View style={[styles.container, container]}>
       <View style={styles.leftContainer}>
         <Button
-          accessibilityLabel='Play Pause Button'
+          accessibilityLabelKey='a11y/Play Pause Button'
           variant='secondary'
           type='ghost'
           size='md'

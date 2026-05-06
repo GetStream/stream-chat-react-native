@@ -6,6 +6,7 @@ import { Pressable, PressableProps } from 'react-native-gesture-handler';
 import { buttonPadding, buttonSizes } from './constants';
 import { useButtonStyles } from './hooks/useButtonStyles';
 
+import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
@@ -34,6 +35,15 @@ const getButtonAccessibilityState = ({
 };
 
 export type ButtonProps = PressableProps & {
+  /**
+   * Translation key used for the button's accessibility label when SDK
+   * accessibility is enabled. Prefer this for SDK-owned icon-only buttons.
+   */
+  accessibilityLabelKey?: string;
+  /**
+   * Optional interpolation params for `accessibilityLabelKey`.
+   */
+  accessibilityLabelParams?: Record<string, unknown>;
   /**
    * The style of the button.
    */
@@ -74,6 +84,9 @@ export type ButtonProps = PressableProps & {
 };
 
 export const Button = ({
+  accessibilityLabel,
+  accessibilityLabelKey,
+  accessibilityLabelParams,
   variant,
   type,
   selected = false,
@@ -100,6 +113,11 @@ export const Button = ({
   const IconOnlyIcon = LeadingIcon ?? TrailingIcon;
   const PrimaryIcon = iconOnly ? IconOnlyIcon : LeftIcon;
   const accessibilityState = getButtonAccessibilityState({ disabled: !!disabled, selected });
+  const translatedAccessibilityLabel = useA11yLabel(
+    accessibilityLabelKey ?? '',
+    accessibilityLabelParams,
+  );
+  const resolvedAccessibilityLabel = translatedAccessibilityLabel ?? accessibilityLabel;
 
   return (
     <View
@@ -119,6 +137,7 @@ export const Button = ({
       onLayout={onLayout}
     >
       <Pressable
+        accessibilityLabel={resolvedAccessibilityLabel}
         accessibilityRole='button'
         accessibilityState={accessibilityState}
         style={({ pressed }) => [

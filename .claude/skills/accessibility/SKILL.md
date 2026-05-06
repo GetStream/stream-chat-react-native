@@ -10,7 +10,7 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 ## Non-negotiable rules
 
 1. **Native semantics first.** Use `Pressable`, `TextInput`, `Switch`, `Image` directly. Use `accessibilityRole` only when native semantics cannot represent the widget (`menu`, `menuitem`, `progressbar`, `radio`, `checkbox`, `article`, `alert`, `tablist`, `tab`).
-2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. Use `useA11yLabel('a11y/...', params)` (or `t('a11y/...')` directly when you don't need the disabled-state short-circuit). Add the key to all 12 locale files in `package/src/i18n/`.
+2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. For SDK `Button`, pass `accessibilityLabelKey='a11y/...'` (and `accessibilityLabelParams` when needed). For non-Button components, use `useA11yLabel('a11y/...', params)` or `t('a11y/...')` directly when you don't need the disabled-state short-circuit. Add the key to all 12 locale files in `package/src/i18n/`.
 3. **Gate behavior on `useAccessibilityContext().enabled`.** A11y is opt-in. New listeners, subscriptions, and announcer mounts must be no-ops when `enabled` is false. New `accessibilityRole`/`accessibilityState` props are fine to render unconditionally — they cost ~zero.
 4. **One focusable target per action.** Don't nest `Pressable` inside `Pressable`. Mark inner decorative views with `accessibilityElementsHidden` (iOS) + `importantForAccessibility='no-hide-descendants'` (Android) so the parent carries the label.
 5. **Decorative visuals stay hidden from AT.** Icon-only buttons must carry an `accessibilityLabel` on the wrapper, and the SVG icon should be hidden.
@@ -31,13 +31,17 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 ### 1) Composing accessible names
 
 ```tsx
-import { useA11yLabel } from 'stream-chat-react-native';
+import { Button, useA11yLabel } from 'stream-chat-react-native';
 
-const label = useA11yLabel('a11y/Reaction {{emoji}} by {{count}} users', { emoji, count });
+const labelParams = useMemo(() => ({ count, emoji }), [count, emoji]);
+const label = useA11yLabel('a11y/Reaction {{emoji}} by {{count}} users', labelParams);
 <Pressable accessibilityLabel={label} accessibilityRole='button' accessibilityState={{ selected }} />
+
+<Button accessibilityLabelKey='a11y/Send message' iconOnly {...buttonProps} />
 ```
 
 `useA11yLabel` returns `undefined` when `accessibility.enabled` is false, so the `t()` call is skipped on hot list paths.
+`Button` centralizes this same behavior for SDK-owned buttons. In SDK code, pass the key/params only. When migrating a released button that already had an `accessibilityLabel`, make the new translation resolve to the same existing label unless the change is intentionally breaking.
 
 For composite labels (sender + timestamp + body + reactions summary), use `composeAccessibilityLabel(...parts)` from `package/src/a11y/a11yUtils.ts` — it filters out empty/null parts and joins with `, ` so screen readers add a brief pause.
 
@@ -95,7 +99,7 @@ Disable spring animations and limit fade durations when this is true.
 
 ## Anti-patterns to avoid
 
-- **Hardcoded English `accessibilityLabel`** strings inside component code. Always use `useA11yLabel('a11y/...')` or `t('a11y/...')`.
+- **Hardcoded English `accessibilityLabel`** strings inside component code. For SDK `Button`, use `accessibilityLabelKey='a11y/...'`; otherwise use `useA11yLabel('a11y/...')` or `t('a11y/...')`.
 - **Nested focusables**: `<Pressable><Pressable>` causes VO to stop on each. Mark the outer `accessible={false}` or the inner `accessibilityElementsHidden`.
 - **Subscribing to `AccessibilityInfo` events when `enabled` is false** — wastes a listener slot. The provided hooks already gate on this; mirror that pattern.
 - **`useScreenReaderEnabled()` inside list items** — toggling SR re-renders every item. Only subscribe in components that actually swap UI on SR (`AudioRecorder`, `ImageGallery`, `Message`'s alternative-actions button).
@@ -116,7 +120,7 @@ Recommended for non-trivial changes:
 
 - [ ] Identified the interaction type (button / menuitem / dialog / progressbar / radio / checkbox / live region / image)
 - [ ] Picked a native element first; ARIA-style `accessibilityRole` only when necessary
-- [ ] Composed `accessibilityLabel` via `useA11yLabel('a11y/...')` (not hardcoded)
+- [ ] Composed the accessible name via `Button accessibilityLabelKey='a11y/...'` or `useA11yLabel('a11y/...')` (not hardcoded)
 - [ ] Added the new `a11y/*` key to all 12 locale JSONs and ran `yarn build-translations`
 - [ ] Set `accessibilityState` for stateful widgets (`disabled`, `selected`, `checked`, `busy`, `expanded`)
 - [ ] Decorative visuals hidden from AT (`accessibilityElementsHidden` / `importantForAccessibility='no-hide-descendants'`)
