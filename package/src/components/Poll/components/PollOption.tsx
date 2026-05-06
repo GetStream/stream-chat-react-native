@@ -25,6 +25,11 @@ import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
 
+const pollVoteAccessibilityStates = {
+  checked: { checked: true, selected: true },
+  unchecked: { checked: false, selected: false },
+} as const;
+
 export type PollOptionProps = {
   option: PollOptionClass;
   showProgressBar?: boolean;
@@ -190,12 +195,15 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   }, [message, onPress, poll, toggleVote]);
 
   const hasVote = !!ownVotesByOptionId[option.id];
+  const accessibilityState = hasVote
+    ? pollVoteAccessibilityStates.checked
+    : pollVoteAccessibilityStates.unchecked;
 
   return ownCapabilities.castPollVote && !isClosed ? (
     <Pressable
       accessibilityLabel={option.text}
       accessibilityRole={poll.data?.enforce_unique_vote ? 'radio' : 'checkbox'}
-      accessibilityState={{ checked: hasVote, selected: hasVote }}
+      accessibilityState={accessibilityState}
       onPress={onPressHandler}
       style={({ pressed }) => [
         { opacity: pressed ? 0.5 : 1 },

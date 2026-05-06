@@ -18,6 +18,25 @@ import { InfoTooltip } from '../../../icons/info';
 import { primitives } from '../../../theme';
 import { IconRenderer } from '../Button';
 
+const inputAccessibilityStates = {
+  disabled: { disabled: true, selected: false },
+  disabledSelected: { disabled: true, selected: true },
+  enabled: { disabled: false, selected: false },
+  selected: { disabled: false, selected: true },
+} as const;
+
+const getInputAccessibilityState = ({
+  disabled,
+  selected,
+}: {
+  disabled: boolean;
+  selected: boolean;
+}) => {
+  if (disabled)
+    return selected ? inputAccessibilityStates.disabledSelected : inputAccessibilityStates.disabled;
+  return selected ? inputAccessibilityStates.selected : inputAccessibilityStates.enabled;
+};
+
 export type InputProps = TextInputProps & {
   title?: string;
   description?: string;
@@ -59,6 +78,10 @@ export const Input = ({
 
   const LeftIcon = isRTL ? TrailingIcon : LeadingIcon;
   const RightIcon = isRTL ? LeadingIcon : TrailingIcon;
+  const accessibilityState = getInputAccessibilityState({
+    disabled: !editable,
+    selected: isFocused,
+  });
 
   const handleFocus = useCallback(
     (e: TextInputFocusEvent) => {
@@ -106,7 +129,7 @@ export const Input = ({
         <TextInput
           accessibilityHint={description}
           accessibilityLabel={props.accessibilityLabel ?? title}
-          accessibilityState={{ disabled: !editable, selected: isFocused }}
+          accessibilityState={accessibilityState}
           editable={editable}
           onFocus={handleFocus}
           onBlur={handleBlur}

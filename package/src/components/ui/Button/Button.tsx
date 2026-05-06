@@ -12,6 +12,27 @@ import { primitives } from '../../../theme';
 
 export type IconRenderer = (props: IconProps) => React.ReactNode;
 
+const buttonAccessibilityStates = {
+  disabled: { disabled: true, selected: false },
+  disabledSelected: { disabled: true, selected: true },
+  enabled: { disabled: false, selected: false },
+  selected: { disabled: false, selected: true },
+} as const;
+
+const getButtonAccessibilityState = ({
+  disabled,
+  selected,
+}: {
+  disabled: boolean;
+  selected: boolean;
+}) => {
+  if (disabled)
+    return selected
+      ? buttonAccessibilityStates.disabledSelected
+      : buttonAccessibilityStates.disabled;
+  return selected ? buttonAccessibilityStates.selected : buttonAccessibilityStates.enabled;
+};
+
 export type ButtonProps = PressableProps & {
   /**
    * The style of the button.
@@ -78,6 +99,7 @@ export const Button = ({
   const RightIcon = isRTL ? LeadingIcon : TrailingIcon;
   const IconOnlyIcon = LeadingIcon ?? TrailingIcon;
   const PrimaryIcon = iconOnly ? IconOnlyIcon : LeftIcon;
+  const accessibilityState = getButtonAccessibilityState({ disabled: !!disabled, selected });
 
   return (
     <View
@@ -98,7 +120,7 @@ export const Button = ({
     >
       <Pressable
         accessibilityRole='button'
-        accessibilityState={{ disabled: !!disabled, selected }}
+        accessibilityState={accessibilityState}
         style={({ pressed }) => [
           {
             backgroundColor: pressed
