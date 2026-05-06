@@ -3777,7 +3777,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 195bbdb73e6ca1dbc76cd46e73f3552c084ef6e4
   FirebaseRemoteConfigInterop: 1c6135e8a094cc6368949f5faeeca7ee8948b8aa
   FirebaseSessions: eaa8ec037e7793769defe4201c20bd4d976f9677
-  fmt: 12a698626610c2fef5e7d8de472b100baf225f93
+  fmt: f2ca71e169c97357ab4e789da2e79d8d714b771a
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   GoogleAppMeasurement: 0dfca1a4b534d123de3945e28f77869d10d0d600
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
@@ -3792,7 +3792,7 @@ SPEC CHECKSUMS:
   op-sqlite: 2e58f87227360fa6251d1fe103d189f11ae8c95f
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  RCT-Folly: 5a8bea092f38495b327c6eff2dc52ee25c10f637
+  RCT-Folly: 53b8d1d24968b95e1de7b2351e5f130be733a4d6
   RCTDeprecation: d4ef510f229cea15314176aee5e3ba10064a8496
   RCTRequired: 1e41b794629558f6626e2bc39c166ac0ec1c5878
   RCTTypeSafety: 62c8105cf08af634c93d38ea1e8ec8a57b7abc2c
