@@ -1,8 +1,14 @@
 import { useEffect, useRef } from 'react';
 
 import { useAccessibilityAnnouncer } from '../../components/Accessibility/useAccessibilityAnnouncer';
+import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 
 const DEFAULT_DEBOUNCE_MS = 250;
+
+type UseAnnounceOnStateChangeOptions = {
+  debounceMs?: number;
+  priority?: 'polite' | 'assertive';
+};
 
 /**
  * Announces `message` whenever it changes (and is non-empty), with a debounce
@@ -13,15 +19,16 @@ const DEFAULT_DEBOUNCE_MS = 250;
  */
 export const useAnnounceOnStateChange = (
   message: string | null | undefined,
-  options: { debounceMs?: number; priority?: 'polite' | 'assertive' } = {},
+  options: UseAnnounceOnStateChangeOptions = {},
 ) => {
   const { debounceMs = DEFAULT_DEBOUNCE_MS, priority = 'polite' } = options;
+  const { enabled } = useAccessibilityContext();
   const announce = useAccessibilityAnnouncer();
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastAnnouncedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!message || message === lastAnnouncedRef.current) return;
+    if (!enabled || !message || message === lastAnnouncedRef.current) return;
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
@@ -36,5 +43,5 @@ export const useAnnounceOnStateChange = (
         timeoutRef.current = null;
       }
     };
-  }, [announce, debounceMs, message, priority]);
+  }, [announce, debounceMs, enabled, message, priority]);
 };
