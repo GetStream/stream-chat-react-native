@@ -1734,6 +1734,9 @@ exports[`Thread should match thread snapshot 1`] = `
         </View>
       </RCTScrollView>
       <View
+        accessibilityElementsHidden={true}
+        accessible={false}
+        importantForAccessibility="no-hide-descendants"
         style={
           {
             "left": 0,

@@ -1,13 +1,12 @@
 import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-import type { StreamChat } from 'stream-chat';
+import type { Channel, QueryChannelsRequestType, StreamChat } from 'stream-chat';
 
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
@@ -16,6 +15,11 @@ import { ChannelList } from '../ChannelList';
 import { ChannelListView } from '../ChannelListView';
 
 let chatClient: StreamChat;
+let defaultChannels: Channel[];
+let queryChannelsResponse: Channel[];
+
+const queryChannelsOverride: QueryChannelsRequestType = () =>
+  Promise.resolve(queryChannelsResponse);
 
 /**
  * Renders the full ChannelList (which now always uses ChannelListView internally).
@@ -31,6 +35,7 @@ const Component = () => (
                 $in: ['vishal', 'neil'],
               },
             }}
+            queryChannelsOverride={queryChannelsOverride}
           />
         </ChatProvider>
       )}
@@ -90,13 +95,19 @@ describe('ChannelListView', () => {
     chatClient = await getTestClientWithUser({ id: 'vishal' });
     const c1 = generateChannelResponse();
     const c2 = generateChannelResponse();
-    useMockedApis(chatClient, [getOrCreateChannelApi(c1), getOrCreateChannelApi(c2)]);
+    useMockedApis(chatClient, [getOrCreateChannelApi(c1)]);
     const channel1 = chatClient.channel(c1.channel.type, c1.channel.id);
     await channel1.watch();
+    useMockedApis(chatClient, [getOrCreateChannelApi(c2)]);
     const channel2 = chatClient.channel(c2.channel.type, c2.channel.id);
     await channel2.watch();
-    useMockedApis(chatClient, [queryChannelsApi([channel1, channel2])]);
+    defaultChannels = [channel1, channel2];
   });
+
+  beforeEach(() => {
+    queryChannelsResponse = defaultChannels;
+  });
+
   afterEach(cleanup);
 
   it('renders without crashing', async () => {
@@ -107,7 +118,7 @@ describe('ChannelListView', () => {
   });
 
   it('renders the `EmptyStateIndicator` when no channels are present', async () => {
-    useMockedApis(chatClient, [queryChannelsApi([])]);
+    queryChannelsResponse = [];
     const { getByTestId } = render(<Component />);
     await waitFor(() => {
       expect(getByTestId('empty-channel-state-title')).toBeTruthy();
