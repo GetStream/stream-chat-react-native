@@ -7,6 +7,7 @@ import { buttonPadding, buttonSizes } from './constants';
 import { useButtonStyles } from './hooks/useButtonStyles';
 
 import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
+import { useAccessibilityActivateAction } from '../../../a11y/hooks/useAccessibilityActivateAction';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
@@ -118,6 +119,10 @@ export const Button = ({
     accessibilityLabelParams,
   );
   const resolvedAccessibilityLabel = translatedAccessibilityLabel ?? accessibilityLabel;
+  const accessibilityActivateActionProps = useAccessibilityActivateAction({
+    onPress: rest.onPress,
+    shouldHandleActivate: !!rest.onPress && !disabled && !!resolvedAccessibilityLabel,
+  });
 
   return (
     <View
@@ -137,6 +142,7 @@ export const Button = ({
       onLayout={onLayout}
     >
       <Pressable
+        accessible
         accessibilityLabel={resolvedAccessibilityLabel}
         accessibilityRole='button'
         accessibilityState={accessibilityState}
@@ -152,6 +158,7 @@ export const Button = ({
           styles.container,
         ]}
         disabled={disabled}
+        {...accessibilityActivateActionProps}
         {...rest}
       >
         {PrimaryIcon ? (
