@@ -59,6 +59,7 @@ const StopRecording = ({
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Stop voice recording'
       variant='destructive'
       type='outline'
       size='sm'
@@ -83,6 +84,7 @@ const UploadRecording = ({
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Send voice recording'
       variant='primary'
       type='solid'
       onPress={onUploadVoiceRecording}
@@ -104,6 +106,7 @@ const DeleteRecording = ({
   };
   return (
     <Button
+      accessibilityLabelKey='a11y/Delete voice recording'
       variant='secondary'
       type='outline'
       size='sm'

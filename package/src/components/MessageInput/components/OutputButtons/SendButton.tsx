@@ -26,6 +26,7 @@ export const SendButton = (props: SendButtonProps) => {
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Send message'
       variant='primary'
       type='solid'
       disabled={disabled}

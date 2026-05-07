@@ -14,6 +14,7 @@ import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
+import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 import { useTypingUsers } from './hooks/useTypingUsers';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
@@ -920,6 +921,19 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     });
   });
 
+  const scrollToBottomUnreadCount =
+    scrollToBottomButtonVisible && !threadList ? channel?.countUnread() : undefined;
+  const {
+    accessibilityActions: messageListAccessibilityActions,
+    onAccessibilityAction: messageListOnAccessibilityAction,
+  } = useScrollToBottomAccessibilityAction({
+    accessibilityActions: additionalFlashListProps?.accessibilityActions,
+    onAccessibilityAction: additionalFlashListProps?.onAccessibilityAction,
+    onScrollToBottom: goToNewMessages,
+    unreadCount: scrollToBottomUnreadCount,
+    visible: scrollToBottomButtonVisible,
+  });
+
   const dismissImagePicker = useStableCallback(() => {
     if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
       attachmentPickerStore.setSelectedPicker(undefined);
@@ -1072,10 +1086,17 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             testID='message-flash-list'
             viewabilityConfig={flatListViewabilityConfig}
             {...additionalFlashListPropsExcludingStyle}
+            accessibilityActions={messageListAccessibilityActions}
+            onAccessibilityAction={messageListOnAccessibilityAction}
           />
         </MessageListItemProvider>
       )}
-      <View style={styles.stickyHeaderContainer}>
+      <View
+        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility='no-hide-descendants'
+        style={styles.stickyHeaderContainer}
+      >
         {messageListLengthAfterUpdate && StickyHeader ? (
           <StickyHeader date={stickyHeaderDate} />
         ) : null}
@@ -1094,7 +1115,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         <ScrollToBottomButton
           onPress={goToNewMessages}
           showNotification={scrollToBottomButtonVisible}
-          unreadCount={threadList ? 0 : channel?.countUnread()}
+          unreadCount={scrollToBottomUnreadCount}
         />
       </Animated.View>
       <NetworkDownIndicator />

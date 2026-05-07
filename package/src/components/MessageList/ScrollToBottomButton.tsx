@@ -3,12 +3,15 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
-import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Down } from '../../icons/arrow-up';
 import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
 import { Button } from '../ui/Button';
+
+export const SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY = 'a11y/Scroll to bottom';
+export const SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY =
+  'a11y/Scroll to bottom, {{count}} new messages';
 
 export type ScrollToBottomButtonProps = {
   /** onPress handler */
@@ -23,9 +26,9 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const a11yLabel = useA11yLabel(
-    unreadCount ? 'a11y/Scroll to latest, {{count}} unread' : 'a11y/Scroll to latest',
-    { count: unreadCount ?? 0 },
+  const accessibilityLabelParams = React.useMemo(
+    () => (unreadCount ? { count: unreadCount } : undefined),
+    [unreadCount],
   );
 
   if (!showNotification) {
@@ -47,7 +50,12 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
         ]}
       >
         <Button
-          accessibilityLabel={a11yLabel}
+          accessibilityLabelKey={
+            unreadCount
+              ? SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY
+              : SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY
+          }
+          accessibilityLabelParams={accessibilityLabelParams}
           variant='secondary'
           type='outline'
           LeadingIcon={Down}
@@ -58,7 +66,11 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
         />
       </View>
 
-      <View style={styles.unreadCountNotificationContainer}>
+      <View
+        accessibilityElementsHidden
+        importantForAccessibility='no-hide-descendants'
+        style={styles.unreadCountNotificationContainer}
+      >
         {unreadCount ? (
           <BadgeNotification count={unreadCount} size='xs' type='primary' testID='unread-count' />
         ) : null}

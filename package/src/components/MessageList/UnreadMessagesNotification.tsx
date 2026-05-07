@@ -84,6 +84,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
       </View>
       <View style={styles.rightButtonContainer}>
         <Button
+          accessibilityLabelKey='a11y/Dismiss unread messages'
           variant='secondary'
           type='ghost'
           iconOnly

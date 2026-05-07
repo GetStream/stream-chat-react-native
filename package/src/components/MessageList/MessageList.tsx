@@ -18,6 +18,7 @@ import debounce from 'lodash/debounce';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
+import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
@@ -1046,6 +1047,19 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     });
   });
 
+  const scrollToBottomUnreadCount =
+    scrollToBottomButtonVisible && !threadList ? channel?.countUnread() : undefined;
+  const {
+    accessibilityActions: messageListAccessibilityActions,
+    onAccessibilityAction: messageListOnAccessibilityAction,
+  } = useScrollToBottomAccessibilityAction({
+    accessibilityActions: additionalFlatListProps?.accessibilityActions,
+    onAccessibilityAction: additionalFlatListProps?.onAccessibilityAction,
+    onScrollToBottom: goToNewMessages,
+    unreadCount: scrollToBottomUnreadCount,
+    visible: scrollToBottomButtonVisible,
+  });
+
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
   const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
   const onScrollToIndexFailedRef = useRef<
@@ -1298,10 +1312,17 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             testID='message-flat-list'
             viewabilityConfig={flatListViewabilityConfig}
             {...additionalFlatListPropsExcludingStyle}
+            accessibilityActions={messageListAccessibilityActions}
+            onAccessibilityAction={messageListOnAccessibilityAction}
           />
         </MessageListItemProvider>
       )}
-      <View style={styles.stickyHeaderContainer}>
+      <View
+        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility='no-hide-descendants'
+        style={styles.stickyHeaderContainer}
+      >
         {messageListLengthAfterUpdate && StickyHeader ? (
           <StickyHeader date={stickyHeaderDate} />
         ) : null}
@@ -1321,7 +1342,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           <ScrollToBottomButton
             onPress={goToNewMessages}
             showNotification={scrollToBottomButtonVisible}
-            unreadCount={threadList ? 0 : channel?.countUnread()}
+            unreadCount={scrollToBottomUnreadCount}
           />
         </Animated.View>
       ) : null}

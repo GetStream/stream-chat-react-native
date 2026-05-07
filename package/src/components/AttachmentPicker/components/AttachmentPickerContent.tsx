@@ -141,6 +141,7 @@ export const AttachmentCommandPicker = () => {
         renderItem={renderItem}
         data={commands}
         keyExtractor={keyExtractor}
+        showsVerticalScrollIndicator={false}
       />
     </>
   );

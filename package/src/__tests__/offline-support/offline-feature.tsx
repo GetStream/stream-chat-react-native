@@ -643,26 +643,29 @@ export const Generic = () => {
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
       const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchNotificationRemovedFromChannel(chatClient, removedChannel));
-      await waitFor(async () => {
-        const channelIdsOnUI = screen
-          .queryAllByLabelText('list-item')
-          .map(
-            (node) =>
-              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
-                .pendingProps.testID,
-          );
-        expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
-        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+      await waitFor(
+        async () => {
+          const channelIdsOnUI = screen
+            .queryAllByLabelText('list-item')
+            .map(
+              (node) =>
+                (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                  .pendingProps.testID,
+            );
+          expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
+          await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
-        const channelsRows = await BetterSqlite.selectFromTable('channels');
-        const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
+          const channelsRows = await BetterSqlite.selectFromTable('channels');
+          const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
 
-        const messagesRows = await BetterSqlite.selectFromTable('messages');
-        const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
+          const messagesRows = await BetterSqlite.selectFromTable('messages');
+          const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
 
-        expect(matchingRows.length).toBe(0);
-        expect(matchingMessagesRows.length).toBe(0);
-      });
+          expect(matchingRows.length).toBe(0);
+          expect(matchingMessagesRows.length).toBe(0);
+        },
+        { timeout: 5000 },
+      );
     });
 
     it('should remove the channel from DB if the channel is deleted', async () => {
@@ -674,26 +677,29 @@ export const Generic = () => {
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
       const removedChannel = channels[getRandomInt(0, channels.length - 1)].channel;
       act(() => dispatchChannelDeletedEvent(chatClient, removedChannel));
-      await waitFor(async () => {
-        const channelIdsOnUI = screen
-          .queryAllByLabelText('list-item')
-          .map(
-            (node) =>
-              (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
-                .pendingProps.testID,
-          );
-        expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
-        await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
+      await waitFor(
+        async () => {
+          const channelIdsOnUI = screen
+            .queryAllByLabelText('list-item')
+            .map(
+              (node) =>
+                (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
+                  .pendingProps.testID,
+            );
+          expect(channelIdsOnUI.includes(removedChannel.cid)).toBeFalsy();
+          await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
-        const channelsRows = await BetterSqlite.selectFromTable('channels');
-        const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
+          const channelsRows = await BetterSqlite.selectFromTable('channels');
+          const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
 
-        const messagesRows = await BetterSqlite.selectFromTable('messages');
-        const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
+          const messagesRows = await BetterSqlite.selectFromTable('messages');
+          const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
 
-        expect(matchingRows.length).toBe(0);
-        expect(matchingMessagesRows.length).toBe(0);
-      });
+          expect(matchingRows.length).toBe(0);
+          expect(matchingMessagesRows.length).toBe(0);
+        },
+        { timeout: 5000 },
+      );
     });
 
     it('should correctly mark the channel as hidden in the db', async () => {

@@ -10,6 +10,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import { useActiveAudioPlayer } from '../../../../contexts/audioPlayerContext/AudioPlayerContext';
 import {
   MessageInputContextValue,
@@ -83,6 +84,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   const pressed = useSharedValue(false);
 
   const { t } = useTranslationContext();
+  const startVoiceRecordingAccessibilityLabel = useA11yLabel('a11y/Start voice recording');
   const {
     theme: {
       messageComposer: { micButtonContainer },
@@ -238,7 +240,12 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
 
   return (
     <GestureDetector gesture={Gesture.Simultaneous(panGesture, tapGesture)}>
-      <Animated.View style={[styles.container, animatedStyle, micButtonContainer]}>
+      <Animated.View
+        accessibilityLabel={startVoiceRecordingAccessibilityLabel}
+        accessibilityRole='button'
+        accessible
+        style={[styles.container, animatedStyle, micButtonContainer]}
+      >
         <Mic height={20} width={20} strokeWidth={1.5} stroke={buttonStyles.foregroundColor} />
       </Animated.View>
     </GestureDetector>

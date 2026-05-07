@@ -67,6 +67,14 @@ i18n.registerTranslation('nl', {
 
 `validate-translations` (run as part of `yarn lint`) enforces non-empty values for every `a11y/*` key in every locale.
 
+SDK-owned `Button` components can translate their own accessible names from an i18n key:
+
+```tsx
+<Button accessibilityLabelKey='a11y/Send message' iconOnly {...buttonProps} />
+```
+
+Use `accessibilityLabelParams` for interpolated labels. SDK-owned buttons should pass the key/params only. When migrating an already-released button, keep the translation value aligned with the existing label unless the label change is intentionally breaking.
+
 ## Public hooks and components
 
 Importable from `stream-chat-react-native`:

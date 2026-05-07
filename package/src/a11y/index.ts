@@ -4,3 +4,4 @@ export * from './hooks/useReducedMotionPreference';
 export * from './hooks/useResolvedModalAccessibilityProps';
 export * from './hooks/useAnnounceOnStateChange';
 export * from './hooks/useA11yLabel';
+export * from './hooks/useAccessibilityActivateAction';

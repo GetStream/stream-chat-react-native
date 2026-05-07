@@ -134,7 +134,7 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) =>
             </Text>
           </View>
           <Button
-            accessibilityLabel='Grid Icon'
+            accessibilityLabelKey='a11y/Grid Icon'
             variant='secondary'
             type='ghost'
             size='md'
@@ -166,7 +166,7 @@ const ShareButton = ({ share, savingInProgress }: ShareButtonProps) => {
     </View>
   ) : (
     <Button
-      accessibilityLabel='Share Button'
+      accessibilityLabelKey='a11y/Share Button'
       variant='secondary'
       type='ghost'
       size='md'

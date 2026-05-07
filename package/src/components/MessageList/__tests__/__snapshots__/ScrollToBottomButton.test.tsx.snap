@@ -186,6 +186,8 @@ exports[`ScrollToBottomButton should render the message notification and match s
     </View>
   </View>
   <View
+    accessibilityElementsHidden={true}
+    importantForAccessibility="no-hide-descendants"
     style={
       {
         "position": "absolute",

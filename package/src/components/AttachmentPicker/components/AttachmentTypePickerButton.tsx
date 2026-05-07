@@ -28,12 +28,14 @@ import { Button, ButtonProps } from '../../ui';
 import { BottomSheetModal } from '../../UIComponents';
 
 export type AttachmentTypePickerButtonProps = Pick<ButtonProps, 'selected' | 'onPress'> & {
+  accessibilityLabelKey?: string;
   Icon: ButtonProps['LeadingIcon'];
 } & Pick<PressableProps, 'testID'>;
 
 const hitSlop = { bottom: 15, top: 15 };
 
 export const AttachmentTypePickerButton = ({
+  accessibilityLabelKey,
   testID,
   selected,
   onPress: onPressProp,
@@ -52,6 +54,7 @@ export const AttachmentTypePickerButton = ({
 
   return (
     <Button
+      accessibilityLabelKey={accessibilityLabelKey}
       testID={testID}
       hitSlop={hitSlop}
       onPress={onPress}
@@ -80,6 +83,7 @@ export const MediaPickerButton = () => {
 
   return hasImagePicker ? (
     <AttachmentTypePickerButton
+      accessibilityLabelKey='a11y/Open photo picker'
       testID='upload-photo-touchable'
       Icon={Picture}
       selected={selectedPicker === 'images'}
@@ -113,6 +117,7 @@ export const CameraPickerButton = () => {
   return hasCameraPicker ? (
     <>
       <AttachmentTypePickerButton
+        accessibilityLabelKey='a11y/Open camera'
         testID='take-photo-touchable'
         Icon={Camera}
         selected={selectedPicker === 'camera-photo'}
@@ -120,6 +125,7 @@ export const CameraPickerButton = () => {
       />
       {Platform.OS === 'android' ? (
         <AttachmentTypePickerButton
+          accessibilityLabelKey='a11y/Open video recorder'
           Icon={VideoIcon}
           selected={selectedPicker === 'camera-video'}
           onPress={onVideoRecorderPickerPress}
@@ -144,6 +150,7 @@ export const FilePickerButton = () => {
 
   return hasFilePicker ? (
     <AttachmentTypePickerButton
+      accessibilityLabelKey='a11y/Open file picker'
       testID='upload-file-touchable'
       Icon={FilePickerIcon}
       selected={selectedPicker === 'files'}
@@ -171,6 +178,7 @@ export const PollPickerButton = () => {
 
   return !threadList && hasCreatePoll && ownCapabilities.sendPoll ? ( // do not allow poll creation in threads
     <AttachmentTypePickerButton
+      accessibilityLabelKey='a11y/Open poll creation'
       testID='create-poll-touchable'
       Icon={PollThumbnail}
       selected={selectedPicker === 'polls'}
@@ -198,6 +206,7 @@ export const CommandsPickerButton = () => {
   return hasCommands ? (
     <>
       <AttachmentTypePickerButton
+        accessibilityLabelKey='a11y/Open commands'
         testID='commands-touchable'
         Icon={CommandsIcon}
         selected={selectedPicker === 'commands'}

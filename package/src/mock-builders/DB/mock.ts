@@ -3,10 +3,11 @@ import Sqlite3 from 'better-sqlite3';
 import type { PreparedQueries } from '../../store/types';
 
 let db: Sqlite3.Database;
+const testDbName = `foobar-${process.env.JEST_WORKER_ID ?? '0'}.db`;
 
 export const sqliteMock = {
   open: () => {
-    db = new Sqlite3('foobar.db');
+    db = new Sqlite3(testDbName);
     return {
       close: () => {
         db.close();

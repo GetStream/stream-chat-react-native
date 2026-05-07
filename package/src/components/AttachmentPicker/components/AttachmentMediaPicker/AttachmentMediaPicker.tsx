@@ -172,6 +172,7 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
       numColumns={numberOfColumns}
       onEndReached={photoError ? undefined : getMorePhotos}
       renderItem={renderAttachmentPickerItem}
+      showsVerticalScrollIndicator={false}
       testID={'attachment-picker-list'}
       updateCellsBatchingPeriod={16}
     />

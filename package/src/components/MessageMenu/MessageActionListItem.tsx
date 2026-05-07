@@ -3,6 +3,7 @@ import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 
+import { useAccessibilityActivateAction } from '../../a11y/hooks/useAccessibilityActivateAction';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { closeOverlay, scheduleActionOnClose } from '../../state-store';
@@ -74,20 +75,25 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
     closeOverlay();
     scheduleActionOnClose(() => action());
   });
+  const accessibilityLabel = `${actionType} action list item`;
+  const accessibilityActivateActionProps = useAccessibilityActivateAction({
+    onPress: onActionPress,
+    shouldHandleActivate: true,
+  });
 
   return (
     <Pressable
+      accessible
+      accessibilityLabel={accessibilityLabel}
       accessibilityRole='menuitem'
+      {...accessibilityActivateActionProps}
       onPress={onActionPress}
       style={({ pressed }) => [
         styles.buttonContainer,
         { backgroundColor: pressed ? semantics.backgroundUtilityPressed : 'transparent' },
       ]}
     >
-      <View
-        accessibilityLabel={`${actionType} action list item`}
-        style={[styles.container, container]}
-      >
+      <View style={[styles.container, container]}>
         <View style={iconTheme}>{icon}</View>
         <Text style={[styles.titleStyle, titleStyle, titleTheme]}>{title}</Text>
       </View>

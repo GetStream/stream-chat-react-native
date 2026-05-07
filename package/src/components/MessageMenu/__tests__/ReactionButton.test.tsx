@@ -2,8 +2,9 @@ import React from 'react';
 
 import { Text } from 'react-native';
 
-import { cleanup, fireEvent, render } from '@testing-library/react-native';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { IconProps } from '../../../icons';
@@ -37,28 +38,40 @@ describe('ReactionButton', () => {
     expect(getByText('24')).toBeTruthy();
   });
 
+  it('uses the released reaction button label when accessibility labels are translated', async () => {
+    render(
+      <OverlayProvider accessibility={{ enabled: true }}>
+        <ReactionButton {...defaultProps} />
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('reaction-button-like-unselected')).toBeTruthy();
+    });
+  });
+
   it('should call onPress function with the correct reaction type when pressed', () => {
-    const { getByLabelText } = render(
+    const { getByRole } = render(
       <ThemeProvider theme={defaultTheme}>
         <ReactionButton {...defaultProps} />
       </ThemeProvider>,
     );
 
     // Simulate a press event
-    fireEvent.press(getByLabelText('reaction-button-like-unselected'));
+    fireEvent.press(getByRole('button'));
 
     // Verify if the mock function has been called with the correct reaction type
     expect(mockOnPress).toHaveBeenCalledWith('like');
   });
 
   it('should not call onPress when the onPress prop is not provided', () => {
-    const { getByLabelText } = render(
+    const { getByRole } = render(
       <ThemeProvider theme={defaultTheme}>
         <ReactionButton {...defaultProps} onPress={undefined} />
       </ThemeProvider>,
     );
 
-    fireEvent.press(getByLabelText('reaction-button-like-unselected'));
+    fireEvent.press(getByRole('button'));
 
     expect(mockOnPress).not.toHaveBeenCalled();
   });

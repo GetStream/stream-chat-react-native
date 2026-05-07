@@ -59,7 +59,10 @@ const ImageGalleryComponentVideo = (props: ImageGalleryProps) => {
   });
 
   return (
-    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+    <OverlayProvider
+      accessibility={{ enabled: true }}
+      value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}
+    >
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
         <ImageGalleryContext.Provider
@@ -101,7 +104,10 @@ const ImageGalleryComponentImage = (
   });
 
   return (
-    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
+    <OverlayProvider
+      accessibility={{ enabled: true }}
+      value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}
+    >
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
         <ImageGalleryContext.Provider
@@ -129,7 +135,7 @@ describe('ImageGalleryFooter', () => {
     });
   });
 
-  it('render image gallery footer component with Share Button and Grid Icon', async () => {
+  it('render image gallery footer component with share and grid buttons', async () => {
     render(<ImageGalleryComponentVideo />);
 
     await waitFor(() => {

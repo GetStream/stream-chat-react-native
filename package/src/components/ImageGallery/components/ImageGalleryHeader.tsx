@@ -74,7 +74,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
       <ReanimatedSafeAreaView edges={['top']} style={[styles.container, headerStyle]}>
         <View style={styles.innerContainer}>
           <Button
-            accessibilityLabel='Hide Overlay'
+            accessibilityLabelKey='a11y/Hide Overlay'
             variant='secondary'
             type='ghost'
             size='md'
