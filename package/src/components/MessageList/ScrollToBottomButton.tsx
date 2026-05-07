@@ -9,8 +9,8 @@ import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
 import { Button } from '../ui/Button';
 
-const SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY = 'a11y/Scroll to bottom';
-const SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY =
+export const SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY = 'a11y/Scroll to bottom';
+export const SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY =
   'a11y/Scroll to bottom, {{count}} new messages';
 
 export type ScrollToBottomButtonProps = {

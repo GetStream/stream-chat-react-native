@@ -34,10 +34,10 @@ export const formatAccessibilityValue = ({
 /**
  * Merge two `accessibilityActions` arrays, deduplicating by `name` (later wins).
  */
-type A11yAction = { name: string; label?: string };
+type A11yAction = Readonly<{ name: string; label?: string }>;
 
 export const mergeAccessibilityActions = (
-  ...actionLists: Array<A11yAction[] | undefined>
+  ...actionLists: Array<ReadonlyArray<A11yAction> | undefined>
 ): A11yAction[] => {
   const byName = new Map<string, A11yAction>();
   for (const list of actionLists) {
