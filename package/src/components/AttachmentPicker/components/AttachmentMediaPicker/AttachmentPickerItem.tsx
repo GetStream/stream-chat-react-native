@@ -6,6 +6,7 @@ import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 's
 
 import { isIosLimited, type PhotoContentItemType } from './shared';
 
+import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import { useAttachmentPickerContext } from '../../../../contexts';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
@@ -52,9 +53,11 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const { duration: videoDuration, thumb_url } = asset;
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const selected = selectedIndex !== -1;
+  const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect video' : 'a11y/Select video');
 
   const onPressVideo = async () => {
-    if (selectedIndex !== -1) {
+    if (selected) {
       const attachment = attachments[selectedIndex];
       if (attachment) {
         attachmentManager.removeAttachments([attachment.localMetadata.id]);
@@ -70,6 +73,10 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
 
   return (
     <BottomSheetTouchableOpacity
+      accessible={accessibilityLabel ? true : undefined}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityLabel ? 'button' : undefined}
+      accessibilityState={accessibilityLabel ? { selected } : undefined}
       onPress={onPressVideo}
       style={[
         {
@@ -110,11 +117,13 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   );
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const selected = selectedIndex !== -1;
+  const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect image' : 'a11y/Select image');
 
   const { uri } = asset;
 
   const onPressImage = async () => {
-    if (selectedIndex !== -1) {
+    if (selected) {
       const attachment = attachments[selectedIndex];
       if (attachment) {
         await attachmentManager.removeAttachments([attachment.localMetadata.id]);
@@ -130,6 +139,10 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
 
   return (
     <BottomSheetTouchableOpacity
+      accessible={accessibilityLabel ? true : undefined}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityLabel ? 'button' : undefined}
+      accessibilityState={accessibilityLabel ? { selected } : undefined}
       onPress={onPressImage}
       style={[
         {
