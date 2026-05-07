@@ -1091,7 +1091,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           />
         </MessageListItemProvider>
       )}
-      <View style={styles.stickyHeaderContainer}>
+      <View
+        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility='no-hide-descendants'
+        style={styles.stickyHeaderContainer}
+      >
         {messageListLengthAfterUpdate && StickyHeader ? (
           <StickyHeader date={stickyHeaderDate} />
         ) : null}
