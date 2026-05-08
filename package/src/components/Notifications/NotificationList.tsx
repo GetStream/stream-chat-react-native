@@ -77,6 +77,23 @@ const getNotificationEnterFrom = (
   return fallbackEnterFrom;
 };
 
+const getStringValue = (value: unknown) => (typeof value === 'string' ? value : undefined);
+
+const getNotificationPresentationKey = (notification: NotificationType) =>
+  notification.type ??
+  getStringValue(notification.metadata?.dedupeKey) ??
+  getStringValue(notification.origin.context?.dedupeKey) ??
+  [notification.origin.emitter, notification.severity, notification.message]
+    .filter(Boolean)
+    .join(':');
+
+const getNewestNotification = (notifications: NotificationType[]) =>
+  notifications.reduce<NotificationType | null>(
+    (newest, notification) =>
+      !newest || notification.createdAt >= newest.createdAt ? notification : newest,
+    null,
+  );
+
 export const NotificationList = ({
   enterFrom = 'bottom',
   fallbackPanel,
@@ -106,7 +123,10 @@ export const NotificationList = ({
     filter: combinedFilter,
     panel,
   });
-  const notification = notifications[0] ?? null;
+  const notification = getNewestNotification(notifications);
+  const notificationPresentationKey = notification
+    ? getNotificationPresentationKey(notification)
+    : undefined;
   const notificationEnterFrom = getNotificationEnterFrom(notification, enterFrom);
 
   const dismiss = useCallback(
@@ -159,6 +179,17 @@ export const NotificationList = ({
   }, [notifications]);
 
   useEffect(() => {
+    if (!notification || notifications.length <= 1) return;
+
+    notifications.forEach(({ id }) => {
+      if (id === notification.id) return;
+
+      startedTimeoutIdsRef.current.delete(id);
+      removeNotification(id);
+    });
+  }, [notification, notifications, removeNotification]);
+
+  useEffect(() => {
     if (!notification) return;
     if (startedTimeoutIdsRef.current.has(notification.id)) return;
 
@@ -183,7 +214,7 @@ export const NotificationList = ({
         <Animated.View
           entering={enteringAnimations[notificationEnterFrom]}
           exiting={exitingAnimations[notificationEnterFrom]}
-          key={notification.id}
+          key={notificationPresentationKey}
           style={[styles.notificationWrapper, animatedStyle]}
           testID='notification-list-item'
         >
