@@ -43,7 +43,7 @@ export type AddSystemNotificationParams = Omit<AddNotificationParams, 'targetPan
 export type AddNotification = (params: AddNotificationParams) => void;
 export type AddSystemNotification = (params: AddSystemNotificationParams) => string;
 export type RemoveNotification = (id: string) => void;
-export type StartNotificationTimeout = (id: string) => void;
+export type StartNotificationTimeout = (id: string, durationOverride?: number) => void;
 
 export type NotificationApi = {
   addNotification: AddNotification;
@@ -164,7 +164,12 @@ export const useNotificationApi = (): NotificationApi => {
   );
 
   const startNotificationTimeout: StartNotificationTimeout = useCallback(
-    (id) => {
+    (id, durationOverride) => {
+      if (typeof durationOverride === 'number') {
+        client.notifications.startTimeout(id, durationOverride);
+        return;
+      }
+
       client.notifications.startTimeout(id);
     },
     [client],

@@ -44,6 +44,7 @@ export type NotificationListProps = {
 const ENTER_TRANSLATION = 96;
 const DISMISS_DISTANCE = 80;
 const DISMISS_VELOCITY = 800;
+const ACTION_NOTIFICATION_DURATION = 5000;
 
 const enteringAnimations = {
   bottom: SlideInDown.duration(180),
@@ -94,6 +95,22 @@ const getNewestNotification = (notifications: NotificationType[]) =>
     null,
   );
 
+const isPersistentNotification = (notification: NotificationType) => !notification.duration;
+
+const getActiveNotification = (notifications: NotificationType[]) => {
+  const persistentNotifications = notifications.filter(isPersistentNotification);
+  return getNewestNotification(
+    persistentNotifications.length > 0 ? persistentNotifications : notifications,
+  );
+};
+
+const getNotificationDurationOverride = (notification: NotificationType) => {
+  if (isPersistentNotification(notification)) return undefined;
+  if (!notification.actions?.length) return undefined;
+
+  return Math.max(notification.duration ?? 0, ACTION_NOTIFICATION_DURATION);
+};
+
 export const NotificationList = ({
   enterFrom = 'bottom',
   fallbackPanel,
@@ -123,7 +140,7 @@ export const NotificationList = ({
     filter: combinedFilter,
     panel,
   });
-  const notification = getNewestNotification(notifications);
+  const notification = getActiveNotification(notifications);
   const notificationPresentationKey = notification
     ? getNotificationPresentationKey(notification)
     : undefined;
@@ -194,7 +211,12 @@ export const NotificationList = ({
     if (startedTimeoutIdsRef.current.has(notification.id)) return;
 
     startedTimeoutIdsRef.current.add(notification.id);
-    startNotificationTimeout(notification.id);
+    const durationOverride = getNotificationDurationOverride(notification);
+    if (typeof durationOverride === 'number') {
+      startNotificationTimeout(notification.id, durationOverride);
+    } else {
+      startNotificationTimeout(notification.id);
+    }
   }, [notification, startNotificationTimeout]);
 
   if (!notification) return null;

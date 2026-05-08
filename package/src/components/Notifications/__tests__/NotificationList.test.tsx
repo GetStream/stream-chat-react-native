@@ -138,6 +138,111 @@ describe('NotificationList', () => {
     expect(startTimeoutSpy).toHaveBeenCalledWith(secondId);
   });
 
+  it('keeps a persistent notification visible when a transient notification arrives', async () => {
+    const manager = new NotificationManager();
+    const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let persistentId = '';
+    let transientId = '';
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    act(() => {
+      persistentId = manager.add({
+        message: 'Retry upload',
+        options: {
+          actions: [{ handler: jest.fn(), label: 'Retry' }],
+          duration: 0,
+          severity: 'error',
+          tags: ['target:channel'],
+          type: 'ui:upload:retry',
+        },
+        origin: { emitter: 'test' },
+      });
+      transientId = manager.add({
+        message: 'Copied',
+        options: { severity: 'success', tags: ['target:channel'], type: 'ui:copy' },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Retry upload')).toBeTruthy());
+    expect(screen.queryByText('Copied')).toBeNull();
+
+    await waitFor(() => {
+      expect(manager.notifications.some((notification) => notification.id === persistentId)).toBe(
+        true,
+      );
+      expect(manager.notifications.some((notification) => notification.id === transientId)).toBe(
+        false,
+      );
+    });
+    expect(startTimeoutSpy).toHaveBeenCalledWith(persistentId);
+    expect(startTimeoutSpy).not.toHaveBeenCalledWith(transientId);
+  });
+
+  it('lets a persistent notification replace a transient notification', async () => {
+    const manager = new NotificationManager();
+    let transientId = '';
+    let persistentId = '';
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    act(() => {
+      transientId = manager.add({
+        message: 'Copied',
+        options: { severity: 'success', tags: ['target:channel'], type: 'ui:copy' },
+        origin: { emitter: 'test' },
+      });
+      persistentId = manager.add({
+        message: 'Retry upload',
+        options: {
+          actions: [{ handler: jest.fn(), label: 'Retry' }],
+          duration: 0,
+          severity: 'error',
+          tags: ['target:channel'],
+          type: 'ui:upload:retry',
+        },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Retry upload')).toBeTruthy());
+    expect(screen.queryByText('Copied')).toBeNull();
+
+    await waitFor(() => {
+      expect(manager.notifications.some((notification) => notification.id === transientId)).toBe(
+        false,
+      );
+      expect(manager.notifications.some((notification) => notification.id === persistentId)).toBe(
+        true,
+      );
+    });
+  });
+
+  it('starts action notification timeouts with a longer LLC duration override', async () => {
+    const manager = new NotificationManager();
+    const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let id = '';
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    act(() => {
+      id = manager.add({
+        message: 'Undo delete',
+        options: {
+          actions: [{ handler: jest.fn(), label: 'Undo' }],
+          severity: 'info',
+          tags: ['target:channel'],
+          type: 'ui:message:delete:undo',
+        },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Undo delete')).toBeTruthy());
+    expect(startTimeoutSpy).toHaveBeenCalledWith(id, 5000);
+  });
+
   it('updates repeated matching notifications without remounting the snackbar item', async () => {
     const manager = new NotificationManager();
     const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
