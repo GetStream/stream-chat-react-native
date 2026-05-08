@@ -532,6 +532,19 @@ export type Theme = {
       rightButtonContainer: ViewStyle;
     };
   };
+  notification: {
+    actionButton: ViewStyle;
+    actionButtonText: TextStyle;
+    actionsContainer: ViewStyle;
+    closeButton: ViewStyle;
+    container: ViewStyle;
+    contentContainer: ViewStyle;
+    iconContainer: ViewStyle;
+    message: TextStyle;
+  };
+  notificationList: {
+    container: ViewStyle;
+  };
   messageMenu: {
     actionList: {
       container: ViewStyle;
@@ -1456,6 +1469,19 @@ export const defaultTheme: Theme = {
       rightButtonContainer: {},
     },
     unreadMessagesNotificationContainer: {},
+  },
+  notification: {
+    actionButton: {},
+    actionButtonText: {},
+    actionsContainer: {},
+    closeButton: {},
+    container: {},
+    contentContainer: {},
+    iconContainer: {},
+    message: {},
+  },
+  notificationList: {
+    container: {},
   },
   messageMenu: {
     actionList: {

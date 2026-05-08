@@ -12,6 +12,7 @@ export * from './useQueryReminders';
 export * from './useAfterKeyboardOpenCallback';
 export * from './useClientNotifications';
 export * from './useInAppNotificationsState';
+export * from '../components/Notifications/hooks';
 export * from './usePortalSettledCallback';
 export * from './useRAFCoalescedValue';
 export * from './useAudioPlayer';

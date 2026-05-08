@@ -298,6 +298,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     EmptyStateIndicator,
     MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
+    NotificationList,
     ScrollToBottomButton,
     StickyHeader,
     TypingIndicator,
@@ -1127,6 +1128,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           />
         </View>
       ) : null}
+      <NotificationList panel={threadList ? 'thread' : 'channel'} verticalAlignment='bottom' />
     </View>
   );
 };

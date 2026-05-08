@@ -354,6 +354,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     EmptyStateIndicator,
     MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
+    NotificationList,
     ScrollToBottomButton,
     StickyHeader,
     TypingIndicator,
@@ -1356,6 +1357,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </View>
       ) : null}
+      <NotificationList panel={threadList ? 'thread' : 'channel'} verticalAlignment='bottom' />
     </View>
   );
 };

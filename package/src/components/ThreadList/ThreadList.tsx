@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { Thread, ThreadManagerState } from 'stream-chat';
 
@@ -77,7 +77,7 @@ export const DefaultThreadListComponent = () => {
 
 export const ThreadList = (props: ThreadListProps) => {
   const { isFocused = true } = props;
-  const { ThreadListComponent: ThreadListContent } = useComponentsContext();
+  const { NotificationList, ThreadListComponent: ThreadListContent } = useComponentsContext();
   const { client } = useChatContext();
 
   useEffect(() => {
@@ -112,7 +112,16 @@ export const ThreadList = (props: ThreadListProps) => {
     <ThreadsProvider
       value={{ isLoading, isLoadingNext, loadMore: client.threads.loadNextPage, threads, ...props }}
     >
-      <ThreadListContent />
+      <View style={styles.container}>
+        <ThreadListContent />
+        <NotificationList panel='thread-list' />
+      </View>
     </ThreadsProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

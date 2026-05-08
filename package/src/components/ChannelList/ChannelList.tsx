@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { StyleSheet, View } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
 
 import {
@@ -21,6 +22,7 @@ import {
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import type { ChannelListEventListenerOptions } from '../../types/types';
 
@@ -250,6 +252,7 @@ export const ChannelList = (props: ChannelListProps) => {
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const { client, enableOfflineSupport } = useChatContext();
+  const { NotificationList } = useComponentsContext();
   const channelManager = useMemo(() => client.createChannelManager({}), [client]);
 
   /**
@@ -370,8 +373,17 @@ export const ChannelList = (props: ChannelListProps) => {
   return (
     <ChannelsProvider value={channelsContext}>
       <SwipeRegistryProvider>
-        <ChannelListView />
+        <View style={styles.container}>
+          <ChannelListView />
+          <NotificationList panel='channel-list' />
+        </View>
       </SwipeRegistryProvider>
     </ChannelsProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
