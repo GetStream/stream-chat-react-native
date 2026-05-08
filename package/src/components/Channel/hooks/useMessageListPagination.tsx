@@ -6,8 +6,10 @@ import { Channel, ChannelState, MessageResponse } from 'stream-chat';
 import { useChannelMessageDataState } from './useChannelDataState';
 
 import { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks';
 import { findInMessagesByDate, findInMessagesById } from '../../../utils/utils';
+import { useNotificationApi } from '../../Notifications';
 
 const defaultDebounceInterval = 500;
 const debounceOptions = {
@@ -22,6 +24,8 @@ const debounceOptions = {
  * @param channel The channel object for which the message list pagination is being handled.
  */
 export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
+  const { addNotification } = useNotificationApi();
+  const { t } = useTranslationContext();
   const {
     copyMessagesStateFromChannel,
     jumpToLatestMessage,
@@ -180,6 +184,18 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
     },
   );
 
+  const notifyJumpToFirstUnreadError = useStableCallback((error: unknown) => {
+    addNotification({
+      context: { feature: 'jumpToFirstUnread' },
+      emitter: 'Channel',
+      error: error instanceof Error ? error : undefined,
+      message: t('Failed to jump to the first unread message'),
+      severity: 'error',
+      targetPanels: ['channel'],
+      type: 'channel:jumpToFirstUnread:failed',
+    });
+  });
+
   /**
    * Loads channel at first unread message.
    */
@@ -225,7 +241,7 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
               } catch (error) {
                 setLoading(false);
                 loadMoreFinished(channel.state.messagePagination.hasPrev, messagesState);
-                console.log('Loading channel at first unread message failed with error:', error);
+                notifyJumpToFirstUnreadError(error);
                 return;
               }
 
@@ -275,7 +291,7 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
             } catch (error) {
               setLoading(false);
               loadMoreFinished(channel.state.messagePagination.hasPrev, channel.state.messages);
-              console.log('Loading channel at first unread message failed with error:', error);
+              notifyJumpToFirstUnreadError(error);
               return;
             }
           }
@@ -296,7 +312,7 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
             setTargetedMessage(firstUnreadMessageId);
           }
         } catch (error) {
-          console.log('Loading channel at first unread message failed with error:', error);
+          notifyJumpToFirstUnreadError(error);
         }
       },
     );

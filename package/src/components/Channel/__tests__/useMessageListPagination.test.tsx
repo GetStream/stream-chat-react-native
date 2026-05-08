@@ -1,6 +1,9 @@
+import React, { PropsWithChildren } from 'react';
+
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
 
+import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
@@ -10,6 +13,12 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { channelInitialState } from '../hooks/useChannelDataState';
 import * as ChannelStateHooks from '../hooks/useChannelDataState';
 import { useMessageListPagination } from '../hooks/useMessageListPagination';
+
+const createChatWrapper =
+  (client: StreamChat) =>
+  ({ children }: PropsWithChildren) => (
+    <ChatProvider value={{ client } as never}>{children}</ChatProvider>
+  );
 
 describe('useMessageListPagination', () => {
   let chatClient: StreamChat;
@@ -618,7 +627,7 @@ describe('useMessageListPagination', () => {
         };
 
         // Mock query if needed
-        const queryMock = jest.fn();
+        const queryMock = jest.fn().mockResolvedValue({ messages: [] });
         channel.query = queryMock as unknown as typeof channel.query;
 
         // Set up mocks
@@ -626,9 +635,12 @@ describe('useMessageListPagination', () => {
         mockedHook(channelInitialState, { jumpToMessageFinished: jumpToMessageFinishedMock });
         const setChannelUnreadStateMock = jest.fn();
         const setTargetedMessageIdMock = jest.fn((message) => message);
+        const addNotificationSpy = jest.spyOn(chatClient.notifications, 'add');
 
         // Render hook
-        const { result } = renderHook(() => useMessageListPagination({ channel }));
+        const { result } = renderHook(() => useMessageListPagination({ channel }), {
+          wrapper: createChatWrapper(chatClient),
+        });
 
         // Act
         await act(async () => {
@@ -642,6 +654,21 @@ describe('useMessageListPagination', () => {
         // Assert
         await waitFor(() => {
           expect(queryMock).toHaveBeenCalledTimes(expectedQueryCalls);
+          if (expectedQueryCalls) {
+            expect(addNotificationSpy).toHaveBeenCalledWith({
+              message: 'Failed to jump to the first unread message',
+              options: {
+                originalError: expect.any(Error),
+                severity: 'error',
+                tags: ['target:channel'],
+                type: 'channel:jumpToFirstUnread:failed',
+              },
+              origin: {
+                context: { feature: 'jumpToFirstUnread' },
+                emitter: 'Channel',
+              },
+            });
+          }
           expect(jumpToMessageFinishedMock).toHaveBeenCalledTimes(
             expectedJumpToMessageFinishedCalls,
           );

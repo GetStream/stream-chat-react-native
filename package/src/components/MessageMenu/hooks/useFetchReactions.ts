@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { LocalMessage, ReactionResponse, ReactionSort } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useNotificationApi } from '../../Notifications';
 
 export type UseFetchReactionParams = {
   limit?: number;
@@ -98,6 +100,8 @@ export const useFetchReactions = ({
   const messageId = message?.id;
 
   const { client } = useChatContext();
+  const { t } = useTranslationContext();
+  const { addNotification } = useNotificationApi();
 
   const sortString = useMemo(() => JSON.stringify(sort), [sort]);
 
@@ -122,10 +126,17 @@ export const useFetchReactions = ({
           setLoading(false);
         }
       } catch (error) {
-        console.log('Error fetching reactions: ', error);
+        addNotification({
+          context: message ? { message } : undefined,
+          emitter: 'Reactions',
+          error: error instanceof Error ? error : undefined,
+          message: t('Error fetching reactions'),
+          severity: 'error',
+          type: 'api:message:reactions:fetch:failed',
+        });
       }
     },
-    [messageId, client, reactionType, sort, limit],
+    [addNotification, client, limit, message, messageId, reactionType, sort, t],
   );
 
   const loadNextPage = useCallback(async () => {
