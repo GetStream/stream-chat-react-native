@@ -69,6 +69,50 @@ describe('NotificationList', () => {
     expect(startTimeoutSpy).toHaveBeenCalledWith(manager.notifications[0].id);
   });
 
+  it('applies a bottom offset on top of the default bottom inset', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    render(<NotificationList bottomOffset={80} panel='channel' />, {
+      wrapper: createWrapper(manager),
+    });
+
+    act(() => {
+      manager.add({
+        message: 'Floating composer notice',
+        options: { severity: 'info', tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Floating composer notice')).toBeTruthy());
+    expect(StyleSheet.flatten(screen.getByTestId('notification-list').props.style)).toMatchObject({
+      bottom: 96,
+    });
+  });
+
+  it('applies a top offset on top of the default top inset', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    render(<NotificationList panel='channel' topOffset={40} verticalAlignment='top' />, {
+      wrapper: createWrapper(manager),
+    });
+
+    act(() => {
+      manager.add({
+        message: 'Top notice',
+        options: { severity: 'info', tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Top notice')).toBeTruthy());
+    expect(StyleSheet.flatten(screen.getByTestId('notification-list').props.style)).toMatchObject({
+      top: 56,
+    });
+  });
+
   it('does not render system notifications in the snackbar list', () => {
     const manager = new NotificationManager();
     manager.add({

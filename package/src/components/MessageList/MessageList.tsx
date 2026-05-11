@@ -1357,7 +1357,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </View>
       ) : null}
-      <NotificationList panel={threadList ? 'thread' : 'channel'} verticalAlignment='bottom' />
+      <NotificationList
+        bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
+        panel={threadList ? 'thread' : 'channel'}
+        verticalAlignment='bottom'
+      />
     </View>
   );
 };

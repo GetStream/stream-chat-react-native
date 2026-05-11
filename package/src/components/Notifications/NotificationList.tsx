@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import Animated, {
@@ -25,20 +25,19 @@ export type NotificationListEnterFrom = 'bottom' | 'left' | 'right' | 'top';
 export type NotificationListVerticalAlignment = 'bottom' | 'top';
 
 export type NotificationListProps = {
+  bottomOffset?: number;
   enterFrom?: NotificationListEnterFrom;
   filter?: NotificationListFilter;
   panel?: NotificationTargetPanel;
   fallbackPanel?: NotificationTargetPanel;
+  topOffset?: number;
   verticalAlignment?: NotificationListVerticalAlignment;
 };
 
 const ACTION_NOTIFICATION_DURATION = 5000;
 const NOTIFICATION_ANIMATION_DURATION = 200;
 
-const getInitialOffset = (
-  direction: NotificationListEnterFrom,
-  values: EntryAnimationsValues,
-) => {
+const getInitialOffset = (direction: NotificationListEnterFrom, values: EntryAnimationsValues) => {
   'worklet';
 
   switch (direction) {
@@ -192,17 +191,17 @@ const getNotificationDurationOverride = (notification: NotificationType) => {
 };
 
 export const NotificationList = ({
+  bottomOffset,
   enterFrom = 'bottom',
   fallbackPanel,
   filter,
   panel,
+  topOffset,
   verticalAlignment = 'bottom',
 }: NotificationListProps) => {
   const { Notification: NotificationComponent = DefaultNotification } = useComponentsContext();
   const { removeNotification, startNotificationTimeout } = useNotificationApi();
-  const {
-    theme: { notificationList },
-  } = useTheme();
+  const styles = useStyles({ bottomOffset, topOffset, verticalAlignment });
   const { t } = useTranslationContext();
   const startedTimeoutIdsRef = useRef<Set<string>>(new Set());
 
@@ -272,11 +271,7 @@ export const NotificationList = ({
     <View
       accessibilityLabel={t('a11y/Notifications')}
       pointerEvents='box-none'
-      style={[
-        styles.container,
-        verticalAlignment === 'bottom' ? styles.containerBottom : styles.containerTop,
-        notificationList.container,
-      ]}
+      style={styles.container}
       testID='notification-list'
     >
       <Animated.View
@@ -297,23 +292,47 @@ export const NotificationList = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    left: primitives.spacingMd,
-    maxHeight: '100%',
-    position: 'absolute',
-    right: primitives.spacingMd,
-    zIndex: 20,
-  },
-  containerBottom: {
-    bottom: primitives.spacingMd,
-  },
-  containerTop: {
-    top: primitives.spacingMd,
-  },
-  notificationWrapper: {
-    alignSelf: 'stretch',
-    width: '100%',
-  },
-});
+const useStyles = ({
+  bottomOffset,
+  topOffset,
+  verticalAlignment,
+}: Pick<NotificationListProps, 'bottomOffset' | 'topOffset'> & {
+  verticalAlignment: NotificationListVerticalAlignment;
+}) => {
+  const {
+    theme: {
+      notificationList: { container: notificationListContainer },
+    },
+  } = useTheme();
+
+  return useMemo(() => {
+    const containerAlignmentStyle =
+      verticalAlignment === 'bottom'
+        ? { bottom: primitives.spacingMd }
+        : { top: primitives.spacingMd };
+    const containerOffsetStyle =
+      verticalAlignment === 'bottom' && typeof bottomOffset === 'number'
+        ? { bottom: primitives.spacingMd + bottomOffset }
+        : verticalAlignment === 'top' && typeof topOffset === 'number'
+          ? { top: primitives.spacingMd + topOffset }
+          : undefined;
+
+    return StyleSheet.create({
+      container: {
+        alignItems: 'center',
+        left: primitives.spacingMd,
+        maxHeight: '100%',
+        position: 'absolute',
+        right: primitives.spacingMd,
+        zIndex: 20,
+        ...containerAlignmentStyle,
+        ...notificationListContainer,
+        ...containerOffsetStyle,
+      },
+      notificationWrapper: {
+        alignSelf: 'stretch',
+        width: '100%',
+      },
+    });
+  }, [bottomOffset, notificationListContainer, topOffset, verticalAlignment]);
+};
