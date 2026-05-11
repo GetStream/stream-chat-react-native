@@ -1,18 +1,16 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
 import type { Notification as NotificationType } from 'stream-chat';
 
-import { hasSystemNotificationTag, useNotificationApi } from './hooks/useNotificationApi';
-import { useNotifications } from './hooks/useNotifications';
+import { useNotificationListController } from './hooks/useNotificationListController';
 import type { NotificationTargetPanel } from './notificationTarget';
 
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { useLazyRef } from '../../hooks/useLazyRef';
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 
@@ -30,17 +28,13 @@ export type NotificationListProps = {
   verticalAlignment?: NotificationListVerticalAlignment;
 };
 
-const ACTION_NOTIFICATION_DURATION = 5000;
-
 const isEnterFrom = (value: unknown): value is NotificationListEnterFrom =>
   value === 'bottom' || value === 'left' || value === 'right' || value === 'top';
 
 const getNotificationEnterFrom = (
-  notification: NotificationType | null,
+  notification: NotificationType,
   fallbackEnterFrom: NotificationListEnterFrom,
 ) => {
-  if (!notification) return fallbackEnterFrom;
-
   const metadataEnterFrom = notification.metadata?.entryDirection;
   if (isEnterFrom(metadataEnterFrom)) return metadataEnterFrom;
 
@@ -60,29 +54,6 @@ const getNotificationPresentationKey = (notification: NotificationType) =>
     .filter(Boolean)
     .join(':');
 
-const getNewestNotification = (notifications: NotificationType[]) =>
-  notifications.reduce<NotificationType | null>(
-    (newest, notification) =>
-      !newest || notification.createdAt >= newest.createdAt ? notification : newest,
-    null,
-  );
-
-const isPersistentNotification = (notification: NotificationType) => !notification.duration;
-
-const getActiveNotification = (notifications: NotificationType[]) => {
-  const persistentNotifications = notifications.filter(isPersistentNotification);
-  return getNewestNotification(
-    persistentNotifications.length > 0 ? persistentNotifications : notifications,
-  );
-};
-
-const getNotificationDurationOverride = (notification: NotificationType) => {
-  if (isPersistentNotification(notification)) return undefined;
-  if (!notification.actions?.length) return undefined;
-
-  return Math.max(notification.duration ?? 0, ACTION_NOTIFICATION_DURATION);
-};
-
 export const NotificationList = ({
   bottomOffset,
   enterFrom = 'bottom',
@@ -93,72 +64,18 @@ export const NotificationList = ({
   verticalAlignment = 'bottom',
 }: NotificationListProps) => {
   const { Notification: NotificationComponent } = useComponentsContext();
-  const { removeNotification, startNotificationTimeout } = useNotificationApi();
   const styles = useStyles({ bottomOffset, topOffset, verticalAlignment });
   const { t } = useTranslationContext();
-  const startedTimeoutIdsRef = useLazyRef<Set<string>>(() => new Set());
-
-  const combinedFilter = useCallback(
-    (notification: NotificationType) => {
-      if (hasSystemNotificationTag(notification)) return false;
-      return filter ? filter(notification) : true;
-    },
-    [filter],
-  );
-
-  const notifications = useNotifications({
+  const { dismissNotification, notification } = useNotificationListController({
     fallbackPanel,
-    filter: combinedFilter,
+    filter,
     panel,
   });
-  const notification = getActiveNotification(notifications);
-  const notificationPresentationKey = notification
-    ? getNotificationPresentationKey(notification)
-    : undefined;
-  const notificationEnterFrom = getNotificationEnterFrom(notification, enterFrom);
-
-  const dismiss = useCallback(
-    (id: string) => {
-      startedTimeoutIdsRef.current.delete(id);
-      removeNotification(id);
-    },
-    [removeNotification, startedTimeoutIdsRef],
-  );
-
-  useEffect(() => {
-    const notificationIds = new Set(notifications.map(({ id }) => id));
-    startedTimeoutIdsRef.current.forEach((id) => {
-      if (!notificationIds.has(id)) {
-        startedTimeoutIdsRef.current.delete(id);
-      }
-    });
-  }, [notifications, startedTimeoutIdsRef]);
-
-  useEffect(() => {
-    if (!notification || notifications.length <= 1) return;
-
-    notifications.forEach(({ id }) => {
-      if (id === notification.id) return;
-
-      startedTimeoutIdsRef.current.delete(id);
-      removeNotification(id);
-    });
-  }, [notification, notifications, removeNotification, startedTimeoutIdsRef]);
-
-  useEffect(() => {
-    if (!notification) return;
-    if (startedTimeoutIdsRef.current.has(notification.id)) return;
-
-    startedTimeoutIdsRef.current.add(notification.id);
-    const durationOverride = getNotificationDurationOverride(notification);
-    if (typeof durationOverride === 'number') {
-      startNotificationTimeout(notification.id, durationOverride);
-    } else {
-      startNotificationTimeout(notification.id);
-    }
-  }, [notification, startNotificationTimeout, startedTimeoutIdsRef]);
 
   if (!notification) return null;
+
+  const notificationEnterFrom = getNotificationEnterFrom(notification, enterFrom);
+  const notificationPresentationKey = getNotificationPresentationKey(notification);
 
   return (
     <Animated.View
@@ -178,7 +95,7 @@ export const NotificationList = ({
         <NotificationComponent
           entryDirection={notificationEnterFrom}
           notification={notification}
-          onDismiss={() => dismiss(notification.id)}
+          onDismiss={dismissNotification}
           showClose={!notification.duration}
         />
       </Animated.View>
