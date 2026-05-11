@@ -16,13 +16,13 @@ const getInitialOffset = (direction: BoundedZoomDirection, values: EntryAnimatio
 
   switch (direction) {
     case 'bottom':
-      return { translateX: 0, translateY: values.targetHeight };
+      return { translateX: 0, translateY: values.targetHeight / 2 };
     case 'left':
-      return { translateX: -values.targetWidth, translateY: 0 };
+      return { translateX: -values.targetWidth / 2, translateY: 0 };
     case 'right':
-      return { translateX: values.targetWidth, translateY: 0 };
+      return { translateX: values.targetWidth / 2, translateY: 0 };
     case 'top':
-      return { translateX: 0, translateY: -values.targetHeight };
+      return { translateX: 0, translateY: -values.targetHeight / 2 };
     default:
       return { translateX: 0, translateY: 0 };
   }
@@ -33,13 +33,13 @@ const getTargetOffset = (direction: BoundedZoomDirection, values: ExitAnimations
 
   switch (direction) {
     case 'bottom':
-      return { translateX: 0, translateY: values.currentHeight };
+      return { translateX: 0, translateY: values.currentHeight / 2 };
     case 'left':
-      return { translateX: -values.currentWidth, translateY: 0 };
+      return { translateX: -values.currentWidth / 2, translateY: 0 };
     case 'right':
-      return { translateX: values.currentWidth, translateY: 0 };
+      return { translateX: values.currentWidth / 2, translateY: 0 };
     case 'top':
-      return { translateX: 0, translateY: -values.currentHeight };
+      return { translateX: 0, translateY: -values.currentHeight / 2 };
     default:
       return { translateX: 0, translateY: 0 };
   }
