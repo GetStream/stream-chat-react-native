@@ -1,5 +1,9 @@
-import { type MutableRefObject, useRef } from 'react';
+import { type RefObject, useRef } from 'react';
 
+/**
+ * Creates a stable ref whose initial value is computed only once.
+ * Use this when the initial ref value is expensive or allocates an object.
+ */
 export const useLazyRef = <T>(getInitialValue: () => T) => {
   const ref = useRef<T | null>(null);
 
@@ -7,5 +11,5 @@ export const useLazyRef = <T>(getInitialValue: () => T) => {
     ref.current = getInitialValue();
   }
 
-  return ref as MutableRefObject<T>;
+  return ref as RefObject<T>;
 };
