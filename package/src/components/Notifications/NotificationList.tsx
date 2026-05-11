@@ -1,20 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  runOnJS,
-  SlideInDown,
-  SlideInLeft,
-  SlideInRight,
-  SlideInUp,
-  SlideOutDown,
-  SlideOutLeft,
-  SlideOutRight,
-  SlideOutUp,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+  type EntryAnimationsValues,
+  type ExitAnimationsValues,
+  type LayoutAnimation,
+  withTiming,
 } from 'react-native-reanimated';
 
 import type { Notification as NotificationType } from 'stream-chat';
@@ -41,23 +32,112 @@ export type NotificationListProps = {
   verticalAlignment?: NotificationListVerticalAlignment;
 };
 
-const ENTER_TRANSLATION = 96;
-const DISMISS_DISTANCE = 80;
-const DISMISS_VELOCITY = 800;
 const ACTION_NOTIFICATION_DURATION = 5000;
+const NOTIFICATION_ANIMATION_DURATION = 200;
+
+const getInitialOffset = (
+  direction: NotificationListEnterFrom,
+  values: EntryAnimationsValues,
+) => {
+  'worklet';
+
+  switch (direction) {
+    case 'bottom':
+      return { translateX: 0, translateY: values.targetHeight };
+    case 'left':
+      return { translateX: -values.targetWidth, translateY: 0 };
+    case 'right':
+      return { translateX: values.targetWidth, translateY: 0 };
+    case 'top':
+      return { translateX: 0, translateY: -values.targetHeight };
+    default:
+      return { translateX: 0, translateY: 0 };
+  }
+};
+
+const getTargetOffset = (direction: NotificationListEnterFrom, values: ExitAnimationsValues) => {
+  'worklet';
+
+  switch (direction) {
+    case 'bottom':
+      return { translateX: 0, translateY: values.currentHeight };
+    case 'left':
+      return { translateX: -values.currentWidth, translateY: 0 };
+    case 'right':
+      return { translateX: values.currentWidth, translateY: 0 };
+    case 'top':
+      return { translateX: 0, translateY: -values.currentHeight };
+    default:
+      return { translateX: 0, translateY: 0 };
+  }
+};
+
+const createEnteringAnimation =
+  (direction: NotificationListEnterFrom) =>
+  (values: EntryAnimationsValues): LayoutAnimation => {
+    'worklet';
+
+    const initialOffset = getInitialOffset(direction, values);
+
+    return {
+      animations: {
+        transform: [
+          { translateX: withTiming(0, { duration: NOTIFICATION_ANIMATION_DURATION }) },
+          { translateY: withTiming(0, { duration: NOTIFICATION_ANIMATION_DURATION }) },
+          { scale: withTiming(1, { duration: NOTIFICATION_ANIMATION_DURATION }) },
+        ],
+      },
+      initialValues: {
+        transform: [
+          { translateX: initialOffset.translateX },
+          { translateY: initialOffset.translateY },
+          { scale: 0 },
+        ],
+      },
+    };
+  };
 
 const enteringAnimations = {
-  bottom: SlideInDown.duration(180),
-  left: SlideInLeft.duration(180),
-  right: SlideInRight.duration(180),
-  top: SlideInUp.duration(180),
+  bottom: createEnteringAnimation('bottom'),
+  left: createEnteringAnimation('left'),
+  right: createEnteringAnimation('right'),
+  top: createEnteringAnimation('top'),
 } as const;
 
+const createExitingAnimation =
+  (direction: NotificationListEnterFrom) =>
+  (values: ExitAnimationsValues): LayoutAnimation => {
+    'worklet';
+
+    const targetOffset = getTargetOffset(direction, values);
+
+    return {
+      animations: {
+        transform: [
+          {
+            translateX: withTiming(targetOffset.translateX, {
+              duration: NOTIFICATION_ANIMATION_DURATION,
+            }),
+          },
+          {
+            translateY: withTiming(targetOffset.translateY, {
+              duration: NOTIFICATION_ANIMATION_DURATION,
+            }),
+          },
+          { scale: withTiming(0, { duration: NOTIFICATION_ANIMATION_DURATION }) },
+        ],
+      },
+      initialValues: {
+        transform: [{ translateX: 0 }, { translateY: 0 }, { scale: 1 }],
+      },
+    };
+  };
+
 const exitingAnimations = {
-  bottom: SlideOutDown.duration(180),
-  left: SlideOutLeft.duration(180),
-  right: SlideOutRight.duration(180),
-  top: SlideOutUp.duration(180),
+  bottom: createExitingAnimation('bottom'),
+  left: createExitingAnimation('left'),
+  right: createExitingAnimation('right'),
+  top: createExitingAnimation('top'),
 } as const;
 
 const isEnterFrom = (value: unknown): value is NotificationListEnterFrom =>
@@ -125,7 +205,6 @@ export const NotificationList = ({
   } = useTheme();
   const { t } = useTranslationContext();
   const startedTimeoutIdsRef = useRef<Set<string>>(new Set());
-  const dragX = useSharedValue(0);
 
   const combinedFilter = useCallback(
     (notification: NotificationType) => {
@@ -153,38 +232,6 @@ export const NotificationList = ({
     },
     [removeNotification],
   );
-
-  const panGesture = useMemo(
-    () =>
-      Gesture.Pan()
-        .onUpdate((event) => {
-          dragX.value = event.translationX;
-        })
-        .onEnd((event) => {
-          const shouldDismiss =
-            Math.abs(event.translationX) > DISMISS_DISTANCE ||
-            Math.abs(event.velocityX) > DISMISS_VELOCITY;
-
-          if (!shouldDismiss) {
-            dragX.value = withSpring(0, { damping: 18, stiffness: 180 });
-            return;
-          }
-
-          dragX.value = event.translationX < 0 ? -ENTER_TRANSLATION : ENTER_TRANSLATION;
-          if (notification) {
-            runOnJS(dismiss)(notification.id);
-          }
-        }),
-    [dismiss, dragX, notification],
-  );
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: dragX.value }],
-  }));
-
-  useEffect(() => {
-    dragX.value = 0;
-  }, [dragX, notification?.id]);
 
   useEffect(() => {
     const notificationIds = new Set(notifications.map(({ id }) => id));
@@ -232,22 +279,20 @@ export const NotificationList = ({
       ]}
       testID='notification-list'
     >
-      <GestureDetector gesture={panGesture}>
-        <Animated.View
-          entering={enteringAnimations[notificationEnterFrom]}
-          exiting={exitingAnimations[notificationEnterFrom]}
-          key={notificationPresentationKey}
-          style={[styles.notificationWrapper, animatedStyle]}
-          testID='notification-list-item'
-        >
-          <NotificationComponent
-            entryDirection={notificationEnterFrom}
-            notification={notification}
-            onDismiss={() => dismiss(notification.id)}
-            showClose={!notification.duration}
-          />
-        </Animated.View>
-      </GestureDetector>
+      <Animated.View
+        entering={enteringAnimations[notificationEnterFrom]}
+        exiting={exitingAnimations[notificationEnterFrom]}
+        key={notificationPresentationKey}
+        style={styles.notificationWrapper}
+        testID='notification-list-item'
+      >
+        <NotificationComponent
+          entryDirection={notificationEnterFrom}
+          notification={notification}
+          onDismiss={() => dismiss(notification.id)}
+          showClose={!notification.duration}
+        />
+      </Animated.View>
     </View>
   );
 };
