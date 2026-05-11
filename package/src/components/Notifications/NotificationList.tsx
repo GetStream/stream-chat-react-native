@@ -1,12 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import Animated, {
-  type EntryAnimationsValues,
-  type ExitAnimationsValues,
-  type LayoutAnimation,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import type { Notification as NotificationType } from 'stream-chat';
 
@@ -19,6 +14,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../theme';
+import { transitions } from '../../utils/transitions';
 
 export type NotificationListFilter = (notification: NotificationType) => boolean;
 export type NotificationListEnterFrom = 'bottom' | 'left' | 'right' | 'top';
@@ -35,109 +31,6 @@ export type NotificationListProps = {
 };
 
 const ACTION_NOTIFICATION_DURATION = 5000;
-const NOTIFICATION_ANIMATION_DURATION = 200;
-
-const getInitialOffset = (direction: NotificationListEnterFrom, values: EntryAnimationsValues) => {
-  'worklet';
-
-  switch (direction) {
-    case 'bottom':
-      return { translateX: 0, translateY: values.targetHeight };
-    case 'left':
-      return { translateX: -values.targetWidth, translateY: 0 };
-    case 'right':
-      return { translateX: values.targetWidth, translateY: 0 };
-    case 'top':
-      return { translateX: 0, translateY: -values.targetHeight };
-    default:
-      return { translateX: 0, translateY: 0 };
-  }
-};
-
-const getTargetOffset = (direction: NotificationListEnterFrom, values: ExitAnimationsValues) => {
-  'worklet';
-
-  switch (direction) {
-    case 'bottom':
-      return { translateX: 0, translateY: values.currentHeight };
-    case 'left':
-      return { translateX: -values.currentWidth, translateY: 0 };
-    case 'right':
-      return { translateX: values.currentWidth, translateY: 0 };
-    case 'top':
-      return { translateX: 0, translateY: -values.currentHeight };
-    default:
-      return { translateX: 0, translateY: 0 };
-  }
-};
-
-const createEnteringAnimation =
-  (direction: NotificationListEnterFrom) =>
-  (values: EntryAnimationsValues): LayoutAnimation => {
-    'worklet';
-
-    const initialOffset = getInitialOffset(direction, values);
-
-    return {
-      animations: {
-        transform: [
-          { translateX: withTiming(0, { duration: NOTIFICATION_ANIMATION_DURATION }) },
-          { translateY: withTiming(0, { duration: NOTIFICATION_ANIMATION_DURATION }) },
-          { scale: withTiming(1, { duration: NOTIFICATION_ANIMATION_DURATION }) },
-        ],
-      },
-      initialValues: {
-        transform: [
-          { translateX: initialOffset.translateX },
-          { translateY: initialOffset.translateY },
-          { scale: 0 },
-        ],
-      },
-    };
-  };
-
-const enteringAnimations = {
-  bottom: createEnteringAnimation('bottom'),
-  left: createEnteringAnimation('left'),
-  right: createEnteringAnimation('right'),
-  top: createEnteringAnimation('top'),
-} as const;
-
-const createExitingAnimation =
-  (direction: NotificationListEnterFrom) =>
-  (values: ExitAnimationsValues): LayoutAnimation => {
-    'worklet';
-
-    const targetOffset = getTargetOffset(direction, values);
-
-    return {
-      animations: {
-        transform: [
-          {
-            translateX: withTiming(targetOffset.translateX, {
-              duration: NOTIFICATION_ANIMATION_DURATION,
-            }),
-          },
-          {
-            translateY: withTiming(targetOffset.translateY, {
-              duration: NOTIFICATION_ANIMATION_DURATION,
-            }),
-          },
-          { scale: withTiming(0, { duration: NOTIFICATION_ANIMATION_DURATION }) },
-        ],
-      },
-      initialValues: {
-        transform: [{ translateX: 0 }, { translateY: 0 }, { scale: 1 }],
-      },
-    };
-  };
-
-const exitingAnimations = {
-  bottom: createExitingAnimation('bottom'),
-  left: createExitingAnimation('left'),
-  right: createExitingAnimation('right'),
-  top: createExitingAnimation('top'),
-} as const;
 
 const isEnterFrom = (value: unknown): value is NotificationListEnterFrom =>
   value === 'bottom' || value === 'left' || value === 'right' || value === 'top';
@@ -275,8 +168,8 @@ export const NotificationList = ({
       testID='notification-list'
     >
       <Animated.View
-        entering={enteringAnimations[notificationEnterFrom]}
-        exiting={exitingAnimations[notificationEnterFrom]}
+        entering={transitions.boundedZoomIn200[notificationEnterFrom]}
+        exiting={transitions.boundedZoomOut200[notificationEnterFrom]}
         key={notificationPresentationKey}
         style={styles.notificationWrapper}
         testID='notification-list-item'
