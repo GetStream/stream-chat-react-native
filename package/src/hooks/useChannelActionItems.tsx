@@ -3,17 +3,18 @@ import { Alert } from 'react-native';
 
 import type { Channel } from 'stream-chat';
 
-import { ChannelActions, getOtherUserInDirectChannel } from './useChannelActions';
-import { useChannelActions } from './useChannelActions';
-import { useChannelMembershipState } from './useChannelMembershipState';
-
-import { useChannelMuteActive } from './useChannelMuteActive';
-import { useIsDirectChat } from './useIsDirectChat';
-
-import { useTheme, useTranslationContext } from '../../../contexts';
-import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
-import { IconProps, Mute, BlockUser, Delete, Sound } from '../../../icons';
-import { ArrowBoxLeft } from '../../../icons/leave';
+import { useTheme, useTranslationContext } from '../contexts';
+import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
+import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';
+import { ArrowBoxLeft } from '../icons/leave';
+import {
+  ChannelActions,
+  getOtherUserInDirectChannel,
+} from '../components/ChannelList/hooks/useChannelActions';
+import { useChannelActions } from '../components/ChannelList/hooks/useChannelActions';
+import { useChannelMembershipState } from '../components/ChannelList/hooks/useChannelMembershipState';
+import { useChannelMuteActive } from '../components/ChannelList/hooks/useChannelMuteActive';
+import { useIsDirectChat } from '../components/ChannelList/hooks/useIsDirectChat';
 
 export type ChannelActionHandler = () => Promise<void> | void;
 

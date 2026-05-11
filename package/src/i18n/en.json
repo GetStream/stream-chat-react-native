@@ -292,5 +292,18 @@
   "a11y/Send voice recording": "Send voice recording",
   "a11y/Share Button": "Share Button",
   "a11y/Start voice recording": "Start voice recording",
-  "a11y/Stop voice recording": "Stop voice recording"
+  "a11y/Stop voice recording": "Stop voice recording",
+  "Add": "Add",
+  "Admin": "Admin",
+  "Contact Info": "Contact Info",
+  "Edit": "Edit",
+  "Files": "Files",
+  "Group Info": "Group Info",
+  "Photos & Videos": "Photos & Videos",
+  "Pinned Messages": "Pinned Messages",
+  "View all": "View all",
+  "{{count}} members_one": "{{count}} member",
+  "{{count}} members_other": "{{count}} members",
+  "{{count}} members_many": "{{count}} members",
+  "a11y/Back": "Back"
 }

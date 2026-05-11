@@ -1,5 +1,7 @@
 export * from '../a11y';
 export * from './useAppStateListener';
+export * from './useChannelActionItems';
+export * from './useChannelActionItemsById';
 export * from './useStreami18n';
 export * from './useViewport';
 export * from './useScreenDimensions';

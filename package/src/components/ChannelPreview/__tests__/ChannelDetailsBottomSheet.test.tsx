@@ -6,7 +6,7 @@ import type { Channel } from 'stream-chat';
 
 import { ThemeProvider, defaultTheme } from '../../../contexts';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
-import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
+import type { ChannelActionItem } from '../../../hooks/useChannelActionItems';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 import type { ChannelDetailsHeaderProps } from '../ChannelDetailsBottomSheet';
 import { ChannelDetailsBottomSheet } from '../ChannelDetailsBottomSheet';

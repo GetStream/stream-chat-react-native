@@ -1,6 +1,4 @@
 export * from './listeners/useChannelUpdated';
-export * from './useChannelActionItems';
-export * from './useChannelActionItemsById';
 export * from './useChannelActions';
 export * from './useChannelMembershipState';
 export * from './useChannelMembersState';

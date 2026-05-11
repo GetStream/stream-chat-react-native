@@ -182,6 +182,40 @@ export type Theme = {
       standardText: TextStyle;
     };
   };
+  channelDetailsScreen: {
+    container: ViewStyle;
+    scrollContent: ViewStyle;
+    header: {
+      container: ViewStyle;
+      title: TextStyle;
+    };
+    profile: {
+      container: ViewStyle;
+      heading: ViewStyle;
+      subtitle: TextStyle;
+      title: TextStyle;
+    };
+    sectionCard: ViewStyle;
+    listItem: {
+      container: ViewStyle;
+      destructiveLabel: TextStyle;
+      iconWrapper: ViewStyle;
+      label: TextStyle;
+      trailingValue: TextStyle;
+    };
+    memberSection: {
+      footer: ViewStyle;
+      header: ViewStyle;
+      headerTitle: TextStyle;
+      viewAllLabel: TextStyle;
+    };
+    memberItem: {
+      adminBadge: TextStyle;
+      container: ViewStyle;
+      name: TextStyle;
+      status: TextStyle;
+    };
+  };
   channelListSkeleton: {
     animationTime: number;
     avatar: ViewStyle;
@@ -1117,6 +1151,40 @@ export const defaultTheme: Theme = {
       container: {},
       destructiveText: {},
       standardText: {},
+    },
+  },
+  channelDetailsScreen: {
+    container: {},
+    scrollContent: {},
+    header: {
+      container: {},
+      title: {},
+    },
+    profile: {
+      container: {},
+      heading: {},
+      subtitle: {},
+      title: {},
+    },
+    sectionCard: {},
+    listItem: {
+      container: {},
+      destructiveLabel: {},
+      iconWrapper: {},
+      label: {},
+      trailingValue: {},
+    },
+    memberSection: {
+      footer: {},
+      header: {},
+      headerTitle: {},
+      viewAllLabel: {},
+    },
+    memberItem: {
+      adminBadge: {},
+      container: {},
+      name: {},
+      status: {},
     },
   },
   channelListSkeleton: {

@@ -49,3 +49,4 @@ export * from './command';
 export * from './bell';
 export * from './save';
 export * from './checkmark-1';
+export * from './chevron-right';

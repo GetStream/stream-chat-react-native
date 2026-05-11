@@ -15,9 +15,9 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import type { ChannelActionItem } from '../../hooks/useChannelActionItems';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { primitives } from '../../theme';
-import type { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelMembersState } from '../ChannelList/hooks/useChannelMembersState';
 import { useChannelMuteActive } from '../ChannelList/hooks/useChannelMuteActive';
 import { useChannelOnlineMemberCount } from '../ChannelList/hooks/useChannelOnlineMemberCount';

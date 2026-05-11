@@ -5,8 +5,8 @@ import { act, render } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
-import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
-import * as ChannelActionItemsModule from '../../ChannelList/hooks/useChannelActionItems';
+import type { ChannelActionItem } from '../../../hooks/useChannelActionItems';
+import * as ChannelActionItemsModule from '../../../hooks/useChannelActionItems';
 import * as ChannelActionsModule from '../../ChannelList/hooks/useChannelActions';
 import { SwipableWrapper } from '../../UIComponents/SwipableWrapper';
 import { ChannelSwipableWrapper } from '../ChannelSwipableWrapper';

@@ -27,6 +27,16 @@ import { AutoCompleteSuggestionHeader } from '../../components/AutoCompleteInput
 import { AutoCompleteSuggestionItem } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import { InputView } from '../../components/AutoCompleteInput/InputView';
+import { ChannelDetailsScreenContent } from '../../components/ChannelDetailsScreen/ChannelDetailsScreen';
+import {
+  ChannelDetailsActionsSection,
+  ChannelDetailsListItem,
+  ChannelDetailsMemberListItem,
+  ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
+  ChannelDetailsProfile,
+  ChannelDetailsScreenHeader,
+} from '../../components/ChannelDetailsScreen/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from '../../components/ChannelList/ChannelListHeaderNetworkDownIndicator';
@@ -283,6 +293,16 @@ const components = {
 
   // Channel details
   ChannelDetailsHeader,
+
+  // Channel Details Screen
+  ChannelDetailsActionsSection,
+  ChannelDetailsListItem,
+  ChannelDetailsMemberListItem,
+  ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
+  ChannelDetailsProfile,
+  ChannelDetailsScreenContent,
+  ChannelDetailsScreenHeader,
 
   // Thread
   ThreadMessageComposer: MessageComposer,

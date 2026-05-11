@@ -10,9 +10,9 @@ import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import type { GetChannelActionItems } from '../../hooks/useChannelActionItems';
+import { useChannelActionItems } from '../../hooks/useChannelActionItems';
 import { MenuPointHorizontal, Mute, Sound } from '../../icons';
-import type { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
-import { useChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActions } from '../ChannelList/hooks/useChannelActions';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 import {
