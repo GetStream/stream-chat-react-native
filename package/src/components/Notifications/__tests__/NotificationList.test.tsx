@@ -5,6 +5,7 @@ import { StyleSheet, Text } from 'react-native';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { NotificationManager } from 'stream-chat';
 
+import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import {
   ComponentOverrides,
@@ -30,17 +31,23 @@ const createWrapper =
   (manager: NotificationManager, overrides?: ComponentOverrides) =>
   ({ children }: PropsWithChildren) => (
     <ChatProvider value={{ client: { notifications: manager } } as never}>
-      <TranslationProvider
-        value={{
-          t,
-          tDateTimeParser: (input) => input ?? new Date(),
-          userLanguage: DEFAULT_USER_LANGUAGE,
-        }}
-      >
-        <ThemeProvider>
-          {overrides ? <WithComponents overrides={overrides}>{children}</WithComponents> : children}
-        </ThemeProvider>
-      </TranslationProvider>
+      <ChannelProvider value={{ channel: { cid: 'messaging:general' } } as never}>
+        <TranslationProvider
+          value={{
+            t,
+            tDateTimeParser: (input) => input ?? new Date(),
+            userLanguage: DEFAULT_USER_LANGUAGE,
+          }}
+        >
+          <ThemeProvider>
+            {overrides ? (
+              <WithComponents overrides={overrides}>{children}</WithComponents>
+            ) : (
+              children
+            )}
+          </ThemeProvider>
+        </TranslationProvider>
+      </ChannelProvider>
     </ChatProvider>
   );
 
@@ -124,6 +131,44 @@ describe('NotificationList', () => {
     render(<NotificationList />, { wrapper: createWrapper(manager) });
 
     expect(screen.queryByTestId('notification-list')).toBeNull();
+  });
+
+  it('removes non-system notifications for its panel on unmount', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let channelId = '';
+    let threadId = '';
+    let systemId = '';
+
+    const { unmount } = render(<NotificationList panel='channel' />, {
+      wrapper: createWrapper(manager),
+    });
+
+    act(() => {
+      channelId = manager.add({
+        message: 'Channel notice',
+        options: { severity: 'info', tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+      threadId = manager.add({
+        message: 'Thread notice',
+        options: { severity: 'info', tags: ['target:thread'] },
+        origin: { emitter: 'test' },
+      });
+      systemId = manager.add({
+        message: 'System notice',
+        options: { severity: 'info', tags: ['system', 'target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Channel notice')).toBeTruthy());
+
+    unmount();
+
+    expect(manager.notifications.some((notification) => notification.id === channelId)).toBe(false);
+    expect(manager.notifications.some((notification) => notification.id === threadId)).toBe(true);
+    expect(manager.notifications.some((notification) => notification.id === systemId)).toBe(true);
   });
 
   it('dismisses persistent notifications with the close button', async () => {

@@ -6,6 +6,7 @@ import { hasSystemNotificationTag, useNotificationApi } from './useNotificationA
 import { useNotifications, type UseNotificationsFilter } from './useNotifications';
 
 import { useLazyRef } from '../../../hooks/useLazyRef';
+import { useStableCallback } from '../../../hooks/useStableCallback';
 import type { NotificationTargetPanel } from '../notificationTarget';
 
 export type UseNotificationListControllerParams = {
@@ -49,7 +50,8 @@ export const useNotificationListController = ({
   filter,
   panel,
 }: UseNotificationListControllerParams = {}): UseNotificationListControllerResult => {
-  const { removeNotification, startNotificationTimeout } = useNotificationApi();
+  const { removeNotification, removeNotificationsForCurrentPanel, startNotificationTimeout } =
+    useNotificationApi();
   const startedTimeoutIdsRef = useLazyRef<Set<string>>(() => new Set());
 
   const combinedFilter = useCallback(
@@ -106,6 +108,19 @@ export const useNotificationListController = ({
       startNotificationTimeout(notification.id);
     }
   }, [notification, startNotificationTimeout, startedTimeoutIdsRef]);
+
+  const removeCurrentPanelNotifications = useStableCallback(() => {
+    if (!panel) return;
+
+    startedTimeoutIdsRef.current.clear();
+    removeNotificationsForCurrentPanel(fallbackPanel ? { fallbackPanel } : undefined);
+  });
+
+  useEffect(() => {
+    return () => {
+      removeCurrentPanelNotifications();
+    };
+  }, [removeCurrentPanelNotifications]);
 
   return {
     dismissNotification,

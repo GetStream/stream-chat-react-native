@@ -125,4 +125,45 @@ describe('useNotificationApi', () => {
       origin: { emitter: 'Connection' },
     });
   });
+
+  it('removes non-system notifications for a panel', () => {
+    const remove = jest.fn();
+    const client = {
+      notifications: {
+        add: jest.fn(),
+        notifications: [
+          {
+            id: 'channel-id',
+            origin: { emitter: 'test' },
+            tags: ['target:channel'],
+          },
+          {
+            id: 'fallback-channel-id',
+            origin: { emitter: 'test' },
+          },
+          {
+            id: 'thread-id',
+            origin: { emitter: 'test' },
+            tags: ['target:thread'],
+          },
+          {
+            id: 'system-id',
+            origin: { emitter: 'test' },
+            tags: ['system', 'target:channel'],
+          },
+        ],
+        remove,
+        startTimeout: jest.fn(),
+      },
+    };
+    const { result } = renderHook(() => useNotificationApi(), {
+      wrapper: createWrapper(client),
+    });
+
+    act(() => {
+      result.current.removeNotificationsForCurrentPanel();
+    });
+
+    expect(remove.mock.calls.map(([id]) => id)).toEqual(['channel-id', 'fallback-channel-id']);
+  });
 });

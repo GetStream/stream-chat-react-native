@@ -8,6 +8,7 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   addNotificationTargetTag,
   getNotificationTargetTag,
+  isNotificationForPanel,
   type NotificationTargetPanel,
 } from '../notificationTarget';
 
@@ -29,6 +30,9 @@ export type AddNotificationOptions = {
 };
 
 export type AddSystemNotificationOptions = Omit<AddNotificationOptions, 'targetPanels'>;
+export type RemoveNotificationsForCurrentPanelOptions = {
+  fallbackPanel?: NotificationTargetPanel;
+};
 
 export type AddNotification = (
   payload: AddNotificationPayload,
@@ -39,12 +43,16 @@ export type AddSystemNotification = (
   options?: AddSystemNotificationOptions,
 ) => string;
 export type RemoveNotification = (id: string) => void;
+export type RemoveNotificationsForCurrentPanel = (
+  options?: RemoveNotificationsForCurrentPanelOptions,
+) => void;
 export type StartNotificationTimeout = (id: string, durationOverride?: number) => void;
 
 export type NotificationApi = {
   addNotification: AddNotification;
   addSystemNotification: AddSystemNotification;
   removeNotification: RemoveNotification;
+  removeNotificationsForCurrentPanel: RemoveNotificationsForCurrentPanel;
   startNotificationTimeout: StartNotificationTimeout;
 };
 
@@ -152,6 +160,25 @@ export const useNotificationApi = (): NotificationApi => {
     [client],
   );
 
+  const removeNotificationsForCurrentPanel: RemoveNotificationsForCurrentPanel = useCallback(
+    (options) => {
+      if (!inferredPanel) return;
+
+      const notificationIds = client.notifications.notifications
+        .filter(
+          (notification) =>
+            !hasSystemNotificationTag(notification) &&
+            isNotificationForPanel(notification, inferredPanel, {
+              fallbackPanel: options?.fallbackPanel,
+            }),
+        )
+        .map(({ id }) => id);
+
+      notificationIds.forEach(removeNotification);
+    },
+    [client, inferredPanel, removeNotification],
+  );
+
   const startNotificationTimeout: StartNotificationTimeout = useCallback(
     (id, durationOverride) => {
       if (typeof durationOverride === 'number') {
@@ -168,6 +195,7 @@ export const useNotificationApi = (): NotificationApi => {
     addNotification,
     addSystemNotification,
     removeNotification,
+    removeNotificationsForCurrentPanel,
     startNotificationTimeout,
   };
 };
