@@ -38,12 +38,14 @@ describe('useNotificationApi', () => {
     });
 
     act(() => {
-      result.current.addNotification({
-        emitter: 'MessageComposer',
-        incident: { domain: 'api', entity: 'message', operation: 'send' },
-        message: 'Could not send message',
-        severity: 'error',
-      });
+      result.current.addNotification(
+        {
+          message: 'Could not send message',
+          options: { severity: 'error' },
+          origin: { emitter: 'MessageComposer' },
+        },
+        { incident: { domain: 'api', entity: 'message', operation: 'send' } },
+      );
     });
 
     expect(add).toHaveBeenCalledWith({
@@ -71,12 +73,14 @@ describe('useNotificationApi', () => {
     });
 
     act(() => {
-      result.current.addNotification({
-        emitter: 'Poll',
-        message: 'Poll ended',
-        severity: 'success',
-        targetPanels: ['channel', 'thread'],
-      });
+      result.current.addNotification(
+        {
+          message: 'Poll ended',
+          options: { severity: 'success' },
+          origin: { emitter: 'Poll' },
+        },
+        { targetPanels: ['channel', 'thread'] },
+      );
     });
 
     expect(add).toHaveBeenCalledWith({
@@ -103,10 +107,12 @@ describe('useNotificationApi', () => {
     });
 
     const id = result.current.addSystemNotification({
-      emitter: 'Connection',
       message: 'Reconnecting',
-      severity: 'warning',
-      tags: ['network'],
+      options: {
+        severity: 'warning',
+        tags: ['network'],
+      },
+      origin: { emitter: 'Connection' },
     });
 
     expect(id).toBe('notification-id');

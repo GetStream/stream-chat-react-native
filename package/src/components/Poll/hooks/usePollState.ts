@@ -98,19 +98,20 @@ export const usePollState = (): UsePollStateReturnType => {
     try {
       const response = await poll.close();
       addNotification({
-        emitter: 'PollActions',
         message: t('Poll ended'),
-        severity: 'success',
-        type: 'api:poll:end:success',
+        options: { severity: 'success', type: 'api:poll:end:success' },
+        origin: { emitter: 'PollActions' },
       });
       return response;
     } catch (error) {
       addNotification({
-        emitter: 'PollActions',
-        error: error instanceof Error ? error : undefined,
         message: t('Failed to end the poll'),
-        severity: 'error',
-        type: 'api:poll:end:failed',
+        options: {
+          ...(error instanceof Error ? { originalError: error } : {}),
+          severity: 'error',
+          type: 'api:poll:end:failed',
+        },
+        origin: { emitter: 'PollActions' },
       });
       throw error;
     }

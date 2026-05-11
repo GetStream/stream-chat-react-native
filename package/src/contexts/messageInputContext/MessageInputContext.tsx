@@ -409,17 +409,23 @@ export const MessageInputProvider = ({
           clearEditingState();
           await value.editMessage({ localMessage, options: sendOptions });
         } catch (error) {
-          addNotification({
-            emitter: 'MessageComposer',
-            error: error instanceof Error ? error : undefined,
-            incident: {
-              domain: 'api',
-              entity: 'message',
-              operation: 'edit',
+          addNotification(
+            {
+              message: t('Edit message request failed'),
+              options: {
+                ...(error instanceof Error ? { originalError: error } : {}),
+                severity: 'error',
+              },
+              origin: { emitter: 'MessageComposer' },
             },
-            message: t('Edit message request failed'),
-            severity: 'error',
-          });
+            {
+              incident: {
+                domain: 'api',
+                entity: 'message',
+                operation: 'edit',
+              },
+            },
+          );
           throw new Error('Error while editing message');
         }
       } else {
@@ -446,17 +452,23 @@ export const MessageInputProvider = ({
             options: sendOptions,
           });
         } catch (error) {
-          addNotification({
-            emitter: 'MessageComposer',
-            error: error instanceof Error ? error : undefined,
-            incident: {
-              domain: 'api',
-              entity: 'message',
-              operation: 'send',
+          addNotification(
+            {
+              message: t('Send message request failed'),
+              options: {
+                ...(error instanceof Error ? { originalError: error } : {}),
+                severity: 'error',
+              },
+              origin: { emitter: 'MessageComposer' },
             },
-            message: t('Send message request failed'),
-            severity: 'error',
-          });
+            {
+              incident: {
+                domain: 'api',
+                entity: 'message',
+                operation: 'send',
+              },
+            },
+          );
           throw new Error('Error while sending message');
         }
       }

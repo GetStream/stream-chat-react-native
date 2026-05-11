@@ -102,10 +102,12 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     if (!recording) {
       NativeHandlers.triggerHaptic('notificationError');
       addNotification({
-        emitter: 'AudioRecordingButton',
         message: 'Hold to start recording.',
-        severity: 'warning',
-        type: 'validation:audio:recording:hold-required',
+        options: {
+          severity: 'warning',
+          type: 'validation:audio:recording:hold-required',
+        },
+        origin: { emitter: 'AudioRecordingButton' },
       });
     }
   });
@@ -123,19 +125,21 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       const permissionsGranted = await startVoiceRecording();
       if (!permissionsGranted) {
         addNotification({
-          actions: [
-            {
-              handler: () => {
-                Linking.openSettings();
-              },
-              label: t('Open Settings'),
-            },
-          ],
-          duration: 0,
-          emitter: 'AudioRecordingButton',
           message: 'Please allow Audio permissions in settings.',
-          severity: 'warning',
-          type: 'permission:audio:recording:blocked',
+          options: {
+            actions: [
+              {
+                handler: () => {
+                  Linking.openSettings();
+                },
+                label: t('Open Settings'),
+              },
+            ],
+            duration: 0,
+            severity: 'warning',
+            type: 'permission:audio:recording:blocked',
+          },
+          origin: { emitter: 'AudioRecordingButton' },
         });
         return;
       }

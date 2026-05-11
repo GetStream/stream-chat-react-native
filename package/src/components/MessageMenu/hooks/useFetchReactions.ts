@@ -127,12 +127,16 @@ export const useFetchReactions = ({
         }
       } catch (error) {
         addNotification({
-          context: message ? { message } : undefined,
-          emitter: 'Reactions',
-          error: error instanceof Error ? error : undefined,
           message: t('Error fetching reactions'),
-          severity: 'error',
-          type: 'api:message:reactions:fetch:failed',
+          options: {
+            ...(error instanceof Error ? { originalError: error } : {}),
+            severity: 'error',
+            type: 'api:message:reactions:fetch:failed',
+          },
+          origin: {
+            ...(message ? { context: { message } } : {}),
+            emitter: 'Reactions',
+          },
         });
       }
     },

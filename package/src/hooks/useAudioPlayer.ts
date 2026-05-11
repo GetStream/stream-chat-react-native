@@ -60,11 +60,13 @@ export const useAudioPlayer = ({
       const message = errorMessages[errCode];
 
       addNotification({
-        emitter: 'AudioPlayer',
-        error: error ?? new Error(message),
         message,
-        severity: 'error',
-        type: 'browser:audio:playback:error',
+        options: {
+          originalError: error ?? new Error(message),
+          severity: 'error',
+          type: 'browser:audio:playback:error',
+        },
+        origin: { emitter: 'AudioPlayer' },
       });
     },
     [addNotification, hasNotificationManager, t],

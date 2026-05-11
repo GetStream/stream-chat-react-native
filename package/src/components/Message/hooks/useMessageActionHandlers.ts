@@ -34,6 +34,11 @@ const getNotificationError = (error: unknown): Error | undefined => {
   return undefined;
 };
 
+const getNotificationErrorOptions = (error: unknown) => {
+  const originalError = getNotificationError(error);
+  return originalError ? { originalError } : {};
+};
+
 export const useWithPortalKeyboardSafety = <T extends unknown[]>(
   callback: (...args: T) => void,
 ) => {
@@ -92,20 +97,19 @@ export const useMessageActionHandlers = ({
             try {
               await deleteMessage(message);
               addNotification({
-                context: { message },
-                emitter: 'MessageActions',
                 message: t('Message deleted'),
-                severity: 'success',
-                type: 'api:message:delete:success',
+                options: { severity: 'success', type: 'api:message:delete:success' },
+                origin: { context: { message }, emitter: 'MessageActions' },
               });
             } catch (error) {
               addNotification({
-                context: { message },
-                emitter: 'MessageActions',
-                error: getNotificationError(error),
                 message: getErrorMessage(error, t('Error deleting message')),
-                severity: 'error',
-                type: 'api:message:delete:failed',
+                options: {
+                  ...getNotificationErrorOptions(error),
+                  severity: 'error',
+                  type: 'api:message:delete:failed',
+                },
+                origin: { context: { message }, emitter: 'MessageActions' },
               });
             }
           },
@@ -134,37 +138,34 @@ export const useMessageActionHandlers = ({
       if (isMuted) {
         await client.unmuteUser(message.user.id);
         addNotification({
-          context: { message },
-          emitter: 'MessageActions',
           message: t('{{ user }} has been unmuted', {
             user: message.user?.name || message.user?.id,
           }),
-          severity: 'success',
-          type: 'api:user:unmute:success',
+          options: { severity: 'success', type: 'api:user:unmute:success' },
+          origin: { context: { message }, emitter: 'MessageActions' },
         });
       } else {
         await client.muteUser(message.user.id);
         addNotification({
-          context: { message },
-          emitter: 'MessageActions',
           message: t('{{ user }} has been muted', {
             user: message.user?.name || message.user?.id,
           }),
-          severity: 'success',
-          type: 'api:user:mute:success',
+          options: { severity: 'success', type: 'api:user:mute:success' },
+          origin: { context: { message }, emitter: 'MessageActions' },
         });
       }
     } catch (error) {
       addNotification({
-        context: { message },
-        emitter: 'MessageActions',
-        error: getNotificationError(error),
         message: getErrorMessage(
           error,
           isMuted ? t('Error unmuting a user ...') : t('Error muting a user ...'),
         ),
-        severity: 'error',
-        type: isMuted ? 'api:user:unmute:failed' : 'api:user:mute:failed',
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: isMuted ? 'api:user:unmute:failed' : 'api:user:mute:failed',
+        },
+        origin: { context: { message }, emitter: 'MessageActions' },
       });
     }
   });
@@ -188,33 +189,30 @@ export const useMessageActionHandlers = ({
       if (!isPinned) {
         await client.pinMessage(message, null);
         addNotification({
-          context: { message },
-          emitter: 'MessageActions',
           message: t('Message pinned'),
-          severity: 'success',
-          type: 'api:message:pin:success',
+          options: { severity: 'success', type: 'api:message:pin:success' },
+          origin: { context: { message }, emitter: 'MessageActions' },
         });
       } else {
         await client.unpinMessage(message);
         addNotification({
-          context: { message },
-          emitter: 'MessageActions',
           message: t('Message unpinned'),
-          severity: 'success',
-          type: 'api:message:unpin:success',
+          options: { severity: 'success', type: 'api:message:unpin:success' },
+          origin: { context: { message }, emitter: 'MessageActions' },
         });
       }
     } catch (error) {
       addNotification({
-        context: { message },
-        emitter: 'MessageActions',
-        error: getNotificationError(error),
         message: getErrorMessage(
           error,
           isPinned ? t('Error removing message pin') : t('Error pinning message'),
         ),
-        severity: 'error',
-        type: isPinned ? 'api:message:unpin:failed' : 'api:message:pin:failed',
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: isPinned ? 'api:message:unpin:failed' : 'api:message:pin:failed',
+        },
+        origin: { context: { message }, emitter: 'MessageActions' },
       });
     }
   });
@@ -237,20 +235,19 @@ export const useMessageActionHandlers = ({
             try {
               await client.flagMessage(message.id);
               addNotification({
-                context: { message },
-                emitter: 'MessageActions',
                 message: t('Message has been successfully flagged'),
-                severity: 'success',
-                type: 'api:message:flag:success',
+                options: { severity: 'success', type: 'api:message:flag:success' },
+                origin: { context: { message }, emitter: 'MessageActions' },
               });
             } catch (error) {
               addNotification({
-                context: { message },
-                emitter: 'MessageActions',
-                error: getNotificationError(error),
                 message: getErrorMessage(error, t('Error adding flag')),
-                severity: 'error',
-                type: 'api:message:flag:failed',
+                options: {
+                  ...getNotificationErrorOptions(error),
+                  severity: 'error',
+                  type: 'api:message:flag:failed',
+                },
+                origin: { context: { message }, emitter: 'MessageActions' },
               });
             }
           },
@@ -268,25 +265,24 @@ export const useMessageActionHandlers = ({
     try {
       await channel.markUnread({ message_id: message.id });
       addNotification({
-        context: { message },
-        emitter: 'MessageActions',
         message: t('Message marked as unread'),
-        severity: 'success',
-        type: 'api:message:markUnread:success',
+        options: { severity: 'success', type: 'api:message:markUnread:success' },
+        origin: { context: { message }, emitter: 'MessageActions' },
       });
     } catch (error) {
       addNotification({
-        context: { message },
-        emitter: 'MessageActions',
-        error: getNotificationError(error),
         message: getErrorMessage(
           error,
           t(
             'Error marking message unread. Cannot mark unread messages older than the newest 100 channel messages.',
           ),
         ),
-        severity: 'error',
-        type: 'api:message:markUnread:failed',
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:message:markUnread:failed',
+        },
+        origin: { context: { message }, emitter: 'MessageActions' },
       });
     }
   });

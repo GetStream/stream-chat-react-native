@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import type { Notification, NotificationAction, NotificationSeverity } from 'stream-chat';
+import type { AddNotificationPayload, Notification } from 'stream-chat';
 
 import { useNotificationTarget } from './useNotificationTarget';
 
@@ -23,25 +23,21 @@ export type NotificationIncidentDescriptor = {
   status?: string;
 };
 
-export type AddNotificationParams = {
-  actions?: NotificationAction[];
-  context?: Record<string, unknown>;
-  duration?: number;
-  emitter: string;
-  error?: Error;
+export type AddNotificationOptions = {
   incident?: NotificationIncidentDescriptor;
-  message: string;
-  metadata?: Record<string, unknown>;
-  severity?: NotificationSeverity;
-  tags?: string[];
   targetPanels?: NotificationTargetPanel[];
-  type?: string;
 };
 
-export type AddSystemNotificationParams = Omit<AddNotificationParams, 'targetPanels'>;
+export type AddSystemNotificationOptions = Omit<AddNotificationOptions, 'targetPanels'>;
 
-export type AddNotification = (params: AddNotificationParams) => void;
-export type AddSystemNotification = (params: AddSystemNotificationParams) => string;
+export type AddNotification = (
+  payload: AddNotificationPayload,
+  options?: AddNotificationOptions,
+) => void;
+export type AddSystemNotification = (
+  payload: AddNotificationPayload,
+  options?: AddSystemNotificationOptions,
+) => string;
 export type RemoveNotification = (id: string) => void;
 export type StartNotificationTimeout = (id: string, durationOverride?: number) => void;
 
@@ -68,7 +64,11 @@ const getTypeFromIncident = ({
   incident,
   severity,
   type,
-}: Pick<AddNotificationParams, 'incident' | 'severity' | 'type'>) => {
+}: {
+  incident?: NotificationIncidentDescriptor;
+  severity?: NonNullable<AddNotificationPayload['options']>['severity'];
+  type?: NonNullable<AddNotificationPayload['options']>['type'];
+}) => {
   if (type) return type;
   if (!incident) return undefined;
 
@@ -81,77 +81,66 @@ const getTypeFromIncident = ({
     .join(':');
 };
 
+const mergeNotificationOptions = (
+  payload: AddNotificationPayload,
+  options: NonNullable<AddNotificationPayload['options']>,
+): AddNotificationPayload => {
+  const mergedOptions = { ...payload.options, ...options };
+
+  if (!payload.options && Object.keys(mergedOptions).length === 0) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    options: mergedOptions,
+  };
+};
+
 export const useNotificationApi = (): NotificationApi => {
   const { client } = useChatContext();
   const inferredPanel = useNotificationTarget();
 
   const addNotification: AddNotification = useCallback(
-    ({
-      actions,
-      context,
-      duration,
-      emitter,
-      error,
-      incident,
-      message,
-      metadata,
-      severity,
-      tags,
-      targetPanels,
-      type,
-    }: AddNotificationParams) => {
-      const notificationTags = getTargetTags(targetPanels, inferredPanel, tags);
-      const resolvedType = getTypeFromIncident({ incident, severity, type });
-      const origin = context ? { context, emitter } : { emitter };
-
-      client.notifications.add({
-        message,
-        options: {
-          ...(actions ? { actions } : {}),
-          ...(typeof duration === 'number' ? { duration } : {}),
-          ...(error ? { originalError: error } : {}),
-          ...(metadata ? { metadata } : {}),
-          ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
-          ...(severity ? { severity } : {}),
-          ...(resolvedType ? { type: resolvedType } : {}),
-        },
-        origin,
+    (payload, options) => {
+      const notificationTags = getTargetTags(
+        options?.targetPanels,
+        inferredPanel,
+        payload.options?.tags,
+      );
+      const resolvedType = getTypeFromIncident({
+        incident: options?.incident,
+        severity: payload.options?.severity,
+        type: payload.options?.type,
       });
+
+      client.notifications.add(
+        mergeNotificationOptions(payload, {
+          ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
+          ...(resolvedType ? { type: resolvedType } : {}),
+        }),
+      );
     },
     [client, inferredPanel],
   );
 
   const addSystemNotification: AddSystemNotification = useCallback(
-    ({
-      actions,
-      context,
-      duration,
-      emitter,
-      error,
-      incident,
-      message,
-      metadata,
-      severity,
-      tags,
-      type,
-    }: AddSystemNotificationParams) => {
-      const notificationTags = Array.from(new Set([SYSTEM_NOTIFICATION_TAG, ...(tags ?? [])]));
-      const resolvedType = getTypeFromIncident({ incident, severity, type });
-      const origin = context ? { context, emitter } : { emitter };
-
-      return client.notifications.add({
-        message,
-        options: {
-          ...(actions ? { actions } : {}),
-          ...(typeof duration === 'number' ? { duration } : {}),
-          ...(error ? { originalError: error } : {}),
-          ...(metadata ? { metadata } : {}),
-          ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
-          ...(severity ? { severity } : {}),
-          ...(resolvedType ? { type: resolvedType } : {}),
-        },
-        origin,
+    (payload, options) => {
+      const notificationTags = Array.from(
+        new Set([SYSTEM_NOTIFICATION_TAG, ...(payload.options?.tags ?? [])]),
+      );
+      const resolvedType = getTypeFromIncident({
+        incident: options?.incident,
+        severity: payload.options?.severity,
+        type: payload.options?.type,
       });
+
+      return client.notifications.add(
+        mergeNotificationOptions(payload, {
+          ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
+          ...(resolvedType ? { type: resolvedType } : {}),
+        }),
+      );
     },
     [client],
   );

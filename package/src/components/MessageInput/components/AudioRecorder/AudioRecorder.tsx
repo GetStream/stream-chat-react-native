@@ -107,10 +107,9 @@ const DeleteRecording = ({
     NativeHandlers.triggerHaptic('impactMedium');
     await deleteVoiceRecordingHandler();
     addNotification({
-      emitter: 'AudioRecorder',
       message: t('Voice message deleted'),
-      severity: 'info',
-      type: 'audioRecording:cancel:success',
+      options: { severity: 'info', type: 'audioRecording:cancel:success' },
+      origin: { emitter: 'AudioRecorder' },
     });
   };
   return (
