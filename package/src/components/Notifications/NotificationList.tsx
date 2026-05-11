@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
@@ -12,6 +12,7 @@ import type { NotificationTargetPanel } from './notificationTarget';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useLazyRef } from '../../hooks/useLazyRef';
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 
@@ -95,7 +96,7 @@ export const NotificationList = ({
   const { removeNotification, startNotificationTimeout } = useNotificationApi();
   const styles = useStyles({ bottomOffset, topOffset, verticalAlignment });
   const { t } = useTranslationContext();
-  const startedTimeoutIdsRef = useRef<Set<string>>(new Set());
+  const startedTimeoutIdsRef = useLazyRef<Set<string>>(() => new Set());
 
   const combinedFilter = useCallback(
     (notification: NotificationType) => {
@@ -121,7 +122,7 @@ export const NotificationList = ({
       startedTimeoutIdsRef.current.delete(id);
       removeNotification(id);
     },
-    [removeNotification],
+    [removeNotification, startedTimeoutIdsRef],
   );
 
   useEffect(() => {
@@ -131,7 +132,7 @@ export const NotificationList = ({
         startedTimeoutIdsRef.current.delete(id);
       }
     });
-  }, [notifications]);
+  }, [notifications, startedTimeoutIdsRef]);
 
   useEffect(() => {
     if (!notification || notifications.length <= 1) return;
@@ -142,7 +143,7 @@ export const NotificationList = ({
       startedTimeoutIdsRef.current.delete(id);
       removeNotification(id);
     });
-  }, [notification, notifications, removeNotification]);
+  }, [notification, notifications, removeNotification, startedTimeoutIdsRef]);
 
   useEffect(() => {
     if (!notification) return;
@@ -155,7 +156,7 @@ export const NotificationList = ({
     } else {
       startNotificationTimeout(notification.id);
     }
-  }, [notification, startNotificationTimeout]);
+  }, [notification, startNotificationTimeout, startedTimeoutIdsRef]);
 
   if (!notification) return null;
 
