@@ -14,7 +14,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../theme';
-import { transitions } from '../../utils/transitions';
+import { transitions } from '../../utils/animations/transitions';
 
 export type NotificationListFilter = (notification: NotificationType) => boolean;
 export type NotificationListEnterFrom = 'bottom' | 'left' | 'right' | 'top';

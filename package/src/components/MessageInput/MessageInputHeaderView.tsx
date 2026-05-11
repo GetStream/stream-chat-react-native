@@ -17,7 +17,7 @@ import { useMessageInputContext } from '../../contexts/messageInputContext/Messa
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
-import { transitions } from '../../utils/transitions';
+import { transitions } from '../../utils/animations/transitions';
 
 export const MessageInputHeaderView = () => {
   const {
