@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
@@ -161,9 +161,10 @@ export const NotificationList = ({
   if (!notification) return null;
 
   return (
-    <View
+    <Animated.View
       accessibilityLabel={t('a11y/Notifications')}
       pointerEvents='box-none'
+      layout={transitions.layout200}
       style={styles.container}
       testID='notification-list'
     >
@@ -181,7 +182,7 @@ export const NotificationList = ({
           showClose={!notification.duration}
         />
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 };
 
