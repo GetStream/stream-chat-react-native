@@ -1,7 +1,7 @@
 # Official React Native SDK for Stream Chat
 
 <p align="center">
-  <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
+  <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src=".readme-assets/stream-chat-react-native-cover.png" alt="Stream Chat React Native SDK" width="100%" /></a>
 </p>
 
 > The official React Native and Expo components for Stream Chat, a service for
