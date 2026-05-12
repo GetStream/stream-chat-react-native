@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { Thread, ThreadManagerState } from 'stream-chat';
@@ -14,6 +14,7 @@ import {
   useThreadsContext,
 } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
+import { useLazyRef } from '../../hooks/useLazyRef';
 import { generateRandomId } from '../../utils/utils';
 
 import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
@@ -83,10 +84,8 @@ export const ThreadList = (props: ThreadListProps) => {
   const { isFocused = true, notificationHostId: notificationHostIdProp } = props;
   const { NotificationList, ThreadListComponent: ThreadListContent } = useComponentsContext();
   const { client } = useChatContext();
-  const notificationHostIdRef = useRef(
-    notificationHostIdProp ?? `thread-list:${generateRandomId()}`,
-  );
-  const notificationHostId = notificationHostIdProp ?? notificationHostIdRef.current;
+  const fallbackNotificationHostIdRef = useLazyRef(() => `thread-list:${generateRandomId()}`);
+  const notificationHostId = notificationHostIdProp ?? fallbackNotificationHostIdRef.current;
 
   useEffect(() => {
     if (!client) {

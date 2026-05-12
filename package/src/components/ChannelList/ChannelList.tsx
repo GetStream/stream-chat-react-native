@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
@@ -24,6 +24,7 @@ import {
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
+import { useLazyRef } from '../../hooks/useLazyRef';
 import type { ChannelListEventListenerOptions } from '../../types/types';
 import { generateRandomId } from '../../utils/utils';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
@@ -255,10 +256,8 @@ export const ChannelList = (props: ChannelListProps) => {
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-  const notificationHostIdRef = useRef(
-    notificationHostIdProp ?? `channel-list:${generateRandomId()}`,
-  );
-  const notificationHostId = notificationHostIdProp ?? notificationHostIdRef.current;
+  const fallbackNotificationHostIdRef = useLazyRef(() => `channel-list:${generateRandomId()}`);
+  const notificationHostId = notificationHostIdProp ?? fallbackNotificationHostIdRef.current;
   const { client, enableOfflineSupport } = useChatContext();
   const { NotificationList } = useComponentsContext();
   const channelManager = useMemo(() => client.createChannelManager({}), [client]);
