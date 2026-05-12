@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Alert } from 'react-native';
 
-import type { Channel } from 'stream-chat';
+import type { BlockedUsersState, Channel } from 'stream-chat';
 
 import {
   ChannelActions,
@@ -15,6 +15,7 @@ import { useTheme, useTranslationContext } from '../contexts';
 import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
 import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';
 import { ArrowBoxLeft } from '../icons/leave';
+import { useStateStore } from './useStateStore';
 
 export type ChannelActionHandler = () => Promise<void> | void;
 
@@ -31,6 +32,7 @@ export type ChannelActionItemsParams = {
   actions: ChannelActions;
   channel: Channel;
   isArchived: boolean;
+  isBlocked: boolean | undefined;
   isDirectChat: boolean;
   isPinned: boolean;
   muteActive: boolean;
@@ -66,20 +68,13 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       blockUser,
       unblockUser,
     },
+    isBlocked,
     isDirectChat,
     muteActive,
     t,
     channel,
   } = channelActionItemsParams;
   const ownUserId = channel.getClient().userID;
-
-  const client = channel.getClient();
-
-  const isBlocked = isDirectChat
-    ? new Set(client.blockedUsers.getLatestValue().userIds).has(
-        getOtherUserInDirectChannel(channel)?.user?.id ?? '',
-      )
-    : undefined;
 
   const actionItems: ChannelActionItem[] = [
     {
@@ -180,6 +175,9 @@ type UseChannelActionItemsParams = {
   getChannelActionItems?: GetChannelActionItems;
 };
 
+const blockedUsersStateSelector = (state: BlockedUsersState) =>
+  ({ userIds: state.userIds }) as const;
+
 export const useChannelActionItems = ({
   channel,
   getChannelActionItems: getChannelActionItemsProp = getChannelActionItems,
@@ -193,17 +191,27 @@ export const useChannelActionItems = ({
 
   const muteActive = useChannelMuteActive(channel);
 
+  const { userIds: blockedUserIds } = useStateStore(
+    channel.getClient().blockedUsers,
+    blockedUsersStateSelector,
+  );
+
+  const isBlocked = isDirectChat
+    ? blockedUserIds.includes(getOtherUserInDirectChannel(channel)?.user?.id ?? '')
+    : undefined;
+
   const channelActionItemsParams = useMemo(
     () => ({
       actions: channelActions,
       channel,
       isArchived,
+      isBlocked,
       isDirectChat,
       isPinned,
       muteActive,
       t,
     }),
-    [channel, muteActive, channelActions, isArchived, isDirectChat, isPinned, t],
+    [channel, muteActive, channelActions, isArchived, isBlocked, isDirectChat, isPinned, t],
   );
 
   const defaultItems = useMemo(
