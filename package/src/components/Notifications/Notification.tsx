@@ -13,11 +13,11 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Check } from '../../icons/checkmark';
 import { Warning } from '../../icons/exclamation-triangle-fill';
-import { InfoTooltip } from '../../icons/info';
 import { Reload } from '../../icons/refresh';
 import { IconProps } from '../../icons/utils/base';
 import { NewClose } from '../../icons/xmark';
 import { primitives } from '../../theme';
+import { Button } from '../ui/Button';
 
 export type NotificationEntryDirection = 'bottom' | 'left' | 'right' | 'top';
 export type NotificationTransitionState = 'enter' | 'exit';
@@ -31,12 +31,19 @@ export type NotificationVariant = 'default' | NotificationSeverity;
 export const getNotificationVariant = (notification: NotificationType): NotificationVariant =>
   notification.severity ?? 'default';
 
-const IconsByVariant: Partial<Record<NotificationVariant, ComponentType<IconProps>>> = {
+const IconsByVariant: Partial<Record<NotificationVariant, ComponentType<IconProps> | null>> = {
   error: Warning,
-  info: InfoTooltip,
+  info: null,
   loading: Reload,
   success: Check,
   warning: Warning,
+};
+
+const getNotificationIconComponent = (notification: NotificationType) => {
+  const variant = getNotificationVariant(notification);
+  if (variant === 'default') return undefined;
+
+  return IconsByVariant[variant] ?? undefined;
 };
 
 export const NotificationIcon = ({ notification }: NotificationIconProps) => {
@@ -44,9 +51,7 @@ export const NotificationIcon = ({ notification }: NotificationIconProps) => {
     theme: { notification: notificationTheme, semantics },
   } = useTheme();
   const variant = getNotificationVariant(notification);
-  if (variant === 'default') return null;
-
-  const Icon = IconsByVariant[variant];
+  const Icon = getNotificationIconComponent(notification);
   if (!Icon) return null;
 
   const color =
@@ -91,6 +96,10 @@ export const Notification = ({
   const { t } = useTranslationContext();
   const displayMessage = getNotificationDisplayMessage({ notification, t });
   const ResolvedIcon = Icon ?? NotificationIconComponent;
+  const hasResolvedIcon =
+    ResolvedIcon === NotificationIcon
+      ? !!getNotificationIconComponent(notification)
+      : !!ResolvedIcon;
   const isPersistent = !notification.duration;
   const closeVisible = showClose || isPersistent;
 
@@ -117,8 +126,14 @@ export const Notification = ({
       ]}
       testID='notification'
     >
-      <View style={[styles.contentContainer, notificationTheme.contentContainer]}>
-        {ResolvedIcon ? <ResolvedIcon notification={notification} /> : null}
+      <View
+        style={[
+          styles.contentContainer,
+          hasResolvedIcon ? { paddingLeft: primitives.spacingXxs } : undefined,
+          notificationTheme.contentContainer,
+        ]}
+      >
+        {hasResolvedIcon ? <ResolvedIcon notification={notification} /> : null}
         <Text
           style={[styles.message, { color: semantics.textOnInverse }, notificationTheme.message]}
         >
@@ -128,30 +143,16 @@ export const Notification = ({
       {notification.actions && notification.actions.length > 0 ? (
         <View style={[styles.actionsContainer, notificationTheme.actionsContainer]}>
           {notification.actions.map((action, index) => (
-            <Pressable
-              accessibilityRole='button'
+            <Button
+              accessibilityLabel={action.label}
               key={`${action.label}-${index}`}
+              label={action.label}
               onPress={action.handler}
-              style={({ pressed }) => [
-                styles.actionButton,
-                {
-                  backgroundColor: pressed
-                    ? semantics.backgroundUtilityPressed
-                    : semantics.backgroundCoreSurfaceStrong,
-                },
-                notificationTheme.actionButton,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.actionButtonText,
-                  { color: semantics.textPrimary },
-                  notificationTheme.actionButtonText,
-                ]}
-              >
-                {action.label}
-              </Text>
-            </Pressable>
+              size='sm'
+              style={[styles.actionButton, notificationTheme.actionButton]}
+              type='outline'
+              variant='primary'
+            />
           ))}
         </View>
       ) : null}
@@ -177,14 +178,7 @@ export const Notification = ({
 
 const styles = StyleSheet.create({
   actionButton: {
-    borderRadius: primitives.radiusLg,
-    minHeight: 32,
-    paddingHorizontal: primitives.spacingSm,
-    paddingVertical: primitives.spacingXs,
-  },
-  actionButtonText: {
-    fontSize: primitives.typographyFontSizeSm,
-    fontWeight: primitives.typographyFontWeightSemiBold,
+    width: 'auto',
   },
   actionsContainer: {
     flexDirection: 'row',
@@ -195,41 +189,44 @@ const styles = StyleSheet.create({
   closeButton: {
     alignItems: 'center',
     borderRadius: primitives.radiusMax,
-    height: 32,
+    height: 24,
     justifyContent: 'center',
     marginLeft: primitives.spacingXs,
-    width: 32,
+    width: 24,
   },
   container: {
     alignItems: 'flex-start',
-    borderRadius: primitives.radiusLg,
+    alignSelf: 'center',
+    borderRadius: primitives.radius3xl,
     elevation: 5,
     flexDirection: 'row',
     maxWidth: '100%',
     paddingHorizontal: primitives.spacingSm,
-    paddingVertical: primitives.spacingSm,
     shadowOffset: { height: 2, width: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
   },
   contentContainer: {
     alignItems: 'center',
-    flex: 1,
+    flexShrink: 1,
     flexDirection: 'row',
+    paddingVertical: primitives.spacingXxxs,
+    paddingRight: primitives.spacingXs,
+    paddingLeft: primitives.spacingXs,
     gap: primitives.spacingXs,
-    minHeight: 32,
+    minHeight: 48,
   },
   iconContainer: {
     alignItems: 'center',
-    height: 24,
+    height: 20,
     justifyContent: 'center',
-    width: 24,
+    width: 20,
   },
   message: {
-    flex: 1,
     flexShrink: 1,
     fontSize: primitives.typographyFontSizeSm,
-    fontWeight: primitives.typographyFontWeightMedium,
+    fontWeight: primitives.typographyFontWeightRegular,
     lineHeight: primitives.typographyLineHeightNormal,
+    paddingVertical: primitives.spacingSm,
   },
 });

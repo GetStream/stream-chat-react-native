@@ -141,8 +141,8 @@ const useStyles = ({
         ...containerOffsetStyle,
       },
       notificationWrapper: {
-        alignSelf: 'stretch',
-        width: '100%',
+        alignSelf: 'center',
+        maxWidth: '100%',
       },
     });
   }, [bottomOffset, notificationListContainer, topOffset, verticalAlignment]);

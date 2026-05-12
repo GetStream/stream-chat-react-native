@@ -71,12 +71,7 @@ describe('NotificationList', () => {
     });
 
     await waitFor(() => expect(screen.getByText('Upload failed')).toBeTruthy());
-    expect(
-      StyleSheet.flatten(screen.getByTestId('notification-list-item').props.style),
-    ).toMatchObject({
-      alignSelf: 'stretch',
-      width: '100%',
-    });
+    expect(screen.getByTestId('notification-icon')).toBeTruthy();
     expect(startTimeoutSpy).toHaveBeenCalledWith(manager.notifications[0].id);
   });
 
@@ -97,7 +92,7 @@ describe('NotificationList', () => {
     });
 
     await waitFor(() => expect(screen.getByText('Floating composer notice')).toBeTruthy());
-    expect(screen.getByTestId('notification-icon')).toBeTruthy();
+    expect(screen.queryByTestId('notification-icon')).toBeNull();
     expect(StyleSheet.flatten(screen.getByTestId('notification-list').props.style)).toMatchObject({
       bottom: 96,
     });
@@ -255,6 +250,7 @@ describe('NotificationList', () => {
   it('keeps a persistent notification visible when a transient notification arrives', async () => {
     const manager = new NotificationManager();
     const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
+    const retryHandler = jest.fn();
     let persistentId = '';
     let transientId = '';
 
@@ -264,7 +260,7 @@ describe('NotificationList', () => {
       persistentId = manager.add({
         message: 'Retry upload',
         options: {
-          actions: [{ handler: jest.fn(), label: 'Retry' }],
+          actions: [{ handler: retryHandler, label: 'Retry' }],
           duration: 0,
           severity: 'error',
           tags: ['target:channel'],
@@ -280,6 +276,8 @@ describe('NotificationList', () => {
     });
 
     await waitFor(() => expect(screen.getByText('Retry upload')).toBeTruthy());
+    fireEvent.press(screen.getByLabelText('Retry'));
+    expect(retryHandler).toHaveBeenCalledTimes(1);
     expect(screen.queryByText('Copied')).toBeNull();
 
     await waitFor(() => {
