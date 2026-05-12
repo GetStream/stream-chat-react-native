@@ -665,6 +665,7 @@ describe('useMessageListPagination', () => {
               options: {
                 originalError: expect.any(Error),
                 severity: 'error',
+                tags: ['target:channel:channel:messaging:general'],
                 type: 'channel:jumpToFirstUnread:failed',
               },
               origin: {

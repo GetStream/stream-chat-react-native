@@ -92,6 +92,7 @@ describe('useMessageActionHandlers notifications', () => {
       message: 'Message pinned',
       options: {
         severity: 'success',
+        tags: ['target:channel:channel:messaging:general'],
         type: 'api:message:pin:success',
       },
       origin: {
@@ -118,6 +119,7 @@ describe('useMessageActionHandlers notifications', () => {
       options: {
         originalError: error,
         severity: 'error',
+        tags: ['target:channel:channel:messaging:general'],
         type: 'api:message:markUnread:failed',
       },
       origin: {

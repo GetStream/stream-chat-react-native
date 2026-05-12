@@ -19,7 +19,6 @@ import {
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useNotificationApi } from '../hooks/useNotificationApi';
 import { NotificationList } from '../NotificationList';
-import { getNotificationTargetClaim } from '../notificationTarget';
 import { NotificationTargetProvider } from '../NotificationTargetContext';
 
 const t = ((key: string, options?: Record<string, unknown>) => {
@@ -385,7 +384,7 @@ describe('NotificationList', () => {
     expect(startTimeoutSpy).toHaveBeenCalledWith(secondId);
   });
 
-  it('claims untagged manager notifications to the latest active host', async () => {
+  it('adds an exact target tag to untagged manager notifications from the latest active host', async () => {
     const manager = new NotificationManager();
     jest.spyOn(manager, 'startTimeout').mockImplementation();
     let id = '';
@@ -412,13 +411,12 @@ describe('NotificationList', () => {
 
     await waitFor(() => expect(screen.getByText('Untagged notice')).toBeTruthy());
     expect(screen.getAllByText('Untagged notice')).toHaveLength(1);
-    expect(getNotificationTargetClaim(manager, id)).toEqual({
-      hostId: 'channel:messaging:second',
-      panel: 'channel',
-    });
+    expect(manager.notifications.find((notification) => notification.id === id)?.tags).toEqual([
+      'target:channel:channel:messaging:second',
+    ]);
   });
 
-  it('claims action-scoped manager notifications to the triggering host', async () => {
+  it('adds an exact target tag to action-scoped manager notifications from the triggering host', async () => {
     const manager = new NotificationManager();
     jest.spyOn(manager, 'startTimeout').mockImplementation();
 
@@ -459,14 +457,11 @@ describe('NotificationList', () => {
     fireEvent.press(screen.getByTestId('trigger-action-notification'));
 
     await waitFor(() => expect(screen.getByText('Action-scoped notice')).toBeTruthy());
-    const id = manager.notifications.find(
+    const notification = manager.notifications.find(
       (notification) => notification.message === 'Action-scoped notice',
-    )?.id;
+    );
 
     expect(screen.getAllByText('Action-scoped notice')).toHaveLength(1);
-    expect(id ? getNotificationTargetClaim(manager, id) : undefined).toEqual({
-      hostId: 'channel:messaging:first',
-      panel: 'channel',
-    });
+    expect(notification?.tags).toEqual(['target:channel:channel:messaging:first']);
   });
 });

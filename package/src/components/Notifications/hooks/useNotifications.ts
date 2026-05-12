@@ -21,11 +21,7 @@ export const useNotifications = (options?: UseNotificationsOptions): Notificatio
       const notifications = state.notifications;
       const target = options?.target;
       const byTarget = target
-        ? notifications.filter((notification) =>
-            isNotificationForTarget(notification, target, {
-              claimOwner: client.notifications,
-            }),
-          )
+        ? notifications.filter((notification) => isNotificationForTarget(notification, target))
         : options?.requireTarget
           ? []
           : notifications;
@@ -34,7 +30,7 @@ export const useNotifications = (options?: UseNotificationsOptions): Notificatio
         notifications: options?.filter ? byTarget.filter(options.filter) : byTarget,
       };
     },
-    [client.notifications, options?.filter, options?.requireTarget, options?.target],
+    [options?.filter, options?.requireTarget, options?.target],
   );
 
   const { notifications } = useStateStore(client.notifications.store, selector);

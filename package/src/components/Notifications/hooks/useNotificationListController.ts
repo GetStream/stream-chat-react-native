@@ -9,10 +9,9 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useLazyRef } from '../../../hooks/useLazyRef';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import {
-  claimNotificationTargetIfNeeded,
   isNotificationForTarget,
-  pruneNotificationTargetClaims,
   registerActiveNotificationTarget,
+  resolveNotificationTargetTagIfNeeded,
   type NotificationTargetPanel,
 } from '../notificationTarget';
 import { useResolvedNotificationTarget } from '../NotificationTargetContext';
@@ -89,27 +88,22 @@ export const useNotificationListController = ({
     client.notifications.notifications
       .filter(
         (notification) =>
-          !hasSystemNotificationTag(notification) &&
-          isNotificationForTarget(notification, target, {
-            claimOwner: client.notifications,
-          }),
+          !hasSystemNotificationTag(notification) && isNotificationForTarget(notification, target),
       )
       .forEach(({ id }) => removeNotification(id));
   });
 
   useEffect(() => {
     return client.notifications.store.addPreprocessor((nextState, previousState) => {
-      const notificationIds = new Set(nextState.notifications.map(({ id }) => id));
       const previousNotificationIds = new Set(
         previousState?.notifications.map(({ id }) => id) ?? [],
       );
 
-      pruneNotificationTargetClaims(client.notifications, notificationIds);
       nextState.notifications.forEach((notification) => {
         if (previousNotificationIds.has(notification.id)) return;
         if (hasSystemNotificationTag(notification)) return;
 
-        claimNotificationTargetIfNeeded(client.notifications, notification);
+        resolveNotificationTargetTagIfNeeded(client.notifications, notification);
       });
     });
   }, [client.notifications]);

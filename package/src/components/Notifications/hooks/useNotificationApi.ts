@@ -4,12 +4,11 @@ import type { AddNotificationPayload, Notification } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
-  claimNotificationTarget,
-  getNotificationTarget,
+  addExactNotificationTargetTag,
   getNotificationTargetTag,
+  hasNotificationTargetTag,
   isNotificationForTarget,
   registerNotificationActionTarget,
-  removeNotificationTargetClaim,
   type NotificationTarget,
   type NotificationTargetPanel,
 } from '../notificationTarget';
@@ -61,11 +60,18 @@ export type NotificationApi = {
 };
 
 const getTargetTags = (
+  target: NotificationTarget | undefined,
   targetPanels: NotificationTargetPanel[] | undefined,
   tags: string[] | undefined,
 ) => {
   if (targetPanels) {
-    return Array.from(new Set([...targetPanels.map(getNotificationTargetTag), ...(tags ?? [])]));
+    return Array.from(
+      new Set([...targetPanels.map((panel) => getNotificationTargetTag(panel)), ...(tags ?? [])]),
+    );
+  }
+
+  if (target) {
+    return addExactNotificationTargetTag(target, tags);
   }
 
   return tags ?? [];
@@ -117,36 +123,24 @@ export const useNotificationApi = (): NotificationApi => {
     (payload, options) => {
       if (!notificationManager) return;
 
-      const notificationTags = getTargetTags(options?.targetPanels, payload.options?.tags);
+      const target =
+        options?.target ??
+        (options?.targetPanels || hasNotificationTargetTag(payload.options?.tags)
+          ? undefined
+          : contextTarget);
+      const notificationTags = getTargetTags(target, options?.targetPanels, payload.options?.tags);
       const resolvedType = getTypeFromIncident({
         incident: options?.incident,
         severity: payload.options?.severity,
         type: payload.options?.type,
       });
-      const target = options?.target ?? (options?.targetPanels ? undefined : contextTarget);
-      const unregisterActionTarget = target
-        ? registerNotificationActionTarget(notificationManager, target)
-        : undefined;
 
-      try {
-        const notificationId = notificationManager.add(
-          mergeNotificationOptions(payload, {
-            ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
-            ...(resolvedType ? { type: resolvedType } : {}),
-          }),
-        );
-
-        if (target) {
-          const notification = notificationManager.notifications?.find(
-            ({ id }) => id === notificationId,
-          );
-          if (!notification || !getNotificationTarget(notification)) {
-            claimNotificationTarget(notificationManager, notificationId, target);
-          }
-        }
-      } finally {
-        unregisterActionTarget?.();
-      }
+      notificationManager.add(
+        mergeNotificationOptions(payload, {
+          ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
+          ...(resolvedType ? { type: resolvedType } : {}),
+        }),
+      );
     },
     [contextTarget, notificationManager],
   );
@@ -178,7 +172,6 @@ export const useNotificationApi = (): NotificationApi => {
     (id) => {
       if (!notificationManager) return;
 
-      removeNotificationTargetClaim(notificationManager, id);
       notificationManager.remove(id);
     },
     [notificationManager],
@@ -191,9 +184,7 @@ export const useNotificationApi = (): NotificationApi => {
       .filter(
         (notification) =>
           !hasSystemNotificationTag(notification) &&
-          isNotificationForTarget(notification, contextTarget, {
-            claimOwner: notificationManager,
-          }),
+          isNotificationForTarget(notification, contextTarget),
       )
       .map(({ id }) => id);
 

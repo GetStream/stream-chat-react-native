@@ -4,7 +4,6 @@ import { act, renderHook } from '@testing-library/react-native';
 
 import { ChannelProvider } from '../../../../contexts/channelContext/ChannelContext';
 import { ChatProvider } from '../../../../contexts/chatContext/ChatContext';
-import { getNotificationTargetClaim } from '../../notificationTarget';
 import { NotificationTargetProvider } from '../../NotificationTargetContext';
 import { useNotificationApi } from '../useNotificationApi';
 
@@ -28,7 +27,7 @@ const createWrapper =
   );
 
 describe('useNotificationApi', () => {
-  it('claims inferred targets and adds incident-derived types', () => {
+  it('adds inferred exact target tags and incident-derived types', () => {
     const add = jest.fn(() => 'notification-id');
     const client = {
       notifications: {
@@ -56,13 +55,10 @@ describe('useNotificationApi', () => {
       message: 'Could not send message',
       options: {
         severity: 'error',
+        tags: ['target:channel:channel:messaging:general'],
         type: 'api:message:send:failed',
       },
       origin: { emitter: 'MessageComposer' },
-    });
-    expect(getNotificationTargetClaim(client.notifications, 'notification-id')).toEqual({
-      hostId: 'channel:messaging:general',
-      panel: 'channel',
     });
   });
 

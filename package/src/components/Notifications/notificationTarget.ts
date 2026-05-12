@@ -2,24 +2,25 @@ import type { Notification } from 'stream-chat';
 
 const NOTIFICATION_TARGET_PANELS = ['channel', 'thread', 'channel-list', 'thread-list'] as const;
 const NOTIFICATION_TARGET_TAG_PREFIX = 'target:' as const;
-const NOTIFICATION_TARGET_HOST_TAG_PREFIX = 'target-host:' as const;
 
-export type NotificationTargetPanel = (typeof NOTIFICATION_TARGET_PANELS)[number];
+export type BuiltInNotificationTargetPanel = (typeof NOTIFICATION_TARGET_PANELS)[number];
+export type NotificationTargetPanel = BuiltInNotificationTargetPanel | (string & {});
 export type NotificationTarget = {
   hostId: string;
   panel: NotificationTargetPanel;
 };
 export type NotificationTargetOwner = object;
 
+type ParsedNotificationTargetTag = {
+  hostId?: string;
+  panel: NotificationTargetPanel;
+};
+
 type NotificationTargetStackItem = {
   target: NotificationTarget;
   token: symbol;
 };
 
-const notificationTargetClaims = new WeakMap<
-  NotificationTargetOwner,
-  Map<string, NotificationTarget>
->();
 const activeNotificationTargets = new WeakMap<
   NotificationTargetOwner,
   NotificationTargetStackItem[]
@@ -30,22 +31,28 @@ const actionNotificationTargets = new WeakMap<
 >();
 
 export const isNotificationTargetPanel = (value: unknown): value is NotificationTargetPanel =>
+  typeof value === 'string' && value.length > 0 && !value.includes(':');
+
+export const isBuiltInNotificationTargetPanel = (
+  value: unknown,
+): value is BuiltInNotificationTargetPanel =>
   typeof value === 'string' && (NOTIFICATION_TARGET_PANELS as readonly string[]).includes(value);
 
-export const getNotificationTargetTag = (panel: NotificationTargetPanel) =>
-  `${NOTIFICATION_TARGET_TAG_PREFIX}${panel}` as const;
-
-export const getNotificationTargetHostTag = ({ hostId, panel }: NotificationTarget) =>
-  `${NOTIFICATION_TARGET_HOST_TAG_PREFIX}${panel}:${hostId}` as const;
+export const getNotificationTargetTag = (panel: NotificationTargetPanel, hostId?: string) =>
+  `${NOTIFICATION_TARGET_TAG_PREFIX}${panel}${hostId ? `:${hostId}` : ''}`;
 
 export const addNotificationTargetTag = (
   panel: NotificationTargetPanel | undefined,
   tags?: string[],
+  hostId?: string,
 ) => {
   if (!panel) return tags ?? [];
 
-  return Array.from(new Set([getNotificationTargetTag(panel), ...(tags ?? [])]));
+  return Array.from(new Set([getNotificationTargetTag(panel, hostId), ...(tags ?? [])]));
 };
+
+export const addExactNotificationTargetTag = (target: NotificationTarget, tags?: string[]) =>
+  addNotificationTargetTag(target.panel, tags, target.hostId);
 
 export const getChannelNotificationHostId = (cid: string) => `channel:${cid}` as const;
 
@@ -61,26 +68,36 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const getStringValue = (value: unknown) => (typeof value === 'string' ? value : undefined);
 
-const getNotificationTargetFromHostTag = (
-  notification: Notification,
-): NotificationTarget | undefined => {
-  const targetHostTag = notification.tags?.find((tag) =>
-    tag.startsWith(NOTIFICATION_TARGET_HOST_TAG_PREFIX),
+const parseNotificationTargetTag = (tag: string): ParsedNotificationTargetTag | undefined => {
+  if (!tag.startsWith(NOTIFICATION_TARGET_TAG_PREFIX)) return undefined;
+
+  const tagValue = tag.slice(NOTIFICATION_TARGET_TAG_PREFIX.length);
+  const hostSeparatorIndex = tagValue.indexOf(':');
+  const panel = hostSeparatorIndex === -1 ? tagValue : tagValue.slice(0, hostSeparatorIndex);
+
+  if (!isNotificationTargetPanel(panel)) return undefined;
+
+  const hostId = hostSeparatorIndex === -1 ? undefined : tagValue.slice(hostSeparatorIndex + 1);
+
+  return hostId ? { hostId, panel } : { panel };
+};
+
+const getNotificationTargetTags = (notification: Notification) =>
+  (notification.tags ?? [])
+    .map(parseNotificationTargetTag)
+    .filter((target): target is ParsedNotificationTargetTag => !!target);
+
+export const hasNotificationTargetTag = (tags: string[] | undefined) =>
+  tags?.some((tag) => !!parseNotificationTargetTag(tag)) ?? false;
+
+const getExactNotificationTargetTags = (notification: Notification): NotificationTarget[] =>
+  getNotificationTargetTags(notification).filter(
+    (target): target is NotificationTarget => !!target.hostId,
   );
 
-  if (!targetHostTag) return undefined;
-
-  const targetHostTagValue = targetHostTag.slice(NOTIFICATION_TARGET_HOST_TAG_PREFIX.length);
-  for (const panel of NOTIFICATION_TARGET_PANELS) {
-    const panelPrefix = `${panel}:`;
-    if (!targetHostTagValue.startsWith(panelPrefix)) continue;
-
-    const hostId = targetHostTagValue.slice(panelPrefix.length);
-    return hostId ? { hostId, panel } : undefined;
-  }
-
-  return undefined;
-};
+const getNotificationTargetFromTags = (
+  notification: Notification,
+): NotificationTarget | undefined => getExactNotificationTargetTags(notification)[0];
 
 const getNotificationTargetFromComposer = (
   notification: Notification,
@@ -101,15 +118,12 @@ const getNotificationTargetFromComposer = (
 };
 
 export const getNotificationTarget = (notification: Notification): NotificationTarget | undefined =>
-  getNotificationTargetFromHostTag(notification) ?? getNotificationTargetFromComposer(notification);
+  getNotificationTargetFromTags(notification) ?? getNotificationTargetFromComposer(notification);
 
 const getExplicitNotificationTargetPanels = (
   notification: Notification,
 ): NotificationTargetPanel[] => {
-  const targetPanels = (notification.tags ?? [])
-    .filter((tag) => tag.startsWith(NOTIFICATION_TARGET_TAG_PREFIX))
-    .map((tag) => tag.slice(NOTIFICATION_TARGET_TAG_PREFIX.length))
-    .filter((value): value is NotificationTargetPanel => isNotificationTargetPanel(value));
+  const targetPanels = getNotificationTargetTags(notification).map(({ panel }) => panel);
 
   if (targetPanels.length > 0) {
     return Array.from(new Set(targetPanels));
@@ -196,102 +210,48 @@ export const getActiveNotificationTarget = (owner: NotificationTargetOwner) =>
 export const getNotificationActionTarget = (owner: NotificationTargetOwner) =>
   getLastNotificationTarget(actionNotificationTargets, owner);
 
-const getNotificationTargetClaims = (owner: NotificationTargetOwner) => {
-  const claims = notificationTargetClaims.get(owner) ?? new Map<string, NotificationTarget>();
-  notificationTargetClaims.set(owner, claims);
-  return claims;
+const hasExactNotificationTargetTag = (notification: Notification) =>
+  getExactNotificationTargetTags(notification).length > 0;
+
+const hasExplicitNotificationTargetPanel = (notification: Notification) =>
+  getExplicitNotificationTargetPanels(notification).length > 0;
+
+const setNotificationTargetTag = (notification: Notification, target: NotificationTarget) => {
+  notification.tags = addExactNotificationTargetTag(target, notification.tags);
 };
 
-export const claimNotificationTarget = (
-  owner: NotificationTargetOwner,
-  notificationId: string,
-  target: NotificationTarget,
-) => {
-  getNotificationTargetClaims(owner).set(notificationId, target);
-};
-
-export const getNotificationTargetClaim = (
-  owner: NotificationTargetOwner,
-  notificationId: string,
-) => notificationTargetClaims.get(owner)?.get(notificationId);
-
-export const removeNotificationTargetClaim = (
-  owner: NotificationTargetOwner,
-  notificationId: string,
-) => {
-  const claims = notificationTargetClaims.get(owner);
-  if (!claims) return;
-
-  claims.delete(notificationId);
-  if (claims.size === 0) {
-    notificationTargetClaims.delete(owner);
-  }
-};
-
-export const pruneNotificationTargetClaims = (
-  owner: NotificationTargetOwner,
-  notificationIds: Set<string>,
-) => {
-  const claims = notificationTargetClaims.get(owner);
-  if (!claims) return;
-
-  Array.from(claims.keys()).forEach((notificationId) => {
-    if (!notificationIds.has(notificationId)) {
-      claims.delete(notificationId);
-    }
-  });
-
-  if (claims.size === 0) {
-    notificationTargetClaims.delete(owner);
-  }
-};
-
-const hasExactNotificationTarget = (notification: Notification) =>
-  !!getNotificationTarget(notification);
-
-const isNotificationTargetCompatible = (notification: Notification, target: NotificationTarget) => {
-  if (hasExactNotificationTarget(notification)) return false;
-
-  const explicitTargetPanels = getExplicitNotificationTargetPanels(notification);
-  return explicitTargetPanels.length === 0 || explicitTargetPanels.includes(target.panel);
-};
-
-export const claimNotificationTargetIfNeeded = (
+export const resolveNotificationTargetTagIfNeeded = (
   owner: NotificationTargetOwner,
   notification: Notification,
 ) => {
-  if (getNotificationTargetClaim(owner, notification.id)) return false;
+  if (hasExactNotificationTargetTag(notification)) return false;
+  if (hasExplicitNotificationTargetPanel(notification)) return false;
+
+  const composerTarget = getNotificationTargetFromComposer(notification);
+  if (composerTarget) {
+    setNotificationTargetTag(notification, composerTarget);
+    return true;
+  }
 
   const actionTarget = getNotificationActionTarget(owner);
-  if (actionTarget && isNotificationTargetCompatible(notification, actionTarget)) {
-    claimNotificationTarget(owner, notification.id, actionTarget);
+  if (actionTarget) {
+    setNotificationTargetTag(notification, actionTarget);
     return true;
   }
 
   const activeTarget = getActiveNotificationTarget(owner);
-  if (activeTarget && isNotificationTargetCompatible(notification, activeTarget)) {
-    claimNotificationTarget(owner, notification.id, activeTarget);
+  if (activeTarget) {
+    setNotificationTargetTag(notification, activeTarget);
     return true;
   }
 
   return false;
 };
 
-export const isNotificationForTarget = (
-  notification: Notification,
-  target: NotificationTarget,
-  options?: { claimOwner?: NotificationTargetOwner },
-) => {
-  const claim = options?.claimOwner
-    ? getNotificationTargetClaim(options.claimOwner, notification.id)
-    : undefined;
-  if (claim) {
-    return isNotificationTargetEqual(claim, target);
-  }
-
-  const explicitTarget = getNotificationTargetFromHostTag(notification);
-  if (explicitTarget) {
-    return isNotificationTargetEqual(explicitTarget, target);
+export const isNotificationForTarget = (notification: Notification, target: NotificationTarget) => {
+  const exactTargets = getExactNotificationTargetTags(notification);
+  if (exactTargets.length > 0) {
+    return exactTargets.some((exactTarget) => isNotificationTargetEqual(exactTarget, target));
   }
 
   const explicitTargetPanels = getExplicitNotificationTargetPanels(notification);
