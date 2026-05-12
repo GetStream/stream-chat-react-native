@@ -3,12 +3,18 @@ import type { Notification } from 'stream-chat';
 const NOTIFICATION_TARGET_PANELS = ['channel', 'thread', 'channel-list', 'thread-list'] as const;
 const NOTIFICATION_TARGET_TAG_PREFIX = 'target:' as const;
 
+/** Built-in SDK surfaces that can host snackbar notifications. */
 export type BuiltInNotificationTargetPanel = (typeof NOTIFICATION_TARGET_PANELS)[number];
+/** Notification surface name. Custom panel strings are supported for integrator-defined hosts. */
 export type NotificationTargetPanel = BuiltInNotificationTargetPanel | (string & {});
+/** Exact notification host within a panel. */
 export type NotificationTarget = {
+  /** Stable id for a mounted notification host, for example a channel cid-derived id. */
   hostId: string;
+  /** Surface that owns the host. */
   panel: NotificationTargetPanel;
 };
+/** Owner object used to keep target stacks scoped to a notification manager instance. */
 export type NotificationTargetOwner = object;
 
 type ParsedNotificationTargetTag = {
@@ -30,17 +36,21 @@ const actionNotificationTargets = new WeakMap<
   NotificationTargetStackItem[]
 >();
 
+/** Returns whether a value can be encoded as a notification target panel segment. */
 export const isNotificationTargetPanel = (value: unknown): value is NotificationTargetPanel =>
   typeof value === 'string' && value.length > 0 && !value.includes(':');
 
+/** Returns whether a value is one of the SDK's built-in notification panels. */
 export const isBuiltInNotificationTargetPanel = (
   value: unknown,
 ): value is BuiltInNotificationTargetPanel =>
   typeof value === 'string' && (NOTIFICATION_TARGET_PANELS as readonly string[]).includes(value);
 
+/** Builds a notification target tag. Without `hostId`, the tag targets every host in the panel. */
 export const getNotificationTargetTag = (panel: NotificationTargetPanel, hostId?: string) =>
   `${NOTIFICATION_TARGET_TAG_PREFIX}${panel}${hostId ? `:${hostId}` : ''}`;
 
+/** Adds a broad or exact target tag to a notification tag list without duplicating tags. */
 export const addNotificationTargetTag = (
   panel: NotificationTargetPanel | undefined,
   tags?: string[],
@@ -51,13 +61,17 @@ export const addNotificationTargetTag = (
   return Array.from(new Set([getNotificationTargetTag(panel, hostId), ...(tags ?? [])]));
 };
 
+/** Adds an exact panel and host target tag to a notification tag list. */
 export const addExactNotificationTargetTag = (target: NotificationTarget, tags?: string[]) =>
   addNotificationTargetTag(target.panel, tags, target.hostId);
 
+/** Host id helper for channel notification targets. */
 export const getChannelNotificationHostId = (cid: string) => `channel:${cid}` as const;
 
+/** Host id helper for thread notification targets. */
 export const getThreadNotificationHostId = (threadId: string) => `thread:${threadId}` as const;
 
+/** Compares notification targets by panel and host id. */
 export const isNotificationTargetEqual = (
   left: NotificationTarget | undefined,
   right: NotificationTarget | undefined,
@@ -87,6 +101,7 @@ const getNotificationTargetTags = (notification: Notification) =>
     .map(parseNotificationTargetTag)
     .filter((target): target is ParsedNotificationTargetTag => !!target);
 
+/** Returns whether a tag list already contains a notification target tag. */
 export const hasNotificationTargetTag = (tags: string[] | undefined) =>
   tags?.some((tag) => !!parseNotificationTargetTag(tag)) ?? false;
 
@@ -117,6 +132,7 @@ const getNotificationTargetFromComposer = (
   return cid ? { hostId: getChannelNotificationHostId(cid), panel: 'channel' } : undefined;
 };
 
+/** Resolves an exact notification target from tags or composer origin metadata. */
 export const getNotificationTarget = (notification: Notification): NotificationTarget | undefined =>
   getNotificationTargetFromTags(notification) ?? getNotificationTargetFromComposer(notification);
 
@@ -133,6 +149,7 @@ const getExplicitNotificationTargetPanels = (
   return isNotificationTargetPanel(panel) ? [panel] : [];
 };
 
+/** Resolves the first target panel declared or inferred for a notification. */
 export const getNotificationTargetPanel = (
   notification: Notification,
 ): NotificationTargetPanel | undefined => {
@@ -142,6 +159,7 @@ export const getNotificationTargetPanel = (
   return getNotificationTarget(notification)?.panel;
 };
 
+/** Resolves all target panels declared or inferred for a notification. */
 export const getNotificationTargetPanels = (
   notification: Notification,
 ): NotificationTargetPanel[] => {
@@ -194,19 +212,23 @@ const getLastNotificationTarget = (
   return stack?.[stack.length - 1]?.target;
 };
 
+/** Registers a mounted notification host as the latest active fallback target. */
 export const registerActiveNotificationTarget = (
   owner: NotificationTargetOwner,
   target: NotificationTarget,
 ) => registerNotificationTarget(activeNotificationTargets, owner, target);
 
+/** Registers the target for notifications emitted while an action is running. */
 export const registerNotificationActionTarget = (
   owner: NotificationTargetOwner,
   target: NotificationTarget,
 ) => registerNotificationTarget(actionNotificationTargets, owner, target);
 
+/** Returns the latest mounted fallback target for a notification manager owner. */
 export const getActiveNotificationTarget = (owner: NotificationTargetOwner) =>
   getLastNotificationTarget(activeNotificationTargets, owner);
 
+/** Returns the latest action-scoped target for a notification manager owner. */
 export const getNotificationActionTarget = (owner: NotificationTargetOwner) =>
   getLastNotificationTarget(actionNotificationTargets, owner);
 
@@ -220,6 +242,7 @@ const setNotificationTargetTag = (notification: Notification, target: Notificati
   notification.tags = addExactNotificationTargetTag(target, notification.tags);
 };
 
+/** Mutates an unscoped notification by adding the best available exact target tag. */
 export const resolveNotificationTargetTagIfNeeded = (
   owner: NotificationTargetOwner,
   notification: Notification,
@@ -248,6 +271,7 @@ export const resolveNotificationTargetTagIfNeeded = (
   return false;
 };
 
+/** Returns whether a notification should be consumed by an exact target host. */
 export const isNotificationForTarget = (notification: Notification, target: NotificationTarget) => {
   const exactTargets = getExactNotificationTargetTags(notification);
   if (exactTargets.length > 0) {
@@ -267,6 +291,7 @@ export const isNotificationForTarget = (notification: Notification, target: Noti
   return false;
 };
 
+/** Returns whether a notification should be consumed by any host in a panel. */
 export const isNotificationForPanel = (
   notification: Notification,
   panel: NotificationTargetPanel,

@@ -393,6 +393,7 @@ export const ChannelList = (props: ChannelListProps) => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'transparent',
     flex: 1,
   },
 });

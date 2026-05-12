@@ -10,9 +10,11 @@ import { useStateStore } from '../../../hooks/useStateStore';
 export type UseSystemNotificationsFilter = (notification: Notification) => boolean;
 
 export type UseSystemNotificationsOptions = {
+  /** Additional filter applied to system-tagged notifications. */
   filter?: UseSystemNotificationsFilter;
 };
 
+/** Subscribes to notifications tagged as system notifications. */
 export const useSystemNotifications = (options?: UseSystemNotificationsOptions): Notification[] => {
   const { client } = useChatContext();
   const selector = useCallback(

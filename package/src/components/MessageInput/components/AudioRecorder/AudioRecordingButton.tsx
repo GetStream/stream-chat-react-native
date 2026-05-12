@@ -107,6 +107,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
         message: 'Hold to record. Release to save.',
         options: {
           duration: VOICE_RECORDING_HINT_NOTIFICATION_DURATION,
+          severity: 'info',
           type: 'validation:audio:recording:hold-required',
         },
         origin: { emitter: 'AudioRecordingButton' },

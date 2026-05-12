@@ -14,17 +14,27 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 
+/** Predicate used to hide notifications from a specific rendered notification list. */
 export type NotificationListFilter = (notification: NotificationType) => boolean;
+/** Direction from which new snackbars animate into the list. */
 export type NotificationListEnterFrom = 'bottom' | 'left' | 'right' | 'top';
+/** Vertical edge used by the absolutely positioned notification host. */
 export type NotificationListVerticalAlignment = 'bottom' | 'top';
 
 export type NotificationListProps = {
+  /** Extra distance from the bottom edge, useful when floating composers cover the default host. */
   bottomOffset?: number;
+  /** Default enter/exit animation direction when notification metadata does not define one. */
   enterFrom?: NotificationListEnterFrom;
+  /** Additional per-list filter applied after target filtering. */
   filter?: NotificationListFilter;
+  /** Exact notification host id. Use together with `panel` when rendering outside a target provider. */
   hostId?: string;
+  /** Target panel consumed by this list. Defaults to the nearest `NotificationTargetProvider`. */
   panel?: NotificationTargetPanel;
+  /** Extra distance from the top edge when `verticalAlignment` is `top`. */
   topOffset?: number;
+  /** Whether the host is anchored to the top or bottom of its parent. */
   verticalAlignment?: NotificationListVerticalAlignment;
 };
 
@@ -54,6 +64,7 @@ const getNotificationPresentationKey = (notification: NotificationType) =>
     .filter(Boolean)
     .join(':');
 
+/** Renders the newest matching client notification as an animated snackbar. */
 export const NotificationList = ({
   bottomOffset,
   enterFrom = 'bottom',

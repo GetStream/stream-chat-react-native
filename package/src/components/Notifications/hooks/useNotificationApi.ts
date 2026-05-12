@@ -16,35 +16,50 @@ import { useNotificationTargetContext } from '../NotificationTargetContext';
 
 export const SYSTEM_NOTIFICATION_TAG = 'system' as const;
 
+/** Returns whether a notification is reserved for system-level consumers instead of snackbars. */
 export const hasSystemNotificationTag = (notification: Notification) =>
   notification.tags?.includes(SYSTEM_NOTIFICATION_TAG) ?? false;
 
+/** Structured descriptor used to derive stable notification `type` values. */
 export type NotificationIncidentDescriptor = {
+  /** Product or SDK area where the notification originated, for example `message` or `poll`. */
   domain: string;
+  /** Entity affected by the incident, for example `attachment` or `vote`. */
   entity: string;
+  /** Operation being reported, for example `upload` or `create`. */
   operation: string;
+  /** Optional explicit status. Falls back to severity-derived status when omitted. */
   status?: string;
 };
 
 export type AddNotificationOptions = {
+  /** Incident metadata used to derive `options.type` when the payload does not provide one. */
   incident?: NotificationIncidentDescriptor;
+  /** Exact host target for this notification. Defaults to the nearest notification target provider. */
   target?: NotificationTarget;
+  /** Broad panel targets. Use for notifications that should appear in every host of a panel. */
   targetPanels?: NotificationTargetPanel[];
 };
 
 export type AddSystemNotificationOptions = Omit<AddNotificationOptions, 'target' | 'targetPanels'>;
 
+/** Adds a snackbar notification scoped to a target host or panel. */
 export type AddNotification = (
   payload: AddNotificationPayload,
   options?: AddNotificationOptions,
 ) => void;
+/** Adds a system notification that is excluded from the default snackbar list. */
 export type AddSystemNotification = (
   payload: AddNotificationPayload,
   options?: AddSystemNotificationOptions,
 ) => string;
+/** Removes a notification by id. */
 export type RemoveNotification = (id: string) => void;
+/** Removes non-system notifications that belong to the current target provider. */
 export type RemoveNotificationsForCurrentPanel = () => void;
+/** Starts the manager timeout for a notification, optionally overriding the stored duration. */
 export type StartNotificationTimeout = (id: string, durationOverride?: number) => void;
+/** Runs an action while temporarily making its target available to untagged notifications. */
 export type RunWithNotificationTarget = <T>(
   callback: () => T | Promise<T>,
   target?: NotificationTarget,
@@ -114,6 +129,7 @@ const mergeNotificationOptions = (
   };
 };
 
+/** Returns imperative helpers for dispatching, targeting and dismissing client notifications. */
 export const useNotificationApi = (): NotificationApi => {
   const { client } = useChatContext();
   const contextTarget = useNotificationTargetContext();

@@ -19,15 +19,19 @@ import { NewClose } from '../../icons/xmark';
 import { primitives } from '../../theme';
 import { Button } from '../ui/Button';
 
+/** Direction from which a snackbar enters and exits the screen. */
 export type NotificationEntryDirection = 'bottom' | 'left' | 'right' | 'top';
 export type NotificationTransitionState = 'enter' | 'exit';
 
 export type NotificationIconProps = {
+  /** Notification rendered by the icon slot. */
   notification: NotificationType;
 };
 
+/** Visual variant resolved from notification severity. Notifications without severity use `default`. */
 export type NotificationVariant = 'default' | NotificationSeverity;
 
+/** Resolves the visual variant used by the default notification renderer. */
 export const getNotificationVariant = (notification: NotificationType): NotificationVariant =>
   notification.severity ?? 'default';
 
@@ -59,14 +63,21 @@ export const NotificationIcon = ({ notification }: NotificationIconProps) => {
 };
 
 export type NotificationProps = {
+  /** Notification object produced by the Stream Chat notification manager. */
   notification: NotificationType;
+  /** Direction used by the surrounding list animation. */
   entryDirection?: NotificationEntryDirection;
+  /** Optional icon override for this notification instance. */
   Icon?: React.ComponentType<NotificationIconProps>;
+  /** Called instead of the default notification removal behavior. */
   onDismiss?: () => void;
+  /** Forces a dismiss button for transient notifications. Persistent notifications always show one. */
   showClose?: boolean;
+  /** Reserved for custom animated notification implementations. */
   transitionState?: NotificationTransitionState;
 };
 
+/** Default snackbar notification renderer used by `NotificationList`. */
 export const Notification = ({
   Icon,
   notification,
