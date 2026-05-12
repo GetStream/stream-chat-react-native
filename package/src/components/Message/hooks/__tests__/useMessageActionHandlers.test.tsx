@@ -5,13 +5,14 @@ import type { Channel, LocalMessage, StreamChat } from 'stream-chat';
 
 import { ChannelProvider } from '../../../../contexts/channelContext/ChannelContext';
 import { ChatProvider } from '../../../../contexts/chatContext/ChatContext';
+import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { useMessageActionHandlers } from '../useMessageActionHandlers';
 
 const createClient = () =>
   ({
     mutedUsers: [],
     notifications: {
-      add: jest.fn(),
+      add: jest.fn(() => 'notification-id'),
       remove: jest.fn(),
       startTimeout: jest.fn(),
     },
@@ -34,7 +35,9 @@ const createWrapper =
   (client: StreamChat, channel: Channel) =>
   ({ children }: PropsWithChildren) => (
     <ChatProvider value={{ client } as never}>
-      <ChannelProvider value={{ channel } as never}>{children}</ChannelProvider>
+      <NotificationTargetProvider hostId='channel:messaging:general' panel='channel'>
+        <ChannelProvider value={{ channel } as never}>{children}</ChannelProvider>
+      </NotificationTargetProvider>
     </ChatProvider>
   );
 
@@ -89,7 +92,6 @@ describe('useMessageActionHandlers notifications', () => {
       message: 'Message pinned',
       options: {
         severity: 'success',
-        tags: ['target:channel'],
         type: 'api:message:pin:success',
       },
       origin: {
@@ -116,7 +118,6 @@ describe('useMessageActionHandlers notifications', () => {
       options: {
         originalError: error,
         severity: 'error',
-        tags: ['target:channel'],
         type: 'api:message:markUnread:failed',
       },
       origin: {

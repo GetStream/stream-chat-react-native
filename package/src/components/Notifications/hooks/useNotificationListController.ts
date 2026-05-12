@@ -5,13 +5,21 @@ import type { Notification as NotificationType } from 'stream-chat';
 import { hasSystemNotificationTag, useNotificationApi } from './useNotificationApi';
 import { useNotifications, type UseNotificationsFilter } from './useNotifications';
 
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useLazyRef } from '../../../hooks/useLazyRef';
 import { useStableCallback } from '../../../hooks/useStableCallback';
-import type { NotificationTargetPanel } from '../notificationTarget';
+import {
+  claimNotificationTargetIfNeeded,
+  isNotificationForTarget,
+  pruneNotificationTargetClaims,
+  registerActiveNotificationTarget,
+  type NotificationTargetPanel,
+} from '../notificationTarget';
+import { useResolvedNotificationTarget } from '../NotificationTargetContext';
 
 export type UseNotificationListControllerParams = {
-  fallbackPanel?: NotificationTargetPanel;
   filter?: UseNotificationsFilter;
+  hostId?: string;
   panel?: NotificationTargetPanel;
 };
 
@@ -46,12 +54,13 @@ const getNotificationDurationOverride = (notification: NotificationType) => {
 };
 
 export const useNotificationListController = ({
-  fallbackPanel,
   filter,
+  hostId,
   panel,
 }: UseNotificationListControllerParams = {}): UseNotificationListControllerResult => {
-  const { removeNotification, removeNotificationsForCurrentPanel, startNotificationTimeout } =
-    useNotificationApi();
+  const { client } = useChatContext();
+  const { removeNotification, startNotificationTimeout } = useNotificationApi();
+  const target = useResolvedNotificationTarget({ hostId, panel });
   const startedTimeoutIdsRef = useLazyRef<Set<string>>(() => new Set());
 
   const combinedFilter = useStableCallback((notification: NotificationType) => {
@@ -60,9 +69,9 @@ export const useNotificationListController = ({
   });
 
   const notifications = useNotifications({
-    fallbackPanel,
     filter: combinedFilter,
-    panel,
+    requireTarget: true,
+    target,
   });
   const notification = getActiveNotification(notifications);
 
@@ -74,11 +83,42 @@ export const useNotificationListController = ({
   });
 
   const removeCurrentPanelNotifications = useStableCallback(() => {
-    if (!panel) return;
+    if (!target) return;
 
     startedTimeoutIdsRef.current.clear();
-    removeNotificationsForCurrentPanel(fallbackPanel ? { fallbackPanel } : undefined);
+    client.notifications.notifications
+      .filter(
+        (notification) =>
+          !hasSystemNotificationTag(notification) &&
+          isNotificationForTarget(notification, target, {
+            claimOwner: client.notifications,
+          }),
+      )
+      .forEach(({ id }) => removeNotification(id));
   });
+
+  useEffect(() => {
+    return client.notifications.store.addPreprocessor((nextState, previousState) => {
+      const notificationIds = new Set(nextState.notifications.map(({ id }) => id));
+      const previousNotificationIds = new Set(
+        previousState?.notifications.map(({ id }) => id) ?? [],
+      );
+
+      pruneNotificationTargetClaims(client.notifications, notificationIds);
+      nextState.notifications.forEach((notification) => {
+        if (previousNotificationIds.has(notification.id)) return;
+        if (hasSystemNotificationTag(notification)) return;
+
+        claimNotificationTargetIfNeeded(client.notifications, notification);
+      });
+    });
+  }, [client.notifications]);
+
+  useEffect(() => {
+    if (!target) return;
+
+    return registerActiveNotificationTarget(client.notifications, target);
+  }, [client.notifications, target]);
 
   useEffect(() => {
     const notificationIds = new Set(notifications.map(({ id }) => id));

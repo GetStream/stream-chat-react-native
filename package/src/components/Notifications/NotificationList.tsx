@@ -22,8 +22,8 @@ export type NotificationListProps = {
   bottomOffset?: number;
   enterFrom?: NotificationListEnterFrom;
   filter?: NotificationListFilter;
+  hostId?: string;
   panel?: NotificationTargetPanel;
-  fallbackPanel?: NotificationTargetPanel;
   topOffset?: number;
   verticalAlignment?: NotificationListVerticalAlignment;
 };
@@ -57,8 +57,8 @@ const getNotificationPresentationKey = (notification: NotificationType) =>
 export const NotificationList = ({
   bottomOffset,
   enterFrom = 'bottom',
-  fallbackPanel,
   filter,
+  hostId,
   panel,
   topOffset,
   verticalAlignment = 'bottom',
@@ -67,8 +67,8 @@ export const NotificationList = ({
   const styles = useStyles({ bottomOffset, topOffset, verticalAlignment });
   const { t } = useTranslationContext();
   const { dismissNotification, notification } = useNotificationListController({
-    fallbackPanel,
     filter,
+    hostId,
     panel,
   });
 

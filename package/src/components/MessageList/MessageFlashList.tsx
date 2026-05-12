@@ -1128,10 +1128,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           />
         </View>
       ) : null}
-      <NotificationList
-        bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
-        panel={threadList ? 'thread' : 'channel'}
-      />
+      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
     </View>
   );
 };

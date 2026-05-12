@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 
-import { StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { NotificationManager } from 'stream-chat';
@@ -17,7 +17,10 @@ import {
   TranslationProvider,
 } from '../../../contexts/translationContext/TranslationContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
+import { useNotificationApi } from '../hooks/useNotificationApi';
 import { NotificationList } from '../NotificationList';
+import { getNotificationTargetClaim } from '../notificationTarget';
+import { NotificationTargetProvider } from '../NotificationTargetContext';
 
 const t = ((key: string, options?: Record<string, unknown>) => {
   if (options?.reason && key.includes('{{reason}}')) {
@@ -40,11 +43,13 @@ const createWrapper =
           }}
         >
           <ThemeProvider>
-            {overrides ? (
-              <WithComponents overrides={overrides}>{children}</WithComponents>
-            ) : (
-              children
-            )}
+            <NotificationTargetProvider hostId='channel:messaging:general' panel='channel'>
+              {overrides ? (
+                <WithComponents overrides={overrides}>{children}</WithComponents>
+              ) : (
+                children
+              )}
+            </NotificationTargetProvider>
           </ThemeProvider>
         </TranslationProvider>
       </ChannelProvider>
@@ -378,5 +383,90 @@ describe('NotificationList', () => {
     expect(mountCount).toBe(1);
     expect(startTimeoutSpy).toHaveBeenCalledWith(firstId);
     expect(startTimeoutSpy).toHaveBeenCalledWith(secondId);
+  });
+
+  it('claims untagged manager notifications to the latest active host', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let id = '';
+
+    render(
+      <>
+        <NotificationTargetProvider hostId='channel:messaging:first' panel='channel'>
+          <NotificationList />
+        </NotificationTargetProvider>
+        <NotificationTargetProvider hostId='channel:messaging:second' panel='channel'>
+          <NotificationList />
+        </NotificationTargetProvider>
+      </>,
+      { wrapper: createWrapper(manager) },
+    );
+
+    act(() => {
+      id = manager.add({
+        message: 'Untagged notice',
+        options: { severity: 'info' },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Untagged notice')).toBeTruthy());
+    expect(screen.getAllByText('Untagged notice')).toHaveLength(1);
+    expect(getNotificationTargetClaim(manager, id)).toEqual({
+      hostId: 'channel:messaging:second',
+      panel: 'channel',
+    });
+  });
+
+  it('claims action-scoped manager notifications to the triggering host', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    const Trigger = () => {
+      const { runWithNotificationTarget } = useNotificationApi();
+
+      return (
+        <Pressable
+          onPress={() =>
+            runWithNotificationTarget(() => {
+              manager.add({
+                message: 'Action-scoped notice',
+                options: { severity: 'info' },
+                origin: { emitter: 'Poll' },
+              });
+            })
+          }
+          testID='trigger-action-notification'
+        >
+          <Text>Trigger</Text>
+        </Pressable>
+      );
+    };
+
+    render(
+      <>
+        <NotificationTargetProvider hostId='channel:messaging:first' panel='channel'>
+          <Trigger />
+          <NotificationList />
+        </NotificationTargetProvider>
+        <NotificationTargetProvider hostId='channel:messaging:second' panel='channel'>
+          <NotificationList />
+        </NotificationTargetProvider>
+      </>,
+      { wrapper: createWrapper(manager) },
+    );
+
+    fireEvent.press(screen.getByTestId('trigger-action-notification'));
+
+    await waitFor(() => expect(screen.getByText('Action-scoped notice')).toBeTruthy());
+    const id = manager.notifications.find(
+      (notification) => notification.message === 'Action-scoped notice',
+    )?.id;
+
+    expect(screen.getAllByText('Action-scoped notice')).toHaveLength(1);
+    expect(id ? getNotificationTargetClaim(manager, id) : undefined).toEqual({
+      hostId: 'channel:messaging:first',
+      panel: 'channel',
+    });
   });
 });

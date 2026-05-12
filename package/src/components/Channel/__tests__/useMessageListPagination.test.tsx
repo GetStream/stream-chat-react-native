@@ -10,6 +10,7 @@ import { generateChannelResponse } from '../../../mock-builders/generator/channe
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { channelInitialState } from '../hooks/useChannelDataState';
 import * as ChannelStateHooks from '../hooks/useChannelDataState';
 import { useMessageListPagination } from '../hooks/useMessageListPagination';
@@ -17,7 +18,11 @@ import { useMessageListPagination } from '../hooks/useMessageListPagination';
 const createChatWrapper =
   (client: StreamChat) =>
   ({ children }: PropsWithChildren) => (
-    <ChatProvider value={{ client } as never}>{children}</ChatProvider>
+    <ChatProvider value={{ client } as never}>
+      <NotificationTargetProvider hostId='channel:messaging:general' panel='channel'>
+        {children}
+      </NotificationTargetProvider>
+    </ChatProvider>
   );
 
 describe('useMessageListPagination', () => {
@@ -660,7 +665,6 @@ describe('useMessageListPagination', () => {
               options: {
                 originalError: expect.any(Error),
                 severity: 'error',
-                tags: ['target:channel'],
                 type: 'channel:jumpToFirstUnread:failed',
               },
               origin: {

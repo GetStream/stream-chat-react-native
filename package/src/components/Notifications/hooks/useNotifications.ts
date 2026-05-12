@@ -4,14 +4,14 @@ import type { Notification, NotificationManagerState } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { isNotificationForPanel, type NotificationTargetPanel } from '../notificationTarget';
+import { isNotificationForTarget, type NotificationTarget } from '../notificationTarget';
 
 export type UseNotificationsFilter = (notification: Notification) => boolean;
 
 export type UseNotificationsOptions = {
   filter?: UseNotificationsFilter;
-  panel?: NotificationTargetPanel;
-  fallbackPanel?: NotificationTargetPanel;
+  requireTarget?: boolean;
+  target?: NotificationTarget;
 };
 
 export const useNotifications = (options?: UseNotificationsOptions): Notification[] => {
@@ -19,20 +19,22 @@ export const useNotifications = (options?: UseNotificationsOptions): Notificatio
   const selector = useCallback(
     (state: NotificationManagerState) => {
       const notifications = state.notifications;
-      const panel = options?.panel;
-      const byPanel = panel
+      const target = options?.target;
+      const byTarget = target
         ? notifications.filter((notification) =>
-            isNotificationForPanel(notification, panel, {
-              fallbackPanel: options?.fallbackPanel,
+            isNotificationForTarget(notification, target, {
+              claimOwner: client.notifications,
             }),
           )
-        : notifications;
+        : options?.requireTarget
+          ? []
+          : notifications;
 
       return {
-        notifications: options?.filter ? byPanel.filter(options.filter) : byPanel,
+        notifications: options?.filter ? byTarget.filter(options.filter) : byTarget,
       };
     },
-    [options?.fallbackPanel, options?.filter, options?.panel],
+    [client.notifications, options?.filter, options?.requireTarget, options?.target],
   );
 
   const { notifications } = useStateStore(client.notifications.store, selector);

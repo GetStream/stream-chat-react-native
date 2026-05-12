@@ -185,18 +185,15 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
   );
 
   const notifyJumpToFirstUnreadError = useStableCallback((error: unknown) => {
-    addNotification(
-      {
-        message: t('Failed to jump to the first unread message'),
-        options: {
-          ...(error instanceof Error ? { originalError: error } : {}),
-          severity: 'error',
-          type: 'channel:jumpToFirstUnread:failed',
-        },
-        origin: { context: { feature: 'jumpToFirstUnread' }, emitter: 'Channel' },
+    addNotification({
+      message: t('Failed to jump to the first unread message'),
+      options: {
+        ...(error instanceof Error ? { originalError: error } : {}),
+        severity: 'error',
+        type: 'channel:jumpToFirstUnread:failed',
       },
-      { targetPanels: ['channel'] },
-    );
+      origin: { context: { feature: 'jumpToFirstUnread' }, emitter: 'Channel' },
+    });
   });
 
   /**

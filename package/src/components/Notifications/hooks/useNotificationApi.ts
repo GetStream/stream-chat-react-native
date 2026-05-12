@@ -2,15 +2,18 @@ import { useCallback } from 'react';
 
 import type { AddNotificationPayload, Notification } from 'stream-chat';
 
-import { useNotificationTarget } from './useNotificationTarget';
-
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
-  addNotificationTargetTag,
+  claimNotificationTarget,
+  getNotificationTarget,
   getNotificationTargetTag,
-  isNotificationForPanel,
+  isNotificationForTarget,
+  registerNotificationActionTarget,
+  removeNotificationTargetClaim,
+  type NotificationTarget,
   type NotificationTargetPanel,
 } from '../notificationTarget';
+import { useNotificationTargetContext } from '../NotificationTargetContext';
 
 export const SYSTEM_NOTIFICATION_TAG = 'system' as const;
 
@@ -26,13 +29,11 @@ export type NotificationIncidentDescriptor = {
 
 export type AddNotificationOptions = {
   incident?: NotificationIncidentDescriptor;
+  target?: NotificationTarget;
   targetPanels?: NotificationTargetPanel[];
 };
 
-export type AddSystemNotificationOptions = Omit<AddNotificationOptions, 'targetPanels'>;
-export type RemoveNotificationsForCurrentPanelOptions = {
-  fallbackPanel?: NotificationTargetPanel;
-};
+export type AddSystemNotificationOptions = Omit<AddNotificationOptions, 'target' | 'targetPanels'>;
 
 export type AddNotification = (
   payload: AddNotificationPayload,
@@ -43,29 +44,31 @@ export type AddSystemNotification = (
   options?: AddSystemNotificationOptions,
 ) => string;
 export type RemoveNotification = (id: string) => void;
-export type RemoveNotificationsForCurrentPanel = (
-  options?: RemoveNotificationsForCurrentPanelOptions,
-) => void;
+export type RemoveNotificationsForCurrentPanel = () => void;
 export type StartNotificationTimeout = (id: string, durationOverride?: number) => void;
+export type RunWithNotificationTarget = <T>(
+  callback: () => T | Promise<T>,
+  target?: NotificationTarget,
+) => Promise<T>;
 
 export type NotificationApi = {
   addNotification: AddNotification;
   addSystemNotification: AddSystemNotification;
   removeNotification: RemoveNotification;
   removeNotificationsForCurrentPanel: RemoveNotificationsForCurrentPanel;
+  runWithNotificationTarget: RunWithNotificationTarget;
   startNotificationTimeout: StartNotificationTimeout;
 };
 
 const getTargetTags = (
   targetPanels: NotificationTargetPanel[] | undefined,
-  inferredPanel: NotificationTargetPanel | undefined,
   tags: string[] | undefined,
 ) => {
   if (targetPanels) {
     return Array.from(new Set([...targetPanels.map(getNotificationTargetTag), ...(tags ?? [])]));
   }
 
-  return addNotificationTargetTag(inferredPanel, tags);
+  return tags ?? [];
 };
 
 const getTypeFromIncident = ({
@@ -107,33 +110,51 @@ const mergeNotificationOptions = (
 
 export const useNotificationApi = (): NotificationApi => {
   const { client } = useChatContext();
-  const inferredPanel = useNotificationTarget();
+  const contextTarget = useNotificationTargetContext();
+  const notificationManager = client?.notifications;
 
   const addNotification: AddNotification = useCallback(
     (payload, options) => {
-      const notificationTags = getTargetTags(
-        options?.targetPanels,
-        inferredPanel,
-        payload.options?.tags,
-      );
+      if (!notificationManager) return;
+
+      const notificationTags = getTargetTags(options?.targetPanels, payload.options?.tags);
       const resolvedType = getTypeFromIncident({
         incident: options?.incident,
         severity: payload.options?.severity,
         type: payload.options?.type,
       });
+      const target = options?.target ?? (options?.targetPanels ? undefined : contextTarget);
+      const unregisterActionTarget = target
+        ? registerNotificationActionTarget(notificationManager, target)
+        : undefined;
 
-      client.notifications.add(
-        mergeNotificationOptions(payload, {
-          ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
-          ...(resolvedType ? { type: resolvedType } : {}),
-        }),
-      );
+      try {
+        const notificationId = notificationManager.add(
+          mergeNotificationOptions(payload, {
+            ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
+            ...(resolvedType ? { type: resolvedType } : {}),
+          }),
+        );
+
+        if (target) {
+          const notification = notificationManager.notifications?.find(
+            ({ id }) => id === notificationId,
+          );
+          if (!notification || !getNotificationTarget(notification)) {
+            claimNotificationTarget(notificationManager, notificationId, target);
+          }
+        }
+      } finally {
+        unregisterActionTarget?.();
+      }
     },
-    [client, inferredPanel],
+    [contextTarget, notificationManager],
   );
 
   const addSystemNotification: AddSystemNotification = useCallback(
     (payload, options) => {
+      if (!notificationManager) return '';
+
       const notificationTags = Array.from(
         new Set([SYSTEM_NOTIFICATION_TAG, ...(payload.options?.tags ?? [])]),
       );
@@ -143,52 +164,70 @@ export const useNotificationApi = (): NotificationApi => {
         type: payload.options?.type,
       });
 
-      return client.notifications.add(
+      return notificationManager.add(
         mergeNotificationOptions(payload, {
           ...(notificationTags.length > 0 ? { tags: notificationTags } : {}),
           ...(resolvedType ? { type: resolvedType } : {}),
         }),
       );
     },
-    [client],
+    [notificationManager],
   );
 
   const removeNotification: RemoveNotification = useCallback(
     (id) => {
-      client.notifications.remove(id);
+      if (!notificationManager) return;
+
+      removeNotificationTargetClaim(notificationManager, id);
+      notificationManager.remove(id);
     },
-    [client],
+    [notificationManager],
   );
 
-  const removeNotificationsForCurrentPanel: RemoveNotificationsForCurrentPanel = useCallback(
-    (options) => {
-      if (!inferredPanel) return;
+  const removeNotificationsForCurrentPanel: RemoveNotificationsForCurrentPanel = useCallback(() => {
+    if (!contextTarget || !notificationManager) return;
 
-      const notificationIds = client.notifications.notifications
-        .filter(
-          (notification) =>
-            !hasSystemNotificationTag(notification) &&
-            isNotificationForPanel(notification, inferredPanel, {
-              fallbackPanel: options?.fallbackPanel,
-            }),
-        )
-        .map(({ id }) => id);
+    const notificationIds = notificationManager.notifications
+      .filter(
+        (notification) =>
+          !hasSystemNotificationTag(notification) &&
+          isNotificationForTarget(notification, contextTarget, {
+            claimOwner: notificationManager,
+          }),
+      )
+      .map(({ id }) => id);
 
-      notificationIds.forEach(removeNotification);
+    notificationIds.forEach(removeNotification);
+  }, [contextTarget, notificationManager, removeNotification]);
+
+  const runWithNotificationTarget: RunWithNotificationTarget = useCallback(
+    async (callback, target = contextTarget) => {
+      if (!target || !notificationManager) {
+        return await callback();
+      }
+
+      const unregisterActionTarget = registerNotificationActionTarget(notificationManager, target);
+      try {
+        return await callback();
+      } finally {
+        unregisterActionTarget();
+      }
     },
-    [client, inferredPanel, removeNotification],
+    [contextTarget, notificationManager],
   );
 
   const startNotificationTimeout: StartNotificationTimeout = useCallback(
     (id, durationOverride) => {
+      if (!notificationManager) return;
+
       if (typeof durationOverride === 'number') {
-        client.notifications.startTimeout(id, durationOverride);
+        notificationManager.startTimeout(id, durationOverride);
         return;
       }
 
-      client.notifications.startTimeout(id);
+      notificationManager.startTimeout(id);
     },
-    [client],
+    [notificationManager],
   );
 
   return {
@@ -196,6 +235,7 @@ export const useNotificationApi = (): NotificationApi => {
     addSystemNotification,
     removeNotification,
     removeNotificationsForCurrentPanel,
+    runWithNotificationTarget,
     startNotificationTimeout,
   };
 };

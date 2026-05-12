@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { Thread, ThreadManagerState } from 'stream-chat';
@@ -14,9 +14,11 @@ import {
   useThreadsContext,
 } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
+import { generateRandomId } from '../../utils/utils';
 
 import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
 import { LoadingIndicator } from '../Indicators/LoadingIndicator';
+import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 const selector = (nextValue: ThreadManagerState) =>
   ({
@@ -28,7 +30,9 @@ const selector = (nextValue: ThreadManagerState) =>
 export type ThreadListProps = Pick<
   ThreadsContextValue,
   'additionalFlatListProps' | 'isFocused' | 'onThreadSelect'
->;
+> & {
+  notificationHostId?: string;
+};
 
 export const DefaultThreadListEmptyPlaceholder = () => <EmptyStateIndicator listType='threads' />;
 
@@ -76,9 +80,13 @@ export const DefaultThreadListComponent = () => {
 };
 
 export const ThreadList = (props: ThreadListProps) => {
-  const { isFocused = true } = props;
+  const { isFocused = true, notificationHostId: notificationHostIdProp } = props;
   const { NotificationList, ThreadListComponent: ThreadListContent } = useComponentsContext();
   const { client } = useChatContext();
+  const notificationHostIdRef = useRef(
+    notificationHostIdProp ?? `thread-list:${generateRandomId()}`,
+  );
+  const notificationHostId = notificationHostIdProp ?? notificationHostIdRef.current;
 
   useEffect(() => {
     if (!client) {
@@ -109,14 +117,22 @@ export const ThreadList = (props: ThreadListProps) => {
   const { isLoading, isLoadingNext, threads } = useStateStore(client.threads.state, selector);
 
   return (
-    <ThreadsProvider
-      value={{ isLoading, isLoadingNext, loadMore: client.threads.loadNextPage, threads, ...props }}
-    >
-      <View style={styles.container}>
-        <ThreadListContent />
-        <NotificationList panel='thread-list' />
-      </View>
-    </ThreadsProvider>
+    <NotificationTargetProvider hostId={notificationHostId} panel='thread-list'>
+      <ThreadsProvider
+        value={{
+          isLoading,
+          isLoadingNext,
+          loadMore: client.threads.loadNextPage,
+          threads,
+          ...props,
+        }}
+      >
+        <View style={styles.container}>
+          <ThreadListContent />
+          <NotificationList />
+        </View>
+      </ThreadsProvider>
+    </NotificationTargetProvider>
   );
 };
 
