@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import type { Notification as NotificationType } from 'stream-chat';
 
@@ -54,13 +54,10 @@ export const useNotificationListController = ({
     useNotificationApi();
   const startedTimeoutIdsRef = useLazyRef<Set<string>>(() => new Set());
 
-  const combinedFilter = useCallback(
-    (notification: NotificationType) => {
-      if (hasSystemNotificationTag(notification)) return false;
-      return filter ? filter(notification) : true;
-    },
-    [filter],
-  );
+  const combinedFilter = useStableCallback((notification: NotificationType) => {
+    if (hasSystemNotificationTag(notification)) return false;
+    return filter ? filter(notification) : true;
+  });
 
   const notifications = useNotifications({
     fallbackPanel,
@@ -69,12 +66,19 @@ export const useNotificationListController = ({
   });
   const notification = getActiveNotification(notifications);
 
-  const dismissNotification = useCallback(() => {
+  const dismissNotification = useStableCallback(() => {
     if (!notification) return;
 
     startedTimeoutIdsRef.current.delete(notification.id);
     removeNotification(notification.id);
-  }, [notification, removeNotification, startedTimeoutIdsRef]);
+  });
+
+  const removeCurrentPanelNotifications = useStableCallback(() => {
+    if (!panel) return;
+
+    startedTimeoutIdsRef.current.clear();
+    removeNotificationsForCurrentPanel(fallbackPanel ? { fallbackPanel } : undefined);
+  });
 
   useEffect(() => {
     const notificationIds = new Set(notifications.map(({ id }) => id));
@@ -108,13 +112,6 @@ export const useNotificationListController = ({
       startNotificationTimeout(notification.id);
     }
   }, [notification, startNotificationTimeout, startedTimeoutIdsRef]);
-
-  const removeCurrentPanelNotifications = useStableCallback(() => {
-    if (!panel) return;
-
-    startedTimeoutIdsRef.current.clear();
-    removeNotificationsForCurrentPanel(fallbackPanel ? { fallbackPanel } : undefined);
-  });
 
   useEffect(() => {
     return () => {
