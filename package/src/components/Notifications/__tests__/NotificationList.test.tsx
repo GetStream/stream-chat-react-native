@@ -97,9 +97,30 @@ describe('NotificationList', () => {
     });
 
     await waitFor(() => expect(screen.getByText('Floating composer notice')).toBeTruthy());
+    expect(screen.getByTestId('notification-icon')).toBeTruthy();
     expect(StyleSheet.flatten(screen.getByTestId('notification-list').props.style)).toMatchObject({
       bottom: 96,
     });
+  });
+
+  it('renders default notifications without an icon when severity is omitted', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    render(<NotificationList panel='channel' />, {
+      wrapper: createWrapper(manager),
+    });
+
+    act(() => {
+      manager.add({
+        message: 'Default notice',
+        options: { tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Default notice')).toBeTruthy());
+    expect(screen.queryByTestId('notification-icon')).toBeNull();
   });
 
   it('applies a top offset on top of the default top inset', async () => {

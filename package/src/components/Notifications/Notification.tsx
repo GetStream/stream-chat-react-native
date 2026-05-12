@@ -26,7 +26,12 @@ export type NotificationIconProps = {
   notification: NotificationType;
 };
 
-const IconsBySeverity: Partial<Record<NotificationSeverity, ComponentType<IconProps>>> = {
+export type NotificationVariant = 'default' | NotificationSeverity;
+
+export const getNotificationVariant = (notification: NotificationType): NotificationVariant =>
+  notification.severity ?? 'default';
+
+const IconsByVariant: Partial<Record<NotificationVariant, ComponentType<IconProps>>> = {
   error: Warning,
   info: InfoTooltip,
   loading: Reload,
@@ -38,23 +43,26 @@ export const NotificationIcon = ({ notification }: NotificationIconProps) => {
   const {
     theme: { notification: notificationTheme, semantics },
   } = useTheme();
-  const severity = notification.severity;
-  if (!severity) return null;
+  const variant = getNotificationVariant(notification);
+  if (variant === 'default') return null;
 
-  const Icon = IconsBySeverity[severity];
+  const Icon = IconsByVariant[variant];
   if (!Icon) return null;
 
   const color =
-    severity === 'error'
+    variant === 'error'
       ? semantics.accentError
-      : severity === 'success'
+      : variant === 'success'
         ? semantics.accentSuccess
-        : severity === 'warning'
+        : variant === 'warning'
           ? semantics.accentWarning
           : semantics.accentPrimary;
 
   return (
-    <View style={[styles.iconContainer, notificationTheme.iconContainer]}>
+    <View
+      style={[styles.iconContainer, notificationTheme.iconContainer]}
+      testID='notification-icon'
+    >
       <Icon height={20} pathFill={color} stroke={color} width={20} />
     </View>
   );

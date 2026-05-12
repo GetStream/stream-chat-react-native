@@ -102,7 +102,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     if (!recording) {
       NativeHandlers.triggerHaptic('notificationError');
       addNotification({
-        message: 'Hold to start recording.',
+        message: 'Hold to record. Release to save.',
         options: {
           severity: 'warning',
           type: 'validation:audio:recording:hold-required',
