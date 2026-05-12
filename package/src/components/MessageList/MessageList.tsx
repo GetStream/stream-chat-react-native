@@ -71,7 +71,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { transitions } from '../../utils/transitions';
+import { transitions } from '../../utils/animations/transitions';
 import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
@@ -354,6 +354,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     EmptyStateIndicator,
     MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
+    NotificationList,
     ScrollToBottomButton,
     StickyHeader,
     TypingIndicator,
@@ -1356,6 +1357,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </View>
       ) : null}
+      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
     </View>
   );
 };

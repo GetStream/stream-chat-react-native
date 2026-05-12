@@ -1,0 +1,480 @@
+import React, { PropsWithChildren } from 'react';
+
+import { Pressable, Text } from 'react-native';
+
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { NotificationManager } from 'stream-chat';
+
+import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
+import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import {
+  ComponentOverrides,
+  WithComponents,
+} from '../../../contexts/componentsContext/ComponentsContext';
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import {
+  DEFAULT_USER_LANGUAGE,
+  TranslationProvider,
+} from '../../../contexts/translationContext/TranslationContext';
+import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
+import { useNotificationApi } from '../hooks/useNotificationApi';
+import { NotificationList } from '../NotificationList';
+import { NotificationTargetProvider } from '../NotificationTargetContext';
+
+const t = ((key: string, options?: Record<string, unknown>) => {
+  if (options?.reason && key.includes('{{reason}}')) {
+    return key.replace('{{reason}}', String(options.reason));
+  }
+
+  return key;
+}) as TranslationContextValue['t'];
+
+const createWrapper =
+  (manager: NotificationManager, overrides?: ComponentOverrides) =>
+  ({ children }: PropsWithChildren) => (
+    <ChatProvider value={{ client: { notifications: manager } } as never}>
+      <ChannelProvider value={{ channel: { cid: 'messaging:general' } } as never}>
+        <TranslationProvider
+          value={{
+            t,
+            tDateTimeParser: (input) => input ?? new Date(),
+            userLanguage: DEFAULT_USER_LANGUAGE,
+          }}
+        >
+          <ThemeProvider>
+            <NotificationTargetProvider hostId='channel:messaging:general' panel='channel'>
+              {overrides ? (
+                <WithComponents overrides={overrides}>{children}</WithComponents>
+              ) : (
+                children
+              )}
+            </NotificationTargetProvider>
+          </ThemeProvider>
+        </TranslationProvider>
+      </ChannelProvider>
+    </ChatProvider>
+  );
+
+describe('NotificationList', () => {
+  it('renders client notifications and starts their timeout once displayed', async () => {
+    const manager = new NotificationManager();
+    const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    act(() => {
+      manager.add({
+        message: 'Upload failed',
+        options: { severity: 'error', tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Upload failed')).toBeTruthy());
+    expect(screen.getByTestId('notification-icon')).toBeTruthy();
+    expect(startTimeoutSpy).toHaveBeenCalledWith(manager.notifications[0].id);
+  });
+
+  it('applies a bottom offset on top of the default bottom inset', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    render(<NotificationList bottomOffset={80} panel='channel' />, {
+      wrapper: createWrapper(manager),
+    });
+
+    act(() => {
+      manager.add({
+        message: 'Floating composer notice',
+        options: { severity: 'info', tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Floating composer notice')).toBeTruthy());
+    expect(screen.queryByTestId('notification-icon')).toBeNull();
+  });
+
+  it('renders default notifications without an icon when severity is omitted', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    render(<NotificationList panel='channel' />, {
+      wrapper: createWrapper(manager),
+    });
+
+    act(() => {
+      manager.add({
+        message: 'Default notice',
+        options: { tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Default notice')).toBeTruthy());
+    expect(screen.queryByTestId('notification-icon')).toBeNull();
+  });
+
+  it('applies a top offset on top of the default top inset', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    render(<NotificationList panel='channel' topOffset={40} verticalAlignment='top' />, {
+      wrapper: createWrapper(manager),
+    });
+
+    act(() => {
+      manager.add({
+        message: 'Top notice',
+        options: { severity: 'info', tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Top notice')).toBeTruthy());
+  });
+
+  it('does not render system notifications in the snackbar list', () => {
+    const manager = new NotificationManager();
+    manager.add({
+      message: 'System notice',
+      options: { severity: 'info', tags: ['system'] },
+      origin: { emitter: 'test' },
+    });
+
+    render(<NotificationList />, { wrapper: createWrapper(manager) });
+
+    expect(screen.queryByTestId('notification-list')).toBeNull();
+  });
+
+  it('removes non-system notifications for its panel on unmount', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let channelId = '';
+    let threadId = '';
+    let systemId = '';
+
+    const { unmount } = render(<NotificationList panel='channel' />, {
+      wrapper: createWrapper(manager),
+    });
+
+    act(() => {
+      channelId = manager.add({
+        message: 'Channel notice',
+        options: { severity: 'info', tags: ['target:channel'] },
+        origin: { emitter: 'test' },
+      });
+      threadId = manager.add({
+        message: 'Thread notice',
+        options: { severity: 'info', tags: ['target:thread'] },
+        origin: { emitter: 'test' },
+      });
+      systemId = manager.add({
+        message: 'System notice',
+        options: { severity: 'info', tags: ['system', 'target:channel'] },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Channel notice')).toBeTruthy());
+
+    unmount();
+
+    expect(manager.notifications.some((notification) => notification.id === channelId)).toBe(false);
+    expect(manager.notifications.some((notification) => notification.id === threadId)).toBe(true);
+    expect(manager.notifications.some((notification) => notification.id === systemId)).toBe(true);
+  });
+
+  it('dismisses persistent notifications with the close button', async () => {
+    const manager = new NotificationManager();
+    const id = manager.add({
+      message: 'Persistent notice',
+      options: { duration: 0, severity: 'warning', tags: ['target:channel'] },
+      origin: { emitter: 'test' },
+    });
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    await waitFor(() => expect(screen.getByText('Persistent notice')).toBeTruthy());
+    fireEvent.press(screen.getByTestId('notification-close-button'));
+
+    await waitFor(() => {
+      expect(manager.notifications.some((notification) => notification.id === id)).toBe(false);
+    });
+  });
+
+  it('shows the newest notification and removes older matching notifications instead of queueing', async () => {
+    const manager = new NotificationManager();
+    const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let firstId = '';
+    let threadId = '';
+    let secondId = '';
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    act(() => {
+      firstId = manager.add({
+        message: 'First notice',
+        options: { severity: 'info', tags: ['target:channel'], type: 'ui:first' },
+        origin: { emitter: 'test' },
+      });
+      threadId = manager.add({
+        message: 'Thread notice',
+        options: { severity: 'info', tags: ['target:thread'], type: 'ui:thread' },
+        origin: { emitter: 'test' },
+      });
+      secondId = manager.add({
+        message: 'Second notice',
+        options: { severity: 'warning', tags: ['target:channel'], type: 'ui:second' },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Second notice')).toBeTruthy());
+    expect(screen.queryByText('First notice')).toBeNull();
+
+    await waitFor(() => {
+      expect(manager.notifications.some((notification) => notification.id === firstId)).toBe(false);
+      expect(manager.notifications.some((notification) => notification.id === threadId)).toBe(true);
+      expect(manager.notifications.some((notification) => notification.id === secondId)).toBe(true);
+    });
+    expect(startTimeoutSpy).toHaveBeenCalledWith(secondId);
+  });
+
+  it('keeps a persistent notification visible when a transient notification arrives', async () => {
+    const manager = new NotificationManager();
+    const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
+    const retryHandler = jest.fn();
+    let persistentId = '';
+    let transientId = '';
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    act(() => {
+      persistentId = manager.add({
+        message: 'Retry upload',
+        options: {
+          actions: [{ handler: retryHandler, label: 'Retry' }],
+          duration: 0,
+          severity: 'error',
+          tags: ['target:channel'],
+          type: 'ui:upload:retry',
+        },
+        origin: { emitter: 'test' },
+      });
+      transientId = manager.add({
+        message: 'Copied',
+        options: { severity: 'success', tags: ['target:channel'], type: 'ui:copy' },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Retry upload')).toBeTruthy());
+    fireEvent.press(screen.getByLabelText('Retry'));
+    expect(retryHandler).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('Copied')).toBeNull();
+
+    await waitFor(() => {
+      expect(manager.notifications.some((notification) => notification.id === persistentId)).toBe(
+        true,
+      );
+      expect(manager.notifications.some((notification) => notification.id === transientId)).toBe(
+        false,
+      );
+    });
+    expect(startTimeoutSpy).toHaveBeenCalledWith(persistentId);
+    expect(startTimeoutSpy).not.toHaveBeenCalledWith(transientId);
+  });
+
+  it('lets a persistent notification replace a transient notification', async () => {
+    const manager = new NotificationManager();
+    let transientId = '';
+    let persistentId = '';
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    act(() => {
+      transientId = manager.add({
+        message: 'Copied',
+        options: { severity: 'success', tags: ['target:channel'], type: 'ui:copy' },
+        origin: { emitter: 'test' },
+      });
+      persistentId = manager.add({
+        message: 'Retry upload',
+        options: {
+          actions: [{ handler: jest.fn(), label: 'Retry' }],
+          duration: 0,
+          severity: 'error',
+          tags: ['target:channel'],
+          type: 'ui:upload:retry',
+        },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Retry upload')).toBeTruthy());
+    expect(screen.queryByText('Copied')).toBeNull();
+
+    await waitFor(() => {
+      expect(manager.notifications.some((notification) => notification.id === transientId)).toBe(
+        false,
+      );
+      expect(manager.notifications.some((notification) => notification.id === persistentId)).toBe(
+        true,
+      );
+    });
+  });
+
+  it('starts action notification timeouts with a longer LLC duration override', async () => {
+    const manager = new NotificationManager();
+    const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let id = '';
+
+    render(<NotificationList panel='channel' />, { wrapper: createWrapper(manager) });
+
+    act(() => {
+      id = manager.add({
+        message: 'Undo delete',
+        options: {
+          actions: [{ handler: jest.fn(), label: 'Undo' }],
+          severity: 'info',
+          tags: ['target:channel'],
+          type: 'ui:message:delete:undo',
+        },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Undo delete')).toBeTruthy());
+    expect(startTimeoutSpy).toHaveBeenCalledWith(id, 5000);
+  });
+
+  it('updates repeated matching notifications without remounting the snackbar item', async () => {
+    const manager = new NotificationManager();
+    const startTimeoutSpy = jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let mountCount = 0;
+    let firstId = '';
+    let secondId = '';
+
+    const Notification: ComponentOverrides['Notification'] = ({ notification }) => {
+      React.useEffect(() => {
+        mountCount += 1;
+      }, []);
+
+      return <Text>{notification.message}</Text>;
+    };
+
+    render(<NotificationList panel='channel' />, {
+      wrapper: createWrapper(manager, { Notification }),
+    });
+
+    act(() => {
+      firstId = manager.add({
+        message: 'Copied',
+        options: { severity: 'success', tags: ['target:channel'], type: 'ui:copy' },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Copied')).toBeTruthy());
+    expect(mountCount).toBe(1);
+
+    act(() => {
+      secondId = manager.add({
+        message: 'Copied again',
+        options: { severity: 'success', tags: ['target:channel'], type: 'ui:copy' },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Copied again')).toBeTruthy());
+    await waitFor(() => {
+      expect(manager.notifications.some((notification) => notification.id === firstId)).toBe(false);
+      expect(manager.notifications.some((notification) => notification.id === secondId)).toBe(true);
+    });
+    expect(mountCount).toBe(1);
+    expect(startTimeoutSpy).toHaveBeenCalledWith(firstId);
+    expect(startTimeoutSpy).toHaveBeenCalledWith(secondId);
+  });
+
+  it('adds an exact target tag to untagged manager notifications from the latest active host', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+    let id = '';
+
+    render(
+      <>
+        <NotificationTargetProvider hostId='channel:messaging:first' panel='channel'>
+          <NotificationList />
+        </NotificationTargetProvider>
+        <NotificationTargetProvider hostId='channel:messaging:second' panel='channel'>
+          <NotificationList />
+        </NotificationTargetProvider>
+      </>,
+      { wrapper: createWrapper(manager) },
+    );
+
+    act(() => {
+      id = manager.add({
+        message: 'Untagged notice',
+        options: { severity: 'info' },
+        origin: { emitter: 'test' },
+      });
+    });
+
+    await waitFor(() => expect(screen.getByText('Untagged notice')).toBeTruthy());
+    expect(screen.getAllByText('Untagged notice')).toHaveLength(1);
+    expect(manager.notifications.find((notification) => notification.id === id)?.tags).toEqual([
+      'target:channel:channel:messaging:second',
+    ]);
+  });
+
+  it('adds an exact target tag to action-scoped manager notifications from the triggering host', async () => {
+    const manager = new NotificationManager();
+    jest.spyOn(manager, 'startTimeout').mockImplementation();
+
+    const Trigger = () => {
+      const { runWithNotificationTarget } = useNotificationApi();
+
+      return (
+        <Pressable
+          onPress={() =>
+            runWithNotificationTarget(() => {
+              manager.add({
+                message: 'Action-scoped notice',
+                options: { severity: 'info' },
+                origin: { emitter: 'Poll' },
+              });
+            })
+          }
+          testID='trigger-action-notification'
+        >
+          <Text>Trigger</Text>
+        </Pressable>
+      );
+    };
+
+    render(
+      <>
+        <NotificationTargetProvider hostId='channel:messaging:first' panel='channel'>
+          <Trigger />
+          <NotificationList />
+        </NotificationTargetProvider>
+        <NotificationTargetProvider hostId='channel:messaging:second' panel='channel'>
+          <NotificationList />
+        </NotificationTargetProvider>
+      </>,
+      { wrapper: createWrapper(manager) },
+    );
+
+    fireEvent.press(screen.getByTestId('trigger-action-notification'));
+
+    await waitFor(() => expect(screen.getByText('Action-scoped notice')).toBeTruthy());
+    const notification = manager.notifications.find(
+      (notification) => notification.message === 'Action-scoped notice',
+    );
+
+    expect(screen.getAllByText('Action-scoped notice')).toHaveLength(1);
+    expect(notification?.tags).toEqual(['target:channel:channel:messaging:first']);
+  });
+});

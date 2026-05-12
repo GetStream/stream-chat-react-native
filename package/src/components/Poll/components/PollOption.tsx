@@ -20,6 +20,7 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 
 import { Check } from '../../../icons';
 import { primitives } from '../../../theme';
+import { useNotificationApi } from '../../Notifications';
 import { ProgressBar } from '../../ProgressControl/ProgressBar';
 import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
@@ -160,6 +161,7 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
 export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   const { message, poll } = usePollContext();
   const { isClosed, ownVotesByOptionId } = usePollState();
+  const { runWithNotificationTarget } = useNotificationApi();
   const ownCapabilities = useOwnCapabilitiesContext();
   const {
     theme: { semantics },
@@ -178,12 +180,14 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   } = useTheme();
 
   const toggleVote = useCallback(async () => {
-    if (ownVotesByOptionId[option.id]) {
-      await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
-    } else {
-      await poll.castVote(option.id, message.id);
-    }
-  }, [message.id, option.id, ownVotesByOptionId, poll]);
+    await runWithNotificationTarget(async () => {
+      if (ownVotesByOptionId[option.id]) {
+        await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
+      } else {
+        await poll.castVote(option.id, message.id);
+      }
+    });
+  }, [message.id, option.id, ownVotesByOptionId, poll, runWithNotificationTarget]);
 
   const onPressHandler = useCallback(() => {
     if (onPress) {

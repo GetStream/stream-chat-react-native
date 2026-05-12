@@ -9,7 +9,7 @@ import { idleRecordingStateSelector } from './utils/audioRecorderSelectors';
 import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { transitions } from '../../utils/transitions';
+import { transitions } from '../../utils/animations/transitions';
 
 export const MessageComposerLeadingView = () => {
   const {

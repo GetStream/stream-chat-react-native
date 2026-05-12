@@ -18,7 +18,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
         },
         {
           "elevation": 2,
-          "shadowColor": "rgba(0,0,0,0.12)",
+          "shadowColor": "rgb(0,0,0)",
           "shadowOffset": {
             "height": 1,
             "width": 0,

@@ -58,7 +58,7 @@ import { useStableCallback, useStateStore } from '../../hooks';
 import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { transitions } from '../../utils/transitions';
+import { transitions } from '../../utils/animations/transitions';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
 type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
@@ -298,6 +298,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     EmptyStateIndicator,
     MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
+    NotificationList,
     ScrollToBottomButton,
     StickyHeader,
     TypingIndicator,
@@ -1127,6 +1128,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           />
         </View>
       ) : null}
+      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Alert, Linking, StyleSheet } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 
 import { Gesture, GestureDetector, State } from 'react-native-gesture-handler';
 import Animated, {
@@ -24,6 +24,7 @@ import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
+import { useNotificationApi } from '../../../Notifications';
 import { ButtonStylesConfig, useButtonStyles } from '../../../ui/Button/hooks/useButtonStyles';
 import { useMicPositionContext } from '../../contexts/MicPositionContext';
 
@@ -92,6 +93,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     },
   } = useTheme();
   const buttonStyles = useButtonStyles(buttonStylesConfig);
+  const { addNotification } = useNotificationApi();
 
   const onPressHandler = useStableCallback(() => {
     if (handlePress) {
@@ -99,7 +101,14 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     }
     if (!recording) {
       NativeHandlers.triggerHaptic('notificationError');
-      Alert.alert(t('Hold to start recording.'));
+      addNotification({
+        message: 'Hold to record. Release to save.',
+        options: {
+          severity: 'info',
+          type: 'validation:audio:recording:hold-required',
+        },
+        origin: { emitter: 'AudioRecordingButton' },
+      });
     }
   });
 
@@ -115,18 +124,23 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       }
       const permissionsGranted = await startVoiceRecording();
       if (!permissionsGranted) {
-        Alert.alert(t('Please allow Audio permissions in settings.'), '', [
-          {
-            onPress: () => {
-              Linking.openSettings();
-            },
-            text: t('Open Settings'),
+        addNotification({
+          message: 'Please allow Audio permissions in settings.',
+          options: {
+            actions: [
+              {
+                handler: () => {
+                  Linking.openSettings();
+                },
+                label: t('Open Settings'),
+              },
+            ],
+            duration: 0,
+            severity: 'warning',
+            type: 'permission:audio:recording:blocked',
           },
-          {
-            text: t('Cancel'),
-            style: 'cancel',
-          },
-        ]);
+          origin: { emitter: 'AudioRecordingButton' },
+        });
         return;
       }
       NativeHandlers.triggerHaptic('impactHeavy');

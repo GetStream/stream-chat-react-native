@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { StyleSheet, View } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
 
 import {
@@ -21,8 +22,12 @@ import {
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
+import { useLazyRef } from '../../hooks/useLazyRef';
 import type { ChannelListEventListenerOptions } from '../../types/types';
+import { generateRandomId } from '../../utils/utils';
+import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 export type ChannelListProps = Partial<
   Pick<
@@ -206,6 +211,7 @@ export type ChannelListProps = Partial<
    * - The return type has to be Channel[] (which is the return type of StreamChat.queryChannels)
    */
   queryChannelsOverride?: QueryChannelsRequestType;
+  notificationHostId?: string;
 };
 
 const DEFAULT_FILTERS = {};
@@ -244,12 +250,16 @@ export const ChannelList = (props: ChannelListProps) => {
     setFlatListRef,
     sort = DEFAULT_SORT,
     queryChannelsOverride,
+    notificationHostId: notificationHostIdProp,
     mutedStatusPosition = 'inlineTitle',
     swipeActionsEnabled = true,
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
+  const fallbackNotificationHostIdRef = useLazyRef(() => `channel-list:${generateRandomId()}`);
+  const notificationHostId = notificationHostIdProp ?? fallbackNotificationHostIdRef.current;
   const { client, enableOfflineSupport } = useChatContext();
+  const { NotificationList } = useComponentsContext();
   const channelManager = useMemo(() => client.createChannelManager({}), [client]);
 
   /**
@@ -368,10 +378,22 @@ export const ChannelList = (props: ChannelListProps) => {
   });
 
   return (
-    <ChannelsProvider value={channelsContext}>
-      <SwipeRegistryProvider>
-        <ChannelListView />
-      </SwipeRegistryProvider>
-    </ChannelsProvider>
+    <NotificationTargetProvider hostId={notificationHostId} panel='channel-list'>
+      <ChannelsProvider value={channelsContext}>
+        <SwipeRegistryProvider>
+          <View style={styles.container}>
+            <ChannelListView />
+            <NotificationList />
+          </View>
+        </SwipeRegistryProvider>
+      </ChannelsProvider>
+    </NotificationTargetProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'transparent',
+    flex: 1,
+  },
+});
