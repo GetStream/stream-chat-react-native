@@ -55,8 +55,6 @@ export type AudioRecordingButtonPropsWithContext = Pick<
     cancellableDuration: boolean;
   };
 
-const VOICE_RECORDING_HINT_NOTIFICATION_DURATION = 3000;
-
 const buttonStylesConfig: ButtonStylesConfig = {
   variant: 'secondary',
   type: 'ghost',
@@ -106,7 +104,6 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       addNotification({
         message: 'Hold to record. Release to save.',
         options: {
-          duration: VOICE_RECORDING_HINT_NOTIFICATION_DURATION,
           severity: 'info',
           type: 'validation:audio:recording:hold-required',
         },
