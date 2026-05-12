@@ -1,5 +1,5 @@
 import React, { type ComponentType, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 
@@ -166,6 +166,9 @@ const useNotificationStyles = ({ hasResolvedIcon }: { hasResolvedIcon: boolean }
   const {
     theme: { notification: notificationTheme, semantics },
   } = useTheme();
+  const scheme = useColorScheme();
+  const notificationShadow =
+    scheme === 'dark' ? primitives.darkElevation3 : primitives.lightElevation3;
 
   return useMemo(() => {
     const baseStyles = StyleSheet.create({
@@ -194,14 +197,11 @@ const useNotificationStyles = ({ hasResolvedIcon }: { hasResolvedIcon: boolean }
         alignSelf: 'center',
         backgroundColor: semantics.backgroundCoreInverse,
         borderRadius: primitives.radius3xl,
-        elevation: 5,
         flexDirection: 'row',
         maxWidth: '100%',
         paddingHorizontal: primitives.spacingSm,
-        shadowColor: semantics.chrome1000,
-        shadowOffset: { height: 2, width: 0 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
+        ...notificationShadow,
+        shadowOpacity: 0,
       },
       contentContainer: {
         alignItems: 'center',
@@ -239,5 +239,5 @@ const useNotificationStyles = ({ hasResolvedIcon }: { hasResolvedIcon: boolean }
         message: [baseStyles.message, notificationTheme.message],
       },
     };
-  }, [hasResolvedIcon, notificationTheme, semantics]);
+  }, [hasResolvedIcon, notificationShadow, notificationTheme, semantics]);
 };

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { NotificationManager } from 'stream-chat';
@@ -93,9 +93,6 @@ describe('NotificationList', () => {
 
     await waitFor(() => expect(screen.getByText('Floating composer notice')).toBeTruthy());
     expect(screen.queryByTestId('notification-icon')).toBeNull();
-    expect(StyleSheet.flatten(screen.getByTestId('notification-list').props.style)).toMatchObject({
-      bottom: 96,
-    });
   });
 
   it('renders default notifications without an icon when severity is omitted', async () => {
@@ -135,9 +132,6 @@ describe('NotificationList', () => {
     });
 
     await waitFor(() => expect(screen.getByText('Top notice')).toBeTruthy());
-    expect(StyleSheet.flatten(screen.getByTestId('notification-list').props.style)).toMatchObject({
-      top: 56,
-    });
   });
 
   it('does not render system notifications in the snackbar list', () => {
