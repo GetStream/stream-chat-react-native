@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import type { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
@@ -9,7 +8,7 @@ import { primitives } from '../../../theme';
 export type ChannelDetailsListItemProps = {
   Icon: React.ComponentType<IconProps>;
   label: string;
-  accessibilityLabelKey?: string;
+  accessibilityHint?: string;
   destructive?: boolean;
   onPress?: () => void;
   testID?: string;
@@ -17,8 +16,8 @@ export type ChannelDetailsListItemProps = {
 };
 
 export const ChannelDetailsListItem = ({
+  accessibilityHint,
   Icon,
-  accessibilityLabelKey,
   destructive = false,
   label,
   onPress,
@@ -39,13 +38,16 @@ export const ChannelDetailsListItem = ({
     },
   } = useTheme();
   const styles = useStyles();
-  const translatedAccessibilityLabel = useA11yLabel(accessibilityLabelKey ?? '');
   const labelColor = destructive ? semantics.accentError : semantics.textPrimary;
   const iconColor = destructive ? semantics.accentError : semantics.textPrimary;
 
   const content = (
     <View style={[styles.contentContainer, containerOverride]}>
-      <View style={[styles.iconWrapper, iconWrapperOverride]}>
+      <View
+        accessibilityElementsHidden
+        importantForAccessibility='no-hide-descendants'
+        style={[styles.iconWrapper, iconWrapperOverride]}
+      >
         <Icon fill={iconColor} height={20} stroke={iconColor} width={20} />
       </View>
       <Text
@@ -59,7 +61,15 @@ export const ChannelDetailsListItem = ({
       >
         {label}
       </Text>
-      {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
+      {trailing ? (
+        <View
+          accessibilityElementsHidden
+          importantForAccessibility='no-hide-descendants'
+          style={styles.trailing}
+        >
+          {trailing}
+        </View>
+      ) : null}
     </View>
   );
 
@@ -73,7 +83,8 @@ export const ChannelDetailsListItem = ({
 
   return (
     <Pressable
-      accessibilityLabel={translatedAccessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityLabel={label}
       accessibilityRole='button'
       onPress={onPress}
       style={({ pressed }) => [

@@ -3,6 +3,7 @@ import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
+import { composeAccessibilityLabel } from '../../../a11y/a11yUtils';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../../theme';
@@ -40,9 +41,18 @@ const ChannelDetailsMemberListItemInner = ({
 
   const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
   const statusLine = user.online ? t('Online') : '';
+  const accessibilityLabel = composeAccessibilityLabel(
+    displayName,
+    statusLine,
+    isOwner ? t('Admin') : null,
+  );
 
   return (
-    <View style={[styles.container, containerOverride]}>
+    <View
+      accessibilityLabel={accessibilityLabel}
+      accessible
+      style={[styles.container, containerOverride]}
+    >
       <UserAvatar showOnlineIndicator={user.online} size='sm' user={user} />
       <View style={styles.body}>
         <Text

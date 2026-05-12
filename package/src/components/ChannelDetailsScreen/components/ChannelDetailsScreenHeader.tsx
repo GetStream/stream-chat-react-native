@@ -56,6 +56,7 @@ export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeader
       </View>
       <View style={styles.centerContainer}>
         <Text
+          accessibilityRole='header'
           numberOfLines={1}
           style={[styles.title, { color: semantics.textPrimary }, titleOverride]}
         >

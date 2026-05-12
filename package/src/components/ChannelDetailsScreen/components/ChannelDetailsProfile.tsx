@@ -46,6 +46,7 @@ export const ChannelDetailsProfile = () => {
       <ChannelAvatar channel={channel} showBorder={false} size='2xl' />
       <View style={[styles.heading, headingOverride]}>
         <Text
+          accessibilityRole='header'
           numberOfLines={2}
           style={[styles.title, { color: semantics.textPrimary }, titleOverride]}
         >

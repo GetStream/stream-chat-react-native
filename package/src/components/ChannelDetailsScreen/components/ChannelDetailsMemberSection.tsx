@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -42,7 +42,10 @@ export const ChannelDetailsMemberSection = () => {
       ]}
     >
       <View style={[styles.header, headerOverride]}>
-        <Text style={[styles.headerTitle, { color: semantics.textPrimary }, headerTitleOverride]}>
+        <Text
+          accessibilityRole='header'
+          style={[styles.headerTitle, { color: semantics.textPrimary }, headerTitleOverride]}
+        >
           {t('{{count}} members', { count: total })}
         </Text>
       </View>
@@ -63,13 +66,13 @@ export const ChannelDetailsMemberSection = () => {
         <View
           style={[styles.footer, { borderTopColor: semantics.borderCoreDefault }, footerOverride]}
         >
-          <Pressable accessibilityRole='button' style={styles.viewAllButton}>
+          <View style={styles.viewAllButton}>
             <Text
               style={[styles.viewAllLabel, { color: semantics.textPrimary }, viewAllLabelOverride]}
             >
               {t('View all')}
             </Text>
-          </Pressable>
+          </View>
         </View>
       ) : null}
     </View>
