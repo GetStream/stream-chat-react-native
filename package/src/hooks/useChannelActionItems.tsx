@@ -3,6 +3,8 @@ import { Alert } from 'react-native';
 
 import type { BlockedUsersState, Channel } from 'stream-chat';
 
+import { useStateStore } from './useStateStore';
+
 import {
   ChannelActions,
   getOtherUserInDirectChannel,
@@ -15,7 +17,6 @@ import { useTheme, useTranslationContext } from '../contexts';
 import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
 import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';
 import { ArrowBoxLeft } from '../icons/leave';
-import { useStateStore } from './useStateStore';
 
 export type ChannelActionHandler = () => Promise<void> | void;
 
