@@ -3,10 +3,6 @@ import { Alert } from 'react-native';
 
 import type { Channel } from 'stream-chat';
 
-import { useTheme, useTranslationContext } from '../contexts';
-import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
-import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';
-import { ArrowBoxLeft } from '../icons/leave';
 import {
   ChannelActions,
   getOtherUserInDirectChannel,
@@ -15,6 +11,10 @@ import { useChannelActions } from '../components/ChannelList/hooks/useChannelAct
 import { useChannelMembershipState } from '../components/ChannelList/hooks/useChannelMembershipState';
 import { useChannelMuteActive } from '../components/ChannelList/hooks/useChannelMuteActive';
 import { useIsDirectChat } from '../components/ChannelList/hooks/useIsDirectChat';
+import { useTheme, useTranslationContext } from '../contexts';
+import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
+import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';
+import { ArrowBoxLeft } from '../icons/leave';
 
 export type ChannelActionHandler = () => Promise<void> | void;
 
