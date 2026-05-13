@@ -8,6 +8,7 @@ import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import * as useChannelMuteActiveModule from '../../../hooks/useChannelMuteActive';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
 import * as useChannelMembersStateModule from '../../ChannelList/hooks/useChannelMembersState';
 import * as useChannelPreviewDisplayNameModule from '../../ChannelPreview/hooks/useChannelPreviewDisplayName';
@@ -66,6 +67,7 @@ describe('ChannelDetailsProfile', () => {
   let useChannelMembersStateSpy: jest.SpyInstance;
   let useChannelPreviewDisplayNameSpy: jest.SpyInstance;
   let useChannelDetailsMemberStatusTextSpy: jest.SpyInstance;
+  let useChannelMuteActiveSpy: jest.SpyInstance;
 
   beforeEach(() => {
     channelAvatarCalls.length = 0;
@@ -81,6 +83,9 @@ describe('ChannelDetailsProfile', () => {
     useChannelDetailsMemberStatusTextSpy = jest
       .spyOn(useChannelDetailsMemberStatusTextModule, 'useChannelDetailsMemberStatusText')
       .mockReturnValue('12 members, 3 online');
+    useChannelMuteActiveSpy = jest
+      .spyOn(useChannelMuteActiveModule, 'useChannelMuteActive')
+      .mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -162,6 +167,20 @@ describe('ChannelDetailsProfile', () => {
       });
       renderProfile();
       expect(screen.queryByText('12 members, 3 online')).toBeNull();
+    });
+  });
+
+  describe('muted indicator', () => {
+    it('renders the muted indicator when useChannelMuteActive returns true', () => {
+      useChannelMuteActiveSpy.mockReturnValue(true);
+      renderProfile();
+      expect(screen.getByTestId('channel-details-profile-muted-indicator')).toBeTruthy();
+    });
+
+    it('does not render the muted indicator when useChannelMuteActive returns false', () => {
+      useChannelMuteActiveSpy.mockReturnValue(false);
+      renderProfile();
+      expect(screen.queryByTestId('channel-details-profile-muted-indicator')).toBeNull();
     });
   });
 });

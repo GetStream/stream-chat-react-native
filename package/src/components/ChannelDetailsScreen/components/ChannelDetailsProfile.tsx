@@ -4,7 +4,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useChannelMuteActive } from '../../../hooks/useChannelMuteActive';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
+import { Mute } from '../../../icons/mute';
 import { primitives } from '../../../theme';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { useChannelPreviewDisplayName } from '../../ChannelPreview/hooks/useChannelPreviewDisplayName';
@@ -31,6 +33,7 @@ export const ChannelDetailsProfile = () => {
   const members = useChannelMembersState(channel);
   const displayName = useChannelPreviewDisplayName(channel);
   const groupStatusText = useChannelDetailsMemberStatusText(channel);
+  const muted = useChannelMuteActive(channel);
   const styles = useStyles();
 
   const subtitle = useMemo(() => {
@@ -45,13 +48,23 @@ export const ChannelDetailsProfile = () => {
     <View style={[styles.container, containerOverride]}>
       <ChannelAvatar channel={channel} showBorder={false} size='2xl' />
       <View style={[styles.heading, headingOverride]}>
-        <Text
-          accessibilityRole='header'
-          numberOfLines={2}
-          style={[styles.title, { color: semantics.textPrimary }, titleOverride]}
-        >
-          {displayName ?? ''}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text
+            accessibilityRole='header'
+            numberOfLines={2}
+            style={[styles.title, { color: semantics.textPrimary }, titleOverride]}
+          >
+            {displayName ?? ''}
+          </Text>
+          {muted ? (
+            <Mute
+              fill={semantics.textTertiary}
+              height={20}
+              testID='channel-details-profile-muted-indicator'
+              width={20}
+            />
+          ) : null}
+        </View>
         {subtitle ? (
           <Text style={[styles.subtitle, { color: semantics.textSecondary }, subtitleOverride]}>
             {subtitle}
@@ -82,10 +95,17 @@ const useStyles = () => {
           textAlign: 'center',
         },
         title: {
+          flexShrink: 1,
           fontSize: primitives.typographyFontSizeXl,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightRelaxed,
           textAlign: 'center',
+        },
+        titleRow: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: primitives.spacingXs,
+          justifyContent: 'center',
         },
       }),
     [],
