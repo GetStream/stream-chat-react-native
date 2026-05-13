@@ -7,6 +7,7 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
 import { useIsDirectChat } from '../../ChannelList/hooks/useIsDirectChat';
+import { useChannelDetailsActionItems } from '../hooks';
 
 export const ChannelDetailsActionsSection = () => {
   const { channel } = useChannelDetailsContext();
