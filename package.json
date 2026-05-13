@@ -40,7 +40,7 @@
     "@semantic-release/git": "^10.0.1",
     "dotenv": "^10.0.0",
     "execa": "^5.1.1",
-    "husky": "^6.0.0",
+    "husky": "^9.1.7",
     "prettier": "^3.5.1",
     "semantic-release": "^25.0.2",
     "uglify-js": "^3.19.2"

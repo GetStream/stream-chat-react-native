@@ -14727,12 +14727,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "husky@npm:6.0.0"
+"husky@npm:^9.1.7":
+  version: 9.1.7
+  resolution: "husky@npm:9.1.7"
   bin:
-    husky: lib/bin.js
-  checksum: 10c0/00dca95e24f6174f150ba1ee746948a89a3ff20b460ecad7bc2e4c2a76fe5b78bef1400c84bc2bade6588392c37baf57c173f49dc123fdbc7c7a71e4d412fb67
+    husky: bin.js
+  checksum: 10c0/35bb110a71086c48906aa7cd3ed4913fb913823715359d65e32e0b964cb1e255593b0ae8014a5005c66a68e6fa66c38dcfa8056dbbdfb8b0187c0ffe7ee3a58f
   languageName: node
   linkType: hard
 
@@ -21921,7 +21921,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     dotenv: "npm:^10.0.0"
     execa: "npm:^5.1.1"
-    husky: "npm:^6.0.0"
+    husky: "npm:^9.1.7"
     prettier: "npm:^3.5.1"
     semantic-release: "npm:^25.0.2"
     uglify-js: "npm:^3.19.2"
