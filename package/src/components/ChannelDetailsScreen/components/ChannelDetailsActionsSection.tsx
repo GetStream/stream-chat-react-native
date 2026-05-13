@@ -1,16 +1,15 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { GetChannelActionItems, useChannelActionItems } from '../../../hooks/useChannelActionItems';
 import { primitives } from '../../../theme';
 import { useIsDirectChat } from '../../ChannelList/hooks/useIsDirectChat';
 
 export const ChannelDetailsActionsSection = () => {
-  const { channel, onAfterDeleteChat, onAfterLeaveGroup } = useChannelDetailsContext();
+  const { channel } = useChannelDetailsContext();
   const {
     theme: {
       channelDetailsScreen: { sectionCard: sectionCardOverride },
@@ -27,36 +26,7 @@ export const ChannelDetailsActionsSection = () => {
   );
   const styles = useStyles();
 
-  const getActionItemsForDetailsScreen = useCallback<GetChannelActionItems>(
-    ({ defaultItems }) =>
-      defaultItems.map((item) => {
-        if (item.id === 'leave') {
-          return {
-            ...item,
-            action: async () => {
-              await item.action();
-              onAfterLeaveGroup?.(channel);
-            },
-          };
-        }
-        if (item.id === 'deleteChannel') {
-          return {
-            ...item,
-            action: async () => {
-              await item.action();
-              onAfterDeleteChat?.(channel);
-            },
-          };
-        }
-        return item;
-      }),
-    [channel, onAfterDeleteChat, onAfterLeaveGroup],
-  );
-
-  const items = useChannelActionItems({
-    channel,
-    getChannelActionItems: getActionItemsForDetailsScreen,
-  });
+  const items = useChannelDetailsActionItems();
 
   if (items.length === 0) return null;
 
