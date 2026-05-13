@@ -119,7 +119,7 @@
     "@op-engineering/op-sqlite": "^14.0.3",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native/babel-preset": "0.79.3",
-    "@shopify/flash-list": "^2.1.0",
+    "@shopify/flash-list": "^2.3.1",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "13.2.0",
     "@total-typescript/shoehorn": "^0.1.2",
