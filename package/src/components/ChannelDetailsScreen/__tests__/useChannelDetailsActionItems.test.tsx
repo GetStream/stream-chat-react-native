@@ -29,8 +29,7 @@ const mockContext = (
 ) => {
   const value: channelDetailsContextModule.ChannelDetailsContextValue = {
     channel,
-    onAfterDeleteChat: jest.fn(),
-    onAfterLeaveGroup: jest.fn(),
+    onChannelDismiss: jest.fn(),
     ...overrides,
   };
   jest.spyOn(channelDetailsContextModule, 'useChannelDetailsContext').mockReturnValue(value);
@@ -91,8 +90,8 @@ describe('useChannelDetailsActionItems', () => {
     expect(result[1]).toBe(archiveItem);
   });
 
-  it('wraps leave action to call onAfterLeaveGroup after the original action resolves', async () => {
-    const { onAfterLeaveGroup } = mockContext();
+  it('wraps leave action to call onChannelDismiss after the original action resolves', async () => {
+    const { onChannelDismiss } = mockContext();
     renderHook(() => useChannelDetailsActionItems());
 
     const callOrder: string[] = [];
@@ -107,8 +106,8 @@ describe('useChannelDetailsActionItems', () => {
           };
         }),
     );
-    (onAfterLeaveGroup as jest.Mock).mockImplementation(() => {
-      callOrder.push('onAfterLeaveGroup');
+    (onChannelDismiss as jest.Mock).mockImplementation(() => {
+      callOrder.push('onChannelDismiss');
     });
 
     const leaveItem = buildItem({
@@ -131,18 +130,18 @@ describe('useChannelDetailsActionItems', () => {
 
     const pending = wrapped.action();
     expect(originalLeave).toHaveBeenCalledTimes(1);
-    expect(onAfterLeaveGroup).not.toHaveBeenCalled();
+    expect(onChannelDismiss).not.toHaveBeenCalled();
 
     resolveLeave!();
     await pending;
 
-    expect(onAfterLeaveGroup).toHaveBeenCalledTimes(1);
-    expect(onAfterLeaveGroup).toHaveBeenCalledWith(channel);
-    expect(callOrder).toEqual(['leave-start', 'leave-resolved', 'onAfterLeaveGroup']);
+    expect(onChannelDismiss).toHaveBeenCalledTimes(1);
+    expect(onChannelDismiss).toHaveBeenCalledWith();
+    expect(callOrder).toEqual(['leave-start', 'leave-resolved', 'onChannelDismiss']);
   });
 
-  it('wraps deleteChannel action to call onAfterDeleteChat after the original action resolves', async () => {
-    const { onAfterDeleteChat } = mockContext();
+  it('wraps deleteChannel action to call onChannelDismiss after the original action resolves', async () => {
+    const { onChannelDismiss } = mockContext();
     renderHook(() => useChannelDetailsActionItems());
 
     const callOrder: string[] = [];
@@ -157,8 +156,8 @@ describe('useChannelDetailsActionItems', () => {
           };
         }),
     );
-    (onAfterDeleteChat as jest.Mock).mockImplementation(() => {
-      callOrder.push('onAfterDeleteChat');
+    (onChannelDismiss as jest.Mock).mockImplementation(() => {
+      callOrder.push('onChannelDismiss');
     });
 
     const deleteItem = buildItem({
@@ -181,18 +180,18 @@ describe('useChannelDetailsActionItems', () => {
 
     const pending = wrapped.action();
     expect(originalDelete).toHaveBeenCalledTimes(1);
-    expect(onAfterDeleteChat).not.toHaveBeenCalled();
+    expect(onChannelDismiss).not.toHaveBeenCalled();
 
     resolveDelete!();
     await pending;
 
-    expect(onAfterDeleteChat).toHaveBeenCalledTimes(1);
-    expect(onAfterDeleteChat).toHaveBeenCalledWith(channel);
-    expect(callOrder).toEqual(['delete-start', 'delete-resolved', 'onAfterDeleteChat']);
+    expect(onChannelDismiss).toHaveBeenCalledTimes(1);
+    expect(onChannelDismiss).toHaveBeenCalledWith();
+    expect(callOrder).toEqual(['delete-start', 'delete-resolved', 'onChannelDismiss']);
   });
 
-  it('does not throw when onAfterLeaveGroup is undefined', async () => {
-    mockContext({ onAfterLeaveGroup: undefined });
+  it('does not throw when onChannelDismiss is undefined on the leave path', async () => {
+    mockContext({ onChannelDismiss: undefined });
     renderHook(() => useChannelDetailsActionItems());
 
     const originalLeave = jest.fn().mockResolvedValue(undefined);
@@ -205,8 +204,8 @@ describe('useChannelDetailsActionItems', () => {
     expect(originalLeave).toHaveBeenCalledTimes(1);
   });
 
-  it('does not throw when onAfterDeleteChat is undefined', async () => {
-    mockContext({ onAfterDeleteChat: undefined });
+  it('does not throw when onChannelDismiss is undefined on the deleteChannel path', async () => {
+    mockContext({ onChannelDismiss: undefined });
     renderHook(() => useChannelDetailsActionItems());
 
     const originalDelete = jest.fn().mockResolvedValue(undefined);

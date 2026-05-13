@@ -38,5 +38,5 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
     [navigation],
   );
 
-  return <ChannelDetailsScreen channel={channel} onAfterDeleteChat={popToRoot} onBack={onBack} />;
+  return <ChannelDetailsScreen channel={channel} onBack={onBack} onChannelDismiss={popToRoot} />;
 };

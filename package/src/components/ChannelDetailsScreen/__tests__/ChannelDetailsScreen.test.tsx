@@ -79,8 +79,7 @@ describe('ChannelDetailsScreen', () => {
 
   describe('context provisioning', () => {
     it('exposes channel and callbacks via ChannelDetailsContext', () => {
-      const onAfterDeleteChat = jest.fn();
-      const onAfterLeaveGroup = jest.fn();
+      const onChannelDismiss = jest.fn();
       const onBack = jest.fn();
       let captured: ReturnType<typeof useChannelDetailsContext> | undefined;
       const ContextProbe = () => {
@@ -98,9 +97,8 @@ describe('ChannelDetailsScreen', () => {
           >
             <ChannelDetailsScreen
               channel={channel}
-              onAfterDeleteChat={onAfterDeleteChat}
-              onAfterLeaveGroup={onAfterLeaveGroup}
               onBack={onBack}
+              onChannelDismiss={onChannelDismiss}
             />
           </WithComponents>
         </ThemeProvider>,
@@ -108,8 +106,7 @@ describe('ChannelDetailsScreen', () => {
 
       expect(captured).toBeDefined();
       expect(captured?.channel).toBe(channel);
-      expect(captured?.onAfterDeleteChat).toBe(onAfterDeleteChat);
-      expect(captured?.onAfterLeaveGroup).toBe(onAfterLeaveGroup);
+      expect(captured?.onChannelDismiss).toBe(onChannelDismiss);
       expect(captured?.onBack).toBe(onBack);
     });
   });

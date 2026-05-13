@@ -7,9 +7,9 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelDetailsContextValue = {
   channel: Channel;
-  onAfterDeleteChat?: (channel: Channel) => void;
-  onAfterLeaveGroup?: (channel: Channel) => void;
   onBack?: () => void;
+  /** Fired after the channel is no longer available to the current user (delete or leave). */
+  onChannelDismiss?: () => void;
 };
 
 export const ChannelDetailsContext = React.createContext(

@@ -8,32 +8,23 @@ import {
 } from '../../../hooks/useChannelActionItems';
 
 export const useChannelDetailsActionItems = (): ChannelActionItem[] => {
-  const { channel, onAfterDeleteChat, onAfterLeaveGroup } = useChannelDetailsContext();
+  const { channel, onChannelDismiss } = useChannelDetailsContext();
 
   const getActionItemsForDetailsScreen = useCallback<GetChannelActionItems>(
     ({ defaultItems }) =>
       defaultItems.map((item) => {
-        if (item.id === 'leave') {
+        if (item.id === 'leave' || item.id === 'deleteChannel') {
           return {
             ...item,
             action: async () => {
               await item.action();
-              onAfterLeaveGroup?.(channel);
-            },
-          };
-        }
-        if (item.id === 'deleteChannel') {
-          return {
-            ...item,
-            action: async () => {
-              await item.action();
-              onAfterDeleteChat?.(channel);
+              onChannelDismiss?.();
             },
           };
         }
         return item;
       }),
-    [channel, onAfterDeleteChat, onAfterLeaveGroup],
+    [onChannelDismiss],
   );
 
   return useChannelActionItems({

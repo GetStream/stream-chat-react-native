@@ -15,11 +15,9 @@ import { primitives } from '../../theme';
 
 export type ChannelDetailsScreenProps = {
   channel: Channel;
-  /** Fired after channel.delete() resolves so consumers can pop the screen. */
-  onAfterDeleteChat?: (channel: Channel) => void;
-  /** Fired after the current user is removed from the channel. */
-  onAfterLeaveGroup?: (channel: Channel) => void;
   onBack?: () => void;
+  /** Fired after the channel is no longer available to the current user (delete or leave). */
+  onChannelDismiss?: () => void;
 };
 
 export const ChannelDetailsScreenContent = () => {
@@ -61,15 +59,14 @@ export const ChannelDetailsScreenContent = () => {
 
 export const ChannelDetailsScreen = ({
   channel,
-  onAfterDeleteChat,
-  onAfterLeaveGroup,
   onBack,
+  onChannelDismiss,
 }: ChannelDetailsScreenProps) => {
   const { ChannelDetailsScreenContent: ChannelDetailsScreenContentOverride } =
     useComponentsContext();
   const value = useMemo<ChannelDetailsContextValue>(
-    () => ({ channel, onAfterDeleteChat, onAfterLeaveGroup, onBack }),
-    [channel, onAfterDeleteChat, onAfterLeaveGroup, onBack],
+    () => ({ channel, onBack, onChannelDismiss }),
+    [channel, onBack, onChannelDismiss],
   );
   const Content = ChannelDetailsScreenContentOverride ?? ChannelDetailsScreenContent;
 

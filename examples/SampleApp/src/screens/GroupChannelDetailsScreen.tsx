@@ -36,11 +36,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   );
 
   return (
-    <ChannelDetailsScreen
-      channel={channel}
-      onAfterDeleteChat={popToRoot}
-      onAfterLeaveGroup={popToRoot}
-      onBack={onBack}
-    />
+    <ChannelDetailsScreen channel={channel} onBack={onBack} onChannelDismiss={popToRoot} />
   );
 };
