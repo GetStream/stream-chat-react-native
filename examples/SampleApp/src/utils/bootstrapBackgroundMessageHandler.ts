@@ -1,12 +1,14 @@
-import { LoginConfig } from '../types';
-import AsyncStore from './AsyncStore';
+import notifee from '@notifee/react-native';
 import {
   FirebaseMessagingTypes,
   setBackgroundMessageHandler,
 } from '@react-native-firebase/messaging';
-import { DeliveredMessageConfirmation, StreamChat } from 'stream-chat';
-import notifee from '@notifee/react-native';
 import { getMessaging } from '@react-native-firebase/messaging';
+import { DeliveredMessageConfirmation, StreamChat } from 'stream-chat';
+
+import AsyncStore from './AsyncStore';
+
+import { LoginConfig } from '../types';
 
 const messaging = getMessaging();
 
@@ -44,6 +46,7 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
       return;
     }
     const chatClient = StreamChat.getInstance(loginConfig.apiKey);
+    // eslint-disable-next-line no-underscore-dangle
     await chatClient._setToken({ id: loginConfig.userId }, loginConfig.userToken);
 
     const notification = remoteMessage.data;

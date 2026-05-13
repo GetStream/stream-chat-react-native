@@ -5,9 +5,7 @@ import type { UserResponse } from 'stream-chat';
 
 Dayjs.extend(relativeTime);
 
-export const getUserActivityStatus = (
-  user?: UserResponse,
-) => {
+export const getUserActivityStatus = (user?: UserResponse) => {
   if (!user) {
     return '';
   }

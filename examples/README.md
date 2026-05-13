@@ -5,6 +5,7 @@ The three apps -- `SampleApp`, `ExpoMessaging`, `TypeScriptMessaging` -- are Yar
 On RN <= 0.72, symlink was not supported by default so the setup has to be done locally through metro config to run the project within the monorepo. The guide below addresses the same -- it remains useful when you want to consume a locally-cloned SDK from an app that lives **outside** this monorepo.
 
 ### Running a local SDK clone on your app
+
 ​
 If you're contributing and trying to link the SDK into your own React Native project, you may find
 some challenges on the way once [Metro doesn't follow symlinks](https://github.com/facebook/metro/issues/1).

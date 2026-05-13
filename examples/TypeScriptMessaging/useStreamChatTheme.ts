@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
+
 import type { DeepPartial, Theme } from 'stream-chat-react-native';
 
 const getChatStyle = (colorScheme: string | null | undefined): DeepPartial<Theme> => ({

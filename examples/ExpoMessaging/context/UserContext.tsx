@@ -1,5 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserResponse } from 'stream-chat';
 
 export type UserContextValue = {

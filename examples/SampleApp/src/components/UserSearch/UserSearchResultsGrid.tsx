@@ -1,13 +1,12 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+
+import type { UserResponse } from 'stream-chat';
 import { useViewport } from 'stream-chat-react-native';
 
 import { UserGridItem } from './UserGridItem';
 
 import { EmptySearchState } from '../../icons/EmptySearchState';
-
-import type { UserResponse } from 'stream-chat';
-
 
 const styles = StyleSheet.create({
   container: {

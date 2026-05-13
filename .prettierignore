@@ -1,7 +1,45 @@
+# Dependencies / build artifacts
 **/node_modules/
 **/build/
 **/dist/
+**/lib/
 **/.expo/
+**/.gradle/
 **/vendor/
+**/ios/build/
+**/ios/Pods/
+**/android/build/
+**/android/app/build/
+**/coverage/
+
+# Native scaffolding (not in this project's purview)
+**/ios/
+**/android/
+**/fastlane/
+examples/SampleApp/patches/
+
+# Lockfiles & generated metadata
+**/*.lock
+**/Podfile.lock
+.yarn/
+yarn.lock
+
+# Generated SDK assets
 package/src/components/docs/
-package/lib/
+package/src/theme/generated/
+
+# Workflow / tooling configs not owned by this project's Prettier
+.github/
+.husky/
+dotgit/
+
+# Repo metadata & docs that don't follow Prettier rules
+.claude/
+ai-docs/
+AGENTS.md
+CLAUDE.md
+PULL_REQUEST_TEMPLATE.md
+RELEASE_PROCESS.md
+SECURITY.md
+**/CHANGELOG.md
+**/.watchmanconfig

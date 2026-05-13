@@ -8,9 +8,12 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useChatContext, useTheme, useQueryReminders } from 'stream-chat-react-native';
+
 import { ReminderResponse } from 'stream-chat';
+import { useChatContext, useTheme, useQueryReminders } from 'stream-chat-react-native';
+
 import { ReminderItem } from './ReminderItem';
+
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const tabs = [

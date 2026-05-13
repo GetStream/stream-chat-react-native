@@ -1,16 +1,18 @@
 import { Alert } from 'react-native';
+
 import { useChatContext } from 'stream-chat-react-native';
 
+import type { ConfirmationData } from '../components/ConfirmationBottomSheet';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
-
-import type { ConfirmationData } from '../components/ConfirmationBottomSheet';
 
 type UseUserInfoOverlayActionsParams = {
   showConfirmation: (data: ConfirmationData) => void;
 };
 
-export const useUserInfoOverlayActions = ({ showConfirmation }: UseUserInfoOverlayActionsParams) => {
+export const useUserInfoOverlayActions = ({
+  showConfirmation,
+}: UseUserInfoOverlayActionsParams) => {
   const { client } = useChatContext();
   const { setOverlay } = useAppOverlayContext();
   const { data } = useUserInfoOverlayContext();

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 
-import { ChannelState } from 'stream-chat';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ChannelState } from 'stream-chat';
 import type { ChannelContextValue } from 'stream-chat-react-native';
 
 import type { StackNavigatorParamList } from '../types';

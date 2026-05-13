@@ -1,6 +1,10 @@
-import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
+
 import { Alert, AlertButton, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
+
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { ReminderResponse } from 'stream-chat';
 import {
   Delete,
@@ -10,8 +14,9 @@ import {
   useTheme,
   useTranslationContext,
 } from 'stream-chat-react-native';
+
 import { ReminderBanner } from './ReminderBanner';
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
 export const ReminderItem = (
@@ -23,9 +28,7 @@ export const ReminderItem = (
   const { t } = useTranslationContext();
   const channelName = channel?.name ? channel.name : 'Channel';
   const {
-    theme: {
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   const { accent_red, white_smoke, grey_gainsboro } = useLegacyColors();
   const messagePreviewText = useMessagePreviewText({ message });

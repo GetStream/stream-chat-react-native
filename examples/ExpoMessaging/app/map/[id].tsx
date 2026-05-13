@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useContext, useMemo, useCallback, useRef } from 'react';
 import {
   Platform,
   Pressable,
@@ -8,12 +8,15 @@ import {
   Image,
   Text,
 } from 'react-native';
-import { useContext, useMemo, useCallback, useRef } from 'react';
-import { AppContext } from '../../context/AppContext';
-import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-expo';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import MapView, { MapMarker, Marker } from 'react-native-maps';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { SharedLocationResponse, StreamChat } from 'stream-chat';
+import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-expo';
+
+import { AppContext } from '../../context/AppContext';
 
 export type SharedLiveLocationParamsStringType = SharedLocationResponse & {
   latitude: string;
@@ -124,6 +127,7 @@ export default function MapScreen() {
     if (Platform.OS === 'android' && markerRef.current?.animateMarkerToCoordinate) {
       markerRef.current.animateMarkerToCoordinate(newPosition, 500);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { isLiveLocationStopped, locationResponse } = useHandleLiveLocationEvents({
@@ -142,6 +146,7 @@ export default function MapScreen() {
       latitudeDelta,
       longitudeDelta,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aspect_ratio]);
 
   const region = useMemo(() => {

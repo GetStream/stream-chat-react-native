@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { BottomSheetModal, Delete, useStableCallback, useTheme } from 'stream-chat-react-native';
 
 import { UserMinus } from '../icons/UserMinus';

@@ -1,16 +1,16 @@
 import React, { useCallback, useRef } from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Search, useTheme } from 'stream-chat-react-native';
 
-import { RightArrow } from '../icons/RightArrow';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
+import { RightArrow } from '../icons/RightArrow';
 import { useLegacyColors } from '../theme/useLegacyColors';
-
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { StackNavigatorParamList } from '../types';
 

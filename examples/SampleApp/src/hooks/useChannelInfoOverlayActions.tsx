@@ -1,11 +1,12 @@
+import { Channel, ChannelMemberResponse } from 'stream-chat';
+
+import type { ConfirmationData } from '../components/ConfirmationBottomSheet';
+import { useAppOverlayContext } from '../context/AppOverlayContext';
+
 import {
   ChannelListScreenNavigationProp,
   useChannelInfoOverlayContext,
 } from '../context/ChannelInfoOverlayContext';
-import { Channel, ChannelMemberResponse } from 'stream-chat';
-import { useAppOverlayContext } from '../context/AppOverlayContext';
-
-import type { ConfirmationData } from '../components/ConfirmationBottomSheet';
 
 export type UseChannelInfoOverlayGesturesParams = {
   showConfirmation: (data: ConfirmationData) => void;
@@ -83,6 +84,7 @@ export const useChannelInfoOverlayActions = (params: UseChannelInfoOverlayGestur
     setOverlay('none');
   };
 
+  // eslint-disable-next-line require-await
   const deleteConversation = async () => {
     if (!channel) {
       return;

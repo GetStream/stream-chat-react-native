@@ -1,10 +1,14 @@
 import React from 'react';
-import { Alert, Image, Pressable, StyleSheet, View } from 'react-native';
-import { ChannelList, SqliteClient } from 'stream-chat-expo';
+
 import { useCallback, useContext, useMemo } from 'react';
+import { Alert, Image, Pressable, StyleSheet, View } from 'react-native';
+
 import { Stack, useRouter } from 'expo-router';
 import { ChannelSort } from 'stream-chat';
+import { ChannelList, SqliteClient } from 'stream-chat-expo';
+
 import { AppContext } from '../context/AppContext';
+
 import { useUserContext } from '@/context/UserContext';
 import { getInitialsOfName } from '@/utils/getInitialsOfName';
 
@@ -59,6 +63,7 @@ export default function ChannelListScreen() {
   return (
     <View style={styles.container}>
       <Stack.Screen
+        // eslint-disable-next-line react/no-unstable-nested-components
         options={{ title: 'Channel List Screen', headerLeft: () => <LogoutButton /> }}
       />
 

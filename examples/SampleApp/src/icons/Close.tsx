@@ -1,16 +1,10 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-import { IconProps } from '../utils/base';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { IconProps } from '../utils/base';
 
-export const Close: React.FC<IconProps> = ({
-  fill,
-  height = 24,
-  pathFill,
-  stroke,
-  width = 24,
-}) => {
+export const Close: React.FC<IconProps> = ({ fill, height = 24, pathFill, stroke, width = 24 }) => {
   const { black } = useLegacyColors();
   const color = pathFill ?? fill ?? stroke ?? black;
 

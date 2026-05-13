@@ -1,4 +1,5 @@
 const fs = require('fs');
+
 const {
   withPlugins,
   createRunOncePlugin,
@@ -19,7 +20,7 @@ const modifyPodfile = (podfilePath) => {
   end
 `;
   if (fs.existsSync(podfilePath)) {
-    let podfileContent = fs.readFileSync(podfilePath, 'utf-8');
+    const podfileContent = fs.readFileSync(podfilePath, 'utf-8');
     // Look for the `use_frameworks!` line
     const useFrameworksLine =
       "use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']";
@@ -43,6 +44,7 @@ const modifyPodfile = (podfilePath) => {
 const withModifyPodfile = (config) => {
   return withDangerousMod(config, [
     'ios',
+    // eslint-disable-next-line require-await
     async (config) => {
       const path = IOSConfig.Paths.getPodfilePath(config.modRequest.projectRoot);
       modifyPodfile(path);

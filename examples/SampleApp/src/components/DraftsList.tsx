@@ -1,17 +1,20 @@
+import { useCallback, useEffect, useMemo } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { DraftsIcon } from '../icons/DraftIcon';
+
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import dayjs from 'dayjs';
+import { ChannelResponse, DraftMessage, DraftResponse, MessageResponseBase } from 'stream-chat';
 import {
   useChatContext,
   useStateStore,
   useTheme,
   useMessagePreviewText,
 } from 'stream-chat-react-native';
-import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
-import { useCallback, useEffect, useMemo } from 'react';
-import dayjs from 'dayjs';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { ChannelResponse, DraftMessage, DraftResponse, MessageResponseBase } from 'stream-chat';
+
+import { DraftsIcon } from '../icons/DraftIcon';
+
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
 
 export type DraftItemProps = {
   type?: 'channel' | 'thread';

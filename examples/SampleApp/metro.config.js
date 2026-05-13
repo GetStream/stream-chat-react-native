@@ -13,10 +13,9 @@ const PATH = require('path');
 const metroConfigPackageJsonPath = require.resolve('metro-config/package.json', {
   paths: [__dirname],
 });
-const metroExclusionList = require(PATH.join(
-  PATH.dirname(metroConfigPackageJsonPath),
-  'src/defaults/exclusionList.js',
-));
+const metroExclusionList = require(
+  PATH.join(PATH.dirname(metroConfigPackageJsonPath), 'src/defaults/exclusionList.js'),
+);
 const exclusionList = metroExclusionList.default || metroExclusionList;
 const packageDirPath = PATH.resolve(__dirname, '../../package');
 const nativePackageDirPath = PATH.resolve(__dirname, '../../package/native-package');

@@ -1,3 +1,8 @@
+import { useCallback, useEffect, useRef } from 'react';
+
+import { Platform, PermissionsAndroid } from 'react-native';
+
+import notifee, { EventType } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getMessaging,
@@ -11,10 +16,9 @@ import {
   FirebaseMessagingTypes,
   onNotificationOpenedApp,
 } from '@react-native-firebase/messaging';
-import { useCallback, useEffect, useRef } from 'react';
-import { Platform, PermissionsAndroid } from 'react-native';
+
 import { PushProvider, StreamChat } from 'stream-chat';
-import notifee, { EventType } from '@notifee/react-native';
+
 import { navigateFromPNData } from '@/utils/navigateFromPNData';
 
 export type MessagingDataType = FirebaseMessagingTypes.RemoteMessage['data'];
@@ -186,5 +190,6 @@ export const usePushNotifications = ({ chatClient }: { chatClient: StreamChat | 
     }
 
     return unsubscribePushListenerRef.current;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatClient]);
 };

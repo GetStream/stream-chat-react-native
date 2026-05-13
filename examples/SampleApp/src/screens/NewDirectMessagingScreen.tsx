@@ -1,29 +1,24 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  Channel,
-  MessageComposer,
-  MessageList,
-  UserAdd,
-  useTheme,
-} from 'stream-chat-react-native';
 
-import { User } from '../icons/User';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { useFocusEffect } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { Channel as StreamChatChannel } from 'stream-chat';
+import { Channel, MessageComposer, MessageList, UserAdd, useTheme } from 'stream-chat-react-native';
+
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
+import { Group } from '../icons/Group';
+import { User } from '../icons/User';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { Channel as StreamChatChannel } from 'stream-chat';
-
 import type { StackNavigatorParamList } from '../types';
-import { Group } from '../icons/Group';
 
 const styles = StyleSheet.create({
   container: {

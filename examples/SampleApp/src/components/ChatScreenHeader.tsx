@@ -1,8 +1,12 @@
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+
+import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useChatContext } from 'stream-chat-react-native';
 
+import { NetworkDownIndicator } from './NetworkDownIndicator';
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';
 
@@ -10,11 +14,7 @@ import { useAppContext } from '../context/AppContext';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
-import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
-import { NetworkDownIndicator } from './NetworkDownIndicator';
 
 const styles = StyleSheet.create({
   avatar: {

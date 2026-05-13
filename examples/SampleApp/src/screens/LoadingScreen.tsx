@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, useColorScheme, View } from 'react-native';
+
 import { useTheme } from 'stream-chat-react-native';
 
 const styles = StyleSheet.create({

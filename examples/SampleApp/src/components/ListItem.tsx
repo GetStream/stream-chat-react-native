@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+
 import { useTheme } from 'stream-chat-react-native';
 
 type ListItemProps = {

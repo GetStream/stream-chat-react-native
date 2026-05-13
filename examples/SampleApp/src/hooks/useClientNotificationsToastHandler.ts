@@ -1,7 +1,7 @@
+import { useEffect, useMemo, useRef } from 'react';
+
 import type { Notification } from 'stream-chat';
 import { useClientNotifications, useInAppNotificationsState } from 'stream-chat-react-native';
-
-import { useEffect, useMemo, useRef } from 'react';
 
 export const usePreviousNotifications = (notifications: Notification[]) => {
   const prevNotifications = useRef<Notification[]>(notifications);

@@ -15,9 +15,6 @@
     "prestart": "yarn sync-native",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint .",
-    "eslint": "eslint .",
-    "lint-fix": "eslint . --fix",
     "extract-changelog": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/extract-changelog.js",
     "bootstrap": "yarn install",
     "release": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/prod",
@@ -79,13 +76,12 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.27.4",
-    "@babel/runtime": "^7.27.6",
+    "@babel/core": "^7.29.0",
+    "@babel/runtime": "^7.29.2",
     "@react-native-community/cli": "20.0.0",
     "@react-native-community/cli-platform-android": "20.0.0",
     "@react-native-community/cli-platform-ios": "20.0.0",
     "@react-native/babel-preset": "0.81.6",
-    "@react-native/eslint-config": "0.81.6",
     "@react-native/metro-config": "0.81.6",
     "@react-native/typescript-config": "0.81.6",
     "@rnx-kit/metro-config": "^2.1.0",
@@ -94,17 +90,9 @@
     "@types/react": "^19.1.4",
     "@types/react-test-renderer": "^19.1.0",
     "babel-plugin-react-compiler": "^1.0.0",
-    "eslint": "^9.28.0",
-    "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-jest": "^28.13.3",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-native": "^5.0.0",
-    "jest": "^30.0.0",
-    "prettier": "^3.5.3",
+    "jest": "^30.4.2",
     "react-test-renderer": "19.1.0",
-    "typescript": "5.8.3",
-    "typescript-eslint": "^8.34.0"
+    "typescript": "5.8.3"
   },
   "engines": {
     "node": ">=20.19.4"

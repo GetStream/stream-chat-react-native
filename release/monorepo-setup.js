@@ -1,5 +1,6 @@
-const execa = require('execa');
 const path = require('path');
+
+const execa = require('execa');
 
 const rootPath = path.resolve(`${__dirname}/..`);
 

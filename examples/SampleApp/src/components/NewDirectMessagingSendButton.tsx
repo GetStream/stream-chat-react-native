@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+
 import { useNavigation } from '@react-navigation/core';
 
 import {
@@ -12,11 +13,10 @@ import {
   useTheme,
 } from 'stream-chat-react-native';
 
-import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
-
-import { useUserSearchContext } from '../context/UserSearchContext';
 import { useAppContext } from '../context/AppContext';
+import { useUserSearchContext } from '../context/UserSearchContext';
 import { SendUp } from '../icons/SendUp';
+import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
 type NewDirectMessagingSendButtonPropsWithContext = Pick<

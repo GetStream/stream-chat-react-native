@@ -11,6 +11,9 @@ import {
   Image,
   Platform,
 } from 'react-native';
+
+import MapView, { MapMarker, Marker } from 'react-native-maps';
+
 import * as Location from 'expo-location';
 import {
   useChatContext,
@@ -18,7 +21,6 @@ import {
   useTheme,
   useTranslationContext,
 } from 'stream-chat-expo';
-import MapView, { MapMarker, Marker } from 'react-native-maps';
 
 type LiveLocationCreateModalProps = {
   visible: boolean;
@@ -62,7 +64,7 @@ export const LiveLocationCreateModal = ({
   useEffect(() => {
     let subscription: Location.LocationSubscription;
     const watchLocationHandler = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permissions not granted!');
         return;
@@ -99,6 +101,7 @@ export const LiveLocationCreateModal = ({
     return () => {
       subscription?.remove();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const buttons = [
@@ -134,7 +137,7 @@ export const LiveLocationCreateModal = ({
       description: 'Share your current location once',
       onPress: async () => {
         onRequestClose();
-        let { status } = await Location.requestForegroundPermissionsAsync();
+        const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           Alert.alert('Permission to access location was denied!');
           return;

@@ -8,14 +8,17 @@ import {
   View,
   Pressable,
 } from 'react-native';
+
+import MapView, { MapMarker, Marker } from 'react-native-maps';
+
+import { SharedLocationResponse, StreamChat } from 'stream-chat';
 import {
   MessageLocationProps,
   useChannelContext,
   useChatContext,
   useTheme,
 } from 'stream-chat-react-native';
-import MapView, { MapMarker, Marker } from 'react-native-maps';
-import { SharedLocationResponse, StreamChat } from 'stream-chat';
+
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const MessageLocationFooter = ({

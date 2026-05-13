@@ -1,6 +1,6 @@
 import jsEslint from '@eslint/js';
-import eslintReactNativeConfig from '@react-native-community/eslint-config';
-import eslintPluginReactNativeOfficial from '@react-native-community/eslint-plugin';
+import eslintReactNativeConfig from '@react-native/eslint-config';
+import eslintPluginReactNativeOfficial from '@react-native/eslint-plugin';
 import eslintPluginComments from 'eslint-plugin-eslint-comments';
 import eslintPluginImport from 'eslint-plugin-import';
 import eslintPluginJest from 'eslint-plugin-jest';
@@ -13,24 +13,19 @@ import tsEslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 /**
- * @react-native-community/eslint-config is for some reason still using the old notation
- * for globals. We parse them manually here to make sure they're compatible with
- * the new config. All globals are now readonly to prevent them from causing trouble.
+ * @react-native/eslint-config stores globals as `true`/`false`. We rebuild the
+ * map with `'readonly'` so flat config accepts them.
  */
-const reactNativeGlobals = Object.keys(eslintReactNativeConfig.globals).reduce((acc, key) => {
-  acc[key] = 'readonly';
-  return acc;
-}, {});
-
-/**
- * We filter out the jest/ rules as they're part of another config layer.
- */
-const reactNativeRules = Object.keys(eslintReactNativeConfig.rules).reduce((acc, key) => {
-  if (!key.startsWith('jest/')) {
-    acc[key] = eslintReactNativeConfig.rules[key];
+const reactNativeGlobals = Object.keys(eslintReactNativeConfig.globals ?? {}).reduce((acc, key) => {
+  if (eslintReactNativeConfig.globals[key]) {
+    acc[key] = 'readonly';
   }
   return acc;
 }, {});
+
+const reactNativeRules = Object.fromEntries(
+  Object.entries(eslintReactNativeConfig.rules ?? {}).filter(([key]) => !key.startsWith('jest/')),
+);
 
 export default tsEslint.config(
   jsEslint.configs.recommended,
@@ -38,14 +33,57 @@ export default tsEslint.config(
   eslintPluginReact.configs.flat.recommended,
   {
     ignores: [
-      'node_modules/',
-      'build/',
-      'dist/',
-      '.expo/',
-      'vendor/',
-      '*.md',
-      'src/components/docs/',
-      'lib/',
+      // Dependencies and build outputs
+      '**/node_modules/',
+      '**/build/',
+      '**/dist/',
+      '**/lib/',
+      '**/.expo/',
+      '**/.gradle/',
+      '**/vendor/',
+      '**/coverage/',
+      '**/ios/build/',
+      '**/ios/Pods/',
+      '**/android/build/',
+      '**/android/app/build/',
+
+      // Native scaffolding (not source we lint)
+      '**/ios/',
+      '**/android/',
+      '**/fastlane/',
+
+      // Generated SDK assets
+      'package/src/components/docs/',
+      'package/src/theme/generated/',
+
+      // Jest snapshots (auto-generated)
+      '**/__snapshots__/',
+      '**/*.snap',
+
+      // JSON is formatted by Prettier, not linted by ESLint
+      '**/*.json',
+
+      // Markdown is not linted (core has historically excluded it)
+      '**/*.md',
+
+      // Tooling config files
+      '**/*.config.js',
+      '**/*.config.cjs',
+      '**/*.config.mjs',
+      '**/jest-setup.*',
+
+      // Workspaces / dirs not previously in lint scope
+      'package/native-package/',
+      'package/expo-package/',
+      'release/',
+
+      // Repo metadata
+      '.github/',
+      '.husky/',
+      'dotgit/',
+      '.claude/',
+      'ai-docs/',
+      'docs/',
     ],
   },
   {
@@ -64,7 +102,7 @@ export default tsEslint.config(
       sourceType: 'module',
     },
     plugins: {
-      '@react-native-community': eslintPluginReactNativeOfficial,
+      '@react-native': eslintPluginReactNativeOfficial,
       'eslint-comments': eslintPluginComments,
       import: eslintPluginImport,
       prettier: eslintPluginPrettier,
@@ -107,7 +145,10 @@ export default tsEslint.config(
       'comma-dangle': 0,
       'default-case': 2,
       eqeqeq: [2, 'smart'],
-      'import/no-unresolved': ['error', { ignore: ['types'] }],
+      // TypeScript already catches unresolved imports; the eslint-import-resolver-node
+      // resolver doesn't understand Yarn workspace hoisting or TS path aliases, so we
+      // turn this off repo-wide to avoid false positives in example apps.
+      'import/no-unresolved': 'off',
       'import/order': [
         'error',
         {
@@ -147,7 +188,12 @@ export default tsEslint.config(
       '@typescript-eslint/ban-ts-comment': 0,
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { ignoreRestSiblings: false, caughtErrors: 'none' },
+        {
+          ignoreRestSiblings: false,
+          caughtErrors: 'none',
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
       ],
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-var-requires': 0,
@@ -161,7 +207,7 @@ export default tsEslint.config(
   },
   {
     name: 'jest',
-    files: ['src/**/__tests__/**', '**/*.test.*', 'src/mock-builders/**'],
+    files: ['**/__tests__/**', '**/*.test.*', 'package/src/mock-builders/**'],
     plugins: { jest: eslintPluginJest },
     languageOptions: {
       globals: {

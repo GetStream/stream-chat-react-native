@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { KeyboardCompatibleView, useTheme, version } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';

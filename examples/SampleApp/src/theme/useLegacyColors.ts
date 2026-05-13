@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { useTheme } from 'stream-chat-react-native';
 
 export const useLegacyColors = () => {

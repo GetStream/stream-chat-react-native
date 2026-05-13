@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { useAppContext } from '../context/AppContext';
-
 import type { MessageFilters, MessageResponse } from 'stream-chat';
+
+import { useAppContext } from '../context/AppContext';
 
 import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
 
-export const usePaginatedSearchedMessages = (
-  messageFilters: string | MessageFilters = {},
-) => {
+export const usePaginatedSearchedMessages = (messageFilters: string | MessageFilters = {}) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<Error | boolean>(false);

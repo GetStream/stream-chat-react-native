@@ -9,19 +9,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import { ChannelList, useTheme, useStableCallback, ChannelActionItem } from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
+import type { ChannelSort } from 'stream-chat';
+import {
+  ChannelList,
+  useTheme,
+  useStableCallback,
+  ChannelActionItem,
+} from 'stream-chat-react-native';
+
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { useAppContext } from '../context/AppContext';
+import { useStreamChatContext } from '../context/StreamChatContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
-import type { ChannelSort } from 'stream-chat';
-import { useStreamChatContext } from '../context/StreamChatContext';
-import { Search } from '../icons/Search';
 import { ChannelInfo } from '../icons/ChannelInfo.tsx';
 import { CircleClose } from '../icons/CircleClose.tsx';
+import { Search } from '../icons/Search';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({

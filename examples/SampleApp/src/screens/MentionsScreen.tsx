@@ -1,19 +1,19 @@
 import React, { RefObject, useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { useTheme } from 'stream-chat-react-native';
+
+import { useScrollToTop } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MessageResponse } from 'stream-chat';
+import { useTheme } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
-import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
-import { useScrollToTop } from '@react-navigation/native';
-
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
-import type { BottomTabNavigatorParamList } from '../types';
 import { useAppContext } from '../context/AppContext';
+import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
+
 import { AtMentions } from '../icons/AtMentions';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import type { BottomTabNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   container: {

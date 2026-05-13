@@ -9,11 +9,12 @@ import Animated, {
 
 import { AppOverlayContext, AppOverlayContextValue } from './AppOverlayContext';
 
-import { ChannelInfoOverlay } from '../components/ChannelInfoOverlay';
-import { UserInfoOverlay } from '../components/UserInfoOverlay';
 import { ChannelInfoOverlayProvider } from './ChannelInfoOverlayContext';
 import { UserInfoOverlayProvider } from './UserInfoOverlayContext';
+
+import { ChannelInfoOverlay } from '../components/ChannelInfoOverlay';
 import { OverlayBackdrop } from '../components/OverlayBackdrop';
+import { UserInfoOverlay } from '../components/UserInfoOverlay';
 
 export const AppOverlayProvider = (
   props: React.PropsWithChildren<{
@@ -76,10 +77,7 @@ export const AppOverlayProvider = (
             <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
           </Animated.View>
           <UserInfoOverlay overlayOpacity={overlayOpacity} visible={overlay === 'userInfo'} />
-          <ChannelInfoOverlay
-            overlayOpacity={overlayOpacity}
-            visible={overlay === 'channelInfo'}
-          />
+          <ChannelInfoOverlay overlayOpacity={overlayOpacity} visible={overlay === 'channelInfo'} />
         </UserInfoOverlayProvider>
       </ChannelInfoOverlayProvider>
     </AppOverlayContext.Provider>

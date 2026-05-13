@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+
 import {
   useAttachmentPickerState,
   AttachmentPickerContentProps,
@@ -8,8 +9,10 @@ import {
   useTheme,
   useTranslationContext,
 } from 'stream-chat-react-native';
-import { ShareLocationIcon } from '../icons/ShareLocationIcon.tsx';
+
 import { LiveLocationCreateModal } from './LocationSharing/CreateLocationModal.tsx';
+
+import { ShareLocationIcon } from '../icons/ShareLocationIcon.tsx';
 
 export const CustomAttachmentPickerContent = (props: AttachmentPickerContentProps) => {
   const [modalVisible, setModalVisible] = useState(false);

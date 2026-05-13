@@ -7,18 +7,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import dayjs from 'dayjs';
+
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+
+import dayjs from 'dayjs';
+import calendar from 'dayjs/plugin/calendar';
+import type { UserResponse } from 'stream-chat';
 import { useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
 import { useUserSearchContext } from '../../context/UserSearchContext';
 
-import type { UserResponse } from 'stream-chat';
-
+import { CheckSend } from '../../icons/CheckSend';
 import { Close } from '../../icons/Close';
 import { Search } from '../../icons/Search';
-import calendar from 'dayjs/plugin/calendar';
-import { CheckSend } from '../../icons/CheckSend';
+
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
 dayjs.extend(calendar);
