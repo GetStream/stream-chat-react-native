@@ -12,7 +12,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Check } from '../../icons/checkmark';
-import { Warning } from '../../icons/exclamation-triangle-fill';
+import { ExclamationCircle } from '../../icons/exclamation-circle-fill';
 import { Reload } from '../../icons/refresh';
 import { IconProps } from '../../icons/utils/base';
 import { NewClose } from '../../icons/xmark';
@@ -36,11 +36,11 @@ export const getNotificationVariant = (notification: NotificationType): Notifica
   notification.severity ?? 'default';
 
 const IconsByVariant: Partial<Record<NotificationVariant, ComponentType<IconProps> | null>> = {
-  error: Warning,
+  error: ExclamationCircle,
   info: null,
   loading: Reload,
   success: Check,
-  warning: Warning,
+  warning: ExclamationCircle,
 };
 
 const getNotificationIconComponent = (notification: NotificationType) => {
@@ -210,9 +210,8 @@ const useNotificationStyles = ({ hasResolvedIcon }: { hasResolvedIcon: boolean }
         borderRadius: primitives.radius3xl,
         flexDirection: 'row',
         maxWidth: '100%',
-        paddingHorizontal: primitives.spacingSm,
+        paddingHorizontal: primitives.spacingXs,
         ...notificationShadow,
-        shadowOpacity: 0,
       },
       contentContainer: {
         alignItems: 'center',
