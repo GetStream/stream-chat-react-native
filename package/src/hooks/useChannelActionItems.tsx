@@ -23,7 +23,7 @@ export type ChannelActionHandler = () => Promise<void> | void;
 export type ChannelActionItem = {
   action: ChannelActionHandler;
   Icon: React.ComponentType<IconProps>;
-  id: 'mute' | 'block' | 'archive' | 'leave' | 'deleteChannel' | string;
+  id: 'mute' | 'block' | 'leave' | 'deleteChannel' | string;
   label: string;
   placement: 'both' | 'sheet' | 'swipe';
   type: 'destructive' | 'standard';
