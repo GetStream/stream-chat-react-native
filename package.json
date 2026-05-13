@@ -14,6 +14,20 @@
     "prettier": "3.5.3",
     "react-native-keyboard-controller": "1.20.2"
   },
+  "dependenciesMeta": {
+    "@swc/core": {
+      "built": true
+    },
+    "better-sqlite3": {
+      "built": true
+    },
+    "react-native-nitro-modules": {
+      "built": true
+    },
+    "unrs-resolver": {
+      "built": true
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/GetStream/stream-chat-react-native.git"

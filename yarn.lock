@@ -21925,6 +21925,15 @@ __metadata:
     prettier: "npm:^3.5.1"
     semantic-release: "npm:^25.0.2"
     uglify-js: "npm:^3.19.2"
+  dependenciesMeta:
+    "@swc/core":
+      built: true
+    better-sqlite3:
+      built: true
+    react-native-nitro-modules:
+      built: true
+    unrs-resolver:
+      built: true
   languageName: unknown
   linkType: soft
 
