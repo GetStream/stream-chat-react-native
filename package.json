@@ -27,7 +27,6 @@
     "dotenv": "^10.0.0",
     "execa": "^5.1.1",
     "husky": "^6.0.0",
-    "lerna": "^4.0.0",
     "prettier": "^3.5.1",
     "semantic-release": "^25.0.2",
     "uglify-js": "^3.19.2"
@@ -40,10 +39,9 @@
   },
   "scripts": {
     "postinstall": "yarn workspace stream-chat-react-native-core shared-native:sync",
-    "lerna-workspaces": "lerna",
-    "release": "yarn lerna-workspaces run release",
-    "release-next": "yarn lerna-workspaces run release-next",
-    "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn lerna-workspaces run extract-changelog",
+    "release": "yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run release",
+    "release-next": "yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run release-next",
+    "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run extract-changelog",
     "eslint": "yarn workspace stream-chat-react-native-core eslint",
     "lint": "yarn workspace stream-chat-react-native-core lint",
     "lint-fix": "yarn workspace stream-chat-react-native-core lint-fix",
