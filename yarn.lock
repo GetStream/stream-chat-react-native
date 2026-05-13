@@ -20135,12 +20135,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.5.3":
-  version: 3.5.3
-  resolution: "prettier@npm:3.5.3"
+"prettier@npm:^3.5.1, prettier@npm:^3.5.3":
+  version: 3.8.3
+  resolution: "prettier@npm:3.8.3"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/3880cb90b9dc0635819ab52ff571518c35bd7f15a6e80a2054c05dbc8a3aa6e74f135519e91197de63705bcb38388ded7e7230e2178432a1468005406238b877
+  checksum: 10c0/754816fd7593eb80f6376d7476d463e832c38a12f32775a82683adb6e35b772b1f484d65f19401507b983a8c8a7cd5a4a9f12006bd56491e8f35503473f77473
   languageName: node
   linkType: hard
 
@@ -20724,16 +20724,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-keyboard-controller@npm:1.20.2":
-  version: 1.20.2
-  resolution: "react-native-keyboard-controller@npm:1.20.2"
+"react-native-keyboard-controller@npm:^1.20.2":
+  version: 1.21.7
+  resolution: "react-native-keyboard-controller@npm:1.21.7"
   dependencies:
     react-native-is-edge-to-edge: "npm:^1.2.1"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-reanimated: ">=3.0.0"
-  checksum: 10c0/39e23c778fa4b52b36c71d0c3970508c47dafe7a3a16ece12c87e87a290bddca0b334bd26356fb31cae9be9d8a213d8f8d009d68c6b5ed574035dc1a11a2479c
+  checksum: 10c0/47c1e8692538cb97a2933012367f6f17dc8d42d1d0c66fdb35de586709eb08b35e04f1f3c3390d495cbe10f1fc9d2c332a67efa7cd6d729bd74abb8292c0b3cd
   languageName: node
   linkType: hard
 

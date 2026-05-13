@@ -2,8 +2,7 @@ import { createGenerateVideoThumbnails } from 'stream-chat-react-native-core/src
 
 import { createVideoThumbnails, type VideoThumbnailResult } from '../native/videoThumbnail';
 
-export const generateThumbnails: (
-  uris: string[],
-) => Promise<Record<string, VideoThumbnailResult>> = createGenerateVideoThumbnails({
-  createVideoThumbnails,
-});
+export const generateThumbnails: (uris: string[]) => Promise<Record<string, VideoThumbnailResult>> =
+  createGenerateVideoThumbnails({
+    createVideoThumbnails,
+  });

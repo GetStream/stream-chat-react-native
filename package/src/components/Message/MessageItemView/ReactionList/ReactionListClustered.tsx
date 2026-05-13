@@ -113,17 +113,15 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
       style={containerStyle}
       accessibilityLabel={accessibilityLabel}
     >
-      {reactions
-        ?.slice(0, 4)
-        .map((reaction) => (
-          <Icon
-            key={reaction.type}
-            size={icon.size}
-            style={[styles.iconStyle, icon.style]}
-            supportedReactions={supportedReactions}
-            type={reaction.type}
-          />
-        ))}
+      {reactions?.slice(0, 4).map((reaction) => (
+        <Icon
+          key={reaction.type}
+          size={icon.size}
+          style={[styles.iconStyle, icon.style]}
+          supportedReactions={supportedReactions}
+          type={reaction.type}
+        />
+      ))}
       {reactionsCount > 4 ? <Text style={styles.reactionCount}>{reactionsCountText}</Text> : null}
     </ReactionListItemWrapper>
   );

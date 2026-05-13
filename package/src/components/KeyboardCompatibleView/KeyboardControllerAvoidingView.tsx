@@ -43,7 +43,6 @@ export const KeyboardCompatibleView = (props: KeyboardCompatibleViewProps) => {
   if (KeyboardProvider && KeyboardAvoidingView) {
     return (
       <KeyboardProvider>
-        {/* @ts-expect-error - The reason is that react-native-keyboard-controller's KeyboardAvoidingViewProps is a discriminated union, not a simple behavior union so it complains about the `position` value passed. */}
         <KeyboardAvoidingView behavior={behavior} {...rest}>
           {children}
         </KeyboardAvoidingView>
