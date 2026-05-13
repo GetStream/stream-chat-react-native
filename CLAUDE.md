@@ -6,50 +6,56 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Stream Chat React Native SDK monorepo. The main SDK code lives in `package/` (published as `stream-chat-react-native-core`). Built on top of the `stream-chat` JS client library.
 
+This is a **Yarn 4 (Berry)** workspace monorepo. The Yarn binary lives in `.yarn/releases/yarn-4.14.1.cjs` and is invoked via `yarnPath` in `.yarnrc.yml`; any globally-installed Yarn launcher (e.g. the Homebrew Yarn 1.x) auto-delegates to it. No Corepack required.
+
+Workspaces: `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/ExpoMessaging`, `examples/TypeScriptMessaging`. There is a single root `yarn.lock`.
+
 ## Common Commands
 
-All commands below run from the repo root unless noted otherwise.
+All commands below run from the repo root.
+
+### Install
+
+```bash
+yarn install                  # Set up every workspace (single root lockfile)
+yarn install --immutable      # CI-style; fail if yarn.lock would change
+```
+
+The root `package/`'s `postinstall` runs `husky install` and `yarn shared-native:sync` automatically.
 
 ### Build
 
 ```bash
-yarn build                    # Build all packages (runs in package/)
-cd package && yarn build      # Build SDK directly
+yarn build                                          # SDK build (commonjs + esm + types)
+yarn workspace stream-chat-react-native-core build  # Same, explicit form
 ```
 
 ### Lint & Format
 
 ```bash
-cd package && yarn lint       # Check prettier + eslint + translation validation (max-warnings 0)
-cd package && yarn lint-fix   # Auto-fix lint and formatting issues
+yarn lint        # prettier + eslint + translation validation (max-warnings 0)
+yarn lint-fix    # Auto-fix lint and formatting issues
 ```
 
 ### Test
 
 ```bash
-cd package && yarn test:unit              # Run all unit tests (sets TZ=UTC)
-cd package && yarn test:coverage          # Run with coverage report
-cd package && TZ=UTC npx jest path/to/test.test.tsx  # Run a single test file
+yarn test:unit                                          # All unit tests (sets TZ=UTC)
+yarn test:coverage                                      # With coverage report
+yarn workspace stream-chat-react-native-core test:unit  # Same as `yarn test:unit`
+cd package && TZ=UTC npx jest path/to/test.test.tsx     # Single test file
 ```
 
 Tests use Jest with `react-native` preset and `@testing-library/react-native`. Test files live alongside source at `src/**/__tests__/*.test.ts(x)`. Mock builders are in `src/mock-builders/`.
 
 To run a single test, you can also temporarily add the file path to the `testRegex` array in `package/jest.config.js`.
 
-### Install
-
-```bash
-yarn install --frozen-lockfile         # Root dependencies
-cd package && yarn install-all         # SDK + native-package + expo-package
-```
-
 ### Sample App
 
 ```bash
-cd examples/SampleApp && yarn install
-cd examples/SampleApp && yarn start    # Metro bundler
-cd examples/SampleApp && yarn ios      # Run iOS
-cd examples/SampleApp && yarn android  # Run Android
+yarn workspace sampleapp start    # Metro bundler (alias: cd examples/SampleApp && yarn start)
+yarn workspace sampleapp ios      # Run iOS
+yarn workspace sampleapp android  # Run Android
 ```
 
 ## Architecture
@@ -153,4 +159,5 @@ Translation JSON files live in `src/i18n/`. `validate-translations` (run as part
 - **Prettier**: single quotes, trailing commas, 100 char width (see `.prettierrc`)
 - **TypeScript strict mode** with platform-specific module suffixes (`.ios`, `.android`, `.web`)
 - Git branches: PRs target `develop`, `main` is production releases only
-- **Shared native sync**: Run `yarn shared-native:sync` from `package/` after modifying shared native code to copy to native-package and expo-package
+- **Shared native sync**: Root `yarn install`'s postinstall runs `yarn shared-native:sync` automatically. Re-run manually with `yarn workspace stream-chat-react-native-core shared-native:sync` after modifying `package/shared-native/`.
+- **No Lerna**: the release pipeline uses `yarn workspaces foreach` directly. Release-participating workspaces (core SDK + SampleApp) are hardcoded in `release/release.config.js`.
