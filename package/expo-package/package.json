@@ -31,7 +31,7 @@
   },
   "peerDependencies": {
     "expo": ">=52.0.0",
-    "react-native": ">=0.76.0",
+    "expo-audio": "*",
     "expo-av": "*",
     "expo-clipboard": "*",
     "expo-document-picker": "*",
@@ -42,16 +42,13 @@
     "expo-media-library": "*",
     "expo-sharing": "*",
     "expo-video": "*",
-    "expo-audio": "*"
+    "react-native": ">=0.76.0"
   },
   "peerDependenciesMeta": {
-    "expo-av": {
-      "optional": true
-    },
     "expo-audio": {
       "optional": true
     },
-    "expo-video": {
+    "expo-av": {
       "optional": true
     },
     "expo-clipboard": {
@@ -63,26 +60,29 @@
     "expo-file-system": {
       "optional": true
     },
-    "expo-media-library": {
-      "optional": true
-    },
-    "expo-image-picker": {
+    "expo-haptics": {
       "optional": true
     },
     "expo-image-manipulator": {
       "optional": true
     },
+    "expo-image-picker": {
+      "optional": true
+    },
+    "expo-media-library": {
+      "optional": true
+    },
     "expo-sharing": {
       "optional": true
     },
-    "expo-haptics": {
+    "expo-video": {
       "optional": true
     }
   },
   "devDependencies": {
     "expo": "^53.0.12",
-    "expo-image-manipulator": "^12.0.5",
-    "expo-audio": "~0.4.6"
+    "expo-audio": "~0.4.6",
+    "expo-image-manipulator": "^12.0.5"
   },
   "scripts": {
     "prepack": "bash ../scripts/sync-shared-native.sh expo-package && cp ../../README.md .",

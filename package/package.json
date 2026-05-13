@@ -101,6 +101,9 @@
     "react-native-teleport": ">=0.5.4"
   },
   "peerDependenciesMeta": {
+    "@emoji-mart/data": {
+      "optional": true
+    },
     "@op-engineering/op-sqlite": {
       "optional": true
     },
@@ -108,9 +111,6 @@
       "optional": true
     },
     "emoji-mart": {
-      "optional": true
-    },
-    "@emoji-mart/data": {
       "optional": true
     },
     "react-native-keyboard-controller": {
