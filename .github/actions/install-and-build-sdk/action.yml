@@ -1,22 +1,8 @@
 name: 'Install and Build SDK'
-description: 'Runs yarn install for all the packages and sample and fails if yarn lock has a change that is not committed'
+description: 'Runs yarn install at the workspace root and fails if yarn.lock has uncommitted changes'
 runs:
   using: 'composite'
   steps:
-    - name: Install Root repo dependencies
-      run: yarn --frozen-lockfile
-      shell: bash
-    - name: Install & Build the Core Package
-      run: |
-        cd package/
-        yarn --frozen-lockfile
-      shell: bash
-    - name: Install & Build the Native Package
-      run: |
-        cd package/native-package/
-        yarn
-      shell: bash
-    - name: Install & Build the Sample App
-      working-directory: examples/SampleApp
-      run: yarn
+    - name: Install workspace dependencies
+      run: yarn install --immutable
       shell: bash

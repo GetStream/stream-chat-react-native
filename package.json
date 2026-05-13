@@ -1,6 +1,19 @@
 {
   "name": "root",
   "private": true,
+  "workspaces": [
+    "package",
+    "package/native-package",
+    "package/expo-package",
+    "examples/SampleApp",
+    "examples/ExpoMessaging",
+    "examples/TypeScriptMessaging"
+  ],
+  "resolutions": {
+    "@types/react": "^19.0.0",
+    "prettier": "3.5.3",
+    "react-native-keyboard-controller": "1.20.2"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/GetStream/stream-chat-react-native.git"
