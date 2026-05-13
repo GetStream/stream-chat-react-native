@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 
 import { Channel } from 'stream-chat';
 
-import { useChatContext } from '../../../contexts';
+import { useChatContext, useTranslationContext } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
+import { useNotificationApi } from '../../Notifications';
 
 export type ChannelActions = {
   archive: () => Promise<void>;
@@ -27,8 +28,25 @@ export const getOtherUserInDirectChannel = (channel: Channel) => {
     : undefined;
 };
 
+const getNotificationError = (error: unknown): Error | undefined => {
+  if (error instanceof Error) return error;
+  if (typeof error === 'string') return new Error(error);
+  if (error && typeof error === 'object' && 'message' in error) {
+    const message = error.message;
+    if (typeof message === 'string') return new Error(message);
+  }
+  return undefined;
+};
+
+const getNotificationErrorOptions = (error: unknown) => {
+  const originalError = getNotificationError(error);
+  return originalError ? { originalError } : {};
+};
+
 export const useChannelActions = (channel: Channel) => {
   const { client } = useChatContext();
+  const { addNotification } = useNotificationApi();
+  const { t } = useTranslationContext();
   const ownUserId = client.userID;
 
   const pin = useStableCallback(async () => {
@@ -37,8 +55,21 @@ export const useChannelActions = (channel: Channel) => {
         return;
       }
       await channel.pin();
+      addNotification({
+        message: t('Channel pinned'),
+        options: { severity: 'success', type: 'api:channel:pin:success' },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     } catch (error) {
-      console.log('Error pinning channel', error);
+      addNotification({
+        message: t('Failed to update channel pinned status'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:channel:pin:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -48,8 +79,21 @@ export const useChannelActions = (channel: Channel) => {
         return;
       }
       await channel.unpin();
+      addNotification({
+        message: t('Channel unpinned'),
+        options: { severity: 'success', type: 'api:channel:unpin:success' },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     } catch (error) {
-      console.log('Error unpinning channel', error);
+      addNotification({
+        message: t('Failed to update channel pinned status'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:channel:pin:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -59,8 +103,21 @@ export const useChannelActions = (channel: Channel) => {
         return;
       }
       await channel.archive();
+      addNotification({
+        message: t('Channel archived'),
+        options: { severity: 'success', type: 'api:channel:archive:success' },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     } catch (error) {
-      console.log('Error archiving channel', error);
+      addNotification({
+        message: t('Failed to update channel archive status'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:channel:archive:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -70,8 +127,21 @@ export const useChannelActions = (channel: Channel) => {
         return;
       }
       await channel.unarchive();
+      addNotification({
+        message: t('Channel unarchived'),
+        options: { severity: 'success', type: 'api:channel:unarchive:success' },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     } catch (error) {
-      console.log('Error unarchiving channel', error);
+      addNotification({
+        message: t('Failed to update channel archive status'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:channel:archive:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -80,7 +150,24 @@ export const useChannelActions = (channel: Channel) => {
       return;
     }
     if (ownUserId) {
-      await channel.removeMembers([ownUserId]);
+      try {
+        await channel.removeMembers([ownUserId]);
+        addNotification({
+          message: t('Left channel'),
+          options: { severity: 'success', type: 'api:channel:leave:success' },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
+      } catch (error) {
+        addNotification({
+          message: t('Failed to leave channel'),
+          options: {
+            ...getNotificationErrorOptions(error),
+            severity: 'error',
+            type: 'api:channel:leave:failed',
+          },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
+      }
     }
   });
 
@@ -106,9 +193,24 @@ export const useChannelActions = (channel: Channel) => {
     try {
       if (otherUser?.user?.id) {
         await client.muteUser(otherUser.user.id);
+        addNotification({
+          message: t('{{ user }} has been muted', {
+            user: otherUser.user.name || otherUser.user.id,
+          }),
+          options: { severity: 'success', type: 'api:user:mute:success' },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
       }
     } catch (error) {
-      console.log('Error muting user', error);
+      addNotification({
+        message: t('Error muting a user ...'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:user:mute:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -122,9 +224,24 @@ export const useChannelActions = (channel: Channel) => {
     try {
       if (otherUser?.user?.id) {
         await client.unmuteUser(otherUser.user.id);
+        addNotification({
+          message: t('{{ user }} has been unmuted', {
+            user: otherUser.user.name || otherUser.user.id,
+          }),
+          options: { severity: 'success', type: 'api:user:unmute:success' },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
       }
     } catch (error) {
-      console.log('Error muting user', error);
+      addNotification({
+        message: t('Error unmuting a user ...'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:user:unmute:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -135,8 +252,21 @@ export const useChannelActions = (channel: Channel) => {
 
     try {
       await channel.mute();
+      addNotification({
+        message: t('Channel muted'),
+        options: { severity: 'success', type: 'api:channel:mute:success' },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     } catch (error) {
-      console.log('Error muting channel', error);
+      addNotification({
+        message: t('Failed to update channel mute status'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:channel:mute:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -147,8 +277,21 @@ export const useChannelActions = (channel: Channel) => {
 
     try {
       await channel.unmute();
+      addNotification({
+        message: t('Channel unmuted'),
+        options: { severity: 'success', type: 'api:channel:unmute:success' },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     } catch (error) {
-      console.log('Error muting channel', error);
+      addNotification({
+        message: t('Failed to update channel mute status'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:channel:mute:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -162,9 +305,22 @@ export const useChannelActions = (channel: Channel) => {
     try {
       if (otherUser?.user?.id) {
         await client.blockUser(otherUser.user.id);
+        addNotification({
+          message: t('User blocked'),
+          options: { severity: 'success', type: 'api:user:block:success' },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
       }
     } catch (error) {
-      console.log('Error blocking user', error);
+      addNotification({
+        message: t('Failed to block user'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:user:block:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
@@ -178,9 +334,22 @@ export const useChannelActions = (channel: Channel) => {
     try {
       if (otherUser?.user?.id) {
         await client.unBlockUser(otherUser.user.id);
+        addNotification({
+          message: t('User unblocked'),
+          options: { severity: 'success', type: 'api:user:unblock:success' },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
       }
     } catch (error) {
-      console.log('Error unblocking user', error);
+      addNotification({
+        message: t('Failed to block user'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:user:block:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 

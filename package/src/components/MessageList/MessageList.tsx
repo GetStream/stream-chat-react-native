@@ -18,6 +18,7 @@ import debounce from 'lodash/debounce';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
+import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
@@ -37,6 +38,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
@@ -69,7 +71,8 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { transitions } from '../../utils/transitions';
+import { transitions } from '../../utils/animations/transitions';
+import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -351,6 +354,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     EmptyStateIndicator,
     MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
+    NotificationList,
     ScrollToBottomButton,
     StickyHeader,
     TypingIndicator,
@@ -364,6 +368,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
+
+  useIncomingMessageAnnouncements({
+    activeThreadId: thread?.id,
+    channel,
+    ownUserId: client.user?.id,
+    threadList,
+  });
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
@@ -1037,6 +1048,19 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     });
   });
 
+  const scrollToBottomUnreadCount =
+    scrollToBottomButtonVisible && !threadList ? channel?.countUnread() : undefined;
+  const {
+    accessibilityActions: messageListAccessibilityActions,
+    onAccessibilityAction: messageListOnAccessibilityAction,
+  } = useScrollToBottomAccessibilityAction({
+    accessibilityActions: additionalFlatListProps?.accessibilityActions,
+    onAccessibilityAction: additionalFlatListProps?.onAccessibilityAction,
+    onScrollToBottom: goToNewMessages,
+    unreadCount: scrollToBottomUnreadCount,
+    visible: scrollToBottomButtonVisible,
+  });
+
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
   const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
   const onScrollToIndexFailedRef = useRef<
@@ -1289,10 +1313,17 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             testID='message-flat-list'
             viewabilityConfig={flatListViewabilityConfig}
             {...additionalFlatListPropsExcludingStyle}
+            accessibilityActions={messageListAccessibilityActions}
+            onAccessibilityAction={messageListOnAccessibilityAction}
           />
         </MessageListItemProvider>
       )}
-      <View style={styles.stickyHeaderContainer}>
+      <View
+        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility='no-hide-descendants'
+        style={styles.stickyHeaderContainer}
+      >
         {messageListLengthAfterUpdate && StickyHeader ? (
           <StickyHeader date={stickyHeaderDate} />
         ) : null}
@@ -1312,7 +1343,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           <ScrollToBottomButton
             onPress={goToNewMessages}
             showNotification={scrollToBottomButtonVisible}
-            unreadCount={threadList ? 0 : channel?.countUnread()}
+            unreadCount={scrollToBottomUnreadCount}
           />
         </Animated.View>
       ) : null}
@@ -1326,6 +1357,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </View>
       ) : null}
+      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
     </View>
   );
 };

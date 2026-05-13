@@ -115,6 +115,7 @@ export const EmojiViewerButton = ({
     <>
       <View style={[styles.emojiViewerButton, emojiViewerButton]}>
         <Button
+          accessibilityLabelKey='a11y/Open more reactions'
           variant='secondary'
           type='outline'
           size='sm'
@@ -163,6 +164,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   return (
     <View
       accessibilityLabel='Reaction Selector on long pressing message'
+      accessibilityRole='menu'
       style={[styles.container, container]}
     >
       <MessageReactionPickerList onSelectReaction={onSelectReaction} />

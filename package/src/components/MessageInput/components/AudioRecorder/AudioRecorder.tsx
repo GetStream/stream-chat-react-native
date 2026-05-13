@@ -23,6 +23,7 @@ import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
+import { useNotificationApi } from '../../../Notifications';
 
 type AudioRecorderPropsWithContext = Pick<
   MessageInputContextValue,
@@ -59,6 +60,7 @@ const StopRecording = ({
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Stop voice recording'
       variant='destructive'
       type='outline'
       size='sm'
@@ -83,6 +85,7 @@ const UploadRecording = ({
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Send voice recording'
       variant='primary'
       type='solid'
       onPress={onUploadVoiceRecording}
@@ -98,12 +101,20 @@ const DeleteRecording = ({
 }: {
   deleteVoiceRecordingHandler: () => Promise<void>;
 }) => {
-  const onDeleteVoiceRecording = () => {
+  const { addNotification } = useNotificationApi();
+  const { t } = useTranslationContext();
+  const onDeleteVoiceRecording = async () => {
     NativeHandlers.triggerHaptic('impactMedium');
-    deleteVoiceRecordingHandler();
+    await deleteVoiceRecordingHandler();
+    addNotification({
+      message: t('Voice message deleted'),
+      options: { severity: 'info', type: 'audioRecording:cancel:success' },
+      origin: { emitter: 'AudioRecorder' },
+    });
   };
   return (
     <Button
+      accessibilityLabelKey='a11y/Delete voice recording'
       variant='secondary'
       type='outline'
       size='sm'

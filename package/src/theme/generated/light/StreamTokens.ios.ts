@@ -237,7 +237,7 @@ export const foundations: IStreamTokens['foundations'] = {
 export const primitives: IStreamTokens['primitives'] = {
   darkElevation1: {
     elevation: 2,
-    shadowColor: 'rgba(0,0,0,0.20)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -247,7 +247,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   darkElevation2: {
     elevation: 3,
-    shadowColor: 'rgba(0,0,0,0.22)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -257,7 +257,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   darkElevation3: {
     elevation: 6,
-    shadowColor: 'rgba(0,0,0,0.24)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -267,7 +267,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   darkElevation4: {
     elevation: 12,
-    shadowColor: 'rgba(0,0,0,0.28)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 8,
@@ -277,7 +277,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   lightElevation1: {
     elevation: 2,
-    shadowColor: 'rgba(0,0,0,0.12)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -287,7 +287,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   lightElevation2: {
     elevation: 3,
-    shadowColor: 'rgba(0,0,0,0.14)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -297,7 +297,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   lightElevation3: {
     elevation: 6,
-    shadowColor: 'rgba(0,0,0,0.16)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -307,7 +307,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   lightElevation4: {
     elevation: 12,
-    shadowColor: 'rgba(0,0,0,0.20)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 8,

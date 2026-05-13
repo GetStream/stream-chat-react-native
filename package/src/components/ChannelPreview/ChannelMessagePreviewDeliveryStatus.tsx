@@ -5,6 +5,7 @@ import { LocalMessage, MessageResponse } from 'stream-chat';
 
 import { ChannelPreviewProps } from './ChannelPreview';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -61,6 +62,18 @@ export const ChannelMessagePreviewDeliveryStatus = ({
     isReadEventsEnabled: readEvents,
   });
 
+  const statusLabel = useA11yLabel(
+    message.status === MessageStatusTypes.SENDING
+      ? 'a11y/Sending'
+      : message.status === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
+        ? 'a11y/Read'
+        : status === MessageDeliveryStatus.DELIVERED
+          ? 'a11y/Delivered'
+          : status === MessageDeliveryStatus.SENT
+            ? 'a11y/Sent'
+            : 'a11y/Sending',
+  );
+
   if (!channel.data?.name && membersWithoutSelf.length === 1 && !isLastMessageByCurrentUser) {
     return null;
   }
@@ -70,7 +83,7 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View accessibilityLabel={statusLabel} accessibilityRole='text' style={styles.container}>
       {message.status === MessageStatusTypes.SENDING ? (
         <Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
       ) : message.status === MessageStatusTypes.RECEIVED &&

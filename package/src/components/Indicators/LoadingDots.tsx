@@ -31,7 +31,11 @@ export const LoadingDots = (props: Props) => {
   const offsetLength = duration / numberOfDots;
 
   return (
-    <View style={[{ flexDirection: 'row' }, container, style]}>
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility='no-hide-descendants'
+      style={[{ flexDirection: 'row' }, container, style]}
+    >
       {Array.from(Array(numberOfDots)).map((_item, index) => (
         <LoadingDot
           diameter={diameter}

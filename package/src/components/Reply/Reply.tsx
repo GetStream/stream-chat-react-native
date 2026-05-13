@@ -151,7 +151,11 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   }
 
   return (
-    <View style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}>
+    <View
+      accessibilityLabel={title}
+      accessibilityRole='text'
+      style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}
+    >
       <View style={[styles.container, container, stylesProp?.container]}>
         <View style={[styles.leftContainer, leftContainer, stylesProp?.leftContainer]}>
           <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp?.title]}>
@@ -166,7 +170,10 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       </View>
       {onDismiss ? (
         <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
-          <AttachmentRemoveControl onPress={onDismiss} />
+          <AttachmentRemoveControl
+            accessibilityLabelKey={mode === 'edit' ? 'a11y/Remove edit' : 'a11y/Remove reply'}
+            onPress={onDismiss}
+          />
         </View>
       ) : null}
     </View>

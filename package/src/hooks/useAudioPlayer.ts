@@ -1,7 +1,10 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
+import { useNotificationApi } from '../components/Notifications';
 import { useAudioPlayerContext } from '../contexts/audioPlayerContext/AudioPlayerContext';
-import { AudioPlayerOptions } from '../state-store/audio-player';
+import { useChatContext } from '../contexts/chatContext/ChatContext';
+import { useTranslationContext } from '../contexts/translationContext/TranslationContext';
+import { AudioPlayerErrorCode, AudioPlayerOptions } from '../state-store/audio-player';
 
 export type UseAudioPlayerProps = {
   /**
@@ -40,19 +43,57 @@ export const useAudioPlayer = ({
   id: fileId,
 }: UseAudioPlayerProps) => {
   const { audioPlayerPool } = useAudioPlayerContext();
+  const { addNotification } = useNotificationApi();
+  const { client } = useChatContext();
+  const { t } = useTranslationContext();
+  const hasNotificationManager = !!client?.notifications;
   const id = makeAudioPlayerId({ id: fileId, requester, src: uri ?? '' });
+  const onError = useCallback(
+    ({ errCode, error }: { errCode: AudioPlayerErrorCode; error?: Error }) => {
+      if (!hasNotificationManager) return;
+
+      const errorMessages: Record<AudioPlayerErrorCode, string> = {
+        'failed-to-start': t('Failed to play the recording'),
+        'not-playable': t('Recording format is not supported and cannot be reproduced'),
+        'seek-not-supported': t('Cannot seek in the recording'),
+      };
+      const message = errorMessages[errCode];
+
+      addNotification({
+        message,
+        options: {
+          originalError: error ?? new Error(message),
+          severity: 'error',
+          type: 'browser:audio:playback:error',
+        },
+        origin: { emitter: 'AudioPlayer' },
+      });
+    },
+    [addNotification, hasNotificationManager, t],
+  );
   const audioPlayer = useMemo(
     () =>
       audioPlayerPool?.getOrAddPlayer({
         duration: duration ?? 0,
         id,
         mimeType: mimeType ?? '',
+        onError,
         playbackRates,
         previewVoiceRecording,
         type: type ?? 'audio',
         uri: uri ?? '',
       }),
-    [audioPlayerPool, duration, id, mimeType, playbackRates, previewVoiceRecording, type, uri],
+    [
+      audioPlayerPool,
+      duration,
+      id,
+      mimeType,
+      onError,
+      playbackRates,
+      previewVoiceRecording,
+      type,
+      uri,
+    ],
   );
 
   return audioPlayer;

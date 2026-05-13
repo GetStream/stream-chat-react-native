@@ -26,6 +26,7 @@ export const EditButton = (props: EditButtonProps) => {
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Save edited message'
       variant='primary'
       type='solid'
       LeadingIcon={Tick}

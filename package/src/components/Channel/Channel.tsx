@@ -49,6 +49,7 @@ import {
   AudioPlayerContextProps,
   AudioPlayerProvider,
 } from '../../contexts/audioPlayerContext/AudioPlayerContext';
+
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
@@ -111,11 +112,14 @@ import {
   MessageStatusTypes,
   ReactionData,
 } from '../../utils/utils';
+import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
 import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
+import { getChannelNotificationHostId } from '../Notifications/notificationTarget';
+import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 export type MarkReadFunctionOptions = {
   /**
@@ -350,6 +354,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * Load the channel at a specified message instead of the most recent message.
      */
     messageId?: string;
+    notificationHostId?: string;
     /**
      * @deprecated
      * The time interval for throttling while updating the message state
@@ -1754,6 +1759,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
                         <AudioPlayerProvider value={audioPlayerContext}>
+                          <NotificationAnnouncer />
                           <View style={{ height: '100%' }}>{children}</View>
                           <AttachmentPicker />
                         </AudioPlayerProvider>
@@ -1786,6 +1792,9 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client, enableOfflineSupport, isOnline, isMessageAIGenerated } = useChatContext();
   const { t } = useTranslationContext();
+  const notificationHostId =
+    props.notificationHostId ??
+    (props.channel?.cid ? getChannelNotificationHostId(props.channel.cid) : undefined);
 
   const threadFromProps = props?.thread;
   const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
@@ -1805,7 +1814,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
     props.threadList ? threadMessage?.id : undefined,
   );
 
-  return (
+  const channelWithContext = (
     <ChannelWithContext
       {...{
         client,
@@ -1822,6 +1831,14 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
         threadMessages,
       }}
     />
+  );
+
+  return notificationHostId ? (
+    <NotificationTargetProvider hostId={notificationHostId} panel='channel'>
+      {channelWithContext}
+    </NotificationTargetProvider>
+  ) : (
+    channelWithContext
   );
 };
 

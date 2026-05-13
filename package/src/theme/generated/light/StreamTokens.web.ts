@@ -237,7 +237,7 @@ export const foundations: IStreamTokens['foundations'] = {
 export const primitives: IStreamTokens['primitives'] = {
   darkElevation1: {
     elevation: 3,
-    shadowColor: 'rgba(0,0,0,0.1)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 2.6666666666666665,
@@ -247,7 +247,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   darkElevation2: {
     elevation: 7,
-    shadowColor: 'rgba(0,0,0,0.12)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 4.5016949152542365,
@@ -257,7 +257,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   darkElevation3: {
     elevation: 10,
-    shadowColor: 'rgba(0,0,0,0.14)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 8.839779005524864,
@@ -267,7 +267,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   darkElevation4: {
     elevation: 13,
-    shadowColor: 'rgba(0,0,0,0.16)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 14.201622247972189,
@@ -277,7 +277,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   lightElevation1: {
     elevation: 3,
-    shadowColor: 'rgba(0,0,0,0.06)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 2.904109589041096,
@@ -287,7 +287,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   lightElevation2: {
     elevation: 7,
-    shadowColor: 'rgba(0,0,0,0.06)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 4.510067114093959,
@@ -297,7 +297,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   lightElevation3: {
     elevation: 10,
-    shadowColor: 'rgba(0,0,0,0.1)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 9.322128851540615,
@@ -307,7 +307,7 @@ export const primitives: IStreamTokens['primitives'] = {
   },
   lightElevation4: {
     elevation: 14,
-    shadowColor: 'rgba(0,0,0,0.12)',
+    shadowColor: 'rgb(0,0,0)',
     shadowOffset: {
       width: 0,
       height: 15.201376936316695,

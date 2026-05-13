@@ -36,13 +36,14 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
         }
       >
         <View
+          accessibilityRole="button"
           accessibilityState={
             {
               "busy": undefined,
               "checked": undefined,
               "disabled": false,
               "expanded": undefined,
-              "selected": undefined,
+              "selected": false,
             }
           }
           accessibilityValue={
@@ -196,13 +197,14 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -335,13 +337,14 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -503,13 +506,14 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -638,13 +642,14 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -905,13 +910,14 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
         }
       >
         <View
+          accessibilityRole="button"
           accessibilityState={
             {
               "busy": undefined,
               "checked": undefined,
               "disabled": false,
               "expanded": undefined,
-              "selected": undefined,
+              "selected": false,
             }
           }
           accessibilityValue={
@@ -1065,13 +1071,14 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -1204,13 +1211,14 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -1372,13 +1380,14 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -1507,13 +1516,14 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -1774,13 +1784,14 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
         }
       >
         <View
+          accessibilityRole="button"
           accessibilityState={
             {
               "busy": undefined,
               "checked": undefined,
               "disabled": true,
               "expanded": undefined,
-              "selected": undefined,
+              "selected": false,
             }
           }
           accessibilityValue={
@@ -1934,13 +1945,14 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -2073,13 +2085,14 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -2241,13 +2254,14 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={
@@ -2376,13 +2390,14 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
             }
           >
             <View
+              accessibilityRole="button"
               accessibilityState={
                 {
                   "busy": undefined,
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": undefined,
+                  "selected": false,
                 }
               }
               accessibilityValue={

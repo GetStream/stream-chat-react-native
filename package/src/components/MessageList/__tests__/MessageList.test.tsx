@@ -20,6 +20,7 @@ import { channelInitialState } from '../../Channel/hooks/useChannelDataState';
 import * as MessageListPaginationHook from '../../Channel/hooks/useMessageListPagination';
 import { Chat } from '../../Chat/Chat';
 
+import { SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME } from '../hooks/useScrollToBottomAccessibilityAction';
 import { MessageList } from '../MessageList';
 
 describe('MessageList', () => {
@@ -180,6 +181,41 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(getByTestId('empty-state')).toBeTruthy();
+    });
+  });
+
+  it('should render client notifications in the message list notification host', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: [generateMessage({ user: user1 })],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    const { getByText } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    act(() => {
+      chatClient.notifications.add({
+        message: 'Message list notification',
+        options: { severity: 'warning' },
+        origin: { emitter: 'MessageListTest' },
+      });
+    });
+
+    await waitFor(() => {
+      expect(getByText('Message list notification')).toBeTruthy();
     });
   });
 
@@ -487,6 +523,49 @@ describe('MessageList pagination', () => {
       }));
   };
 
+  const renderMessageListForScrollToBottom = async ({
+    additionalFlatListProps,
+    accessibility = { enabled: true },
+    staleChannelState = false,
+  }: {
+    additionalFlatListProps?: React.ComponentProps<typeof MessageList>['additionalFlatListProps'];
+    accessibility?: React.ComponentProps<typeof OverlayProvider>['accessibility'];
+    staleChannelState?: boolean;
+  } = {}) => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    if (staleChannelState) {
+      channel.state = {
+        ...channelInitialState,
+        latestMessages: [],
+        members: Object.fromEntries(
+          Array.from({ length: 10 }, (_, i) => [i, generateMember({ user_id: String(i) })]),
+        ),
+        messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
+        messageSets: [{ isCurrent: true, isLatest: true }],
+      } as unknown as typeof channel.state;
+    }
+
+    return render(
+      <OverlayProvider accessibility={accessibility}>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList additionalFlatListProps={additionalFlatListProps} />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+  };
+
   it('should load more recent messages when the user scrolls to the start of the list', async () => {
     const user1 = generateUser();
     const mockedChannel = generateChannelResponse({
@@ -629,5 +708,147 @@ describe('MessageList pagination', () => {
 
       expect(loadLatestMessages).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('should not expose the scroll to bottom accessibility action when hidden', async () => {
+    const { getByTestId, queryByTestId } = await renderMessageListForScrollToBottom();
+
+    await waitFor(() => {
+      expect(queryByTestId('scroll-to-bottom-button')).toBeFalsy();
+      expect(getByTestId('message-flat-list').props.accessibilityActions).toBeUndefined();
+    });
+  });
+
+  it('should not expose the SDK scroll to bottom action when SDK accessibility is disabled', async () => {
+    const { getByTestId, queryByTestId } = await renderMessageListForScrollToBottom({
+      accessibility: { enabled: false },
+      staleChannelState: true,
+    });
+
+    act(() => {
+      fireEvent(getByTestId('message-flat-list'), 'scroll', {
+        nativeEvent: {
+          contentOffset: { y: 1900 },
+          contentSize: { height: 2000, width: 200 },
+          layoutMeasurement: { height: 400, width: 200 },
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('scroll-to-bottom-button')).toBeTruthy();
+      expect(getByTestId('message-flat-list').props.accessibilityActions ?? []).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME,
+          }),
+        ]),
+      );
+    });
+  });
+
+  it('should preserve additional message list accessibility actions when scroll to bottom is hidden', async () => {
+    const { getByTestId, queryByTestId } = await renderMessageListForScrollToBottom({
+      additionalFlatListProps: {
+        accessibilityActions: [{ label: 'Custom action', name: 'customAction' }],
+      },
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('scroll-to-bottom-button')).toBeFalsy();
+      expect(getByTestId('message-flat-list').props.accessibilityActions).toEqual([
+        { label: 'Custom action', name: 'customAction' },
+      ]);
+    });
+  });
+
+  it('should expose scroll to bottom as a message list accessibility action when visible', async () => {
+    const loadLatestMessages = jest.fn(() => Promise.resolve());
+    mockedHook({ loadLatestMessages });
+
+    const { getByTestId } = await renderMessageListForScrollToBottom({
+      staleChannelState: true,
+    });
+
+    act(() => {
+      fireEvent(getByTestId('message-flat-list'), 'scroll', {
+        nativeEvent: {
+          contentOffset: { y: 1900 },
+          contentSize: { height: 2000, width: 200 },
+          layoutMeasurement: { height: 400, width: 200 },
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('message-flat-list').props.accessibilityActions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            label: expect.stringContaining('Scroll to bottom'),
+            name: SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME,
+          }),
+        ]),
+      );
+    });
+
+    await act(async () => {
+      await getByTestId('message-flat-list').props.onAccessibilityAction({
+        nativeEvent: { actionName: SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME },
+      });
+    });
+
+    expect(loadLatestMessages).toHaveBeenCalledTimes(1);
+  });
+
+  it('should preserve additional message list accessibility actions', async () => {
+    const loadLatestMessages = jest.fn(() => Promise.resolve());
+    const onAccessibilityAction = jest.fn();
+    mockedHook({ loadLatestMessages });
+
+    const { getByTestId } = await renderMessageListForScrollToBottom({
+      additionalFlatListProps: {
+        accessibilityActions: [{ label: 'Custom action', name: 'customAction' }],
+        onAccessibilityAction,
+      },
+      staleChannelState: true,
+    });
+
+    act(() => {
+      fireEvent(getByTestId('message-flat-list'), 'scroll', {
+        nativeEvent: {
+          contentOffset: { y: 1900 },
+          contentSize: { height: 2000, width: 200 },
+          layoutMeasurement: { height: 400, width: 200 },
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('message-flat-list').props.accessibilityActions).toEqual(
+        expect.arrayContaining([
+          { label: 'Custom action', name: 'customAction' },
+          expect.objectContaining({
+            label: expect.stringContaining('Scroll to bottom'),
+            name: SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME,
+          }),
+        ]),
+      );
+    });
+
+    act(() => {
+      getByTestId('message-flat-list').props.onAccessibilityAction({
+        nativeEvent: { actionName: 'customAction' },
+      });
+    });
+    expect(onAccessibilityAction).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      await getByTestId('message-flat-list').props.onAccessibilityAction({
+        nativeEvent: { actionName: SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME },
+      });
+    });
+
+    expect(loadLatestMessages).toHaveBeenCalledTimes(1);
+    expect(onAccessibilityAction).toHaveBeenCalledTimes(1);
   });
 });

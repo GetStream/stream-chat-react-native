@@ -25,6 +25,7 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
     <View style={[styles.container, container]}>
       <View style={styles.sideContainer}>
         <Button
+          accessibilityLabelKey='a11y/Close poll'
           variant='secondary'
           type='solid'
           size='md'

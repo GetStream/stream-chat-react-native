@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Text } from 'react-native';
 
+import type { ReactTestInstance } from 'react-test-renderer';
+
 import { fireEvent, render } from '@testing-library/react-native';
 
 import { ReactionResponse } from 'stream-chat';
@@ -38,6 +40,9 @@ const defaultProps = {
   },
   supportedReactions: mockSupportedReactions,
 };
+
+const filterReactionButtons = (buttons: ReactTestInstance[]) =>
+  buttons.filter((button) => button.props.accessibilityLabel !== 'more-reactions-button');
 
 const renderComponent = (props = {}) =>
   render(
@@ -87,35 +92,32 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
   });
 
   it('renders reaction buttons', () => {
-    const { getByLabelText } = renderComponent();
-    const likeReactionButton = getByLabelText('reaction-button-like-unselected');
-    expect(likeReactionButton).toBeDefined();
-    const loveReactionButton = getByLabelText('reaction-button-love-unselected');
-    expect(loveReactionButton).toBeDefined();
+    const { getAllByRole } = renderComponent();
+    expect(filterReactionButtons(getAllByRole('button'))).toHaveLength(2);
   });
 
   it('starts with no reaction filter selected by default', () => {
-    const { getAllByLabelText } = renderComponent();
-    const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
-    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
+    const { getAllByRole } = renderComponent();
+    const reactionButtons = filterReactionButtons(getAllByRole('button'));
+    expect(reactionButtons[0].props.accessibilityState.selected).toBe(false);
+    expect(reactionButtons[1].props.accessibilityState.selected).toBe(false);
   });
 
   it('toggles the selected reaction when a reaction button is pressed twice', () => {
-    const { getAllByLabelText } = renderComponent();
-    let reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+    const { getAllByRole } = renderComponent();
+    let reactionButtons = filterReactionButtons(getAllByRole('button'));
 
     fireEvent.press(reactionButtons[1]);
 
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
-    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-selected');
+    expect(reactionButtons[0].props.accessibilityState.selected).toBe(false);
+    expect(reactionButtons[1].props.accessibilityState.selected).toBe(true);
 
     fireEvent.press(reactionButtons[1]);
 
-    reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+    reactionButtons = filterReactionButtons(getAllByRole('button'));
 
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
-    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
+    expect(reactionButtons[0].props.accessibilityState.selected).toBe(false);
+    expect(reactionButtons[1].props.accessibilityState.selected).toBe(false);
   });
 
   it('renders reactions list', () => {
@@ -133,10 +135,10 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
   });
 
   it("don't render reaction buttons that is of unsupported type", () => {
-    const { queryAllByLabelText } = renderComponent({
+    const { queryAllByRole } = renderComponent({
       message: { ...generateMessage(), reaction_groups: { money: 1 } },
     });
-    const reactionButtons = queryAllByLabelText(/\breaction-button[^\s]+/);
+    const reactionButtons = filterReactionButtons(queryAllByRole('button'));
 
     expect(reactionButtons.length).toBe(0);
   });

@@ -64,6 +64,8 @@ export const BackButton: React.FC<{
 
   return (
     <TouchableOpacity
+      accessibilityLabel='Back'
+      accessibilityRole='button'
       onPress={() => {
         if (onBack) {
           onBack();

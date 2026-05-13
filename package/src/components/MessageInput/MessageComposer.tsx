@@ -50,7 +50,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { AudioRecorderManagerState } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { transitions } from '../../utils/transitions';
+import { transitions } from '../../utils/animations/transitions';
 import { type TextInputOverrideComponent } from '../AutoCompleteInput/AutoCompleteInput';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';

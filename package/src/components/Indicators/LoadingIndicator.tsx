@@ -12,7 +12,7 @@ const LoadingIndicatorWrapper = ({ text }: LoadingIndicatorWrapperProps) => {
   const styles = useStyles();
 
   return (
-    <View style={styles.container}>
+    <View accessibilityLiveRegion='polite' accessibilityRole='progressbar' style={styles.container}>
       <Spinner height={20} width={20} />
       {text ? (
         <Text style={styles.loadingText} testID='loading'>

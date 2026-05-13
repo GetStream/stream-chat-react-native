@@ -18,7 +18,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
         },
         {
           "elevation": 2,
-          "shadowColor": "rgba(0,0,0,0.12)",
+          "shadowColor": "rgb(0,0,0)",
           "shadowOffset": {
             "height": 1,
             "width": 0,
@@ -50,13 +50,14 @@ exports[`ScrollToBottomButton should render the message notification and match s
       }
     >
       <View
+        accessibilityRole="button"
         accessibilityState={
           {
             "busy": undefined,
             "checked": undefined,
             "disabled": false,
             "expanded": undefined,
-            "selected": undefined,
+            "selected": false,
           }
         }
         accessibilityValue={
@@ -185,6 +186,8 @@ exports[`ScrollToBottomButton should render the message notification and match s
     </View>
   </View>
   <View
+    accessibilityElementsHidden={true}
+    importantForAccessibility="no-hide-descendants"
     style={
       {
         "position": "absolute",

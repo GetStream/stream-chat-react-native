@@ -1,3 +1,5 @@
+export * from './Accessibility';
+
 export * from './Attachment/Attachment';
 export * from './Attachment/Audio';
 export * from './Attachment/UrlPreview';
@@ -172,6 +174,8 @@ export * from './MessageMenu/MessageUserReactionsAvatar';
 export * from './MessageMenu/MessageReactionPicker';
 export * from './MessageMenu/utils/toUnicodeScalarString';
 export * from './MessageMenu/hooks/useFetchReactions';
+
+export * from './Notifications';
 
 export * from './ProgressControl/ProgressControl';
 export * from './ProgressControl/WaveProgressBar';

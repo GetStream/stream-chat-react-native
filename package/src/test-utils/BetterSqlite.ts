@@ -2,11 +2,13 @@ import Database, { type Database as DatabaseType } from 'better-sqlite3';
 
 import { tables } from '../store/schema';
 
+const testDbName = `foobar-${process.env.JEST_WORKER_ID ?? '0'}.db`;
+
 export class BetterSqlite {
   static db: DatabaseType | null = null;
 
   static openDB = (): void => {
-    BetterSqlite.db = new Database('foobar.db');
+    BetterSqlite.db = new Database(testDbName);
   };
 
   static closeDB = (): void => {

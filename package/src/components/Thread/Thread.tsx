@@ -10,6 +10,8 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 import type { MessageComposerProps } from '../MessageInput/MessageComposer';
 import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
 import { MessageListProps } from '../MessageList/MessageList';
+import { getThreadNotificationHostId } from '../Notifications/notificationTarget';
+import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 let FlashList;
 
@@ -56,6 +58,7 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
      * Call custom function on closing thread if handling thread state elsewhere
      */
     onThreadDismount?: () => void;
+    notificationHostId?: string;
     shouldUseFlashList?: boolean;
   };
 
@@ -70,6 +73,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     disabled,
     loadMoreThread,
     onThreadDismount,
+    notificationHostId: notificationHostIdProp,
     parentMessagePreventPress = true,
     thread,
     threadInstance,
@@ -120,26 +124,30 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     return null;
   }
 
+  const notificationHostId = notificationHostIdProp ?? getThreadNotificationHostId(thread.id);
+
   return (
     <React.Fragment key={`thread-${thread.id}`}>
-      {FlashList && shouldUseFlashList ? (
-        <MessageFlashList
-          HeaderComponent={MemoizedThreadFooterComponent}
+      <NotificationTargetProvider hostId={notificationHostId} panel='thread'>
+        {FlashList && shouldUseFlashList ? (
+          <MessageFlashList
+            HeaderComponent={MemoizedThreadFooterComponent}
+            threadList
+            {...additionalMessageFlashListProps}
+          />
+        ) : (
+          <MessageList
+            FooterComponent={MemoizedThreadFooterComponent}
+            threadList
+            {...additionalMessageListProps}
+          />
+        )}
+        <MessageComposer
+          additionalTextInputProps={additionalTextInputProps}
           threadList
-          {...additionalMessageFlashListProps}
+          {...additionalMessageComposerProps}
         />
-      ) : (
-        <MessageList
-          FooterComponent={MemoizedThreadFooterComponent}
-          threadList
-          {...additionalMessageListProps}
-        />
-      )}
-      <MessageComposer
-        additionalTextInputProps={additionalTextInputProps}
-        threadList
-        {...additionalMessageComposerProps}
-      />
+      </NotificationTargetProvider>
     </React.Fragment>
   );
 };

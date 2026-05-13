@@ -51,6 +51,7 @@ export const CreatePollHeader = ({
   return (
     <View style={[styles.headerContainer, headerContainer]}>
       <Button
+        accessibilityLabelKey='a11y/Close poll creation'
         variant='secondary'
         onPress={onBackPressHandler}
         type='solid'
@@ -63,6 +64,7 @@ export const CreatePollHeader = ({
       </Text>
 
       <Button
+        accessibilityLabelKey='a11y/Create poll'
         variant='primary'
         onPress={onCreatePollPressHandler}
         type='solid'

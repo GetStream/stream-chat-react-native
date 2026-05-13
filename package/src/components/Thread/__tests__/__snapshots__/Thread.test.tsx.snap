@@ -412,6 +412,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                 testID="avatar-image"
                               >
                                 <Image
+                                  accessibilityElementsHidden={true}
+                                  importantForAccessibility="no"
                                   onError={[Function]}
                                   source={
                                     {
@@ -753,6 +755,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                 testID="avatar-image"
                               >
                                 <Image
+                                  accessibilityElementsHidden={true}
+                                  importantForAccessibility="no"
                                   onError={[Function]}
                                   source={
                                     {
@@ -1127,6 +1131,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                 testID="avatar-image"
                               >
                                 <Image
+                                  accessibilityElementsHidden={true}
+                                  importantForAccessibility="no"
                                   onError={[Function]}
                                   source={
                                     {
@@ -1459,6 +1465,8 @@ exports[`Thread should match thread snapshot 1`] = `
                               testID="avatar-image"
                             >
                               <Image
+                                accessibilityElementsHidden={true}
+                                importantForAccessibility="no"
                                 onError={[Function]}
                                 source={
                                   {
@@ -1726,6 +1734,9 @@ exports[`Thread should match thread snapshot 1`] = `
         </View>
       </RCTScrollView>
       <View
+        accessibilityElementsHidden={true}
+        accessible={false}
+        importantForAccessibility="no-hide-descendants"
         style={
           {
             "left": 0,
@@ -1827,13 +1838,14 @@ exports[`Thread should match thread snapshot 1`] = `
                       }
                     >
                       <View
+                        accessibilityRole="button"
                         accessibilityState={
                           {
                             "busy": undefined,
                             "checked": undefined,
                             "disabled": false,
                             "expanded": undefined,
-                            "selected": undefined,
+                            "selected": false,
                           }
                         }
                         accessibilityValue={
@@ -2191,13 +2203,14 @@ exports[`Thread should match thread snapshot 1`] = `
                           }
                         >
                           <View
+                            accessibilityRole="button"
                             accessibilityState={
                               {
                                 "busy": undefined,
                                 "checked": undefined,
                                 "disabled": true,
                                 "expanded": undefined,
-                                "selected": undefined,
+                                "selected": false,
                               }
                             }
                             accessibilityValue={
@@ -2374,13 +2387,14 @@ exports[`Thread should match thread snapshot 1`] = `
           }
         >
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
                 "checked": undefined,
                 "disabled": false,
                 "expanded": undefined,
-                "selected": undefined,
+                "selected": false,
               }
             }
             accessibilityValue={
@@ -2513,13 +2527,14 @@ exports[`Thread should match thread snapshot 1`] = `
           }
         >
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
                 "checked": undefined,
                 "disabled": false,
                 "expanded": undefined,
-                "selected": undefined,
+                "selected": false,
               }
             }
             accessibilityValue={
@@ -2681,13 +2696,14 @@ exports[`Thread should match thread snapshot 1`] = `
           }
         >
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
                 "checked": undefined,
                 "disabled": false,
                 "expanded": undefined,
-                "selected": undefined,
+                "selected": false,
               }
             }
             accessibilityValue={
@@ -2816,13 +2832,14 @@ exports[`Thread should match thread snapshot 1`] = `
           }
         >
           <View
+            accessibilityRole="button"
             accessibilityState={
               {
                 "busy": undefined,
                 "checked": undefined,
                 "disabled": false,
                 "expanded": undefined,
-                "selected": undefined,
+                "selected": false,
               }
             }
             accessibilityValue={

@@ -1,27 +1,31 @@
 import React from 'react';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import type { CommandSuggestion } from 'stream-chat';
+import { type CommandSuggestion, notifyCommandDisabled } from 'stream-chat';
+
+jest.mock('stream-chat', () => ({
+  CommandSearchSource: jest.fn(() => ({
+    query: jest.fn(() => ({ items: [] })),
+  })),
+  notifyCommandDisabled: jest.fn(),
+}));
 
 import {
   AttachmentCommandNativePickerItem,
   AttachmentCommandPickerItem,
 } from '../AttachmentPickerContent';
 
-jest.mock('stream-chat', () => ({
-  CommandSearchSource: jest.fn(() => ({
-    query: jest.fn(() => ({ items: [] })),
-  })),
-}));
-
 jest.mock('../AttachmentMediaPicker/AttachmentMediaPicker', () => ({
   AttachmentMediaPicker: () => null,
 }));
 
+const mockNotifyCommandDisabled = jest.mocked(notifyCommandDisabled);
 const mockClose = jest.fn((callback?: () => void) => callback?.());
 const mockFocus = jest.fn();
-const mockIsCommandDisabled = jest.fn();
 const mockSetCommand = jest.fn();
+const mockMessageComposer = {
+  textComposer: { setCommand: mockSetCommand },
+};
 
 jest.mock('../../../../contexts', () => ({
   useAttachmentPickerContext: jest.fn(() => ({
@@ -30,10 +34,7 @@ jest.mock('../../../../contexts', () => ({
   useBottomSheetContext: jest.fn(() => ({
     close: mockClose,
   })),
-  useMessageComposer: jest.fn(() => ({
-    isCommandDisabled: mockIsCommandDisabled,
-    textComposer: { setCommand: mockSetCommand },
-  })),
+  useMessageComposer: jest.fn(() => mockMessageComposer),
   useMessageInputContext: jest.fn(() => ({
     inputBoxRef: { current: { focus: mockFocus } },
   })),
@@ -73,30 +74,30 @@ describe('AttachmentPickerContent commands', () => {
   beforeEach(() => {
     mockClose.mockClear();
     mockFocus.mockClear();
-    mockIsCommandDisabled.mockReset();
+    mockNotifyCommandDisabled.mockReset();
     mockSetCommand.mockClear();
   });
 
-  it('does not focus the input when a disabled command is pressed', () => {
-    mockIsCommandDisabled.mockReturnValue(true);
+  it('does not focus the input when a disabled command notification is emitted', () => {
+    mockNotifyCommandDisabled.mockReturnValue(true);
 
     render(<AttachmentCommandPickerItem item={command} />);
 
     fireEvent.press(screen.getByText('ban'));
 
-    expect(mockIsCommandDisabled).toHaveBeenCalledWith(command);
+    expect(mockNotifyCommandDisabled).toHaveBeenCalledWith(mockMessageComposer, command);
     expect(mockSetCommand).not.toHaveBeenCalled();
     expect(mockFocus).not.toHaveBeenCalled();
   });
 
-  it('does not close the picker or focus the input when a disabled command is pressed in native picker mode', () => {
-    mockIsCommandDisabled.mockReturnValue(true);
+  it('does not close the picker or focus the input when a disabled command notification is emitted in native picker mode', () => {
+    mockNotifyCommandDisabled.mockReturnValue(true);
 
     render(<AttachmentCommandNativePickerItem item={command} />);
 
     fireEvent.press(screen.getByText('ban'));
 
-    expect(mockIsCommandDisabled).toHaveBeenCalledWith(command);
+    expect(mockNotifyCommandDisabled).toHaveBeenCalledWith(mockMessageComposer, command);
     expect(mockSetCommand).not.toHaveBeenCalled();
     expect(mockClose).not.toHaveBeenCalled();
     expect(mockFocus).not.toHaveBeenCalled();

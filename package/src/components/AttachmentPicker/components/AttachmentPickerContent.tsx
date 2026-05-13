@@ -3,7 +3,7 @@ import { Linking, Platform, Pressable, StyleSheet, Text } from 'react-native';
 
 import { FlatList } from 'react-native-gesture-handler';
 
-import { CommandSearchSource, CommandSuggestion } from 'stream-chat';
+import { CommandSearchSource, CommandSuggestion, notifyCommandDisabled } from 'stream-chat';
 
 import { AttachmentMediaPicker } from './AttachmentMediaPicker/AttachmentMediaPicker';
 
@@ -58,7 +58,7 @@ export const AttachmentCommandNativePickerItem = ({ item }: { item: CommandSugge
   const { close } = useBottomSheetContext();
 
   const handlePress = useCallback(() => {
-    if (messageComposer.isCommandDisabled(item)) {
+    if (notifyCommandDisabled(messageComposer, item)) {
       return;
     }
 
@@ -77,7 +77,7 @@ export const AttachmentCommandPickerItem = ({ item }: { item: CommandSuggestion 
   const { inputBoxRef } = useMessageInputContext();
 
   const handlePress = useCallback(() => {
-    if (messageComposer.isCommandDisabled(item)) {
+    if (notifyCommandDisabled(messageComposer, item)) {
       return;
     }
 
@@ -141,6 +141,7 @@ export const AttachmentCommandPicker = () => {
         renderItem={renderItem}
         data={commands}
         keyExtractor={keyExtractor}
+        showsVerticalScrollIndicator={false}
       />
     </>
   );

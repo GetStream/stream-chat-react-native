@@ -20,10 +20,16 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 
 import { Check } from '../../../icons';
 import { primitives } from '../../../theme';
+import { useNotificationApi } from '../../Notifications';
 import { ProgressBar } from '../../ProgressControl/ProgressBar';
 import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
+
+const pollVoteAccessibilityStates = {
+  checked: { checked: true, selected: true },
+  unchecked: { checked: false, selected: false },
+} as const;
 
 export type PollOptionProps = {
   option: PollOptionClass;
@@ -155,6 +161,7 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
 export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   const { message, poll } = usePollContext();
   const { isClosed, ownVotesByOptionId } = usePollState();
+  const { runWithNotificationTarget } = useNotificationApi();
   const ownCapabilities = useOwnCapabilitiesContext();
   const {
     theme: { semantics },
@@ -173,12 +180,14 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   } = useTheme();
 
   const toggleVote = useCallback(async () => {
-    if (ownVotesByOptionId[option.id]) {
-      await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
-    } else {
-      await poll.castVote(option.id, message.id);
-    }
-  }, [message.id, option.id, ownVotesByOptionId, poll]);
+    await runWithNotificationTarget(async () => {
+      if (ownVotesByOptionId[option.id]) {
+        await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
+      } else {
+        await poll.castVote(option.id, message.id);
+      }
+    });
+  }, [message.id, option.id, ownVotesByOptionId, poll, runWithNotificationTarget]);
 
   const onPressHandler = useCallback(() => {
     if (onPress) {
@@ -190,9 +199,15 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   }, [message, onPress, poll, toggleVote]);
 
   const hasVote = !!ownVotesByOptionId[option.id];
+  const accessibilityState = hasVote
+    ? pollVoteAccessibilityStates.checked
+    : pollVoteAccessibilityStates.unchecked;
 
   return ownCapabilities.castPollVote && !isClosed ? (
     <Pressable
+      accessibilityLabel={option.text}
+      accessibilityRole={poll.data?.enforce_unique_vote ? 'radio' : 'checkbox'}
+      accessibilityState={accessibilityState}
       onPress={onPressHandler}
       style={({ pressed }) => [
         { opacity: pressed ? 0.5 : 1 },

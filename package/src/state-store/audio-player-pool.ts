@@ -29,6 +29,7 @@ export class AudioPlayerPool {
   getOrAddPlayer(params: AudioPlayerOptions) {
     const player = this.pool.get(params.id);
     if (player) {
+      player.setOnError(params.onError);
       return player;
     }
     const newPlayer = new AudioPlayer(params);

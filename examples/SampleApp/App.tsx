@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  DevSettings,
-  I18nManager,
-  LogBox,
-  Platform,
-  useColorScheme,
-} from 'react-native';
+import { DevSettings, I18nManager, LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -103,6 +97,7 @@ const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createNativeStackNavigator<UserSelectorParamList>();
 const RTL_STORAGE_KEY = '@stream-rn-sampleapp-rtl-enabled';
+const accessibilityConfig = { enabled: true };
 
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
@@ -270,7 +265,11 @@ const App = () => {
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <WithComponents overrides={componentOverrides}>
-          <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
+          <OverlayProvider
+            accessibility={accessibilityConfig}
+            value={{ style: streamChatTheme }}
+            i18nInstance={streami18n}
+          >
             <ThemeProvider style={streamChatTheme}>
               <NavigationContainer
                 ref={RootNavigationRef}

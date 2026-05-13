@@ -1,3 +1,4 @@
+export * from './accessibilityContext/AccessibilityContext';
 export * from './attachmentPickerContext/AttachmentPickerContext';
 export * from './componentsContext/ComponentsContext';
 export * from './bottomSheetContext/BottomSheetContext';

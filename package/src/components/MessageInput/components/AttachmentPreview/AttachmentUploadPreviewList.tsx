@@ -29,6 +29,7 @@ import { useComponentsContext } from '../../../../contexts/componentsContext/Com
 import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useLazyRef } from '../../../../hooks/useLazyRef';
 import { isSoundPackageAvailable } from '../../../../native';
 import { primitives } from '../../../../theme';
 
@@ -71,16 +72,6 @@ const ItemSeparatorComponent = () => {
     },
   } = useTheme();
   return <View style={[styles.itemSeparator, itemSeparator]} />;
-};
-
-const useLazyRef = <T,>(getInitialValue: () => T) => {
-  const ref = useRef<T | null>(null);
-
-  if (ref.current === null) {
-    ref.current = getInitialValue();
-  }
-
-  return ref as React.RefObject<T>;
 };
 
 const getIsAudioAttachmentPreview =

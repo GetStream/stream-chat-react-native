@@ -6,13 +6,45 @@ import { Pressable, PressableProps } from 'react-native-gesture-handler';
 import { buttonPadding, buttonSizes } from './constants';
 import { useButtonStyles } from './hooks/useButtonStyles';
 
+import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
+import { useAccessibilityActivateAction } from '../../../a11y/hooks/useAccessibilityActivateAction';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
 
 export type IconRenderer = (props: IconProps) => React.ReactNode;
 
+const buttonAccessibilityStates = {
+  disabled: { disabled: true, selected: false },
+  disabledSelected: { disabled: true, selected: true },
+  enabled: { disabled: false, selected: false },
+  selected: { disabled: false, selected: true },
+} as const;
+
+const getButtonAccessibilityState = ({
+  disabled,
+  selected,
+}: {
+  disabled: boolean;
+  selected: boolean;
+}) => {
+  if (disabled)
+    return selected
+      ? buttonAccessibilityStates.disabledSelected
+      : buttonAccessibilityStates.disabled;
+  return selected ? buttonAccessibilityStates.selected : buttonAccessibilityStates.enabled;
+};
+
 export type ButtonProps = PressableProps & {
+  /**
+   * Translation key used for the button's accessibility label when SDK
+   * accessibility is enabled. Prefer this for SDK-owned icon-only buttons.
+   */
+  accessibilityLabelKey?: string;
+  /**
+   * Optional interpolation params for `accessibilityLabelKey`.
+   */
+  accessibilityLabelParams?: Record<string, unknown>;
   /**
    * The style of the button.
    */
@@ -53,6 +85,9 @@ export type ButtonProps = PressableProps & {
 };
 
 export const Button = ({
+  accessibilityLabel,
+  accessibilityLabelKey,
+  accessibilityLabelParams,
   variant,
   type,
   selected = false,
@@ -78,6 +113,16 @@ export const Button = ({
   const RightIcon = isRTL ? LeadingIcon : TrailingIcon;
   const IconOnlyIcon = LeadingIcon ?? TrailingIcon;
   const PrimaryIcon = iconOnly ? IconOnlyIcon : LeftIcon;
+  const accessibilityState = getButtonAccessibilityState({ disabled: !!disabled, selected });
+  const translatedAccessibilityLabel = useA11yLabel(
+    accessibilityLabelKey ?? '',
+    accessibilityLabelParams,
+  );
+  const resolvedAccessibilityLabel = translatedAccessibilityLabel ?? accessibilityLabel;
+  const accessibilityActivateActionProps = useAccessibilityActivateAction({
+    onPress: rest.onPress,
+    shouldHandleActivate: !!rest.onPress && !disabled && !!resolvedAccessibilityLabel,
+  });
 
   return (
     <View
@@ -97,6 +142,10 @@ export const Button = ({
       onLayout={onLayout}
     >
       <Pressable
+        accessible
+        accessibilityLabel={resolvedAccessibilityLabel}
+        accessibilityRole='button'
+        accessibilityState={accessibilityState}
         style={({ pressed }) => [
           {
             backgroundColor: pressed
@@ -109,6 +158,7 @@ export const Button = ({
           styles.container,
         ]}
         disabled={disabled}
+        {...accessibilityActivateActionProps}
         {...rest}
       >
         {PrimaryIcon ? (
