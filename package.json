@@ -39,6 +39,7 @@
     }
   },
   "scripts": {
+    "postinstall": "yarn workspace stream-chat-react-native-core shared-native:sync",
     "lerna-workspaces": "lerna",
     "release": "yarn lerna-workspaces run release",
     "release-next": "yarn lerna-workspaces run release-next",
