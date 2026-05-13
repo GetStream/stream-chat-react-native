@@ -31,14 +31,7 @@
     "semantic-release": "^25.0.2",
     "uglify-js": "^3.19.2"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "dotgit/hooks/pre-commit-format.sh && dotgit/hooks/pre-commit-reject-binaries.py",
-      "commit-msg": "npx commitlint --edit $1"
-    }
-  },
   "scripts": {
-    "postinstall": "yarn workspace stream-chat-react-native-core shared-native:sync",
     "release": "yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run release",
     "release-next": "yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run release-next",
     "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run extract-changelog",

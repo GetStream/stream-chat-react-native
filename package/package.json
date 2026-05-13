@@ -23,6 +23,7 @@
     "README.md"
   ],
   "scripts": {
+    "postinstall": "(cd .. && node node_modules/husky/lib/bin.js install) && yarn run shared-native:sync",
     "shared-native:sync": "bash ./scripts/sync-shared-native.sh all",
     "shared-native:clean-copies": "bash ./scripts/clean-shared-native-copies.sh all",
     "build": "rimraf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",
