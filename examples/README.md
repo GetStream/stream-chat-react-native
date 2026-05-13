@@ -34,50 +34,11 @@ Here I am assuming that the clone of `stream-chat-react-native` and your app are
 
 ### Metro config
 
-If you run your app at this point, you will run into some issues related to `dependency collision`.
-Since metro bundler will have `node_module` dependencies from your `app` folder, `stream-chat-react-native`
-folder and `stream-chat-react-native/native-package` folder. And it doesn't know how to resolve those
-dependencies.
+If you run your app at this point, you'll hit `dependency collision` errors -- Metro doesn't know how to resolve modules (`react`, `react-native`, etc.) that appear both under your app's `node_modules` and under the cloned SDK's. You need to teach Metro which copy of each shared package to use and where to watch for SDK source changes.
 
-So you need to modify `metro.config.js`. We added some helpers for that inside of our package.
-You can copy-paste the following config:
+The cleanest reference is the in-repo example: [`examples/SampleApp/metro.config.js`](./SampleApp/metro.config.js). It uses `@react-native/metro-config` + `@rnx-kit/metro-config`'s `resolveUniqueModule` to handle deduplication, then adds the SDK directories to Metro's `watchFolders`. Copy that file into your app and adjust the paths to point at your local clone of `stream-chat-react-native`.
 
-:::note
-If you're using an older `metro-config` version, you may need to replace
-
-```js
-const blacklist = require('metro-config/src/defaults/exclusionList');
-```
-
-with
-
-```js
-const blacklist = require('metro-config/src/defaults/blackList');
-```
-
-:::
-
-```js
-const PATH = require('path');
-const blacklist = require('metro-config/src/defaults/exclusionList');
-
-const extractLinkedPackages = require('stream-chat-react-native-core/metro-dev-helpers/extract-linked-packages');
-
-const projectRoot = PATH.resolve(__dirname);
-
-const { alternateRoots, extraNodeModules, moduleBlacklist } = extractLinkedPackages(projectRoot);
-
-module.exports = {
-  resolver: {
-    blacklistRE: blacklist(moduleBlacklist),
-    extraNodeModules,
-    useWatchman: false,
-  },
-  watchFolders: [projectRoot].concat(alternateRoots),
-};
-```
-
-And as last step, clean install your app.
+Then clean-install:
 
 ```
 rm -rf node_modules
@@ -87,7 +48,7 @@ watchman watch-del-all
 yarn start --reset-cache
 ```
 
-And that's all. If you make code changes in `stream-chat-react-native`, they should reflect in your application.
+Changes you make in your local SDK clone will be reflected in your application.
 
 ## Samples repository
 

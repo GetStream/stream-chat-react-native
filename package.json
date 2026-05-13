@@ -10,7 +10,10 @@
     "examples/TypeScriptMessaging"
   ],
   "resolutions": {
-    "@types/react": "^19.0.0"
+    "@types/react": "^19.1.0"
+  },
+  "engines": {
+    "node": ">=20.19.4"
   },
   "dependenciesMeta": {
     "@swc/core": {

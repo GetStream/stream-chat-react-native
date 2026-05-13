@@ -10,7 +10,6 @@
     "ios": "react-native run-ios",
     "prestart": "yarn sync-native",
     "start": "react-native start",
-    "test": "jest",
     "clean": "watchman watch-del-all && yarn cache clean && rm -rf ios/build && pod cache clean --all && rm -rf android/build && cd android && ./gradlew clean && cd -",
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
   },
@@ -48,11 +47,7 @@
     "@react-native/metro-config": "0.80.2",
     "@react-native/typescript-config": "0.80.2",
     "@rnx-kit/metro-config": "^2.1.0",
-    "@types/jest": "^29.5.14",
     "@types/react": "^19.1.0",
-    "@types/react-test-renderer": "^19.1.0",
-    "jest": "^30.4.2",
-    "react-test-renderer": "19.1.0",
     "typescript": "5.8.3"
   }
 }

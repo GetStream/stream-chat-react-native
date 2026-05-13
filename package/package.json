@@ -133,7 +133,6 @@
     "@types/ungap__structured-clone": "^1.2.0",
     "@types/use-sync-external-store": "^1.5.0",
     "@types/uuid": "^10.0.0",
-    "babel-eslint": "10.1.0",
     "babel-jest": "30.0.0",
     "babel-loader": "10.1.1",
     "babel-plugin-module-resolver": "5.0.3",
