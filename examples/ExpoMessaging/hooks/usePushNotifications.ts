@@ -190,6 +190,6 @@ export const usePushNotifications = ({ chatClient }: { chatClient: StreamChat | 
     }
 
     return unsubscribePushListenerRef.current;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- example app: registerPushToken intentionally not retriggered on identity change
   }, [chatClient]);
 };

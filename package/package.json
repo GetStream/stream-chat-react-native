@@ -34,6 +34,7 @@
     "test:coverage": "yarn test:unit --coverage",
     "test:typecheck": "tsc --noEmit -p tsconfig.test.json",
     "test:unit": "TZ=UTC jest",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
     "validate-translations": "node bin/validate-translations.js",
     "get-version": "echo $npm_package_version",
     "version": "bash ./bin/before-tag.sh",
@@ -151,7 +152,6 @@
     "react-native-teleport": "^0.5.4",
     "react-test-renderer": "19.1.0",
     "rimraf": "^6.0.1",
-    "typescript": "5.8.3",
     "uuid": "^11.1.0"
   },
   "resolutions": {

@@ -48,6 +48,8 @@ const LogoutButton = () => {
   );
 };
 
+const renderLogoutButton = () => <LogoutButton />;
+
 export default function ChannelListScreen() {
   const { user } = useUserContext();
   const filters = useMemo(
@@ -62,10 +64,7 @@ export default function ChannelListScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        // eslint-disable-next-line react/no-unstable-nested-components
-        options={{ title: 'Channel List Screen', headerLeft: () => <LogoutButton /> }}
-      />
+      <Stack.Screen options={{ title: 'Channel List Screen', headerLeft: renderLogoutButton }} />
 
       <ChannelList
         filters={filters}

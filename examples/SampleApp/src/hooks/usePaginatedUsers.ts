@@ -134,8 +134,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
         return;
       }
 
-      // eslint-disable-next-line no-unsafe-optional-chaining
-      const { users } = await chatClient?.queryUsers(
+      const { users } = await chatClient.queryUsers(
         filter,
         { name: 1 },
         {

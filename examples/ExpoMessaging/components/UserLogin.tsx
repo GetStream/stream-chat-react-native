@@ -10,7 +10,7 @@ const PredefinedUserItem = ({ item }: { item: UserResponse }) => {
   const { logIn } = useUserContext();
   const handleUserSelect = useCallback(() => {
     logIn(item);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- example app: `item` is a stable prop, identity tied to logIn
   }, [logIn]);
 
   return (

@@ -101,7 +101,7 @@ export const LiveLocationCreateModal = ({
     return () => {
       subscription?.remove();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- example app: mount-only effect, deps captured at first render
   }, []);
 
   const buttons = [

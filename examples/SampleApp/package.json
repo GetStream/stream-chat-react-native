@@ -18,6 +18,7 @@
     "bootstrap": "yarn install",
     "release": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/prod",
     "release-next": "echo \"Skipping next release for SampleApp\"",
+    "typecheck": "tsc --noEmit",
     "clean": "watchman watch-del-all && yarn cache clean && rm -rf ios/build && pod cache clean --all && rm -rf android/build && cd android && ./gradlew clean && cd -",
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -",
     "fastlane:android-build": "bundle exec fastlane android firebase_build_and_upload deploy:false",
@@ -85,8 +86,7 @@
     "@rnx-kit/metro-config": "^2.1.0",
     "@types/lodash.mergewith": "^4.6.9",
     "@types/react": "^19.1.4",
-    "babel-plugin-react-compiler": "^1.0.0",
-    "typescript": "5.8.3"
+    "babel-plugin-react-compiler": "^1.0.0"
   },
   "engines": {
     "node": ">=20.19.4"

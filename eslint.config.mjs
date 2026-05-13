@@ -75,7 +75,6 @@ export default tsEslint.config(
       // Workspaces / dirs not previously in lint scope
       'package/native-package/',
       'package/expo-package/',
-      'release/',
 
       // Repo metadata
       '.github/',
@@ -131,7 +130,9 @@ export default tsEslint.config(
       'import/ignore': ['react-native'],
       react: {
         pragma: 'React',
-        version: 'detect',
+        // 'detect' fails to find React from the root config location (React isn't a
+        // direct root dep), so we pin to the major version used across all workspaces.
+        version: '19',
       },
     },
     rules: {

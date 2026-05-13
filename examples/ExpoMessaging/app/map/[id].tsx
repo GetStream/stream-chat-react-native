@@ -127,7 +127,7 @@ export default function MapScreen() {
     if (Platform.OS === 'android' && markerRef.current?.animateMarkerToCoordinate) {
       markerRef.current.animateMarkerToCoordinate(newPosition, 500);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- example app: deps treated as stable per mount; revisit if they become dynamic
   }, []);
 
   const { isLiveLocationStopped, locationResponse } = useHandleLiveLocationEvents({
@@ -146,7 +146,7 @@ export default function MapScreen() {
       latitudeDelta,
       longitudeDelta,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- example app: deps treated as stable per mount; revisit if they become dynamic
   }, [aspect_ratio]);
 
   const region = useMemo(() => {

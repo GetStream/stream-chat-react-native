@@ -84,8 +84,7 @@ export const useChannelInfoOverlayActions = (params: UseChannelInfoOverlayGestur
     setOverlay('none');
   };
 
-  // eslint-disable-next-line require-await
-  const deleteConversation = async () => {
+  const deleteConversation = () => {
     if (!channel) {
       return;
     }

@@ -73,7 +73,7 @@ export const useStreamChatTheme = () => {
 
   useEffect(() => {
     setChatStyle(getChatStyle());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- example app: theme is colorScheme-driven; getChatStyle treated as stable
   }, [colorScheme]);
 
   return chatStyle;

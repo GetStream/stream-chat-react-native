@@ -194,8 +194,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   );
 
   const onAlsoSentToChannelHeaderPress = useCallback(
-    // eslint-disable-next-line require-await
-    async ({ parentMessage, targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
+    ({ parentMessage, targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
       if (!channel || !parentMessage) {
         return;
       }

@@ -44,8 +44,7 @@ const modifyPodfile = (podfilePath) => {
 const withModifyPodfile = (config) => {
   return withDangerousMod(config, [
     'ios',
-    // eslint-disable-next-line require-await
-    async (config) => {
+    (config) => {
       const path = IOSConfig.Paths.getPodfilePath(config.modRequest.projectRoot);
       modifyPodfile(path);
       return config;

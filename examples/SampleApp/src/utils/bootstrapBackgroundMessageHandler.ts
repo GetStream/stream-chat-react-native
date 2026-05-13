@@ -46,7 +46,7 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
       return;
     }
     const chatClient = StreamChat.getInstance(loginConfig.apiKey);
-    // eslint-disable-next-line no-underscore-dangle
+    // eslint-disable-next-line no-underscore-dangle -- stream-chat exposes _setToken as a public-but-underscore-prefixed method for background contexts
     await chatClient._setToken({ id: loginConfig.userId }, loginConfig.userToken);
 
     const notification = remoteMessage.data;
