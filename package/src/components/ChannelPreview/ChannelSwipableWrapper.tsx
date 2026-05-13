@@ -12,8 +12,8 @@ import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRe
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { GetChannelActionItems } from '../../hooks/useChannelActionItems';
 import { useChannelActionItems } from '../../hooks/useChannelActionItems';
+import { useChannelActions } from '../../hooks/useChannelActions';
 import { MenuPointHorizontal, Mute, Sound } from '../../icons';
-import { useChannelActions } from '../ChannelList/hooks/useChannelActions';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 import {
   RightActions,

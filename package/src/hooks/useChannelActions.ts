@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 
 import { Channel } from 'stream-chat';
 
-import { useChatContext } from '../../../contexts';
-import { useStableCallback } from '../../../hooks';
+import { useStableCallback } from './useStableCallback';
+
+import { useChatContext } from '../contexts';
 
 export type ChannelActions = {
   archive: () => Promise<void>;

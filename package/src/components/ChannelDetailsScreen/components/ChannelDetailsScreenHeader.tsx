@@ -6,9 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
-import { useIsDirectChat } from '../../ChannelList/hooks/useIsDirectChat';
 import { Button } from '../../ui/Button/Button';
 
 export type ChannelDetailsScreenHeaderProps = {

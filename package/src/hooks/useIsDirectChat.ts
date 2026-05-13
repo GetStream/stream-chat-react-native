@@ -2,9 +2,8 @@ import { useMemo } from 'react';
 
 import type { Channel } from 'stream-chat';
 
-import { useChannelMembersState } from './useChannelMembersState';
-
-import { useChatContext } from '../../../contexts';
+import { useChannelMembersState } from '../components/ChannelList/hooks/useChannelMembersState';
+import { useChatContext } from '../contexts';
 
 export const useIsDirectChat = (channel: Channel) => {
   const { client } = useChatContext();

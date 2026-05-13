@@ -3,16 +3,16 @@ import { Alert } from 'react-native';
 
 import type { BlockedUsersState, Channel } from 'stream-chat';
 
-import { useStateStore } from './useStateStore';
-
 import {
   ChannelActions,
   getOtherUserInDirectChannel,
-} from '../components/ChannelList/hooks/useChannelActions';
-import { useChannelActions } from '../components/ChannelList/hooks/useChannelActions';
-import { useChannelMembershipState } from '../components/ChannelList/hooks/useChannelMembershipState';
-import { useChannelMuteActive } from '../components/ChannelList/hooks/useChannelMuteActive';
-import { useIsDirectChat } from '../components/ChannelList/hooks/useIsDirectChat';
+  useChannelActions,
+} from './useChannelActions';
+import { useChannelMembershipState } from './useChannelMembershipState';
+import { useChannelMuteActive } from './useChannelMuteActive';
+import { useIsDirectChat } from './useIsDirectChat';
+import { useStateStore } from './useStateStore';
+
 import { useTheme, useTranslationContext } from '../contexts';
 import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
 import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';

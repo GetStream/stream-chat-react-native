@@ -1,9 +1,11 @@
 import { Channel } from 'stream-chat';
 
 import { getOtherUserInDirectChannel } from './useChannelActions';
+
 import { useIsDirectChat } from './useIsDirectChat';
-import { useMutedChannels } from './useMutedChannels';
-import { useMutedUsers } from './useMutedUsers';
+
+import { useMutedChannels } from '../components/ChannelList/hooks/useMutedChannels';
+import { useMutedUsers } from '../components/ChannelList/hooks/useMutedUsers';
 
 export const useChannelMuteActive = (channel: Channel) => {
   const isDirectChat = useIsDirectChat(channel);

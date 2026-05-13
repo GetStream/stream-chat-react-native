@@ -10,8 +10,8 @@ import {
 import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
-import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
 
 export type ChannelDetailsScreenProps = {
   channel: Channel;

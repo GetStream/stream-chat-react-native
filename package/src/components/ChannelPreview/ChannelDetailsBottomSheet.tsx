@@ -16,12 +16,12 @@ import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRe
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import type { ChannelActionItem } from '../../hooks/useChannelActionItems';
+import { useChannelMuteActive } from '../../hooks/useChannelMuteActive';
+import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { primitives } from '../../theme';
 import { useChannelMembersState } from '../ChannelList/hooks/useChannelMembersState';
-import { useChannelMuteActive } from '../ChannelList/hooks/useChannelMuteActive';
 import { useChannelOnlineMemberCount } from '../ChannelList/hooks/useChannelOnlineMemberCount';
-import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
 import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
 import { StreamBottomSheetModalFlatList } from '../UIComponents/StreamBottomSheetModalFlatList';
 

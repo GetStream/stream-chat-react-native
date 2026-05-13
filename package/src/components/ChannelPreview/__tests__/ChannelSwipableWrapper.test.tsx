@@ -7,7 +7,7 @@ import type { Channel } from 'stream-chat';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import type { ChannelActionItem } from '../../../hooks/useChannelActionItems';
 import * as ChannelActionItemsModule from '../../../hooks/useChannelActionItems';
-import * as ChannelActionsModule from '../../ChannelList/hooks/useChannelActions';
+import * as ChannelActionsModule from '../../../hooks/useChannelActions';
 import { SwipableWrapper } from '../../UIComponents/SwipableWrapper';
 import { ChannelSwipableWrapper } from '../ChannelSwipableWrapper';
 import * as UseIsChannelMutedModule from '../hooks/useIsChannelMuted';

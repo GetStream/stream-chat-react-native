@@ -5,8 +5,8 @@ import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { primitives } from '../../../theme';
-import { useIsDirectChat } from '../../ChannelList/hooks/useIsDirectChat';
 import { useChannelDetailsActionItems } from '../hooks';
 
 export const ChannelDetailsActionsSection = () => {

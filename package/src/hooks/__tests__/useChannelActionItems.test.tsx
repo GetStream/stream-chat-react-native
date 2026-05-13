@@ -3,10 +3,6 @@ import { Alert, AlertButton } from 'react-native';
 import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import * as useChannelActionsModule from '../../components/ChannelList/hooks/useChannelActions';
-import * as useChannelMembershipStateModule from '../../components/ChannelList/hooks/useChannelMembershipState';
-import * as useChannelMuteActiveModule from '../../components/ChannelList/hooks/useChannelMuteActive';
-import * as useIsDirectChatModule from '../../components/ChannelList/hooks/useIsDirectChat';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../contexts/translationContext/TranslationContext';
 import {
@@ -15,6 +11,10 @@ import {
   getChannelActionItems,
   useChannelActionItems,
 } from '../useChannelActionItems';
+import * as useChannelActionsModule from '../useChannelActions';
+import * as useChannelMembershipStateModule from '../useChannelMembershipState';
+import * as useChannelMuteActiveModule from '../useChannelMuteActive';
+import * as useIsDirectChatModule from '../useIsDirectChat';
 
 const createChannelActions = (): useChannelActionsModule.ChannelActions => ({
   archive: jest.fn(),
