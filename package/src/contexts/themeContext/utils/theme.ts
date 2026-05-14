@@ -212,7 +212,6 @@ export type Theme = {
       viewAllLabel: TextStyle;
     };
     memberItem: {
-      adminBadge: TextStyle;
       container: ViewStyle;
       name: TextStyle;
       status: TextStyle;
@@ -1185,7 +1184,6 @@ export const defaultTheme: Theme = {
       viewAllLabel: {},
     },
     memberItem: {
-      adminBadge: {},
       container: {},
       name: {},
       status: {},

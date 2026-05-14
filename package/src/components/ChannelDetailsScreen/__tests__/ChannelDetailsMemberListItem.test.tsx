@@ -53,37 +53,9 @@ describe('ChannelDetailsMemberListItem accessibility', () => {
     expect(screen.getByLabelText('Alice, Online')).toBeTruthy();
   });
 
-  it('appends the Admin badge to the accessible label when the member owns the channel', () => {
-    renderRow({ isOwner: true, member: memberFor({ online: true }) });
-    expect(screen.getByLabelText('Alice, Online, Admin')).toBeTruthy();
-  });
-
   it('uses "You" when the row represents the current user', () => {
     renderRow({ isCurrentUser: true, member: memberFor() });
     expect(screen.getByLabelText('You, Offline')).toBeTruthy();
-  });
-});
-
-describe('ChannelDetailsMemberListItem trailing label', () => {
-  it('renders no trailing label when neither role nor isOwner is set', () => {
-    renderRow({ member: memberFor() });
-    expect(screen.queryByText('Admin')).toBeNull();
-  });
-
-  it('renders "Admin" when isOwner is true and role is not provided', () => {
-    renderRow({ isOwner: true, member: memberFor() });
-    expect(screen.getByText('Admin')).toBeTruthy();
-  });
-
-  it('renders the provided role in place of the Admin badge when set', () => {
-    renderRow({ isOwner: true, member: memberFor(), role: 'Moderator' });
-    expect(screen.getByText('Moderator')).toBeTruthy();
-    expect(screen.queryByText('Admin')).toBeNull();
-  });
-
-  it('renders the role even when isOwner is not set', () => {
-    renderRow({ member: memberFor(), role: 'Guest' });
-    expect(screen.getByText('Guest')).toBeTruthy();
   });
 });
 

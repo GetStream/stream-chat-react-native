@@ -7,7 +7,6 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
-import { useChannelDetailsCreatorId } from '../hooks/useChannelDetailsCreatorId';
 
 const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? member.user_id ?? '';
 
@@ -24,19 +23,14 @@ export const ChannelDetailsMemberList = () => {
   const { client } = useChatContext();
   const { ChannelDetailsMemberListItem } = useComponentsContext();
   const members = useChannelMembersState(channel);
-  const creatorId = useChannelDetailsCreatorId(channel);
 
   const data = useMemo(() => Object.values(members), [members]);
 
   const renderItem = useCallback(
     ({ item }: { item: ChannelMemberResponse }) => (
-      <ChannelDetailsMemberListItem
-        isCurrentUser={item.user?.id === client.userID}
-        isOwner={!!item.user?.id && item.user.id === creatorId}
-        member={item}
-      />
+      <ChannelDetailsMemberListItem isCurrentUser={item.user?.id === client.userID} member={item} />
     ),
-    [ChannelDetailsMemberListItem, client.userID, creatorId],
+    [ChannelDetailsMemberListItem, client.userID],
   );
 
   return (

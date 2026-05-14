@@ -13,7 +13,6 @@ import { NewClose } from '../../../icons/xmark';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 import { BottomSheetModal } from '../../UIComponents/BottomSheetModal';
-import { useChannelDetailsCreatorId } from '../hooks/useChannelDetailsCreatorId';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
 export const ChannelDetailsMemberSection = () => {
@@ -40,7 +39,6 @@ export const ChannelDetailsMemberSection = () => {
   } = useTheme();
   const { ChannelDetailsMemberList, ChannelDetailsMemberListItem } = useComponentsContext();
   const { hasMore, total, visible } = useChannelDetailsMembersPreview(channel);
-  const creatorId = useChannelDetailsCreatorId(channel);
   const styles = useStyles();
   const [isMemberListVisible, setMemberListVisible] = useState(false);
 
@@ -94,7 +92,6 @@ export const ChannelDetailsMemberSection = () => {
           return (
             <ChannelDetailsMemberListItem
               isCurrentUser={member.user.id === client.userID}
-              isOwner={creatorId === member.user.id}
               key={member.user.id}
               member={member}
             />

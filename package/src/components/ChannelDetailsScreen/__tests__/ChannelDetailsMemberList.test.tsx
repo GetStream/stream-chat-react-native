@@ -28,10 +28,10 @@ jest.mock('../../UIComponents/StreamBottomSheetModalFlatList', () => ({
     mockStreamBottomSheetModalFlatList(...args),
 }));
 
-const buildChannel = (members: ChannelMemberResponse[], createdById?: string): Channel =>
+const buildChannel = (members: ChannelMemberResponse[]): Channel =>
   ({
     cid: 'messaging:test',
-    data: createdById ? { created_by_id: createdById } : {},
+    data: {},
     on: () => ({ unsubscribe: () => undefined }),
     state: {
       members: Object.fromEntries(
@@ -117,18 +117,16 @@ describe('ChannelDetailsMemberList', () => {
     expect(keyExtractor?.(alice, 0)).toBe('alice');
   });
 
-  it('renders the resolved item component with isCurrentUser and isOwner flags', () => {
+  it('renders the resolved item component with the isCurrentUser flag', () => {
     const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
     const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
-    const cid = 'creator-id';
-    const creator = generateMember({ user: generateUser({ id: cid, name: 'Creator' }) });
-    renderItemsFromMock([alice, bob, creator]);
-    const channel = buildChannel([alice, bob, creator], cid);
+    renderItemsFromMock([alice, bob]);
+    const channel = buildChannel([alice, bob]);
 
     renderList({ channel, currentUserId: 'alice' });
 
     const { data, renderItem } = mockStreamBottomSheetModalFlatList.mock.calls[0]?.[0] ?? {};
-    expect(data).toHaveLength(3);
+    expect(data).toHaveLength(2);
 
     data?.forEach((member, index) => {
       render(
@@ -137,13 +135,9 @@ describe('ChannelDetailsMemberList', () => {
       );
     });
 
-    expect(probeCalls).toHaveLength(3);
+    expect(probeCalls).toHaveLength(2);
     const byId = Object.fromEntries(probeCalls.map((p) => [p.member.user?.id, p]));
     expect(byId.alice.isCurrentUser).toBe(true);
-    expect(byId.alice.isOwner).toBe(false);
     expect(byId.bob.isCurrentUser).toBe(false);
-    expect(byId.bob.isOwner).toBe(false);
-    expect(byId[cid].isOwner).toBe(true);
-    expect(byId[cid].isCurrentUser).toBe(false);
   });
 });

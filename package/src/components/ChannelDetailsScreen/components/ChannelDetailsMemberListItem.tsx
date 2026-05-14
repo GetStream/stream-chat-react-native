@@ -13,32 +13,17 @@ import { useUserActivityStatus } from '../hooks/useUserActivityStatus';
 export type ChannelDetailsMemberListItemProps = {
   member: ChannelMemberResponse;
   isCurrentUser?: boolean;
-  isOwner?: boolean;
-  /**
-   * Optional role label displayed in the trailing slot (e.g. "Moderator"). When
-   * provided, it takes precedence over the default `isOwner ? "Admin" : null`
-   * label so callers can surface custom channel roles without losing the
-   * owner-fallback behavior.
-   */
-  role?: string;
 };
 
 const ChannelDetailsMemberListItemInner = ({
   isCurrentUser,
-  isOwner,
   member,
-  role,
 }: ChannelDetailsMemberListItemProps) => {
   const { t } = useTranslationContext();
   const {
     theme: {
       channelDetailsScreen: {
-        memberItem: {
-          adminBadge: adminBadgeOverride,
-          container: containerOverride,
-          name: nameOverride,
-          status: statusOverride,
-        },
+        memberItem: { container: containerOverride, name: nameOverride, status: statusOverride },
       },
       semantics,
     },
@@ -50,8 +35,7 @@ const ChannelDetailsMemberListItemInner = ({
   if (!user) return null;
 
   const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
-  const trailingLabel = role ?? (isOwner ? t('Admin') : null);
-  const accessibilityLabel = composeAccessibilityLabel(displayName, statusLine, trailingLabel);
+  const accessibilityLabel = composeAccessibilityLabel(displayName, statusLine);
 
   return (
     <View
@@ -76,11 +60,6 @@ const ChannelDetailsMemberListItemInner = ({
           </Text>
         ) : null}
       </View>
-      {trailingLabel ? (
-        <Text style={[styles.adminBadge, { color: semantics.textTertiary }, adminBadgeOverride]}>
-          {trailingLabel}
-        </Text>
-      ) : null}
     </View>
   );
 };
@@ -90,8 +69,6 @@ const areEqual = (
   next: ChannelDetailsMemberListItemProps,
 ) => {
   if (prev.isCurrentUser !== next.isCurrentUser) return false;
-  if (prev.isOwner !== next.isOwner) return false;
-  if (prev.role !== next.role) return false;
   if (prev.member === next.member) return true;
   const prevUser = prev.member.user;
   const nextUser = next.member.user;
@@ -113,13 +90,6 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        adminBadge: {
-          fontSize: primitives.typographyFontSizeSm,
-          fontWeight: primitives.typographyFontWeightRegular,
-          lineHeight: primitives.typographyLineHeightNormal,
-          textAlign: 'right',
-          width: 120,
-        },
         body: {
           flex: 1,
           gap: 0,
