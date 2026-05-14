@@ -376,7 +376,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                     {
                       borderTopWidth: 1,
                       backgroundColor: semantics.backgroundCoreElevation1,
-                      borderColor: semantics.borderCoreDefault,
+                      borderTopColor: semantics.borderCoreSubtle,
                       // paddingBottom: BOTTOM_OFFSET,
                       paddingBottom:
                         selectedPicker && !isKeyboardVisible

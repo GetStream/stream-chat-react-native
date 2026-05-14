@@ -145,6 +145,9 @@ export type Theme = {
     presenceIndicator: CircleProps;
     presenceIndicatorContainer: ViewStyle;
   };
+  avatarStack: {
+    userAvatarWrapper: ViewStyle;
+  };
   bottomSheetModal: {
     container: ViewStyle;
     contentContainer: ViewStyle;
@@ -1094,6 +1097,9 @@ export const defaultTheme: Theme = {
       strokeWidth: 2,
     },
     presenceIndicatorContainer: {},
+  },
+  avatarStack: {
+    userAvatarWrapper: {},
   },
   bottomSheetModal: {
     container: {},
