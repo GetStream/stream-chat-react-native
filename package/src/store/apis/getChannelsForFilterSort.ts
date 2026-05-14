@@ -1,4 +1,4 @@
-import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-chat';
+import type { ChannelAPIResponse, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import { getChannels } from './getChannels';
 import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
@@ -18,20 +18,24 @@ import { SqliteClient } from '../SqliteClient';
 export const getChannelsForFilterSort = async ({
   currentUserId,
   filters,
+  options,
   sort,
 }: {
   currentUserId: string;
   filters?: ChannelFilters;
+  options?: ChannelOptions;
   sort?: ChannelSort;
 }): Promise<Omit<ChannelAPIResponse, 'duration'>[] | null> => {
-  if (!filters && !sort) {
-    console.warn('Please provide the query (filters/sort) to fetch channels from DB');
+  if (!filters && !sort && !options?.predefined_filter) {
+    console.warn(
+      'Please provide the query (filters/sort/options.predefined_filters) to fetch channels from the DB.',
+    );
     return null;
   }
 
-  SqliteClient.logger?.('info', 'getChannelsForFilterSort', { filters, sort });
+  SqliteClient.logger?.('info', 'getChannelsForFilterSort', { filters, options, sort });
 
-  const channelIds = await selectChannelIdsForFilterSort({ filters, sort });
+  const channelIds = await selectChannelIdsForFilterSort({ filters, options, sort });
 
   if (!channelIds) {
     return null;

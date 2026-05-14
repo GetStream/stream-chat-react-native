@@ -1,5 +1,6 @@
 import { AbstractOfflineDB, StreamChat } from 'stream-chat';
 import type {
+  ChannelOptions,
   DBGetAppSettingsType,
   DBGetChannelsForQueryType,
   DBGetChannelsType,
@@ -10,6 +11,10 @@ import type {
 
 import * as api from './apis';
 import { SqliteClient } from './SqliteClient';
+
+type DBGetChannelsForQueryTypeWithOptions = DBGetChannelsForQueryType & {
+  options?: ChannelOptions;
+};
 
 export class OfflineDB extends AbstractOfflineDB {
   constructor({ client }: { client: StreamChat }) {
@@ -51,8 +56,13 @@ export class OfflineDB extends AbstractOfflineDB {
     api.getChannels({ channelIds: cids, currentUserId: userId });
 
   // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  getChannelsForQuery = ({ userId, filters, sort }: DBGetChannelsForQueryType) =>
-    api.getChannelsForFilterSort({ currentUserId: userId, filters, sort });
+  getChannelsForQuery = ({
+    userId,
+    filters,
+    options,
+    sort,
+  }: DBGetChannelsForQueryTypeWithOptions) =>
+    api.getChannelsForFilterSort({ currentUserId: userId, filters, options, sort });
 
   getAllChannelCids = api.getAllChannelIds;
 
