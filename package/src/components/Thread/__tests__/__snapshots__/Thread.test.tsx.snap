@@ -603,7 +603,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
-                                    "gap": 8,
+                                    "gap": 4,
                                     "justifyContent": "center",
                                     "maxWidth": "100%",
                                     "paddingVertical": 4,
@@ -946,7 +946,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
-                                    "gap": 8,
+                                    "gap": 4,
                                     "justifyContent": "center",
                                     "maxWidth": "100%",
                                     "paddingVertical": 4,
@@ -1322,7 +1322,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                   {
                                     "alignItems": "center",
                                     "flexDirection": "row",
-                                    "gap": 8,
+                                    "gap": 4,
                                     "justifyContent": "center",
                                     "maxWidth": "100%",
                                     "paddingVertical": 4,
@@ -1656,7 +1656,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 {
                                   "alignItems": "center",
                                   "flexDirection": "row",
-                                  "gap": 8,
+                                  "gap": 4,
                                   "justifyContent": "center",
                                   "maxWidth": "100%",
                                   "paddingVertical": 4,
@@ -1768,7 +1768,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 },
                 {
                   "backgroundColor": "#ffffff",
-                  "borderColor": "#d5dbe1",
+                  "borderTopColor": "#ebeef1",
                   "borderTopWidth": 1,
                   "paddingBottom": 16,
                 },
