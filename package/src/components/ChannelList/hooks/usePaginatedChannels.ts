@@ -70,11 +70,9 @@ export const usePaginatedChannels = ({
       queryType === 'loadChannels' ||
       queryType === 'refresh' ||
       queryType === 'backgroundRefresh' ||
-      [
-        JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
-        JSON.stringify(optionsRef.current) !== JSON.stringify(options),
-        JSON.stringify(sortRef.current) !== JSON.stringify(sort),
-      ].some(Boolean);
+      JSON.stringify(filtersRef.current) !== JSON.stringify(filters) ||
+      JSON.stringify(optionsRef.current) !== JSON.stringify(options) ||
+      JSON.stringify(sortRef.current) !== JSON.stringify(sort);
 
     const isQueryStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
 
