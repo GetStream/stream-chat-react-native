@@ -92,15 +92,6 @@ export const ChannelListScreen: React.FC = () => {
     usePaginatedSearchedMessages(searchQuery);
 
   const chatClientUserId = chatClient?.user?.id || '';
-  // const filters = useMemo(
-  //   () => ({
-  //     ...baseFilters,
-  //     members: {
-  //       $in: [chatClientUserId],
-  //     },
-  //   }),
-  //   [chatClientUserId],
-  // );
   const options = useMemo(() => ({
     ...baseOptions,
     filter_values: {
@@ -255,13 +246,11 @@ export const ChannelListScreen: React.FC = () => {
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <ChannelList
               additionalFlatListProps={additionalFlatListProps}
-              // filters={filters}
               maxUnreadCount={99}
               onSelect={onSelect}
               options={options}
               setFlatListRef={setScrollRef}
               getChannelActionItems={getChannelActionItems}
-              // sort={sort}
             />
           </View>
         </View>
