@@ -17,7 +17,6 @@ import { MessageSearchList } from '../components/MessageSearch/MessageSearchList
 import { useAppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
-import type { ChannelSort } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
 import { Search } from '../icons/Search';
 import { ChannelInfo } from '../icons/ChannelInfo.tsx';
