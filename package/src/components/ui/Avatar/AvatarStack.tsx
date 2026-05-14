@@ -111,7 +111,7 @@ export const UserAvatarStack = ({
 
 const useUserAvatarStackStyles = () => {
   const {
-    theme: { semantics },
+    theme: { avatarStack, semantics },
   } = useTheme();
 
   return useMemo(
@@ -121,9 +121,10 @@ const useUserAvatarStackStyles = () => {
           borderWidth: 2,
           borderColor: semantics.borderCoreInverse,
           borderRadius: primitives.radiusMax,
+          ...avatarStack.userAvatarWrapper,
         },
       }),
-    [semantics.borderCoreInverse],
+    [avatarStack.userAvatarWrapper, semantics.borderCoreInverse],
   );
 };
 
