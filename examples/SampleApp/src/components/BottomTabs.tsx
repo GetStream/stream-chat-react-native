@@ -130,7 +130,6 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { white } = useLegacyColors();
   const { bottom } = useSafeAreaInsets();
 
   return (
@@ -138,7 +137,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
       style={[
         styles.tabListContainer,
         {
-          backgroundColor: white,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderTopColor: semantics.borderCoreSubtle,
           paddingBottom: bottom,
         },
