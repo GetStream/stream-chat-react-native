@@ -131,7 +131,7 @@ const useStyles = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           borderBottomWidth: 1,
-          borderBottomColor: semantics.borderCoreDefault,
+          borderBottomColor: semantics.borderCoreSubtle,
           ...header.innerContainer,
         },
         rightContainer: {

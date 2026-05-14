@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   tabListContainer: {
-    borderTopColor: 'rgba(0, 0, 0, 0.0677)',
     borderTopWidth: 1,
     flexDirection: 'row',
   },
@@ -128,7 +127,9 @@ const Tab = (props: TabProps) => {
 
 export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
   const { navigation, state } = props;
-  useTheme();
+  const {
+    theme: { semantics },
+  } = useTheme();
   const { white } = useLegacyColors();
   const { bottom } = useSafeAreaInsets();
 
@@ -138,6 +139,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
         styles.tabListContainer,
         {
           backgroundColor: white,
+          borderTopColor: semantics.borderCoreSubtle,
           paddingBottom: bottom,
         },
       ]}
