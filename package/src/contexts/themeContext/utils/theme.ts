@@ -207,6 +207,8 @@ export type Theme = {
       footer: ViewStyle;
       header: ViewStyle;
       headerTitle: TextStyle;
+      modalHeader: ViewStyle;
+      modalHeaderTitle: TextStyle;
       viewAllLabel: TextStyle;
     };
     memberItem: {
@@ -1178,6 +1180,8 @@ export const defaultTheme: Theme = {
       footer: {},
       header: {},
       headerTitle: {},
+      modalHeader: {},
+      modalHeaderTitle: {},
       viewAllLabel: {},
     },
     memberItem: {

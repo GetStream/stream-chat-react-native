@@ -7,9 +7,23 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelDetailsContextValue = {
   channel: Channel;
+  /**
+   * Fired when the user taps the add-members button in the all-members bottom sheet.
+   * The button itself is rendered whenever the current user has the
+   * `update-channel-members` capability; the press is a no-op until this callback is
+   * provided.
+   */
+  onAddMembersPress?: () => void;
   onBack?: () => void;
   /** Fired after the channel is no longer available to the current user (delete or leave). */
   onChannelDismiss?: () => void;
+  /**
+   * Override for the default "View all" members behavior on the channel details screen.
+   * When set, `ChannelDetailsMemberSection` calls this callback instead of opening the
+   * built-in bottom-sheet member list — useful for integrators that want to navigate
+   * to a dedicated screen.
+   */
+  onViewAllMembersPress?: () => void;
 };
 
 export const ChannelDetailsContext = React.createContext(

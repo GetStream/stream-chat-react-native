@@ -31,6 +31,7 @@ import { ChannelDetailsScreenContent } from '../../components/ChannelDetailsScre
 import {
   ChannelDetailsActionsSection,
   ChannelDetailsListItem,
+  ChannelDetailsMemberList,
   ChannelDetailsMemberListItem,
   ChannelDetailsMemberSection,
   ChannelDetailsNavigationSection,
@@ -297,6 +298,7 @@ const components = {
   // Channel Details Screen
   ChannelDetailsActionsSection,
   ChannelDetailsListItem,
+  ChannelDetailsMemberList,
   ChannelDetailsMemberListItem,
   ChannelDetailsMemberSection,
   ChannelDetailsNavigationSection,

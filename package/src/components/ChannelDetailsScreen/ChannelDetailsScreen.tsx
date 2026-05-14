@@ -9,15 +9,30 @@ import {
 } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import { OwnCapabilitiesProvider } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
 
+import { useCreateOwnCapabilitiesContext } from '../Channel/hooks/useCreateOwnCapabilitiesContext';
+
 export type ChannelDetailsScreenProps = {
   channel: Channel;
+  /**
+   * Fired when the user taps the add-members button in the all-members bottom sheet.
+   * The button is shown whenever the current user has the `update-channel-members`
+   * capability; until this callback is provided the press is a no-op.
+   */
+  onAddMembersPress?: () => void;
   onBack?: () => void;
   /** Fired after the channel is no longer available to the current user (delete or leave). */
   onChannelDismiss?: () => void;
+  /**
+   * Override for the default "View all" members behavior. When provided, the member
+   * section calls this callback instead of opening the built-in bottom-sheet — use it
+   * to navigate to a dedicated members screen instead.
+   */
+  onViewAllMembersPress?: () => void;
 };
 
 export const ChannelDetailsScreenContent = () => {
@@ -59,20 +74,25 @@ export const ChannelDetailsScreenContent = () => {
 
 export const ChannelDetailsScreen = ({
   channel,
+  onAddMembersPress,
   onBack,
   onChannelDismiss,
+  onViewAllMembersPress,
 }: ChannelDetailsScreenProps) => {
   const { ChannelDetailsScreenContent: ChannelDetailsScreenContentOverride } =
     useComponentsContext();
   const value = useMemo<ChannelDetailsContextValue>(
-    () => ({ channel, onBack, onChannelDismiss }),
-    [channel, onBack, onChannelDismiss],
+    () => ({ channel, onAddMembersPress, onBack, onChannelDismiss, onViewAllMembersPress }),
+    [channel, onAddMembersPress, onBack, onChannelDismiss, onViewAllMembersPress],
   );
+  const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({ channel });
   const Content = ChannelDetailsScreenContentOverride ?? ChannelDetailsScreenContent;
 
   return (
     <ChannelDetailsContextProvider value={value}>
-      <Content />
+      <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
+        <Content />
+      </OwnCapabilitiesProvider>
     </ChannelDetailsContextProvider>
   );
 };

@@ -6,6 +6,8 @@ import type { Channel } from 'stream-chat';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
+import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
@@ -25,7 +27,11 @@ const SECTION_OVERRIDES = {
   ChannelDetailsScreenHeader: HeaderProbe,
 };
 
-const channel = { cid: 'messaging:test' } as unknown as Channel;
+const channel = {
+  cid: 'messaging:test',
+  id: 'test',
+  on: jest.fn(() => ({ unsubscribe: jest.fn() })),
+} as unknown as Channel;
 
 const renderContent = () =>
   render(
@@ -108,6 +114,44 @@ describe('ChannelDetailsScreen', () => {
       expect(captured?.channel).toBe(channel);
       expect(captured?.onChannelDismiss).toBe(onChannelDismiss);
       expect(captured?.onBack).toBe(onBack);
+    });
+
+    it('exposes own capabilities derived from the channel via OwnCapabilitiesContext', () => {
+      const unsubscribe = jest.fn();
+      const channelWithCapabilities = {
+        cid: 'messaging:test',
+        id: 'test',
+        data: { own_capabilities: ['send-message', 'delete-own-message'] },
+        on: jest.fn(() => ({ unsubscribe })),
+      } as unknown as Channel;
+
+      let captured: OwnCapabilitiesContextValue | undefined;
+      const CapabilitiesProbe = () => {
+        captured = useOwnCapabilitiesContext();
+        return null;
+      };
+
+      render(
+        <ThemeProvider theme={defaultTheme}>
+          <WithComponents
+            overrides={{
+              ...SECTION_OVERRIDES,
+              ChannelDetailsScreenContent: CapabilitiesProbe,
+            }}
+          >
+            <ChannelDetailsScreen channel={channelWithCapabilities} />
+          </WithComponents>
+        </ThemeProvider>,
+      );
+
+      expect(captured).toBeDefined();
+      expect(captured?.sendMessage).toBe(true);
+      expect(captured?.deleteOwnMessage).toBe(true);
+      expect(captured?.banChannelMembers).toBe(false);
+      expect(channelWithCapabilities.on).toHaveBeenCalledWith(
+        'capabilities.changed',
+        expect.any(Function),
+      );
     });
   });
 

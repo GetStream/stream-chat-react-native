@@ -21,6 +21,7 @@ export const allOwnCapabilities = {
   sendReply: 'send-reply',
   sendTypingEvents: 'send-typing-events',
   updateAnyMessage: 'update-any-message',
+  updateChannelMembers: 'update-channel-members',
   updateOwnMessage: 'update-own-message',
   uploadFile: 'upload-file',
 };

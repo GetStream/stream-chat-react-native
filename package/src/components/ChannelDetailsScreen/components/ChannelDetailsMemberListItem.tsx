@@ -8,17 +8,26 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../../theme';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
+import { useUserActivityStatus } from '../hooks/useUserActivityStatus';
 
 export type ChannelDetailsMemberListItemProps = {
   member: ChannelMemberResponse;
   isCurrentUser?: boolean;
   isOwner?: boolean;
+  /**
+   * Optional role label displayed in the trailing slot (e.g. "Moderator"). When
+   * provided, it takes precedence over the default `isOwner ? "Admin" : null`
+   * label so callers can surface custom channel roles without losing the
+   * owner-fallback behavior.
+   */
+  role?: string;
 };
 
 const ChannelDetailsMemberListItemInner = ({
   isCurrentUser,
   isOwner,
   member,
+  role,
 }: ChannelDetailsMemberListItemProps) => {
   const { t } = useTranslationContext();
   const {
@@ -35,17 +44,14 @@ const ChannelDetailsMemberListItemInner = ({
     },
   } = useTheme();
   const styles = useStyles();
+  const statusLine = useUserActivityStatus(member.user);
 
   const user = member.user;
   if (!user) return null;
 
   const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
-  const statusLine = user.online ? t('Online') : '';
-  const accessibilityLabel = composeAccessibilityLabel(
-    displayName,
-    statusLine,
-    isOwner ? t('Admin') : null,
-  );
+  const trailingLabel = role ?? (isOwner ? t('Admin') : null);
+  const accessibilityLabel = composeAccessibilityLabel(displayName, statusLine, trailingLabel);
 
   return (
     <View
@@ -70,9 +76,9 @@ const ChannelDetailsMemberListItemInner = ({
           </Text>
         ) : null}
       </View>
-      {isOwner ? (
+      {trailingLabel ? (
         <Text style={[styles.adminBadge, { color: semantics.textTertiary }, adminBadgeOverride]}>
-          {t('Admin')}
+          {trailingLabel}
         </Text>
       ) : null}
     </View>
@@ -85,6 +91,7 @@ const areEqual = (
 ) => {
   if (prev.isCurrentUser !== next.isCurrentUser) return false;
   if (prev.isOwner !== next.isOwner) return false;
+  if (prev.role !== next.role) return false;
   if (prev.member === next.member) return true;
   const prevUser = prev.member.user;
   const nextUser = next.member.user;
