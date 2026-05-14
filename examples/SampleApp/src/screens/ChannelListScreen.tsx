@@ -60,13 +60,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const baseFilters = {
-  archived: false,
-  type: 'messaging',
-};
-
-const sort: ChannelSort = [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }];
-
 const baseOptions = {
   presence: true,
   state: true,
