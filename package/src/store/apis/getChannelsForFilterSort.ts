@@ -28,7 +28,7 @@ export const getChannelsForFilterSort = async ({
 }): Promise<Omit<ChannelAPIResponse, 'duration'>[] | null> => {
   if (!filters && !sort && !options?.predefined_filter) {
     console.warn(
-      'Please provide the query (filters/sort/options.predefined_filters) to fetch channels from the DB.',
+      'Please provide the query (filters/sort/options.predefined_filter) to fetch channels from the DB.',
     );
     return null;
   }
