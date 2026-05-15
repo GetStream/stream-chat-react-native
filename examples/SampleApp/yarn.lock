@@ -2712,10 +2712,10 @@
     read-yaml-file "^2.1.0"
     strip-json-comments "^3.1.1"
 
-"@shopify/flash-list@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-2.1.0.tgz#b1eefcf9fbd01ca04a5f24a6003cda3b46a59f64"
-  integrity sha512-/EIQlptG456yM5o9qNmNsmaZEFEOGvG3WGyb6GUAxSLlcKUGlPUkPI2NLW5wQSDEY4xSRa5zocUI+9xwmsM4Kg==
+"@shopify/flash-list@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-2.3.1.tgz#d4f90b1471a741a97c07d9aadbfaf200e92c86f7"
+  integrity sha512-7oktg2NQR7KAODjFoDaWe8/OBzyYbdTE3zQTrUBMxjIbxHTHN7UXRX1hX3DHk8KvtkgQdRfZOV8Gjj2l4fGrXw==
 
 "@sideway/address@^4.1.5":
   version "4.1.5"
