@@ -257,7 +257,7 @@ export const ChannelDetailsMemberSection = () => {
             </Pressable>
           </View>
         </View>
-        <ChannelAddMembers channel={channel} onSelectionChange={handleAddMembersSelectionChange} />
+        <ChannelAddMembers onSelectionChange={handleAddMembersSelectionChange} />
       </BottomSheetModal>
     </View>
   );

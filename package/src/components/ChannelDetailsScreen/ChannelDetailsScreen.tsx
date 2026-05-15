@@ -19,18 +19,17 @@ import { useCreateOwnCapabilitiesContext } from '../Channel/hooks/useCreateOwnCa
 export type ChannelDetailsScreenProps = {
   channel: Channel;
   /**
-   * Fired when the user taps the add-members button in the all-members bottom sheet.
-   * The button is shown whenever the current user has the `update-channel-members`
-   * capability; until this callback is provided the press is a no-op.
+   * Fired when the user taps the "add members" button, by default it opens the add members bottom sheet. Only visible if the current user has the `update-channel-members` capability.
    */
   onAddMembersPress?: () => void;
+  /**
+   * Fired when the back button is pressed on the channel details header.
+   */
   onBack?: () => void;
-  /** Fired after the channel is no longer available to the current user (delete or leave). */
+  /** Fired after the channel is no longer available to the current user (delete or leave actions). */
   onChannelDismiss?: () => void;
   /**
-   * Override for the default "View all" members behavior. When provided, the member
-   * section calls this callback instead of opening the built-in bottom-sheet — use it
-   * to navigate to a dedicated members screen instead.
+   * Fired when the user taps the "view all members" button, by default it opens the members bottom sheet.
    */
   onViewAllMembersPress?: () => void;
 };

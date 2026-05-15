@@ -12,7 +12,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import type { Channel, UserResponse } from 'stream-chat';
+import type { UserResponse } from 'stream-chat';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -33,11 +33,6 @@ export type ChannelAddMembersProps = {
    * selected user ids when committing the add).
    */
   onSelectionChange: (selectedUsers: UserResponse[]) => void;
-  /**
-   * Optional channel override. Defaults to `useChannelDetailsContext().channel`.
-   * Used to filter out existing channel members from the result list.
-   */
-  channel?: Channel;
 };
 
 const keyExtractor = (user: UserResponse) => user.id;
@@ -180,12 +175,8 @@ const ChannelAddMembersEmptyState = ({
   );
 };
 
-export const ChannelAddMembers = ({
-  channel: channelProp,
-  onSelectionChange,
-}: ChannelAddMembersProps) => {
-  const { channel: channelFromContext } = useChannelDetailsContext();
-  const channel = channelProp ?? channelFromContext;
+export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps) => {
+  const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
