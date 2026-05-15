@@ -39,8 +39,9 @@ const buildMember = (id: string, online = false): ChannelMemberResponse =>
 const buildChannel = () =>
   ({
     cid: 'messaging:test',
-    getClient: () => ({ userID: OWN_USER_ID }),
     data: {},
+    getClient: () => ({ userID: OWN_USER_ID }),
+    on: () => ({ unsubscribe: () => undefined }),
   }) as unknown as Channel;
 
 const renderProfile = ({ channel = buildChannel() }: { channel?: Channel } = {}) =>

@@ -11,7 +11,6 @@ import { WithComponents } from '../../../contexts/componentsContext/ComponentsCo
 import {
   allOwnCapabilities,
   OwnCapabilitiesContextValue,
-  OwnCapabilitiesProvider,
   OwnCapability,
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
@@ -60,16 +59,20 @@ const buildChannel = (
     ...overrides,
   }) as unknown as Channel;
 
-const buildCapabilities = (
+const applyCapabilities = (
+  channel: Channel,
   overrides?: Partial<OwnCapabilitiesContextValue>,
-): OwnCapabilitiesContextValue =>
-  Object.keys(allOwnCapabilities).reduce(
-    (acc, capability) => ({
-      ...acc,
-      [capability]: overrides?.[capability as OwnCapability] ?? false,
-    }),
-    {} as OwnCapabilitiesContextValue,
-  );
+): Channel => {
+  if (!overrides) return channel;
+  const ownCapabilities = Object.entries(overrides)
+    .filter(([, enabled]) => enabled)
+    .map(([key]) => allOwnCapabilities[key as OwnCapability]);
+  (channel as { data?: Record<string, unknown> }).data = {
+    ...((channel as { data?: Record<string, unknown> }).data ?? {}),
+    own_capabilities: ownCapabilities,
+  };
+  return channel;
+};
 
 const renderSection = ({
   capabilities,
@@ -93,20 +96,22 @@ const renderSection = ({
           }}
         >
           <ChatContext.Provider value={{ client: { userID: 'me' } } as never}>
-            <OwnCapabilitiesProvider value={buildCapabilities(capabilities)}>
-              <ChannelDetailsContextProvider
-                value={{ channel, onAddMembersPress, onViewAllMembersPress }}
+            <ChannelDetailsContextProvider
+              value={{
+                channel: applyCapabilities(channel, capabilities),
+                onAddMembersPress,
+                onViewAllMembersPress,
+              }}
+            >
+              <WithComponents
+                overrides={{
+                  ChannelAddMembers: AddMembersProbe,
+                  ChannelDetailsMemberList: MemberListProbe,
+                }}
               >
-                <WithComponents
-                  overrides={{
-                    ChannelAddMembers: AddMembersProbe,
-                    ChannelDetailsMemberList: MemberListProbe,
-                  }}
-                >
-                  <ChannelDetailsMemberSection />
-                </WithComponents>
-              </ChannelDetailsContextProvider>
-            </OwnCapabilitiesProvider>
+                <ChannelDetailsMemberSection />
+              </WithComponents>
+            </ChannelDetailsContextProvider>
           </ChatContext.Provider>
         </TranslationProvider>
       </AccessibilityProvider>

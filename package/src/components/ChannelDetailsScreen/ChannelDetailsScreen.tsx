@@ -9,12 +9,9 @@ import {
 } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import { OwnCapabilitiesProvider } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
-
-import { useCreateOwnCapabilitiesContext } from '../Channel/hooks/useCreateOwnCapabilitiesContext';
 
 export type ChannelDetailsScreenProps = {
   channel: Channel;
@@ -84,14 +81,11 @@ export const ChannelDetailsScreen = ({
     () => ({ channel, onAddMembersPress, onBack, onChannelDismiss, onViewAllMembersPress }),
     [channel, onAddMembersPress, onBack, onChannelDismiss, onViewAllMembersPress],
   );
-  const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({ channel });
   const Content = ChannelDetailsScreenContentOverride ?? ChannelDetailsScreenContent;
 
   return (
     <ChannelDetailsContextProvider value={value}>
-      <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
-        <Content />
-      </OwnCapabilitiesProvider>
+      <Content />
     </ChannelDetailsContextProvider>
   );
 };

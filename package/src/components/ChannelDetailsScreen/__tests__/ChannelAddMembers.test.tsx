@@ -17,6 +17,7 @@ const buildChannel = (members: ChannelMemberResponse[]): Channel =>
   ({
     cid: 'messaging:test',
     data: { member_count: members.length },
+    on: () => ({ unsubscribe: () => undefined }),
     state: {
       members: Object.fromEntries(
         members.map((m) => [m.user?.id ?? m.user_id ?? '', m]).filter(([k]) => Boolean(k)),

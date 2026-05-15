@@ -28,7 +28,10 @@ const buildItem = (overrides: Partial<ChannelActionItem> = {}): ChannelActionIte
   ...overrides,
 });
 
-const channel = { cid: 'messaging:test' } as unknown as Channel;
+const channel = {
+  cid: 'messaging:test',
+  on: () => ({ unsubscribe: () => undefined }),
+} as unknown as Channel;
 
 type Probe = ChannelDetailsListItemProps & { testID?: string };
 
