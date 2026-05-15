@@ -11,7 +11,7 @@ import {
 import Animated from 'react-native-reanimated';
 
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
-import type { Attachment, Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
+import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
@@ -58,7 +58,6 @@ import { useStableCallback, useStateStore } from '../../hooks';
 import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { FileTypes } from '../../types/types';
 import { transitions } from '../../utils/animations/transitions';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
@@ -269,51 +268,10 @@ type MessageFlashListPropsWithContext = Pick<
 
 const WAIT_FOR_SCROLL_TIMEOUT = 0;
 
-const getAttachmentSubtype = (attachments: Attachment[]) => {
-  if (!attachments.length) {
-    return;
-  }
-
-  if (
-    attachments.some(
-      (attachment) => attachment.type === FileTypes.Giphy || attachment.type === FileTypes.Imgur,
-    )
-  ) {
-    return 'attachment-giphy';
-  }
-
-  if (attachments.some((attachment) => !!attachment.og_scrape_url || !!attachment.title_link)) {
-    return 'attachment-link-preview';
-  }
-
-  const imageCount = attachments.filter((attachment) => attachment.type === FileTypes.Image).length;
-  const videoCount = attachments.filter((attachment) => attachment.type === FileTypes.Video).length;
-  const mediaCount = imageCount + videoCount;
-  if (mediaCount === attachments.length) {
-    return 'attachment-gallery';
-  }
-
-  if (
-    attachments.some(
-      (attachment) =>
-        attachment.type === FileTypes.Audio || attachment.type === FileTypes.VoiceRecording,
-    )
-  ) {
-    return 'attachment-audio';
-  }
-
-  if (attachments.some((attachment) => attachment.type === FileTypes.File)) {
-    return 'attachment-file';
-  }
-
-  return 'attachment';
-};
-
 const getItemTypeInternal = (message: LocalMessage) => {
   if (message.type === 'regular') {
-    const attachmentSubtype = getAttachmentSubtype(message.attachments ?? []);
-    if (attachmentSubtype) {
-      return `message-with-${attachmentSubtype}`;
+    if (message.attachments?.length) {
+      return 'message-with-attachments';
     }
 
     if (message.poll_id) {
