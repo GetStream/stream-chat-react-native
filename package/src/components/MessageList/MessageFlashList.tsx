@@ -444,9 +444,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [autoscrollToRecent]);
 
-  const maintainVisibleContentPosition = useMemo(() => {
+  const maintainVisibleContentPosition = useMemo<
+    FlashListProps<LocalMessage>['maintainVisibleContentPosition']
+  >(() => {
     return {
-      animateAutoscrollToBottom: true,
+      animateAutoScrollToBottom: true,
       autoscrollToBottomThreshold: autoscrollToRecent ? 1 : undefined,
       startRenderingFromBottom: true,
     };
