@@ -356,9 +356,17 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const [hasMoved, setHasMoved] = useState(false);
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
+  const scrollToBottomButtonVisibleRef = useRef(scrollToBottomButtonVisible);
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
   const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
+
+  const setScrollToBottomButtonVisibleIfChanged = useStableCallback((visible: boolean) => {
+    if (scrollToBottomButtonVisibleRef.current !== visible) {
+      scrollToBottomButtonVisibleRef.current = visible;
+      setScrollToBottomButtonVisible(visible);
+    }
+  });
 
   const stickyHeaderDateRef = useRef<Date | undefined>(undefined);
   /**
@@ -446,9 +454,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   useEffect(() => {
     if (disabled) {
-      setScrollToBottomButtonVisible(false);
+      setScrollToBottomButtonVisibleIfChanged(false);
     }
-  }, [disabled]);
+  }, [disabled, setScrollToBottomButtonVisibleIfChanged]);
 
   const indexToScrollToRef = useRef<number | undefined>(undefined);
 
@@ -537,7 +545,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
       ) {
         channelResyncScrollSet.current = false;
-        setScrollToBottomButtonVisible(false);
+        setScrollToBottomButtonVisibleIfChanged(false);
         resetPaginationTrackersRef.current();
 
         setTimeout(() => {
@@ -568,7 +576,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       latestNonCurrentMessageBeforeUpdateRef.current =
         channel.state.latestMessages[channel.state.latestMessages.length - 1];
       setAutoscrollToRecent(false);
-      setScrollToBottomButtonVisible(true);
+      setScrollToBottomButtonVisibleIfChanged(true);
       return;
     } else {
       indexToScrollToRef.current = undefined;
@@ -594,7 +602,13 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         });
       }
     }
-  }, [channel, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, threadList]);
+  }, [
+    channel,
+    processedMessageList,
+    setScrollToBottomButtonVisibleIfChanged,
+    shouldScrollToRecentOnNewOwnMessageRef,
+    threadList,
+  ]);
 
   /**
    * Effect to mark the channel as read when the user scrolls to the bottom of the message list.
@@ -935,7 +949,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
      *    |-> hide scrollToBottom button.
      *    |-> if channel is unread, call markRead().
      */
-    setScrollToBottomButtonVisible(showScrollToBottomButton);
+    setScrollToBottomButtonVisibleIfChanged(showScrollToBottomButton);
 
     if (onListScroll) {
       onListScroll(event);
@@ -954,7 +968,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       });
     }
 
-    setScrollToBottomButtonVisible(false);
+    setScrollToBottomButtonVisibleIfChanged(false);
     /**
      *  When we are not in the bottom of the list, and we receive new messages, we need to mark the channel as read.
      We would still need to show the unread label, where the first unread message appeared so we don't update the channelUnreadState.
