@@ -7,6 +7,8 @@ import { avatarSizes } from './constants';
 
 import { UserAvatar } from './UserAvatar';
 
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../theme';
 import { BadgeCount } from '../Badge';
 
 export type AvatarStackProps = {
@@ -85,16 +87,44 @@ export const UserAvatarStack = ({
   overlap,
   users,
 }: UserAvatarStackProps) => {
+  const styles = useUserAvatarStackStyles();
   const items = useMemo(
     () =>
       users.map((user) => {
-        return <UserAvatar key={user.id} user={user} size={avatarSize} showBorder />;
+        return (
+          <UserAvatar
+            key={user.id}
+            style={styles.userAvatarWrapper}
+            user={user}
+            size={avatarSize}
+            showBorder
+          />
+        );
       }),
-    [avatarSize, users],
+    [avatarSize, styles.userAvatarWrapper, users],
   );
 
   return (
     <AvatarStack avatarSize={avatarSize} maxVisible={maxVisible} overlap={overlap} items={items} />
+  );
+};
+
+const useUserAvatarStackStyles = () => {
+  const {
+    theme: { avatarStack, semantics },
+  } = useTheme();
+
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        userAvatarWrapper: {
+          borderWidth: 2,
+          borderColor: semantics.borderCoreInverse,
+          borderRadius: primitives.radiusMax,
+          ...avatarStack.userAvatarWrapper,
+        },
+      }),
+    [avatarStack.userAvatarWrapper, semantics.borderCoreInverse],
   );
 };
 

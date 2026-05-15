@@ -30,7 +30,7 @@ const useStyles = () => {
     return StyleSheet.create({
       container: {
         backgroundColor: semantics.backgroundCoreApp,
-        borderTopColor: semantics.borderCoreDefault,
+        borderTopColor: semantics.borderCoreSubtle,
         height: 48,
         ...container,
       },

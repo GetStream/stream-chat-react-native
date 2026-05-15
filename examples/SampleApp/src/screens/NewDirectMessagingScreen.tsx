@@ -7,9 +7,11 @@ import {
   MessageComposer,
   MessageList,
   UserAdd,
+  WithComponents,
   useTheme,
 } from 'stream-chat-react-native';
 
+import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import { User } from '../icons/User';
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -359,7 +361,9 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
           <MessageList />
         )}
-        <MessageComposer />
+        <WithComponents overrides={{ SendButton: NewDirectMessagingSendButton }}>
+          <MessageComposer />
+        </WithComponents>
       </Channel>
     </SafeAreaView>
   );

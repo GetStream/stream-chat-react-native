@@ -219,9 +219,14 @@ const useAudioAttachmentStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { isMyMessage, messageHasOnlySingleAttachment } = useMessageContext();
+  const { isMyMessage, message, messageHasOnlySingleAttachment } = useMessageContext();
 
-  const showBackgroundTransparent = messageHasOnlySingleAttachment;
+  const messageHasSingleAttachment = message.attachments?.length === 1;
+  const messageHasCaption = !!message.text?.trim();
+  const messageIsQuotedReply = !!(message.quoted_message || message.quoted_message_id);
+  const showBackgroundTransparent =
+    messageHasOnlySingleAttachment ||
+    (messageIsQuotedReply && messageHasSingleAttachment && !messageHasCaption);
 
   return useMemo(() => {
     return StyleSheet.create({
