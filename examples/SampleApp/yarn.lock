@@ -7695,10 +7695,10 @@ react-native-svg@^15.15.4:
     css-tree "^1.1.3"
     warn-once "0.1.1"
 
-react-native-teleport@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/react-native-teleport/-/react-native-teleport-1.1.2.tgz#23deea2a34f6b1bb378e0305d44deeb93d51d490"
-  integrity sha512-64dcEkxlVKzxIts2FAVhzI2tDExcD23T13c2yDC/E+1dA1vP9UlDwPYUEkHvnoTOFtMDGrKLH03RJahIWfQC1g==
+react-native-teleport@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/react-native-teleport/-/react-native-teleport-1.1.5.tgz#53709238828ef346948531593f81950e57461396"
+  integrity sha512-nK7gI9Ak8RVOgE08YLL/AhY1ZjnccVpqNymyfYW+qQdGxpRCys6ndjQpc4YWiQLLWRG2hs47YS5wnXURPcWWEA==
 
 react-native-url-polyfill@^2.0.0:
   version "2.0.0"
