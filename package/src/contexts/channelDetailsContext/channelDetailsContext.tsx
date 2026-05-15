@@ -1,10 +1,11 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import { ChannelDetailsScreenProps } from '../../components';
+
 import { useCreateOwnCapabilitiesContext } from '../../components/Channel/hooks/useCreateOwnCapabilitiesContext';
 import { OwnCapabilitiesProvider } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
-import { ChannelDetailsScreenProps } from 'src/components';
 
 export type ChannelDetailsContextValue = ChannelDetailsScreenProps;
 export const ChannelDetailsContext = React.createContext(
