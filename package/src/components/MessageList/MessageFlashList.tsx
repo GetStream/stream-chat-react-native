@@ -85,6 +85,58 @@ const keyExtractor = (item: LocalMessage) => {
   return Date.now().toString();
 };
 
+type MessageFlashListItemWithNeighbours = LocalMessage & {
+  message: LocalMessage;
+  nextMessage?: LocalMessage;
+  previousMessage?: LocalMessage;
+};
+
+const getFlashListItemCacheKey = (item: LocalMessage, index: number) => {
+  if (item.id) {
+    return item.id;
+  }
+  if (item.created_at) {
+    return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
+  }
+  return `index-${index}`;
+};
+
+const buildFlashListItemsWithNeighbours = (
+  processedMessageList: LocalMessage[],
+  previousDerivedItems: Map<string, MessageFlashListItemWithNeighbours>,
+) => {
+  const nextDerivedItems = new Map<string, MessageFlashListItemWithNeighbours>();
+
+  const items = processedMessageList.map((message, index) => {
+    const cacheKey = getFlashListItemCacheKey(message, index);
+    const previousMessage = processedMessageList[index - 1];
+    const nextMessage = processedMessageList[index + 1];
+    const previousDerived = previousDerivedItems.get(cacheKey);
+
+    if (
+      previousDerived &&
+      previousDerived.message === message &&
+      previousDerived.previousMessage === previousMessage &&
+      previousDerived.nextMessage === nextMessage
+    ) {
+      nextDerivedItems.set(cacheKey, previousDerived);
+      return previousDerived;
+    }
+
+    const derivedItem = {
+      ...message,
+      message,
+      nextMessage,
+      previousMessage,
+    } as MessageFlashListItemWithNeighbours;
+
+    nextDerivedItems.set(cacheKey, derivedItem);
+    return derivedItem;
+  });
+
+  return { items, nextDerivedItems };
+};
+
 const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
 };
@@ -402,20 +454,33 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     threadList,
   });
 
-  const renderItem = useCallback(
-    ({ item: message, index }: { item: LocalMessage; index: number }) => {
-      const previousMessage = processedMessageList[index - 1];
-      const nextMessage = processedMessageList[index + 1];
-      return (
-        <MessageWrapper
-          message={message}
-          previousMessage={previousMessage}
-          nextMessage={nextMessage}
-        />
-      );
-    },
-    [processedMessageList],
-  );
+  const previousDerivedItemsRef =
+    useRef<Map<string, MessageFlashListItemWithNeighbours>>(undefined);
+
+  const processedMessageListWithNeighbours = useMemo(() => {
+    if (!previousDerivedItemsRef.current) {
+      previousDerivedItemsRef.current = new Map();
+    }
+
+    const { items, nextDerivedItems } = buildFlashListItemsWithNeighbours(
+      processedMessageList,
+      previousDerivedItemsRef.current,
+    );
+    previousDerivedItemsRef.current = nextDerivedItems;
+
+    return items;
+  }, [processedMessageList]);
+
+  const renderItem = useStableCallback(({ item }: { item: MessageFlashListItemWithNeighbours }) => {
+    const { message, previousMessage, nextMessage } = item;
+    return (
+      <MessageWrapper
+        message={message}
+        previousMessage={previousMessage}
+        nextMessage={nextMessage}
+      />
+    );
+  });
 
   /**
    * We need topMessage and channelLastRead values to set the initial scroll position.
@@ -1119,7 +1184,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         <MessageListItemProvider value={messageListItemContextValue}>
           <FlashList
             contentContainerStyle={flatListContentContainerStyle}
-            data={processedMessageList}
+            data={processedMessageListWithNeighbours}
             drawDistance={800}
             getItemType={getItemTypeInternal}
             initialScrollIndex={
