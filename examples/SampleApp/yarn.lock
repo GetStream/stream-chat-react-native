@@ -2712,10 +2712,10 @@
     read-yaml-file "^2.1.0"
     strip-json-comments "^3.1.1"
 
-"@shopify/flash-list@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-2.1.0.tgz#b1eefcf9fbd01ca04a5f24a6003cda3b46a59f64"
-  integrity sha512-/EIQlptG456yM5o9qNmNsmaZEFEOGvG3WGyb6GUAxSLlcKUGlPUkPI2NLW5wQSDEY4xSRa5zocUI+9xwmsM4Kg==
+"@shopify/flash-list@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-2.3.1.tgz#d4f90b1471a741a97c07d9aadbfaf200e92c86f7"
+  integrity sha512-7oktg2NQR7KAODjFoDaWe8/OBzyYbdTE3zQTrUBMxjIbxHTHN7UXRX1hX3DHk8KvtkgQdRfZOV8Gjj2l4fGrXw==
 
 "@sideway/address@^4.1.5":
   version "4.1.5"
@@ -7695,10 +7695,10 @@ react-native-svg@^15.15.4:
     css-tree "^1.1.3"
     warn-once "0.1.1"
 
-react-native-teleport@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/react-native-teleport/-/react-native-teleport-1.1.2.tgz#23deea2a34f6b1bb378e0305d44deeb93d51d490"
-  integrity sha512-64dcEkxlVKzxIts2FAVhzI2tDExcD23T13c2yDC/E+1dA1vP9UlDwPYUEkHvnoTOFtMDGrKLH03RJahIWfQC1g==
+react-native-teleport@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/react-native-teleport/-/react-native-teleport-1.1.5.tgz#53709238828ef346948531593f81950e57461396"
+  integrity sha512-nK7gI9Ak8RVOgE08YLL/AhY1ZjnccVpqNymyfYW+qQdGxpRCys6ndjQpc4YWiQLLWRG2hs47YS5wnXURPcWWEA==
 
 react-native-url-polyfill@^2.0.0:
   version "2.0.0"
@@ -8291,10 +8291,10 @@ stream-chat-react-native-core@8.1.0:
   version "0.0.0"
   uid ""
 
-stream-chat@^9.43.1:
-  version "9.43.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.43.1.tgz#5b2cccdd95ce92cc44c6691c527eeee271ce37bd"
-  integrity sha512-lP1B3ulv2B20tqbn0xWUaVuKgBPAtgiKRGTBgmZsAIcOKDziR0xbYmZuC8zo9+L6yPh3euSdbF5w+CQ/Rn1FiQ==
+stream-chat@^9.44.2:
+  version "9.44.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.44.2.tgz#97d23ae4ac356b352bb0f20a31a29dc63d3ea6f5"
+  integrity sha512-TXALWeHyWnSn1KlGYEF0sltEHB26vFd26l5m1qlE9Q1XHo9RPPSyLb5mfXqTEY8b2FAv57Ei3hrT8nSXVWacDQ==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"

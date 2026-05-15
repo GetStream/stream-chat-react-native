@@ -81,7 +81,11 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
                     "borderColor": "rgba(26, 27, 37, 0.1)",
                     "borderWidth": 1,
                   },
-                  undefined,
+                  {
+                    "borderColor": "#ffffff",
+                    "borderRadius": 9999,
+                    "borderWidth": 2,
+                  },
                 ]
               }
               testID="avatar-image"
@@ -143,7 +147,11 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
                     "borderColor": "rgba(26, 27, 37, 0.1)",
                     "borderWidth": 1,
                   },
-                  undefined,
+                  {
+                    "borderColor": "#ffffff",
+                    "borderRadius": 9999,
+                    "borderWidth": 2,
+                  },
                 ]
               }
               testID="avatar-image"

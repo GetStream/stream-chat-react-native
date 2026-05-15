@@ -17,7 +17,6 @@ import { MessageSearchList } from '../components/MessageSearch/MessageSearchList
 import { useAppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
-import type { ChannelSort } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
 import { Search } from '../icons/Search';
 import { ChannelInfo } from '../icons/ChannelInfo.tsx';
@@ -60,18 +59,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const baseFilters = {
-  archived: false,
-  type: 'messaging',
-};
-
-const sort: ChannelSort = [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }];
-
-const options = {
+const baseOptions = {
   presence: true,
   state: true,
   watch: true,
   message_limit: 25,
+  predefined_filter: 'basic_channel_list_filter',
 };
 
 export const ChannelListScreen: React.FC = () => {
@@ -91,15 +84,12 @@ export const ChannelListScreen: React.FC = () => {
     usePaginatedSearchedMessages(searchQuery);
 
   const chatClientUserId = chatClient?.user?.id || '';
-  const filters = useMemo(
-    () => ({
-      ...baseFilters,
-      members: {
-        $in: [chatClientUserId],
-      },
-    }),
-    [chatClientUserId],
-  );
+  const options = useMemo(() => ({
+    ...baseOptions,
+    filter_values: {
+      user_id: chatClientUserId,
+    }
+  }), [chatClientUserId])
 
   useScrollToTop(scrollRef as RefObject<FlatList<Channel>>);
 
@@ -248,13 +238,11 @@ export const ChannelListScreen: React.FC = () => {
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <ChannelList
               additionalFlatListProps={additionalFlatListProps}
-              filters={filters}
               maxUnreadCount={99}
               onSelect={onSelect}
               options={options}
               setFlatListRef={setScrollRef}
               getChannelActionItems={getChannelActionItems}
-              sort={sort}
             />
           </View>
         </View>

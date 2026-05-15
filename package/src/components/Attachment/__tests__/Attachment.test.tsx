@@ -11,7 +11,7 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { mergeThemes, ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import {
   generateAudioAttachment,
   generateFileAttachment,
@@ -19,6 +19,7 @@ import {
   generateVideoAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { FileTypes } from '../../../types/types';
 
 import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
@@ -48,8 +49,11 @@ jest.mock('../../../hooks/usePendingAttachmentUpload', () => ({
   })),
 }));
 
-const getAttachmentComponent = (props: ComponentProps<typeof Attachment>) => {
-  const message = generateMessage();
+const getAttachmentComponent = (
+  props: ComponentProps<typeof Attachment>,
+  messageContextValue: Partial<MessageContextValue> = {},
+) => {
+  const message = messageContextValue.message ?? generateMessage();
   return (
     <ThemeProvider>
       <AudioPlayerProvider value={{ allowConcurrentAudioPlayback: false }}>
@@ -63,7 +67,9 @@ const getAttachmentComponent = (props: ComponentProps<typeof Attachment>) => {
             } as unknown as MessagesContextValue
           }
         >
-          <MessageProvider value={{ message } as unknown as MessageContextValue}>
+          <MessageProvider
+            value={{ message, ...messageContextValue } as unknown as MessageContextValue}
+          >
             <Attachment {...props} />
           </MessageProvider>
         </MessagesProvider>
@@ -79,6 +85,8 @@ const getWaveformBarCount = (root: ReactTestInstance) =>
   }).length;
 
 describe('Attachment', () => {
+  const lightTheme = mergeThemes({ scheme: 'light' });
+
   it('should render File component for "audio" type attachment', async () => {
     const attachment = generateAudioAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
@@ -118,6 +126,94 @@ describe('Attachment', () => {
     await waitFor(() => {
       expect(getByLabelText('audio-attachment-preview')).toBeTruthy();
       expect(getWaveformBarCount(root)).toBeGreaterThan(0);
+    });
+    isSoundPackageAvailable.mockReturnValue(false);
+  });
+
+  it('uses a transparent audio player background for quoted replies without captions', async () => {
+    const { isSoundPackageAvailable } = require('../../../native');
+    isSoundPackageAvailable.mockReturnValue(true);
+    const attachment = generateAudioAttachment({
+      duration: 10,
+      waveform_data: [0.2, 0.6, 0.4],
+    });
+    const quotedMessage = generateMessage();
+    const message = generateMessage({
+      attachments: [attachment],
+      quoted_message: quotedMessage,
+      quoted_message_id: quotedMessage.id,
+      text: '',
+    });
+
+    const { getByLabelText } = render(
+      getAttachmentComponent(
+        { attachment },
+        { isMyMessage: false, message, messageHasOnlySingleAttachment: false },
+      ),
+    );
+
+    await waitFor(() => {
+      const style = StyleSheet.flatten(getByLabelText('audio-attachment-preview').props.style);
+      expect(style.backgroundColor).toBe('transparent');
+    });
+    isSoundPackageAvailable.mockReturnValue(false);
+  });
+
+  it('keeps the audio player background for quoted replies with captions', async () => {
+    const { isSoundPackageAvailable } = require('../../../native');
+    isSoundPackageAvailable.mockReturnValue(true);
+    const attachment = generateAudioAttachment({
+      duration: 10,
+      type: FileTypes.VoiceRecording,
+      waveform_data: [0.2, 0.6, 0.4],
+    });
+    const quotedMessage = generateMessage();
+    const message = generateMessage({
+      attachments: [attachment],
+      quoted_message: quotedMessage,
+      quoted_message_id: quotedMessage.id,
+      text: 'caption',
+    });
+
+    const { getByLabelText } = render(
+      getAttachmentComponent(
+        { attachment },
+        { isMyMessage: false, message, messageHasOnlySingleAttachment: false },
+      ),
+    );
+
+    await waitFor(() => {
+      const style = StyleSheet.flatten(getByLabelText('audio-attachment-preview').props.style);
+      expect(style.backgroundColor).toBe(lightTheme.semantics.chatBgAttachmentIncoming);
+    });
+    isSoundPackageAvailable.mockReturnValue(false);
+  });
+
+  it('keeps the audio player background for quoted replies with multiple attachments and no captions', async () => {
+    const { isSoundPackageAvailable } = require('../../../native');
+    isSoundPackageAvailable.mockReturnValue(true);
+    const attachment = generateAudioAttachment({
+      duration: 10,
+      waveform_data: [0.2, 0.6, 0.4],
+    });
+    const quotedMessage = generateMessage();
+    const message = generateMessage({
+      attachments: [attachment, generateAudioAttachment()],
+      quoted_message: quotedMessage,
+      quoted_message_id: quotedMessage.id,
+      text: '',
+    });
+
+    const { getByLabelText } = render(
+      getAttachmentComponent(
+        { attachment },
+        { isMyMessage: false, message, messageHasOnlySingleAttachment: false },
+      ),
+    );
+
+    await waitFor(() => {
+      const style = StyleSheet.flatten(getByLabelText('audio-attachment-preview').props.style);
+      expect(style.backgroundColor).toBe(lightTheme.semantics.chatBgAttachmentIncoming);
     });
     isSoundPackageAvailable.mockReturnValue(false);
   });

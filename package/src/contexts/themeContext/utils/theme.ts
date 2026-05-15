@@ -145,6 +145,9 @@ export type Theme = {
     presenceIndicator: CircleProps;
     presenceIndicatorContainer: ViewStyle;
   };
+  avatarStack: {
+    userAvatarWrapper: ViewStyle;
+  };
   bottomSheetModal: {
     container: ViewStyle;
     contentContainer: ViewStyle;
@@ -580,6 +583,19 @@ export type Theme = {
       leftButtonContainer: ViewStyle;
       rightButtonContainer: ViewStyle;
     };
+  };
+  notification: {
+    actionButton: ViewStyle;
+    actionButtonText: TextStyle;
+    actionsContainer: ViewStyle;
+    closeButton: ViewStyle;
+    container: ViewStyle;
+    contentContainer: ViewStyle;
+    iconContainer: ViewStyle;
+    message: TextStyle;
+  };
+  notificationList: {
+    container: ViewStyle;
   };
   messageMenu: {
     actionList: {
@@ -1131,6 +1147,9 @@ export const defaultTheme: Theme = {
     },
     presenceIndicatorContainer: {},
   },
+  avatarStack: {
+    userAvatarWrapper: {},
+  },
   bottomSheetModal: {
     container: {},
     contentContainer: {},
@@ -1553,6 +1572,19 @@ export const defaultTheme: Theme = {
       rightButtonContainer: {},
     },
     unreadMessagesNotificationContainer: {},
+  },
+  notification: {
+    actionButton: {},
+    actionButtonText: {},
+    actionsContainer: {},
+    closeButton: {},
+    container: {},
+    contentContainer: {},
+    iconContainer: {},
+    message: {},
+  },
+  notificationList: {
+    container: {},
   },
   messageMenu: {
     actionList: {

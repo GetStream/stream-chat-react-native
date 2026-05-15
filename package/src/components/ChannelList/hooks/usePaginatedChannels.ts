@@ -53,6 +53,7 @@ export const usePaginatedChannels = ({
   const hasNextPage = pagination?.hasNext;
 
   const filtersRef = useRef<typeof filters | null>(null);
+  const optionsRef = useRef<typeof options | null>(null);
   const sortRef = useRef<typeof sort | null>(null);
   const activeRequestId = useRef<number>(0);
   const isQueryingRef = useRef(false);
@@ -69,10 +70,9 @@ export const usePaginatedChannels = ({
       queryType === 'loadChannels' ||
       queryType === 'refresh' ||
       queryType === 'backgroundRefresh' ||
-      [
-        JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
-        JSON.stringify(sortRef.current) !== JSON.stringify(sort),
-      ].some(Boolean);
+      JSON.stringify(filtersRef.current) !== JSON.stringify(filters) ||
+      JSON.stringify(optionsRef.current) !== JSON.stringify(options) ||
+      JSON.stringify(sortRef.current) !== JSON.stringify(sort);
 
     const isQueryStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
 
@@ -87,6 +87,7 @@ export const usePaginatedChannels = ({
     }
 
     filtersRef.current = filters;
+    optionsRef.current = options;
     sortRef.current = sort;
     isQueryingRef.current = true;
     activeRequestId.current++;
@@ -146,7 +147,7 @@ export const usePaginatedChannels = ({
   };
 
   /**
-   * Equality check using stringified filters/sort ensure that we don't make un-necessary queryChannels api calls
+   * Equality check using stringified filters/options/sort ensure that we don't make un-necessary queryChannels api calls
    * for the scenario:
    *
    * <ChannelList
@@ -161,6 +162,7 @@ export const usePaginatedChannels = ({
    * in return will trigger useEffect. To avoid this, we can add a value check.
    */
   const filterStr = useMemo(() => JSON.stringify(filters), [filters]);
+  const optionsStr = useMemo(() => JSON.stringify(options), [options]);
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
@@ -178,7 +180,7 @@ export const usePaginatedChannels = ({
 
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterStr, sortStr, channelManager]);
+  }, [filterStr, optionsStr, sortStr, channelManager]);
 
   return {
     channelListInitialized,

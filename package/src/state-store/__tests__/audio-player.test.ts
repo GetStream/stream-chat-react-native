@@ -158,6 +158,51 @@ describe('AudioPlayer', () => {
     expect(playerRef.unloadAsync).toHaveBeenCalledTimes(1);
   });
 
+  it('reports when playback is requested without an initialized player', () => {
+    const onError = jest.fn();
+    const player = new AudioPlayer({
+      duration: 30,
+      id: 'missing-player',
+      mimeType: 'audio/mp4',
+      onError,
+      type: 'audio',
+      uri: 'https://example.com/audio.mp4',
+    });
+
+    player.play();
+
+    expect(onError).toHaveBeenCalledWith({
+      errCode: 'not-playable',
+      error: undefined,
+    });
+  });
+
+  it('reports initialization failures', async () => {
+    const error = new Error('initialize failed');
+    const onError = jest.fn();
+    (NativeHandlers as { Sound: unknown }).Sound = {
+      Player: null,
+      initializeSound: jest.fn().mockRejectedValue(error),
+    };
+
+    const player = new AudioPlayer({
+      duration: 30,
+      id: 'failed-initialization-player',
+      mimeType: 'audio/mp4',
+      onError,
+      type: 'audio',
+      uri: 'https://example.com/audio.mp4',
+    });
+
+    await flushPromises();
+
+    expect(player).toBeDefined();
+    expect(onError).toHaveBeenCalledWith({
+      errCode: 'failed-to-start',
+      error,
+    });
+  });
+
   it('cleans up a stale native player when initialization resolves after removal', async () => {
     const playerRef = createMockNativePlayerRef();
     let resolveInitializeSound: (player: typeof playerRef) => void;

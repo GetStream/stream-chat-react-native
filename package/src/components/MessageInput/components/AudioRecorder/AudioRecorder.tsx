@@ -23,6 +23,7 @@ import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
+import { useNotificationApi } from '../../../Notifications';
 
 type AudioRecorderPropsWithContext = Pick<
   MessageInputContextValue,
@@ -100,9 +101,16 @@ const DeleteRecording = ({
 }: {
   deleteVoiceRecordingHandler: () => Promise<void>;
 }) => {
-  const onDeleteVoiceRecording = () => {
+  const { addNotification } = useNotificationApi();
+  const { t } = useTranslationContext();
+  const onDeleteVoiceRecording = async () => {
     NativeHandlers.triggerHaptic('impactMedium');
-    deleteVoiceRecordingHandler();
+    await deleteVoiceRecordingHandler();
+    addNotification({
+      message: t('Voice message deleted'),
+      options: { severity: 'info', type: 'audioRecording:cancel:success' },
+      origin: { emitter: 'AudioRecorder' },
+    });
   };
   return (
     <Button

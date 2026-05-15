@@ -14,6 +14,12 @@ const selector = ({ notifications }: InAppNotificationsState) => ({
   notifications,
 });
 
+/**
+ * @deprecated Prefer the client-backed notification APIs exported from
+ * `components/Notifications` (`useNotificationApi`, `useNotifications`, and
+ * `NotificationList`). This hook is kept for apps that already render their own
+ * legacy in-app notification store.
+ */
 export const useInAppNotificationsState = () => {
   const { notifications } = useStateStore(inAppNotificationsStore, selector);
 

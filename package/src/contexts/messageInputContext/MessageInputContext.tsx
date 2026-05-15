@@ -26,6 +26,7 @@ import { useMessageComposer } from './hooks/useMessageComposer';
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { parseLinksFromText } from '../../components/Message/MessageItemView/utils/parseLinks';
 import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
+import { useNotificationApi } from '../../components/Notifications';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import {
   createAttachmentsCompositionMiddleware,
@@ -220,6 +221,7 @@ export const MessageInputProvider = ({
   const { clearEditingState } = useMessageComposerAPIContext();
   const { thread } = useThreadContext();
   const { t } = useTranslationContext();
+  const { addNotification } = useNotificationApi();
   const inputBoxRef = useRef<InputBoxRef | null>(null);
 
   const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
@@ -407,6 +409,23 @@ export const MessageInputProvider = ({
           clearEditingState();
           await value.editMessage({ localMessage, options: sendOptions });
         } catch (error) {
+          addNotification(
+            {
+              message: t('Edit message request failed'),
+              options: {
+                ...(error instanceof Error ? { originalError: error } : {}),
+                severity: 'error',
+              },
+              origin: { emitter: 'MessageComposer' },
+            },
+            {
+              incident: {
+                domain: 'api',
+                entity: 'message',
+                operation: 'edit',
+              },
+            },
+          );
           throw new Error('Error while editing message');
         }
       } else {
@@ -433,6 +452,23 @@ export const MessageInputProvider = ({
             options: sendOptions,
           });
         } catch (error) {
+          addNotification(
+            {
+              message: t('Send message request failed'),
+              options: {
+                ...(error instanceof Error ? { originalError: error } : {}),
+                severity: 'error',
+              },
+              origin: { emitter: 'MessageComposer' },
+            },
+            {
+              incident: {
+                domain: 'api',
+                entity: 'message',
+                operation: 'send',
+              },
+            },
+          );
           throw new Error('Error while sending message');
         }
       }

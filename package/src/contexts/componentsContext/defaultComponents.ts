@@ -142,6 +142,7 @@ import { MessageReactionPicker } from '../../components/MessageMenu/MessageReact
 import { MessageUserReactions } from '../../components/MessageMenu/MessageUserReactions';
 import { MessageUserReactionsAvatar } from '../../components/MessageMenu/MessageUserReactionsAvatar';
 import { MessageUserReactionsItem } from '../../components/MessageMenu/MessageUserReactionsItem';
+import { Notification, NotificationIcon, NotificationList } from '../../components/Notifications';
 import { PollAnswersListContent } from '../../components/Poll/components/PollAnswersList';
 import { PollButtons } from '../../components/Poll/components/PollButtons';
 import { PollAllOptionsContent } from '../../components/Poll/components/PollOption';
@@ -257,6 +258,9 @@ const components = {
   MessageUserReactionsAvatar,
   MessageUserReactionsItem,
   NetworkDownIndicator,
+  Notification,
+  NotificationIcon,
+  NotificationList,
   ChannelPreview: ChannelPreviewView,
   ChannelPreviewAvatar: ChannelAvatar,
   ChannelPreviewLastMessage: ChannelLastMessagePreview,

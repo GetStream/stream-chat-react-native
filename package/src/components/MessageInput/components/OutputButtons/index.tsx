@@ -22,7 +22,7 @@ import {
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { transitions } from '../../../../utils/transitions';
+import { transitions } from '../../../../utils/animations/transitions';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
 import { useIsCooldownActive } from '../../hooks/useIsCooldownActive';
 

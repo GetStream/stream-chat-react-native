@@ -184,6 +184,41 @@ describe('MessageList', () => {
     });
   });
 
+  it('should render client notifications in the message list notification host', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: [generateMessage({ user: user1 })],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    const { getByText } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    act(() => {
+      chatClient.notifications.add({
+        message: 'Message list notification',
+        options: { severity: 'warning' },
+        origin: { emitter: 'MessageListTest' },
+      });
+    });
+
+    await waitFor(() => {
+      expect(getByText('Message list notification')).toBeTruthy();
+    });
+  });
+
   it('should render the is offline error', async () => {
     const user1 = generateUser();
     const mockedChannel = generateChannelResponse({

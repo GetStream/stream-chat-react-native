@@ -175,6 +175,8 @@ export * from './MessageMenu/MessageReactionPicker';
 export * from './MessageMenu/utils/toUnicodeScalarString';
 export * from './MessageMenu/hooks/useFetchReactions';
 
+export * from './Notifications';
+
 export * from './ProgressControl/ProgressControl';
 export * from './ProgressControl/WaveProgressBar';
 export * from './ChannelDetailsScreen';
