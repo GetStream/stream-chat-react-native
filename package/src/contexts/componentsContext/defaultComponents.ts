@@ -29,6 +29,7 @@ import { AutoCompleteSuggestionList } from '../../components/AutoCompleteInput/A
 import { InputView } from '../../components/AutoCompleteInput/InputView';
 import { ChannelDetailsScreenContent } from '../../components/ChannelDetailsScreen/ChannelDetailsScreen';
 import {
+  ChannelAddMembers,
   ChannelDetailsActionsSection,
   ChannelDetailsListItem,
   ChannelDetailsMemberList,
@@ -296,6 +297,7 @@ const components = {
   ChannelDetailsHeader,
 
   // Channel Details Screen
+  ChannelAddMembers,
   ChannelDetailsActionsSection,
   ChannelDetailsListItem,
   ChannelDetailsMemberList,

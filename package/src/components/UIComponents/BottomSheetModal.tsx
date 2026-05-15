@@ -395,7 +395,16 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
   }, [visible, animateKeyboardOffset, keyboardDidHide, keyboardDidShowRN]);
 
   const sheetViewportAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: sheetTranslateY.value - keyboardOffset.value }],
+    // Shift the sheet up by the keyboard height, but never above the top of the
+    // safe area — otherwise the sheet header is pushed off-screen for fullscreen
+    // sheets. Any leftover keyboard height that can't be absorbed by the shift is
+    // applied as bottom padding to the inner content (see below) so a TextInput at
+    // the top stays visible and the list/content below it shrinks.
+    transform: [{ translateY: Math.max(0, sheetTranslateY.value - keyboardOffset.value) }],
+  }));
+
+  const contentContainerAnimatedStyle = useAnimatedStyle(() => ({
+    paddingBottom: Math.max(0, keyboardOffset.value - sheetTranslateY.value),
   }));
 
   const overlayAnimatedStyle = useAnimatedStyle(() => {
@@ -531,7 +540,9 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
             <GestureDetector gesture={panGesture}>
               <Animated.View style={[styles.container, { height: maxHeight }, container]}>
                 <View style={[styles.handle, handle]} />
-                <View style={[styles.contentContainer, contentContainer]}>
+                <Animated.View
+                  style={[styles.contentContainer, contentContainer, contentContainerAnimatedStyle]}
+                >
                   {renderContent ? (
                     <BottomSheetProvider value={bottomSheetModalContextValue}>
                       <Animated.View
@@ -551,7 +562,7 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
                       </Animated.View>
                     </BottomSheetProvider>
                   ) : null}
-                </View>
+                </Animated.View>
               </Animated.View>
             </GestureDetector>
           </Animated.View>

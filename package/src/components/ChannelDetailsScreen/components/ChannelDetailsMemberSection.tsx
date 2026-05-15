@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import type { UserResponse } from 'stream-chat';
+
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -8,6 +10,7 @@ import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesCont
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks/useStableCallback';
+import { Checkmark } from '../../../icons/checkmark-1';
 import { UserAdd } from '../../../icons/user-add';
 import { NewClose } from '../../../icons/xmark';
 import { primitives } from '../../../theme';
@@ -25,6 +28,7 @@ export const ChannelDetailsMemberSection = () => {
     theme: {
       channelDetailsScreen: {
         memberSection: {
+          confirmButton: confirmButtonOverride,
           footer: footerOverride,
           header: headerOverride,
           headerTitle: headerTitleOverride,
@@ -37,10 +41,14 @@ export const ChannelDetailsMemberSection = () => {
       semantics,
     },
   } = useTheme();
-  const { ChannelDetailsMemberList, ChannelDetailsMemberListItem } = useComponentsContext();
+  const { ChannelAddMembers, ChannelDetailsMemberList, ChannelDetailsMemberListItem } =
+    useComponentsContext();
   const { hasMore, total, visible } = useChannelDetailsMembersPreview(channel);
   const styles = useStyles();
   const [isMemberListVisible, setMemberListVisible] = useState(false);
+  const [isAddMembersVisible, setAddMembersVisible] = useState(false);
+  const [addMembersSelection, setAddMembersSelection] = useState<UserResponse[]>([]);
+  const [addingMembers, setAddingMembers] = useState(false);
 
   const handleViewAllPress = useStableCallback(() => {
     if (onViewAllMembersPress) {
@@ -52,9 +60,40 @@ export const ChannelDetailsMemberSection = () => {
 
   const handleMemberListClose = useStableCallback(() => setMemberListVisible(false));
 
-  const handleAddMembersPress = useStableCallback(() => {
-    onAddMembersPress?.();
+  const handleAddMembersClose = useStableCallback(() => {
+    setAddMembersVisible(false);
+    setAddMembersSelection([]);
   });
+
+  const handleAddMembersSelectionChange = useStableCallback((users: UserResponse[]) => {
+    setAddMembersSelection(users);
+  });
+
+  const handleAddMembersConfirm = useStableCallback(async () => {
+    if (!addMembersSelection.length || addingMembers) return;
+    setAddingMembers(true);
+    try {
+      await channel.addMembers(addMembersSelection.map((u) => u.id));
+      setAddMembersVisible(false);
+      setAddMembersSelection([]);
+    } catch (err) {
+      console.warn('[ChannelDetailsMemberSection] failed to add members', err);
+    } finally {
+      setAddingMembers(false);
+    }
+  });
+
+  const handleAddMembersPress = useStableCallback(() => {
+    if (onAddMembersPress) {
+      onAddMembersPress();
+      return;
+    }
+    setMemberListVisible(false);
+    setAddMembersSelection([]);
+    setAddMembersVisible(true);
+  });
+
+  const confirmEnabled = addMembersSelection.length > 0 && !addingMembers;
 
   return (
     <View
@@ -161,6 +200,65 @@ export const ChannelDetailsMemberSection = () => {
         </View>
         <ChannelDetailsMemberList />
       </BottomSheetModal>
+      <BottomSheetModal
+        height={windowHeight}
+        onClose={handleAddMembersClose}
+        visible={isAddMembersVisible}
+      >
+        <View style={[styles.modalHeader, modalHeaderOverride]}>
+          <View style={styles.modalHeaderSide}>
+            <Button
+              accessibilityLabelKey='a11y/Close'
+              iconOnly
+              LeadingIcon={NewClose}
+              onPress={handleAddMembersClose}
+              size='md'
+              type='outline'
+              variant='secondary'
+            />
+          </View>
+          <View style={styles.modalHeaderCenter}>
+            <Text
+              accessibilityRole='header'
+              numberOfLines={1}
+              style={[
+                styles.modalHeaderTitle,
+                { color: semantics.textPrimary },
+                modalHeaderTitleOverride,
+              ]}
+            >
+              {t('Add Members')}
+            </Text>
+          </View>
+          <View style={[styles.modalHeaderSide, styles.modalHeaderSideRight]}>
+            <Pressable
+              accessibilityLabel={t('a11y/Confirm add members')}
+              accessibilityRole='button'
+              accessibilityState={{ disabled: !confirmEnabled }}
+              disabled={!confirmEnabled}
+              onPress={handleAddMembersConfirm}
+              style={[
+                styles.confirmButton,
+                confirmEnabled
+                  ? { backgroundColor: semantics.accentPrimary }
+                  : {
+                      borderColor: semantics.borderCoreDefault,
+                      borderWidth: 1,
+                    },
+                confirmButtonOverride,
+              ]}
+              testID='channel-details-add-members-confirm-button'
+            >
+              <Checkmark
+                height={20}
+                pathFill={confirmEnabled ? semantics.textOnInverse : semantics.textSecondary}
+                width={20}
+              />
+            </Pressable>
+          </View>
+        </View>
+        <ChannelAddMembers channel={channel} onSelectionChange={handleAddMembersSelectionChange} />
+      </BottomSheetModal>
     </View>
   );
 };
@@ -224,6 +322,13 @@ const useStyles = () => {
           lineHeight: primitives.typographyLineHeightNormal,
           textTransform: 'capitalize',
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
+        },
+        confirmButton: {
+          alignItems: 'center',
+          borderRadius: 9999,
+          height: 40,
+          justifyContent: 'center',
+          width: 40,
         },
         sectionCard: {
           borderRadius: primitives.radiusLg,

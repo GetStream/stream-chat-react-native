@@ -204,6 +204,7 @@ export type Theme = {
       trailingValue: TextStyle;
     };
     memberSection: {
+      confirmButton: ViewStyle;
       footer: ViewStyle;
       header: ViewStyle;
       headerTitle: TextStyle;
@@ -215,6 +216,19 @@ export type Theme = {
       container: ViewStyle;
       name: TextStyle;
       status: TextStyle;
+    };
+    addMembers: {
+      emptyState: ViewStyle;
+      emptyStateText: TextStyle;
+      searchContainer: ViewStyle;
+      searchInput: ViewStyle;
+      searchInputFocused: ViewStyle;
+      searchTextInput: TextStyle;
+      selectionCircle: ViewStyle;
+      selectionCircleSelected: ViewStyle;
+      userName: TextStyle;
+      userRow: ViewStyle;
+      clearSearch: ViewStyle;
     };
   };
   channelListSkeleton: {
@@ -1176,6 +1190,7 @@ export const defaultTheme: Theme = {
       trailingValue: {},
     },
     memberSection: {
+      confirmButton: {},
       footer: {},
       header: {},
       headerTitle: {},
@@ -1187,6 +1202,18 @@ export const defaultTheme: Theme = {
       container: {},
       name: {},
       status: {},
+    },
+    addMembers: {
+      emptyState: {},
+      emptyStateText: {},
+      searchContainer: {},
+      searchInput: {},
+      searchInputFocused: {},
+      searchTextInput: {},
+      selectionCircle: {},
+      selectionCircleSelected: {},
+      userName: {},
+      userRow: {},
     },
   },
   channelListSkeleton: {

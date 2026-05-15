@@ -1,8 +1,8 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
-import { fireEvent, render, screen } from '@testing-library/react-native';
-import type { Channel, ChannelMemberResponse } from 'stream-chat';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import type { Channel, ChannelMemberResponse, UserResponse } from 'stream-chat';
 
 import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -19,13 +19,36 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
+import type { ChannelAddMembersProps } from '../components/ChannelAddMembers';
 import { ChannelDetailsMemberSection } from '../components/ChannelDetailsMemberSection';
 import * as useChannelDetailsMembersPreviewModule from '../hooks/useChannelDetailsMembersPreview';
 
 const MemberListProbe = () => <Text testID='member-list-probe'>full-member-list</Text>;
 
-const buildChannel = (members: ChannelMemberResponse[], memberCount?: number): Channel =>
+const AddMembersProbe = ({ onSelectionChange }: ChannelAddMembersProps) => (
+  <>
+    <Text testID='add-members-probe'>add-members</Text>
+    <Pressable
+      onPress={() =>
+        onSelectionChange([generateUser({ id: 'picked-1', name: 'Picked One' })] as UserResponse[])
+      }
+      testID='probe-select-one'
+    >
+      <Text>select one</Text>
+    </Pressable>
+    <Pressable onPress={() => onSelectionChange([])} testID='probe-clear-selection'>
+      <Text>clear</Text>
+    </Pressable>
+  </>
+);
+
+const buildChannel = (
+  members: ChannelMemberResponse[],
+  memberCount?: number,
+  overrides?: Partial<Channel>,
+): Channel =>
   ({
+    addMembers: jest.fn().mockResolvedValue(undefined),
     cid: 'messaging:test',
     data: { member_count: memberCount ?? members.length },
     on: () => ({ unsubscribe: () => undefined }),
@@ -34,6 +57,7 @@ const buildChannel = (members: ChannelMemberResponse[], memberCount?: number): C
         members.map((m) => [m.user?.id ?? m.user_id ?? '', m]).filter(([k]) => Boolean(k)),
       ),
     },
+    ...overrides,
   }) as unknown as Channel;
 
 const buildCapabilities = (
@@ -73,7 +97,12 @@ const renderSection = ({
               <ChannelDetailsContextProvider
                 value={{ channel, onAddMembersPress, onViewAllMembersPress }}
               >
-                <WithComponents overrides={{ ChannelDetailsMemberList: MemberListProbe }}>
+                <WithComponents
+                  overrides={{
+                    ChannelAddMembers: AddMembersProbe,
+                    ChannelDetailsMemberList: MemberListProbe,
+                  }}
+                >
                   <ChannelDetailsMemberSection />
                 </WithComponents>
               </ChannelDetailsContextProvider>
@@ -208,7 +237,7 @@ describe('ChannelDetailsMemberSection', () => {
     expect(onAddMembersPress).toHaveBeenCalledTimes(1);
   });
 
-  it('renders the modal add-members button as a no-op when onAddMembersPress is omitted', () => {
+  it('opens the Add-members sheet when the modal Add button is pressed and no onAddMembersPress override is provided', () => {
     previewSpy.mockReturnValue({ hasMore: true, total: 12, visible: makeMembers(5) });
     const channel = buildChannel(makeMembers(12), 12);
 
@@ -218,9 +247,125 @@ describe('ChannelDetailsMemberSection', () => {
     });
 
     fireEvent.press(screen.getByLabelText('View all'));
+    fireEvent.press(screen.getByTestId('channel-details-member-list-add-button'));
 
-    const addButton = screen.getByTestId('channel-details-member-list-add-button');
-    expect(addButton).toBeTruthy();
-    expect(() => fireEvent.press(addButton)).not.toThrow();
+    expect(screen.getByTestId('add-members-probe')).toBeTruthy();
+    // View-all sheet is dismissed when Add-members opens (swap, not stack).
+    expect(screen.queryByTestId('member-list-probe')).toBeNull();
+  });
+
+  it('opens the Add-members sheet when the preview Add is pressed and no onAddMembersPress override is provided', () => {
+    previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
+    const channel = buildChannel(makeMembers(3), 3);
+
+    renderSection({
+      capabilities: { updateChannelMembers: true },
+      channel,
+    });
+
+    expect(screen.queryByTestId('add-members-probe')).toBeNull();
+    fireEvent.press(screen.getByTestId('channel-details-member-section-add-button'));
+    expect(screen.getByTestId('add-members-probe')).toBeTruthy();
+  });
+
+  it('keeps the Add-members confirm button disabled until ChannelAddMembers reports a selection', () => {
+    previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
+    const channel = buildChannel(makeMembers(3), 3);
+
+    renderSection({
+      capabilities: { updateChannelMembers: true },
+      channel,
+    });
+
+    fireEvent.press(screen.getByTestId('channel-details-member-section-add-button'));
+    const confirm = screen.getByTestId('channel-details-add-members-confirm-button');
+    expect(confirm.props.accessibilityState).toMatchObject({ disabled: true });
+
+    fireEvent.press(screen.getByTestId('probe-select-one'));
+    expect(
+      screen.getByTestId('channel-details-add-members-confirm-button').props.accessibilityState,
+    ).toMatchObject({ disabled: false });
+
+    fireEvent.press(screen.getByTestId('probe-clear-selection'));
+    expect(
+      screen.getByTestId('channel-details-add-members-confirm-button').props.accessibilityState,
+    ).toMatchObject({ disabled: true });
+  });
+
+  it('calls channel.addMembers with the selected user ids and closes the sheet on confirm', async () => {
+    previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
+    const channel = buildChannel(makeMembers(3), 3);
+
+    renderSection({
+      capabilities: { updateChannelMembers: true },
+      channel,
+    });
+
+    fireEvent.press(screen.getByTestId('channel-details-member-section-add-button'));
+    fireEvent.press(screen.getByTestId('probe-select-one'));
+
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('channel-details-add-members-confirm-button'));
+      await Promise.resolve();
+    });
+
+    expect(channel.addMembers).toHaveBeenCalledWith(['picked-1']);
+    await waitFor(() => expect(screen.queryByTestId('add-members-probe')).toBeNull());
+  });
+
+  it('resets the selection when the Add-members sheet is closed via the X', () => {
+    previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
+    const channel = buildChannel(makeMembers(3), 3);
+
+    renderSection({
+      capabilities: { updateChannelMembers: true },
+      channel,
+    });
+
+    fireEvent.press(screen.getByTestId('channel-details-member-section-add-button'));
+    fireEvent.press(screen.getByTestId('probe-select-one'));
+    expect(
+      screen.getByTestId('channel-details-add-members-confirm-button').props.accessibilityState,
+    ).toMatchObject({ disabled: false });
+
+    // Two 'a11y/Close' labels render: one in the View-all modal header, one in the
+    // Add-members modal header. Both are mounted (the modal contents stay in the tree
+    // until their close animation finishes); grab the last one — the Add-members close.
+    const closes = screen.getAllByLabelText('a11y/Close');
+    fireEvent.press(closes[closes.length - 1]);
+
+    fireEvent.press(screen.getByTestId('channel-details-member-section-add-button'));
+    expect(
+      screen.getByTestId('channel-details-add-members-confirm-button').props.accessibilityState,
+    ).toMatchObject({ disabled: true });
+  });
+
+  it('keeps the Add-members sheet open and re-enables confirm when channel.addMembers rejects', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
+    const channel = buildChannel(makeMembers(3), 3, {
+      addMembers: jest.fn().mockRejectedValue(new Error('nope')),
+    } as Partial<Channel>);
+
+    renderSection({
+      capabilities: { updateChannelMembers: true },
+      channel,
+    });
+
+    fireEvent.press(screen.getByTestId('channel-details-member-section-add-button'));
+    fireEvent.press(screen.getByTestId('probe-select-one'));
+
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('channel-details-add-members-confirm-button'));
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(screen.getByTestId('add-members-probe')).toBeTruthy();
+    expect(
+      screen.getByTestId('channel-details-add-members-confirm-button').props.accessibilityState,
+    ).toMatchObject({ disabled: false });
+
+    warnSpy.mockRestore();
   });
 });

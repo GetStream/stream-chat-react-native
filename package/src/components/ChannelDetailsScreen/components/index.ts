@@ -1,3 +1,4 @@
+export * from './ChannelAddMembers';
 export * from './ChannelDetailsActionsSection';
 export * from './ChannelDetailsListItem';
 export * from './ChannelDetailsMemberList';
