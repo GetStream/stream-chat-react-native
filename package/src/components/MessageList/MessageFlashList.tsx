@@ -388,9 +388,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   useEffect(() => {
     if (autoscrollToRecent && flashListRef.current) {
-      flashListRef.current.scrollToEnd({
-        animated: true,
-      });
+      // TODO: Think of a better fix than commenting this out.
+      // flashListRef.current.scrollToEnd({
+      //   animated: true,
+      // });
     }
   }, [autoscrollToRecent]);
 
@@ -407,18 +408,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       setScrollToBottomButtonVisible(false);
     }
   }, [disabled]);
-
-  const indexToScrollToRef = useRef<number | undefined>(undefined);
-
-  const initialIndexToScrollTo = useMemo(() => {
-    return targetedMessage
-      ? processedMessageList.findIndex((message) => message?.id === targetedMessage)
-      : -1;
-  }, [processedMessageList, targetedMessage]);
-
-  useEffect(() => {
-    indexToScrollToRef.current = initialIndexToScrollTo;
-  }, [initialIndexToScrollTo]);
 
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
@@ -440,13 +429,60 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       scrollToDebounceTimeoutRef.current = setTimeout(() => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
-        // now scroll to it
-        flashListRef.current?.scrollToIndex({
+        const scrollToTargetOffset = () => {
+          const list = flashListRef.current;
+          const targetLayout = list?.getLayout(indexOfParentInMessageList);
+
+          if (!list || !targetLayout) {
+            return false;
+          }
+
+          const { height: windowHeight } = list.getWindowSize();
+          const firstItemOffset = list.getFirstItemOffset();
+          const maxOffset = Math.max(
+            0,
+            list.getChildContainerDimensions().height - windowHeight + firstItemOffset,
+          );
+          const centeredOffset =
+            targetLayout.y - (windowHeight - targetLayout.height) * 0.5 + firstItemOffset;
+          const offset = Math.min(Math.max(centeredOffset, 0), maxOffset);
+
+          list.scrollToOffset({
+            animated: true,
+            offset,
+            skipFirstItemOffset: true,
+          });
+
+          return true;
+        };
+
+        if (scrollToTargetOffset()) {
+          requestAnimationFrame(() => {
+            scrollToTargetOffset();
+            setTargetedMessage(undefined);
+          });
+          return;
+        }
+
+        const scrollToIndexPromise = flashListRef.current?.scrollToIndex({
           animated: true,
           index: indexOfParentInMessageList,
           viewPosition: 0.5,
         });
-        setTargetedMessage(undefined);
+
+        if (!scrollToIndexPromise) {
+          setTargetedMessage(undefined);
+          return;
+        }
+
+        scrollToIndexPromise
+          .then(() => {
+            setTargetedMessage(undefined);
+          })
+          .catch((e) => {
+            console.warn('Error while scrolling to message', e);
+            setTargetedMessage(undefined);
+          });
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
   }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
@@ -455,8 +491,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const indexOfParentInMessageList = processedMessageList.findIndex(
       (message) => message?.id === messageId,
     );
-
-    indexToScrollToRef.current = indexOfParentInMessageList;
 
     try {
       if (indexOfParentInMessageList === -1) {
@@ -529,7 +563,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       setScrollToBottomButtonVisible(true);
       return;
     } else {
-      indexToScrollToRef.current = undefined;
       setAutoscrollToRecent(true);
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
@@ -1064,9 +1097,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             data={processedMessageList}
             drawDistance={800}
             getItemType={getItemTypeInternal}
-            initialScrollIndex={
-              indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
-            }
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
             ListFooterComponent={ListFooterComponent}
