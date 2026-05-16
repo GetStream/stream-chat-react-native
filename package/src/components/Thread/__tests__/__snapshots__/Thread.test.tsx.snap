@@ -506,7 +506,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                         {
                                           "borderTopLeftRadius": 20,
                                           "borderTopRightRadius": 20,
-                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#ebeef1",
@@ -849,7 +848,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                         {
                                           "borderTopLeftRadius": 20,
                                           "borderTopRightRadius": 20,
-                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#ebeef1",
@@ -1225,7 +1223,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                         {
                                           "borderTopLeftRadius": 20,
                                           "borderTopRightRadius": 20,
-                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#ebeef1",
@@ -1559,7 +1556,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                       {
                                         "borderTopLeftRadius": 20,
                                         "borderTopRightRadius": 20,
-                                        "overflow": "hidden",
                                       },
                                       {
                                         "backgroundColor": "#ebeef1",
