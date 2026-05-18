@@ -48,10 +48,7 @@ export const useChannelAddMembers = ({
     return ids;
   }, [members, client.userID]);
 
-  // Keep a stable reference to the latest excludedIds so fetchPage doesn't churn
-  // whenever channel.state.members mutates (every realtime event creates a new
-  // reference). Churning fetchPage churns debouncedFetchQuery, which lets stale
-  // pending debounces fire after we've moved on.
+  // Avoid fetchPage churning whenever channel.state.members mutates.
   const excludedIdsRef = useRef(excludedIds);
   excludedIdsRef.current = excludedIds;
 

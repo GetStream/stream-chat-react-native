@@ -21,26 +21,208 @@ import { Button } from '../../ui/Button/Button';
 import { BottomSheetModal } from '../../UIComponents/BottomSheetModal';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
-export const ChannelDetailsMemberSection = () => {
-  const { channel, onAddMembersPress, onViewAllMembersPress } = useChannelDetailsContext();
-  const { client } = useChatContext();
-  const { t } = useTranslationContext();
-  const { addMembers } = useChannelActions(channel);
-  const { updateChannelMembers } = useOwnCapabilitiesContext();
-  const { height: windowHeight } = useWindowDimensions();
-  const addMembersNotificationHostId = channel?.cid
-    ? `channel-add-members:${channel.cid}`
-    : undefined;
+type ModalHeaderProps = {
+  onClose: () => void;
+  title: string;
+  rightAction?: React.ReactNode;
+};
+
+const ModalHeader = ({ onClose, rightAction, title }: ModalHeaderProps) => {
   const {
     theme: {
       channelDetailsScreen: {
         memberSection: {
-          confirmButton: confirmButtonOverride,
+          modalHeader: modalHeaderOverride,
+          modalHeaderTitle: modalHeaderTitleOverride,
+        },
+      },
+      semantics,
+    },
+  } = useTheme();
+  const styles = useStyles();
+
+  return (
+    <View style={[styles.modalHeader, modalHeaderOverride]}>
+      <View style={styles.modalHeaderSide}>
+        <Button
+          accessibilityLabelKey='a11y/Close'
+          iconOnly
+          LeadingIcon={NewClose}
+          onPress={onClose}
+          size='md'
+          type='outline'
+          variant='secondary'
+        />
+      </View>
+      <View style={styles.modalHeaderCenter}>
+        <Text
+          accessibilityRole='header'
+          numberOfLines={1}
+          style={[
+            styles.modalHeaderTitle,
+            { color: semantics.textPrimary },
+            modalHeaderTitleOverride,
+          ]}
+        >
+          {title}
+        </Text>
+      </View>
+      <View style={[styles.modalHeaderSide, styles.modalHeaderSideRight]}>{rightAction}</View>
+    </View>
+  );
+};
+
+type ChannelAllMembersModalProps = {
+  onAddMembersPress: () => void;
+  onClose: () => void;
+  visible: boolean;
+};
+
+const ChannelAllMembersModal = ({
+  onAddMembersPress,
+  onClose,
+  visible,
+}: ChannelAllMembersModalProps) => {
+  const { channel } = useChannelDetailsContext();
+  const { ChannelDetailsMemberList } = useComponentsContext();
+  const { t } = useTranslationContext();
+  const { updateChannelMembers } = useOwnCapabilitiesContext();
+  const { height: windowHeight } = useWindowDimensions();
+  const { total } = useChannelDetailsMembersPreview(channel);
+
+  return (
+    <BottomSheetModal height={windowHeight} onClose={onClose} visible={visible}>
+      <ModalHeader
+        onClose={onClose}
+        rightAction={
+          updateChannelMembers ? (
+            <Button
+              accessibilityLabelKey='a11y/Add members'
+              iconOnly
+              LeadingIcon={UserAdd}
+              onPress={onAddMembersPress}
+              size='md'
+              testID='channel-details-member-list-add-button'
+              type='outline'
+              variant='secondary'
+            />
+          ) : null
+        }
+        title={t('{{count}} members', { count: total })}
+      />
+      <ChannelDetailsMemberList />
+    </BottomSheetModal>
+  );
+};
+
+type ChannelAddMembersModalProps = {
+  onClose: () => void;
+  visible: boolean;
+};
+
+const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProps) => {
+  const { channel } = useChannelDetailsContext();
+  const { addMembers } = useChannelActions(channel);
+  const { ChannelAddMembers } = useComponentsContext();
+  const { t } = useTranslationContext();
+  const { height: windowHeight } = useWindowDimensions();
+  const styles = useStyles();
+  const {
+    theme: {
+      channelDetailsScreen: {
+        memberSection: { confirmButton: confirmButtonOverride },
+      },
+      semantics,
+    },
+  } = useTheme();
+  const [addMembersSelection, setAddMembersSelection] = useState<UserResponse[]>([]);
+  const [addingMembers, setAddingMembers] = useState(false);
+  const confirmEnabled = addMembersSelection.length > 0 && !addingMembers;
+  const notificationHostId = channel?.cid ? `channel-add-members:${channel.cid}` : undefined;
+
+  const handleClose = useStableCallback(() => {
+    setAddMembersSelection([]);
+    onClose();
+  });
+
+  const handleSelectionChange = useStableCallback((users: UserResponse[]) => {
+    setAddMembersSelection(users);
+  });
+
+  const handleConfirm = useStableCallback(async () => {
+    if (!addMembersSelection.length || addingMembers) return;
+    setAddingMembers(true);
+    try {
+      await addMembers(
+        addMembersSelection.map((u) => u.id),
+        {
+          onSuccess: () => {
+            setAddMembersSelection([]);
+            onClose();
+          },
+        },
+      );
+    } finally {
+      setAddingMembers(false);
+    }
+  });
+
+  return (
+    <BottomSheetModal height={windowHeight} onClose={handleClose} visible={visible}>
+      {notificationHostId ? (
+        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+          <View style={styles.modalBody}>
+            <ModalHeader
+              onClose={handleClose}
+              rightAction={
+                <Pressable
+                  accessibilityLabel={t('a11y/Confirm add members')}
+                  accessibilityRole='button'
+                  accessibilityState={{ disabled: !confirmEnabled }}
+                  disabled={!confirmEnabled}
+                  onPress={handleConfirm}
+                  style={[
+                    styles.confirmButton,
+                    confirmEnabled
+                      ? { backgroundColor: semantics.accentPrimary }
+                      : {
+                          borderColor: semantics.borderCoreDefault,
+                          borderWidth: 1,
+                        },
+                    confirmButtonOverride,
+                  ]}
+                  testID='channel-details-add-members-confirm-button'
+                >
+                  <Checkmark
+                    height={20}
+                    pathFill={confirmEnabled ? semantics.textOnInverse : semantics.textSecondary}
+                    width={20}
+                  />
+                </Pressable>
+              }
+              title={t('Add Members')}
+            />
+            <ChannelAddMembers onSelectionChange={handleSelectionChange} />
+            <NotificationList />
+          </View>
+        </NotificationTargetProvider>
+      ) : null}
+    </BottomSheetModal>
+  );
+};
+
+export const ChannelDetailsMemberSection = () => {
+  const { channel, onAddMembersPress, onViewAllMembersPress } = useChannelDetailsContext();
+  const { client } = useChatContext();
+  const { t } = useTranslationContext();
+  const { updateChannelMembers } = useOwnCapabilitiesContext();
+  const {
+    theme: {
+      channelDetailsScreen: {
+        memberSection: {
           footer: footerOverride,
           header: headerOverride,
           headerTitle: headerTitleOverride,
-          modalHeader: modalHeaderOverride,
-          modalHeaderTitle: modalHeaderTitleOverride,
           viewAllLabel: viewAllLabelOverride,
         },
         sectionCard: sectionCardOverride,
@@ -48,14 +230,11 @@ export const ChannelDetailsMemberSection = () => {
       semantics,
     },
   } = useTheme();
-  const { ChannelAddMembers, ChannelDetailsMemberList, ChannelDetailsMemberListItem } =
-    useComponentsContext();
+  const { ChannelDetailsMemberListItem } = useComponentsContext();
   const { hasMore, total, visible } = useChannelDetailsMembersPreview(channel);
   const styles = useStyles();
   const [isMemberListVisible, setMemberListVisible] = useState(false);
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
-  const [addMembersSelection, setAddMembersSelection] = useState<UserResponse[]>([]);
-  const [addingMembers, setAddingMembers] = useState(false);
 
   const handleViewAllPress = useStableCallback(() => {
     if (onViewAllMembersPress) {
@@ -67,32 +246,7 @@ export const ChannelDetailsMemberSection = () => {
 
   const handleMemberListClose = useStableCallback(() => setMemberListVisible(false));
 
-  const handleAddMembersClose = useStableCallback(() => {
-    setAddMembersVisible(false);
-    setAddMembersSelection([]);
-  });
-
-  const handleAddMembersSelectionChange = useStableCallback((users: UserResponse[]) => {
-    setAddMembersSelection(users);
-  });
-
-  const handleAddMembersConfirm = useStableCallback(async () => {
-    if (!addMembersSelection.length || addingMembers) return;
-    setAddingMembers(true);
-    try {
-      await addMembers(
-        addMembersSelection.map((u) => u.id),
-        {
-          onSuccess: () => {
-            setAddMembersVisible(false);
-            setAddMembersSelection([]);
-          },
-        },
-      );
-    } finally {
-      setAddingMembers(false);
-    }
-  });
+  const handleAddMembersClose = useStableCallback(() => setAddMembersVisible(false));
 
   const handleAddMembersPress = useStableCallback(() => {
     if (onAddMembersPress) {
@@ -100,11 +254,8 @@ export const ChannelDetailsMemberSection = () => {
       return;
     }
     setMemberListVisible(false);
-    setAddMembersSelection([]);
     setAddMembersVisible(true);
   });
-
-  const confirmEnabled = addMembersSelection.length > 0 && !addingMembers;
 
   return (
     <View
@@ -164,119 +315,12 @@ export const ChannelDetailsMemberSection = () => {
           </View>
         </Pressable>
       ) : null}
-      <BottomSheetModal
-        height={windowHeight}
+      <ChannelAllMembersModal
+        onAddMembersPress={handleAddMembersPress}
         onClose={handleMemberListClose}
         visible={isMemberListVisible}
-      >
-        <View style={[styles.modalHeader, modalHeaderOverride]}>
-          <View style={styles.modalHeaderSide}>
-            <Button
-              accessibilityLabelKey='a11y/Close'
-              iconOnly
-              LeadingIcon={NewClose}
-              onPress={handleMemberListClose}
-              size='md'
-              type='outline'
-              variant='secondary'
-            />
-          </View>
-          <View style={styles.modalHeaderCenter}>
-            <Text
-              accessibilityRole='header'
-              numberOfLines={1}
-              style={[
-                styles.modalHeaderTitle,
-                { color: semantics.textPrimary },
-                modalHeaderTitleOverride,
-              ]}
-            >
-              {t('{{count}} members', { count: total })}
-            </Text>
-          </View>
-          <View style={[styles.modalHeaderSide, styles.modalHeaderSideRight]}>
-            {updateChannelMembers ? (
-              <Button
-                accessibilityLabelKey='a11y/Add members'
-                iconOnly
-                LeadingIcon={UserAdd}
-                onPress={handleAddMembersPress}
-                size='md'
-                testID='channel-details-member-list-add-button'
-                type='outline'
-                variant='secondary'
-              />
-            ) : null}
-          </View>
-        </View>
-        <ChannelDetailsMemberList />
-      </BottomSheetModal>
-      <BottomSheetModal
-        height={windowHeight}
-        onClose={handleAddMembersClose}
-        visible={isAddMembersVisible}
-      >
-        {addMembersNotificationHostId ? (
-          <NotificationTargetProvider hostId={addMembersNotificationHostId} panel='channel-details'>
-            <View style={styles.modalBody}>
-              <View style={[styles.modalHeader, modalHeaderOverride]}>
-                <View style={styles.modalHeaderSide}>
-                  <Button
-                    accessibilityLabelKey='a11y/Close'
-                    iconOnly
-                    LeadingIcon={NewClose}
-                    onPress={handleAddMembersClose}
-                    size='md'
-                    type='outline'
-                    variant='secondary'
-                  />
-                </View>
-                <View style={styles.modalHeaderCenter}>
-                  <Text
-                    accessibilityRole='header'
-                    numberOfLines={1}
-                    style={[
-                      styles.modalHeaderTitle,
-                      { color: semantics.textPrimary },
-                      modalHeaderTitleOverride,
-                    ]}
-                  >
-                    {t('Add Members')}
-                  </Text>
-                </View>
-                <View style={[styles.modalHeaderSide, styles.modalHeaderSideRight]}>
-                  <Pressable
-                    accessibilityLabel={t('a11y/Confirm add members')}
-                    accessibilityRole='button'
-                    accessibilityState={{ disabled: !confirmEnabled }}
-                    disabled={!confirmEnabled}
-                    onPress={handleAddMembersConfirm}
-                    style={[
-                      styles.confirmButton,
-                      confirmEnabled
-                        ? { backgroundColor: semantics.accentPrimary }
-                        : {
-                            borderColor: semantics.borderCoreDefault,
-                            borderWidth: 1,
-                          },
-                      confirmButtonOverride,
-                    ]}
-                    testID='channel-details-add-members-confirm-button'
-                  >
-                    <Checkmark
-                      height={20}
-                      pathFill={confirmEnabled ? semantics.textOnInverse : semantics.textSecondary}
-                      width={20}
-                    />
-                  </Pressable>
-                </View>
-              </View>
-              <ChannelAddMembers onSelectionChange={handleAddMembersSelectionChange} />
-              <NotificationList />
-            </View>
-          </NotificationTargetProvider>
-        ) : null}
-      </BottomSheetModal>
+      />
+      <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
     </View>
   );
 };
