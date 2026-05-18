@@ -101,8 +101,9 @@ describe('ChannelDetailsMemberList', () => {
 
     expect(mockStreamBottomSheetModalFlatList).toHaveBeenCalled();
     const props = mockStreamBottomSheetModalFlatList.mock.calls[0]?.[0];
-    expect(props.data).toHaveLength(2);
-    expect(props.data?.map((m) => m.user?.id)).toEqual(['alice', 'bob']);
+    const data = props.data as ChannelMemberResponse[];
+    expect(data).toHaveLength(2);
+    expect(data.map((m) => m.user?.id)).toEqual(['alice', 'bob']);
     expect(typeof props.renderItem).toBe('function');
     expect(typeof props.keyExtractor).toBe('function');
   });
@@ -125,7 +126,10 @@ describe('ChannelDetailsMemberList', () => {
 
     renderList({ channel, currentUserId: 'alice' });
 
-    const { data, renderItem } = mockStreamBottomSheetModalFlatList.mock.calls[0]?.[0] ?? {};
+    const { data: dataArray, renderItem } =
+      mockStreamBottomSheetModalFlatList.mock.calls[0]?.[0] ?? {};
+    const data = dataArray as ChannelMemberResponse[];
+
     expect(data).toHaveLength(2);
 
     data?.forEach((member, index) => {
