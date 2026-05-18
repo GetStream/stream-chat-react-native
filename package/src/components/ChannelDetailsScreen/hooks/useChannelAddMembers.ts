@@ -9,7 +9,7 @@ import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMember
 const PAGE_SIZE = 10;
 const DEBOUNCE_MS = 200;
 
-export type UseChannelAddMembersUsersResult = {
+export type UseChannelAddMembersResult = {
   clearSearch: () => void;
   hasMore: boolean;
   isSelected: (userId: string) => boolean;
@@ -23,11 +23,11 @@ export type UseChannelAddMembersUsersResult = {
   toggleUser: (user: UserResponse) => void;
 };
 
-export const useChannelAddMembersUsers = ({
+export const useChannelAddMembers = ({
   channel,
 }: {
   channel: Channel;
-}): UseChannelAddMembersUsersResult => {
+}): UseChannelAddMembersResult => {
   const { client } = useChatContext();
 
   const [searchText, setSearchText] = useState('');
@@ -96,7 +96,7 @@ export const useChannelAddMembersUsers = ({
         }
       } catch (err) {
         if (requestId !== requestIdRef.current) return;
-        console.warn('[useChannelAddMembersUsers] queryUsers failed', err);
+        console.warn('[useChannelAddMembers] queryUsers failed', err);
       } finally {
         if (requestId === requestIdRef.current) {
           inFlightRef.current = false;

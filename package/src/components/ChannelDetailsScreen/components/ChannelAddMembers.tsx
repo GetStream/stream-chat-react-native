@@ -24,7 +24,7 @@ import { NewClose } from '../../../icons/xmark';
 import { primitives } from '../../../theme';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
-import { useChannelAddMembersUsers } from '../hooks/useChannelAddMembersUsers';
+import { useChannelAddMembers } from '../hooks/useChannelAddMembers';
 
 export type ChannelAddMembersProps = {
   /**
@@ -209,7 +209,7 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
     searchText,
     selectedUsers,
     toggleUser,
-  } = useChannelAddMembersUsers({ channel });
+  } = useChannelAddMembers({ channel });
 
   const [searchFocused, setSearchFocused] = useState(false);
 
