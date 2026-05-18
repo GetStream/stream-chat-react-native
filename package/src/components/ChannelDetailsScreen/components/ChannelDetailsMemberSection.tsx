@@ -390,7 +390,7 @@ const useStyles = () => {
         },
         confirmButton: {
           alignItems: 'center',
-          borderRadius: 9999,
+          borderRadius: primitives.radiusMax,
           height: 40,
           justifyContent: 'center',
           width: 40,

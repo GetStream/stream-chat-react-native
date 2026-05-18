@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -98,6 +98,7 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
       }),
     [insets.top],

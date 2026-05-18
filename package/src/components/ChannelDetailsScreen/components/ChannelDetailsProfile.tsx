@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -93,6 +93,7 @@ const useStyles = () => {
           fontWeight: primitives.typographyFontWeightRegular,
           lineHeight: primitives.typographyLineHeightNormal,
           textAlign: 'center',
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
         title: {
           flexShrink: 1,
@@ -100,6 +101,7 @@ const useStyles = () => {
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightRelaxed,
           textAlign: 'center',
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
         titleRow: {
           alignItems: 'center',
