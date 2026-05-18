@@ -7,19 +7,25 @@ import { useStableCallback } from './useStableCallback';
 import { useNotificationApi } from '../components/Notifications/hooks';
 import { useChatContext, useTranslationContext } from '../contexts';
 
+export type ChannelActionOptions = {
+  onSuccess?: () => unknown;
+};
+
+export type ChannelActionHandler = (options?: ChannelActionOptions) => Promise<void>;
+
 export type ChannelActions = {
-  archive: () => Promise<void>;
-  deleteChannel: () => Promise<void>;
-  leave: () => Promise<void>;
-  pin: () => Promise<void>;
-  unarchive: () => Promise<void>;
-  unpin: () => Promise<void>;
-  muteUser: () => Promise<void>;
-  unmuteUser: () => Promise<void>;
-  muteChannel: () => Promise<void>;
-  unmuteChannel: () => Promise<void>;
-  blockUser: () => Promise<void>;
-  unblockUser: () => Promise<void>;
+  archive: ChannelActionHandler;
+  deleteChannel: ChannelActionHandler;
+  leave: ChannelActionHandler;
+  pin: ChannelActionHandler;
+  unarchive: ChannelActionHandler;
+  unpin: ChannelActionHandler;
+  muteUser: ChannelActionHandler;
+  unmuteUser: ChannelActionHandler;
+  muteChannel: ChannelActionHandler;
+  unmuteChannel: ChannelActionHandler;
+  blockUser: ChannelActionHandler;
+  unblockUser: ChannelActionHandler;
 };
 
 export const getOtherUserInDirectChannel = (channel: Channel) => {
@@ -39,7 +45,7 @@ const getNotificationError = (error: unknown): Error | undefined => {
   return undefined;
 };
 
-const getNotificationErrorOptions = (error: unknown) => {
+export const getNotificationErrorOptions = (error: unknown) => {
   const originalError = getNotificationError(error);
   return originalError ? { originalError } : {};
 };
@@ -50,7 +56,7 @@ export const useChannelActions = (channel: Channel) => {
   const { t } = useTranslationContext();
   const ownUserId = client.userID;
 
-  const pin = useStableCallback(async () => {
+  const pin = useStableCallback(async (options?: ChannelActionOptions) => {
     try {
       if (!channel) {
         return;
@@ -61,6 +67,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:pin:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      await options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel pinned status'),
@@ -74,7 +81,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const unpin = useStableCallback(async () => {
+  const unpin = useStableCallback(async (options?: ChannelActionOptions) => {
     try {
       if (!channel) {
         return;
@@ -85,6 +92,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:unpin:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      await options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel pinned status'),
@@ -98,7 +106,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const archive = useStableCallback(async () => {
+  const archive = useStableCallback(async (options?: ChannelActionOptions) => {
     try {
       if (!channel) {
         return;
@@ -109,6 +117,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:archive:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      await options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel archive status'),
@@ -122,7 +131,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const unarchive = useStableCallback(async () => {
+  const unarchive = useStableCallback(async (options?: ChannelActionOptions) => {
     try {
       if (!channel) {
         return;
@@ -133,6 +142,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:unarchive:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      await options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel archive status'),
@@ -146,7 +156,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const leave = useStableCallback(async () => {
+  const leave = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
     }
@@ -158,6 +168,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:channel:leave:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
+        await options?.onSuccess?.();
       } catch (error) {
         addNotification({
           message: t('Failed to leave channel'),
@@ -172,19 +183,33 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const deleteChannel = useStableCallback(async () => {
+  const deleteChannel = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
     }
 
     try {
       await channel.delete();
+      addNotification({
+        message: t('Channel deleted'),
+        options: { severity: 'success', type: 'api:channel:delete:success' },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
+      await options?.onSuccess?.();
     } catch (error) {
-      console.log('Error deleting channel', error);
+      addNotification({
+        message: t('Failed to delete channel'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:channel:delete:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
     }
   });
 
-  const muteUser = useStableCallback(async () => {
+  const muteUser = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
     }
@@ -201,6 +226,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:user:mute:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
+        await options?.onSuccess?.();
       }
     } catch (error) {
       addNotification({
@@ -215,7 +241,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const unmuteUser = useStableCallback(async () => {
+  const unmuteUser = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
     }
@@ -232,6 +258,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:user:unmute:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
+        await options?.onSuccess?.();
       }
     } catch (error) {
       addNotification({
@@ -246,7 +273,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const muteChannel = useStableCallback(async () => {
+  const muteChannel = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
     }
@@ -258,6 +285,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:mute:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      await options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel mute status'),
@@ -271,7 +299,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const unmuteChannel = useStableCallback(async () => {
+  const unmuteChannel = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
     }
@@ -283,6 +311,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:unmute:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      await options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel mute status'),
@@ -296,7 +325,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const blockUser = useStableCallback(async () => {
+  const blockUser = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
     }
@@ -311,6 +340,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:user:block:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
+        await options?.onSuccess?.();
       }
     } catch (error) {
       addNotification({
@@ -325,7 +355,7 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
-  const unblockUser = useStableCallback(async () => {
+  const unblockUser = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
     }
@@ -340,6 +370,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:user:unblock:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
+        await options?.onSuccess?.();
       }
     } catch (error) {
       addNotification({

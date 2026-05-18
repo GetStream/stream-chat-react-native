@@ -12,6 +12,8 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
+import { NotificationList } from '../Notifications/NotificationList';
+import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 export type ChannelDetailsScreenProps = {
   channel: Channel;
@@ -64,6 +66,7 @@ export const ChannelDetailsScreenContent = () => {
         {isDirect ? null : <ChannelDetailsMemberSection />}
         <ChannelDetailsActionsSection />
       </ScrollView>
+      <NotificationList />
     </View>
   );
 };
@@ -82,10 +85,17 @@ export const ChannelDetailsScreen = ({
     [channel, onAddMembersPress, onBack, onChannelDismiss, onViewAllMembersPress],
   );
   const Content = ChannelDetailsScreenContentOverride ?? ChannelDetailsScreenContent;
+  const notificationHostId = channel?.cid ? `channel-details:${channel.cid}` : undefined;
 
   return (
     <ChannelDetailsContextProvider value={value}>
-      <Content />
+      {notificationHostId ? (
+        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+          <Content />
+        </NotificationTargetProvider>
+      ) : (
+        <Content />
+      )}
     </ChannelDetailsContextProvider>
   );
 };

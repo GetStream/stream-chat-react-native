@@ -1,17 +1,38 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Text } from 'react-native';
 
 import { render, screen } from '@testing-library/react-native';
+import { NotificationManager } from 'stream-chat';
 import type { Channel } from 'stream-chat';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChatContext } from '../../../contexts/chatContext/ChatContext';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
 import { ChannelDetailsScreen } from '../ChannelDetailsScreen';
+
+const Providers = ({ children }: PropsWithChildren) => (
+  <ThemeProvider theme={defaultTheme}>
+    <TranslationProvider
+      value={{
+        t: ((key: string) => key) as never,
+        tDateTimeParser: ((input: unknown) => input) as never,
+        userLanguage: 'en',
+      }}
+    >
+      <ChatContext.Provider
+        value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
+      >
+        {children}
+      </ChatContext.Provider>
+    </TranslationProvider>
+  </ThemeProvider>
+);
 
 const HeaderProbe = () => <Text testID='probe-header'>HEADER</Text>;
 const ProfileProbe = () => <Text testID='probe-profile'>PROFILE</Text>;
@@ -35,11 +56,11 @@ const channel = {
 
 const renderContent = () =>
   render(
-    <ThemeProvider theme={defaultTheme}>
+    <Providers>
       <WithComponents overrides={SECTION_OVERRIDES}>
         <ChannelDetailsScreen channel={channel} />
       </WithComponents>
-    </ThemeProvider>,
+    </Providers>,
   );
 
 describe('ChannelDetailsScreenContent', () => {
@@ -94,7 +115,7 @@ describe('ChannelDetailsScreen', () => {
       };
 
       render(
-        <ThemeProvider theme={defaultTheme}>
+        <Providers>
           <WithComponents
             overrides={{
               ...SECTION_OVERRIDES,
@@ -107,7 +128,7 @@ describe('ChannelDetailsScreen', () => {
               onChannelDismiss={onChannelDismiss}
             />
           </WithComponents>
-        </ThemeProvider>,
+        </Providers>,
       );
 
       expect(captured).toBeDefined();
@@ -132,7 +153,7 @@ describe('ChannelDetailsScreen', () => {
       };
 
       render(
-        <ThemeProvider theme={defaultTheme}>
+        <Providers>
           <WithComponents
             overrides={{
               ...SECTION_OVERRIDES,
@@ -141,7 +162,7 @@ describe('ChannelDetailsScreen', () => {
           >
             <ChannelDetailsScreen channel={channelWithCapabilities} />
           </WithComponents>
-        </ThemeProvider>,
+        </Providers>,
       );
 
       expect(captured).toBeDefined();
@@ -159,7 +180,7 @@ describe('ChannelDetailsScreen', () => {
     it('renders the override instead of the default content', () => {
       const Override = () => <Text testID='custom-content'>CUSTOM</Text>;
       render(
-        <ThemeProvider theme={defaultTheme}>
+        <Providers>
           <WithComponents
             overrides={{
               ...SECTION_OVERRIDES,
@@ -168,7 +189,7 @@ describe('ChannelDetailsScreen', () => {
           >
             <ChannelDetailsScreen channel={channel} />
           </WithComponents>
-        </ThemeProvider>,
+        </Providers>,
       );
 
       expect(screen.getByTestId('custom-content')).toBeTruthy();
@@ -184,11 +205,11 @@ describe('ChannelDetailsScreen', () => {
       // Note: re-export the default Content via the override map so we can prove it
       // wasn't swapped out — the section probes from SECTION_OVERRIDES should appear.
       render(
-        <ThemeProvider theme={defaultTheme}>
+        <Providers>
           <WithComponents overrides={SECTION_OVERRIDES}>
             <ChannelDetailsScreen channel={channel} />
           </WithComponents>
-        </ThemeProvider>,
+        </Providers>,
       );
       expect(screen.getByTestId('probe-header')).toBeTruthy();
       expect(screen.getByTestId('probe-actions')).toBeTruthy();

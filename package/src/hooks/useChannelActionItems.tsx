@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 import type { BlockedUsersState, Channel } from 'stream-chat';
 
 import {
+  ChannelActionHandler,
   ChannelActions,
   getOtherUserInDirectChannel,
   useChannelActions,
@@ -17,8 +18,6 @@ import { useTheme, useTranslationContext } from '../contexts';
 import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
 import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';
 import { ArrowBoxLeft } from '../icons/leave';
-
-export type ChannelActionHandler = () => Promise<void> | void;
 
 export type ChannelActionItem = {
   action: ChannelActionHandler;
@@ -133,7 +132,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 
   if (channel.data?.created_by?.id === ownUserId) {
     actionItems.push({
-      action: () => {
+      action: (options) => {
         const title = isDirectChat ? t('Delete chat') : t('Delete group');
         const message = isDirectChat
           ? t("Are you sure you want to delete this chat? This can't be undone.")
@@ -146,12 +145,14 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
           },
           {
             onPress: async () => {
-              await deleteChannel();
+              await deleteChannel(options);
             },
             style: 'destructive',
             text: t('Delete'),
           },
         ]);
+
+        return Promise.resolve();
       },
       Icon: (props) => <ChannelActionsIcon Icon={Delete} {...props} />,
       id: 'deleteChannel',

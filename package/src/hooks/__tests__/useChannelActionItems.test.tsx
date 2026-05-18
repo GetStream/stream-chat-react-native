@@ -106,6 +106,17 @@ describe('useChannelActionItems', () => {
     expect(result.current.map((item) => item.placement)).toEqual(['swipe', 'sheet', 'sheet']);
   });
 
+  it('forwards options from item.action to the underlying channel action', async () => {
+    const { result } = renderHook(() => useChannelActionItems({ channel }));
+
+    const muteItem = result.current.find((item) => item.id === 'mute');
+    expect(muteItem).toBeDefined();
+    const onSuccess = jest.fn();
+    await muteItem?.action({ onSuccess });
+
+    expect(channelActions.muteChannel).toHaveBeenCalledWith({ onSuccess });
+  });
+
   it('uses custom getChannelActionItems with context and defaultItems when provided', () => {
     const customGetChannelActionItems = jest.fn(
       ({ defaultItems }: Parameters<GetChannelActionItems>[0]) => defaultItems.slice(0, 1),
@@ -264,7 +275,8 @@ describe('getChannelActionItems', () => {
 
     const deleteItem = actionItems.find((item) => item.id === 'deleteChannel');
     expect(deleteItem).toBeDefined();
-    deleteItem?.action();
+    const onSuccess = jest.fn();
+    await deleteItem?.action({ onSuccess });
 
     expect(alertSpy).toHaveBeenCalledWith(
       'Delete group',
@@ -278,6 +290,7 @@ describe('getChannelActionItems', () => {
     expect(destructiveButton?.text).toBe('Delete');
     await destructiveButton?.onPress?.();
     expect(channelActions.deleteChannel).toHaveBeenCalledTimes(1);
+    expect(channelActions.deleteChannel).toHaveBeenCalledWith({ onSuccess });
 
     alertSpy.mockRestore();
   });

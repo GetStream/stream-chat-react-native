@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, Text } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { NotificationManager } from 'stream-chat';
 import type { Channel, ChannelMemberResponse, UserResponse } from 'stream-chat';
 
 import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
@@ -95,7 +96,9 @@ const renderSection = ({
             userLanguage: 'en',
           }}
         >
-          <ChatContext.Provider value={{ client: { userID: 'me' } } as never}>
+          <ChatContext.Provider
+            value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
+          >
             <ChannelDetailsContextProvider
               value={{
                 channel: applyCapabilities(channel, capabilities),

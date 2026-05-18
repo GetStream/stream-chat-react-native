@@ -1233,6 +1233,7 @@ export const defaultTheme: Theme = {
       selectionCircleSelected: {},
       userName: {},
       userRow: {},
+      clearSearch: {},
     },
   },
   channelListSkeleton: {
