@@ -1,28 +1,36 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
+import { FlatList } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
+import { BottomSheetContext } from '../../../contexts/bottomSheetContext/BottomSheetContext';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../../../contexts/utils/defaultBaseContextValue';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 
 const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? member.user_id ?? '';
 
 /**
- * Renders the full list of channel members inside the channel-details bottom sheet.
+ * Renders the full list of channel members.
  *
- * Reads `channel` from `ChannelDetailsContext` and the current user from `ChatContext`,
- * then defers each row to `ChannelDetailsMemberListItem` (resolved via the components
- * context so it remains overridable). Uses `StreamBottomSheetModalFlatList` so scroll
- * is correctly handed off between the list and the surrounding bottom sheet.
+ * Auto-detects whether a `BottomSheetProvider` is mounted above it: when rendered
+ * inside a bottom sheet (the default `ChannelDetailsMemberSection` path), uses
+ * `StreamBottomSheetModalFlatList` so scroll is correctly handed off between the
+ * list and the surrounding sheet. When rendered standalone (e.g. inside a
+ * full-screen route reached via `onViewAllMembersPress`), falls back to a regular
+ * `FlatList`.
  */
 export const ChannelDetailsMemberList = () => {
   const { channel } = useChannelDetailsContext();
   const { client } = useChatContext();
   const { ChannelDetailsMemberListItem } = useComponentsContext();
   const members = useChannelMembersState(channel);
+  const bottomSheetContext = useContext(BottomSheetContext);
+  const List =
+    bottomSheetContext === DEFAULT_BASE_CONTEXT_VALUE ? FlatList : StreamBottomSheetModalFlatList;
 
   const data = useMemo(() => Object.values(members), [members]);
 
@@ -33,11 +41,5 @@ export const ChannelDetailsMemberList = () => {
     [ChannelDetailsMemberListItem, client.userID],
   );
 
-  return (
-    <StreamBottomSheetModalFlatList
-      data={data}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-    />
-  );
+  return <List data={data} keyExtractor={keyExtractor} renderItem={renderItem} />;
 };

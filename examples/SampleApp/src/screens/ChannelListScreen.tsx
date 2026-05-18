@@ -133,21 +133,15 @@ export const ChannelListScreen: React.FC = () => {
   );
 
   const getChannelActionItems = useStableCallback(
-    ({ context: { isDirectChat, channel }, defaultItems }) => {
+    ({ context: { channel }, defaultItems }) => {
       const viewInfo = () => {
         if (!channel) {
           return;
         }
         if (navigation) {
-          if (isDirectChat) {
-            navigation.navigate('OneOnOneChannelDetailScreen', {
-              channel,
-            });
-          } else {
-            navigation.navigate('GroupChannelDetailsScreen', {
-              channel,
-            });
-          }
+          navigation.navigate('ChannelDetailsScreen', {
+            channel,
+          });
         }
       };
 

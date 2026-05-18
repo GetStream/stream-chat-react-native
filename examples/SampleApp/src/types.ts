@@ -24,16 +24,19 @@ export type StackNavigatorParamList = {
     messageId?: string;
   };
   MapScreen: SharedLocationResponse;
-  GroupChannelDetailsScreen: {
+  ChannelDetailsScreen: {
+    channel: Channel;
+  };
+  ChannelAllMembersScreen: {
+    channel: Channel;
+  };
+  ChannelAddMembersScreen: {
     channel: Channel;
   };
   MessagingScreen: undefined;
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: undefined;
-  OneOnOneChannelDetailScreen: {
-    channel: Channel;
-  };
   SharedGroupsScreen: {
     user: UserResponse;
   };

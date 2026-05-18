@@ -29,14 +29,13 @@ import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelScreen } from './src/screens/ChannelScreen';
 import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessagesScreen';
+import { ChannelDetailsScreen } from './src/screens/ChannelDetailsScreen';
 import { ChatScreen } from './src/screens/ChatScreen';
-import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
 import { MenuDrawer } from './src/components/MenuDrawer';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
 import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
-import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetailScreen';
 import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
@@ -66,6 +65,8 @@ import {
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
 } from './src/components/SecretMenu.tsx';
+import { ChannelAllMembersScreen } from './src/screens/ChannelAllMembersScreen.tsx';
+import { ChannelAddMembersScreen } from './src/screens/ChannelAddMembersScreen.tsx';
 
 init({ data });
 
@@ -417,14 +418,19 @@ const HomeScreen = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        component={OneOnOneChannelDetailScreen}
-        name='OneOnOneChannelDetailScreen'
+        component={ChannelDetailsScreen}
+        name='ChannelDetailsScreen'
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        component={GroupChannelDetailsScreen}
-        name='GroupChannelDetailsScreen'
-        options={{ headerShown: false }}
+        component={ChannelAllMembersScreen}
+        name='ChannelAllMembersScreen'
+        options={{ headerShown: true }}
+      />
+      <Stack.Screen
+        component={ChannelAddMembersScreen}
+        name='ChannelAddMembersScreen'
+        options={{ headerShown: true }}
       />
       <Stack.Screen
         component={ChannelImagesScreen}

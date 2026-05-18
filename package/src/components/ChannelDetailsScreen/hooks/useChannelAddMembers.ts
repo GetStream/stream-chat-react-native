@@ -6,7 +6,7 @@ import type { Channel, UserFilters, UserResponse } from 'stream-chat';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 100;
 const DEBOUNCE_MS = 200;
 
 export type UseChannelAddMembersResult = {
