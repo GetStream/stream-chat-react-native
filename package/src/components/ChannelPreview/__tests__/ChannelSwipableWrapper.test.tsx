@@ -97,6 +97,7 @@ describe('ChannelSwipableWrapper', () => {
     ];
 
     jest.spyOn(ChannelActionsModule, 'useChannelActions').mockReturnValue({
+      addMembers: jest.fn(),
       archive: jest.fn(),
       blockUser: jest.fn(),
       deleteChannel: jest.fn(),
@@ -163,6 +164,7 @@ describe('ChannelSwipableWrapper', () => {
     } as const satisfies ChannelActionItem;
 
     jest.spyOn(ChannelActionsModule, 'useChannelActions').mockReturnValue({
+      addMembers: jest.fn(),
       archive: jest.fn(),
       blockUser: jest.fn(),
       deleteChannel: jest.fn(),

@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce';
 import type { Channel, UserFilters, UserResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 
 const PAGE_SIZE = 10;
 const DEBOUNCE_MS = 200;
@@ -40,11 +41,12 @@ export const useChannelAddMembersUsers = ({
   const requestIdRef = useRef(0);
   const inFlightRef = useRef(false);
 
+  const members = useChannelMembersState(channel);
   const excludedIds = useMemo(() => {
-    const ids = new Set<string>(Object.keys(channel.state.members));
+    const ids = new Set<string>(Object.keys(members));
     if (client.userID) ids.add(client.userID);
     return ids;
-  }, [channel.state.members, client.userID]);
+  }, [members, client.userID]);
 
   // Keep a stable reference to the latest excludedIds so fetchPage doesn't churn
   // whenever channel.state.members mutates (every realtime event creates a new

@@ -17,6 +17,7 @@ import * as useChannelMuteActiveModule from '../useChannelMuteActive';
 import * as useIsDirectChatModule from '../useIsDirectChat';
 
 const createChannelActions = (): useChannelActionsModule.ChannelActions => ({
+  addMembers: jest.fn(),
   archive: jest.fn(),
   blockUser: jest.fn(),
   deleteChannel: jest.fn(),
