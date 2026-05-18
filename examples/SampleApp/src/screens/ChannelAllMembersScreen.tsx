@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -26,8 +26,10 @@ export const ChannelAllMembersScreen: React.FC<Props> = ({
     params: { channel },
   },
 }) => {
+  const channelDetailsContextValue = useMemo(() => ({ channel }), [channel]);
+
   return (
-    <ChannelDetailsContext.Provider value={{ channel }}>
+    <ChannelDetailsContext.Provider value={channelDetailsContextValue}>
       <ChannelDetailsMemberList />
     </ChannelDetailsContext.Provider>
   );

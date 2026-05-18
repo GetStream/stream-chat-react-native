@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -39,6 +39,8 @@ export const ChannelAddMembersScreen: React.FC<Props> = ({
   const { addMembers } = useChannelActions(channel);
   const [selectedUsers, setSelectedUsers] = useState<UserResponse[]>([]);
 
+  const channelDetailsContextValue = useMemo(() => ({ channel }), [channel]);
+
   const goBack = useCallback(() => navigation.goBack(), [navigation]);
 
   const onSavePress = useCallback(async () => {
@@ -54,7 +56,7 @@ export const ChannelAddMembersScreen: React.FC<Props> = ({
   }, [addMembers, selectedUsers, goBack]);
 
   return (
-    <ChannelDetailsContext.Provider value={{ channel }}>
+    <ChannelDetailsContext.Provider value={channelDetailsContextValue}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
