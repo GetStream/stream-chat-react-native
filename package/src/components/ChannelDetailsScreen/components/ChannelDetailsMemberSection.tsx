@@ -9,13 +9,12 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { getNotificationErrorOptions } from '../../../hooks/useChannelActions';
+import { useChannelActions } from '../../../hooks/useChannelActions';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
 import { UserAdd } from '../../../icons/user-add';
 import { NewClose } from '../../../icons/xmark';
 import { primitives } from '../../../theme';
-import { useNotificationApi } from '../../Notifications/hooks';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
@@ -26,7 +25,7 @@ export const ChannelDetailsMemberSection = () => {
   const { channel, onAddMembersPress, onViewAllMembersPress } = useChannelDetailsContext();
   const { client } = useChatContext();
   const { t } = useTranslationContext();
-  const { addNotification } = useNotificationApi();
+  const { addMembers } = useChannelActions(channel);
   const { updateChannelMembers } = useOwnCapabilitiesContext();
   const { height: windowHeight } = useWindowDimensions();
   const addMembersNotificationHostId = channel?.cid
@@ -80,26 +79,16 @@ export const ChannelDetailsMemberSection = () => {
   const handleAddMembersConfirm = useStableCallback(async () => {
     if (!addMembersSelection.length || addingMembers) return;
     setAddingMembers(true);
-    const addedCount = addMembersSelection.length;
     try {
-      await channel.addMembers(addMembersSelection.map((u) => u.id));
-      addNotification({
-        message: t('{{count}} members added', { count: addedCount }),
-        options: { severity: 'success', type: 'api:channel:add-members:success' },
-        origin: { context: { channel }, emitter: 'ChannelDetailsMemberSection' },
-      });
-      setAddMembersVisible(false);
-      setAddMembersSelection([]);
-    } catch (error) {
-      addNotification({
-        message: t('Failed to add members'),
-        options: {
-          ...getNotificationErrorOptions(error),
-          severity: 'error',
-          type: 'api:channel:add-members:failed',
+      await addMembers(
+        addMembersSelection.map((u) => u.id),
+        {
+          onSuccess: () => {
+            setAddMembersVisible(false);
+            setAddMembersSelection([]);
+          },
         },
-        origin: { context: { channel }, emitter: 'ChannelDetailsMemberSection' },
-      });
+      );
     } finally {
       setAddingMembers(false);
     }

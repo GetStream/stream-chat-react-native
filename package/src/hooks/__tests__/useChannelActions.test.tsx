@@ -27,6 +27,7 @@ const createClient = () => ({
 
 const createChannel = (client: ReturnType<typeof createClient>) =>
   ({
+    addMembers: jest.fn(),
     archive: jest.fn(),
     getClient: () => client,
     mute: jest.fn(),
@@ -209,6 +210,90 @@ describe('useChannelActions', () => {
     });
 
     expect(client.blockUser).not.toHaveBeenCalled();
+    expect(onSuccess).not.toHaveBeenCalled();
+  });
+
+  it('notifies and calls channel.addMembers when adding members succeeds', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.addMembers(['u-1', 'u-2']);
+    });
+
+    expect(channel.addMembers).toHaveBeenCalledWith(['u-1', 'u-2']);
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: '{{count}} members added',
+      options: {
+        severity: 'success',
+        type: 'api:channel:add-members:success',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('notifies with originalError when adding members fails', async () => {
+    const error = new Error('add failed');
+    const client = createClient();
+    const channel = createChannel(client);
+    jest.mocked(channel.addMembers).mockRejectedValue(error);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.addMembers(['u-1']);
+    });
+
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Failed to add members',
+      options: {
+        originalError: error,
+        severity: 'error',
+        type: 'api:channel:add-members:failed',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('calls onSuccess after addMembers succeeds', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const onSuccess = jest.fn();
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.addMembers(['u-1'], { onSuccess });
+    });
+
+    expect(channel.addMembers).toHaveBeenCalledWith(['u-1']);
+    expect(onSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call onSuccess when addMembers rejects', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    jest.mocked(channel.addMembers).mockRejectedValue(new Error('nope'));
+    const onSuccess = jest.fn();
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.addMembers(['u-1'], { onSuccess });
+    });
+
     expect(onSuccess).not.toHaveBeenCalled();
   });
 

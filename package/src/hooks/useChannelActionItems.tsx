@@ -132,7 +132,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 
   if (channel.data?.created_by?.id === ownUserId) {
     actionItems.push({
-      action: (options) => {
+      action: (...args: Parameters<ChannelActionHandler>) => {
         const title = isDirectChat ? t('Delete chat') : t('Delete group');
         const message = isDirectChat
           ? t("Are you sure you want to delete this chat? This can't be undone.")
@@ -145,7 +145,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
           },
           {
             onPress: async () => {
-              await deleteChannel(options);
+              await deleteChannel(...args);
             },
             style: 'destructive',
             text: t('Delete'),

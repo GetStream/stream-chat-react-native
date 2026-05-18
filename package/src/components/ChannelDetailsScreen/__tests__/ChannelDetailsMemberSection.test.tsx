@@ -17,11 +17,15 @@ import {
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { useChannelActions } from '../../../hooks/useChannelActions';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
 import type { ChannelAddMembersProps } from '../components/ChannelAddMembers';
 import { ChannelDetailsMemberSection } from '../components/ChannelDetailsMemberSection';
 import * as useChannelDetailsMembersPreviewModule from '../hooks/useChannelDetailsMembersPreview';
+
+jest.mock('../../../hooks/useChannelActions');
+const mockedUseChannelActions = jest.mocked(useChannelActions);
 
 const MemberListProbe = () => <Text testID='member-list-probe'>full-member-list</Text>;
 
@@ -128,16 +132,24 @@ const makeMembers = (count: number) =>
 
 describe('ChannelDetailsMemberSection', () => {
   let previewSpy: jest.SpyInstance;
+  let addMembersSpy: jest.Mock;
 
   beforeEach(() => {
     previewSpy = jest.spyOn(
       useChannelDetailsMembersPreviewModule,
       'useChannelDetailsMembersPreview',
     );
+    addMembersSpy = jest.fn(async (_ids: string[], options?: { onSuccess?: () => unknown }) => {
+      await options?.onSuccess?.();
+    });
+    mockedUseChannelActions.mockReturnValue({
+      addMembers: addMembersSpy,
+    } as unknown as ReturnType<typeof useChannelActions>);
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    mockedUseChannelActions.mockReset();
   });
 
   it('hides the "View all" affordance when there are no extra members', () => {
@@ -300,7 +312,7 @@ describe('ChannelDetailsMemberSection', () => {
     ).toMatchObject({ disabled: true });
   });
 
-  it('calls channel.addMembers with the selected user ids and closes the sheet on confirm', async () => {
+  it('calls addMembers from useChannelActions with the selected user ids and closes the sheet on confirm', async () => {
     previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
     const channel = buildChannel(makeMembers(3), 3);
 
@@ -317,7 +329,11 @@ describe('ChannelDetailsMemberSection', () => {
       await Promise.resolve();
     });
 
-    expect(channel.addMembers).toHaveBeenCalledWith(['picked-1']);
+    expect(addMembersSpy).toHaveBeenCalledWith(
+      ['picked-1'],
+      expect.objectContaining({ onSuccess: expect.any(Function) }),
+    );
+    expect(channel.addMembers).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.queryByTestId('add-members-probe')).toBeNull());
   });
 
@@ -348,12 +364,12 @@ describe('ChannelDetailsMemberSection', () => {
     ).toMatchObject({ disabled: true });
   });
 
-  it('keeps the Add-members sheet open and re-enables confirm when channel.addMembers rejects', async () => {
+  it('keeps the Add-members sheet open and re-enables confirm when addMembers does not invoke onSuccess', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
     previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
-    const channel = buildChannel(makeMembers(3), 3, {
-      addMembers: jest.fn().mockRejectedValue(new Error('nope')),
-    } as Partial<Channel>);
+    // Simulate the hook's internal error catch: addMembers resolves without invoking onSuccess.
+    addMembersSpy.mockResolvedValueOnce(undefined);
+    const channel = buildChannel(makeMembers(3), 3);
 
     renderSection({
       capabilities: { updateChannelMembers: true },
@@ -369,6 +385,10 @@ describe('ChannelDetailsMemberSection', () => {
       await Promise.resolve();
     });
 
+    expect(addMembersSpy).toHaveBeenCalledWith(
+      ['picked-1'],
+      expect.objectContaining({ onSuccess: expect.any(Function) }),
+    );
     expect(screen.getByTestId('add-members-probe')).toBeTruthy();
     expect(
       screen.getByTestId('channel-details-add-members-confirm-button').props.accessibilityState,
