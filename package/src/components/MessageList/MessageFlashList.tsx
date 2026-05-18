@@ -389,9 +389,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   useEffect(() => {
     if (autoscrollToRecent && flashListRef.current) {
       // TODO: Think of a better fix than commenting this out.
-      // flashListRef.current.scrollToEnd({
-      //   animated: true,
-      // });
+      flashListRef.current.scrollToEnd({
+        animated: true,
+      });
     }
   }, [autoscrollToRecent]);
 
