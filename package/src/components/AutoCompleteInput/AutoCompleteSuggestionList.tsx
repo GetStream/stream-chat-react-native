@@ -101,8 +101,8 @@ export const AutoCompleteSuggestionList = ({
         renderItem={renderItem}
         style={[
           styles.flatlist,
-          flatlist,
           { backgroundColor: white, maxHeight, shadowColor: black },
+          flatlist,
         ]}
         testID={'auto-complete-suggestion-list'}
       />
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
   flatlist: {
     borderRadius: 8,
     elevation: 3,
+    flexGrow: 0,
     marginHorizontal: 8,
     shadowOffset: {
       height: 1,
