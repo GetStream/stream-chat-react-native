@@ -97,11 +97,12 @@ describe('useChannelDetailsActionItems', () => {
     const callOrder: string[] = [];
     let resolveLeave: (() => void) | undefined;
     const originalLeave = jest.fn(
-      () =>
+      (options?: { onSuccess?: () => unknown }) =>
         new Promise<void>((resolve) => {
           callOrder.push('leave-start');
-          resolveLeave = () => {
+          resolveLeave = async () => {
             callOrder.push('leave-resolved');
+            await options?.onSuccess?.();
             resolve();
           };
         }),
@@ -147,11 +148,12 @@ describe('useChannelDetailsActionItems', () => {
     const callOrder: string[] = [];
     let resolveDelete: (() => void) | undefined;
     const originalDelete = jest.fn(
-      () =>
+      (options?: { onSuccess?: () => unknown }) =>
         new Promise<void>((resolve) => {
           callOrder.push('delete-start');
-          resolveDelete = () => {
+          resolveDelete = async () => {
             callOrder.push('delete-resolved');
+            await options?.onSuccess?.();
             resolve();
           };
         }),
