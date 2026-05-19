@@ -39,6 +39,7 @@ export const AttachmentPicker = () => {
     attachmentPickerBottomSheetHeight,
     bottomSheetRef: ref,
     bottomInset,
+    topInset,
     disableAttachmentPicker,
   } = useAttachmentPickerContext();
   const { AttachmentPickerContent, AttachmentPickerSelectionBar } = useComponentsContext();
@@ -94,7 +95,7 @@ export const AttachmentPicker = () => {
   const initialSnapPoint = attachmentPickerBottomSheetHeight;
   const pickerTopInset = Math.max(
     0,
-    windowHeight - attachmentPickerBottomSheetHeight - bottomInset,
+    windowHeight - topInset - attachmentPickerBottomSheetHeight - bottomInset,
   );
 
   /**

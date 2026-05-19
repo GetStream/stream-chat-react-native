@@ -496,7 +496,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     thread: threadFromProps,
     threadList,
     threadMessages,
-    topInset,
+    topInset = 0,
     isOnline,
     maximumMessageLimit,
     initializeOnMount = true,
