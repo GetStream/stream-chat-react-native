@@ -434,7 +434,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       scrollToDebounceTimeoutRef.current = setTimeout(() => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
-        const scrollToTargetOffset = async () => {
+        const scrollToIndex = async () => {
           const list = flashListRef.current;
 
           if (!list) {
@@ -451,9 +451,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         };
 
         requestAnimationFrame(async () => {
-          await scrollToTargetOffset();
+          await scrollToIndex();
           requestAnimationFrame(async () => {
-            await scrollToTargetOffset();
+            await scrollToIndex();
             setTargetedMessage(undefined);
           });
         });
