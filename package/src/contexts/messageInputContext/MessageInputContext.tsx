@@ -23,7 +23,7 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageComposer } from './hooks/useMessageComposer';
 
-import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardCompatibleView';
 import { parseLinksFromText } from '../../components/Message/MessageItemView/utils/parseLinks';
 import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
 import { useNotificationApi } from '../../components/Notifications';

@@ -19,7 +19,6 @@ import {
   View,
 } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import type { KeyboardEventData } from 'react-native-keyboard-controller';
 import Animated, {
   Easing,
   FadeIn,
@@ -43,7 +42,6 @@ import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomShe
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
-import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 export type BottomSheetModalProps = {
   /**
@@ -377,18 +375,16 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
 
     const listeners: EventSubscription[] = [];
 
-    if (KeyboardControllerPackage?.KeyboardEvents) {
-      const keyboardDidShowKC = (event: KeyboardEventData) => {
-        animateKeyboardOffset(event.height);
-      };
-
+    if (Platform.OS === 'ios') {
       listeners.push(
-        KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidShow', keyboardDidShowKC),
-        KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidHide', keyboardDidHide),
+        Keyboard.addListener('keyboardWillShow', keyboardDidShowRN),
+        Keyboard.addListener('keyboardWillHide', keyboardDidHide),
       );
-    } else if (Platform.OS === 'ios') {
-      listeners.push(Keyboard.addListener('keyboardWillShow', keyboardDidShowRN));
-      listeners.push(Keyboard.addListener('keyboardWillHide', keyboardDidHide));
+    } else {
+      listeners.push(
+        Keyboard.addListener('keyboardDidShow', keyboardDidShowRN),
+        Keyboard.addListener('keyboardDidHide', keyboardDidHide),
+      );
     }
 
     return () => listeners.forEach((l) => l.remove());
