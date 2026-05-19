@@ -1571,8 +1571,7 @@ export const Generic = () => {
         // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
         expect(
           Math.abs(
-            new Date(matchingReadRows[0].lastRead).getTime() -
-              new Date(readTimestamp).getTime(),
+            new Date(matchingReadRows[0].lastRead).getTime() - new Date(readTimestamp).getTime(),
           ),
         ).toBeLessThanOrEqual(1);
       });
@@ -1620,8 +1619,7 @@ export const Generic = () => {
         // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
         expect(
           Math.abs(
-            new Date(matchingReadRows[0].lastRead).getTime() -
-              new Date(readTimestamp).getTime(),
+            new Date(matchingReadRows[0].lastRead).getTime() - new Date(readTimestamp).getTime(),
           ),
         ).toBeLessThanOrEqual(1);
       });
