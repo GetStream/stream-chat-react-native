@@ -132,6 +132,7 @@ type MessageFlashListPropsWithContext = Pick<
     | 'scrollToFirstUnreadThreshold'
     | 'setChannelUnreadState'
     | 'setTargetedMessage'
+    | 'hasPendingInitialTargetLoad'
     | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
@@ -289,6 +290,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     thread,
     threadInstance,
@@ -388,11 +390,15 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   useEffect(() => {
     if (autoscrollToRecent && flashListRef.current) {
+      if (hasPendingInitialTargetLoad?.()) {
+        return;
+      }
+
       flashListRef.current.scrollToEnd({
         animated: true,
       });
     }
-  }, [autoscrollToRecent]);
+  }, [autoscrollToRecent, hasPendingInitialTargetLoad]);
 
   const maintainVisibleContentPosition = useMemo(() => {
     return {
@@ -407,18 +413,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       setScrollToBottomButtonVisible(false);
     }
   }, [disabled]);
-
-  const indexToScrollToRef = useRef<number | undefined>(undefined);
-
-  const initialIndexToScrollTo = useMemo(() => {
-    return targetedMessage
-      ? processedMessageList.findIndex((message) => message?.id === targetedMessage)
-      : -1;
-  }, [processedMessageList, targetedMessage]);
-
-  useEffect(() => {
-    indexToScrollToRef.current = initialIndexToScrollTo;
-  }, [initialIndexToScrollTo]);
 
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
@@ -440,13 +434,29 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       scrollToDebounceTimeoutRef.current = setTimeout(() => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
-        // now scroll to it
-        flashListRef.current?.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5,
+        const scrollToIndex = async () => {
+          const list = flashListRef.current;
+
+          if (!list) {
+            return false;
+          }
+
+          await list.scrollToIndex({
+            index: indexOfParentInMessageList,
+            animated: true,
+            viewPosition: 0.5,
+          });
+
+          return true;
+        };
+
+        requestAnimationFrame(async () => {
+          await scrollToIndex();
+          requestAnimationFrame(async () => {
+            await scrollToIndex();
+            setTargetedMessage(undefined);
+          });
         });
-        setTargetedMessage(undefined);
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
   }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
@@ -455,8 +465,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const indexOfParentInMessageList = processedMessageList.findIndex(
       (message) => message?.id === messageId,
     );
-
-    indexToScrollToRef.current = indexOfParentInMessageList;
 
     try {
       if (indexOfParentInMessageList === -1) {
@@ -529,7 +537,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       setScrollToBottomButtonVisible(true);
       return;
     } else {
-      indexToScrollToRef.current = undefined;
       setAutoscrollToRecent(true);
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
@@ -1064,9 +1071,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             data={processedMessageList}
             drawDistance={800}
             getItemType={getItemTypeInternal}
-            initialScrollIndex={
-              indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
-            }
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
             ListFooterComponent={ListFooterComponent}
@@ -1203,6 +1207,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
     setTargetedMessage,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     threadList,
   } = useChannelContext();
@@ -1246,6 +1251,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         scrollToFirstUnreadThreshold,
         setChannelUnreadState,
         setTargetedMessage,
+        hasPendingInitialTargetLoad,
         shouldShowUnreadUnderlay,
         targetedMessage,
         thread,

@@ -113,6 +113,12 @@ export type ChannelContextValue = {
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId?: string) => void;
   /**
+   * Returns true when Channel is about to load an initial targeted message.
+   *
+   * @internal
+   */
+  hasPendingInitialTargetLoad?: () => boolean;
+  /**
    * Abort controller for cancelling async requests made for uploading images/files
    * Its a map of filename and AbortController
    */
