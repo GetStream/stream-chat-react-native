@@ -132,7 +132,7 @@ type MessageFlashListPropsWithContext = Pick<
     | 'scrollToFirstUnreadThreshold'
     | 'setChannelUnreadState'
     | 'setTargetedMessage'
-    | 'shouldSkipInitialAutoscrollToRecent'
+    | 'hasPendingInitialTargetLoad'
     | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
@@ -290,7 +290,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
-    shouldSkipInitialAutoscrollToRecent,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     thread,
     threadInstance,
@@ -390,7 +390,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   useEffect(() => {
     if (autoscrollToRecent && flashListRef.current) {
-      if (shouldSkipInitialAutoscrollToRecent?.()) {
+      if (hasPendingInitialTargetLoad?.()) {
         return;
       }
 
@@ -398,7 +398,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         animated: true,
       });
     }
-  }, [autoscrollToRecent, shouldSkipInitialAutoscrollToRecent]);
+  }, [autoscrollToRecent, hasPendingInitialTargetLoad]);
 
   const maintainVisibleContentPosition = useMemo(() => {
     return {
@@ -1207,7 +1207,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
     setTargetedMessage,
-    shouldSkipInitialAutoscrollToRecent,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     threadList,
   } = useChannelContext();
@@ -1251,7 +1251,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         scrollToFirstUnreadThreshold,
         setChannelUnreadState,
         setTargetedMessage,
-        shouldSkipInitialAutoscrollToRecent,
+        hasPendingInitialTargetLoad,
         shouldShowUnreadUnderlay,
         targetedMessage,
         thread,

@@ -575,7 +575,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return (unreadCount ?? channel.countUnread()) > scrollToFirstUnreadThreshold;
   });
 
-  const shouldSkipInitialAutoscrollToRecent = useStableCallback(() => {
+  const hasPendingInitialTargetLoad = useStableCallback(() => {
     return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
   });
 
@@ -1592,7 +1592,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     setChannelUnreadState,
     setLastRead,
     setTargetedMessage,
-    shouldSkipInitialAutoscrollToRecent,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     threadList,
     uploadAbortControllerRef,
