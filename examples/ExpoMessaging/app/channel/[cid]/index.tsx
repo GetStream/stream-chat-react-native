@@ -73,6 +73,7 @@ export default function ChannelScreen() {
         channel={channel}
         onPressMessage={onPressMessage}
         keyboardVerticalOffset={headerHeight}
+        topInset={headerHeight}
         thread={thread}
       >
         <MessageList
