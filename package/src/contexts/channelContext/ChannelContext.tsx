@@ -113,6 +113,11 @@ export type ChannelContextValue = {
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId?: string) => void;
   /**
+   * Returns true when the initial MessageList auto-scroll-to-recent should be skipped because
+   * Channel is about to load and scroll to a targeted message.
+   */
+  shouldSkipInitialAutoscrollToRecent?: () => boolean;
+  /**
    * Abort controller for cancelling async requests made for uploading images/files
    * Its a map of filename and AbortController
    */

@@ -132,6 +132,7 @@ type MessageFlashListPropsWithContext = Pick<
     | 'scrollToFirstUnreadThreshold'
     | 'setChannelUnreadState'
     | 'setTargetedMessage'
+    | 'shouldSkipInitialAutoscrollToRecent'
     | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
@@ -289,6 +290,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
+    shouldSkipInitialAutoscrollToRecent,
     targetedMessage,
     thread,
     threadInstance,
@@ -388,12 +390,15 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   useEffect(() => {
     if (autoscrollToRecent && flashListRef.current) {
-      // TODO: Think of a better fix than commenting this out.
+      if (shouldSkipInitialAutoscrollToRecent?.()) {
+        return;
+      }
+
       flashListRef.current.scrollToEnd({
         animated: true,
       });
     }
-  }, [autoscrollToRecent]);
+  }, [autoscrollToRecent, shouldSkipInitialAutoscrollToRecent]);
 
   const maintainVisibleContentPosition = useMemo(() => {
     return {
@@ -429,14 +434,14 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       scrollToDebounceTimeoutRef.current = setTimeout(() => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
-        const scrollToTargetOffset = () => {
+        const scrollToTargetOffset = async () => {
           const list = flashListRef.current;
 
           if (!list) {
             return false;
           }
 
-          list.scrollToIndex({
+          await list.scrollToIndex({
             index: indexOfParentInMessageList,
             animated: true,
             viewPosition: 0.5,
@@ -445,10 +450,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           return true;
         };
 
-        requestAnimationFrame(() => {
-          scrollToTargetOffset();
-          requestAnimationFrame(() => {
-            scrollToTargetOffset();
+        requestAnimationFrame(async () => {
+          await scrollToTargetOffset();
+          requestAnimationFrame(async () => {
+            await scrollToTargetOffset();
             setTargetedMessage(undefined);
           });
         });
@@ -1202,6 +1207,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
     setTargetedMessage,
+    shouldSkipInitialAutoscrollToRecent,
     targetedMessage,
     threadList,
   } = useChannelContext();
@@ -1245,6 +1251,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         scrollToFirstUnreadThreshold,
         setChannelUnreadState,
         setTargetedMessage,
+        shouldSkipInitialAutoscrollToRecent,
         shouldShowUnreadUnderlay,
         targetedMessage,
         thread,
