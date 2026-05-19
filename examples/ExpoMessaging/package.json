@@ -47,6 +47,7 @@
     "react-dom": "19.2.0",
     "react-native": "0.83.2",
     "react-native-gesture-handler": "~2.30.0",
+    "react-native-keyboard-controller": "1.20.7",
     "react-native-maps": "1.26.20",
     "react-native-reanimated": "4.2.1",
     "react-native-safe-area-context": "~5.6.2",
