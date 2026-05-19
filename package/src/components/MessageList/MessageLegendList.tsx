@@ -458,7 +458,7 @@ const MessageLegendListWithContext = (props: MessageLegendListPropsWithContext) 
    * hook returns the natural (non-inverted) ordering, with the newest message at the end.
    */
   const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
-    isFlashList: false,
+    isFlashList: true,
     isLiveStreaming,
     threadList,
   });
@@ -482,11 +482,17 @@ const MessageLegendListWithContext = (props: MessageLegendListPropsWithContext) 
   const renderItem = useStableCallback(
     ({ item }: LegendListRenderItemProps<MessageListItemWithNeighbours>) => {
       const { message, previousMessage, nextMessage } = item;
+      // `buildMessageListWithNeighbours` walks the data array linearly, so for our non-inverted
+      // ordering `previousMessage` is OLDER and `nextMessage` is NEWER. The SDK's group-style
+      // and date-separator helpers were written for the inverted `MessageList` convention, where
+      // `previousMessage` is NEWER and `nextMessage` is OLDER. Swap when handing off so the same
+      // logic produces matching UI (group "bottom" / `MessageFooter` lands on the oldest message
+      // in the group, inline date separators sit at the row of the day-boundary message, etc.).
       return (
         <MessageWrapper
           message={message}
-          previousMessage={previousMessage}
-          nextMessage={nextMessage}
+          previousMessage={nextMessage}
+          nextMessage={previousMessage}
         />
       );
     },
@@ -532,8 +538,10 @@ const MessageLegendListWithContext = (props: MessageLegendListPropsWithContext) 
         on: {
           // Auto-scroll to end on new messages only when we are following recent activity.
           dataChange: autoscrollToRecent,
-          // Always re-pin when an item resizes (e.g., image load or reaction counts grow).
-          itemLayout: true,
+          // Disabled: on Android each item-layout fire (e.g. image attachment decode, reaction
+          // count grow) becomes a scroll-position adjustment, and during fast scroll a flood of
+          // these fights the user's scroll velocity. `dataChange` alone covers new messages.
+          itemLayout: false,
           // Disabled: container layout changes mostly come from keyboard / orientation, which
           // we don't want to trigger an autoscroll-to-end. Composer height is handled separately.
           layout: false,
@@ -1325,7 +1333,7 @@ const MessageLegendListWithContext = (props: MessageLegendListPropsWithContext) 
             alignItemsAtEnd
             contentContainerStyle={legendListContentContainerStyle}
             data={processedMessageListWithNeighbors}
-            drawDistance={1200}
+            drawDistance={500}
             estimatedItemSize={DEFAULT_ESTIMATED_ITEM_SIZE}
             extraData={disabled}
             getEstimatedItemSize={getEstimatedItemSizeForMessage}
