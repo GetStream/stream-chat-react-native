@@ -431,58 +431,27 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
         const scrollToTargetOffset = () => {
           const list = flashListRef.current;
-          const targetLayout = list?.getLayout(indexOfParentInMessageList);
 
-          if (!list || !targetLayout) {
+          if (!list) {
             return false;
           }
 
-          const { height: windowHeight } = list.getWindowSize();
-          const firstItemOffset = list.getFirstItemOffset();
-          const maxOffset = Math.max(
-            0,
-            list.getChildContainerDimensions().height - windowHeight + firstItemOffset,
-          );
-          const centeredOffset =
-            targetLayout.y - (windowHeight - targetLayout.height) * 0.5 + firstItemOffset;
-          const offset = Math.min(Math.max(centeredOffset, 0), maxOffset);
-
-          list.scrollToOffset({
+          list.scrollToIndex({
+            index: indexOfParentInMessageList,
             animated: true,
-            offset,
-            skipFirstItemOffset: true,
+            viewPosition: 0.5,
           });
 
           return true;
         };
 
-        if (scrollToTargetOffset()) {
+        requestAnimationFrame(() => {
+          scrollToTargetOffset();
           requestAnimationFrame(() => {
             scrollToTargetOffset();
             setTargetedMessage(undefined);
           });
-          return;
-        }
-
-        const scrollToIndexPromise = flashListRef.current?.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5,
         });
-
-        if (!scrollToIndexPromise) {
-          setTargetedMessage(undefined);
-          return;
-        }
-
-        scrollToIndexPromise
-          .then(() => {
-            setTargetedMessage(undefined);
-          })
-          .catch((e) => {
-            console.warn('Error while scrolling to message', e);
-            setTargetedMessage(undefined);
-          });
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
   }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
