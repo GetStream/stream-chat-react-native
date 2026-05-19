@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BackHandler,
-  EmitterSubscription,
   Keyboard,
   Platform,
   View,
@@ -21,7 +20,6 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
-import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 dayjs.extend(duration);
 
@@ -78,18 +76,10 @@ export const AttachmentPicker = () => {
       }
       closePicker();
     };
-    let keyboardSubscription: EmitterSubscription | null = null;
-    if (KeyboardControllerPackage?.KeyboardEvents) {
-      keyboardSubscription = KeyboardControllerPackage.KeyboardEvents.addListener(
-        'keyboardWillShow',
-        onKeyboardOpenHandler,
-      );
-    } else {
-      const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-      keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
-    }
+    const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
     return () => {
-      keyboardSubscription?.remove();
+      keyboardSubscription.remove();
     };
   }, [attachmentPickerStore, closePicker]);
 

@@ -22,6 +22,12 @@ import {
 
 import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext';
 
+export type KeyboardCompatibleViewProps = KeyboardAvoidingViewProps;
+
+export const dismissKeyboard = () => {
+  Keyboard.dismiss();
+};
+
 type State = {
   bottom: number;
 };

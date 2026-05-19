@@ -77,7 +77,7 @@ import {
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
-import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { BottomSheetModal } from '../UIComponents';
 
 const createMessageOverlayId = (messageId?: string) =>
