@@ -36,7 +36,7 @@ import { useViewport } from '../../hooks/useViewport';
 import { IconProps } from '../../icons/utils/base';
 import { ImageGalleryState } from '../../state-store/image-gallery-state-store';
 import { FileTypes } from '../../types/types';
-import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { BottomSheetModal } from '../UIComponents';
 
 export type ImageGalleryActionHandler = () => Promise<void> | void;
