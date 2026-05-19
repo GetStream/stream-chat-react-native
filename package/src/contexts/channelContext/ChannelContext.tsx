@@ -114,6 +114,8 @@ export type ChannelContextValue = {
   setTargetedMessage: (messageId?: string) => void;
   /**
    * Returns true when Channel is about to load an initial targeted message.
+   *
+   * @internal
    */
   hasPendingInitialTargetLoad?: () => boolean;
   /**
