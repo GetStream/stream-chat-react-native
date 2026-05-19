@@ -380,11 +380,6 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
         Keyboard.addListener('keyboardWillShow', keyboardDidShowRN),
         Keyboard.addListener('keyboardWillHide', keyboardDidHide),
       );
-    } else {
-      listeners.push(
-        Keyboard.addListener('keyboardDidShow', keyboardDidShowRN),
-        Keyboard.addListener('keyboardDidHide', keyboardDidHide),
-      );
     }
 
     return () => listeners.forEach((l) => l.remove());
