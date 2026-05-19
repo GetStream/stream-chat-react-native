@@ -834,6 +834,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
   });
 
+  const shouldLoadInitialChannelAtFirstUnreadMessage = useStableCallback((unreadCount?: number) => {
+    if (messageId || !initialScrollToFirstUnreadMessage || !client.user) {
+      return false;
+    }
+
+    return (unreadCount ?? channel.countUnread()) > scrollToFirstUnreadThreshold;
+  });
+
+  const hasPendingInitialTargetLoad = useStableCallback(() => {
+    return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
+  });
+
   const { setMessages: copyMessagesStateFromChannel, viewabilityChangedCallback } =
     usePrunableMessageList({ maximumMessageLimit, setMessages: rawCopyMessagesStateFromChannel });
 
@@ -960,6 +972,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const initChannel = async () => {
       setLastRead(new Date());
       const unreadCount = channel.countUnread();
+      const shouldLoadAtFirstUnread = shouldLoadInitialChannelAtFirstUnreadMessage(unreadCount);
       if (!channel || !shouldSyncChannel) {
         return;
       }
@@ -989,13 +1002,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       if (messageId) {
         await loadChannelAroundMessage({ messageId, setTargetedMessage });
-      } else if (
-        initialScrollToFirstUnreadMessage &&
-        client.user &&
-        unreadCount > scrollToFirstUnreadThreshold
-      ) {
+      } else if (shouldLoadAtFirstUnread) {
+        const clientUserId = client.user?.id;
+        if (!clientUserId) {
+          return;
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { user, ...ownReadState } = channel.state.read[client.user.id];
+        const { user, ...ownReadState } = channel.state.read[clientUserId];
 
         await loadChannelAtFirstUnreadMessage({
           channelUnreadState: ownReadState,
@@ -1788,6 +1802,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
+    hasPendingInitialTargetLoad,
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,

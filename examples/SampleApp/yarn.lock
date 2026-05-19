@@ -2732,10 +2732,10 @@
     read-yaml-file "^2.1.0"
     strip-json-comments "^3.1.1"
 
-"@shopify/flash-list@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-2.1.0.tgz#b1eefcf9fbd01ca04a5f24a6003cda3b46a59f64"
-  integrity sha512-/EIQlptG456yM5o9qNmNsmaZEFEOGvG3WGyb6GUAxSLlcKUGlPUkPI2NLW5wQSDEY4xSRa5zocUI+9xwmsM4Kg==
+"@shopify/flash-list@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-2.3.1.tgz#d4f90b1471a741a97c07d9aadbfaf200e92c86f7"
+  integrity sha512-7oktg2NQR7KAODjFoDaWe8/OBzyYbdTE3zQTrUBMxjIbxHTHN7UXRX1hX3DHk8KvtkgQdRfZOV8Gjj2l4fGrXw==
 
 "@sideway/address@^4.1.5":
   version "4.1.5"
@@ -3371,6 +3371,13 @@ acorn@^8.14.0, acorn@^8.8.2:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.14.0.tgz#063e2c70cac5fb4f6467f0b11152e04c682795b0"
   integrity sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==
 
+agent-base@6:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-6.0.2.tgz#49fff58577cfee3f37176feab4c22e00f86d7f77"
+  integrity sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==
+  dependencies:
+    debug "4"
+
 agent-base@^7.1.2:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.3.tgz#29435eb821bc4194633a5b89e5bc4703bafc25a1"
@@ -3584,14 +3591,15 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.12.2:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.12.2.tgz#6c307390136cf7a2278d09cec63b136dfc6e6da7"
-  integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
+axios@^1.15.1:
+  version "1.16.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.16.1.tgz#517e29291d19d6e8cf919ff264f4fe157261ba12"
+  integrity sha512-caYkukvroVPO8KrzuJEb50Hm07KwfBZPEC3VeFHTsqWHvKTsy54hjJz9BS/cdaypROE2rH6xvm9mHX4fgWkr3A==
   dependencies:
-    follow-redirects "^1.15.6"
-    form-data "^4.0.4"
-    proxy-from-env "^1.1.0"
+    follow-redirects "^1.16.0"
+    form-data "^4.0.5"
+    https-proxy-agent "^5.0.1"
+    proxy-from-env "^2.1.0"
 
 axios@^1.6.0:
   version "1.7.9"
@@ -5136,6 +5144,11 @@ follow-redirects@^1.15.6:
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.9.tgz#a604fa10e443bf98ca94228d9eebcc2e8a2c8ee1"
   integrity sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==
 
+follow-redirects@^1.16.0:
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.16.0.tgz#28474a159d3b9d11ef62050a14ed60e4df6d61bc"
+  integrity sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==
+
 for-each@^0.3.3:
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/for-each/-/for-each-0.3.5.tgz#d650688027826920feeb0af747ee7b9421a41d47"
@@ -5165,6 +5178,17 @@ form-data@^4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.4.tgz#784cdcce0669a9d68e94d11ac4eea98088edd2c4"
   integrity sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    es-set-tostringtag "^2.1.0"
+    hasown "^2.0.2"
+    mime-types "^2.1.12"
+
+form-data@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.5.tgz#b49e48858045ff4cbf6b03e1805cebcad3679053"
+  integrity sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
@@ -5464,6 +5488,14 @@ http-parser-js@>=0.5.1:
   version "0.5.9"
   resolved "https://registry.yarnpkg.com/http-parser-js/-/http-parser-js-0.5.9.tgz#b817b3ca0edea6236225000d795378707c169cec"
   integrity sha512-n1XsPy3rXVxlqxVioEWdC+0+M+SQw0DpJynwtOPo1X+ZlvdzTLtDBIJJlDQTnwZIFJrZSzSGmIOUdP8tu+SgLw==
+
+https-proxy-agent@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-5.0.1.tgz#c59ef224a04fe8b754f3db0063a25ea30d0005d6"
+  integrity sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==
+  dependencies:
+    agent-base "6"
+    debug "4"
 
 https-proxy-agent@^7.0.5:
   version "7.0.6"
@@ -7545,6 +7577,11 @@ proxy-from-env@^1.1.0:
   resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
   integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
 
+proxy-from-env@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-2.1.0.tgz#a7487568adad577cfaaa7e88c49cab3ab3081aba"
+  integrity sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==
+
 punycode@^2.1.0, punycode@^2.1.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.1.tgz#027422e2faec0b25e1549c3e1bd8309b9133b6e5"
@@ -8349,14 +8386,14 @@ stream-chat-react-native-core@8.1.0:
   version "0.0.0"
   uid ""
 
-stream-chat@^9.36.1:
-  version "9.41.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.41.1.tgz#a877c8aa800d78b497eec2fad636345d4422309c"
-  integrity sha512-W8zjfINYol2UtdRMz2t/NN2GyjDrvb4pJgKmhtuRYzCY1u0Cjezcsu5OCNgyAM0QsenlY6tRqnvAU8Qam5R49Q==
+stream-chat@^9.41.1:
+  version "9.44.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-9.44.2.tgz#97d23ae4ac356b352bb0f20a31a29dc63d3ea6f5"
+  integrity sha512-TXALWeHyWnSn1KlGYEF0sltEHB26vFd26l5m1qlE9Q1XHo9RPPSyLb5mfXqTEY8b2FAv57Ei3hrT8nSXVWacDQ==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
     "@types/ws" "^8.5.14"
-    axios "^1.12.2"
+    axios "^1.15.1"
     base64-js "^1.5.1"
     form-data "^4.0.4"
     isomorphic-ws "^5.0.0"
