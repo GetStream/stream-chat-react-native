@@ -7,6 +7,7 @@ import {
   MessageComposer,
   MessageList,
   MessageFlashList,
+  MessageLegendList,
   ThreadContextValue,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
@@ -281,6 +282,11 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         </PortalWhileClosingView>
         {messageListImplementation === 'flashlist' ? (
           <MessageFlashList
+            onThreadSelect={onThreadSelect}
+            isLiveStreaming={messageListMode === 'livestream'}
+          />
+        ) : messageListImplementation === 'legendlist' ? (
+          <MessageLegendList
             onThreadSelect={onThreadSelect}
             isLiveStreaming={messageListMode === 'livestream'}
           />

@@ -1971,6 +1971,13 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@legendapp/list@^3.0.0-beta.56":
+  version "3.0.0-beta.56"
+  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-3.0.0-beta.56.tgz#c593fa4dde6fdf924b37d5efcd1ac0459487fd7d"
+  integrity sha512-FcaZLq5n818/2D0VkZCmc4Y/V18/EKLLiYLRZxHgYrgaP+NtHvJ7fp+ZXpo6ae/bWLom0kCK2cM7FiIaWQLEcQ==
+  dependencies:
+    use-sync-external-store "^1.5.0"
+
 "@napi-rs/wasm-runtime@^0.2.11":
   version "0.2.11"
   resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.11.tgz#192c1610e1625048089ab4e35bc0649ce478500e"
@@ -7855,18 +7862,6 @@ react-native-is-edge-to-edge@1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz#28947688f9fafd584e73a4f935ea9603bd9b1939"
   integrity sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==
-
-react-native-is-edge-to-edge@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.2.1.tgz#64e10851abd9d176cbf2b40562f751622bde3358"
-  integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
-
-react-native-keyboard-controller@^1.20.2:
-  version "1.20.2"
-  resolved "https://registry.yarnpkg.com/react-native-keyboard-controller/-/react-native-keyboard-controller-1.20.2.tgz#2953341f48e25fec20dd732241cb8152251fd4d1"
-  integrity sha512-3xvPTIfasAbosDxT3Mc6b5Xr/M+yq99ECCM4iGnSAngziIVUZsZuPpfYL7nN1UiN9rQjWKvjdul/jq9E0V1s2w==
-  dependencies:
-    react-native-is-edge-to-edge "^1.2.1"
 
 react-native-lightbox@^0.7.0:
   version "0.7.0"

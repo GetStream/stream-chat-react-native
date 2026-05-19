@@ -4,6 +4,10 @@ module.exports = {
   globalSetup: './jest-global-setup.js',
   moduleNameMapper: {
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
+    // `@legendapp/list/react-native` ships a `react-native.web.js` fallback that imports `react-dom`.
+    // Jest's CJS resolver does not always pass the `react-native` condition for nested subpaths,
+    // so we explicitly redirect to the native build under test.
+    '^@legendapp/list/react-native$': '<rootDir>/node_modules/@legendapp/list/react-native.js',
   },
   preset: 'react-native',
   setupFiles: ['./node_modules/react-native-gesture-handler/jestSetup.js'],

@@ -155,6 +155,7 @@ export * from './MessageList/InlineLoadingMoreRecentIndicator';
 export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';
 export * from './MessageList/MessageFlashList';
+export * from './MessageList/MessageLegendList';
 export * from './MessageList/MessageSystem';
 export * from './MessageList/NetworkDownIndicator';
 export * from './MessageList/ScrollToBottomButton';

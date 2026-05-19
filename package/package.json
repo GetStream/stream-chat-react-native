@@ -84,7 +84,8 @@
     "react-native-markdown-package": "1.8.2",
     "react-native-url-polyfill": "^2.0.0",
     "stream-chat": "^9.44.2",
-    "use-sync-external-store": "^1.5.0"
+    "use-sync-external-store": "^1.5.0",
+    "@legendapp/list": "^3.0.0-beta.56"
   },
   "peerDependencies": {
     "@emoji-mart/data": ">=1.1.0",

@@ -9,6 +9,7 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 
 import type { MessageComposerProps } from '../MessageInput/MessageComposer';
 import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
+import { MessageLegendList, MessageLegendListProps } from '../MessageList/MessageLegendList';
 import { MessageListProps } from '../MessageList/MessageList';
 import { getThreadNotificationHostId } from '../Notifications/notificationTarget';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
@@ -48,6 +49,12 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
      * Available props - https://shopify.github.io/flash-list/docs/usage
      */
     additionalMessageFlashListProps?: Partial<MessageFlashListProps>;
+    /**
+     * @experimental This prop is experimental and is subject to change.
+     *
+     * Additional props for underlying MessageLegendList component.
+     */
+    additionalMessageLegendListProps?: Partial<MessageLegendListProps>;
     /** Make input focus on mounting thread */
     autoFocus?: boolean;
     /** Closes thread on dismount, defaults to true */
@@ -60,6 +67,11 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
     onThreadDismount?: () => void;
     notificationHostId?: string;
     shouldUseFlashList?: boolean;
+    /**
+     * @experimental When true, renders the LegendList-backed message list inside the thread.
+     * Takes precedence over `shouldUseFlashList` if both are true.
+     */
+    shouldUseLegendList?: boolean;
   };
 
 const ThreadWithContext = (props: ThreadPropsWithContext) => {
@@ -67,6 +79,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     additionalMessageComposerProps,
     additionalMessageListProps,
     additionalMessageFlashListProps,
+    additionalMessageLegendListProps,
     autoFocus = false,
     closeThread,
     closeThreadOnDismount = true,
@@ -78,6 +91,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     thread,
     threadInstance,
     shouldUseFlashList = false,
+    shouldUseLegendList = false,
   } = props;
   const { MessageList, ThreadMessageComposer: MessageComposer } = useComponentsContext();
 
@@ -129,7 +143,13 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   return (
     <React.Fragment key={`thread-${thread.id}`}>
       <NotificationTargetProvider hostId={notificationHostId} panel='thread'>
-        {FlashList && shouldUseFlashList ? (
+        {shouldUseLegendList ? (
+          <MessageLegendList
+            HeaderComponent={MemoizedThreadFooterComponent}
+            threadList
+            {...additionalMessageLegendListProps}
+          />
+        ) : FlashList && shouldUseFlashList ? (
           <MessageFlashList
             HeaderComponent={MemoizedThreadFooterComponent}
             threadList

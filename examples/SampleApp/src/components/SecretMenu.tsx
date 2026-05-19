@@ -27,7 +27,10 @@ import { useLegacyColors } from '../theme/useLegacyColors.ts';
 const isAndroid = Platform.OS === 'android';
 
 export type NotificationConfigItem = { label: string; name: string; id: string };
-export type MessageListImplementationConfigItem = { label: string; id: 'flatlist' | 'flashlist' };
+export type MessageListImplementationConfigItem = {
+  label: string;
+  id: 'flatlist' | 'flashlist' | 'legendlist';
+};
 export type MessageListModeConfigItem = { label: string; mode: 'default' | 'livestream' };
 export type MessageListPruningConfigItem = { label: string; value: 100 | 500 | 1000 | undefined };
 export type MessageInputFloatingConfigItem = { label: string; value: boolean };
@@ -39,6 +42,7 @@ export type MessageOverlayBackdropConfigItem = {
 const messageListImplementationConfigItems: MessageListImplementationConfigItem[] = [
   { label: 'FlatList', id: 'flatlist' },
   { label: 'FlashList', id: 'flashlist' },
+  { label: 'LegendList', id: 'legendlist' },
 ];
 
 const messageListModeConfigItems: MessageListModeConfigItem[] = [
