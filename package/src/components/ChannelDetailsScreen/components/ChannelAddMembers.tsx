@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   ColorValue,
@@ -15,18 +15,15 @@ import {
 
 import type { UserResponse } from 'stream-chat';
 
-import { BottomSheetContext } from '../../../contexts/bottomSheetContext/BottomSheetContext';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { DEFAULT_BASE_CONTEXT_VALUE } from '../../../contexts/utils/defaultBaseContextValue';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
 import { Search } from '../../../icons/search';
 import { NewClose } from '../../../icons/xmark';
 import { primitives } from '../../../theme';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
-import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 import { type AddMemberSearchResult, useChannelAddMembers } from '../hooks/useChannelAddMembers';
 
 export type ChannelAddMembersProps = {
@@ -238,10 +235,6 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
 
   const [searchFocused, setSearchFocused] = useState(false);
 
-  const bottomSheetContext = useContext(BottomSheetContext);
-  const List =
-    bottomSheetContext === DEFAULT_BASE_CONTEXT_VALUE ? FlatList : StreamBottomSheetModalFlatList;
-
   const stableOnSelectionChange = useStableCallback(onSelectionChange);
 
   const lastSelectionRef = useRef(selectedUsers);
@@ -338,17 +331,17 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
               style={styles.clearSearch}
             >
               <NewClose
-                height={styles.clearSearch.height}
-                stroke={styles.clearSearch.borderColor}
-                strokeWidth={styles.clearSearch.borderWidth * 1.5}
-                width={styles.clearSearch.height}
+                height={15}
+                stroke={semantics.inputTextIcon}
+                strokeWidth={2.25}
+                width={15}
               />
             </Pressable>
           ) : null}
         </View>
       </View>
 
-      <List
+      <FlatList
         contentContainerStyle={styles.listContent}
         data={results}
         keyboardDismissMode='interactive'

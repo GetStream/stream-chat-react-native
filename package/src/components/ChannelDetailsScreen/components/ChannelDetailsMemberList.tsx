@@ -1,36 +1,23 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ActivityIndicator, FlatList } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { BottomSheetContext } from '../../../contexts/bottomSheetContext/BottomSheetContext';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
-import { DEFAULT_BASE_CONTEXT_VALUE } from '../../../contexts/utils/defaultBaseContextValue';
-import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 import { useChannelAllMembers } from '../hooks/useChannelAllMembers';
 
 const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? member.user_id ?? '';
 
 /**
- * Renders the full list of channel members.
- *
- * Auto-detects whether a `BottomSheetProvider` is mounted above it: when rendered
- * inside a bottom sheet (the default `ChannelDetailsMemberSection` path), uses
- * `StreamBottomSheetModalFlatList` so scroll is correctly handed off between the
- * list and the surrounding sheet. When rendered standalone (e.g. inside a
- * full-screen route reached via `onViewAllMembersPress`), falls back to a regular
- * `FlatList`.
+ * Lists all channel members.
  */
 export const ChannelDetailsMemberList = () => {
   const { channel } = useChannelDetailsContext();
   const { client } = useChatContext();
   const { ChannelDetailsMemberListItem } = useComponentsContext();
   const { hasMore, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
-  const bottomSheetContext = useContext(BottomSheetContext);
-  const List =
-    bottomSheetContext === DEFAULT_BASE_CONTEXT_VALUE ? FlatList : StreamBottomSheetModalFlatList;
 
   const renderItem = useCallback(
     ({ item }: { item: ChannelMemberResponse }) => (
@@ -46,7 +33,7 @@ export const ChannelDetailsMemberList = () => {
   );
 
   return (
-    <List
+    <FlatList
       data={results}
       keyExtractor={keyExtractor}
       ListFooterComponent={ListFooterComponent}

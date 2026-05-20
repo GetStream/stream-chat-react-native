@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { I18nManager, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { I18nManager, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -11,14 +12,14 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/useChannelActions';
 import { useStableCallback } from '../../../hooks/useStableCallback';
+import { ArrowLeft } from '../../../icons/arrow-left';
 import { Checkmark } from '../../../icons/checkmark-1';
 import { UserAdd } from '../../../icons/user-add';
-import { NewClose } from '../../../icons/xmark';
 import { primitives } from '../../../theme';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
-import { BottomSheetModal } from '../../UIComponents/BottomSheetModal';
+import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
 type ModalHeaderProps = {
@@ -47,10 +48,10 @@ const ModalHeader = ({ onClose, rightAction, title }: ModalHeaderProps) => {
         <Button
           accessibilityLabelKey='a11y/Close'
           iconOnly
-          LeadingIcon={NewClose}
+          LeadingIcon={ArrowLeft}
           onPress={onClose}
           size='md'
-          type='outline'
+          type='ghost'
           variant='secondary'
         />
       </View>
@@ -87,31 +88,38 @@ const ChannelAllMembersModal = ({
   const { ChannelDetailsMemberList } = useComponentsContext();
   const { t } = useTranslationContext();
   const { updateChannelMembers } = useOwnCapabilitiesContext();
-  const { height: windowHeight } = useWindowDimensions();
   const { total } = useChannelDetailsMembersPreview(channel);
 
+  const styles = useStyles();
+
   return (
-    <BottomSheetModal height={windowHeight} onClose={onClose} visible={visible}>
-      <ModalHeader
-        onClose={onClose}
-        rightAction={
-          updateChannelMembers ? (
-            <Button
-              accessibilityLabelKey='a11y/Add members'
-              iconOnly
-              LeadingIcon={UserAdd}
-              onPress={onAddMembersPress}
-              size='md'
-              testID='channel-details-member-list-add-button'
-              type='outline'
-              variant='secondary'
-            />
-          ) : null
-        }
-        title={t('{{count}} members', { count: total })}
-      />
-      <ChannelDetailsMemberList />
-    </BottomSheetModal>
+    <Modal animationType='slide' onRequestClose={onClose} visible={visible}>
+      <GestureHandlerRootView style={styles.modalRoot}>
+        <SafeAreaViewWrapper style={styles.modalRoot}>
+          <ModalHeader
+            onClose={onClose}
+            rightAction={
+              updateChannelMembers ? (
+                <Button
+                  accessibilityLabelKey='a11y/Add members'
+                  iconOnly
+                  LeadingIcon={UserAdd}
+                  onPress={onAddMembersPress}
+                  size='md'
+                  testID='channel-details-member-list-add-button'
+                  type='outline'
+                  variant='secondary'
+                />
+              ) : null
+            }
+            title={t('{{count}} members', { count: total })}
+          />
+          <View style={styles.modalBody}>
+            <ChannelDetailsMemberList />
+          </View>
+        </SafeAreaViewWrapper>
+      </GestureHandlerRootView>
+    </Modal>
   );
 };
 
@@ -125,14 +133,12 @@ const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProp
   const { addMembers } = useChannelActions(channel);
   const { ChannelAddMembers } = useComponentsContext();
   const { t } = useTranslationContext();
-  const { height: windowHeight } = useWindowDimensions();
   const styles = useStyles();
   const {
     theme: {
       channelDetailsScreen: {
         memberSection: { confirmButton: confirmButtonOverride },
       },
-      semantics,
     },
   } = useTheme();
   const [addMembersSelection, setAddMembersSelection] = useState<UserResponse[]>([]);
@@ -168,46 +174,39 @@ const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProp
   });
 
   return (
-    <BottomSheetModal height={windowHeight} onClose={handleClose} visible={visible}>
-      {notificationHostId ? (
-        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-          <View style={styles.modalBody}>
-            <ModalHeader
-              onClose={handleClose}
-              rightAction={
-                <Pressable
-                  accessibilityLabel={t('a11y/Confirm add members')}
-                  accessibilityRole='button'
-                  accessibilityState={{ disabled: !confirmEnabled }}
-                  disabled={!confirmEnabled}
-                  onPress={handleConfirm}
-                  style={[
-                    styles.confirmButton,
-                    confirmEnabled
-                      ? { backgroundColor: semantics.accentPrimary }
-                      : {
-                          borderColor: semantics.borderCoreDefault,
-                          borderWidth: 1,
-                        },
-                    confirmButtonOverride,
-                  ]}
-                  testID='channel-details-add-members-confirm-button'
-                >
-                  <Checkmark
-                    height={20}
-                    pathFill={confirmEnabled ? semantics.textOnInverse : semantics.textSecondary}
-                    width={20}
-                  />
-                </Pressable>
-              }
-              title={t('Add Members')}
-            />
-            <ChannelAddMembers onSelectionChange={handleSelectionChange} />
-            <NotificationList />
-          </View>
-        </NotificationTargetProvider>
-      ) : null}
-    </BottomSheetModal>
+    <Modal animationType='slide' onRequestClose={onClose} visible={visible}>
+      <GestureHandlerRootView style={styles.modalRoot}>
+        <SafeAreaViewWrapper style={styles.modalRoot}>
+          {notificationHostId ? (
+            <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+              <View style={styles.modalBody}>
+                <ModalHeader
+                  onClose={handleClose}
+                  rightAction={
+                    <Button
+                      accessibilityLabel={t('a11y/Confirm add members')}
+                      accessibilityRole='button'
+                      accessibilityState={{ disabled: !confirmEnabled }}
+                      disabled={!confirmEnabled}
+                      variant='primary'
+                      onPress={handleConfirm}
+                      type='solid'
+                      LeadingIcon={Checkmark}
+                      iconOnly
+                      testID='channel-details-add-members-confirm-button'
+                      style={confirmButtonOverride}
+                    />
+                  }
+                  title={t('Add Members')}
+                />
+                <ChannelAddMembers onSelectionChange={handleSelectionChange} />
+                <NotificationList />
+              </View>
+            </NotificationTargetProvider>
+          ) : null}
+        </SafeAreaViewWrapper>
+      </GestureHandlerRootView>
+    </Modal>
   );
 };
 
@@ -326,6 +325,9 @@ export const ChannelDetailsMemberSection = () => {
 };
 
 const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
@@ -361,6 +363,10 @@ const useStyles = () => {
         modalBody: {
           flex: 1,
         },
+        modalRoot: {
+          backgroundColor: semantics.backgroundCoreElevation1,
+          flex: 1,
+        },
         modalHeader: {
           alignItems: 'center',
           flexDirection: 'row',
@@ -388,13 +394,6 @@ const useStyles = () => {
           textTransform: 'capitalize',
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
-        confirmButton: {
-          alignItems: 'center',
-          borderRadius: primitives.radiusMax,
-          height: 40,
-          justifyContent: 'center',
-          width: 40,
-        },
         sectionCard: {
           borderRadius: primitives.radiusLg,
           overflow: 'hidden',
@@ -411,6 +410,6 @@ const useStyles = () => {
           lineHeight: primitives.typographyLineHeightNormal,
         },
       }),
-    [],
+    [semantics],
   );
 };

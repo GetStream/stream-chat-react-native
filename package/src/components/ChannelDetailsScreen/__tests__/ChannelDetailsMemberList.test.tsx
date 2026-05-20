@@ -1,5 +1,5 @@
-import React, { type ComponentProps } from 'react';
-import { Text } from 'react-native';
+import React from 'react';
+import { type FlatListProps as RNFlatListProps, Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
@@ -13,21 +13,29 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
-import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 import { ChannelDetailsMemberList } from '../components/ChannelDetailsMemberList';
 import type { ChannelDetailsMemberListItemProps } from '../components/ChannelDetailsMemberListItem';
 
-type FlatListProps = ComponentProps<typeof StreamBottomSheetModalFlatList<ChannelMemberResponse>>;
+type FlatListProps = RNFlatListProps<ChannelMemberResponse>;
 
-const mockStreamBottomSheetModalFlatList = jest.fn(
+const mockFlatList = jest.fn(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (_props: FlatListProps) => null,
 );
 
-jest.mock('../../UIComponents/StreamBottomSheetModalFlatList', () => ({
-  StreamBottomSheetModalFlatList: (...args: [FlatListProps]) =>
-    mockStreamBottomSheetModalFlatList(...args),
-}));
+jest.mock('react-native', () => {
+  const actual = jest.requireActual('react-native');
+
+  return new Proxy(actual, {
+    get(target, prop, receiver) {
+      if (prop === 'FlatList') {
+        return (props: FlatListProps) => mockFlatList(props);
+      }
+
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+});
 
 type QueryMembersMock = jest.Mock<
   Promise<{ members: ChannelMemberResponse[] }>,
@@ -110,17 +118,17 @@ const renderList = ({ channel, currentUserId }: { channel: Channel; currentUserI
   );
 
 const latestListProps = () => {
-  const calls = mockStreamBottomSheetModalFlatList.mock.calls;
+  const calls = mockFlatList.mock.calls;
   return calls[calls.length - 1]?.[0];
 };
 
 describe('ChannelDetailsMemberList', () => {
   beforeEach(() => {
-    mockStreamBottomSheetModalFlatList.mockClear();
+    mockFlatList.mockClear();
     probeCalls.length = 0;
   });
 
-  it('forwards every channel member into the bottom sheet flat list', () => {
+  it('forwards every channel member into the flat list', () => {
     const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
     const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
     const queryMembers: QueryMembersMock = jest.fn();
@@ -129,7 +137,7 @@ describe('ChannelDetailsMemberList', () => {
     renderList({ channel });
 
     expect(queryMembers).not.toHaveBeenCalled();
-    expect(mockStreamBottomSheetModalFlatList).toHaveBeenCalled();
+    expect(mockFlatList).toHaveBeenCalled();
     const props = latestListProps();
     const data = props?.data as ChannelMemberResponse[];
     expect(data).toHaveLength(2);
