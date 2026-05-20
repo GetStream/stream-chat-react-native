@@ -310,6 +310,7 @@
   "a11y/Send voice recording": "Send voice recording",
   "a11y/Search users to add": "Search users to add",
   "a11y/Select {{name}}": "Select {{name}}",
+  "a11y/{{name}} is already a member": "{{name}} पहले से ही सदस्य है",
   "a11y/Share Button": "Share Button",
   "a11y/Start voice recording": "Start voice recording",
   "a11y/Stop voice recording": "Stop voice recording",
@@ -366,6 +367,7 @@
   "Failed to block user": "उपयोगकर्ता को ब्लॉक करने में विफल",
   "Failed to delete channel": "चैनल हटाने में विफल",
   "Failed to leave channel": "चैनल छोड़ने में विफल",
+  "Failed to load users": "उपयोगकर्ता लोड करने में विफल",
   "Failed to play the recording": "रिकॉर्डिंग चलाने में विफल",
   "Failed to update channel archive status": "चैनल आर्काइव स्थिति अपडेट करने में विफल",
   "Failed to update channel mute status": "चैनल म्यूट स्थिति अपडेट करने में विफल",
@@ -382,5 +384,6 @@
   "{{ user }} has been unmuted": "{{ user }} को अनम्यूट किया गया",
   "size limit": "आकार सीमा",
   "unknown error": "अज्ञात त्रुटि",
-  "unsupported file type": "असमर्थित फ़ाइल प्रकार"
+  "unsupported file type": "असमर्थित फ़ाइल प्रकार",
+  "Already a member": "पहले से सदस्य"
 }

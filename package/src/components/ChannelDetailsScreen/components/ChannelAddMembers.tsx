@@ -27,7 +27,7 @@ import { NewClose } from '../../../icons/xmark';
 import { primitives } from '../../../theme';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
-import { useChannelAddMembers } from '../hooks/useChannelAddMembers';
+import { type AddMemberSearchResult, useChannelAddMembers } from '../hooks/useChannelAddMembers';
 
 export type ChannelAddMembersProps = {
   /**
@@ -38,7 +38,7 @@ export type ChannelAddMembersProps = {
   onSelectionChange: (selectedUsers: UserResponse[]) => void;
 };
 
-const keyExtractor = (user: UserResponse) => user.id;
+const keyExtractor = (user: AddMemberSearchResult) => user.id;
 
 type SelectionCircleProps = {
   selected: boolean;
@@ -86,6 +86,9 @@ SelectionCircle.displayName = 'SelectionCircle';
 
 type RowProps = {
   accessibilityLabel: string;
+  isAlreadyMember: boolean;
+  memberLabel: string;
+  memberLabelColor: ColorValue;
   onPress: () => void;
   rowStyle?: StyleProp<ViewStyle>;
   selected: boolean;
@@ -99,6 +102,9 @@ type RowProps = {
 const ChannelAddMembersRow = React.memo(
   ({
     accessibilityLabel,
+    isAlreadyMember,
+    memberLabel,
+    memberLabelColor,
     onPress,
     rowStyle,
     selected,
@@ -114,20 +120,36 @@ const ChannelAddMembersRow = React.memo(
       <Pressable
         accessibilityLabel={accessibilityLabel}
         accessibilityRole='button'
-        accessibilityState={{ selected }}
+        accessibilityState={{ disabled: isAlreadyMember, selected }}
+        disabled={isAlreadyMember}
         onPress={onPress}
-        style={({ pressed }) => [styles.userRow, rowStyle, pressed && { opacity: 0.7 }]}
+        style={({ pressed }) => [
+          styles.userRow,
+          rowStyle,
+          isAlreadyMember && styles.userRowDisabled,
+          pressed && !isAlreadyMember && { opacity: 0.7 },
+        ]}
         testID={`channel-add-members-row-${user.id}`}
       >
         <UserAvatar showOnlineIndicator={user.online} size='sm' user={user} />
         <Text numberOfLines={1} style={[styles.userName, { color: userNameColor }, userNameStyle]}>
           {displayName}
         </Text>
-        <SelectionCircle
-          selected={selected}
-          selectedStyle={selectedCircleStyle}
-          unselectedStyle={unselectedCircleStyle}
-        />
+        {isAlreadyMember ? (
+          <Text
+            numberOfLines={1}
+            style={[styles.memberLabel, { color: memberLabelColor }]}
+            testID={`channel-add-members-row-${user.id}-member-label`}
+          >
+            {memberLabel}
+          </Text>
+        ) : (
+          <SelectionCircle
+            selected={selected}
+            selectedStyle={selectedCircleStyle}
+            unselectedStyle={unselectedCircleStyle}
+          />
+        )}
       </Pressable>
     );
   },
@@ -230,19 +252,25 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
   }, [selectedUsers, stableOnSelectionChange]);
 
   const renderItem = useCallback(
-    ({ item }: { item: UserResponse }) => {
+    ({ item }: { item: AddMemberSearchResult }) => {
       const selected = isSelected(item.id);
       const displayName = item.name ?? item.id;
+      const accessibilityLabel = item.isAlreadyMember
+        ? t('a11y/{{name}} is already a member', { name: displayName })
+        : t('a11y/Select {{name}}', { name: displayName });
       return (
         <ChannelAddMembersRow
-          accessibilityLabel={t('a11y/Select {{name}}', { name: displayName })}
+          accessibilityLabel={accessibilityLabel}
+          isAlreadyMember={item.isAlreadyMember}
+          memberLabel={t('Already a member')}
+          memberLabelColor={semantics.textSecondary}
           onPress={() => toggleUser(item)}
           rowStyle={userRowOverride}
           selected={selected}
           selectedCircleStyle={selectionCircleSelectedOverride}
           unselectedCircleStyle={selectionCircleOverride}
           user={item}
-          userNameColor={semantics.textPrimary}
+          userNameColor={item.isAlreadyMember ? semantics.textSecondary : semantics.textPrimary}
           userNameStyle={userNameOverride}
         />
       );
@@ -252,6 +280,7 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
       selectionCircleOverride,
       selectionCircleSelectedOverride,
       semantics.textPrimary,
+      semantics.textSecondary,
       t,
       toggleUser,
       userNameOverride,
@@ -421,6 +450,15 @@ const useStyles = () => {
           minHeight: 52,
           paddingHorizontal: primitives.spacingMd,
           paddingVertical: primitives.spacingXs,
+        },
+        userRowDisabled: {
+          opacity: 0.6,
+        },
+        memberLabel: {
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
       }),
     [semantics],

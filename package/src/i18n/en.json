@@ -310,6 +310,7 @@
   "a11y/Send voice recording": "Send voice recording",
   "a11y/Search users to add": "Search users to add",
   "a11y/Select {{name}}": "Select {{name}}",
+  "a11y/{{name}} is already a member": "{{name}} is already a member",
   "a11y/Share Button": "Share Button",
   "a11y/Start voice recording": "Start voice recording",
   "a11y/Stop voice recording": "Stop voice recording",
@@ -366,6 +367,7 @@
   "Failed to block user": "Failed to block user",
   "Failed to delete channel": "Failed to delete channel",
   "Failed to leave channel": "Failed to leave channel",
+  "Failed to load users": "Failed to load users",
   "Failed to play the recording": "Failed to play the recording",
   "Failed to update channel archive status": "Failed to update channel archive status",
   "Failed to update channel mute status": "Failed to update channel mute status",
@@ -382,5 +384,6 @@
   "{{ user }} has been unmuted": "{{ user }} has been unmuted",
   "size limit": "size limit",
   "unknown error": "unknown error",
-  "unsupported file type": "unsupported file type"
+  "unsupported file type": "unsupported file type",
+  "Already a member": "Already a member"
 }

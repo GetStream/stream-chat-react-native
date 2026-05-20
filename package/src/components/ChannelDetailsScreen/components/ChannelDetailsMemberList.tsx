@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useMemo } from 'react';
-import { FlatList } from 'react-native';
+import { ActivityIndicator, FlatList } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
@@ -8,8 +8,8 @@ import { useChannelDetailsContext } from '../../../contexts/channelDetailsContex
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../../../contexts/utils/defaultBaseContextValue';
-import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
+import { useChannelAllMembers } from '../hooks/useChannelAllMembers';
 
 const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? member.user_id ?? '';
 
@@ -27,12 +27,10 @@ export const ChannelDetailsMemberList = () => {
   const { channel } = useChannelDetailsContext();
   const { client } = useChatContext();
   const { ChannelDetailsMemberListItem } = useComponentsContext();
-  const members = useChannelMembersState(channel);
+  const { hasMore, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
   const bottomSheetContext = useContext(BottomSheetContext);
   const List =
     bottomSheetContext === DEFAULT_BASE_CONTEXT_VALUE ? FlatList : StreamBottomSheetModalFlatList;
-
-  const data = useMemo(() => Object.values(members), [members]);
 
   const renderItem = useCallback(
     ({ item }: { item: ChannelMemberResponse }) => (
@@ -41,5 +39,20 @@ export const ChannelDetailsMemberList = () => {
     [ChannelDetailsMemberListItem, client.userID],
   );
 
-  return <List data={data} keyExtractor={keyExtractor} renderItem={renderItem} />;
+  const ListFooterComponent = useMemo(
+    () =>
+      loadingMore ? <ActivityIndicator testID='channel-details-member-list-loading-more' /> : null,
+    [loadingMore],
+  );
+
+  return (
+    <List
+      data={results}
+      keyExtractor={keyExtractor}
+      ListFooterComponent={ListFooterComponent}
+      onEndReached={hasMore ? loadMore : undefined}
+      onEndReachedThreshold={0.5}
+      renderItem={renderItem}
+    />
+  );
 };

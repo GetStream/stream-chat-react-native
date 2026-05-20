@@ -310,6 +310,7 @@
   "a11y/Send voice recording": "Send voice recording",
   "a11y/Search users to add": "Search users to add",
   "a11y/Select {{name}}": "Select {{name}}",
+  "a11y/{{name}} is already a member": "{{name}}님은 이미 멤버입니다",
   "a11y/Share Button": "Share Button",
   "a11y/Start voice recording": "Start voice recording",
   "a11y/Stop voice recording": "Stop voice recording",
@@ -366,6 +367,7 @@
   "Failed to block user": "사용자 차단에 실패했습니다",
   "Failed to delete channel": "채널 삭제에 실패했습니다",
   "Failed to leave channel": "채널 나가기에 실패했습니다",
+  "Failed to load users": "사용자 불러오기에 실패했습니다",
   "Failed to play the recording": "녹음 재생에 실패했습니다",
   "Failed to update channel archive status": "채널 보관 상태 업데이트에 실패했습니다",
   "Failed to update channel mute status": "채널 음소거 상태 업데이트에 실패했습니다",
@@ -382,5 +384,6 @@
   "{{ user }} has been unmuted": "{{ user }}님의 음소거가 해제되었습니다",
   "size limit": "크기 제한",
   "unknown error": "알 수 없는 오류",
-  "unsupported file type": "지원되지 않는 파일 형식"
+  "unsupported file type": "지원되지 않는 파일 형식",
+  "Already a member": "이미 멤버"
 }

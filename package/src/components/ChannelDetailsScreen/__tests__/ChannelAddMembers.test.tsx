@@ -96,9 +96,9 @@ describe('ChannelAddMembers', () => {
 
     await waitFor(() => expect(queryUsers).toHaveBeenCalledTimes(1));
     expect(queryUsers).toHaveBeenCalledWith(
-      { role: 'user' },
+      {},
       { name: 1 },
-      expect.objectContaining({ limit: 10, offset: 0, presence: true }),
+      expect.objectContaining({ limit: 25, offset: 0 }),
     );
   });
 
@@ -133,25 +133,36 @@ describe('ChannelAddMembers', () => {
     expect(autocompleteCalls).toHaveLength(1);
     expect(autocompleteCalls[0][0]).toEqual({
       name: { $autocomplete: 'Eth' },
-      role: 'user',
     });
   });
 
-  it('filters out existing channel members from the rendered list', async () => {
+  it('renders existing channel members as disabled rows with a Member label', async () => {
     const existingUser = generateUser({ id: 'u-1', name: 'Existing Member' });
     const newUser = generateUser({ id: 'u-2', name: 'New User' });
     const channel = buildChannel([generateMember({ user: existingUser })]);
     const queryUsers: QueryUsersMock = jest
       .fn()
       .mockResolvedValue({ users: [existingUser, newUser] });
+    const onSelectionChange = jest.fn();
 
-    renderComponent({ channel, queryUsers });
+    renderComponent({ channel, onSelectionChange, queryUsers });
 
-    await waitFor(() => expect(screen.queryByTestId('channel-add-members-row-u-2')).toBeTruthy());
-    expect(screen.queryByTestId('channel-add-members-row-u-1')).toBeNull();
+    const existingRow = await waitFor(() => screen.getByTestId('channel-add-members-row-u-1'));
+    expect(existingRow.props.accessibilityState).toMatchObject({ disabled: true });
+    expect(screen.getByTestId('channel-add-members-row-u-1-member-label')).toBeTruthy();
+
+    fireEvent.press(existingRow);
+    expect(
+      screen.getByTestId('channel-add-members-row-u-1').props.accessibilityState,
+    ).toMatchObject({ selected: false });
+    expect(onSelectionChange).not.toHaveBeenCalled();
+
+    const newRow = screen.getByTestId('channel-add-members-row-u-2');
+    expect(newRow.props.accessibilityState).toMatchObject({ disabled: false });
+    expect(screen.queryByTestId('channel-add-members-row-u-2-member-label')).toBeNull();
   });
 
-  it('filters out the current user from the rendered list', async () => {
+  it('treats the current user as a regular row when not in channel.state.members', async () => {
     const me = generateUser({ id: 'me', name: 'Me' });
     const newUser = generateUser({ id: 'u-2', name: 'New User' });
     const channel = buildChannel([]);
@@ -159,8 +170,8 @@ describe('ChannelAddMembers', () => {
 
     renderComponent({ channel, queryUsers, userID: 'me' });
 
-    await waitFor(() => expect(screen.queryByTestId('channel-add-members-row-u-2')).toBeTruthy());
-    expect(screen.queryByTestId('channel-add-members-row-me')).toBeNull();
+    const meRow = await waitFor(() => screen.getByTestId('channel-add-members-row-me'));
+    expect(meRow.props.accessibilityState).toMatchObject({ disabled: false });
   });
 
   it('toggles selection on the row and reflects it via accessibilityState', async () => {
@@ -264,7 +275,7 @@ describe('ChannelAddMembers', () => {
   });
 
   it('wires onEndReached on the list so it can request additional pages', async () => {
-    const firstPage = Array.from({ length: 10 }, (_, i) =>
+    const firstPage = Array.from({ length: 25 }, (_, i) =>
       generateUser({ id: `p1-${i}`, name: `User P1 ${i}` }),
     );
     const channel = buildChannel([]);
@@ -277,5 +288,39 @@ describe('ChannelAddMembers', () => {
     const list = screen.getByTestId('channel-add-members-list');
     expect(typeof list.props.onEndReached).toBe('function');
     expect(list.props.onEndReachedThreshold).toBe(0.2);
+  });
+
+  it('flips an already-rendered row to disabled when the user becomes a channel member', async () => {
+    const newUser = generateUser({ id: 'u-2', name: 'New User' });
+    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [newUser] });
+
+    const listeners: Array<(event: unknown) => void> = [];
+    const state: { members: Record<string, ChannelMemberResponse> } = { members: {} };
+    const channel = {
+      cid: 'messaging:test',
+      data: { member_count: 0 },
+      on: (_event: string, cb: (event: unknown) => void) => {
+        listeners.push(cb);
+        return { unsubscribe: () => undefined };
+      },
+      state,
+    } as unknown as Channel;
+
+    renderComponent({ channel, queryUsers });
+
+    const row = await waitFor(() => screen.getByTestId('channel-add-members-row-u-2'));
+    expect(row.props.accessibilityState).toMatchObject({ disabled: false });
+
+    act(() => {
+      state.members = { 'u-2': generateMember({ user: newUser }) };
+      listeners.forEach((cb) => cb({ type: 'member.added' }));
+    });
+
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('channel-add-members-row-u-2').props.accessibilityState,
+      ).toMatchObject({ disabled: true }),
+    );
+    expect(screen.getByTestId('channel-add-members-row-u-2-member-label')).toBeTruthy();
   });
 });

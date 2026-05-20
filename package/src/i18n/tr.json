@@ -310,6 +310,7 @@
   "a11y/Send voice recording": "Send voice recording",
   "a11y/Search users to add": "Search users to add",
   "a11y/Select {{name}}": "Select {{name}}",
+  "a11y/{{name}} is already a member": "{{name}} zaten bir üye",
   "a11y/Share Button": "Share Button",
   "a11y/Start voice recording": "Start voice recording",
   "a11y/Stop voice recording": "Stop voice recording",
@@ -366,6 +367,7 @@
   "Failed to block user": "Kullanıcı engellenemedi",
   "Failed to delete channel": "Kanal silinemedi",
   "Failed to leave channel": "Kanaldan çıkılamadı",
+  "Failed to load users": "Kullanıcılar yüklenemedi",
   "Failed to play the recording": "Kayıt oynatılamadı",
   "Failed to update channel archive status": "Kanal arşiv durumu güncellenemedi",
   "Failed to update channel mute status": "Kanal sessize alma durumu güncellenemedi",
@@ -382,5 +384,6 @@
   "{{ user }} has been unmuted": "{{ user }} kullanıcısının sesi açıldı",
   "size limit": "boyut sınırı",
   "unknown error": "bilinmeyen hata",
-  "unsupported file type": "desteklenmeyen dosya türü"
+  "unsupported file type": "desteklenmeyen dosya türü",
+  "Already a member": "Zaten üye"
 }

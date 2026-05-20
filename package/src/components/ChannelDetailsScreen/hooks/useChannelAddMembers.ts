@@ -3,11 +3,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import debounce from 'lodash/debounce';
 import type { Channel, UserFilters, UserResponse } from 'stream-chat';
 
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useChatContext, useTranslationContext } from '../../../contexts';
+import { getNotificationErrorOptions } from '../../../hooks/useChannelActions';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
+import { useNotificationApi } from '../../Notifications/hooks/useNotificationApi';
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 25;
 const DEBOUNCE_MS = 200;
+
+export type AddMemberSearchResult = UserResponse & { isAlreadyMember: boolean };
 
 export type UseChannelAddMembersResult = {
   clearSearch: () => void;
@@ -17,10 +21,10 @@ export type UseChannelAddMembersResult = {
   loadingMore: boolean;
   loadMore: () => void;
   onChangeSearchText: (text: string) => void;
-  results: UserResponse[];
+  results: AddMemberSearchResult[];
   searchText: string;
   selectedUsers: UserResponse[];
-  toggleUser: (user: UserResponse) => void;
+  toggleUser: (user: AddMemberSearchResult) => void;
 };
 
 export const useChannelAddMembers = ({
@@ -29,9 +33,11 @@ export const useChannelAddMembers = ({
   channel: Channel;
 }): UseChannelAddMembersResult => {
   const { client } = useChatContext();
+  const { addNotification } = useNotificationApi();
+  const { t } = useTranslationContext();
 
   const [searchText, setSearchText] = useState('');
-  const [results, setResults] = useState<UserResponse[]>([]);
+  const [rawResults, setRawResults] = useState<UserResponse[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -42,15 +48,7 @@ export const useChannelAddMembers = ({
   const inFlightRef = useRef(false);
 
   const members = useChannelMembersState(channel);
-  const excludedIds = useMemo(() => {
-    const ids = new Set<string>(Object.keys(members));
-    if (client.userID) ids.add(client.userID);
-    return ids;
-  }, [members, client.userID]);
-
-  // Avoid fetchPage churning whenever channel.state.members mutates.
-  const excludedIdsRef = useRef(excludedIds);
-  excludedIdsRef.current = excludedIds;
+  const memberIds = useMemo(() => new Set(Object.keys(members)), [members]);
 
   const fetchPage = useCallback(
     async ({ append, query }: { append: boolean; query: string }) => {
@@ -65,7 +63,7 @@ export const useChannelAddMembers = ({
       }
 
       try {
-        const filter: UserFilters = { role: 'user' };
+        const filter: UserFilters = {};
         if (query) {
           filter.name = { $autocomplete: query };
         }
@@ -73,27 +71,34 @@ export const useChannelAddMembers = ({
         const response = await client.queryUsers(
           filter,
           { name: 1 },
-          { limit: PAGE_SIZE, offset: offsetRef.current, presence: true },
+          { limit: PAGE_SIZE, offset: offsetRef.current },
         );
 
         if (requestId !== requestIdRef.current) return;
 
         const fetched = response.users ?? [];
-        const filtered = fetched.filter((user) => user.id && !excludedIdsRef.current.has(user.id));
 
-        setResults((prev) => {
-          if (!append) return filtered;
+        setRawResults((prev) => {
+          if (!append) return fetched;
           const seen = new Set(prev.map((u) => u.id));
-          const deduped = filtered.filter((u) => !seen.has(u.id));
+          const deduped = fetched.filter((u) => u.id && !seen.has(u.id));
           return deduped.length ? [...prev, ...deduped] : prev;
         });
         offsetRef.current += fetched.length;
         if (fetched.length < PAGE_SIZE) {
           setHasMore(false);
         }
-      } catch (err) {
+      } catch (error) {
         if (requestId !== requestIdRef.current) return;
-        console.warn('[useChannelAddMembers] queryUsers failed', err);
+        addNotification({
+          message: t('Failed to load users'),
+          options: {
+            ...getNotificationErrorOptions(error),
+            severity: 'error',
+            type: 'api:channel:query-users:failed',
+          },
+          origin: { context: { channel }, emitter: 'AddChannelMembers' },
+        });
       } finally {
         if (requestId === requestIdRef.current) {
           inFlightRef.current = false;
@@ -102,7 +107,7 @@ export const useChannelAddMembers = ({
         }
       }
     },
-    [client],
+    [client, addNotification, t, channel],
   );
 
   const fetchPageRef = useRef(fetchPage);
@@ -143,17 +148,29 @@ export const useChannelAddMembers = ({
     fetchPageRef.current({ append: true, query: searchText });
   }, [hasMore, loading, searchText]);
 
-  const toggleUser = useCallback((user: UserResponse) => {
-    if (!user.id) return;
+  const toggleUser = useCallback((user: AddMemberSearchResult) => {
+    if (!user.id || user.isAlreadyMember) return;
     setSelectedUsers((prev) => {
       const exists = prev.some((u) => u.id === user.id);
-      return exists ? prev.filter((u) => u.id !== user.id) : [...prev, user];
+      if (exists) return prev.filter((u) => u.id !== user.id);
+      const userResponse: UserResponse = { ...user };
+      delete (userResponse as Partial<AddMemberSearchResult>).isAlreadyMember;
+      return [...prev, userResponse];
     });
   }, []);
 
   const selectedIds = useMemo(() => new Set(selectedUsers.map((u) => u.id)), [selectedUsers]);
 
   const isSelected = useCallback((userId: string) => selectedIds.has(userId), [selectedIds]);
+
+  const results = useMemo<AddMemberSearchResult[]>(
+    () =>
+      rawResults.map((user) => ({
+        ...user,
+        isAlreadyMember: !!user.id && memberIds.has(user.id),
+      })),
+    [rawResults, memberIds],
+  );
 
   return {
     clearSearch,
