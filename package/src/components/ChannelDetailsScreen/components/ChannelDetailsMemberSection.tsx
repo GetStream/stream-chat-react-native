@@ -396,7 +396,6 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
-          textTransform: 'capitalize',
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
         sectionCard: {

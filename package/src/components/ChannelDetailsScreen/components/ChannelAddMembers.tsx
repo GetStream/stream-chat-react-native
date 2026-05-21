@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TextStyle,
   View,
   ViewStyle,
 } from 'react-native';
@@ -154,6 +155,92 @@ const ChannelAddMembersRow = React.memo(
 
 ChannelAddMembersRow.displayName = 'ChannelAddMembersRow';
 
+type SearchInputProps = {
+  onChangeText: (text: string) => void;
+  onClear: () => void;
+  searchContainerStyle?: StyleProp<ViewStyle>;
+  searchInputFocusedStyle?: StyleProp<ViewStyle>;
+  searchInputStyle?: StyleProp<ViewStyle>;
+  searchTextInputStyle?: StyleProp<TextStyle>;
+};
+
+const ChannelAddMembersSearchInput = React.memo(
+  ({
+    onChangeText,
+    onClear,
+    searchContainerStyle,
+    searchInputFocusedStyle,
+    searchInputStyle,
+    searchTextInputStyle,
+  }: SearchInputProps) => {
+    const { t } = useTranslationContext();
+    const {
+      theme: { semantics },
+    } = useTheme();
+    const styles = useStyles();
+
+    const [searchText, setSearchText] = useState('');
+    const [focused, setFocused] = useState(false);
+
+    const handleChangeText = useCallback(
+      (text: string) => {
+        setSearchText(text);
+        onChangeText(text);
+      },
+      [onChangeText],
+    );
+
+    const handleClear = useCallback(() => {
+      setSearchText('');
+      onClear();
+    }, [onClear]);
+
+    const handleFocus = useCallback(() => setFocused(true), []);
+    const handleBlur = useCallback(() => setFocused(false), []);
+
+    return (
+      <View style={[styles.searchContainer, searchContainerStyle]}>
+        <View
+          style={[
+            styles.searchInput,
+            { borderColor: semantics.borderCoreDefault },
+            searchInputStyle,
+            focused && [{ borderColor: semantics.accentPrimary }, searchInputFocusedStyle],
+          ]}
+        >
+          <Search height={20} stroke={semantics.textSecondary} width={20} />
+          <TextInput
+            accessibilityLabel={t('a11y/Search users to add')}
+            autoCapitalize='none'
+            autoCorrect={false}
+            onBlur={handleBlur}
+            onChangeText={handleChangeText}
+            onFocus={handleFocus}
+            placeholder={t('Search')}
+            placeholderTextColor={semantics.textSecondary}
+            style={[styles.searchTextInput, { color: semantics.textPrimary }, searchTextInputStyle]}
+            testID='channel-add-members-search-input'
+            value={searchText}
+          />
+          {searchText.length > 0 ? (
+            <Pressable
+              accessibilityLabel={t('a11y/Clear search')}
+              accessibilityRole='button'
+              hitSlop={30}
+              onPress={handleClear}
+              testID='channel-add-members-clear-search'
+            >
+              <XCircle height={15} stroke={semantics.inputTextIcon} strokeWidth={2.25} width={15} />
+            </Pressable>
+          ) : null}
+        </View>
+      </View>
+    );
+  },
+);
+
+ChannelAddMembersSearchInput.displayName = 'ChannelAddMembersSearchInput';
+
 type EmptyStateProps = {
   containerStyle?: StyleProp<ViewStyle>;
   iconColor: ColorValue;
@@ -228,12 +315,9 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
     loadMore,
     onChangeSearchText,
     results,
-    searchText,
     selectedUsers,
     toggleUser,
   } = useChannelAddMembers({ channel });
-
-  const [searchFocused, setSearchFocused] = useState(false);
 
   const stableOnSelectionChange = useStableCallback(onSelectionChange);
 
@@ -294,46 +378,14 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
 
   return (
     <View style={styles.container}>
-      <View style={[styles.searchContainer, searchContainerOverride]}>
-        <View
-          style={[
-            styles.searchInput,
-            { borderColor: semantics.borderCoreDefault },
-            searchInputOverride,
-            searchFocused && [{ borderColor: semantics.accentPrimary }, searchInputFocusedOverride],
-          ]}
-        >
-          <Search height={20} stroke={semantics.textSecondary} width={20} />
-          <TextInput
-            accessibilityLabel={t('a11y/Search users to add')}
-            autoCapitalize='none'
-            autoCorrect={false}
-            onBlur={() => setSearchFocused(false)}
-            onChangeText={onChangeSearchText}
-            onFocus={() => setSearchFocused(true)}
-            placeholder={t('Search')}
-            placeholderTextColor={semantics.textSecondary}
-            style={[
-              styles.searchTextInput,
-              { color: semantics.textPrimary },
-              searchTextInputOverride,
-            ]}
-            testID='channel-add-members-search-input'
-            value={searchText}
-          />
-          {searchText.length > 0 ? (
-            <Pressable
-              accessibilityLabel={t('a11y/Clear search')}
-              accessibilityRole='button'
-              hitSlop={30}
-              onPress={clearSearch}
-              testID='channel-add-members-clear-search'
-            >
-              <XCircle height={15} stroke={semantics.inputTextIcon} strokeWidth={2.25} width={15} />
-            </Pressable>
-          ) : null}
-        </View>
-      </View>
+      <ChannelAddMembersSearchInput
+        onChangeText={onChangeSearchText}
+        onClear={clearSearch}
+        searchContainerStyle={searchContainerOverride}
+        searchInputFocusedStyle={searchInputFocusedOverride}
+        searchInputStyle={searchInputOverride}
+        searchTextInputStyle={searchTextInputOverride}
+      />
 
       <FlatList
         contentContainerStyle={styles.listContent}

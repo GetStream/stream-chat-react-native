@@ -66,7 +66,6 @@ export const ChannelDetailsScreenContent = () => {
         {isDirect ? null : <ChannelDetailsMemberSection />}
         <ChannelDetailsActionsSection />
       </ScrollView>
-      <NotificationList />
     </View>
   );
 };
@@ -92,6 +91,7 @@ export const ChannelDetailsScreen = ({
       {notificationHostId ? (
         <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
           <Content />
+          <NotificationList />
         </NotificationTargetProvider>
       ) : (
         <Content />

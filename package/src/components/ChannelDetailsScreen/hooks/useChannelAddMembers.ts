@@ -22,7 +22,6 @@ export type UseChannelAddMembersResult = {
   loadMore: () => void;
   onChangeSearchText: (text: string) => void;
   results: AddMemberSearchResult[];
-  searchText: string;
   selectedUsers: UserResponse[];
   toggleUser: (user: AddMemberSearchResult) => void;
 };
@@ -36,13 +35,13 @@ export const useChannelAddMembers = ({
   const { addNotification } = useNotificationApi();
   const { t } = useTranslationContext();
 
-  const [searchText, setSearchText] = useState('');
   const [rawResults, setRawResults] = useState<UserResponse[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
+  const queryRef = useRef('');
   const offsetRef = useRef(0);
   const requestIdRef = useRef(0);
   const inFlightRef = useRef(false);
@@ -131,22 +130,22 @@ export const useChannelAddMembers = ({
 
   const onChangeSearchText = useCallback(
     (text: string) => {
-      setSearchText(text);
+      queryRef.current = text;
       debouncedFetchQuery(text);
     },
     [debouncedFetchQuery],
   );
 
   const clearSearch = useCallback(() => {
-    setSearchText('');
+    queryRef.current = '';
     debouncedFetchQuery.cancel();
     fetchPageRef.current({ append: false, query: '' });
   }, [debouncedFetchQuery]);
 
   const loadMore = useCallback(() => {
     if (inFlightRef.current || !hasMore || loading) return;
-    fetchPageRef.current({ append: true, query: searchText });
-  }, [hasMore, loading, searchText]);
+    fetchPageRef.current({ append: true, query: queryRef.current });
+  }, [hasMore, loading]);
 
   const toggleUser = useCallback((user: AddMemberSearchResult) => {
     if (!user.id || user.isAlreadyMember) return;
@@ -181,7 +180,6 @@ export const useChannelAddMembers = ({
     loadMore,
     onChangeSearchText,
     results,
-    searchText,
     selectedUsers,
     toggleUser,
   };
