@@ -73,6 +73,26 @@ const ModalHeader = ({ onClose, rightAction, title }: ModalHeaderProps) => {
   );
 };
 
+type MemberSectionModalProps = {
+  children: React.ReactNode;
+  onClose: () => void;
+  visible: boolean;
+};
+
+const MemberSectionModal = ({ children, onClose, visible }: MemberSectionModalProps) => {
+  const styles = useStyles();
+
+  return (
+    <Modal animationType='slide' onRequestClose={onClose} visible={visible}>
+      <GestureHandlerRootView style={styles.modalRoot}>
+        <SafeAreaViewWrapper style={styles.modalRoot}>
+          <View style={styles.modalBody}>{children}</View>
+        </SafeAreaViewWrapper>
+      </GestureHandlerRootView>
+    </Modal>
+  );
+};
+
 type ChannelAllMembersModalProps = {
   onAddMembersPress: () => void;
   onClose: () => void;
@@ -90,36 +110,28 @@ const ChannelAllMembersModal = ({
   const { updateChannelMembers } = useOwnCapabilitiesContext();
   const { total } = useChannelDetailsMembersPreview(channel);
 
-  const styles = useStyles();
-
   return (
-    <Modal animationType='slide' onRequestClose={onClose} visible={visible}>
-      <GestureHandlerRootView style={styles.modalRoot}>
-        <SafeAreaViewWrapper style={styles.modalRoot}>
-          <ModalHeader
-            onClose={onClose}
-            rightAction={
-              updateChannelMembers ? (
-                <Button
-                  accessibilityLabelKey='a11y/Add members'
-                  iconOnly
-                  LeadingIcon={UserAdd}
-                  onPress={onAddMembersPress}
-                  size='md'
-                  testID='channel-details-member-list-add-button'
-                  type='outline'
-                  variant='secondary'
-                />
-              ) : null
-            }
-            title={t('{{count}} members', { count: total })}
-          />
-          <View style={styles.modalBody}>
-            <ChannelDetailsMemberList />
-          </View>
-        </SafeAreaViewWrapper>
-      </GestureHandlerRootView>
-    </Modal>
+    <MemberSectionModal onClose={onClose} visible={visible}>
+      <ModalHeader
+        onClose={onClose}
+        rightAction={
+          updateChannelMembers ? (
+            <Button
+              accessibilityLabelKey='a11y/Add members'
+              iconOnly
+              LeadingIcon={UserAdd}
+              onPress={onAddMembersPress}
+              size='md'
+              testID='channel-details-member-list-add-button'
+              type='outline'
+              variant='secondary'
+            />
+          ) : null
+        }
+        title={t('{{count}} members', { count: total })}
+      />
+      <ChannelDetailsMemberList />
+    </MemberSectionModal>
   );
 };
 
@@ -133,7 +145,6 @@ const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProp
   const { addMembers } = useChannelActions(channel);
   const { ChannelAddMembers } = useComponentsContext();
   const { t } = useTranslationContext();
-  const styles = useStyles();
   const {
     theme: {
       channelDetailsScreen: {
@@ -174,39 +185,33 @@ const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProp
   });
 
   return (
-    <Modal animationType='slide' onRequestClose={onClose} visible={visible}>
-      <GestureHandlerRootView style={styles.modalRoot}>
-        <SafeAreaViewWrapper style={styles.modalRoot}>
-          {notificationHostId ? (
-            <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-              <View style={styles.modalBody}>
-                <ModalHeader
-                  onClose={handleClose}
-                  rightAction={
-                    <Button
-                      accessibilityLabel={t('a11y/Confirm add members')}
-                      accessibilityRole='button'
-                      accessibilityState={{ disabled: !confirmEnabled }}
-                      disabled={!confirmEnabled}
-                      variant='primary'
-                      onPress={handleConfirm}
-                      type='solid'
-                      LeadingIcon={Checkmark}
-                      iconOnly
-                      testID='channel-details-add-members-confirm-button'
-                      style={confirmButtonOverride}
-                    />
-                  }
-                  title={t('Add Members')}
-                />
-                <ChannelAddMembers onSelectionChange={handleSelectionChange} />
-                <NotificationList />
-              </View>
-            </NotificationTargetProvider>
-          ) : null}
-        </SafeAreaViewWrapper>
-      </GestureHandlerRootView>
-    </Modal>
+    <MemberSectionModal onClose={onClose} visible={visible}>
+      {notificationHostId ? (
+        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+          <ModalHeader
+            onClose={handleClose}
+            rightAction={
+              <Button
+                accessibilityLabel={t('a11y/Confirm add members')}
+                accessibilityRole='button'
+                accessibilityState={{ disabled: !confirmEnabled }}
+                disabled={!confirmEnabled}
+                variant='primary'
+                onPress={handleConfirm}
+                type='solid'
+                LeadingIcon={Checkmark}
+                iconOnly
+                testID='channel-details-add-members-confirm-button'
+                style={confirmButtonOverride}
+              />
+            }
+            title={t('Add Members')}
+          />
+          <ChannelAddMembers onSelectionChange={handleSelectionChange} />
+          <NotificationList />
+        </NotificationTargetProvider>
+      ) : null}
+    </MemberSectionModal>
   );
 };
 
