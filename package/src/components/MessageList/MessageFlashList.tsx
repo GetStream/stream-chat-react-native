@@ -395,6 +395,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         return;
       }
 
+      console.log('[STREAM] scrollToEnd effect#1 (autoscrollToRecent) fired');
       flashListRef.current.scrollToEnd({
         animated: true,
       });
@@ -432,7 +433,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (indexOfParentInMessageList === -1) {
       loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
     } else {
-      scrollToDebounceTimeoutRef.current = setTimeout(() => {
+      scrollToDebounceTimeoutRef.current = setTimeout(async () => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
         const scrollToIndex = async () => {
@@ -451,12 +452,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           return true;
         };
 
+        await scrollToIndex();
         requestAnimationFrame(async () => {
           await scrollToIndex();
-          requestAnimationFrame(async () => {
-            await scrollToIndex();
-            setTargetedMessage(undefined);
-          });
+          setTargetedMessage(undefined);
         });
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
