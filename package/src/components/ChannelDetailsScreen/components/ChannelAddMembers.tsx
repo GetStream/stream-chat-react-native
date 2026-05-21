@@ -21,7 +21,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
 import { Search } from '../../../icons/search';
-import { NewClose } from '../../../icons/xmark';
+import { XCircle } from '../../../icons/x-circle';
 import { primitives } from '../../../theme';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { type AddMemberSearchResult, useChannelAddMembers } from '../hooks/useChannelAddMembers';
@@ -325,17 +325,11 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
             <Pressable
               accessibilityLabel={t('a11y/Clear search')}
               accessibilityRole='button'
-              hitSlop={50 - styles.clearSearch.height}
+              hitSlop={30}
               onPress={clearSearch}
               testID='channel-add-members-clear-search'
-              style={styles.clearSearch}
             >
-              <NewClose
-                height={15}
-                stroke={semantics.inputTextIcon}
-                strokeWidth={2.25}
-                width={15}
-              />
+              <XCircle height={15} stroke={semantics.inputTextIcon} strokeWidth={2.25} width={15} />
             </Pressable>
           ) : null}
         </View>
@@ -359,10 +353,6 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
 };
 
 const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
   return useMemo(
     () =>
       StyleSheet.create({
@@ -412,15 +402,6 @@ const useStyles = () => {
           padding: 0,
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
-        clearSearch: {
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRadius: primitives.radiusMax,
-          borderWidth: 1.5,
-          borderColor: semantics.inputTextIcon,
-          height: 15,
-          width: 15,
-        },
         selectionCircle: {
           alignItems: 'center',
           borderRadius: primitives.radiusMax,
@@ -454,6 +435,6 @@ const useStyles = () => {
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
       }),
-    [semantics],
+    [],
   );
 };

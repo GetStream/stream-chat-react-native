@@ -231,7 +231,6 @@ export type Theme = {
       selectionCircleSelected: ViewStyle;
       userName: TextStyle;
       userRow: ViewStyle;
-      clearSearch: ViewStyle;
     };
   };
   channelListSkeleton: {
@@ -1233,7 +1232,6 @@ export const defaultTheme: Theme = {
       selectionCircleSelected: {},
       userName: {},
       userRow: {},
-      clearSearch: {},
     },
   },
   channelListSkeleton: {
