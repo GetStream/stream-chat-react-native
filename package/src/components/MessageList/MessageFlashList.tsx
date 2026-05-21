@@ -395,6 +395,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         return;
       }
 
+      console.log('[STREAM] scrollToEnd effect#1 (autoscrollToRecent) fired');
       flashListRef.current.scrollToEnd({
         animated: true,
       });
@@ -432,7 +433,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (indexOfParentInMessageList === -1) {
       loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
     } else {
-      scrollToDebounceTimeoutRef.current = setTimeout(() => {
+      scrollToDebounceTimeoutRef.current = setTimeout(async () => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
         const scrollToIndex = async () => {
@@ -451,12 +452,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           return true;
         };
 
+        await scrollToIndex();
         requestAnimationFrame(async () => {
           await scrollToIndex();
-          requestAnimationFrame(async () => {
-            await scrollToIndex();
-            setTargetedMessage(undefined);
-          });
+          setTargetedMessage(undefined);
         });
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
@@ -555,6 +554,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       // we should scroll to bottom where ever we are now
       // as we have sent a new own message
       if (shouldScrollToRecentOnNewOwnMessage) {
+        console.log('[STREAM] scrollToEnd effect#2 (shouldScrollToRecentOnNewOwnMessage) fired');
         flashListRef.current?.scrollToEnd({
           animated: true,
         });
@@ -962,6 +962,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       resetPaginationTrackersRef.current();
       await reloadChannel();
     } else if (flashListRef.current) {
+      console.log('[STREAM] scrollToEnd effect#3 (goToNewMessages) fired');
       flashListRef.current.scrollToEnd({
         animated: true,
       });
