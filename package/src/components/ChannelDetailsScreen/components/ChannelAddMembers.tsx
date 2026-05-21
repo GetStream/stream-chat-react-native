@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   ActivityIndicator,
   ColorValue,
@@ -8,8 +8,6 @@ import {
   StyleProp,
   StyleSheet,
   Text,
-  TextInput,
-  TextStyle,
   View,
   ViewStyle,
 } from 'react-native';
@@ -20,11 +18,11 @@ import { useChannelDetailsContext } from '../../../contexts/channelDetailsContex
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks/useStableCallback';
-import { Checkmark } from '../../../icons/checkmark-1';
 import { Search } from '../../../icons/search';
-import { XCircle } from '../../../icons/x-circle';
 import { primitives } from '../../../theme';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
+import { SearchInput } from '../../UIComponents/SearchInput';
+import { SelectionCircle } from '../../UIComponents/SelectionCircle';
 import { type AddMemberSearchResult, useChannelAddMembers } from '../hooks/useChannelAddMembers';
 
 export type ChannelAddMembersProps = {
@@ -38,50 +36,6 @@ export type ChannelAddMembersProps = {
 
 const keyExtractor = (user: AddMemberSearchResult) => user.id;
 
-type SelectionCircleProps = {
-  selected: boolean;
-  selectedStyle?: StyleProp<ViewStyle>;
-  unselectedStyle?: StyleProp<ViewStyle>;
-};
-
-const SelectionCircle = React.memo(
-  ({ selected, selectedStyle, unselectedStyle }: SelectionCircleProps) => {
-    const {
-      theme: { semantics },
-    } = useTheme();
-    const styles = useStyles();
-
-    if (selected) {
-      return (
-        <View
-          style={[
-            styles.selectionCircle,
-            {
-              backgroundColor: semantics.accentPrimary,
-              borderColor: semantics.accentPrimary,
-            },
-            selectedStyle,
-          ]}
-        >
-          <Checkmark height={14} pathFill={semantics.textOnInverse} width={14} />
-        </View>
-      );
-    }
-
-    return (
-      <View
-        style={[
-          styles.selectionCircle,
-          { borderColor: semantics.borderCoreDefault },
-          unselectedStyle,
-        ]}
-      />
-    );
-  },
-);
-
-SelectionCircle.displayName = 'SelectionCircle';
-
 type RowProps = {
   accessibilityLabel: string;
   isAlreadyMember: boolean;
@@ -90,8 +44,6 @@ type RowProps = {
   onPress: () => void;
   rowStyle?: StyleProp<ViewStyle>;
   selected: boolean;
-  selectedCircleStyle?: StyleProp<ViewStyle>;
-  unselectedCircleStyle?: StyleProp<ViewStyle>;
   user: UserResponse;
   userNameColor: ColorValue;
   userNameStyle?: StyleProp<ViewStyle>;
@@ -106,8 +58,6 @@ const ChannelAddMembersRow = React.memo(
     onPress,
     rowStyle,
     selected,
-    selectedCircleStyle,
-    unselectedCircleStyle,
     user,
     userNameColor,
     userNameStyle,
@@ -142,11 +92,7 @@ const ChannelAddMembersRow = React.memo(
             {memberLabel}
           </Text>
         ) : (
-          <SelectionCircle
-            selected={selected}
-            selectedStyle={selectedCircleStyle}
-            unselectedStyle={unselectedCircleStyle}
-          />
+          <SelectionCircle selected={selected} />
         )}
       </Pressable>
     );
@@ -154,92 +100,6 @@ const ChannelAddMembersRow = React.memo(
 );
 
 ChannelAddMembersRow.displayName = 'ChannelAddMembersRow';
-
-type SearchInputProps = {
-  onChangeText: (text: string) => void;
-  onClear: () => void;
-  searchContainerStyle?: StyleProp<ViewStyle>;
-  searchInputFocusedStyle?: StyleProp<ViewStyle>;
-  searchInputStyle?: StyleProp<ViewStyle>;
-  searchTextInputStyle?: StyleProp<TextStyle>;
-};
-
-const ChannelAddMembersSearchInput = React.memo(
-  ({
-    onChangeText,
-    onClear,
-    searchContainerStyle,
-    searchInputFocusedStyle,
-    searchInputStyle,
-    searchTextInputStyle,
-  }: SearchInputProps) => {
-    const { t } = useTranslationContext();
-    const {
-      theme: { semantics },
-    } = useTheme();
-    const styles = useStyles();
-
-    const [searchText, setSearchText] = useState('');
-    const [focused, setFocused] = useState(false);
-
-    const handleChangeText = useCallback(
-      (text: string) => {
-        setSearchText(text);
-        onChangeText(text);
-      },
-      [onChangeText],
-    );
-
-    const handleClear = useCallback(() => {
-      setSearchText('');
-      onClear();
-    }, [onClear]);
-
-    const handleFocus = useCallback(() => setFocused(true), []);
-    const handleBlur = useCallback(() => setFocused(false), []);
-
-    return (
-      <View style={[styles.searchContainer, searchContainerStyle]}>
-        <View
-          style={[
-            styles.searchInput,
-            { borderColor: semantics.borderCoreDefault },
-            searchInputStyle,
-            focused && [{ borderColor: semantics.accentPrimary }, searchInputFocusedStyle],
-          ]}
-        >
-          <Search height={20} stroke={semantics.textSecondary} width={20} />
-          <TextInput
-            accessibilityLabel={t('a11y/Search users to add')}
-            autoCapitalize='none'
-            autoCorrect={false}
-            onBlur={handleBlur}
-            onChangeText={handleChangeText}
-            onFocus={handleFocus}
-            placeholder={t('Search')}
-            placeholderTextColor={semantics.textSecondary}
-            style={[styles.searchTextInput, { color: semantics.textPrimary }, searchTextInputStyle]}
-            testID='channel-add-members-search-input'
-            value={searchText}
-          />
-          {searchText.length > 0 ? (
-            <Pressable
-              accessibilityLabel={t('a11y/Clear search')}
-              accessibilityRole='button'
-              hitSlop={30}
-              onPress={handleClear}
-              testID='channel-add-members-clear-search'
-            >
-              <XCircle height={15} stroke={semantics.inputTextIcon} strokeWidth={2.25} width={15} />
-            </Pressable>
-          ) : null}
-        </View>
-      </View>
-    );
-  },
-);
-
-ChannelAddMembersSearchInput.displayName = 'ChannelAddMembersSearchInput';
 
 type EmptyStateProps = {
   containerStyle?: StyleProp<ViewStyle>;
@@ -293,12 +153,6 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
         addMembers: {
           emptyState: emptyStateOverride,
           emptyStateText: emptyStateTextOverride,
-          searchContainer: searchContainerOverride,
-          searchInput: searchInputOverride,
-          searchInputFocused: searchInputFocusedOverride,
-          searchTextInput: searchTextInputOverride,
-          selectionCircle: selectionCircleOverride,
-          selectionCircleSelected: selectionCircleSelectedOverride,
           userName: userNameOverride,
           userRow: userRowOverride,
         },
@@ -344,8 +198,6 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
           onPress={() => toggleUser(item)}
           rowStyle={userRowOverride}
           selected={selected}
-          selectedCircleStyle={selectionCircleSelectedOverride}
-          unselectedCircleStyle={selectionCircleOverride}
           user={item}
           userNameColor={item.isAlreadyMember ? semantics.textSecondary : semantics.textPrimary}
           userNameStyle={userNameOverride}
@@ -354,8 +206,6 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
     },
     [
       isSelected,
-      selectionCircleOverride,
-      selectionCircleSelectedOverride,
       semantics.textPrimary,
       semantics.textSecondary,
       t,
@@ -378,13 +228,10 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
 
   return (
     <View style={styles.container}>
-      <ChannelAddMembersSearchInput
+      <SearchInput
+        accessibilityLabel={t('a11y/Search users to add')}
         onChangeText={onChangeSearchText}
         onClear={clearSearch}
-        searchContainerStyle={searchContainerOverride}
-        searchInputFocusedStyle={searchInputFocusedOverride}
-        searchInputStyle={searchInputOverride}
-        searchTextInputStyle={searchTextInputOverride}
       />
 
       <FlatList
@@ -432,35 +279,6 @@ const useStyles = () => {
         listContent: {
           flexGrow: 1,
           paddingBottom: primitives.spacingXl,
-        },
-        searchContainer: {
-          paddingBottom: primitives.spacingSm,
-          paddingHorizontal: primitives.spacingMd,
-          paddingTop: primitives.spacingXs,
-        },
-        searchInput: {
-          alignItems: 'center',
-          borderRadius: primitives.radiusMax,
-          borderWidth: 1,
-          flexDirection: 'row',
-          gap: primitives.spacingSm,
-          height: 48,
-          paddingHorizontal: primitives.spacingMd,
-        },
-        searchTextInput: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeMd,
-          lineHeight: primitives.typographyLineHeightNormal,
-          padding: 0,
-          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
-        },
-        selectionCircle: {
-          alignItems: 'center',
-          borderRadius: primitives.radiusMax,
-          borderWidth: 1,
-          height: 24,
-          justifyContent: 'center',
-          width: 24,
         },
         userName: {
           flex: 1,

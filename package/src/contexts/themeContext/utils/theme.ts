@@ -223,12 +223,6 @@ export type Theme = {
     addMembers: {
       emptyState: ViewStyle;
       emptyStateText: TextStyle;
-      searchContainer: ViewStyle;
-      searchInput: ViewStyle;
-      searchInputFocused: ViewStyle;
-      searchTextInput: TextStyle;
-      selectionCircle: ViewStyle;
-      selectionCircleSelected: ViewStyle;
       userName: TextStyle;
       userRow: ViewStyle;
     };
@@ -1038,6 +1032,16 @@ export type Theme = {
     };
   };
   screenPadding: number;
+  searchInput: {
+    container: ViewStyle;
+    input: ViewStyle;
+    inputFocused: ViewStyle;
+    textInput: TextStyle;
+  };
+  selectionCircle: {
+    circle: ViewStyle;
+    circleSelected: ViewStyle;
+  };
   spinner: ViewStyle;
   thread: {
     newThread: {
@@ -1224,12 +1228,6 @@ export const defaultTheme: Theme = {
     addMembers: {
       emptyState: {},
       emptyStateText: {},
-      searchContainer: {},
-      searchInput: {},
-      searchInputFocused: {},
-      searchTextInput: {},
-      selectionCircle: {},
-      selectionCircleSelected: {},
       userName: {},
       userRow: {},
     },
@@ -2017,6 +2015,16 @@ export const defaultTheme: Theme = {
     },
   },
   screenPadding: 16,
+  searchInput: {
+    container: {},
+    input: {},
+    inputFocused: {},
+    textInput: {},
+  },
+  selectionCircle: {
+    circle: {},
+    circleSelected: {},
+  },
   spinner: {},
   thread: {
     newThread: {

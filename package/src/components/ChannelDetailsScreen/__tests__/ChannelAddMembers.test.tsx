@@ -84,7 +84,7 @@ describe('ChannelAddMembers', () => {
 
     renderComponent({ channel, queryUsers });
 
-    expect(screen.getByTestId('channel-add-members-search-input')).toBeTruthy();
+    expect(screen.getByTestId('search-input')).toBeTruthy();
     expect(screen.getByTestId('channel-add-members-loading')).toBeTruthy();
   });
 
@@ -114,7 +114,7 @@ describe('ChannelAddMembers', () => {
       await Promise.resolve();
     });
 
-    const input = screen.getByTestId('channel-add-members-search-input');
+    const input = screen.getByTestId('search-input');
     fireEvent.changeText(input, 'E');
     fireEvent.changeText(input, 'Et');
     fireEvent.changeText(input, 'Eth');
@@ -230,15 +230,13 @@ describe('ChannelAddMembers', () => {
 
     renderComponent({ channel, queryUsers });
 
-    expect(screen.queryByTestId('channel-add-members-clear-search')).toBeNull();
+    expect(screen.queryByTestId('clear-search')).toBeNull();
 
-    fireEvent.changeText(screen.getByTestId('channel-add-members-search-input'), 'X');
-    expect(screen.getByTestId('channel-add-members-clear-search')).toBeTruthy();
+    fireEvent.changeText(screen.getByTestId('search-input'), 'X');
+    expect(screen.getByTestId('clear-search')).toBeTruthy();
 
-    fireEvent.press(screen.getByTestId('channel-add-members-clear-search'));
-    await waitFor(() =>
-      expect(screen.queryByTestId('channel-add-members-clear-search')).toBeNull(),
-    );
+    fireEvent.press(screen.getByTestId('clear-search'));
+    await waitFor(() => expect(screen.queryByTestId('clear-search')).toBeNull());
   });
 
   it('keeps the selection when the search text changes', async () => {
@@ -262,7 +260,7 @@ describe('ChannelAddMembers', () => {
     fireEvent.press(row);
     expect(onSelectionChange).toHaveBeenLastCalledWith([expect.objectContaining({ id: 'u-2' })]);
 
-    fireEvent.changeText(screen.getByTestId('channel-add-members-search-input'), 'New');
+    fireEvent.changeText(screen.getByTestId('search-input'), 'New');
     await act(async () => {
       jest.advanceTimersByTime(250);
       await Promise.resolve();
