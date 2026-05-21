@@ -554,7 +554,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       // we should scroll to bottom where ever we are now
       // as we have sent a new own message
       if (shouldScrollToRecentOnNewOwnMessage) {
-        console.log('[STREAM] scrollToEnd effect#2 (shouldScrollToRecentOnNewOwnMessage) fired');
         flashListRef.current?.scrollToEnd({
           animated: true,
         });
@@ -962,7 +961,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       resetPaginationTrackersRef.current();
       await reloadChannel();
     } else if (flashListRef.current) {
-      console.log('[STREAM] scrollToEnd effect#3 (goToNewMessages) fired');
       flashListRef.current.scrollToEnd({
         animated: true,
       });
