@@ -1,13 +1,10 @@
 import React, { useMemo } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
-import { SvgUri } from 'react-native-svg';
-
 import type { ImageGalleryGridProps } from './types';
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useIsSvg } from '../../../hooks/useIsSvg';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { useViewport } from '../../../hooks/useViewport';
 import type {
@@ -18,6 +15,7 @@ import { primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
 import { VideoPlayIndicator } from '../../ui/VideoPlayIndicator';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
+import { SvgAwareImage } from '../../UIComponents/SvgAwareImage';
 
 export type ImageGalleryGridImageComponent = ({
   item,
@@ -39,7 +37,6 @@ const GridImage = ({ item }: { item: GridImageItem }) => {
   const { ...restItem } = item;
 
   const { numberOfImageGalleryGridColumns, selectAndClose, thumb_url, type, uri } = restItem;
-  const isSvg = useIsSvg(uri);
 
   const size = vw(100) / (numberOfImageGalleryGridColumns || 3) - 2;
 
@@ -52,12 +49,8 @@ const GridImage = ({ item }: { item: GridImageItem }) => {
             <VideoPlayIndicator size='md' />
           </View>
         </View>
-      ) : isSvg ? (
-        <View style={[styles.image, { height: size, width: size }]}>
-          <SvgUri height='100%' uri={uri} width='100%' />
-        </View>
       ) : (
-        <Image source={{ uri }} style={[styles.image, { height: size, width: size }]} />
+        <SvgAwareImage source={{ uri }} style={[styles.image, { height: size, width: size }]} />
       )}
     </Pressable>
   );
