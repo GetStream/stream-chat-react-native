@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { ImageGalleryGridProps } from './types';
 
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../../hooks/useStateStore';
@@ -33,6 +34,7 @@ export type GridImageItem = ImageGalleryAsset & {
 const GridImage = ({ item }: { item: GridImageItem }) => {
   const styles = useStyles();
   const { vw } = useViewport();
+  const { ImageComponent } = useComponentsContext();
   const { ...restItem } = item;
 
   const { numberOfImageGalleryGridColumns, selectAndClose, thumb_url, type, uri } = restItem;
@@ -46,7 +48,7 @@ const GridImage = ({ item }: { item: GridImageItem }) => {
           <VideoThumbnail thumb_url={thumb_url} />
         </View>
       ) : (
-        <Image source={{ uri }} style={[styles.image, { height: size, width: size }]} />
+        <ImageComponent source={{ uri }} style={[styles.image, { height: size, width: size }]} />
       )}
     </Pressable>
   );
