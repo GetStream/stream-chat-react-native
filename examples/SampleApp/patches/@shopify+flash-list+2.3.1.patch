@@ -1,0 +1,19 @@
+diff --git a/node_modules/@shopify/flash-list/dist/recyclerview/hooks/useBoundDetection.js b/node_modules/@shopify/flash-list/dist/recyclerview/hooks/useBoundDetection.js
+index 767fc5d..f8d4644 100644
+--- a/node_modules/@shopify/flash-list/dist/recyclerview/hooks/useBoundDetection.js
++++ b/node_modules/@shopify/flash-list/dist/recyclerview/hooks/useBoundDetection.js
+@@ -100,6 +100,14 @@ export function useBoundDetection(recyclerViewManager, scrollViewRef) {
+         }
+     }, [recyclerViewManager]);
+     const runAutoScrollToBottomCheck = useCallback(() => {
++        // Suppress MVCP autoscroll while a programmatic scrollToIndex is in
++        // flight. FlashList disables offset projection at the start of
++        // scrollToIndex and re-enables it ~200-300ms after settling. Without
++        // this guard, the sticky pendingAutoscrollToBottom ref races against
++        // scrollToIndex and fires scrollToEnd mid-flight.
++        if (!recyclerViewManager.isOffsetProjectionEnabled) {
++            return;
++        }
+         if (pendingAutoscrollToBottom.current) {
+             pendingAutoscrollToBottom.current = false;
+             requestAnimationFrame(() => {
