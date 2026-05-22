@@ -221,8 +221,12 @@ export type Theme = {
       status: TextStyle;
     };
     addMembers: {
-      userName: TextStyle;
-      userRow: ViewStyle;
+      searchResultItem: {
+        alreadyMemberInfo: ViewStyle;
+        memberLabel: TextStyle;
+        userName: TextStyle;
+        userRow: ViewStyle;
+      };
     };
   };
   channelListSkeleton: {
@@ -1228,8 +1232,12 @@ export const defaultTheme: Theme = {
       status: {},
     },
     addMembers: {
-      userName: {},
-      userRow: {},
+      searchResultItem: {
+        alreadyMemberInfo: {},
+        memberLabel: {},
+        userName: {},
+        userRow: {},
+      },
     },
   },
   channelListSkeleton: {

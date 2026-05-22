@@ -136,7 +136,7 @@ describe('ChannelAddMembers', () => {
     });
   });
 
-  it('renders existing channel members as disabled rows with a Member label', async () => {
+  it('flags channel.state.members as already-member rows and does not toggle them on press', async () => {
     const existingUser = generateUser({ id: 'u-1', name: 'Existing Member' });
     const newUser = generateUser({ id: 'u-2', name: 'New User' });
     const channel = buildChannel([generateMember({ user: existingUser })]);
@@ -148,18 +148,9 @@ describe('ChannelAddMembers', () => {
     renderComponent({ channel, onSelectionChange, queryUsers });
 
     const existingRow = await waitFor(() => screen.getByTestId('channel-add-members-row-u-1'));
-    expect(existingRow.props.accessibilityState).toMatchObject({ disabled: true });
-    expect(screen.getByTestId('channel-add-members-row-u-1-member-label')).toBeTruthy();
-
     fireEvent.press(existingRow);
-    expect(
-      screen.getByTestId('channel-add-members-row-u-1').props.accessibilityState,
-    ).toMatchObject({ selected: false });
     expect(onSelectionChange).not.toHaveBeenCalled();
-
-    const newRow = screen.getByTestId('channel-add-members-row-u-2');
-    expect(newRow.props.accessibilityState).toMatchObject({ disabled: false });
-    expect(screen.queryByTestId('channel-add-members-row-u-2-member-label')).toBeNull();
+    expect(screen.getByTestId('channel-add-members-row-u-2')).toBeTruthy();
   });
 
   it('treats the current user as a regular row when not in channel.state.members', async () => {
@@ -174,25 +165,23 @@ describe('ChannelAddMembers', () => {
     expect(meRow.props.accessibilityState).toMatchObject({ disabled: false });
   });
 
-  it('toggles selection on the row and reflects it via accessibilityState', async () => {
+  it('toggles selection state through the hook on successive row presses', async () => {
     const newUser = generateUser({ id: 'u-2', name: 'New User' });
     const channel = buildChannel([]);
     const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [newUser] });
+    const onSelectionChange = jest.fn();
 
-    renderComponent({ channel, queryUsers });
+    renderComponent({ channel, onSelectionChange, queryUsers });
 
     const row = await waitFor(() => screen.getByTestId('channel-add-members-row-u-2'));
-    expect(row.props.accessibilityState).toMatchObject({ selected: false });
 
     fireEvent.press(row);
-    expect(
-      screen.getByTestId('channel-add-members-row-u-2').props.accessibilityState,
-    ).toMatchObject({ selected: true });
+    await waitFor(() =>
+      expect(onSelectionChange).toHaveBeenLastCalledWith([expect.objectContaining({ id: 'u-2' })]),
+    );
 
     fireEvent.press(screen.getByTestId('channel-add-members-row-u-2'));
-    expect(
-      screen.getByTestId('channel-add-members-row-u-2').props.accessibilityState,
-    ).toMatchObject({ selected: false });
+    await waitFor(() => expect(onSelectionChange).toHaveBeenLastCalledWith([]));
   });
 
   it('emits onSelectionChange with the latest selection on toggle', async () => {

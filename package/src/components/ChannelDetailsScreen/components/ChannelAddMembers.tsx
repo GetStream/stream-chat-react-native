@@ -1,15 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import {
-  ColorValue,
-  FlatList,
-  I18nManager,
-  Pressable,
-  StyleProp,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -19,11 +9,10 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Search } from '../../../icons/search';
 import { primitives } from '../../../theme';
-import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { EmptySearchResult } from '../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../UIComponents/SearchInput';
-import { SelectionCircle } from '../../UIComponents/SelectionCircle';
 import { type AddMemberSearchResult, useChannelAddMembers } from '../hooks/useChannelAddMembers';
+import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
 
 export type ChannelAddMembersProps = {
   /**
@@ -36,93 +25,11 @@ export type ChannelAddMembersProps = {
 
 const keyExtractor = (user: AddMemberSearchResult) => user.id;
 
-type RowProps = {
-  accessibilityLabel: string;
-  isAlreadyMember: boolean;
-  memberLabel: string;
-  memberLabelColor: ColorValue;
-  onPress: () => void;
-  rowStyle?: StyleProp<ViewStyle>;
-  selected: boolean;
-  user: UserResponse;
-  userNameColor: ColorValue;
-  userNameStyle?: StyleProp<ViewStyle>;
-};
-
-const ChannelAddMembersRow = React.memo(
-  ({
-    accessibilityLabel,
-    isAlreadyMember,
-    memberLabel,
-    memberLabelColor,
-    onPress,
-    rowStyle,
-    selected,
-    user,
-    userNameColor,
-    userNameStyle,
-  }: RowProps) => {
-    const styles = useStyles();
-
-    const displayName = user.name ?? user.id;
-    const avatar = <UserAvatar showOnlineIndicator={user.online} size='md' user={user} />;
-    const name = (
-      <Text numberOfLines={1} style={[styles.userName, { color: userNameColor }, userNameStyle]}>
-        {displayName}
-      </Text>
-    );
-
-    return (
-      <>
-        {isAlreadyMember ? (
-          <View
-            accessibilityLabel={accessibilityLabel}
-            accessibilityState={{ disabled: true, selected: false }}
-            style={[styles.userRow, rowStyle]}
-            testID={`channel-add-members-row-${user.id}`}
-          >
-            {avatar}
-            <View style={[styles.alreadyMemberInfo]}>
-              {name}
-              <Text
-                style={[styles.memberLabel, { color: memberLabelColor }]}
-                testID={`channel-add-members-row-${user.id}-member-label`}
-              >
-                {memberLabel}
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <Pressable
-            accessibilityLabel={accessibilityLabel}
-            accessibilityRole='button'
-            accessibilityState={{ disabled: false, selected }}
-            onPress={onPress}
-            style={[styles.userRow, rowStyle]}
-            testID={`channel-add-members-row-${user.id}`}
-          >
-            {avatar}
-            {name}
-            {isAlreadyMember ? null : <SelectionCircle selected={selected} />}
-          </Pressable>
-        )}
-      </>
-    );
-  },
-);
-
-ChannelAddMembersRow.displayName = 'ChannelAddMembersRow';
-
 export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps) => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const {
-    theme: {
-      channelDetailsScreen: {
-        addMembers: { userName: userNameOverride, userRow: userRowOverride },
-      },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   const styles = useStyles();
 
@@ -147,36 +54,15 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
   }, [selectedUsers, stableOnSelectionChange]);
 
   const renderItem = useCallback(
-    ({ item }: { item: AddMemberSearchResult }) => {
-      const selected = isSelected(item.id);
-      const displayName = item.name ?? item.id;
-      const accessibilityLabel = item.isAlreadyMember
-        ? t('a11y/{{name}} is already a member', { name: displayName })
-        : t('a11y/Select {{name}}', { name: displayName });
-      return (
-        <ChannelAddMembersRow
-          accessibilityLabel={accessibilityLabel}
-          isAlreadyMember={item.isAlreadyMember}
-          memberLabel={t('Already a member')}
-          memberLabelColor={semantics.textSecondary}
-          onPress={() => toggleUser(item)}
-          rowStyle={userRowOverride}
-          selected={selected}
-          user={item}
-          userNameColor={item.isAlreadyMember ? semantics.textSecondary : semantics.textPrimary}
-          userNameStyle={userNameOverride}
-        />
-      );
-    },
-    [
-      isSelected,
-      semantics.textPrimary,
-      semantics.textSecondary,
-      t,
-      toggleUser,
-      userNameOverride,
-      userRowOverride,
-    ],
+    ({ item }: { item: AddMemberSearchResult }) => (
+      <AddMemberSearchResultItem
+        isAlreadyMember={item.isAlreadyMember}
+        onPress={() => toggleUser(item)}
+        selected={isSelected(item.id)}
+        user={item}
+      />
+    ),
+    [isSelected, toggleUser],
   );
 
   const emptyStateElement = (
@@ -186,6 +72,8 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
       loading={loading}
     />
   );
+
+  const loadingMore = <ActivityIndicator />;
 
   return (
     <View style={styles.container}>
@@ -202,6 +90,7 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
         ListEmptyComponent={emptyStateElement}
+        ListFooterComponent={loadingMore}
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}
         renderItem={renderItem}
@@ -225,30 +114,6 @@ const useStyles = () => {
         listContent: {
           flexGrow: 1,
           paddingBottom: primitives.spacingXl,
-        },
-        userName: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeMd,
-          fontWeight: primitives.typographyFontWeightRegular,
-          lineHeight: primitives.typographyLineHeightNormal,
-          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
-        },
-        userRow: {
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: primitives.spacingSm,
-          minHeight: 52,
-          paddingHorizontal: primitives.spacingMd,
-          paddingVertical: primitives.spacingXs,
-        },
-        alreadyMemberInfo: {
-          flexDirection: 'column',
-        },
-        memberLabel: {
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightRegular,
-          lineHeight: primitives.typographyLineHeightNormal,
-          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
       }),
     [],
