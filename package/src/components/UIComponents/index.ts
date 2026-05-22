@@ -1,5 +1,6 @@
 export * from './BottomSheetModal';
 export * from './StreamBottomSheetModalFlatList';
+export * from './EmptySearchResult';
 export * from './ImageBackground';
 export * from './SearchInput';
 export * from './SelectionCircle';

@@ -85,7 +85,7 @@ describe('ChannelAddMembers', () => {
     renderComponent({ channel, queryUsers });
 
     expect(screen.getByTestId('search-input')).toBeTruthy();
-    expect(screen.getByTestId('channel-add-members-loading')).toBeTruthy();
+    expect(screen.getByTestId('empty-search-result-loading')).toBeTruthy();
   });
 
   it('fires an initial queryUsers call on mount with the role filter and pagination opts', async () => {
@@ -220,7 +220,7 @@ describe('ChannelAddMembers', () => {
 
     renderComponent({ channel, queryUsers });
 
-    await waitFor(() => expect(screen.getByTestId('channel-add-members-empty')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('empty-search-result')).toBeTruthy());
     expect(screen.getByText('No user found')).toBeTruthy();
   });
 

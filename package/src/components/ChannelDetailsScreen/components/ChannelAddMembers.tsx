@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
-  ActivityIndicator,
   ColorValue,
   FlatList,
   I18nManager,
@@ -21,6 +20,7 @@ import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Search } from '../../../icons/search';
 import { primitives } from '../../../theme';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
+import { EmptySearchResult } from '../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../UIComponents/SearchInput';
 import { SelectionCircle } from '../../UIComponents/SelectionCircle';
 import { type AddMemberSearchResult, useChannelAddMembers } from '../hooks/useChannelAddMembers';
@@ -113,61 +113,13 @@ const ChannelAddMembersRow = React.memo(
 
 ChannelAddMembersRow.displayName = 'ChannelAddMembersRow';
 
-type EmptyStateProps = {
-  containerStyle?: StyleProp<ViewStyle>;
-  iconColor: ColorValue;
-  label: string;
-  loading: boolean;
-  textColor: ColorValue;
-  textStyle?: StyleProp<ViewStyle>;
-};
-
-const ChannelAddMembersEmptyState = ({
-  containerStyle,
-  iconColor,
-  label,
-  loading,
-  textColor,
-  textStyle,
-}: EmptyStateProps) => {
-  const styles = useStyles();
-
-  if (loading) {
-    return (
-      <View style={[styles.emptyState, containerStyle]} testID='channel-add-members-loading'>
-        <ActivityIndicator color={iconColor} size='small' />
-      </View>
-    );
-  }
-  return (
-    <View style={[styles.emptyState, containerStyle]} testID='channel-add-members-empty'>
-      <Search height={24} stroke={iconColor} width={24} />
-      <Text
-        style={[
-          styles.emptyStateText,
-          { color: textColor },
-          { fontSize: primitives.typographyFontSizeMd },
-          textStyle,
-        ]}
-      >
-        {label}
-      </Text>
-    </View>
-  );
-};
-
 export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps) => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
       channelDetailsScreen: {
-        addMembers: {
-          emptyState: emptyStateOverride,
-          emptyStateText: emptyStateTextOverride,
-          userName: userNameOverride,
-          userRow: userRowOverride,
-        },
+        addMembers: { userName: userNameOverride, userRow: userRowOverride },
       },
       semantics,
     },
@@ -228,13 +180,10 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
   );
 
   const emptyStateElement = (
-    <ChannelAddMembersEmptyState
-      containerStyle={emptyStateOverride}
-      iconColor={semantics.textTertiary}
+    <EmptySearchResult
+      icon={<Search height={24} stroke={semantics.textTertiary} width={24} />}
       label={t('No user found')}
       loading={loading}
-      textColor={semantics.textSecondary}
-      textStyle={emptyStateTextOverride}
     />
   );
 
@@ -269,21 +218,6 @@ const useStyles = () => {
       StyleSheet.create({
         container: {
           flex: 1,
-        },
-        emptyState: {
-          alignItems: 'center',
-          gap: primitives.spacingSm,
-          justifyContent: 'center',
-          paddingVertical: primitives.spacingXl,
-          height: '100%',
-          width: '100%',
-        },
-        emptyStateText: {
-          fontSize: primitives.typographyFontSizeMd,
-          fontWeight: primitives.typographyFontWeightRegular,
-          lineHeight: primitives.typographyLineHeightNormal,
-          textAlign: 'center',
-          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
         list: {
           flex: 1,

@@ -221,8 +221,6 @@ export type Theme = {
       status: TextStyle;
     };
     addMembers: {
-      emptyState: ViewStyle;
-      emptyStateText: TextStyle;
       userName: TextStyle;
       userRow: ViewStyle;
     };
@@ -289,6 +287,10 @@ export type Theme = {
     };
   };
   dateHeader: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
+  emptySearchResult: {
     container: ViewStyle;
     text: TextStyle;
   };
@@ -1226,8 +1228,6 @@ export const defaultTheme: Theme = {
       status: {},
     },
     addMembers: {
-      emptyState: {},
-      emptyStateText: {},
       userName: {},
       userRow: {},
     },
@@ -1294,6 +1294,10 @@ export const defaultTheme: Theme = {
     },
   },
   dateHeader: {
+    container: {},
+    text: {},
+  },
+  emptySearchResult: {
     container: {},
     text: {},
   },
