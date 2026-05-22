@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { I18nManager, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { I18nManager, StyleSheet, TextInput, View } from 'react-native';
+
+import { Pressable } from 'react-native-gesture-handler';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -74,7 +76,7 @@ export const SearchInput = React.memo(
               onPress={handleClear}
               testID='clear-search'
             >
-              <XCircle height={15} stroke={semantics.inputTextIcon} strokeWidth={2.25} width={15} />
+              <XCircle height={15} stroke={semantics.inputTextIcon} width={15} />
             </Pressable>
           ) : null}
         </View>

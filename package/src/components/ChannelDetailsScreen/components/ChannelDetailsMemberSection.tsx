@@ -83,7 +83,12 @@ const MemberSectionModal = ({ children, onClose, visible }: MemberSectionModalPr
   const styles = useStyles();
 
   return (
-    <Modal animationType='slide' onRequestClose={onClose} visible={visible}>
+    <Modal
+      animationType='slide'
+      presentationStyle='pageSheet'
+      onRequestClose={onClose}
+      visible={visible}
+    >
       <GestureHandlerRootView style={styles.modalRoot}>
         <SafeAreaViewWrapper style={styles.modalRoot}>
           <View style={styles.modalBody}>{children}</View>
