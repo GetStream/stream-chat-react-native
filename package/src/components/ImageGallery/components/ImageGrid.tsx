@@ -5,7 +5,6 @@ import { SvgUri } from 'react-native-svg';
 
 import type { ImageGalleryGridProps } from './types';
 
-import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useIsSvg } from '../../../hooks/useIsSvg';
@@ -17,6 +16,7 @@ import type {
 } from '../../../state-store/image-gallery-state-store';
 import { primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
+import { VideoPlayIndicator } from '../../ui/VideoPlayIndicator';
 import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 
 export type ImageGalleryGridImageComponent = ({
@@ -46,8 +46,11 @@ const GridImage = ({ item }: { item: GridImageItem }) => {
   return (
     <Pressable accessibilityLabel='Grid Image' onPress={selectAndClose}>
       {type === FileTypes.Video ? (
-        <View style={[styles.image, { height: size, width: size }]}>
-          <VideoThumbnail thumb_url={thumb_url} />
+        <View style={[styles.image, { height: size, width: size }, styles.videoCell]}>
+          {thumb_url ? <Image source={{ uri: thumb_url }} style={StyleSheet.absoluteFill} /> : null}
+          <View pointerEvents='none' style={[StyleSheet.absoluteFill, styles.playIndicator]}>
+            <VideoPlayIndicator size='md' />
+          </View>
         </View>
       ) : isSvg ? (
         <View style={[styles.image, { height: size, width: size }]}>
@@ -122,6 +125,13 @@ const useStyles = () => {
         ...contentContainer,
       },
       image: { margin: 1, ...gridImage },
+      playIndicator: {
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      videoCell: {
+        overflow: 'hidden',
+      },
     });
   }, [contentContainer, gridImage, semantics]);
 };
