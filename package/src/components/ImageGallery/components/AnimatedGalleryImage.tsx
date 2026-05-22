@@ -1,16 +1,18 @@
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import type { ImageStyle, StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
 import { useChatConfigContext } from '../../../contexts/chatConfigContext/ChatConfigContext';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useStateStore } from '../../../hooks';
+import { useIsSvg } from '../../../hooks/useIsSvg';
 import {
   ImageGalleryAsset,
   ImageGalleryState,
 } from '../../../state-store/image-gallery-state-store';
 import { getResizedImageUrl } from '../../../utils/getResizedImageUrl';
+import { SvgAwareImage } from '../../UIComponents/SvgAwareImage';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
 
 const oneEighth = 1 / 8;
@@ -59,6 +61,7 @@ export const AnimatedGalleryImage = React.memo(
       });
     }, [photo.uri, resizableCDNHosts, screenHeight, screenWidth]);
 
+    const isSvg = useIsSvg(uri);
     const selected = currentIndex === index;
     const previous = currentIndex > index;
     const shouldRender = Math.abs(currentIndex - index) < 4;
@@ -81,6 +84,27 @@ export const AnimatedGalleryImage = React.memo(
      */
     if (!shouldRender) {
       return <View style={[style, { transform: [{ scale: oneEighth }] }]} />;
+    }
+
+    if (isSvg) {
+      // The outer Animated.View is sized at 8× screen so raster images stay
+      // crisp under pinch zoom (see useAnimatedGalleryStyle). rn-svg on
+      // Android rasterizes the SVG to a bitmap at its layout size and an
+      // 8x screen bitmap exceeds RecordingCanvas's per draw byte limit. The
+      // inner SvgAwareImage is sized at 1x screen with a counter scale of 8 so
+      // the bitmap stays small while the composed visible scale (1/8 × 8 === 1)
+      // is unchanged.
+      return (
+        <Animated.View
+          accessibilityLabel={accessibilityLabel}
+          style={[...animatedStyles, style, styles.svgOuter]}
+        >
+          <SvgAwareImage
+            source={{ uri }}
+            style={[{ height: screenHeight, width: screenWidth }, styles.svgInner]}
+          />
+        </Animated.View>
+      );
     }
 
     return (
@@ -106,3 +130,13 @@ export const AnimatedGalleryImage = React.memo(
 );
 
 AnimatedGalleryImage.displayName = 'AnimatedGalleryImage';
+
+const styles = StyleSheet.create({
+  svgInner: {
+    transform: [{ scale: 8 }],
+  },
+  svgOuter: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

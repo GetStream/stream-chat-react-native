@@ -188,6 +188,7 @@ export * from './ui';
 export * from './UIComponents/BottomSheetModal';
 export * from './UIComponents/StreamBottomSheetModalFlatList';
 export * from './UIComponents/ImageBackground';
+export * from './UIComponents/SvgAwareImage';
 export * from './UIComponents/Spinner';
 export * from './UIComponents/SwipableWrapper';
 export * from './UIComponents/PortalWhileClosingView';
