@@ -431,7 +431,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (indexOfParentInMessageList === -1) {
       loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
     } else {
-      scrollToDebounceTimeoutRef.current = setTimeout(() => {
+      scrollToDebounceTimeoutRef.current = setTimeout(async () => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
         const scrollToIndex = async () => {
@@ -442,20 +442,18 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           }
 
           await list.scrollToIndex({
-            index: indexOfParentInMessageList,
             animated: true,
+            index: indexOfParentInMessageList,
             viewPosition: 0.5,
           });
 
           return true;
         };
 
+        await scrollToIndex();
         requestAnimationFrame(async () => {
           await scrollToIndex();
-          requestAnimationFrame(async () => {
-            await scrollToIndex();
-            setTargetedMessage(undefined);
-          });
+          setTargetedMessage(undefined);
         });
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
