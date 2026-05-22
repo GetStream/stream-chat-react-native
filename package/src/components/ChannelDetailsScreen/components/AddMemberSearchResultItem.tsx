@@ -71,11 +71,7 @@ const AddMemberSearchResultItemInner = ({
         <View style={[styles.alreadyMemberInfo, alreadyMemberInfoOverride]}>
           {name}
           <Text
-            style={[
-              styles.memberLabel,
-              { color: semantics.textSecondary },
-              memberLabelOverride,
-            ]}
+            style={[styles.memberLabel, { color: semantics.textSecondary }, memberLabelOverride]}
             testID={`channel-add-members-row-${user.id}-member-label`}
           >
             {t('Already a member')}

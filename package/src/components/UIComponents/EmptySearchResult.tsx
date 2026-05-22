@@ -1,9 +1,10 @@
 import React from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
+import { Spinner } from './Spinner';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
-import { Spinner } from './Spinner';
 
 export type EmptySearchResultProps = {
   icon: React.ReactNode;

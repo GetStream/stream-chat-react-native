@@ -1,8 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { I18nManager, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
+
+import { ChannelDetailsModal } from './modal/Modal';
+
+import { ModalHeader } from './modal/ModalHeader';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -12,91 +15,13 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/useChannelActions';
 import { useStableCallback } from '../../../hooks/useStableCallback';
-import { ArrowLeft } from '../../../icons/arrow-left';
 import { Checkmark } from '../../../icons/checkmark-1';
 import { UserAdd } from '../../../icons/user-add';
 import { primitives } from '../../../theme';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
-import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
-
-type ModalHeaderProps = {
-  onClose: () => void;
-  title: string;
-  rightAction?: React.ReactNode;
-};
-
-const ModalHeader = ({ onClose, rightAction, title }: ModalHeaderProps) => {
-  const {
-    theme: {
-      channelDetailsScreen: {
-        memberSection: {
-          modalHeader: modalHeaderOverride,
-          modalHeaderTitle: modalHeaderTitleOverride,
-        },
-      },
-      semantics,
-    },
-  } = useTheme();
-  const styles = useStyles();
-
-  return (
-    <View style={[styles.modalHeader, modalHeaderOverride]}>
-      <View style={styles.modalHeaderSide}>
-        <Button
-          accessibilityLabelKey='a11y/Close'
-          iconOnly
-          LeadingIcon={ArrowLeft}
-          onPress={onClose}
-          size='md'
-          type='ghost'
-          variant='secondary'
-        />
-      </View>
-      <View style={styles.modalHeaderCenter}>
-        <Text
-          accessibilityRole='header'
-          numberOfLines={1}
-          style={[
-            styles.modalHeaderTitle,
-            { color: semantics.textPrimary },
-            modalHeaderTitleOverride,
-          ]}
-        >
-          {title}
-        </Text>
-      </View>
-      <View style={[styles.modalHeaderSide, styles.modalHeaderSideRight]}>{rightAction}</View>
-    </View>
-  );
-};
-
-type MemberSectionModalProps = {
-  children: React.ReactNode;
-  onClose: () => void;
-  visible: boolean;
-};
-
-const MemberSectionModal = ({ children, onClose, visible }: MemberSectionModalProps) => {
-  const styles = useStyles();
-
-  return (
-    <Modal
-      animationType='slide'
-      presentationStyle='pageSheet'
-      onRequestClose={onClose}
-      visible={visible}
-    >
-      <GestureHandlerRootView style={styles.modalRoot}>
-        <SafeAreaViewWrapper style={styles.modalRoot}>
-          <View style={styles.modalBody}>{children}</View>
-        </SafeAreaViewWrapper>
-      </GestureHandlerRootView>
-    </Modal>
-  );
-};
 
 type ChannelAllMembersModalProps = {
   onAddMembersPress: () => void;
@@ -116,7 +41,7 @@ const ChannelAllMembersModal = ({
   const { total } = useChannelDetailsMembersPreview(channel);
 
   return (
-    <MemberSectionModal onClose={onClose} visible={visible}>
+    <ChannelDetailsModal onClose={onClose} visible={visible}>
       <ModalHeader
         onClose={onClose}
         rightAction={
@@ -136,7 +61,7 @@ const ChannelAllMembersModal = ({
         title={t('{{count}} members', { count: total })}
       />
       <ChannelDetailsMemberList />
-    </MemberSectionModal>
+    </ChannelDetailsModal>
   );
 };
 
@@ -190,7 +115,7 @@ const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProp
   });
 
   return (
-    <MemberSectionModal onClose={onClose} visible={visible}>
+    <ChannelDetailsModal onClose={onClose} visible={visible}>
       {notificationHostId ? (
         <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
           <ModalHeader
@@ -216,7 +141,7 @@ const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProp
           <NotificationList />
         </NotificationTargetProvider>
       ) : null}
-    </MemberSectionModal>
+    </ChannelDetailsModal>
   );
 };
 
@@ -334,11 +259,8 @@ export const ChannelDetailsMemberSection = () => {
   );
 };
 
-const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-  return useMemo(
+const useStyles = () =>
+  useMemo(
     () =>
       StyleSheet.create({
         footer: {
@@ -370,39 +292,6 @@ const useStyles = () => {
         list: {
           paddingBottom: primitives.spacingSm,
         },
-        modalBody: {
-          flex: 1,
-        },
-        modalRoot: {
-          backgroundColor: semantics.backgroundCoreElevation1,
-          flex: 1,
-        },
-        modalHeader: {
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingBottom: primitives.spacingXs,
-          paddingHorizontal: primitives.spacingMd,
-          paddingTop: primitives.spacingXs,
-        },
-        modalHeaderCenter: {
-          alignItems: 'center',
-          flex: 2,
-          justifyContent: 'center',
-        },
-        modalHeaderSide: {
-          flex: 1,
-          justifyContent: 'center',
-        },
-        modalHeaderSideRight: {
-          alignItems: 'flex-end',
-        },
-        modalHeaderTitle: {
-          fontSize: primitives.typographyFontSizeMd,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          lineHeight: primitives.typographyLineHeightNormal,
-          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
-        },
         sectionCard: {
           borderRadius: primitives.radiusLg,
           overflow: 'hidden',
@@ -419,6 +308,5 @@ const useStyles = () => {
           lineHeight: primitives.typographyLineHeightNormal,
         },
       }),
-    [semantics],
+    [],
   );
-};

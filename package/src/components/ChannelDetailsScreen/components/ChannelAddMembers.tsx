@@ -3,6 +3,8 @@ import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
+import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
+
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -12,7 +14,6 @@ import { primitives } from '../../../theme';
 import { EmptySearchResult } from '../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../UIComponents/SearchInput';
 import { type AddMemberSearchResult, useChannelAddMembers } from '../hooks/useChannelAddMembers';
-import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
 
 export type ChannelAddMembersProps = {
   /**
@@ -65,7 +66,7 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
     [isSelected, toggleUser],
   );
 
-  const emptyStateElement = (
+  const emptyState = (
     <EmptySearchResult
       icon={<Search height={24} stroke={semantics.textTertiary} width={24} />}
       label={t('No user found')}
@@ -73,7 +74,7 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
     />
   );
 
-  const loadingMore = <ActivityIndicator />;
+  const loadingMoreIndicator = <>{loading && <ActivityIndicator />}</>;
 
   return (
     <View style={styles.container}>
@@ -89,8 +90,8 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
         keyboardDismissMode='interactive'
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
-        ListEmptyComponent={emptyStateElement}
-        ListFooterComponent={loadingMore}
+        ListEmptyComponent={emptyState}
+        ListFooterComponent={loadingMoreIndicator}
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}
         renderItem={renderItem}

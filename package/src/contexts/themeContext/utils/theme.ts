@@ -211,14 +211,18 @@ export type Theme = {
       footer: ViewStyle;
       header: ViewStyle;
       headerTitle: TextStyle;
-      modalHeader: ViewStyle;
-      modalHeaderTitle: TextStyle;
       viewAllLabel: TextStyle;
     };
     memberItem: {
       container: ViewStyle;
       name: TextStyle;
       status: TextStyle;
+    };
+    modal: {
+      body: ViewStyle;
+      header: ViewStyle;
+      headerTitle: TextStyle;
+      root: ViewStyle;
     };
     addMembers: {
       searchResultItem: {
@@ -1222,14 +1226,18 @@ export const defaultTheme: Theme = {
       footer: {},
       header: {},
       headerTitle: {},
-      modalHeader: {},
-      modalHeaderTitle: {},
       viewAllLabel: {},
     },
     memberItem: {
       container: {},
       name: {},
       status: {},
+    },
+    modal: {
+      body: {},
+      header: {},
+      headerTitle: {},
+      root: {},
     },
     addMembers: {
       searchResultItem: {

@@ -27,8 +27,7 @@ export const ChannelDetailsMemberList = () => {
   );
 
   const ListFooterComponent = useMemo(
-    () =>
-      loadingMore ? <ActivityIndicator testID='channel-details-member-list-loading-more' /> : null,
+    () => (loadingMore ? <ActivityIndicator /> : null),
     [loadingMore],
   );
 
@@ -38,7 +37,7 @@ export const ChannelDetailsMemberList = () => {
       keyExtractor={keyExtractor}
       ListFooterComponent={ListFooterComponent}
       onEndReached={hasMore ? loadMore : undefined}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={0.2}
       renderItem={renderItem}
     />
   );

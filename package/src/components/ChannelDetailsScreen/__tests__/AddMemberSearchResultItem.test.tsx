@@ -69,27 +69,16 @@ describe('AddMemberSearchResultItem', () => {
   });
 
   describe('when isAlreadyMember is true', () => {
-    it('renders the disabled variant with a member label and no selection circle', () => {
+    it('renders the disabled variant with a member label and no button role', () => {
       const user = generateUser({ id: 'u-2', name: 'Bob' });
       renderRow({ isAlreadyMember: true, onPress: jest.fn(), selected: false, user });
 
       const row = screen.getByTestId('channel-add-members-row-u-2');
       expect(row.props.accessibilityState).toMatchObject({ disabled: true, selected: false });
+      expect(row.props.accessibilityRole).toBeUndefined();
       expect(screen.getByTestId('channel-add-members-row-u-2-member-label')).toBeTruthy();
       expect(screen.getByText('Already a member')).toBeTruthy();
       expect(screen.getByLabelText('a11y/Bob is already a member')).toBeTruthy();
-    });
-
-    it('does not call onPress when the disabled row receives a press event', () => {
-      const onPress = jest.fn();
-      const user = generateUser({ id: 'u-2', name: 'Bob' });
-      renderRow({ isAlreadyMember: true, onPress, selected: false, user });
-
-      // The already-member wrapper is a View, not a Pressable — pressing it must not
-      // invoke onPress. fireEvent.press is a no-op on plain Views, but we still assert
-      // explicitly to lock the contract.
-      fireEvent.press(screen.getByTestId('channel-add-members-row-u-2'));
-      expect(onPress).not.toHaveBeenCalled();
     });
   });
 });
