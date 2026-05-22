@@ -63,38 +63,50 @@ const ChannelAddMembersRow = React.memo(
     userNameStyle,
   }: RowProps) => {
     const styles = useStyles();
+
     const displayName = user.name ?? user.id;
+    const avatar = <UserAvatar showOnlineIndicator={user.online} size='md' user={user} />;
+    const name = (
+      <Text numberOfLines={1} style={[styles.userName, { color: userNameColor }, userNameStyle]}>
+        {displayName}
+      </Text>
+    );
+
     return (
-      <Pressable
-        accessibilityLabel={accessibilityLabel}
-        accessibilityRole='button'
-        accessibilityState={{ disabled: isAlreadyMember, selected }}
-        disabled={isAlreadyMember}
-        onPress={onPress}
-        style={({ pressed }) => [
-          styles.userRow,
-          rowStyle,
-          isAlreadyMember && styles.userRowDisabled,
-          pressed && !isAlreadyMember && { opacity: 0.7 },
-        ]}
-        testID={`channel-add-members-row-${user.id}`}
-      >
-        <UserAvatar showOnlineIndicator={user.online} size='sm' user={user} />
-        <Text numberOfLines={1} style={[styles.userName, { color: userNameColor }, userNameStyle]}>
-          {displayName}
-        </Text>
+      <>
         {isAlreadyMember ? (
-          <Text
-            numberOfLines={1}
-            style={[styles.memberLabel, { color: memberLabelColor }]}
-            testID={`channel-add-members-row-${user.id}-member-label`}
+          <View
+            accessibilityLabel={accessibilityLabel}
+            accessibilityState={{ disabled: true, selected: false }}
+            style={[styles.userRow, rowStyle]}
+            testID={`channel-add-members-row-${user.id}`}
           >
-            {memberLabel}
-          </Text>
+            {avatar}
+            <View style={[styles.alreadyMemberInfo]}>
+              {name}
+              <Text
+                style={[styles.memberLabel, { color: memberLabelColor }]}
+                testID={`channel-add-members-row-${user.id}-member-label`}
+              >
+                {memberLabel}
+              </Text>
+            </View>
+          </View>
         ) : (
-          <SelectionCircle selected={selected} />
+          <Pressable
+            accessibilityLabel={accessibilityLabel}
+            accessibilityRole='button'
+            accessibilityState={{ disabled: false, selected }}
+            onPress={onPress}
+            style={[styles.userRow, rowStyle]}
+            testID={`channel-add-members-row-${user.id}`}
+          >
+            {avatar}
+            {name}
+            {isAlreadyMember ? null : <SelectionCircle selected={selected} />}
+          </Pressable>
         )}
-      </Pressable>
+      </>
     );
   },
 );
@@ -295,11 +307,11 @@ const useStyles = () => {
           paddingHorizontal: primitives.spacingMd,
           paddingVertical: primitives.spacingXs,
         },
-        userRowDisabled: {
-          opacity: 0.6,
+        alreadyMemberInfo: {
+          flexDirection: 'column',
         },
         memberLabel: {
-          fontSize: primitives.typographyFontSizeSm,
+          fontSize: primitives.typographyFontSizeXs,
           fontWeight: primitives.typographyFontWeightRegular,
           lineHeight: primitives.typographyLineHeightNormal,
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
