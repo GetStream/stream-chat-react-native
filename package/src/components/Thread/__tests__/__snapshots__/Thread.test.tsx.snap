@@ -506,6 +506,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                         {
                                           "borderTopLeftRadius": 20,
                                           "borderTopRightRadius": 20,
+                                          "borderWidth": 0,
+                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#ebeef1",
@@ -848,6 +850,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                         {
                                           "borderTopLeftRadius": 20,
                                           "borderTopRightRadius": 20,
+                                          "borderWidth": 0,
+                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#ebeef1",
@@ -1223,6 +1227,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                         {
                                           "borderTopLeftRadius": 20,
                                           "borderTopRightRadius": 20,
+                                          "borderWidth": 0,
+                                          "overflow": "hidden",
                                         },
                                         {
                                           "backgroundColor": "#ebeef1",
@@ -1556,6 +1562,8 @@ exports[`Thread should match thread snapshot 1`] = `
                                       {
                                         "borderTopLeftRadius": 20,
                                         "borderTopRightRadius": 20,
+                                        "borderWidth": 0,
+                                        "overflow": "hidden",
                                       },
                                       {
                                         "backgroundColor": "#ebeef1",
