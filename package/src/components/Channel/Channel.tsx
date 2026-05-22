@@ -114,7 +114,7 @@ import {
 } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
-import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
 import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
@@ -496,7 +496,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     thread: threadFromProps,
     threadList,
     threadMessages,
-    topInset,
+    topInset = 0,
     isOnline,
     maximumMessageLimit,
     initializeOnMount = true,
@@ -565,6 +565,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     state: channelMessagesState,
   } = useMessageListPagination({
     channel,
+  });
+
+  const shouldLoadInitialChannelAtFirstUnreadMessage = useStableCallback((unreadCount?: number) => {
+    if (messageId || !initialScrollToFirstUnreadMessage || !client.user) {
+      return false;
+    }
+
+    return (unreadCount ?? channel.countUnread()) > scrollToFirstUnreadThreshold;
+  });
+
+  const hasPendingInitialTargetLoad = useStableCallback(() => {
+    return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
   });
 
   const { setMessages: copyMessagesStateFromChannel, viewabilityChangedCallback } =
@@ -693,6 +705,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const initChannel = async () => {
       setLastRead(new Date());
       const unreadCount = channel.countUnread();
+      const shouldLoadAtFirstUnread = shouldLoadInitialChannelAtFirstUnreadMessage(unreadCount);
       if (!channel || !shouldSyncChannel) {
         return;
       }
@@ -722,13 +735,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       if (messageId) {
         await loadChannelAroundMessage({ messageId, setTargetedMessage });
-      } else if (
-        initialScrollToFirstUnreadMessage &&
-        client.user &&
-        unreadCount > scrollToFirstUnreadThreshold
-      ) {
+      } else if (shouldLoadAtFirstUnread) {
+        const clientUserId = client.user?.id;
+        if (!clientUserId) {
+          return;
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { user, ...ownReadState } = channel.state.read[client.user.id];
+        const { user, ...ownReadState } = channel.state.read[clientUserId];
 
         await loadChannelAtFirstUnreadMessage({
           channelUnreadState: ownReadState,
@@ -1578,6 +1592,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     setChannelUnreadState,
     setLastRead,
     setTargetedMessage,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     threadList,
     uploadAbortControllerRef,

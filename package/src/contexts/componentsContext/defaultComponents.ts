@@ -62,7 +62,7 @@ import { ImageGalleryGrid } from '../../components/ImageGallery/components/Image
 import { EmptyStateIndicator } from '../../components/Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator } from '../../components/Indicators/LoadingErrorIndicator';
 import { LoadingIndicator } from '../../components/Indicators/LoadingIndicator';
-import { KeyboardCompatibleView } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { KeyboardCompatibleView } from '../../components/KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message } from '../../components/Message/Message';
 import { MessagePinnedHeader } from '../../components/Message/MessageItemView/Headers/MessagePinnedHeader';
 import { MessageReminderHeader } from '../../components/Message/MessageItemView/Headers/MessageReminderHeader';

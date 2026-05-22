@@ -3,7 +3,6 @@ import { EventSubscription, Keyboard, Platform } from 'react-native';
 
 import { useStableCallback } from './useStableCallback';
 
-import { KeyboardControllerPackage } from '../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
 import { useMessageInputContext } from '../contexts/messageInputContext/MessageInputContext';
 
 /**
@@ -50,9 +49,7 @@ export const useAfterKeyboardOpenCallback = <T extends unknown[]>(
 
     const keyboardEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
 
-    keyboardSubscriptionRef.current = KeyboardControllerPackage?.KeyboardEvents
-      ? KeyboardControllerPackage.KeyboardEvents.addListener(keyboardEvent, runCallback)
-      : Keyboard.addListener(keyboardEvent, runCallback);
+    keyboardSubscriptionRef.current = Keyboard.addListener(keyboardEvent, runCallback);
 
     inputBoxRef.current.focus();
   });

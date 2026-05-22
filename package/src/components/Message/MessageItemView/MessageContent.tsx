@@ -657,6 +657,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: components.messageBubbleRadiusGroupBottom,
     borderTopRightRadius: components.messageBubbleRadiusGroupBottom,
     overflow: 'hidden',
+    borderWidth: 0,
   },
   contentBody: {
     flexShrink: 1,

@@ -425,17 +425,10 @@ export class AudioPlayer {
     }
     this.position = positionInMillis;
     if (this.isExpoCLI) {
-      if (positionInMillis === 0) {
-        // If currentTime is 0, we should replay the video from 0th position.
-        if (this.playerRef?.replayAsync) {
-          await this.playerRef.replayAsync({});
-        }
+      if (this.playerRef?.setPositionAsync) {
+        await this.playerRef.setPositionAsync(positionInMillis);
       } else {
-        if (this.playerRef?.setPositionAsync) {
-          await this.playerRef.setPositionAsync(positionInMillis);
-        } else {
-          this.notifyError('seek-not-supported');
-        }
+        this.notifyError('seek-not-supported');
       }
     } else {
       if (this.playerRef?.seek) {
