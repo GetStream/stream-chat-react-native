@@ -7,12 +7,12 @@ import { SvgUri } from 'react-native-svg';
 import { useChatConfigContext } from '../../../contexts/chatConfigContext/ChatConfigContext';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useStateStore } from '../../../hooks';
+import { useIsSvg } from '../../../hooks/useIsSvg';
 import {
   ImageGalleryAsset,
   ImageGalleryState,
 } from '../../../state-store/image-gallery-state-store';
 import { getResizedImageUrl } from '../../../utils/getResizedImageUrl';
-import { isSvgUri } from '../../UIComponents/SvgAwareImage';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
 
 const oneEighth = 1 / 8;
@@ -61,6 +61,7 @@ export const AnimatedGalleryImage = React.memo(
       });
     }, [photo.uri, resizableCDNHosts, screenHeight, screenWidth]);
 
+    const isSvg = useIsSvg(uri);
     const selected = currentIndex === index;
     const previous = currentIndex > index;
     const shouldRender = Math.abs(currentIndex - index) < 4;
@@ -85,7 +86,7 @@ export const AnimatedGalleryImage = React.memo(
       return <View style={[style, { transform: [{ scale: oneEighth }] }]} />;
     }
 
-    if (isSvgUri(uri)) {
+    if (isSvg) {
       // The outer Animated.View is sized at 8× screen so raster images stay
       // crisp under pinch-zoom (see useAnimatedGalleryStyle). rn-svg on
       // Android rasterizes the SVG to a bitmap at its layout size, and an

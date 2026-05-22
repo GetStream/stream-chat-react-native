@@ -1,33 +1,15 @@
 import React from 'react';
-import { Image, ImageProps, ImageURISource, View } from 'react-native';
+import { Image, ImageProps, View } from 'react-native';
 
 import { SvgUri } from 'react-native-svg';
 
-/**
- * Returns true if `uri` points to an SVG (either by `.svg` extension or by
- * `image/svg+xml` data-URI prefix). Exported so other surfaces (e.g. the
- * fullscreen image gallery) can branch on SVG without re-implementing the
- * detection.
- */
-export const isSvgUri = (uri: string | null | undefined): boolean => {
-  if (typeof uri !== 'string' || uri.length === 0) {
-    return false;
-  }
-  const lower = uri.toLowerCase();
-  if (lower.startsWith('data:image/svg+xml')) {
-    return true;
-  }
-  const pathOnly = lower.split('#')[0].split('?')[0];
-  return pathOnly.endsWith('.svg');
-};
+import { useIsSvg } from '../../hooks/useIsSvg';
 
-const getSvgRemoteUri = (source: ImageProps['source']): string | null => {
+const getSourceUri = (source: ImageProps['source']): string | undefined => {
   if (!source || typeof source !== 'object' || Array.isArray(source)) {
-    return null;
+    return undefined;
   }
-
-  const { uri } = source as ImageURISource;
-  return isSvgUri(uri) ? (uri as string) : null;
+  return source.uri;
 };
 
 /**
@@ -38,9 +20,10 @@ const getSvgRemoteUri = (source: ImageProps['source']): string | null => {
  * responsible for SVG handling in their override.
  */
 export const SvgAwareImage = (props: ImageProps) => {
-  const svgUri = getSvgRemoteUri(props.source);
+  const uri = getSourceUri(props.source);
+  const isSvg = useIsSvg(uri);
 
-  if (!svgUri) {
+  if (!isSvg || !uri) {
     return <Image {...props} />;
   }
 
@@ -58,7 +41,7 @@ export const SvgAwareImage = (props: ImageProps) => {
           onLoad?.({} as never);
           onLoadEnd?.();
         }}
-        uri={svgUri}
+        uri={uri}
         width='100%'
       />
     </View>

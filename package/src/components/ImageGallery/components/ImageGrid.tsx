@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+
+import { SvgUri } from 'react-native-svg';
 
 import type { ImageGalleryGridProps } from './types';
 
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
-import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useIsSvg } from '../../../hooks/useIsSvg';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { useViewport } from '../../../hooks/useViewport';
 import type {
@@ -34,10 +36,10 @@ export type GridImageItem = ImageGalleryAsset & {
 const GridImage = ({ item }: { item: GridImageItem }) => {
   const styles = useStyles();
   const { vw } = useViewport();
-  const { ImageComponent } = useComponentsContext();
   const { ...restItem } = item;
 
   const { numberOfImageGalleryGridColumns, selectAndClose, thumb_url, type, uri } = restItem;
+  const isSvg = useIsSvg(uri);
 
   const size = vw(100) / (numberOfImageGalleryGridColumns || 3) - 2;
 
@@ -47,8 +49,12 @@ const GridImage = ({ item }: { item: GridImageItem }) => {
         <View style={[styles.image, { height: size, width: size }]}>
           <VideoThumbnail thumb_url={thumb_url} />
         </View>
+      ) : isSvg ? (
+        <View style={[styles.image, { height: size, width: size }]}>
+          <SvgUri height='100%' uri={uri} width='100%' />
+        </View>
       ) : (
-        <ImageComponent source={{ uri }} style={[styles.image, { height: size, width: size }]} />
+        <Image source={{ uri }} style={[styles.image, { height: size, width: size }]} />
       )}
     </Pressable>
   );
