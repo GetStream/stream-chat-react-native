@@ -1,8 +1,10 @@
 import { Alert, AlertButton } from 'react-native';
 
 import { renderHook } from '@testing-library/react-native';
-import type { Channel } from 'stream-chat';
+import type { Channel, Mute } from 'stream-chat';
 
+import * as useMutedUsersModule from '../../components/ChannelList/hooks/useMutedUsers';
+import * as useIsChannelMutedModule from '../../components/ChannelPreview/hooks/useIsChannelMuted';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../contexts/translationContext/TranslationContext';
 import {
@@ -13,7 +15,6 @@ import {
 } from '../useChannelActionItems';
 import * as useChannelActionsModule from '../useChannelActions';
 import * as useChannelMembershipStateModule from '../useChannelMembershipState';
-import * as useChannelMuteActiveModule from '../useChannelMuteActive';
 import * as useIsDirectChatModule from '../useIsDirectChat';
 
 const createChannelActions = (): useChannelActionsModule.ChannelActions => ({
@@ -80,7 +81,12 @@ describe('useChannelActionItems', () => {
       archived_at: undefined,
       pinned_at: undefined,
     } as never);
-    jest.spyOn(useChannelMuteActiveModule, 'useChannelMuteActive').mockReturnValue(false);
+    jest.spyOn(useIsChannelMutedModule, 'useIsChannelMuted').mockReturnValue({
+      createdAt: null,
+      expiresAt: null,
+      muted: false,
+    });
+    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
     jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
   });
@@ -105,6 +111,41 @@ describe('useChannelActionItems', () => {
       'destructive',
     ]);
     expect(result.current.map((item) => item.placement)).toEqual(['swipe', 'sheet', 'sheet']);
+  });
+
+  it('returns muteUser only in direct chats', () => {
+    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
+
+    const { result } = renderHook(() => useChannelActionItems({ channel }));
+
+    expect(result.current.map((item) => item.id)).toEqual([
+      'mute',
+      'muteUser',
+      'block',
+      'leave',
+      'deleteChannel',
+    ]);
+    expect(result.current.find((item) => item.id === 'muteUser')?.action).toBe(
+      channelActions.muteUser,
+    );
+    expect(result.current.find((item) => item.id === 'muteUser')?.placement).toBe('sheet');
+  });
+
+  it('mute action always targets the channel and muteUser toggles independently', () => {
+    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
+    jest.spyOn(useIsChannelMutedModule, 'useIsChannelMuted').mockReturnValue({
+      createdAt: null,
+      expiresAt: null,
+      muted: true,
+    });
+    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
+
+    const { result } = renderHook(() => useChannelActionItems({ channel }));
+
+    const muteItem = result.current.find((item) => item.id === 'mute');
+    const muteUserItem = result.current.find((item) => item.id === 'muteUser');
+    expect(muteItem?.action).toBe(channelActions.unmuteChannel);
+    expect(muteUserItem?.action).toBe(channelActions.muteUser);
   });
 
   it('forwards options from item.action to the underlying channel action', async () => {
@@ -134,12 +175,13 @@ describe('useChannelActionItems', () => {
       context: {
         actions: channelActions,
         channel,
+        channelMuteActive: false,
         isArchived: false,
         isBlocked: undefined,
         isDirectChat: false,
         isPinned: false,
-        muteActive: false,
         t: expect.any(Function),
+        userMuteActive: false,
       },
       defaultItems: expect.any(Array),
     });
@@ -159,23 +201,25 @@ describe('getChannelActionItems', () => {
     const defaultItems = buildDefaultChannelActionItems({
       actions: channelActions,
       channel,
+      channelMuteActive: false,
       isArchived: false,
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      muteActive: false,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
     });
     const actionItems = getChannelActionItems({
       context: {
         actions: channelActions,
         channel,
+        channelMuteActive: false,
         isArchived: false,
         isBlocked: undefined,
         isDirectChat: false,
         isPinned: false,
-        muteActive: false,
         t: ((value: string) => value) as TranslationContextValue['t'],
+        userMuteActive: false,
       },
       defaultItems,
     });
@@ -198,40 +242,72 @@ describe('getChannelActionItems', () => {
     const actionItems = buildDefaultChannelActionItems({
       actions: channelActions,
       channel: createChannelMock({ blockedUserIds: ['other-user-id'] }),
+      channelMuteActive: true,
       isArchived: true,
       isBlocked: true,
       isDirectChat: true,
       isPinned: false,
-      muteActive: true,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: true,
     });
 
-    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'block', 'leave', 'deleteChannel']);
+    expect(actionItems.map((item) => item.id)).toEqual([
+      'mute',
+      'muteUser',
+      'block',
+      'leave',
+      'deleteChannel',
+    ]);
     expect(actionItems.map((item) => item.action)).toEqual([
+      channelActions.unmuteChannel,
       channelActions.unmuteUser,
       channelActions.unblockUser,
       channelActions.leave,
       expect.any(Function),
     ]);
     expect(actionItems.map((item) => item.label)).toEqual([
+      'Unmute Chat',
       'Unmute User',
       'Unblock User',
       'Leave Chat',
       'Delete Chat',
     ]);
-    expect(actionItems.map((item) => item.placement)).toEqual(['sheet', 'sheet', 'sheet', 'sheet']);
+    expect(actionItems.map((item) => item.placement)).toEqual([
+      'swipe',
+      'sheet',
+      'sheet',
+      'sheet',
+      'sheet',
+    ]);
+  });
+
+  it('omits muteUser when not a direct chat', () => {
+    const actionItems = buildDefaultChannelActionItems({
+      actions: createChannelActions(),
+      channel,
+      channelMuteActive: false,
+      isArchived: false,
+      isBlocked: undefined,
+      isDirectChat: false,
+      isPinned: false,
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
+    });
+
+    expect(actionItems.map((item) => item.id)).not.toContain('muteUser');
   });
 
   it('omits delete action when current user is not the channel creator', () => {
     const actionItems = buildDefaultChannelActionItems({
       actions: createChannelActions(),
       channel: createChannelMock({ createdById: 'someone-else' }),
+      channelMuteActive: false,
       isArchived: false,
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      muteActive: false,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
     });
 
     expect(actionItems.map((item) => item.id)).toEqual(['mute', 'leave']);
@@ -242,12 +318,13 @@ describe('getChannelActionItems', () => {
     const actionItems = buildDefaultChannelActionItems({
       actions: channelActions,
       channel,
+      channelMuteActive: true,
       isArchived: true,
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      muteActive: true,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
     });
 
     expect(actionItems[0].action).toBe(channelActions.unmuteChannel);
@@ -259,6 +336,29 @@ describe('getChannelActionItems', () => {
     expect(actionItems[1].placement).toBe('sheet');
   });
 
+  it('mute and muteUser reflect their respective active states independently', () => {
+    const channelActions = createChannelActions();
+    const actionItems = buildDefaultChannelActionItems({
+      actions: channelActions,
+      channel,
+      channelMuteActive: false,
+      isArchived: false,
+      isBlocked: undefined,
+      isDirectChat: true,
+      isPinned: false,
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: true,
+    });
+
+    const muteItem = actionItems.find((item) => item.id === 'mute');
+    const muteUserItem = actionItems.find((item) => item.id === 'muteUser');
+
+    expect(muteItem?.action).toBe(channelActions.muteChannel);
+    expect(muteItem?.label).toBe('Mute Chat');
+    expect(muteUserItem?.action).toBe(channelActions.unmuteUser);
+    expect(muteUserItem?.label).toBe('Unmute User');
+  });
+
   it('shows delete confirmation and calls deleteChannel on destructive confirm', async () => {
     const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(jest.fn());
     const channelActions = createChannelActions();
@@ -266,12 +366,13 @@ describe('getChannelActionItems', () => {
     const actionItems = buildDefaultChannelActionItems({
       actions: channelActions,
       channel,
+      channelMuteActive: false,
       isArchived: false,
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      muteActive: false,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
     });
 
     const deleteItem = actionItems.find((item) => item.id === 'deleteChannel');

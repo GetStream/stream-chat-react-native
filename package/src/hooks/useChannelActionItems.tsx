@@ -10,10 +10,11 @@ import {
   useChannelActions,
 } from './useChannelActions';
 import { useChannelMembershipState } from './useChannelMembershipState';
-import { useChannelMuteActive } from './useChannelMuteActive';
 import { useIsDirectChat } from './useIsDirectChat';
 import { useStateStore } from './useStateStore';
 
+import { useMutedUsers } from '../components/ChannelList/hooks/useMutedUsers';
+import { useIsChannelMuted } from '../components/ChannelPreview/hooks/useIsChannelMuted';
 import { useTheme, useTranslationContext } from '../contexts';
 import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
 import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';
@@ -22,7 +23,7 @@ import { ArrowBoxLeft } from '../icons/leave';
 export type ChannelActionItem = {
   action: ChannelActionHandler;
   Icon: React.ComponentType<IconProps>;
-  id: 'mute' | 'block' | 'leave' | 'deleteChannel' | string;
+  id: 'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | string;
   label: string;
   placement: 'both' | 'sheet' | 'swipe';
   type: 'destructive' | 'standard';
@@ -31,12 +32,13 @@ export type ChannelActionItem = {
 export type ChannelActionItemsParams = {
   actions: ChannelActions;
   channel: Channel;
+  channelMuteActive: boolean;
   isArchived: boolean;
   isBlocked: boolean | undefined;
   isDirectChat: boolean;
   isPinned: boolean;
-  muteActive: boolean;
   t: TranslationContextValue['t'];
+  userMuteActive: boolean;
 };
 
 export type BuildDefaultChannelActionItems = (
@@ -68,9 +70,10 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       blockUser,
       unblockUser,
     },
+    channelMuteActive,
     isBlocked,
     isDirectChat,
-    muteActive,
+    userMuteActive,
     t,
     channel,
   } = channelActionItemsParams;
@@ -78,15 +81,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 
   const actionItems: ChannelActionItem[] = [
     {
-      action: isDirectChat
-        ? muteActive
-          ? unmuteUser
-          : muteUser
-        : muteActive
-          ? unmuteChannel
-          : muteChannel,
+      action: channelMuteActive ? unmuteChannel : muteChannel,
       Icon: (props) =>
-        muteActive ? (
+        channelMuteActive ? (
           <Sound width={20} height={20} {...props} />
         ) : (
           <Mute
@@ -99,18 +96,37 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
         ),
       id: 'mute',
       label: isDirectChat
-        ? muteActive
-          ? t('Unmute User')
-          : t('Mute User')
-        : muteActive
+        ? channelMuteActive
+          ? t('Unmute Chat')
+          : t('Mute Chat')
+        : channelMuteActive
           ? t('Unmute Group')
           : t('Mute Group'),
-      placement: isDirectChat ? 'sheet' : 'swipe',
+      placement: 'swipe',
       type: 'standard',
     },
   ];
 
   if (isDirectChat) {
+    actionItems.push({
+      action: userMuteActive ? unmuteUser : muteUser,
+      Icon: (props) =>
+        userMuteActive ? (
+          <ChannelActionsIcon Icon={Sound} {...props} />
+        ) : (
+          <ChannelActionsIcon
+            Icon={Mute}
+            {...props}
+            fill={props.fill ?? props.stroke}
+            stroke={undefined}
+          />
+        ),
+      id: 'muteUser',
+      label: userMuteActive ? t('Unmute User') : t('Mute User'),
+      placement: 'sheet',
+      type: 'standard',
+    });
+
     actionItems.push({
       action: isBlocked ? unblockUser : blockUser,
       Icon: (props) => <ChannelActionsIcon Icon={BlockUser} {...props} />,
@@ -191,7 +207,13 @@ export const useChannelActionItems = ({
   const isPinned = Boolean(membership?.pinned_at);
   const isArchived = Boolean(membership?.archived_at);
 
-  const muteActive = useChannelMuteActive(channel);
+  const { muted: channelMuteActive } = useIsChannelMuted(channel);
+  const mutedUsers = useMutedUsers(channel);
+  const userMuteActive = isDirectChat
+    ? mutedUsers.some(
+        (mutedUser) => getOtherUserInDirectChannel(channel)?.user?.id === mutedUser.target.id,
+      )
+    : false;
 
   const { userIds: blockedUserIds } = useStateStore(
     channel.getClient().blockedUsers,
@@ -206,14 +228,25 @@ export const useChannelActionItems = ({
     () => ({
       actions: channelActions,
       channel,
+      channelMuteActive,
       isArchived,
       isBlocked,
       isDirectChat,
       isPinned,
-      muteActive,
       t,
+      userMuteActive,
     }),
-    [channel, muteActive, channelActions, isArchived, isBlocked, isDirectChat, isPinned, t],
+    [
+      channel,
+      channelActions,
+      channelMuteActive,
+      isArchived,
+      isBlocked,
+      isDirectChat,
+      isPinned,
+      t,
+      userMuteActive,
+    ],
   );
 
   const defaultItems = useMemo(
